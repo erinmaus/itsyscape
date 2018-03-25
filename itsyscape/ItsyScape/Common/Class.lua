@@ -21,6 +21,26 @@ local function Class(parent)
 
 	function Type.__call(...)
 		local result = setmetatable({}, Metatable)
+		function result:getType()
+			return Type
+		end
+
+		function result:isType(type)
+			return Type == self:getType()
+		end
+
+		function result:isCompatibleType(type)
+			local currentType = self:getType()
+			while currentType ~= nil do
+				if currentType == type then
+					return true
+				end
+
+				currentType = currentType.__parent
+			end
+
+			return false
+		end
 
 		if Class.new then
 			Class.new(result, select(2, ...))
