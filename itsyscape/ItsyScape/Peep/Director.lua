@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Razmatazz/Peep/Cortex.lua
+-- Razmatazz/Peep/Director.lua
 --
 -- This file is a part of ItsyScape.
 --
