@@ -8,13 +8,18 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local Class = {}
+Class.ABSTRACT = function()
+	error("method is abstract", 2)
+end
+
 -- Creates a class, optionally from a parent.
 --
 -- To add a property or method to the class, add add the property or method to
 -- the returned class definition. Same for overriding properties or methods.
 --
 -- Returns the class definition and the metatable.
-local function Class(parent)
+local function __call(parent)
 	local Type = { __index = parent or {}, __parent = parent }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
@@ -52,4 +57,4 @@ local function Class(parent)
 	return Class, Metatable
 end
 
-return Class
+return setmetatable({}, { __call = __call })
