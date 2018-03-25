@@ -30,6 +30,16 @@ function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
+-- Linearly interpolates this vector with other.
+--
+-- delta is clamped to 0 .. 1 inclusive.
+--
+-- Returns the interpolated vector.
+function Vector:lerp(other, delta)
+	delta = math.min(math.max(delta, 0.0), 1.0)
+	return other * delta + self * (1 - delta)
+end
+
 -- Calculates the cross product of two vectors.
 function Vector:cross(other)
 	local s = self.y * other.z - self.z * other.y
@@ -162,5 +172,12 @@ end
 function Metatable.__unm(a)
 	return Vector(-a.x, -a.y, -a.z)
 end
+
+-- Some useful vector constants.
+Vector.ZERO   = Vector(0, 0, 0)
+Vector.ONE    = Vector(1, 1, 1)
+Vector.UNIT_X = Vector(1, 0, 0)
+Vector.UNIT_Y = Vector(0, 1, 0)
+Vector.UNIT_Z = Vector(0, 0, 1)
 
 return Vector
