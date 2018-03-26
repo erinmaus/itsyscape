@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/StageMesh.lua
+-- ItsyScape/World/MapMesh.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,8 +12,8 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
--- Stage mesh. Builds a mesh from a stage.
-StageMesh = Class()
+-- Map mesh. Builds a mesh from a stage.
+MapMesh = Class()
 
 -- Vertex format.
 --
@@ -27,7 +27,7 @@ StageMesh = Class()
 --
 -- s = mod(VertexTexCoord.s, (VertexTileBounds.y - VertexTileBounds.x)) + VertexTileBounds.x
 -- t = mod(VertexTexCoord.t, (VertexTileBounds.w - VertexTileBounds.z)) + VertexTileBounds.z
-StageMesh.FORMAT = {
+MapMesh.FORMAT = {
     { "VertexPosition", 'float', 3 },
     { "VertexNormal", 'float', 3 },
     { "VertexTexCoord", 'float', 2 },
@@ -39,7 +39,7 @@ StageMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- stage mesh is generated (those tiles that fall within the bounds).
-function StageMesh:new(stage, tileSet, left, right, top, bottom)
+function MapMesh:new(stage, tileSet, left, right, top, bottom)
 	self.vertices = {}
 	self.stage = stage
 	self.tileSet = tileSet
@@ -55,23 +55,23 @@ end
 -- Frees underlying resources.
 --
 -- Drawing is prohibited.
-function StageMesh:release()
+function MapMesh:release()
 	self.mesh:release()
 end
 
 -- Draws the mesh with the provided texture.
-function StageMesh:draw(texture, ...)
+function MapMesh:draw(texture, ...)
 	self.mesh:setTexture(texture)
 	love.graphics.draw(self.mesh, ...)
 end
 
 -- Releases all resources used by the mesh.
-function StageMesh:release()
+function MapMesh:release()
 	self.mesh:release()
 end
 
 -- Builds a mesh within the provided bounds.
-function StageMesh:_buildMesh(left, right, top, bottom)
+function MapMesh:_buildMesh(left, right, top, bottom)
 	-- Build vertices.
 	for j = top, bottom do
 		for i = left, right do
@@ -102,9 +102,9 @@ function StageMesh:_buildMesh(left, right, top, bottom)
 	end
 
 	-- Create mesh and enable all attributes.
-	self.mesh = love.graphics.newMesh(StageMesh.FORMAT, self.vertices, 'triangles', 'static')
-	for i = 1, #StageMesh.FORMAT do
-		self.mesh:setAttributeEnabled(StageMesh.FORMAT[i][1], true)
+	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
+	for i = 1, #MapMesh.FORMAT do
+		self.mesh:setAttributeEnabled(MapMesh.FORMAT[i][1], true)
 	end
 end
 
@@ -116,7 +116,7 @@ end
 -- * tile is expected to be in the form { left, right, top, bottom }
 -- * color is expected to be in the form { r, g, b, a }, where each component
 --   is in the range of 0 .. 255 inclusive
-function StageMesh:_addVertex(position, normal, texture, tile, color)
+function MapMesh:_addVertex(position, normal, texture, tile, color)
 	local vertex = {
 		position.x, position.y, position.z,
 		normal.x, normal.y, normal.z,
@@ -136,8 +136,8 @@ end
 --   which side the vertex falls on. For example, -1 on the X axis means left.
 -- * index is the tile set index of the tile. This is either 'flat' or 'edge'.
 -- * i, j are the tile indices on the x and y axis, respectively
--- * tile is the tile at (i, j) from the Stage instance
-function StageMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
+-- * tile is the tile at (i, j) from the Map instance
+function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.stage.cellSize
 	local worldPosition = localPosition * Vector(self.stage.cellSize / 2, 1, self.stage.cellSize / 2) + tileCenterPosition
 
@@ -336,16 +336,16 @@ local function getRightVertices(tile, neighbor)
 end
 
 
-StageMesh._addLeftEdge = addEdgeBuilder(getLeftVertices, -1)
+MapMesh._addLeftEdge = addEdgeBuilder(getLeftVertices, -1)
 
-StageMesh._addRightEdge = addEdgeBuilder(getRightVertices, 1)
+MapMesh._addRightEdge = addEdgeBuilder(getRightVertices, 1)
 
-StageMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
+MapMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
 
-StageMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
+MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
 -- Simply adds the flat (top).
-function StageMesh:_addFlat(i, j, tile)
+function MapMesh:_addFlat(i, j, tile)
 	local E = self.stage.cellSize / 2
 	local topLeft = Vector(-E, tile.topLeft, -1)
 	local topRight = Vector(E, tile.topLeft, -1)
@@ -371,4 +371,4 @@ function StageMesh:_addFlat(i, j, tile)
 	self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, 'flat', i, j, tile)
 end
 
-return StageMesh
+return MapMesh

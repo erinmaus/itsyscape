@@ -1,21 +1,21 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
-local Stage = require "ItsyScape.World.Stage"
-local StageMesh = require "ItsyScape.World.StageMesh"
-local StageMotion = require "ItsyScape.World.StageMotion"
+local Map = require "ItsyScape.World.Map"
+local MapMesh = require "ItsyScape.World.MapMesh"
+local MapMotion = require "ItsyScape.World.MapMotion"
 local TileSet = require "ItsyScape.World.TileSet"
 local ForwardLitModelShader = require "ItsyScape.Graphics.Shaders.ForwardLitModelShader"
 
-local stage = Stage(4, 4, 2)
+local map = Map(4, 4, 2)
 local tileSet
-local stageMesh = nil
+local mapMesh = nil
 local motion = nil
 local shader = nil
 
 function love.load()
-	for j = 1, stage.height do
-		for i = 1, stage.width do
-			local tile = stage:getTile(i, j)
+	for j = 1, map.height do
+		for i = 1, map.width do
+			local tile = map:getTile(i, j)
 			tile.topLeft = 1
 			tile.topRight = 1
 			tile.bottomLeft = 1
@@ -27,15 +27,14 @@ function love.load()
 		end
 	end
 
-	if true then
-	local t = stage:getTile(2, 3)
+	local t = map:getTile(2, 3)
 	t.topLeft = 2
-	t = stage:getTile(1, 3)
+	t = map:getTile(1, 3)
 	t.topRight = 1
-	t = stage:getTile(2, 2)
+	t = map:getTile(2, 2)
 	t.bottomLeft = 2
-	t = stage:getTile(1, 2)
-	t.bottomRight = 2 end
+	t = map:getTile(1, 2)
+	t.bottomRight = 2
 
 	tileSet = TileSet()
 	tileSet:setTileProperty(1, 'colorRed', 128)
@@ -45,15 +44,15 @@ function love.load()
 	tileSet:setTileProperty(2, 'colorGreen', 192)
 	tileSet:setTileProperty(2, 'colorBlue', 64)
 
-	stageMesh = StageMesh(stage, tileSet)
+	mapMesh = MapMesh(map, tileSet)
 
-	local centerX = stage.width * stage.cellSize / 2
-	local centerZ = stage.height * stage.cellSize / 2
+	local centerX = map.width * map.cellSize / 2
+	local centerZ = map.height * map.cellSize / 2
 
 	shader = ForwardLitModelShader()
 	shader:setNumLights(1)
 
-	motion = StageMotion(stage)
+	motion = MapMotion(map)
 end
 
 local transform = love.math.newTransform()
@@ -66,13 +65,13 @@ function love.update(dt)
 	shader:setLight(1, {
 		position = { x, 8, -y, 1 },
 		color = { 1, 1, 1 },
-		attenuation = 0.05,
+		attenuation = 4,
 		ambientCoefficient = 0.2
 	})
 
 
-	local centerX = stage.width * stage.cellSize / 2
-	local centerZ = stage.height * stage.cellSize / 2
+	local centerX = map.width * map.cellSize / 2
+	local centerZ = map.height * map.cellSize / 2
 	transform:reset()
 	transform:translate(centerX, 0, centerZ)
 	--transform:rotate(0, 1, 0, t / math.pi)
@@ -85,8 +84,8 @@ local corner = nil
 local isDragging
 
 function setCamera()
-	local centerX = stage.width * stage.cellSize / 2
-	local centerZ = stage.height * stage.cellSize / 2
+	local centerX = map.width * map.cellSize / 2
+	local centerZ = map.height * map.cellSize / 2
 	local offsetX = (love.mouse.getX() - love.window.getMode() / 2) / 40
 	love.graphics.origin()
 	love.graphics.lookAt(
@@ -147,8 +146,8 @@ function love.mousemoved(x, y)
 	}
 
 	if motion:onMouseMoved(event) then
-		stageMesh:release()
-		stageMesh = StageMesh(stage, tileSet)
+		mapMesh:release()
+		mapMesh = MapMesh(map, tileSet)
 	end
 end
 
@@ -161,12 +160,12 @@ function love.draw()
 	do
 		love.graphics.setDepthMode('less', true)
 		love.graphics.setWireframe(false)
-		stageMesh:draw(nil, transform)
+		mapMesh:draw(nil, transform)
 
 		shader:resetLight(1)
 		love.graphics.translate(0, 0.01, 0)
 		love.graphics.setDepthMode('lequal', false)
 		love.graphics.setWireframe(true)
-		stageMesh:draw(nil, transform)
+		mapMesh:draw(nil, transform)
 	end
 end

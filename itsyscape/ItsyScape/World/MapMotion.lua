@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/StageMotion.lua
+-- ItsyScape/World/MapMotion.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,12 +9,12 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
-local Stage = require "ItsyScape.World.Stage"
+local Map = require "ItsyScape.World.Map"
 local Tile = require "ItsyScape.World.Tile"
 
-StageMotion = Class()
+MapMotion = Class()
 
-function StageMotion:new(stage)
+function MapMotion:new(stage)
 	self.stage = stage
 	self.isDragging = false
 end
@@ -24,7 +24,7 @@ end
 -- Finds the tile under the cursor and selects the nearest corners.
 --
 -- e is a MouseEvent-like structure.
-function StageMotion:onMousePressed(e)
+function MapMotion:onMousePressed(e)
 	-- TODO:
 	--   1. Allow button customization (instead of left/primary mouse button)
 	--   2. Raise entire tile if position is close to center (< cellSize / 2?)
@@ -34,12 +34,12 @@ function StageMotion:onMousePressed(e)
 	if #tiles >= 1 and e.button == 1 then
 		self.isDragging = true
 		self.referenceY = e.ray:project(-(e.ray.origin.z / e.ray.direction.z)).y
-		self.tile = tiles[1][Stage.RAY_TEST_RESULT_TILE]
+		self.tile = tiles[1][Map.RAY_TEST_RESULT_TILE]
 		self.corners = {}
 
 		local _, _, corners = self.tile:findNearestCorner(
-			tiles[1][Stage.RAY_TEST_RESULT_POSITION],
-			tiles[1][Stage.RAY_TEST_RESULT_I], tiles[1][Stage.RAY_TEST_RESULT_J],
+			tiles[1][Map.RAY_TEST_RESULT_POSITION],
+			tiles[1][Map.RAY_TEST_RESULT_I], tiles[1][Map.RAY_TEST_RESULT_J],
 			self.stage.cellSize)
 		for i = 1, #corners do
 			local c = corners[i]
@@ -58,7 +58,7 @@ end
 -- Cancels the current action.
 --
 -- e is a MouseEvent-like structure.
-function StageMotion:onMouseReleased(e)
+function MapMotion:onMouseReleased(e)
 	self.isDragging = false
 end
 
@@ -69,7 +69,7 @@ end
 -- Returns true if the tile has been modified, false otherwise.
 --
 -- e is a MouseEvent-like structure.
-function StageMotion:onMouseMoved(e)
+function MapMotion:onMouseMoved(e)
 	if self.isDragging then
 		-- Using the Z-axis as the reference point, compute how far along
 		-- the Y-axis the ray has moved and adjust corners by amount.
@@ -97,4 +97,4 @@ function StageMotion:onMouseMoved(e)
 	return false
 end
 
-return StageMotion
+return MapMotion
