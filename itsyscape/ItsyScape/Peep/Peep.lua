@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Razmatazz/Peep/Peep.lua
+-- ItsyScape/Peep/Peep.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -20,10 +20,18 @@ local Behavior = require "ItsyScape.Peep.Behavior"
 -- matching systems (Cortexes in this case).
 local Peep = Class()
 
-function Peep:new()
+-- Total number of Peeps created.
+local Peep.PEEPS_TALLY = 1
+
+function Peep:new(name)
 	self.behaviors = {}
 	self.onBehaviorAdded = Callback()
 	self.onBehaviorRemoved = Callback()
+
+	-- It's a RollerCoaster Tycoon reference.
+	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
+
+	Peep.PEEPS_TALLY = Peep.PEEPS_TALLY + 1
 end
 
 -- Gets the Behavior represented by the value, b.

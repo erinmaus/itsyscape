@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Razmatazz/Peep/Director.lua
+-- ItsyScape/Peep/Director.lua
 --
 -- This file is a part of ItsyScape.
 --
