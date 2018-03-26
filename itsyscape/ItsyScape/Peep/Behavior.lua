@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Razmatazz/Peep/Behavior.lua
+-- ItsyScape/Peep/Behavior.lua
 --
 -- This file is a part of ItsyScape.
 --
