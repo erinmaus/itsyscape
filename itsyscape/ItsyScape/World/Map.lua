@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/Stage.lua
+-- ItsyScape/World/Map.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,8 +11,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Tile = require "ItsyScape.World.Tile"
 
--- Stage type. Stores tiles.
-Stage = Class()
+-- Map type. Stores tiles.
+Map = Class()
 
 -- Constructs a new stage with the provided dimensions.
 --
@@ -21,7 +21,7 @@ Stage = Class()
 -- * Values are floored to the nearest integer.
 --
 -- The initial map is flat.
-function Stage:new(width, height, cellSize)
+function Map:new(width, height, cellSize)
 	width = math.floor(math.max(width or 1, 1))
 	height = math.floor(math.max(height or 1, 1))
 	cellSize = math.floor(math.max(cellSize or 1, 1))
@@ -46,7 +46,7 @@ end
 -- Any fractional portion of i or j is discarded.
 --
 -- Returns the tile.
-function Stage:getTile(i, j)
+function Map:getTile(i, j)
 	i = math.floor(i)
 	j = math.floor(j)
 
@@ -70,7 +70,7 @@ end
 -- If x or z are outside the bounds, they are clamped to the nearest tile.
 --
 -- Returns the height.
-function Stage:getInterpolatedHeight(x, z)
+function Map:getInterpolatedHeight(x, z)
 	x = x / self.cellSize
 	z = z / self.cellSize
 
@@ -82,10 +82,10 @@ function Stage:getInterpolatedHeight(x, z)
 	return 0
 end
 
-Stage.RAY_TEST_RESULT_TILE = 1
-Stage.RAY_TEST_RESULT_POSITION = 2
-Stage.RAY_TEST_RESULT_I = 3
-Stage.RAY_TEST_RESULT_J = 4
+Map.RAY_TEST_RESULT_TILE = 1
+Map.RAY_TEST_RESULT_POSITION = 2
+Map.RAY_TEST_RESULT_I = 3
+Map.RAY_TEST_RESULT_J = 4
 
 -- Tests for a collision with the ray.
 --
@@ -93,7 +93,7 @@ Stage.RAY_TEST_RESULT_J = 4
 -- tile hit, where i and j are the tile indices.
 --
 -- If the array is empty, then no tiles were hit...
-function Stage:testRay(ray)
+function Map:testRay(ray)
 	local hitTiles = {}
 	for j = 1, self.height do
 		for i = 1, self.width do
@@ -108,4 +108,4 @@ function Stage:testRay(ray)
 	return hitTiles
 end
 
-return Stage
+return Map
