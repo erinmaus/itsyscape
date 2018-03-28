@@ -21,7 +21,7 @@ local Behavior = require "ItsyScape.Peep.Behavior"
 local Peep = Class()
 
 -- Total number of Peeps created.
-local Peep.PEEPS_TALLY = 1
+Peep.PEEPS_TALLY = 1
 
 function Peep:new(name)
 	self.behaviors = {}
@@ -32,6 +32,20 @@ function Peep:new(name)
 	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
 
 	Peep.PEEPS_TALLY = Peep.PEEPS_TALLY + 1
+end
+
+-- Returns the name of the Peep.
+--
+-- Defaults to "Guest #", where '#' is an incrementing counter.
+function Peep:getName()
+	return self.name
+end
+
+-- Sets the name of peep.
+--
+-- If value is falsey, this does nothing.
+function Peep:setName(value)
+	self.name = value or self.name
 end
 
 -- Gets the Behavior represented by the value, b.
