@@ -48,7 +48,7 @@ local Fragment = [[
 			vec3 lightSurfaceDifference = light.position.xyz - position;
 			direction = normalize(lightSurfaceDifference);
 			float lightSurfaceDistance = length(lightSurfaceDifference);
-			attenuation = 1.0 / (1.0 + light.attenuation * pow(lightSurfaceDistance, 2));
+			attenuation = light.attenuation / lightSurfaceDistance;
 
 			float dot = dot(-direction, normalize(light.coneDirection));
 			float lightToSurfaceAngle = degrees(acos(dot));
