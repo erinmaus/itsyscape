@@ -19,12 +19,12 @@ end
 -- the returned class definition. Same for overriding properties or methods.
 --
 -- Returns the class definition and the metatable.
-local function __call(parent)
+local function __call(self, parent)
 	local Type = { __index = parent or {}, __parent = parent }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
 
-	function Type.__call(...)
+	function Type.__call(self, ...)
 		local result = setmetatable({}, Metatable)
 		function result:getType()
 			return Type
@@ -48,7 +48,7 @@ local function __call(parent)
 		end
 
 		if Class.new then
-			Class.new(result, select(2, ...))
+			Class.new(result, ...)
 		end
 
 		return result
