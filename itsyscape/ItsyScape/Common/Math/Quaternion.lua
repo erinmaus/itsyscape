@@ -19,7 +19,7 @@ function Quaternion.fromAxisAngle(axis, angle)
 	local halfAngleSine = math.sin(halfAngle)
 	local halfAngleCosine = math.cos(halfAngle)
 
-	local xyz = axis * halfAngleSine
+	local xyz = axis:getNormal() * halfAngleSine
 	local w = halfAngleCosine
 
 	return Quaternion(xyz.x, xyz.y, xyz.z, w)
@@ -46,7 +46,10 @@ end
 -- Returns the interpolated quaternion.
 function Quaternion:lerp(other, delta)
 	delta = math.min(math.max(delta, 0.0), 1.0)
-	return other * delta + self * (1 - delta)
+	local deltaQuat = Quaternion(delta, delta, delta, delta)
+	local inverseDeltaQuat = Quaternion(1 - delta, 1 - delta, 1 - delta, 1 - delta)
+
+	return other * deltaQuat + self * inverseDeltaQuat
 end
 
 -- Returns the SLERP (spherical linear interpolation) of self to other by delta.
@@ -54,51 +57,36 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Implementation borrowed from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
-function Quaternion:slerp(a, other, delta)
+function Quaternion:slerp(other, delta)
 	-- Clamp delta.
 	delta = math.min(math.max(delta, 0.0), 1.0)
 
-	-- Epsilon, for numbers near 0. Adjust if necessary.
-	local E = 0.001
-
-	-- Result. This comment is only here because otherwise the spacing looks
-	-- since E is a constant and delta is a parameter; they shouldn't be grouped
-	-- together. Lol. :)
-	local result = Quaternion()
-
 	-- Calculate angle between quaternions.
-	local cosHalfTheta = self.w * other.w + self.x * other.x + self.y * other.y + self.z * other.z
+	local dot = self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
 
-	-- If self == other or self == -other then theta == 0 and we can return self
-	if math.abs(cosHalfTheta) >= 1.0 then
-		result.x = self.x
-		result.y = self.y
-		result.z = self.z
-		result.w = self.w
-
-		return result
+	local theta = math.acos(dot)
+	local sine = math.sin(1 - theta * theta)
+	local c1, c2
+	if theta > 0 then
+		c1 = math.sin((1.0 - delta) * theta) / sine
+		c2 = math.sin(delta * theta) / sine
+	else
+		c1 = 1 - delta
+		c2 = delta
 	end
 
-	-- Calculate temporary values.
-	local halfTheta = math.acos(cosHalfTheta)
-	local sinHalfTheta = math.sqrt(1.0 - cosHalfTheta * cosHalfTheta)
+	local result = Quaternion()
 
-	-- If theta == 180 degrees then result is not fully defined. We could rotate
-	-- around any axis normal to self or other.
-	if math.abs(sinHalfTheta) < E then
-		result.w = (self.w * 0.5 + other.w * 0.5)
-		result.x = (self.x * 0.5 + other.x * 0.5)
-		result.y = (self.y * 0.5 + other.y * 0.5)
-		result.z = (self.z * 0.5 + other.z * 0.5)
+	if dot < 0 then
+		result.x = self.x * c1 - other.x * c2
+		result.y = self.y * c1 - other.y * c2
+		result.z = self.z * c1 - other.z * c2
+		result.w = self.w * c1 - other.w * c2
 	else
-		local ratioA = math.sin((1 - delt) * halfTheta) / sinHalfTheta
-		local ratioB = math.sin(delta * halfTheta) / sinHalfTheta 
-
-		-- Calculate quaternion.
-		result.w = (self.w * ratioA + other.w * ratioB)
-		result.x = (self.x * ratioA + other.x * ratioB)
-		result.y = (self.y * ratioA + other.y * ratioB)
-		result.z = (self.z * ratioA + other.z * ratioB)
+		result.x = self.x * c1 + other.x * c2
+		result.y = self.y * c1 + other.y * c2
+		result.z = self.z * c1 + other.z * c2
+		result.w = self.w * c1 + other.w * c2
 	end
 
 	return result
@@ -120,7 +108,12 @@ function Quaternion:getNormal()
 	if length == 0 then
 		return self
 	else
-		return self / self:getLength()
+		local inverseLength = length
+		return Quaternion(
+			self.x / inverseLength,
+			self.y / inverseLength,
+			self.z / inverseLength,
+			self.w / inverseLength)
 	end
 end
 
