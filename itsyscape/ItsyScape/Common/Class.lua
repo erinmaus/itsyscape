@@ -27,11 +27,11 @@ local function __call(self, parent)
 	function Type.__call(self, ...)
 		local result = setmetatable({}, Metatable)
 		function result:getType()
-			return Type
+			return Class
 		end
 
 		function result:isType(type)
-			return Type == self:getType()
+			return Class == self:getType()
 		end
 
 		function result:isCompatibleType(type)
@@ -41,7 +41,7 @@ local function __call(self, parent)
 					return true
 				end
 
-				currentType = currentType.__parent
+				currentType = getmetatable(currentType).__parent
 			end
 
 			return false
