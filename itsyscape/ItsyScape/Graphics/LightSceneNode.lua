@@ -11,6 +11,7 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Color = require "ItsyScape.Graphics.Color"
+local Light = require "ItsyScape.Graphics.Light"
 
 -- Basic light Scene Node.
 local LightSceneNode = Class(SceneNode)
@@ -18,6 +19,7 @@ local LightSceneNode = Class(SceneNode)
 function LightSceneNode:new()
 	SceneNode.new(self)
 
+	self.previousColor = false
 	self.color = Color(1, 1, 1)
 	self.isGlobal = false
 end
@@ -55,8 +57,20 @@ function LightSceneNode:setColor(value)
 end
 
 -- Converts the LightSceneNode to a Light object.
-function LightSceneNode:toLight()
-	return Class.ABSTRACT()
+function LightSceneNode:toLight(delta)
+	local result = Light()
+
+	local previousColor = self.previousColor or self.color
+	local color = previousColor:lerp(self.color, delta)
+	result:setColor(color)
+
+	return result
+end
+
+function LightSceneNode:tick()
+	SceneNode.tick(self)
+
+	self.previousColor = self.color
 end
 
 return LightSceneNode

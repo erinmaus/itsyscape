@@ -1,7 +1,10 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local Instance = {}
@@ -16,6 +19,15 @@ function love.load()
 
 	local cube = DebugCubeSceneNode()
 	cube:setParent(Instance.SceneRoot)
+
+	local ambientLight = AmbientLightSceneNode()
+	ambientLight:setAmbience(0.2)
+	ambientLight:setParent(Instance.SceneRoot)
+
+	local directionalLight = DirectionalLightSceneNode()
+	directionalLight:setColor(Color(1, 1, 1))
+	directionalLight:setDirection(Vector(2, 0, -1):getNormal())
+	directionalLight:setParent(Instance.SceneRoot)
 end
 
 function love.update(delta)

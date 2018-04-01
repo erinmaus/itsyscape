@@ -126,7 +126,7 @@ function ForwardRendererPass:drawNodes(scene, delta)
 
 				for i = 1, numGlobalLights do
 					local p = self.globalLights[i]
-					local light = p.node:toLight()
+					local light = p.node:toLight(delta)
 					light:setPosition(p.worldPosition)
 
 					setLightProperties(currentShaderProgram, i, light)

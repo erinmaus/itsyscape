@@ -41,17 +41,19 @@ function Renderer:drawFinalStep(scene, delta)
 	self.finalDeferredPass:draw(scene, delta)
 	self.finalDeferredPass:endDraw(scene, delta)
 
-	local lBuffer = self.finalDeferredPass:getLBuffer()
+	local cBuffer = self.finalDeferredPass:getCBuffer()
 
-	lBuffer:use()
+	cBuffer:use()
 	self.finalForwardPass:beginDraw(scene, delta)
 	self.finalForwardPass:draw(scene, delta)
 	self.finalForwardPass:endDraw(scene, delta)
 
+	love.graphics.setShader()
 	love.graphics.setCanvas()
 	love.graphics.origin()
+	love.graphics.setBlendMode('replace')
 	love.graphics.setDepthMode('always', false)
-	love.graphics.draw(lBuffer:getColor())
+	love.graphics.draw(cBuffer:getColor())
 end
 
 function Renderer:draw(scene, delta)
