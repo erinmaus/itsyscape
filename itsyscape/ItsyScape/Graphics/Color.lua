@@ -38,6 +38,14 @@ function Color:clamp()
 	return self
 end
 
+-- Lerps two colors by delta.
+--
+-- delta is clamped to 0 .. 1 inclusive.
+function Color:lerp(other, delta)
+	delta = math.max(math.min(delta, 1), 0)
+	return self * (1 - delta) + other * delta
+end
+
 -- Adds two colors, or a color and a scalar, clamping the result to 0 .. 1
 -- inclusive.
 function Metatable.__add(a, b)
@@ -115,7 +123,7 @@ end
 
 -- Divides two colors, or a color and a scalar, clamping the result to 0 .. 1
 -- inclusive.
-function Metatable.__mul(a, b)
+function Metatable.__div(a, b)
 	local result = Color()
 
 	if type(a) == 'number' then
@@ -142,3 +150,5 @@ end
 function Metatable.__unm(a)
 	return 1.0 - a
 end
+
+return Color
