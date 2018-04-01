@@ -35,6 +35,8 @@ end
 function LBuffer:resize(gBuffer)
 	self:release()
 
+	self.gBuffer = gBuffer
+
 	self.color = love.graphics.newCanvas(
 		gBuffer:getWidth(), gBuffer:getHeight(), { format = LBuffer.COLOR_FORMAT })
 end

@@ -9,6 +9,7 @@
 -------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 
 -- Light class.

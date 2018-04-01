@@ -20,7 +20,7 @@ GBuffer.POSITION_INDEX = 2
 GBuffer.NORMAL_SPECULAR_INDEX = 3
 
 -- Formats of the color, posotion, normal/specular, and depth/stencil bindings.
-GBuffer.COLOR_FORMAT = 'rgb565'
+GBuffer.COLOR_FORMAT = 'rgba8'
 GBuffer.POSITION_FORMAT = 'rgba16f'
 GBuffer.NORMAL_SPECULAR_FORMAT = 'rgba16f'
 GBuffer.DEPTH_STENCIL_FORMAT = 'depth24stencil8'
