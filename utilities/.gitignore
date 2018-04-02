@@ -1,0 +1,54 @@
+# directory for storing precompiled dependencies (useful for windows)
+dependencies/
+bin/
+obj/
+tools/
+
+# --------------------------------------------------------------------------- #
+# SOURCE
+
+*.obj
+*.dll
+*.exe
+*.out
+*.app
+*.bat
+
+build/
+
+# --------------------------------------------------------------------------- #
+# CMAKE
+
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# --------------------------------------------------------------------------- #
+# VISUAL STUDIO
+
+*.sln*
+*.vcxproj*
+*.csproj*
+
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+*.userprefs
+
+.vs/
+.vscode/
+
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+packages.config
