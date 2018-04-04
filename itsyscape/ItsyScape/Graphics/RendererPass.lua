@@ -29,7 +29,7 @@ end
 --
 -- ```
 -- // in the vertex shader
--- vec4 performTransform(mat4 modelViewProjectionMatrix, vec4 position);
+-- vec4 performTransform(mat4 modelViewProjectionMatrix, vec4 position, out vec3 worldPosition);
 --
 -- // in the pixel shader
 -- vec4 performEffect(vec4 color, vec2 textureCoordinates);
@@ -88,7 +88,7 @@ function RendererPass:useShader(shader)
 			finalPixelSource, finalVertexSource)
 	end
 
-	love.graphics.setShader(s)
+	self.renderer:setCurrentShader(s)
 
 	return shader
 end

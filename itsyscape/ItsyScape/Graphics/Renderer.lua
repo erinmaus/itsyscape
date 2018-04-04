@@ -17,6 +17,7 @@ local Renderer = Class()
 
 function Renderer:new()
 	self.cachedShaders = {}
+	self.currentShader = false
 
 	self.finalDeferredPass = DeferredRendererPass(self)
 	self.finalForwardPass = ForwardRendererPass(self)
@@ -67,6 +68,23 @@ function Renderer:draw(scene, delta)
 	end
 
 	self:drawFinalStep(scene, delta)
+
+	self:setCurrentShader(false)
+end
+
+function Renderer:setCurrentShader(shader)
+	if not shader then
+		self.currentShader = false
+	else
+		if self.currentShader ~= shader then
+			self.currentShader = shader
+			love.graphics.setShader(shader)
+		end
+	end
+end
+
+function Renderer:getCurrentShader(shader)
+	return self.currentShader
 end
 
 function Renderer:getCachedShader(rendererPassType, shader)
