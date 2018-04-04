@@ -159,7 +159,7 @@ void exportMesh(const aiScene* scene, FILE* output)
 	std::fprintf(output, "\tformat = {\n");
 	std::fprintf(output, "\t\t{ 'VertexPosition', 'float', 3 },\n");
 	std::fprintf(output, "\t\t{ 'VertexNormal', 'float', 3 },\n");
-	std::fprintf(output, "\t\t{ 'VertexTexture', 'float', 3 },\n");
+	std::fprintf(output, "\t\t{ 'VertexTexture', 'float', 2 },\n");
 	std::fprintf(output, "\t\t{ 'VertexBoneIndex', 'float', 4 },\n");
 	std::fprintf(output, "\t\t{ 'VertexBoneWeight', 'float', 4 },\n");
 	std::fprintf(output, "\t},\n");
