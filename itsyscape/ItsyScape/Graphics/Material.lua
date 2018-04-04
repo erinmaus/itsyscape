@@ -64,6 +64,8 @@ function Material:getTexture(index)
 end
 
 -- Sets the textures in one go.
+--
+-- Textures are expected to be TextureResource objects.
 function Material:setTextures(...)
 	local t = { n = select('#', ...), ... }
 
@@ -74,6 +76,8 @@ function Material:setTextures(...)
 end
 
 -- Sets the texture at the specified index.
+--
+-- Textures are expected to be TextureResource objects.
 --
 -- If value is nil, nothing happens.
 --
