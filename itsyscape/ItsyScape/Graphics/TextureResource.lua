@@ -9,38 +9,61 @@
 -------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Resource = require "ItsyScape.Graphics.Resource"
 
-local TextureResource = Class()
-TextureResource.CURRENT_ID = 1
+local TextureResource = Resource()
 
 -- Basic TextureResource resource class.
 --
--- This object can be sorted by values returned by getID.
+-- Stores a Love2D image.
 function TextureResource:new(image)
-	self.image = image
-
-	self.id = TextureResource.CURRENT_ID
-	TextureResource.CURRENT_ID = TextureResource.CURRENT_ID + 1
+	if self.image then
+		self.image = image
+	else
+		self.image = false
+	end
 end
 
--- Gets the underlying Love2D Image.
 function TextureResource:getResource()
 	return self.image
 end
 
 -- Gets the width of the TextureResource.
 function TextureResource:getWidth()
-	return self.image:getWidth()
+	if self.image then
+		return self.image:getWidth()
+	else
+		return 0
+	end
 end
 
 -- Gets the height of the TextureResource.
 function TextureResource:getHeight()
-	return self.image:getHeight()
+	if self.image then
+		return self.image:getHeight()
+	else
+		return 0
+	end
 end
 
--- Gets the ID of the texture.
-function TextureResource:getID()
-	return self.id
+function TextureResource:release()
+	if self.image then
+		self.image:release()
+		self.image = false
+	end
+end
+
+function TextureResource:loadFromFile(filename)
+	self:release()
+	self.image = love.graphics.newImage(filename)
+end
+
+function TextureResource:getIsReady()
+	if self.image then
+		return true
+	else
+		return false
+	end
 end
 
 return TextureResource
