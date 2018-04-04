@@ -15,12 +15,24 @@ attribute vec3 VertexNormal;
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 
-vec4 performTransform(mat4 modelViewProjection, vec4 vertexPosition);
+void performTransform(
+	mat4 modelViewProjection,
+	vec4 vertexPosition,
+	out vec3 worldPosition,
+	out vec4 projectedPosition);
 
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
-	frag_Position = (TransformMatrix * vertexPosition).xyz;
+	vec3 worldPosition = vec3(0);
+	vec4 projectedPosition = vec4(0);
+	performTransform(
+		modelViewProjection,
+		vertexPosition,
+		worldPosition,
+		projectedPosition);
+
+	frag_Position = worldPosition;
 	frag_Normal = normalize(NormalMatrix * VertexNormal);
 
-	return performTransform(modelViewProjection, vertexPosition);
+	return projectedPosition;
 }
