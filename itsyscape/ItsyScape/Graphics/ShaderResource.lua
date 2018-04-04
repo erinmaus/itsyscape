@@ -32,6 +32,8 @@ end
 
 -- Constructs a new shader from the provided pixel and vertex shaders.
 function ShaderResource:new(pixel, vertex)
+	Resource.new(self)
+
 	if pixel and vertex then
 		self.shader = ShaderResource.Source(pixel, vertex)
 	else

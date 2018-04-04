@@ -24,7 +24,7 @@ function ThirdPersonCamera:new()
 	self.far = 100
 	self.verticalRotation = 0
 	self.horizontalRotation = 0
-	self.distance = 20
+	self.distance = 1
 	self.up = Vector(0, 1, 0)
 	self.position = Vector(0, 0, 0)
 end
