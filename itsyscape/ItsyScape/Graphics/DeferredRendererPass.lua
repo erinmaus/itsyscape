@@ -31,9 +31,14 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 ]]
 
 DeferredRendererPass.DEFAULT_VERTEX_SHADER = [[
-vec4 performTransform(mat4 modelViewProjectionMatrix, vec4 position)
+void performTransform(
+	mat4 modelViewProjectionMatrix,
+	vec4 position,
+	out vec3 worldPosition,
+	out vec4 projectedPosition)
 {
-	return modelViewProjectionMatrix * position;
+	worldPosition = (TransformMatrix * position).xyz;
+	projectedPosition = modelViewProjectionMatrix * position;
 }
 ]]
 
