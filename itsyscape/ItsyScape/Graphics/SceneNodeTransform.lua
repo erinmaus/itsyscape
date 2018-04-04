@@ -50,6 +50,19 @@ function SceneNodeTransform:setParentTransform(parent)
 	end
 end
 
+-- Sets the local translation.
+--
+-- Does nothing if value is nil.
+function SceneNodeTransform:setLocalTranslation(value)
+	self.translation = value or self.translation
+	self.isTransformDirty = true
+end
+
+-- Gets the local translation.
+function SceneNodeTransform:getLocalTranslation()
+	return self.translation
+end
+
 -- Sets the local rotation.
 --
 -- value is expected to be a Quaternion. If nil, rotation remains unchanged.

@@ -17,6 +17,8 @@ local TextureResource = Resource()
 --
 -- Stores a Love2D image.
 function TextureResource:new(image)
+	Resource.new(self)
+
 	if self.image then
 		self.image = image
 	else
