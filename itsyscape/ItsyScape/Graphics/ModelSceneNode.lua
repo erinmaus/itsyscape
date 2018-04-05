@@ -81,6 +81,15 @@ function ModelSceneNode:setIdentity(count)
 	self.numTransforms = count
 end
 
+function ModelSceneNode:beforeDraw(renderer, delta)
+	SceneNode.beforeDraw(self, renderer, delta)
+
+	-- XXX: Terrible hack. Models are rotated when animated. The exporter needs
+	-- to correct this but that's a problem for another day.
+	love.graphics.rotate(1, 0, 0, math.pi / 2)
+	love.graphics.rotate(0, 0, 1, math.pi / 2)
+end
+
 -- Gets the transforms and the number of transforms.
 --
 -- The returned transforms array may contain more transforms than in use. Use

@@ -34,10 +34,10 @@ DeferredRendererPass.DEFAULT_VERTEX_SHADER = [[
 void performTransform(
 	mat4 modelViewProjectionMatrix,
 	vec4 position,
-	out vec3 worldPosition,
+	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	worldPosition = (TransformMatrix * position).xyz;
+	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
 }
 ]]
@@ -128,7 +128,7 @@ function DeferredRendererPass:drawNodes(scene, delta)
 
 	if self.gBuffer then
 		self.gBuffer:use()
-		love.graphics.clear(0, 0, 0, 0)
+		love.graphics.clear(0, 0.39, 0.58, 0.93)
 
 		self:getRenderer():getCamera():apply()
 	else
@@ -136,6 +136,7 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	end
 
 	local previousShader = nil
+	local currentShaderProgram
 	for i = 1, #self.nodes do
 		local node = self.nodes[i].node
 
@@ -143,8 +144,13 @@ function DeferredRendererPass:drawNodes(scene, delta)
 		local shader = material:getShader() or self.defaultShader
 		if shader then
 			if previousShader ~= shader then
-				self:useShader(shader)
+				currentShaderProgram = self:useShader(shader)
 				previousShader = shader
+			end
+
+			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
+				local d = node:getTransform():getGlobalDeltaTransform(delta)
+				currentShaderProgram:send("scape_WorldMatrix", d)
 			end
 
 			node:beforeDraw(self:getRenderer(), delta)

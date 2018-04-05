@@ -8,6 +8,7 @@ local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSc
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Model = require "ItsyScape.Graphics.Model"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -19,26 +20,28 @@ TICK_RATE = 1 / 5
 function love.load()
 	Instance.Renderer = Renderer()
 	Instance.Camera = ThirdPersonCamera()
-	Instance.Camera:setDistance(10)
-	Instance.Camera:setUp(Vector(0, -1, 0))
+	Instance.Camera:setDistance(15)
+	Instance.Camera:setUp(Vector(0, 1, 0))
 	Instance.Camera:setHorizontalRotation(math.pi / 8)
 	Instance.Renderer:setCamera(Instance.Camera)
 	Instance.SceneRoot = SceneNode()
 	Instance.previousTickTime = love.timer.getTime()
+	Instance.startDrawTime = false
 	Instance.time = 0
+	Instance.ModelNodes = {}
 
 	local cube = DebugCubeSceneNode()
 	cube:getTransform():setLocalScale(Vector(1 / 2))
-	cube:getTransform():setLocalTranslation(Vector(0, -1, 0))
+	cube:getTransform():setLocalTranslation(Vector(0, 1, 0))
 	cube:setParent(Instance.SceneRoot)
 
 	local ambientLight = AmbientLightSceneNode()
-	ambientLight:setAmbience(0.2)
+	ambientLight:setAmbience(0.4)
 	ambientLight:setParent(Instance.SceneRoot)
 
 	local directionalLight = DirectionalLightSceneNode()
-	directionalLight:setColor(Color(0, 1, 1))
-	directionalLight:setDirection(Vector(2, 0, -1):getNormal())
+	directionalLight:setColor(Color(1, 1, 1))
+	directionalLight:setDirection(Vector(0, 0, -1):getNormal())
 	directionalLight:setParent(Instance.SceneRoot)
 
 	local skeleton = Skeleton("Resources/Test/Human.lskel")
@@ -58,19 +61,28 @@ function love.load()
 	local faceTextureResource = TextureResource()
 	faceTextureResource:loadFromFile("Resources/Test/Face.png")
 
+	local human = SceneNode()
+	human:setParent(Instance.SceneRoot)
+
 	local bodySceneNode = ModelSceneNode()
 	bodySceneNode:getMaterial():setTextures(bodyTextureResource)
 	bodySceneNode:getMaterial():setShader(shader)
 	bodySceneNode:setModel(bodyModelResource)
 	bodySceneNode:setIdentity()
-	bodySceneNode:setParent(Instance.SceneRoot)
+	bodySceneNode:setParent(human)
 
 	local faceSceneNode = ModelSceneNode()
 	faceSceneNode:getMaterial():setTextures(faceTextureResource)
 	faceSceneNode:getMaterial():setShader(shader)
 	faceSceneNode:setModel(faceModelResource)
 	faceSceneNode:setIdentity()
-	faceSceneNode:setParent(Instance.SceneRoot)
+	faceSceneNode:setParent(human)
+
+	table.insert(Instance.ModelNodes, bodySceneNode)
+	table.insert(Instance.ModelNodes, faceSceneNode)
+
+	local animation = SkeletonAnimation("Resources/Test/Human_Walk.lanim", skeleton)
+	Instance.Animation = animation
 end
 
 function love.update(delta)
@@ -81,9 +93,8 @@ function love.update(delta)
 	while Instance.time > TICK_RATE do
 		Instance.SceneRoot:tick()
 
-		-- Rotate cube 360 degrees every 2 seconds
-		Instance.SceneRoot:getTransform():rotateByAxisAngle(Vector(0, 1, 0), TICK_RATE * math.pi)
-		Instance.SceneRoot:getTransform():translate(Vector(0, 0.5 * TICK_RATE, 0))
+		-- Rotate scene 360 degrees every 4 seconds
+		Instance.SceneRoot:getTransform():rotateByAxisAngle(Vector(0, 1, 0), -TICK_RATE * math.pi / 2)
 
 		-- Handle cases where 'delta' exceeds TICK_RATE
 		Instance.time = Instance.time - TICK_RATE
@@ -103,6 +114,17 @@ function love.draw()
 	local width, height = love.window.getMode()
 	Instance.Renderer:getCamera():setWidth(width)
 	Instance.Renderer:getCamera():setHeight(height)
+
+	if not Instance.startDrawTime then
+		Instance.startDrawTime = currentTime
+	end
+
+	local animationTime = currentTime - Instance.startDrawTime
+	local transforms = {}
+	Instance.Animation:computeTransforms(animationTime, transforms)
+	for i = 1, #Instance.ModelNodes do
+		Instance.ModelNodes[i]:setTransforms(transforms)
+	end
 
 	-- Draw the scene.
 	Instance.Renderer:draw(Instance.SceneRoot, delta)

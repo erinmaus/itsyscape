@@ -10,6 +10,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+uniform mat4 scape_WorldMatrix;
+
 attribute vec3 VertexNormal;
 
 varying vec3 frag_Position;
@@ -18,21 +20,21 @@ varying vec3 frag_Normal;
 void performTransform(
 	mat4 modelViewProjection,
 	vec4 vertexPosition,
-	out vec3 worldPosition,
+	out vec3 localPosition,
 	out vec4 projectedPosition);
 
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
-	vec3 worldPosition = vec3(0);
+	vec3 localPosition = vec3(0);
 	vec4 projectedPosition = vec4(0);
 	performTransform(
 		modelViewProjection,
 		vertexPosition,
-		worldPosition,
+		localPosition,
 		projectedPosition);
 
-	frag_Position = worldPosition;
-	frag_Normal = normalize(NormalMatrix * VertexNormal);
+	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1)).xyz;
+	frag_Normal = normalize(mat3(scape_WorldMatrix) * VertexNormal);
 
 	return projectedPosition;
 }

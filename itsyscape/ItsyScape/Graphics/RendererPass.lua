@@ -90,7 +90,7 @@ function RendererPass:useShader(shader)
 
 	self.renderer:setCurrentShader(s)
 
-	return shader
+	return s
 end
 
 return RendererPass
