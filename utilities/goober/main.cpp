@@ -16,6 +16,10 @@
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 void exportAnimation(const aiScene* scene, FILE* output)
 {
 	if (scene->mNumAnimations < 1)
@@ -120,18 +124,17 @@ void exportSkeleton(const aiScene* scene, FILE* output)
 		return;
 	}
 
-	auto node = scene->mRootNode->FindNode("root");
-	if (!node)
+	auto node = scene->mRootNode->FindNode("Armature");
+	if (!node && node->mParent != scene->mRootNode)
 	{
-		std::fprintf(stderr, "no skeleton (must be node named 'root')\n");
+		std::fprintf(stderr, "no skeleton (must be node named 'Armature')\n");
 		return;
 	}
 
 	std::fprintf(output, "{\n");
 
-	aiMatrix4x4 inverse = node->mTransformation;
-	inverse.Inverse();
-	exportBoneNode(scene, nullptr, node, inverse, output);
+	aiMatrix4x4 parent = node->mParent->mTransformation;
+	exportBoneNode(scene, nullptr, node, parent, output);
 
 	std::fprintf(output, "}\n");
 }
