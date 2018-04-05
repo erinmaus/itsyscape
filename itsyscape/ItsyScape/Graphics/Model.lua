@@ -26,17 +26,19 @@ function Model:loadFromFile(filename, skeleton)
 	local chunk = assert(loadstring(data))
 	local result = setfenv(chunk, {})()
 
-	self:loadFromTable(result)
+	self:loadFromTable(result, skeleton)
 end
 
 function Model:bindSkeleton(skeleton)
 	local vertices = {}
+
 
 	-- Gets the number of bone indices and the offset.
 	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
 	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
 	local boneIndexOffset = 0
 	local maxBonesPerVertex = 0
+	local numPositionComponents = 0
 	for i = 1, #self.format do
 		if self.format[i][LOVE_VERTEX_FORMAT_NAME_INDEX] == 'VertexBoneIndex' then
 			maxBonesPerVertex = self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]

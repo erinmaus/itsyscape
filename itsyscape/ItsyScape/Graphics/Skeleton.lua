@@ -31,7 +31,7 @@ function Skeleton.Bone:getInverseBindPose()
 end
 
 function Skeleton.Bone:setInverseBindPose(...)
-	self.inverseBindPose:setMatrix(...)
+	self.inverseBindPose:setMatrix('row', ...)
 end
 
 function Skeleton:new(d)
@@ -51,12 +51,7 @@ function Skeleton:addBone(name, parent)
 		error(("bone %s already exists in skeleton"):format(name), 2)
 	end
 
-	local p
-	if parent then
-		p = self.bonesByName[parent]
-	end
-
-	local bone = Skeleton.Bone(name, p)
+	local bone = Skeleton.Bone(name, parent)
 	if not self.rootBone then
 		self.rootBone = bone
 	end
@@ -88,6 +83,10 @@ function Skeleton:getNumBones()
 	return #self.bones
 end
 
+function Skeleton:iterate()
+	return ipairs(self.bones)
+end
+
 function Skeleton:loadFromFile(filename)
 	local data = "return " .. love.filesystem.read(filename)
 	local chunk = assert(loadstring(data))
@@ -103,6 +102,7 @@ function Skeleton:loadFromTable(t)
 	for name, value in pairs(t) do
 		local bone = {}
 		bone.name = name
+		bone.parent = value.parent
 		bone.inverseBindPose = value.inverseBindPose
 		bone.children = {}
 
@@ -129,6 +129,7 @@ function Skeleton:loadFromTable(t)
 	buildChildren(root)
 
 	local function addBone(boneDefinition, parentBoneDefinition)
+
 		local bone
 		if parentBoneDefinition then
 			bone = self:addBone(boneDefinition.name, parentBoneDefinition.name)
@@ -138,7 +139,7 @@ function Skeleton:loadFromTable(t)
 
 		bone:setInverseBindPose(unpack(boneDefinition.inverseBindPose))
 		for i = 1, #boneDefinition.children do
-			addBone(boneDefinition.children[i], boneDefinition)
+			addBone(boneDefinition.children[i], boneDefinition, d)
 		end
 	end
 	addBone(root)
