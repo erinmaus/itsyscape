@@ -12,7 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
--- Map mesh. Builds a mesh from a stage.
+-- Map mesh. Builds a mesh from a map.
 MapMesh = Class()
 
 -- Vertex format.
@@ -35,19 +35,19 @@ MapMesh.FORMAT = {
     { "VertexColor", 'float', 4 }
 }
 
--- Creates a mesh from 'stage' using the provided tile set.
+-- Creates a mesh from 'map' using the provided tile set.
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
--- stage mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(stage, tileSet, left, right, top, bottom)
+-- map mesh is generated (those tiles that fall within the bounds).
+function MapMesh:new(map, tileSet, left, right, top, bottom)
 	self.vertices = {}
-	self.stage = stage
+	self.map = map
 	self.tileSet = tileSet
 
 	left = math.max(left or 1, 1)
-	right = math.max(right or stage.width, stage.width)
+	right = math.max(right or map.width, map.width)
 	top = math.max(top or 1, 1)
-	bottom = math.max(bottom or stage.height, stage.height)
+	bottom = math.max(bottom or map.height, map.height)
 
 	self:_buildMesh(left, right, top, bottom)
 end
@@ -75,27 +75,27 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 	-- Build vertices.
 	for j = top, bottom do
 		for i = left, right do
-			local tile = self.stage:getTile(i, j)
+			local tile = self.map:getTile(i, j)
 
 			if i == 1 then
 				self:_addLeftEdge(i, j, tile, nil)
 			end
-			if i == self.stage.width then
+			if i == self.map.width then
 				self:_addRightEdge(i, j, tile, nil)
 			end
 
-			self:_addLeftEdge(i, j, tile, self.stage:getTile(i - 1, j))
-			self:_addRightEdge(i, j, tile, self.stage:getTile(i + 1, j))
+			self:_addLeftEdge(i, j, tile, self.map:getTile(i - 1, j))
+			self:_addRightEdge(i, j, tile, self.map:getTile(i + 1, j))
 
 			if j == 1 then
 				self:_addTopEdge(i, j, tile, nil)
 			end
-			if j == self.stage.height then
+			if j == self.map.height then
 				self:_addBottomEdge(i, j, tile, nil)
 			end
 
-			self:_addTopEdge(i, j, tile, self.stage:getTile(i, j - 1))
-			self:_addBottomEdge(i, j, tile, self.stage:getTile(i, j + 1))
+			self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
+			self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
 
 			self:_addFlat(i, j, tile)
 		end
@@ -138,8 +138,8 @@ end
 -- * i, j are the tile indices on the x and y axis, respectively
 -- * tile is the tile at (i, j) from the Map instance
 function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
-	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.stage.cellSize
-	local worldPosition = localPosition * Vector(self.stage.cellSize / 2, 1, self.stage.cellSize / 2) + tileCenterPosition
+	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.map.cellSize
+	local worldPosition = localPosition * Vector(self.map.cellSize / 2, 1, self.map.cellSize / 2) + tileCenterPosition
 
 	local t = localPosition.y
 	local s
@@ -206,23 +206,23 @@ local function getTopVertices(tile, neighbor)
 	local t
 	if difference1 >= 1 and difference2 >= 1 then
 		t = {
+			Vector(-1, tileRef1, -1),
 			Vector(1, tileRef2, -1),
-			Vector(-1, tileRef1, -1),
 			Vector(1, neighborRef2, -1),
-			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef1, -1),
+			Vector(-1, tileRef1, -1),
 			Vector(1, neighborRef2, -1)
 		}
 	elseif difference1 >= 1 then
 		t = {
-			Vector(1, tileRef2, -1),
 			Vector(-1, tileRef1, -1),
+			Vector(1, tileRef2, -1),
 			Vector(-1, neighborRef1, -1)
 		}
 	elseif difference2 >= 1 then
 		t = {
-			Vector(1, tileRef2, -1),
 			Vector(-1, tileRef1, -1),
+			Vector(1, tileRef2, -1),
 			Vector(1, neighborRef2, -1)
 		}
 	end
@@ -241,23 +241,23 @@ local function getBottomVertices(tile, neighbor)
 	local t
 	if difference1 >= 1 and difference2 >= 1 then
 		t = {
-			Vector(-1, tileRef1, 1),
 			Vector(1, tileRef2, 1),
-			Vector(1, neighborRef2, 1),
 			Vector(-1, tileRef1, 1),
 			Vector(1, neighborRef2, 1),
+			Vector(1, neighborRef2, 1),
+			Vector(-1, tileRef1, 1),
 			Vector(-1, neighborRef1, 1)
 		}
 	elseif difference1 >= 1 then
 		t = {
-			Vector(-1, tileRef1, 1),
 			Vector(1, tileRef2, 1),
+			Vector(-1, tileRef1, 1),
 			Vector(-1, neighborRef1, 1)
 		}
 	elseif difference2 >= 1 then
 		t = {
-			Vector(-1, tileRef1, 1),
 			Vector(1, tileRef2, 1),
+			Vector(-1, tileRef1, 1),
 			Vector(1, neighborRef2, 1)
 		}
 	end
@@ -276,23 +276,23 @@ local function getLeftVertices(tile, neighbor)
 	local t
 	if difference1 >= 1 and difference2 >= 1 then
 		t = {
-			Vector(-1, tileRef1, -1),
 			Vector(-1, tileRef2, 1),
-			Vector(-1, neighborRef2, 1),
 			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef2, 1),
+			Vector(-1, neighborRef2, 1),
+			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef1, -1)
 		}
 	elseif difference1 >= 1 then
 		t = {
-			Vector(-1, tileRef1, -1),
 			Vector(-1, tileRef2, 1),
+			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef1, -1)
 		}
 	elseif difference2 >= 1 then
 		t = {
-			Vector(-1, tileRef2, 1),
 			Vector(-1, neighborRef2, 1),
+			Vector(-1, tileRef2, 1),
 			Vector(-1, tileRef1, -1)
 		}
 	end
@@ -311,23 +311,23 @@ local function getRightVertices(tile, neighbor)
 	local t
 	if difference1 >= 1 and difference2 >= 1 then
 		t = {
+			Vector(1, tileRef1, -1),
 			Vector(1, tileRef2, 1),
-			Vector(1, tileRef1, -1),
 			Vector(1, neighborRef2, 1),
-			Vector(1, tileRef1, -1),
 			Vector(1, neighborRef1, -1),
+			Vector(1, tileRef1, -1),
 			Vector(1, neighborRef2, 1)
 		}
 	elseif difference1 >= 1 then
 		t = {
-			Vector(1, tileRef2, 1),
 			Vector(1, tileRef1, -1),
+			Vector(1, tileRef2, 1),
 			Vector(1, neighborRef1, -1)
 		}
 	elseif difference2 >= 1 then
 		t = {
-			Vector(1, neighborRef2, 1),
 			Vector(1, tileRef2, 1),
+			Vector(1, neighborRef2, 1),
 			Vector(1, tileRef1, -1)
 		}
 	end
@@ -346,7 +346,7 @@ MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
 -- Simply adds the flat (top).
 function MapMesh:_addFlat(i, j, tile)
-	local E = self.stage.cellSize / 2
+	local E = self.map.cellSize / 2
 	local topLeft = Vector(-E, tile.topLeft, -1)
 	local topRight = Vector(E, tile.topLeft, -1)
 	local bottomLeft = Vector(-E, tile.topLeft, 1)
@@ -360,14 +360,14 @@ function MapMesh:_addFlat(i, j, tile)
 
 	-- Triangle 1
 	local normal1 = calculateTriangleNormal(topLeft, topRight, bottomRight)
-	self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, 'flat', i, j, tile)
 	self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, 'flat', i, j, tile)
+	self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, 'flat', i, j, tile)
 	self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, 'flat', i, j, tile)
 
 	-- Triangle 2
 	local normal2 = calculateTriangleNormal(topLeft, bottomRight, bottomLeft)
-	self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, 'flat', i, j, tile)
 	self:_buildVertex(Vector(1, tile.bottomRight, 1), normal2, 1, 'flat', i, j, tile)
+	self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, 'flat', i, j, tile)
 	self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, 'flat', i, j, tile)
 end
 

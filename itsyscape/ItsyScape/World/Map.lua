@@ -38,6 +38,18 @@ function Map:new(width, height, cellSize)
 	end
 end
 
+function Map:getWidth()
+	return self.width
+end
+
+function Map:getHeight()
+	return self.height
+end
+
+function Map:getCellSize()
+	return self.cellSize
+end
+
 -- Gets the tile at (i, j).
 --
 -- If i or j are outside the bounds of the heightmap, they are clamped to the
