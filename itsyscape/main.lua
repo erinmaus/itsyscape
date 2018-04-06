@@ -9,10 +9,13 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Model = require "ItsyScape.Graphics.Model"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
+local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local Map = require "ItsyScape.World.Map"
+local TileSet = require "ItsyScape.World.TileSet"
 
 local Instance = {}
 TICK_RATE = 1 / 5
@@ -21,8 +24,8 @@ function love.load()
 	Instance.Renderer = Renderer()
 	Instance.Camera = ThirdPersonCamera()
 	Instance.Camera:setDistance(15)
-	Instance.Camera:setUp(Vector(0, 1, 0))
-	Instance.Camera:setHorizontalRotation(math.pi / 8)
+	Instance.Camera:setUp(Vector(0, -1, 0))
+	Instance.Camera:setHorizontalRotation(-math.pi / 8)
 	Instance.Renderer:setCamera(Instance.Camera)
 	Instance.SceneRoot = SceneNode()
 	Instance.previousTickTime = love.timer.getTime()
@@ -32,7 +35,7 @@ function love.load()
 
 	local cube = DebugCubeSceneNode()
 	cube:getTransform():setLocalScale(Vector(1 / 2))
-	cube:getTransform():setLocalTranslation(Vector(0, 1, 0))
+	cube:getTransform():setLocalTranslation(Vector(-4, 3, -4))
 	cube:setParent(Instance.SceneRoot)
 
 	local ambientLight = AmbientLightSceneNode()
@@ -41,7 +44,7 @@ function love.load()
 
 	local directionalLight = DirectionalLightSceneNode()
 	directionalLight:setColor(Color(1, 1, 1))
-	directionalLight:setDirection(Vector(0, 0, -1):getNormal())
+	directionalLight:setDirection(Vector(0, 0, 1):getNormal())
 	directionalLight:setParent(Instance.SceneRoot)
 
 	local skeleton = Skeleton("Resources/Test/Human.lskel")
@@ -63,6 +66,7 @@ function love.load()
 
 	local human = SceneNode()
 	human:setParent(Instance.SceneRoot)
+	human:getTransform():translate(Vector.UNIT_Y, 1)
 
 	local bodySceneNode = ModelSceneNode()
 	bodySceneNode:getMaterial():setTextures(bodyTextureResource)
@@ -83,6 +87,36 @@ function love.load()
 
 	local animation = SkeletonAnimation("Resources/Test/Human_Walk.lanim", skeleton)
 	Instance.Animation = animation
+
+	local map = Map(5, 5, 2)
+	for j = 1, map:getHeight() do
+		for i = 1, map:getWidth() do
+			local tile = map:getTile(i, j)
+			tile.flat = 1
+			tile.edge = 2
+			tile.topLeft = 1
+			tile.topRight = 1
+			tile.bottomLeft = 1
+			tile.bottomRight = 1
+		end
+	end
+
+	local t = map:getTile(1, 1)
+	t.topLeft = 3
+	t.topRight, t.bottomLeft, t.bottomRight = 2, 2, 2
+
+	local tileSet = TileSet()
+	tileSet:setTileProperty(1, 'colorRed', 128)
+	tileSet:setTileProperty(1, 'colorGreen', 192)
+	tileSet:setTileProperty(1, 'colorBlue', 64)
+	tileSet:setTileProperty(2, 'colorRed', 255)
+	tileSet:setTileProperty(2, 'colorGreen', 192)
+	tileSet:setTileProperty(2, 'colorBlue', 64)
+
+	local mapMesh = MapMeshSceneNode()
+	mapMesh:fromMap(map, tileSet)
+	mapMesh:getTransform():translate(-Vector(1.25, 0, 1.25), 4)
+	mapMesh:setParent(Instance.SceneRoot)
 end
 
 function love.update(delta)
