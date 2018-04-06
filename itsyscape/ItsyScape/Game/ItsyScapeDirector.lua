@@ -10,11 +10,16 @@
 
 local Class = require "ItsyScape.Common.Class"
 local Director = require "ItsyScape.Peep.Director"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
+local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
 
 local ItsyScapeDirector = Class(Director)
 
 function ItsyScapeDirector:new(game)
 	Director.new(self)
+
+	self:addCortex(MovementCortex)
+	self:addCortex(MoveToTileCortex)
 
 	self.game = game
 end

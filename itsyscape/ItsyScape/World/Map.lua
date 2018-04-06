@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
 -- Map type. Stores tiles.
@@ -57,7 +58,7 @@ end
 --
 -- Any fractional portion of i or j is discarded.
 --
--- Returns the tile.
+-- Returns a tuple of (tile, i, j), where i and j are the clamped indices.
 function Map:getTile(i, j)
 	i = math.floor(i)
 	j = math.floor(j)
@@ -74,7 +75,33 @@ function Map:getTile(i, j)
 		j = self.height
 	end
 
-	return self.tiles[j * self.width + i]
+	return self.tiles[j * self.width + i], i, j
+end
+
+-- Gets a tile at (x, *, z).
+--
+-- If x or z are outside the bounds of the heightmap, they are clamped to the
+-- nearest extent (0 or [width * self.cellSize, height * self.cellSize]).
+--
+-- Returns a tuple of (tile, i, j), where i and j are the indices of the tile
+-- in the map.
+function Map:getTileAt(x, z)
+	i = math.floor(x / self.cellSize) + 1
+	j = math.floor(z / self.cellSize) + 1
+	return self:getTile(i, j)
+end
+
+-- Gets the center of the tile at (i, j).
+--
+-- i and j are not clamped.
+--
+-- Returns a Vector with the center of the tile in world space.
+function Map:getTileCenter(i, j)
+	local x = (i - 0.5) * self.cellSize
+	local z = (j - 0.5) * self.cellSize
+	local y = self:getInterpolatedHeight(x, z)
+
+	return Vector(x, y, z)
 end
 
 -- Gets the interpolated height at (x, z).
@@ -86,9 +113,9 @@ function Map:getInterpolatedHeight(x, z)
 	x = x / self.cellSize
 	z = z / self.cellSize
 
-	local tile = self:getTile(x, z)
+	local tile = self:getTile(x + 1, z + 1)
 	if tile then
-		return tile:getInterpolatedHeight(x - math.floor(x), y - math.floor(z))
+		return tile:getInterpolatedHeight(x - math.floor(x), z - math.floor(z))
 	end
 
 	return 0

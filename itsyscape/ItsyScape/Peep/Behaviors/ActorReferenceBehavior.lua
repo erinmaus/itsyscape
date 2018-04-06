@@ -18,6 +18,7 @@ local ActorReferenceBehavior = Behavior("ActorReference")
 -- * actor: Reference to actor. Should be falsey if there is no reference.
 --   Defaults to false.
 function ActorReferenceBehavior:new()
+	Behavior.Type.new(self)
 	self.actor = false
 end
 

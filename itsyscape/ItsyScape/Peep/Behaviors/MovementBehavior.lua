@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies movement properties.
@@ -40,6 +41,8 @@ MovementBehavior.FACING_RIGHT =  1
 --
 -- Defaults are 0 (or equivalent) unless otherwise specified.
 function MovementBehavior:new()
+	Behavior.Type.new(self)
+
 	self.facing = MovementBehavior.FACING_RIGHT
 	self.acceleration = Vector(0, 0, 0)
 	self.velocity = Vector(0, 0, 0)
@@ -48,6 +51,19 @@ function MovementBehavior:new()
 	self.bounce = 0
 	self.decay = 1
 	self.isOnGround = false
+end
+
+function MovementBehavior:clampMovement()
+	local speed = self.velocity:getLength()
+	local acceleration = self.acceleration:getLength()
+
+	if speed > self.maxSpeed then
+		self.velocity = self.velocity:getNormal() * self.maxSpeed
+	end
+
+	if acceleration > self.maxAcceleration then
+		self.acceleration = self.acceleration:getNormal() * self.maxAcceleration
+	end
 end
 
 return MovementBehavior

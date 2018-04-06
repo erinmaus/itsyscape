@@ -32,7 +32,7 @@ function LocalActor:spawn(id)
 	assert(self.id == Actor.NIL_ID, "Actor already spawned")
 
 	self.peep = self.game:getDirector():addPeep(self.peepType)
-	local _, actorReference = ActorReferenceBehavior:addBehavior(ActorReferenceBehavior)
+	local _, actorReference = self.peep:addBehavior(ActorReferenceBehavior)
 	actorReference.actor = self
 
 	self.id = id
@@ -124,4 +124,4 @@ function LocalActor:getSkin(index)
 	return unpack(result)
 end
 
-return Actor
+return LocalActor

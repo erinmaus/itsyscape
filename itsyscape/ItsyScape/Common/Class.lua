@@ -57,4 +57,4 @@ local function __call(self, parent)
 	return Class, Metatable
 end
 
-return setmetatable({}, { __call = __call })
+return setmetatable(Class, { __call = __call })

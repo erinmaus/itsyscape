@@ -42,7 +42,7 @@ end
 
 function LocalGame:tick()
 	self.ticks = self.ticks + 1
-	self.director:update()
+	self.director:update(self:getDelta())
 end
 
 return LocalGame

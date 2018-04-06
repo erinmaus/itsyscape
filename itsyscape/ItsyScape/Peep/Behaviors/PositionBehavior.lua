@@ -18,6 +18,7 @@ local PositionBehavior = Behavior("Position")
 --
 -- Values default to 0.
 function PositionBehavior:new(x, y, z)
+	Behavior.Type.new(self)
 	self.position = Vector(x, y, z)
 end
 
