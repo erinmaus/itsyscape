@@ -99,16 +99,32 @@ end
 --
 -- Does not consider translucency.
 function Metatable.__lt(a, b)
-	if not a.shader and b.shader then
+	local aShader = 0
+	local bShader = 0
+	if a.shader then
+		aShader = a.shader:getID()
+	end
+
+	if b.shader then
+		bShader = b.shader:getID()
+	end
+
+	if aShader < bShader then
 		return true
-	elseif a.shader and not b.shader then
-		return false
-	elseif a.shader and b.shader and a.shader:getID() < b.shader:getID() then
-		return true
-	else
+	elseif aShader == bShader then
+		if #a.textures < #b.textures then
+			return true
+		elseif #a.textures > #b.textures then
+			return false
+		end
+
 		for i = 1, #a.textures do
-			if b.textures[i] and a.textures[i]:getID() < b.textures[i]:getID() then
+			local aTexture = a.textures[i]:getID()
+			local bTexture = b.textures[i]:getID()
+			if aTexture < bTexture then
 				return true
+			elseif aTexture > bTexture then
+				return false
 			end
 		end
 	end
