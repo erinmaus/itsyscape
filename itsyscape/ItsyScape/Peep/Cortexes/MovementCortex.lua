@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -54,7 +55,9 @@ function MovementCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
-		
+
+		movement:clampMovement()
+
 		movement.acceleration = movement.acceleration + gravity * delta
 		clampVector(movement.acceleration)
 
@@ -63,21 +66,17 @@ function MovementCortex:update(delta)
 
 		position.position = position.position + movement.velocity * delta
 
-		movement.acceleration = movement.acceleration:lerp(
-			Vector.ZERO,
-			movement.decay * delta)
-		movement.velocity = movement.velocity:lerp(
-			Vector.ZERO,
-			movement.decay * delta)
+		movement.acceleration = movement.acceleration * movement.decay
+		movement.velocity = movement.velocity * movement.decay
 
 		local y = map:getInterpolatedHeight(
 			position.position.x,
 			position.position.z)
-		if position.y < y then
+		if position.position.y < y then
 			movement.acceleration.y = -movement.acceleration.y * movement.bounce
 			movement.velocity.y = -movement.velocity.y * movement.bounce
-			position.y = y
-		elseif position.y - y < MovementCortex.GROUND_EPSILON and
+			position.position.y = y
+		elseif position.position.y - y < MovementCortex.GROUND_EPSILON and
 		       movement.velocity.y == 0.0 and
 		       movement.acceleration.y == 0.0
 		then

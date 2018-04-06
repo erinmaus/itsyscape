@@ -121,19 +121,19 @@ end
 function SceneNodeTransform:getLocalTransform()
 	if self.isTransformDirty then
 		self.localTransform:reset()
-		self.localTransform:scale(
-			self.scale.x,
-			self.scale.y,
-			self.scale.z)
+		self.localTransform:translate(
+			self.translation.x,
+			self.translation.y,
+			self.translation.z)
 		self.localTransform:applyQuaternion(
 			self.rotation.x,
 			self.rotation.y,
 			self.rotation.z,
 			self.rotation.w)
-		self.localTransform:translate(
-			self.translation.x,
-			self.translation.y,
-			self.translation.z)
+		self.localTransform:scale(
+			self.scale.x,
+			self.scale.y,
+			self.scale.z)
 		self.isTransformDirty = false
 	end
 
@@ -151,6 +151,10 @@ function SceneNodeTransform:getLocalDeltaTransform(delta)
 
 	self.localDeltaTransform:reset()
 	do
+		self.localDeltaTransform:translate(
+			translation.x,
+			translation.y,
+			translation.z)
 		self.localDeltaTransform:scale(
 			scale.x,
 			scale.y,
@@ -160,10 +164,6 @@ function SceneNodeTransform:getLocalDeltaTransform(delta)
 			rotation.y,
 			rotation.z,
 			rotation.w)
-		self.localDeltaTransform:translate(
-			translation.x,
-			translation.y,
-			translation.z)
 	end
 
 	return self.localDeltaTransform

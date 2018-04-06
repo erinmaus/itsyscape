@@ -51,10 +51,6 @@ end
 --
 -- It is an error to pass anything but a Behavior.
 function Cortex:require(b)
-	if not b:isCompatibleType(Behavior) then
-		error("b must be a Behavior type", 2)
-	end
-
 	if not self.requirements[b] then
 		table.insert(self.requirements, b)
 		self.requirements[b] = #self.requirements
@@ -95,7 +91,7 @@ end
 
 -- Removes a Peep from this Cortex.
 function Cortex:removePeep(peep)
-	self.peeps[peep] = false
+	self.peeps[peep] = nil
 end
 
 -- Returns a construct that allows iteration over the Peeps.

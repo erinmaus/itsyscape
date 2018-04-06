@@ -17,10 +17,11 @@ local Map = require "ItsyScape.World.Map"
 local LocalStage = Class(Stage)
 
 function LocalStage:new(game)
+	Stage.new(self)
 	self.game = game
 	self.actors = {}
 	self.currentActorID = 1
-	self.gravity = Vector(0, -9.8, 0)
+	self.gravity = Vector(0, -9.8, 0) * 8
 end
 
 function LocalStage:spawnActor(actorID)

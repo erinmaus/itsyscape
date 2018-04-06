@@ -89,7 +89,7 @@ end
 -- Updates the Director.
 --
 -- Each Cortex, in the order they were added, is updated.
-function Director:update()
+function Director:update(delta)
 	for _, cortex in ipairs(self.cortexes) do
 		for peep in pairs(self.pendingPeeps) do
 			cortex:previewPeep(peep)
@@ -99,7 +99,7 @@ function Director:update()
 	self.pendingPeeps = {}
 
 	for _, cortex in pairs(self.cortexes) do
-		cortex:update()
+		cortex:update(delta)
 	end
 end
 

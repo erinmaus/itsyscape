@@ -73,13 +73,13 @@ end
 
 -- Gets a Behavior type by ID. If no behavior is found with the provided ID,
 -- returns nil.
-function Behaviors.getTypeByID(id)
+function Behavior.getTypeByID(id)
 	return Behaviors.byID[id]
 end
 
 -- Gets a Behavior ID from a name. If no Behavior with the given name exists,
 -- returns 0.
-function Behaviors.getIDFromName(name)
+function Behavior.getIDFromName(name)
 	local t = Behaviors.byName[name]
 	if t then
 		return Behaviors.byType[t]
@@ -88,4 +88,4 @@ function Behaviors.getIDFromName(name)
 	end
 end
 
-return setmetatable(Behaviors, { __call = __call })
+return setmetatable(Behavior, { __call = __call })
