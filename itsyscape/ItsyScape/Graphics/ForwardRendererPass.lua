@@ -38,7 +38,7 @@ function PendingNodeMetatable.__lt(a, b)
 	elseif a.screenPosition.z > b.screenPosition.z then
 		return false
 	else
-		return a.node:getMaterial() < b.node:getMaterial() then
+		return a.node:getMaterial() < b.node:getMaterial()
 	end
 end
 
