@@ -26,6 +26,8 @@ MovementBehavior.FACING_RIGHT =  1
 -- * velocity is a Vector. Self-explanatory.
 -- * maxSpeed is the maximum magnitude of velocity.
 -- * maxAcceleration is the maximum magnitude of acceleration.
+-- * velocityMultiplier is how much to multiply velocity by
+-- * accelerationMultiplier is how much to multiply acceleration by
 -- * bounce is how much the object bounces. A value of zero means no bounce,
 --   while a value of 1 means the velocity and acceleration are reflected
 --   without any change to the magnitude.
@@ -38,6 +40,9 @@ MovementBehavior.FACING_RIGHT =  1
 -- * isOnGround indicates if the Peep is on the ground. To be on the ground
 --   means the Y component of acceleration and velocity are zero and the Peep is
 --   within a very, very small range of the ground elevation at its position.
+-- * isStopping will apply decay ^ stoppingForce to acceleration and velocity
+--   if on ground.
+-- * stoppingForce is the exponent of decay when stopping.
 --
 -- Defaults are 0 (or equivalent) unless otherwise specified.
 function MovementBehavior:new()
@@ -48,9 +53,13 @@ function MovementBehavior:new()
 	self.velocity = Vector(0, 0, 0)
 	self.maxSpeed = 0
 	self.maxAcceleration = 0
+	self.velocityMultiplier = 1
+	self.accelerationMultiplier = 1
 	self.bounce = 0
 	self.decay = 1
 	self.isOnGround = false
+	self.isStopping = false
+	self.stoppingForce = 2
 end
 
 function MovementBehavior:clampMovement()
