@@ -24,6 +24,9 @@ local TilePathNode = require "ItsyScape.World.TilePathNode"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local Instance = {}
+local Input = {
+	isCameraDragging = false
+}
 TICK_RATE = 1 / LocalGame.TICKS_PER_SECOND
 
 function love.load()
@@ -51,9 +54,10 @@ function love.load()
 	ambientLight:setParent(Instance.SceneRoot)
 
 	local directionalLight = DirectionalLightSceneNode()
-	directionalLight:setColor(Color(1, 1, 1))
+	directionalLight:setColor(Color(0.6, 0.6, 0.6))
 	directionalLight:setDirection(Vector(0, 0, 1):getNormal())
 	directionalLight:setParent(Instance.SceneRoot)
+	Instance.Sun = directionalLight
 
 	local skeleton = Skeleton("Resources/Test/Human.lskel")
 
@@ -97,7 +101,7 @@ function love.load()
 	local animation = SkeletonAnimation("Resources/Test/Human_Walk.lanim", skeleton)
 	Instance.Animation = animation
 
-	Instance.Game:getStage():newMap(5, 5)
+	Instance.Game:getStage():newMap(8, 8)
 	local map = Instance.Game:getStage():getMap()
 	for j = 1, map:getHeight() do
 		for i = 1, map:getWidth() do
@@ -111,9 +115,33 @@ function love.load()
 		end
 	end
 
-	local t = map:getTile(1, 1)
-	t.topLeft, t.topRight = 3, 3
-	t.bottomLeft, t.bottomRight = 2, 2
+	for i = 1, map:getWidth() do
+		local tile = map:getTile(i, 1)
+		tile.topLeft = math.min(i, math.ceil(map:getWidth() / 2))
+		tile.topRight = math.min(i + 1, math.ceil(map:getWidth() / 2))
+		tile.bottomLeft = math.min(i, math.ceil(map:getWidth() / 2))
+		tile.bottomRight = math.min(i + 1, math.ceil(map:getWidth() / 2))
+	end
+
+	for j = 2, map:getHeight() / 2 do
+		for i = 1, map:getWidth() / 2 do
+			if i % 2 ~= j % 2 then
+				local tile = map:getTile(i * 2, j * 2)
+				tile.topLeft = 2
+				tile.topRight = 2
+				tile.bottomLeft = 2
+				tile.bottomRight = 2
+			end
+		end
+	end
+
+	for j = 2, map:getHeight() do
+		local tile = map:getTile(3, j)
+		tile.topLeft = 1
+		tile.topRight = 1
+		tile.bottomLeft = 1
+		tile.bottomRight = 1
+	end
 
 	local tileSet = TileSet()
 	tileSet:setTileProperty(1, 'colorRed', 128)
@@ -129,9 +157,12 @@ function love.load()
 
 	local _, actor = Instance.Game:getStage():spawnActor("ItsyScape.Peep.Peep")
 	local _, movement = actor.peep:addBehavior(MovementBehavior)
-	movement.maxSpeed = 2
+	movement.maxSpeed = 16
 	movement.maxAcceleration = 4
-	movement.decay = 0.7
+	movement.decay = 0.8
+	movement.bounce = 0.9
+	movement.accelerationMultiplier = 1.5
+	movement.stoppingForce = 3
 	local _, position = actor.peep:addBehavior(PositionBehavior)
 	position.position.y = 3
 	actor.peep:addBehavior(SizeBehavior)
@@ -168,6 +199,30 @@ function love.update(delta)
 		-- Update Peep position.
 		local position = Instance.Peep:getBehavior(PositionBehavior).position
 		Instance.Human:getTransform():setLocalTranslation(position)
+
+		local forward = -Instance.Camera:getForward()
+		Instance.Sun:setDirection(forward:getNormal())
+	end
+end
+
+function love.mousepressed(x, y, button)
+	if button == 2 then
+		Input.isCameraDragging = true
+	end
+end
+
+function love.mousereleased(x, y, button)
+	if button == 2 then
+		Input.isCameraDragging = false
+	end
+end
+
+function love.mousemoved(x, y, dx, dy)
+	if Input.isCameraDragging then
+		local angle1 = dx / 128
+		local angle2 = -dy / 128
+		Instance.Camera:setVerticalRotation(Instance.Camera:getVerticalRotation() + angle1)
+		Instance.Camera:setHorizontalRotation(Instance.Camera:getHorizontalRotation() + angle2)
 	end
 end
 
@@ -191,6 +246,13 @@ function love.draw()
 	Instance.Animation:computeTransforms(animationTime, transforms)
 	for i = 1, #Instance.ModelNodes do
 		Instance.ModelNodes[i]:setTransforms(transforms)
+	end
+
+	-- Update camera position.
+	do
+		local transform = Instance.Human:getTransform():getGlobalDeltaTransform(delta)
+		local position = Vector(transform:transformPoint(0, 0, 0))
+		Instance.Camera:setPosition(position)
 	end
 
 	-- Draw the scene.
