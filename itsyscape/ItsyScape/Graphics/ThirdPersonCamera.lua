@@ -57,15 +57,15 @@ function ThirdPersonCamera:getVerticalRotation()
 end
 
 local HALF_PI = math.pi / 2
-function ThirdPersonCamera:setVerticalRotation(value)
-	self.verticalRotation = value or self.verticalRotation
+function ThirdPersonCamera:setHorizontalRotation(value)
+	self.horizontalRotation = value or self.horizontalRotation
 
-	if self.verticalRotation > HALF_PI then
-		self.verticalRotation = HALF_PI - math.pi / 128
+	if self.horizontalRotation > HALF_PI then
+		self.horizontalRotation = HALF_PI - math.pi / 128
 	end
 
-	if self.verticalRotation < -HALF_PI then
-		self.verticalRotation = -HALF_PI + math.pi / 128
+	if self.horizontalRotation < -HALF_PI then
+		self.horizontalRotation = -HALF_PI + math.pi / 128
 	end
 end
 
@@ -74,15 +74,15 @@ function ThirdPersonCamera:getHorizontalRotation()
 end
 
 local TWO_PI = math.pi * 2
-function ThirdPersonCamera:setHorizontalRotation(value)
-	self.horizontalRotation = value or self.horizontalRotation
+function ThirdPersonCamera:setVerticalRotation(value)
+	self.verticalRotation = value or self.verticalRotation
 
-	while self.horizontalRotation >= TWO_PI do
-		self.horizontalRotation = self.horizontalRotation - TWO_PI
+	while self.verticalRotation >= TWO_PI do
+		self.verticalRotation = self.verticalRotation - TWO_PI
 	end
 
-	while self.horizontalRotation < 0 do
-		self.horizontalRotation = self.horizontalRotation + TWO_PI
+	while self.verticalRotation < 0 do
+		self.verticalRotation = self.verticalRotation + TWO_PI
 	end
 end
 
