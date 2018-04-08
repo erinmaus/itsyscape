@@ -18,11 +18,11 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local MovementCortex = Class(Cortex)
 
 -- The epsilon to determine whether an object is on the ground.
-MovementCortex.GROUND_EPSILON = 0.05
+MovementCortex.GROUND_EPSILON = 0.1
 
 -- If any of the components of the acceleration or velocity vectors fall within
 -- +/- CLAMP_EPSILON, then the component is clamped to zero.
-MovementCortex.CLAMP_EPSILON = 0.01
+MovementCortex.CLAMP_EPSILON = 0.05
 
 function MovementCortex:new()
 	Cortex.new(self)
@@ -58,13 +58,15 @@ function MovementCortex:update(delta)
 
 		movement:clampMovement()
 
-		movement.acceleration = movement.acceleration + gravity * delta
+		movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity * delta
 		clampVector(movement.acceleration)
 
-		movement.velocity = movement.velocity + movement.acceleration * delta
+		local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
+		movement.velocity = movement.velocity + acceleration
 		clampVector(movement.velocity)
 
-		position.position = position.position + movement.velocity * delta
+		local velocity = movement.velocity * delta * movement.velocityMultiplier
+		position.position = position.position + velocity
 
 		movement.acceleration = movement.acceleration * movement.decay
 		movement.velocity = movement.velocity * movement.decay
@@ -72,15 +74,28 @@ function MovementCortex:update(delta)
 		local y = map:getInterpolatedHeight(
 			position.position.x,
 			position.position.z)
-		if position.position.y < y then
+		if math.abs(position.position.y - y) < MovementCortex.GROUND_EPSILON and
+		   math.abs(movement.velocity.y * delta) < MovementCortex.GROUND_EPSILON
+		then
+			movement.isOnGround = true
+		elseif position.position.y < y and not movement.isOnGround then
 			movement.acceleration.y = -movement.acceleration.y * movement.bounce
 			movement.velocity.y = -movement.velocity.y * movement.bounce
 			position.position.y = y
-		elseif position.position.y - y < MovementCortex.GROUND_EPSILON and
-		       movement.velocity.y == 0.0 and
-		       movement.acceleration.y == 0.0
+			movement.isOnGround = false
+		elseif position.position.y > y + MovementCortex.GROUND_EPSILON
+		       and movement.isOnGround
 		then
-			movement.isOnGround = true
+			movement.isOnGround = false
+		elseif movement.isOnGround then
+			position.position.y = y
+			movement.acceleration.y = 0
+			movement.velocity.y = 0
+
+			if movement.isStopping then
+				movement.acceleration = movement.acceleration * movement.decay ^ movement.stoppingForce
+				movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
+			end
 		end
 	end
 end
