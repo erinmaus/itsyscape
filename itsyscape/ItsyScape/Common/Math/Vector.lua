@@ -173,6 +173,26 @@ function Metatable.__unm(a)
 	return Vector(-a.x, -a.y, -a.z)
 end
 
+function Metatable.__pow(a, b)
+	local result = Vector()
+
+	if type(a) == 'number' then
+		result.x = a ^ b.x
+		result.y = a ^ b.y
+		result.z = a ^ b.z
+	elseif type(b) == 'number' then
+		result.x = a.x ^ b
+		result.y = a.y ^ b
+		result.z = a.z ^ b
+	else
+		result.x = a.x ^ b.x
+		result.y = a.y ^ b.y
+		result.z = a.z ^ b.z
+	end
+
+	return result
+end
+
 -- Some useful vector constants.
 Vector.ZERO   = Vector(0, 0, 0)
 Vector.ONE    = Vector(1, 1, 1)
