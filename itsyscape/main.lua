@@ -1,4 +1,5 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
@@ -19,6 +20,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local Map = require "ItsyScape.World.Map"
+local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local Path = require "ItsyScape.World.Path"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local TileSet = require "ItsyScape.World.TileSet"
@@ -46,7 +48,7 @@ function love.load()
 	Instance.Game = LocalGame()
 
 	local cube = DebugCubeSceneNode()
-	cube:getTransform():setLocalScale(Vector(1 / 2))
+	cube:getTransform():setLocalTranslation(Vector(3, 2, 4))
 	cube:setParent(Instance.SceneRoot)
 
 	local ambientLight = AmbientLightSceneNode()
@@ -78,7 +80,7 @@ function love.load()
 
 	local human = SceneNode()
 	human:setParent(Instance.SceneRoot)
-	human:getTransform():translate(Vector.UNIT_Y, 3)
+	human:getTransform():translate(Vector.UNIT_Y, 1)
 
 	local bodySceneNode = ModelSceneNode()
 	bodySceneNode:getMaterial():setTextures(bodyTextureResource)
@@ -101,8 +103,8 @@ function love.load()
 	local animation = SkeletonAnimation("Resources/Test/Human_Walk.lanim", skeleton)
 	Instance.Animation = animation
 
-	Instance.Game:getStage():newMap(8, 8)
-	local map = Instance.Game:getStage():getMap()
+	Instance.Game:getStage():newMap(8, 8, 1)
+	local map = Instance.Game:getStage():getMap(1)
 	for j = 1, map:getHeight() do
 		for i = 1, map:getWidth() do
 			local tile = map:getTile(i, j)
@@ -115,12 +117,12 @@ function love.load()
 		end
 	end
 
-	for i = 1, map:getWidth() do
+	for i = 2, map:getWidth() do
 		local tile = map:getTile(i, 1)
-		tile.topLeft = math.min(i, math.ceil(map:getWidth() / 2))
-		tile.topRight = math.min(i + 1, math.ceil(map:getWidth() / 2))
-		tile.bottomLeft = math.min(i, math.ceil(map:getWidth() / 2))
-		tile.bottomRight = math.min(i + 1, math.ceil(map:getWidth() / 2))
+		tile.topLeft = math.min(i - 1, math.ceil(map:getWidth() / 2))
+		tile.topRight = math.min(i, math.ceil(map:getWidth() / 2))
+		tile.bottomLeft = math.min(i - 1, math.ceil(map:getWidth() / 2))
+		tile.bottomRight = math.min(i, math.ceil(map:getWidth() / 2))
 	end
 
 	for j = 2, map:getHeight() / 2 do
@@ -158,25 +160,20 @@ function love.load()
 	local _, actor = Instance.Game:getStage():spawnActor("ItsyScape.Peep.Peep")
 	local _, movement = actor.peep:addBehavior(MovementBehavior)
 	movement.maxSpeed = 16
-	movement.maxAcceleration = 4
-	movement.decay = 0.8
-	movement.bounce = 0.9
-	movement.accelerationMultiplier = 1.5
+	movement.maxAcceleration = 16
+	movement.decay = 0.6
+	movement.velocityMultiplier = 1
+	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 3
 	local _, position = actor.peep:addBehavior(PositionBehavior)
-	position.position.y = 3
+	position.position.y = 1
 	actor.peep:addBehavior(SizeBehavior)
 
-	local path = Path()
-	path:pushNode(TilePathNode, 1, 1)
-	path:pushNode(TilePathNode, 2, 1)
-	path:pushNode(TilePathNode, 3, 1)
-	path:pushNode(TilePathNode, 3, 2)
-	path:pushNode(TilePathNode, 3, 3)
-	path:pushNode(TilePathNode, 3, 4)
-	path:getNodeAtIndex(1):activate(actor.peep)
-
-	cube:getTransform():setLocalTranslation(map:getTileCenter(3, 4))
+	local pathFinder = MapPathFinder(map)
+	local path = pathFinder:find({ i = 1, j = 1 }, { i = 3, j = 4 })
+	if path then
+		--path:activate(actor.peep)
+	end
 
 	Instance.Peep = actor.peep
 end
@@ -206,7 +203,46 @@ function love.update(delta)
 end
 
 function love.mousepressed(x, y, button)
-	if button == 2 then
+	if button == 1 then
+		local width, height = love.window.getMode()
+		y = height - y
+
+		love.graphics.origin()
+		Instance.Camera:apply()
+
+		local a = Vector(love.graphics.unproject(x, y, 0.0))
+		local b = Vector(love.graphics.unproject(x, y, 0.1))
+		local r = Ray(a, b - a)
+
+		local map = Instance.Game:getStage():getMap(1)
+		local tiles = map:testRay(r)
+		local function sortFunc(a, b)
+			local i = a[Map.RAY_TEST_RESULT_POSITION]
+			local j = b[Map.RAY_TEST_RESULT_POSITION]
+			local s = Vector(love.graphics.project(i.x, i.y, i.z))
+			local t = Vector(love.graphics.project(j.x, j.y, j.z))
+
+			return s.z < t.z
+		end
+		table.sort(tiles, sortFunc)
+
+		local best = tiles[1]
+		if best then
+			local pathFinder = MapPathFinder(map)
+			local position = Instance.Peep:getBehavior(PositionBehavior).position 
+			local _, i, j = map:getTileAt(position.x, position.z)
+			local path = pathFinder:find(
+				{ i = i, j = j },
+				{ i = best[Map.RAY_TEST_RESULT_I], j = best[Map.RAY_TEST_RESULT_J] })
+
+			if path then
+				path:activate(Instance.Peep)
+			else
+				local movement = Instance.Peep:getBehavior(MovementBehavior)
+				movement.velocity.y = movement.velocity.y + 200
+			end
+		end
+	elseif button == 2 then
 		Input.isCameraDragging = true
 	end
 end
@@ -215,6 +251,11 @@ function love.mousereleased(x, y, button)
 	if button == 2 then
 		Input.isCameraDragging = false
 	end
+end
+
+function love.wheelmoved(x, y)
+	local distance = Instance.Camera:getDistance() - y * 0.5
+	Instance.Camera:setDistance(math.min(math.max(distance, 1), 40))
 end
 
 function love.mousemoved(x, y, dx, dy)
