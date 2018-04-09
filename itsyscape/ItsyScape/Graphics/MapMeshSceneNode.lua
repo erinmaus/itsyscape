@@ -21,6 +21,10 @@ function MapMeshSceneNode:new()
 end
 
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h)
+	if self.isOwner and self.mapMesh then
+		self.mapMesh:release()
+	end
+
 	self.mapMesh = MapMesh(map, tileSet, x, y, w, h)
 	self.isOwner = true
 end
