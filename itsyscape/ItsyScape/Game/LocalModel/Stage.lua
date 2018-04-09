@@ -20,7 +20,8 @@ function LocalStage:new(game)
 	self.game = game
 	self.actors = {}
 	self.currentActorID = 1
-	self.gravity = Vector(0, -9.8, 0) * 8
+	self.map = {}
+	self.gravity = Vector(0, -9.8, 0)
 end
 
 function LocalStage:spawnActor(actorID)
@@ -29,7 +30,7 @@ function LocalStage:spawnActor(actorID)
 		local actor = LocalActor(self.game, Peep)
 		actor:spawn(self.currentActorID)
 
-		self.onActorSpawned(self, actor)
+		self.onActorSpawned(self, actorID, actor)
 
 		self.currentActorID = self.currentActorID + 1
 		self.actors[actor] = true
@@ -51,26 +52,40 @@ function LocalStage:killActor(actor)
 	end
 end
 
-function LocalStage:newMap(width, height)
-	self:unloadMap()
+function LocalStage:newMap(width, height, layer, tileSetID)
+	self:unloadMap(layer)
 
-	self.map = Map(width, height, Stage.CELL_SIZE)
-	self.onLoadMap(self, self.map)
+	self.map[layer] = Map(width, height, Stage.CELL_SIZE)
+	self.onLoadMap(self, self.map, layer, tileSetID)
 
 	self:updateMap()
 end
 
-function LocalStage:updateMap()
-	self.onMapModified(self, self.map)
+function LocalStage:updateMap(layer)
+	if self.map[layer] then
+		self.onMapModified(self, self.map[layer])
+	end
 end
 
-function LocalStage:unloadMap()
-	self.onUnloadMap(self, self.map)
-	self.map = falsee
+function LocalStage:unloadMap(layer)
+	if self.map[layer] then
+		self.onUnloadMap(self, self.map[layer], layer)
+		self.map[layer] = nil
+	end
 end
 
-function LocalStage:getMap()
-	return self.map
+function LocalStage:getMap(layer)
+	return self.map[layer]
+end
+
+function LocalStage:getLayers()
+	local layers = {}
+	for index in pairs(self.map) do
+		table.insert(layers, index)
+	end
+
+	table.sort(layers)
+	return layers
 end
 
 function LocalStage:getGravity()

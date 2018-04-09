@@ -55,6 +55,7 @@ function MovementCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
+		local map = game:getStage():getMap(position.layer or 1)
 
 		movement:clampMovement()
 
@@ -87,7 +88,9 @@ function MovementCortex:update(delta)
 		       and movement.isOnGround
 		then
 			movement.isOnGround = false
-		elseif movement.isOnGround then
+		end
+
+		if movement.isOnGround then
 			position.position.y = y
 			movement.acceleration.y = 0
 			movement.velocity.y = 0
@@ -96,6 +99,8 @@ function MovementCortex:update(delta)
 				movement.acceleration = movement.acceleration * movement.decay ^ movement.stoppingForce
 				movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
 			end
+		else
+			position.position.y = math.max(position.position.y + gravity.y * delta, y)
 		end
 	end
 end
