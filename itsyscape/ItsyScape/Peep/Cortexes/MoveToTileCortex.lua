@@ -26,13 +26,13 @@ end
 
 function MoveToTileCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
-	local map = game:getStage():getMap()
 	local finished = {}
 
 	for peep in self:iterate() do
 		local position = peep:getBehavior(PositionBehavior).position
 		local targetTile = peep:getBehavior(TargetTileBehavior)
 		local movement = peep:getBehavior(MovementBehavior)
+		local map = game:getStage():getMap(peep:getBehavior(PositionBehavior).layer or 1)
 		movement.isStopping = false
 
 		local currentTile, currentTileI, currentTileJ = map:getTileAt(position.x, position.z)
@@ -47,8 +47,12 @@ function MoveToTileCortex:update(delta)
 
 		if distance > 0.5 then
 			-- If we're too far from the tile, steer towards it.
-			movement.acceleration = movement.acceleration + positionDifference / delta
-			movement.velocity = movement.velocity
+			local currentVelocityMagnitude = movement.velocity:getLength()
+			local desiredSpeed = movement.maxSpeed * movement.velocityMultiplier
+			local desiredVelocity = desiredSpeed * direction
+			local velocityDifference = desiredVelocity - movement.velocity
+			local d = 1 - (currentVelocityMagnitude / desiredVelocity:getLength())
+			movement.acceleration = movement.acceleration * d + velocityDifference
 		else
 			peep:removeBehavior(TargetTileBehavior)
 
