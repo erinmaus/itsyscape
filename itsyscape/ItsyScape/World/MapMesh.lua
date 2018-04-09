@@ -101,6 +101,20 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 		end
 	end
 
+	local yDifference = (self.maxY or 1) - (self.minY or 1)
+	local COLOR_INDEX = 13
+	local COLOR_COMPONENTS = 3
+	local Y_INDEX = 2
+	for i = 1, #self.vertices do
+		local vertex = self.vertices[i]
+		local y = vertex[Y_INDEX]
+		local grade = 0.5 + y / yDifference * 0.5
+		for j = 1, COLOR_COMPONENTS do
+			local index = COLOR_INDEX + j - 1
+			vertex[index] = vertex[index] * grade
+		end
+	end
+
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
 	for i = 1, #MapMesh.FORMAT do
@@ -116,6 +130,8 @@ end
 -- * tile is expected to be in the form { left, right, top, bottom }
 -- * color is expected to be in the form { r, g, b, a }, where each component
 --   is in the range of 0 .. 255 inclusive
+--
+-- color is modified as a function of height.
 function MapMesh:_addVertex(position, normal, texture, tile, color)
 	local vertex = {
 		position.x, position.y, position.z,
@@ -126,6 +142,8 @@ function MapMesh:_addVertex(position, normal, texture, tile, color)
 	}
 
 	table.insert(self.vertices, vertex)
+	self.minY = math.min(self.minY or math.huge, position.y)
+	self.maxY = math.max(self.maxY or -math.huge, position.y)
 end
 
 -- Builds a vertex from a local position.
