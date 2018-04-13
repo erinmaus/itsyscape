@@ -19,6 +19,8 @@ Actor.NIL_ID = 0
 function Actor:new()
 	self.onAnimationPlayed = Callback()
 	self.onSkinChanged = Callback()
+	self.onMove = Callback()
+	self.onTeleport = Callback()
 end
 
 -- Spawns the Actor, assigning it the given unique ID.
@@ -54,6 +56,9 @@ function Actor:getDirection()
 end
 
 -- Gets the absolution position of the Actor in the world as a Vector.
+--
+-- When position changes, onTeleport should be called if the movement is instant,
+-- otherwise onMove should be called.
 function Actor:getPosition()
 	return Class.ABSTRACT()
 end
@@ -92,7 +97,7 @@ end
 
 -- Returns the skins at the slot, or nil if no skin is set.
 --
--- Return values are in the order skin1, priorty1, ..., skinN, priorityN.
+-- Return values are in the order skin1, priority1, ..., skinN, priorityN.
 function Actor:getSkin(slot)
 	return Class.ABSTRACT()
 end
