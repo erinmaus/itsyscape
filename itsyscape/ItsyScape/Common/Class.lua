@@ -14,45 +14,45 @@ Class.ABSTRACT = function()
 end
 
 -- Returns true if a is a Class instance, false otherwise.
-function Class.isType(a)
+function Class.isClass(a)
 	return Class.getType(a) ~= nil
 end
 
 -- Returns the type of a, or nil if a is not a Class instance.
 function Class.getType(a)
-	a = getmetatable(a)
-	if a and a.__c == Class then
-		return a.__type
+	a = getmetatable(a) or {}
+	a = a.__type or {}
+
+	if a and getmetatable(a) and getmetatable(a).__c == Class then
+		return a
 	end
 
 	return nil
 end
 
--- Returns true if a is exactly the type of b, or false otherwise.
+-- Returns true if a (the object) is exactly the type of b (a type), or false
+-- otherwise.
 function Class.isType(a, b)
-	a = getmetatable(a) or {}
-	b = getmetatable(b) or {}
-	if a.__c == Class and b.__c == Class then
-		if a.__type == b.__type then
-			return true
-		end
+	a = Class.getType(a)
+
+	if a == b then
+		return true
 	end
 
 	return false
 end
 
--- Returns true if a is a compatible type to b, or false otherwise.
+-- Returns true if a (an object) is a compatible type to b (a type), or false
+-- otherwise.
 function Class.isCompatibleType(a, b)
-	a = getmetatable(a) or {}
-	b = getmetatable(b) or {}
-	if a.__c == Class and b.__c == Class then
-		local t = a.__type
-		while t ~= nil do
-			if t == b.__type then
-				return true
-			else
-				t = getmetatable(t).__parent
-			end
+	a = Class.getType(a)
+
+	local t = a
+	while t ~= nil do
+		if t == b then
+			return true
+		else
+			t = getmetatable(t).__parent
 		end
 	end
 
