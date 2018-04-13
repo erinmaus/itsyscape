@@ -28,7 +28,7 @@ end
 
 -- Spawns an Actor.
 --
--- If the Actor was spawned, invokes onActorSpawned with the Actor.
+-- If the Actor was spawned, invokes onActorSpawned with the actorID and Actor.
 --
 -- Returns true if the Actor was spawned, plus the Actor. Returns false if the
 -- actor could not be spawned.
@@ -45,19 +45,21 @@ function Stage:killActor(actor)
 	Class.ABSTRACT()
 end
 
--- Loads a map from the file pointed to by 'filename'.
+-- Loads a map from the file pointed to by 'filename' into the layer using the
+-- specified tile set ID.
 --
 -- If a map is loaded, first unloads the map.
 --
--- Calls the onLoadMap callback with the map. Also calls onMapModified.
+-- Calls the onLoadMap callback with the map and layer. Also calls onMapModified.
 --
 -- Returns true if the map was loaded and the Map instance; otherwise,
 -- returns false plus an error message.
-function Stage:loadMapFromFile(filename)
+function Stage:loadMapFromFile(filename, layer, tileSetID)
 	return Class.ABSTRACT()
 end
 
--- Creates a new Map with the provided dimensions.
+-- Creates a new Map with the provided dimensions into the layer using the
+-- specified tile set ID.
 --
 -- If a map is loaded, first unloads the map.
 --
@@ -65,26 +67,26 @@ end
 --
 -- Returns true on success and the Map instance; otherwise, returns false plus
 -- an error message.
-function Stage:newMap(width, height)
+function Stage:newMap(width, height, layer, tileSetID)
 	return Class.ABSTRACT()
 end
 
--- Notifies the Stage that the map has been updated.
+-- Notifies the Stage that the map at the specified layer has been updated.
 --
--- Invokes the onMapModified callback with the Map instance.
-function Stage:updateMap()
+-- Invokes the onMapModified callback with the Map instance and layer.
+function Stage:updateMap(layer)
 	Class.ABSTRACT()
 end
 
--- Unloads the current map.
+-- Unloads the current map at the specified layer.
 --
 -- Does nothing if no map is loaded.
-function Stage:unloadMap()
+function Stage:unloadMap(layer)
 	Class.ABSTRACT()
 end
 
--- Returns current Map instance, if loaded; false otherwise.
-function Stage:getMap()
+-- Returns current Map instance at the layer, if loaded; false otherwise.
+function Stage:getMap(layer)
 	return Class.ABSTRACT()
 end
 
