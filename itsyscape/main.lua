@@ -1,4 +1,5 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local Color = require "ItsyScape.Graphics.Color"
@@ -169,12 +170,6 @@ function love.load()
 	position.position.y = 1
 	actor.peep:addBehavior(SizeBehavior)
 
-	local pathFinder = MapPathFinder(map)
-	local path = pathFinder:find({ i = 1, j = 1 }, { i = 3, j = 4 })
-	if path then
-		--path:activate(actor.peep)
-	end
-
 	Instance.Peep = actor.peep
 end
 
@@ -197,6 +192,15 @@ function love.update(delta)
 		local position = Instance.Peep:getBehavior(PositionBehavior).position
 		Instance.Human:getTransform():setLocalTranslation(position)
 
+		-- Update peep rotation.
+		local movement = Instance.Peep:getBehavior(MovementBehavior)
+		if movement.velocity.x < -0.5 then
+			Instance.Human:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
+		elseif movement.velocity.x > 0.5 then
+			Instance.Human:getTransform():setLocalRotation(Quaternion.IDENTITY)
+		end
+
+		-- Update sun direction.
 		local forward = -Instance.Camera:getForward()
 		Instance.Sun:setDirection(forward:getNormal())
 	end
@@ -282,9 +286,14 @@ function love.draw()
 		Instance.startDrawTime = currentTime
 	end
 
+	local movement = Instance.Peep:getBehavior(MovementBehavior)
 	local animationTime = currentTime - Instance.startDrawTime
 	local transforms = {}
-	Instance.Animation:computeTransforms(animationTime, transforms)
+	if movement.velocity:getLength() > 1 then
+		Instance.Animation:computeTransforms(animationTime, transforms)
+	else
+		Instance.Animation:computeTransforms(0.25, transforms)
+	end
 	for i = 1, #Instance.ModelNodes do
 		Instance.ModelNodes[i]:setTransforms(transforms)
 	end
