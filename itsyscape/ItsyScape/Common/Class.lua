@@ -13,6 +13,52 @@ Class.ABSTRACT = function()
 	error("method is abstract", 2)
 end
 
+-- Returns true if a is a Class instance, false otherwise.
+function Class.isType(a)
+	return Class.getType(a) ~= nil
+end
+
+-- Returns the type of a, or nil if a is not a Class instance.
+function Class.getType(a)
+	a = getmetatable(a)
+	if a and a.__c == Class then
+		return a.__type
+	end
+
+	return nil
+end
+
+-- Returns true if a is exactly the type of b, or false otherwise.
+function Class.isType(a, b)
+	a = getmetatable(a) or {}
+	b = getmetatable(b) or {}
+	if a.__c == Class and b.__c == Class then
+		if a.__type == b.__type then
+			return true
+		end
+	end
+
+	return false
+end
+
+-- Returns true if a is a compatible type to b, or false otherwise.
+function Class.isCompatibleType(a, b)
+	a = getmetatable(a) or {}
+	b = getmetatable(b) or {}
+	if a.__c == Class and b.__c == Class then
+		local t = a.__type
+		while t ~= nil do
+			if t == b.__type then
+				return true
+			else
+				t = getmetatable(t).__parent
+			end
+		end
+	end
+
+	return false
+end
+
 -- Creates a class, optionally from a parent.
 --
 -- To add a property or method to the class, add add the property or method to
@@ -20,7 +66,7 @@ end
 --
 -- Returns the class definition and the metatable.
 local function __call(self, parent)
-	local Type = { __index = parent or {}, __parent = parent }
+	local Type = { __index = parent or {}, __parent = parent, __c = Class }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
 
