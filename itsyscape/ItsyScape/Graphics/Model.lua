@@ -23,14 +23,13 @@ end
 function Model:loadFromFile(filename, skeleton)
 	local data = "return " .. love.filesystem.read(filename)
 	local chunk = assert(loadstring(data))
-	local result = setfenv(chunk, {})()
+	local result = setfenv(chunk, {})() or {}
 
 	self:loadFromTable(result, skeleton)
 end
 
 function Model:bindSkeleton(skeleton)
 	local vertices = {}
-
 
 	-- Gets the number of bone indices and the offset.
 	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
