@@ -53,6 +53,8 @@ function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 end
 
 function SkeletonAnimation:new(d, skeleton)
+	self.duration = 0
+
 	if type(d) == 'string' then
 		self:loadFromFile(d, skeleton)
 	elseif type(d) == 'table' then
@@ -99,6 +101,8 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 			local rotation = Quaternion(unpack(boneFramesDefinition.rotation[i]))
 			local translation = Vector(unpack(boneFramesDefinition.translation[i]))
 
+			self.duration = math.max(self.duration, time)
+
 			local keyFrame = SkeletonAnimation.KeyFrame(time, scale, rotation, translation)
 			table.insert(boneFrames, keyFrame)
 		end
@@ -107,6 +111,10 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 	end
 
 	self.skeleton = skeleton
+end
+
+function SkeletonAnimation:getDuration()
+	return self.duration
 end
 
 function SkeletonAnimation:computeTransforms(time, transforms)
