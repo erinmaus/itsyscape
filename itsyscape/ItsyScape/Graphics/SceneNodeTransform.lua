@@ -88,6 +88,19 @@ function SceneNodeTransform:getLocalScale()
 	return self.scale
 end
 
+-- Sets the previous transform in the order of translation, rotation, and scale.
+--
+-- And values not provided default to the current previous value.
+-- (What a confusing description.)
+--
+-- Generally this is only called when an instantaneous event occurs, like
+-- teleporting.
+function SceneNodeTransform:setPreviousTransform(translation, rotation, scale)
+	self.previousTranslation = translation or self.previousTranslation or false
+	self.previousRotation = rotation or self.previousRotation or false
+	self.previousScale = scale or self.previousScale or false
+end
+
 -- Rotates the transform by the axis angle.
 function SceneNodeTransform:rotateByAxisAngle(axis, angle)
 	self.rotation = self.rotation * Quaternion.fromAxisAngle(axis, angle)
