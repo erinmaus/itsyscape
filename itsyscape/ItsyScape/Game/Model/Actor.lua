@@ -17,10 +17,12 @@ local Actor = Class()
 Actor.NIL_ID = 0
 
 function Actor:new()
-	self.onAnimationPlayed = Callback()
-	self.onSkinChanged = Callback()
+	self.onDirectionChanged = Callback()
 	self.onMove = Callback()
 	self.onTeleport = Callback()
+	self.onAnimationPlayed = Callback()
+	self.onTransmogrify = Callback()
+	self.onSkinChanged = Callback()
 end
 
 -- Spawns the Actor, assigning it the given unique ID.
@@ -51,6 +53,11 @@ function Actor:setName(value)
 end
 
 -- Gets the direction of the Actor, as a Vector.
+--
+-- direction need not be normalized. Instead, the magnitude of direction can be
+-- used for animation purposes.
+--
+-- When direction changes, onDirectionChanged should be invoked.
 function Actor:getDirection()
 	return Class.ABSTRACT()
 end
@@ -73,7 +80,9 @@ function Actor:getMaximumHealth()
 	return Class.ABSTRACT()
 end
 
--- Makes the Actor play the Animation-like object on the provided slot.
+-- Makes the Actor play the animation on the provided slot.
+--
+-- animation should be a CacheRef to an ItsyScape.Game.Animation.Animation.
 --
 -- If 'priority' is lower than the current animation's priority in the provided
 -- slot, the animation is not played.
@@ -86,9 +95,18 @@ function Actor:playAnimation(slot, priority, animation)
 	return Class.ABSTRACT()
 end
 
+-- Sets the model of the Actor.
+--
+-- body should be a CacheRef to a ItsyScape.Game.Body.
+--
+-- Should invoke Actor.onTransmogrify with the model.
+function Actor:setBody(body)
+	Class.ABSTRACT()
+end
+
 -- Sets a skin at the provided slot.
 --
--- skin should be a Skin-like object.
+-- skin should be CacheRef to an ItsyScape.Game.Skin-derived object.
 --
 -- Should invoke Actor.onSkinChanged with the slot, priority, and skin.
 function Actor:setSkin(slot, priority, skin)

@@ -25,6 +25,8 @@ function LocalActor:new(game, peepType)
 	self.peepType = peepType
 
 	self.skin = {}
+	self.animations = {}
+	self.body = false
 end
 
 function LocalActor:spawn(id)
@@ -90,6 +92,26 @@ end
 
 function LocalActor:getMaximumHealth()
 	return 1
+end
+
+function LocalActor:setBody(body)
+	self.body = body or false
+	self.onTransmogrified(self, body)
+end
+
+function LocalActor:playAnimation(slot, priority, animation)
+	local slot = self.animations[slot] or { priority = -math.huge, animation = false }
+	if slot.priority < priorty then
+		slot.priority = priority
+		slot.animation = animation
+
+		self.onAnimationPlayed(self, slot, priority, animation)
+		self.animations[slot] = slot
+
+		return true
+	end
+
+	return false
 end
 
 function LocalActor:setSkin(slot, priority, skin)
