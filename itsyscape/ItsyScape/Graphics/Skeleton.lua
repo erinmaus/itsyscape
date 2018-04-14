@@ -128,7 +128,6 @@ function Skeleton:loadFromTable(t)
 	buildChildren(root)
 
 	local function addBone(boneDefinition, parentBoneDefinition)
-
 		local bone
 		if parentBoneDefinition then
 			bone = self:addBone(boneDefinition.name, parentBoneDefinition.name)
@@ -143,5 +142,8 @@ function Skeleton:loadFromTable(t)
 	end
 	addBone(root)
 end
+
+-- Constants.
+Skeleton.EMPTY = Skeleton()
 
 return Skeleton
