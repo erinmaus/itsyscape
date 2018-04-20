@@ -22,6 +22,14 @@ function Game:new()
 	-- Nothing.
 end
 
+-- Returns the player.
+--
+-- The player is an implementation of ItsyScape.Game.Model.Player. This value
+-- should be created by the Game object.
+function Game:getPlayer()
+	return Class.ABSTRACT()
+end
+
 -- Returns the stage.
 --
 -- The stage is an implementation ot ItsyScape.Game.Model.Stage. This value

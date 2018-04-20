@@ -26,6 +26,13 @@ function Director:new()
 	end
 end
 
+-- Gets the game instance (i.e., ItsyScape.Game.Model.Game).
+--
+-- If not implemented, returns nil.
+function Director:getGameInstance()
+	return nil
+end
+
 -- Adds a Cortex of the provided type to the Director.
 function Director:addCortex(cortexType, ...)
 	local cortex = cortexType(...)
@@ -87,7 +94,9 @@ end
 
 -- Updates the Director.
 --
--- Each Cortex, in the order they were added, is updated.
+-- First updates Peeps.
+--
+-- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
 	for _, cortex in ipairs(self.cortexes) do
 		for peep in pairs(self.pendingPeeps) do
@@ -96,6 +105,10 @@ function Director:update(delta)
 	end
 
 	self.pendingPeeps = {}
+
+	for peep in pairs(self.peeps) do
+		peep:update(self, self:getGameInstance())
+	end
 
 	for _, cortex in pairs(self.cortexes) do
 		cortex:update(delta)

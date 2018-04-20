@@ -29,6 +29,10 @@ function LocalActor:new(game, peepType)
 	self.body = false
 end
 
+function LocalActor:getPeep()
+	return self.peep
+end
+
 function LocalActor:spawn(id)
 	assert(self.id == Actor.NIL_ID, "Actor already spawned")
 
@@ -60,6 +64,17 @@ function LocalActor:setName(value)
 	self.peep:setName(value)
 end
 
+function LocalActor:setDirection(direction)
+	if direction and self.peep then
+		local directionBehavior = self.peep:getBehavior(MovementBehavior)
+
+		if directionBehavior then
+			directionBehavior.direction = direction
+			self.onDirectionChanged(self, direction)
+		end
+	end
+end
+
 function LocalActor:getDirection()
 	if not self.peep then
 		return Vector.ZERO
@@ -70,6 +85,28 @@ function LocalActor:getDirection()
 		return Vector(movement.facing, 0, 0)
 	else
 		return Vector(MovementBehavior.FACING_RIGHT)
+	end
+end
+
+function LocalActor:teleport(position)
+	if position and self.peep then
+		local positionBehavior = self.peep:getBehavior(PositionBehavior)
+		if positionBehavior then
+			positionBehavior.position = position
+
+			self.onTeleport(self, position)
+		end
+	end
+end
+
+function LocalActor:move(position)
+	if position and self.peep then
+		local positionBehavior = self.peep:getBehavior(PositionBehavior)
+		if positionBehavior then
+			positionBehavior.position = position
+
+			self.onMove(self, position)
+		end
 	end
 end
 
@@ -100,13 +137,13 @@ function LocalActor:setBody(body)
 end
 
 function LocalActor:playAnimation(slot, priority, animation)
-	local slot = self.animations[slot] or { priority = -math.huge, animation = false }
-	if slot.priority < priorty then
-		slot.priority = priority
-		slot.animation = animation
+	local s = self.animations[slot] or { priority = -math.huge, animation = false }
+	if s.priority <= priority then
+		s.priority = priority
+		s.animation = animation
 
 		self.onAnimationPlayed(self, slot, priority, animation)
-		self.animations[slot] = slot
+		self.animations[slot] = s
 
 		return true
 	end

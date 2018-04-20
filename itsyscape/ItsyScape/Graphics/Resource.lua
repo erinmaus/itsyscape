@@ -40,7 +40,7 @@ function Resource:release()
 end
 
 -- Loads the underyling resource from 'filename'.
-function Resource:loadFromFile(filename)
+function Resource:loadFromFile(filename, resourceManager)
 	return Class.ABSTRACT()
 end
 

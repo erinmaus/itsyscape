@@ -48,7 +48,9 @@ function MapMeshSceneNode:draw(renderer, delta)
 		texture = texture:getResource()
 	end
 
-	self.mapMesh:draw()
+	if self.mapMesh then
+		self.mapMesh:draw()
+	end
 end
 
 return MapMeshSceneNode

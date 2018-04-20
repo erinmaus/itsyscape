@@ -18,11 +18,8 @@ function Body:new()
 end
 
 -- TODO actually load a Body instead of a Skeleton (lskel) but ok
-function Body.loadFromFile(filename)
-	local body = Body()
-	body.skeleton = Skeleton(filename)
-
-	return body
+function Body:loadFromFile(filename)
+	self.skeleton = Skeleton(filename)
 end
 
 -- Gets the skeleton, or an empty skeleton if none loaded.

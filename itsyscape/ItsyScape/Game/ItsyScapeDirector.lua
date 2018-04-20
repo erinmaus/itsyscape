@@ -19,6 +19,9 @@ function ItsyScapeDirector:new(game)
 
 	self:addCortex(MovementCortex)
 	self:addCortex(MoveToTileCortex)
+	self:addCortex(require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorPositionUpdateCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")
 
 	self.game = game
 end

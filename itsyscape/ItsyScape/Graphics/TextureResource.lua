@@ -54,7 +54,7 @@ function TextureResource:release()
 	end
 end
 
-function TextureResource:loadFromFile(filename)
+function TextureResource:loadFromFile(filename, resourceManager)
 	self:release()
 	self.image = love.graphics.newImage(filename)
 end

@@ -17,22 +17,22 @@ local CacheRef = Class()
 -- should be "ItsyScape.Game.Animation.Animation".
 --
 -- The underlying resource type should implement what's called the Resource
--- contract; there should be a static method, 'loadFromFile', that takes a
--- filename as a single argument. 'loadFromFile' should return a resource of
--- the same type, even if the resource could not be found. However, if there is
+-- contract; there should be a method, 'loadFromFile', that takes a
+-- filename as a single argument. 'loadFromFile' should load the resource from
+-- a file, even if the resource could not be found. However, if there is
 -- an error loading the resource (other than file-not-found), the error should
 -- be propagated.
---
--- For example, ItsyScape.Game.Animation.Animation returns an Animation. If the
--- animation was not found, it returns an empty animation. If the Animation
--- script had a syntax error, the error is propagated. If everything succeeds,
--- the parsed Animation should be returned.
 --
 -- filename is the full path to the resource.
 function CacheRef:new(resourceTypeID, filename)
 	self.resourceType = require(resourceTypeID)
 	self.resourceTypeID = resourceTypeID
 	self.filename = filename or ""
+end
+
+-- Gets the underlying type.
+function CacheRef:getResourceType()
+	return self.resourceType
 end
 
 -- Gets the resourceTypeID. See CacheRef.new.
@@ -47,7 +47,10 @@ end
 
 -- Loads the resource. See CacheRef.new.
 function CacheRef:load(...)
-	self.resourceType.loadFromFile(self.filename, ...)
+	local resource = self.resourceType()
+	resource:loadFromFile(self.filename, ...)
+	
+	return resource
 end
 
 return CacheRef

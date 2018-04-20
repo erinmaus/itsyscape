@@ -21,8 +21,8 @@ function Player:getActor()
 	return Class.ABSTRACT()
 end
 
--- Moves the player to the specified position on the map.
-function Player:moveTo(i, j)
+-- Moves the player to the specified position on the map via walking.
+function Player:walk(i, j, k)
 	return Class.ABSTRACT()
 end
 

@@ -10,11 +10,11 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
+local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
-local ModelSkin = require "ItsyScape.Graphics.Skin.ModelSkin"
 
 local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
@@ -52,19 +52,15 @@ function ActorView.Animatable:getTransforms()
 	return self.transforms
 end
 
-function ActorView:getTransforms()
-	return self.transforms
-end
-
-function ActorView:setTransforms(transforms)
-	for k, transform in pairs(transforms)
+function ActorView.Animatable:setTransforms(transforms)
+	for k, transform in pairs(transforms) do
 		if type(k) == 'number' then
 			self:setTransform(k, transform)
 		end
 	end
 end
 
-function ActorView:setTransform(index, transform)
+function ActorView.Animatable:setTransform(index, transform)
 	for i = 1, index do
 		if self.transforms[index] == nil then
 			self.transforms[index] = love.math.newTransform()
@@ -89,16 +85,17 @@ function ActorView:new(actor, actorID)
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
 
 	self.skins = {}
+	self.models = {}
 	self._onSkinChanged = function(_, slot, priority, skin)
 		self:changeSkin(slot, priority, skin)
 	end
 	actor.onSkinChanged:register(self._onSkinChanged)
 
 	self.body = false
-	self._onTransmogrify = function(_, body)
+	self._onTransmogrified = function(_, body)
 		self:transmogrify(body)
 	end
-	actor.onTransmogrify:register(self._onTransmogrify)
+	actor.onTransmogrified:register(self._onTransmogrified)
 
 	self._onTeleport = function(_, position)
 		self:move(position, true)
@@ -116,8 +113,9 @@ function ActorView:new(actor, actorID)
 	actor.onDirectionChanged:register(self._onDirectionChanged)
 end
 
-function ActorView:attach(scene)
-	self.sceneNode:setParent(scene)
+function ActorView:attach(game)
+	self.game = game
+	self.sceneNode:setParent(game:getScene())
 end
 
 function ActorView:poof()
@@ -127,7 +125,7 @@ function ActorView:poof()
 	self.actor.onMove:unregister(self._onMove)
 	self.actor.onTeleport:unregister(self._onTeleport)
 	self.actor.onAnimationPlayed:unregister(self._onAnimationPlayed)
-	self.actor.onTransmogrify:unregister(self._onTransmogrify)
+	self.actor.onTransmogrified:unregister(self._onTransmogrified)
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
 end
 
@@ -137,23 +135,23 @@ end
 
 function ActorView:playAnimation(slot, animation, time)
 	-- TODO blending
-	local animation = self.animations[slot] or {}
-	if animation.instance then
-		animation.instance:stop()
+	local a = self.animations[slot] or {}
+	if a.instance then
+		a.instance:stop()
 	end
 
 	-- TODO load queue
-	animation.definition = animation:load()
-	animation.instance = animation:play(self.animatable)
-	animation.time = time or 0
+	a.definition = animation:load():getResource()
+	a.instance = a.definition:play(self.animatable)
+	a.time = time or 0
 
-	self.animations[slot] = animation
+	self.animations[slot] = a
 end
 
 function ActorView:transmogrify(body)
-	self.body = body
+	self.body = body:load()
 
-	for _, slot in self.skins do
+	for _, slot in pairs(self.skins) do
 		if slot.sceneNode then
 			slot.sceneNode:setParent(nil)
 		end
@@ -162,7 +160,8 @@ function ActorView:transmogrify(body)
 			-- TODO load queue
 			if slot.definition:isType(ModelSkin) then
 				slot.instance = skin:load(body:getSkeleton())
-				slot.sceneNode = ModelSceneNode(slot.instance:getModel())
+				slot.sceneNode = ModelSceneNode(slot.instance:getModel():load())
+				slot.sceneNode:setParent(self.sceneNode)
 			end
 		else
 			slot.instance = false
@@ -188,8 +187,26 @@ function ActorView:changeSkin(slot, priority, skin)
 		if self.body then
 			if skin:isType(ModelSkin) then
 				slot.instance = skin:load(self.body:getSkeleton())
-				slot.sceneNode = ModelSceneNode(slot.instance:getModel())
+				slot.sceneNode = ModelSceneNode()
+
+				local model = slot.instance:getModel():load()
+				model:getResource():bindSkeleton(self.body:getSkeleton())
+
+				slot.sceneNode:setModel(model)
+				local texture = slot.instance:getTexture()
+				if texture then
+					slot.sceneNode:getMaterial():setTextures(texture:load())
+				end
+
+				slot.sceneNode:setParent(self.sceneNode)
+
+				self.models[slot.sceneNode] = true
+			end
 		else
+			if slot.sceneNode then
+				self.models[slot.sceneNode] = nil
+			end
+
 			slot.instance = false
 			slot.sceneNode = false
 		end
@@ -197,29 +214,29 @@ function ActorView:changeSkin(slot, priority, skin)
 end
 
 function ActorView:move(position, instant)
-	self.sceneNode:setLocalTranslation(position)
+	self.sceneNode:getTransform():setLocalTranslation(position)
 
 	if instant then
-		self.sceneNode:setPreviousTransform(position)
+		self.sceneNode:getTransform():setPreviousTransform(position)
 	end
 end
 
-function ActorView:onDirectionChanged(direction)
+function ActorView:face(direction)
 	-- Assumes models face right.
 	if direction.x < -0.5 then
-		self.sceneNode:setLocalRotation(Quaternion.fromAxisangle(Vector.UNIT_Y, -math.pi))
-	else if direction.x > 0.5
-		self.sceneNode:setLocalRotation(Quaternion.IDENTITY)
+		self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
+	elseif direction.x > 0.5 then
+		self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
 	end
 end
 
 function ActorView:update(delta)
 	for _, animation in pairs(self.animations) do
 		animation.time = animation.time + delta
-		animation:update(animation.time)
+		animation.instance:play(animation.time)
 	end
 
-	for _, model in pairs(self.models)
+	for model in pairs(self.models) do
 		model:setTransforms(self.animatable:getTransforms())
 	end
 end

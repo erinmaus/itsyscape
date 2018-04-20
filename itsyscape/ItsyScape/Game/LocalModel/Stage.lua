@@ -19,6 +19,7 @@ function LocalStage:new(game)
 	Stage.new(self)
 	self.game = game
 	self.actors = {}
+	self.peeps = {}
 	self.currentActorID = 1
 	self.map = {}
 	self.gravity = Vector(0, -9.8, 0)
@@ -35,6 +36,10 @@ function LocalStage:spawnActor(actorID)
 		self.currentActorID = self.currentActorID + 1
 		self.actors[actor] = true
 
+		local peep = actor:getPeep()
+		self.peeps[actor] = peep
+		self.peeps[peep] = actor
+
 		return true, actor
 	end
 
@@ -48,6 +53,10 @@ function LocalStage:killActor(actor)
 		self.onActorKilled(self, a)
 		a:depart()
 
+		local peep = self.peeps[actor]
+		self.peeps[actor] = nil
+		self.peeps[peep] = nil
+
 		self.actors[actor] = nil
 	end
 end
@@ -56,14 +65,14 @@ function LocalStage:newMap(width, height, layer, tileSetID)
 	self:unloadMap(layer)
 
 	self.map[layer] = Map(width, height, Stage.CELL_SIZE)
-	self.onLoadMap(self, self.map, layer, tileSetID)
+	self.onLoadMap(self, self.map[layer], layer, tileSetID)
 
-	self:updateMap()
+	self:updateMap(layer)
 end
 
 function LocalStage:updateMap(layer)
 	if self.map[layer] then
-		self.onMapModified(self, self.map[layer])
+		self.onMapModified(self, self.map[layer], layer)
 	end
 end
 
