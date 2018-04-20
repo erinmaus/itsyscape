@@ -2,12 +2,14 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local GameView = require "ItsyScape.Graphics.GameView"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Model = require "ItsyScape.Graphics.Model"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
@@ -33,76 +35,18 @@ local Input = {
 TICK_RATE = 1 / LocalGame.TICKS_PER_SECOND
 
 function love.load()
-	Instance.Renderer = Renderer()
 	Instance.Camera = ThirdPersonCamera()
 	Instance.Camera:setDistance(30)
 	Instance.Camera:setUp(Vector(0, -1, 0))
 	Instance.Camera:setHorizontalRotation(-math.pi / 8)
 	Instance.Camera:setVerticalRotation(-math.pi / 2)
 	Instance.Camera:setPosition(Vector(5, 0, 5))
-	Instance.Renderer:setCamera(Instance.Camera)
-	Instance.SceneRoot = SceneNode()
 	Instance.previousTickTime = love.timer.getTime()
 	Instance.startDrawTime = false
 	Instance.time = 0
-	Instance.ModelNodes = {}
 	Instance.Game = LocalGame()
-
-	local cube = DebugCubeSceneNode()
-	cube:getTransform():setLocalTranslation(Vector(3, 2, 4))
-	cube:setParent(Instance.SceneRoot)
-
-	local ambientLight = AmbientLightSceneNode()
-	ambientLight:setAmbience(0.4)
-	ambientLight:setParent(Instance.SceneRoot)
-
-	local directionalLight = DirectionalLightSceneNode()
-	directionalLight:setColor(Color(0.6, 0.6, 0.6))
-	directionalLight:setDirection(Vector(0, 0, 1):getNormal())
-	directionalLight:setParent(Instance.SceneRoot)
-	Instance.Sun = directionalLight
-
-	local skeleton = Skeleton("Resources/Test/Human.lskel")
-
-	local bodyModelResource = ModelResource(skeleton)
-	bodyModelResource:loadFromFile("Resources/Test/Body.lmesh")
-
-	local faceModelResource = ModelResource(skeleton)
-	faceModelResource:loadFromFile("Resources/Test/Face.lmesh")
-
-	local shader = ShaderResource()
-	shader:loadFromFile("Resources/Shaders/SkinnedModel")
-
-	local bodyTextureResource = TextureResource()
-	bodyTextureResource:loadFromFile("Resources/Test/Body.png")
-
-	local faceTextureResource = TextureResource()
-	faceTextureResource:loadFromFile("Resources/Test/Face.png")
-
-	local human = SceneNode()
-	human:setParent(Instance.SceneRoot)
-	human:getTransform():translate(Vector.UNIT_Y, 1)
-
-	local bodySceneNode = ModelSceneNode()
-	bodySceneNode:getMaterial():setTextures(bodyTextureResource)
-	bodySceneNode:getMaterial():setShader(shader)
-	bodySceneNode:setModel(bodyModelResource)
-	bodySceneNode:setIdentity()
-	bodySceneNode:setParent(human)
-
-	local faceSceneNode = ModelSceneNode()
-	faceSceneNode:getMaterial():setTextures(faceTextureResource)
-	faceSceneNode:getMaterial():setShader(shader)
-	faceSceneNode:setModel(faceModelResource)
-	faceSceneNode:setIdentity()
-	faceSceneNode:setParent(human)
-
-	Instance.Human = human
-	table.insert(Instance.ModelNodes, bodySceneNode)
-	table.insert(Instance.ModelNodes, faceSceneNode)
-
-	local animation = SkeletonAnimation("Resources/Test/Human_Walk.lanim", skeleton)
-	Instance.Animation = animation
+	Instance.GameView = GameView(Instance.Game)
+	Instance.GameView:getRenderer():setCamera(Instance.Camera)
 
 	Instance.Game:getStage():newMap(8, 8, 1)
 	local map = Instance.Game:getStage():getMap(1)
@@ -146,31 +90,14 @@ function love.load()
 		tile.bottomRight = 1
 	end
 
-	local tileSet = TileSet()
-	tileSet:setTileProperty(1, 'colorRed', 128)
-	tileSet:setTileProperty(1, 'colorGreen', 192)
-	tileSet:setTileProperty(1, 'colorBlue', 64)
-	tileSet:setTileProperty(2, 'colorRed', 255)
-	tileSet:setTileProperty(2, 'colorGreen', 192)
-	tileSet:setTileProperty(2, 'colorBlue', 64)
+	Instance.Game:getStage():updateMap(1)
 
-	local mapMesh = MapMeshSceneNode()
-	mapMesh:fromMap(map, tileSet)
-	mapMesh:setParent(Instance.SceneRoot)
-
-	local _, actor = Instance.Game:getStage():spawnActor("ItsyScape.Peep.Peep")
-	local _, movement = actor.peep:addBehavior(MovementBehavior)
-	movement.maxSpeed = 16
-	movement.maxAcceleration = 16
-	movement.decay = 0.6
-	movement.velocityMultiplier = 1
-	movement.accelerationMultiplier = 1
-	movement.stoppingForce = 3
-	local _, position = actor.peep:addBehavior(PositionBehavior)
-	position.position.y = 1
-	actor.peep:addBehavior(SizeBehavior)
-
-	Instance.Peep = actor.peep
+	Instance.GameView:tick()
+	Instance.Game:tick()
+	
+	local position = Instance.Game:getPlayer():getActor():getPosition()
+	Instance.playerPreviousPosition = position
+	Instance.playerCurrentPosition = position
 end
 
 function love.update(delta)
@@ -179,7 +106,10 @@ function love.update(delta)
 
 	-- Only update at TICK_RATE intervals.
 	while Instance.time > TICK_RATE do
-		Instance.SceneRoot:tick()
+		Instance.playerPreviousPosition = Instance.playerCurrentPosition
+		Instance.playerCurrentPosition = Instance.Game:getPlayer():getActor():getPosition()
+
+		Instance.GameView:tick()
 		Instance.Game:tick()
 
 		-- Handle cases where 'delta' exceeds TICK_RATE
@@ -187,23 +117,9 @@ function love.update(delta)
 
 		-- Store the previous frame time.
 		Instance.previousTickTime = love.timer.getTime()
-
-		-- Update Peep position.
-		local position = Instance.Peep:getBehavior(PositionBehavior).position
-		Instance.Human:getTransform():setLocalTranslation(position)
-
-		-- Update peep rotation.
-		local movement = Instance.Peep:getBehavior(MovementBehavior)
-		if movement.velocity.x < -0.5 then
-			Instance.Human:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
-		elseif movement.velocity.x > 0.5 then
-			Instance.Human:getTransform():setLocalRotation(Quaternion.IDENTITY)
-		end
-
-		-- Update sun direction.
-		local forward = -Instance.Camera:getForward()
-		Instance.Sun:setDirection(forward:getNormal())
 	end
+
+	Instance.GameView:update(delta)
 end
 
 function love.mousepressed(x, y, button)
@@ -232,19 +148,8 @@ function love.mousepressed(x, y, button)
 
 		local best = tiles[1]
 		if best then
-			local pathFinder = MapPathFinder(map)
-			local position = Instance.Peep:getBehavior(PositionBehavior).position 
-			local _, i, j = map:getTileAt(position.x, position.z)
-			local path = pathFinder:find(
-				{ i = i, j = j },
-				{ i = best[Map.RAY_TEST_RESULT_I], j = best[Map.RAY_TEST_RESULT_J] })
-
-			if path then
-				path:activate(Instance.Peep)
-			else
-				local movement = Instance.Peep:getBehavior(MovementBehavior)
-				movement.velocity.y = movement.velocity.y + 200
-			end
+			local player = Instance.Game:getPlayer()
+			player:walk(best[Map.RAY_TEST_RESULT_I], best[map.RAY_TEST_RESULT_J], 1)
 		end
 	elseif button == 2 then
 		Input.isCameraDragging = true
@@ -279,32 +184,20 @@ function love.draw()
 	local delta = (currentTime - previousTime) / TICK_RATE
 
 	local width, height = love.window.getMode()
-	Instance.Renderer:getCamera():setWidth(width)
-	Instance.Renderer:getCamera():setHeight(height)
+	Instance.Camera:setWidth(width)
+	Instance.Camera:setHeight(height)
 
 	if not Instance.startDrawTime then
 		Instance.startDrawTime = currentTime
 	end
 
-	local movement = Instance.Peep:getBehavior(MovementBehavior)
-	local animationTime = currentTime - Instance.startDrawTime
-	local transforms = {}
-	if movement.velocity:getLength() > 1 then
-		Instance.Animation:computeTransforms(animationTime, transforms)
-	else
-		Instance.Animation:computeTransforms(0.25, transforms)
-	end
-	for i = 1, #Instance.ModelNodes do
-		Instance.ModelNodes[i]:setTransforms(transforms)
-	end
-
 	-- Update camera position.
 	do
-		local transform = Instance.Human:getTransform():getGlobalDeltaTransform(delta)
-		local position = Vector(transform:transformPoint(0, 0, 0))
-		Instance.Camera:setPosition(position)
+		local previous = Instance.playerPreviousPosition
+		local current = Instance.playerCurrentPosition
+		Instance.Camera:setPosition(previous:lerp(current, delta))
 	end
 
 	-- Draw the scene.
-	Instance.Renderer:draw(Instance.SceneRoot, delta)
+	Instance.GameView:getRenderer():draw(Instance.GameView:getScene(), delta)
 end

@@ -41,8 +41,8 @@ function Animation:new(name)
 	Animation.CURRENT_ID = Animation.CURRENT_ID + 1
 end
 
--- Loads an animation from a file and returns it.
-function Animation.loadFromFile(filename)
+-- Loads an animation from a file.
+function Animation:loadFromFile(filename)
 	local file = "return " .. love.filesystem.read(filename)
 	local G = {}
 	do
@@ -60,7 +60,13 @@ function Animation.loadFromFile(filename)
 	local chunk = assert(loadstring(file))
 	local result = setfenv(chunk, G)()
 
-	return result or Animation()
+	if result then
+		self.channels = result.channels
+		self.name = result.name
+		self.id = result.id
+		self.blends = result.blends
+		self.skeleton = result.skeleton
+	end
 end
 
 -- Gets the name of the animation.

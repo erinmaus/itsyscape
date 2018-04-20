@@ -34,6 +34,10 @@ function AnimationInstance:addChannel(channel)
 	table.insert(self.channels, c)
 end
 
+function AnimationInstance:stop()
+	-- Nothing.
+end
+
 function AnimationInstance:play(time)
 	if time < self.time then
 		return

@@ -9,9 +9,11 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local ActorView = require "ItsyScape.Graphics.ActorView"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local GameView = Class()
@@ -31,8 +33,8 @@ function GameView:new(game)
 	end
 	stage.onUnloadMap:register(self._onLoadMap)
 
-	self._onMapModified = function(_, map)
-		self:updateMap(map)
+	self._onMapModified = function(_, map, layer)
+		self:updateMap(map, layer)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
@@ -50,6 +52,19 @@ function GameView:new(game)
 	self.mapMeshes = {}
 
 	self.renderer = Renderer()
+	self.resourceManager = ResourceManager()
+end
+
+function GameView:getRenderer()
+	return self.renderer
+end
+
+function GameView:getResourceManager()
+	return self.resourceManager
+end
+
+function GameView:getScene()
+	return self.scene
 end
 
 function GameView:release()
@@ -107,7 +122,7 @@ end
 
 function GameView:addActor(actorID, actor)
 	local view = ActorView(actor, actorID)
-	view:attach(self.scene)
+	view:attach(self)
 
 	self.actors[actor] = view
 end
@@ -116,6 +131,12 @@ function GameView:removeActor(actor)
 	if self.actors[actor] then
 		self.actors[actor]:poof()
 		self.actors[actor] = nil
+	end
+end
+
+function GameView:update(delta)
+	for _, actor in pairs(self.actors) do
+		actor:update(delta)
 	end
 end
 

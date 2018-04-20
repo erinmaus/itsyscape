@@ -87,9 +87,9 @@ function Skeleton:iterate()
 end
 
 function Skeleton:loadFromFile(filename)
-	local data = "return " .. love.filesystem.read(filename)
+	local data = "return " .. (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
-	local result = setfenv(chunk, {})()
+	local result = setfenv(chunk, {})() or {}
 
 	self:loadFromTable(result)
 end

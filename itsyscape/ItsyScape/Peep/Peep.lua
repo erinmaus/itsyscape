@@ -31,6 +31,8 @@ function Peep:new(name)
 	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
 
 	Peep.PEEPS_TALLY = Peep.PEEPS_TALLY + 1
+
+	self.isReady = false
 end
 
 -- Returns the name of the Peep.
@@ -145,6 +147,23 @@ function Peep:match(...)
 	end
 
 	return true
+end
+
+-- Called when the Peep is ready.
+--
+-- This should never be called externally.
+function Peep:ready(director, game)
+	-- Nothing.
+end
+
+-- Updates the Peep.
+--
+-- There is no guarantee to the order Peeps are updated.
+function Peep:update(director, game)
+	if not self.isReady then
+		self:ready(director, game)
+		self.isReady = true
+	end
 end
 
 return Peep

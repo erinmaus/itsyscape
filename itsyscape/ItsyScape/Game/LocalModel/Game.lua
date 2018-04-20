@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Game = require "ItsyScape.Game.Model.Game"
+local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
 local LocalStage = require "ItsyScape.Game.LocalModel.Stage"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 
@@ -19,8 +20,14 @@ function LocalGame:new()
 	Game.new(self)
 
 	self.director = ItsyScapeDirector(self)
+	self.player = LocalPlayer(self)
+	self.playerSpawned = false
 	self.stage = LocalStage(self)
 	self.ticks = 0
+end
+
+function LocalGame:getPlayer()
+	return self.player
 end
 
 function LocalGame:getStage()
@@ -40,6 +47,11 @@ function LocalGame:getCurrentTick()
 end
 
 function LocalGame:tick()
+	if not self.playerSpawned then
+		self.player:spawn()
+		self.playerSpawned = true
+	end
+
 	self.ticks = self.ticks + 1
 	self.director:update(self:getDelta())
 end

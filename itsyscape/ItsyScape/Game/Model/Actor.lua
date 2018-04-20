@@ -21,7 +21,7 @@ function Actor:new()
 	self.onMove = Callback()
 	self.onTeleport = Callback()
 	self.onAnimationPlayed = Callback()
-	self.onTransmogrify = Callback()
+	self.onTransmogrified = Callback()
 	self.onSkinChanged = Callback()
 end
 
@@ -52,6 +52,13 @@ function Actor:setName(value)
 	Class.ABSTRACT()
 end
 
+-- Sets the direction of the Actor.
+--
+-- See Actor.getDirection
+function Actor:setDirection(direction)
+	Class.ABSTRACT()
+end
+
 -- Gets the direction of the Actor, as a Vector.
 --
 -- direction need not be normalized. Instead, the magnitude of direction can be
@@ -60,6 +67,20 @@ end
 -- When direction changes, onDirectionChanged should be invoked.
 function Actor:getDirection()
 	return Class.ABSTRACT()
+end
+
+-- Teleports the actor to the new position.
+--
+-- See Actor.getPosition
+function Actor:teleport(position)
+	Class.ABSTRACT()
+end
+
+-- Move the actor to the new position.
+--
+-- See Actor.getPosition
+function Actor:move(position)
+	Class.ABSTRACT()
 end
 
 -- Gets the absolution position of the Actor in the world as a Vector.
@@ -99,7 +120,7 @@ end
 --
 -- body should be a CacheRef to a ItsyScape.Game.Body.
 --
--- Should invoke Actor.onTransmogrify with the model.
+-- Should invoke Actor.onTransmogrified with the model.
 function Actor:setBody(body)
 	Class.ABSTRACT()
 end

@@ -9,8 +9,13 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local ModelSceneNode = Class(SceneNode)
+ModelSceneNode.DEFAULT_SHADER = ShaderResource()
+do
+	ModelSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/SkinnedModel")
+end
 
 function ModelSceneNode:new()
 	SceneNode.new(self)
@@ -20,6 +25,8 @@ function ModelSceneNode:new()
 	self.transforms = {}
 	self.cachedTransforms = {}
 	self.numTransforms = 0
+
+	self:getMaterial():setShader(ModelSceneNode.DEFAULT_SHADER)
 end
 
 function ModelSceneNode:getModel()
