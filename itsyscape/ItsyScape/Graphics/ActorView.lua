@@ -141,7 +141,8 @@ function ActorView:playAnimation(slot, animation, time)
 	end
 
 	-- TODO load queue
-	a.definition = animation:load():getResource()
+	local definition = self.game:getResourceManager():loadCacheRef(animation)
+	a.definition = definition:getResource()
 	a.instance = a.definition:play(self.animatable)
 	a.time = time or 0
 
@@ -189,13 +190,14 @@ function ActorView:changeSkin(slot, priority, skin)
 				slot.instance = skin:load(self.body:getSkeleton())
 				slot.sceneNode = ModelSceneNode()
 
-				local model = slot.instance:getModel():load()
+				local model = self.game:getResourceManager():loadCacheRef(slot.instance:getModel())
 				model:getResource():bindSkeleton(self.body:getSkeleton())
 
 				slot.sceneNode:setModel(model)
 				local texture = slot.instance:getTexture()
 				if texture then
-					slot.sceneNode:getMaterial():setTextures(texture:load())
+					local textureResource = self.game:getResourceManager():loadCacheRef(texture)
+					slot.sceneNode:getMaterial():setTextures(textureResource)
 				end
 
 				slot.sceneNode:setParent(self.sceneNode)
