@@ -40,10 +40,17 @@ end
 function Callback:invoke(...)
 	local args = { n = select('#', ...), ... }
 
-	for i = 1, #self.handlers do
-		local handler = self.handlers[i]
+	for handler, h in pairs(self.handlers) do
 		function callHandler()
-			return handler(unpack(args, 1, args.n))
+			local prefixArgs = h[1]
+			local concatArgs = { n = args.n + prefixArgs.n }
+			for i = 1, prefixArgs.n do
+				concatArgs[i] = prefixArgs[i]
+			end
+			for i = 1, args.n do
+				concatArgs[i + prefixArgs.n] = args[i]
+			end
+			return handler(unpack(concatArgs, 1, concatArgs.n))
 		end
 
 		local success, result = xpcall(callHandler, debug.traceback)
@@ -62,13 +69,14 @@ end
 
 -- Registers a handler.
 --
--- handler is a function that is called when the callback is invoke. Any
+-- handler is a function that is called when the callback is invoked. Any
 -- arguments passed to Callback.invoke are propagated to the handler.
-function Callback:register(handler)
-	table.insert(self.handlers, handler)
-
-	local index = #self.handlers
-	self.handlers[handler] = index
+--
+-- Any extra arguments are passed to the handler when invoked before the arguments
+-- to invoke. In essence, take the extra arguments here as the 'prefix' and the
+-- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
+function Callback:register(handler, ...)
+	self.handlers[handler] = { index = index, { n = select('#', ...), ... } }
 
 	return index
 end
@@ -83,13 +91,13 @@ function Callback:unregister(handler)
 		local h = self.handlers[handler]
 		if h then
 			table.remove(self.handlers, handler)
-			self.handlers[h] = nil
+			self.handlers[h] = false
 		end
 	elseif type(handler) == 'function' then
 		local i = self.handlers[handler]
 		if i then
 			table.remove(self.handlers, i)
-			self.handlers[handler] = nil
+			self.handlers[handler] = false
 		end
 	end
 end
