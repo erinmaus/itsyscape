@@ -21,12 +21,12 @@ end
 -- resourceType must be derived from Resource.
 --
 -- Immediately loads the resource. Returns the resource.
-function ResourceManager:load(respourceType, filename, ...)
-	if not Class.isCompatibleType(respourceType, Resource) then
+function ResourceManager:load(resourceType, filename, ...)
+	if not Class.isDerived(resourceType, Resource) then
 		error("expected Resource-derived type")
 	end
 
-	local resourcesOfType = self.respourceType[resourceType] or {}
+	local resourcesOfType = self.resources[resourceType] or {}
 	if not resourcesOfType[filename] then
 		local resource = resourceType()
 		resource:loadFromFile(filename, self, ...)
@@ -40,7 +40,7 @@ end
 -- Like ResourceManager.load, but gets the resourceType and filename from the
 -- CacheRef.
 function ResourceManager:loadCacheRef(ref, ...)
-	self:load(ref:getResourceType(), ref:getFilename(), ...)
+	return self:load(ref:getResourceType(), ref:getFilename(), ...)
 end
 
 -- Queues a resource. Not yet implemented.
