@@ -59,6 +59,21 @@ function Class.isCompatibleType(a, b)
 	return false
 end
 
+-- Returns true if a (a type) is derived from b (a type), or is b; returns false
+-- otherwise.
+function Class.isDerived(a, b)
+	local t = a
+	while t ~= nil do
+		if t == b then
+			return true
+		else
+			t = getmetatable(t).__parent
+		end
+	end
+
+	return false
+end
+
 -- Creates a class, optionally from a parent.
 --
 -- To add a property or method to the class, add add the property or method to
