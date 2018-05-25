@@ -45,6 +45,11 @@ function Color:lerp(other, delta)
 	return self * (1 - delta) + other * delta
 end
 
+-- Gets the components of the color in the order red, green, blue, and alpha.
+function Color:get()
+	return self.r, self.g, self.b, self.a
+end
+
 -- Adds two colors, or a color and a scalar, clamping the result to 0 .. 1
 -- inclusive.
 function Metatable.__add(a, b)
