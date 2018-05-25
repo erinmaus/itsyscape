@@ -49,12 +49,12 @@ function ItemInstance:getQuantity()
 	if self.manager:isStackable(self.id) or self:isNoted() then
 		return self.quantity
 	else
-		self.quantity = 1
+		return 1
 	end
 end
 
 function ItemInstance:isStackable()
-	return self.manager:isStackable(self.id)
+	return self.manager:isStackable(self.id) or self.manager:isNoteable(self.id)
 end
 
 function ItemInstance:setQuantity(quantity)

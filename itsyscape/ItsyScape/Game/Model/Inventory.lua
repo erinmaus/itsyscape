@@ -14,7 +14,7 @@ function Inventory:new()
 	-- Nothing.
 end
 
--- Adds item 'item' to the inventory.
+-- Adds item 'item' to the inventory. Item should be an ItemInstance.
 function Inventory:add(item)
 	Class.ABSTRACT()
 end
