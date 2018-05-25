@@ -44,7 +44,7 @@ function LocalInventory:add(item)
 	for i = 1, #self.quantity do
 		local slot = self.items[i]
 		if slot == false then
-			self.items[i] = item
+			self.items[i] = item:clone()
 			return true
 		end
 	end
