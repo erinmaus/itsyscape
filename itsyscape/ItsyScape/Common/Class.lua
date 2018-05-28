@@ -84,6 +84,18 @@ local function __call(self, parent)
 	local Type = { __index = parent or {}, __parent = parent, __c = Class }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
+	Class._METATABLE = Metatable
+
+	-- Propagate metamethods.
+	--
+	-- This should only include standard Lua metamethods but oh well.
+	if parent then
+		for k, v in pairs(parent._METATABLE) do
+			if type(k) == 'string' and type(v) == 'function' then
+				Metatable[k] = v
+			end
+		end
+	end
 
 	function Type.__call(self, ...)
 		local result = setmetatable({}, Metatable)
