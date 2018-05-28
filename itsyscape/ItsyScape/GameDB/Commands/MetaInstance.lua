@@ -26,13 +26,13 @@ end
 
 function MetaInstance:instantiate(brochure)
 	if not self.instance then
-		self.instance = Mapp.Record(meta:getDefinition())
+		self.instance = Mapp.Record(self.definition)
 		for key, value in pairs(self.values) do
 			local v
 			if Class.isType(value, Action) then
-				v = Action:instantiate(brochure)
+				v = value:instantiate(brochure)
 			elseif Class.isType(value, Resource) then
-				v = Resource:instantiate(brochure)
+				v = value:instantiate(brochure)
 			else
 				v = value
 			end
