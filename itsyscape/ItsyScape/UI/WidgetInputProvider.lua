@@ -21,6 +21,20 @@ function WidgetInputProvider:new(root)
 	self.clickedWidgets = {}
 end
 
+function WidgetInputProvider:getFocusedWidget()
+	if self.focusedWidget then
+		if not self.focusedWidget:getIsFocused() then
+			self.focusedWidget = false
+		end
+	end
+
+	if self.focusedWidget then
+		return self.focusedWidget
+	else
+		return nil
+	end
+end
+
 function WidgetInputProvider:isBlocking(x, y)
 	return self:getWidgetUnderPoint(x, y) ~= nil
 end
@@ -73,8 +87,9 @@ function WidgetInputProvider:mousePress(x, y, button)
 
 	local focusedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
 	if focusedWidget ~= self.focusedWidget then
-		if self.focusedWidget then
-			self.focusedWidget:blur()
+		local oldFocusedWidget = self:getFocusedWidget()
+		if oldFocusedWidget then
+			oldFocusedWidget:blur()
 		end
 
 		self.focusedWidget = focusedWidget or false
@@ -122,8 +137,9 @@ end
 
 function WidgetInputProvider:tryFocusNext(widget)
 	if widget:getIsFocusable() then
-		if self.focusedWidget then
-			self.focusedWidget:blur()
+		local f = self:getFocusedWidget()
+		if f then
+			f:blur()
 		end
 		
 		widget:focus()
@@ -165,10 +181,13 @@ end
 
 function WidgetInputProvider:keyDown(key, ...)
 	local captured
-	if self.focusedWidget then
-		captured = self.focusedWidget:keyDown(key, ...)
-	else
-		captured = false
+	do
+		local f = self:getFocusedWidget()
+		if f then
+			captured = f:keyDown(key, ...)
+		else
+			captured = false
+		end
 	end
 
 	if not captured then
@@ -182,8 +201,9 @@ function WidgetInputProvider:keyDown(key, ...)
 end
 
 function WidgetInputProvider:keyUp(...)
-	if self.focusedWidget then
-		self.focusedWidget:keyUp(...)
+	local f = self:getFocusedWidget()
+	if f then
+		f:keyUp(...)
 	end
 end
 
