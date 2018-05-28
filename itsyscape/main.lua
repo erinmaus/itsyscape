@@ -28,6 +28,7 @@ local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
+local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 local Map = require "ItsyScape.World.Map"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local Path = require "ItsyScape.World.Path"
@@ -121,6 +122,8 @@ function love.load()
 	Instance.playerPreviousPosition = position
 	Instance.playerCurrentPosition = position
 
+	local widgetResources = WidgetResourceManager() 
+
 	Instance.UI = DraggablePanel()
 	Instance.UI:setSize(200, 200)
 	local button = Button()
@@ -134,12 +137,12 @@ function love.load()
 		local y = math.floor(math.random(0, map:getHeight() - 1)) + 0.5
 		player:teleport(Vector(x * map:getCellSize(), 2, y * map:getCellSize()))
 	end)
-	button:setStyle(ButtonStyle {
+	button:setStyle(ButtonStyle({
 		inactive = "Resources/Test/button.9.png",
 		hover = "Resources/Test/button-hover.9.png",
 		pressed = "Resources/Test/button-pressed.9.png",
 		color = { 1, 1, 1, 1 }
-	})
+	}, widgetResources))
 	Instance.UI:addChild(button)
 
 	Instance.WidgetInput = WidgetInputProvider(Instance.UI)
