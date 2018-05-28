@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Skill "Magic"
 ItsyScape.Resource.Skill "Attack"
 ItsyScape.Resource.Skill "Strength"
 ItsyScape.Resource.Skill "Defense"
