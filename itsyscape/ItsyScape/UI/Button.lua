@@ -43,6 +43,7 @@ end
 function Button:mouseRelease(x, y, button, ...)
 	if self.isPressed and self.isMouseOver then
 		self.onClick(self)
+		self:blur()
 	end
 
 	self.isPressed = false
