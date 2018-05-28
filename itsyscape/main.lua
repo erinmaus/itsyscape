@@ -138,7 +138,7 @@ function love.load()
 		inactive = "Resources/Test/button.9.png",
 		hover = "Resources/Test/button-hover.9.png",
 		pressed = "Resources/Test/button-pressed.9.png",
-		color = { 0, 0, 0, 1 }
+		color = { 1, 1, 1, 1 }
 	})
 	Instance.UI:addChild(button)
 
@@ -171,7 +171,6 @@ end
 
 function love.mousepressed(x, y, button)
 	if Instance.WidgetInput:isBlocking(x, y) then
-		print 'blocking'
 		Instance.WidgetInput:mousePress(x, y, button)
 	else
 		if button == 1 then
