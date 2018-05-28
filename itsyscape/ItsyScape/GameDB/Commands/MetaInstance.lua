@@ -8,7 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.GameDB.Commands.Action"
 local Pokeable = require "ItsyScape.GameDB.Commands.Pokeable"
 local Resource = require "ItsyScape.GameDB.Commands.Resource"

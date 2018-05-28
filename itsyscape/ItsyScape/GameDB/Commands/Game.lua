@@ -8,7 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Mapp = require "ItsyScape.GameDB.Mapp"
 local ActionCategory = require "ItsyScape.GameDB.Commands.ActionCategory"
 local MetaCategory = require "ItsyScape.GameDB.Commands.MetaCategory"
 local ResourceCategory = require "ItsyScape.GameDB.Commands.ResourceCategory"
@@ -56,6 +55,21 @@ function Game:getName()
 	return self.name
 end
 
+-- Instantiates the GameDB.
+function Game:instantiate(brochure)
+	for _, resources in self.Resource:iterate() do
+		for _, resource in pairs(resources) do
+			resource:instantiate(brochure)
+		end
+	end
+
+	for _, meta in self.Meta:iterate() do
+		for _, m in ipairs(meta) do
+			m:instantiate(brochure)
+		end
+	end
+end
+
 --------------------------------------------------------------------------------
 -- These are internal methods. They add new fields to Meta, Action, and
 -- Resource, among other possible background things.
@@ -70,7 +84,7 @@ function Game:addActionType(actionType)
 		error(string.format("action type '%s' already defined", actionType:getName()), 2)
 	end
 
-	self.actionTypes[actionType:getName() = actionType
+	self.actionTypes[actionType:getName()] = actionType
 end
 
 function Game:getActionType(name)
@@ -86,7 +100,7 @@ function Game:addResourceType(resourceType)
 		error(string.format("resource type '%s' already defined", resourceType:getName()), 2)
 	end
 
-	self.resourceTypes[resourceType:getName() = resourceType
+	self.resourceTypes[resourceType:getName()] = resourceType
 end
 
 function Game:getResourceType(name)
@@ -98,7 +112,7 @@ function Game:getResourceType(name)
 end
 
 function Game:addMeta(meta)
-	self.Meta:add(meta:getName(), meta)
+	self.Meta:add(meta)
 end
 
 return Game

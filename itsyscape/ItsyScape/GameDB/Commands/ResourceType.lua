@@ -8,8 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Game = require "ItsyScape.GameDB.Commands.Game"
 local Pokeable = require "ItsyScape.GameDB.Commands.Pokeable"
-local Game = require "ItsyScape.GameDB.Game"
 
 -- Constructs a new Mapp.ResourceType in the Brochure.
 --
@@ -22,7 +22,7 @@ function ResourceType:new(name)
 
 	local game = Game.getGame()
 	game:addResourceType(self)
-	game.Resources:add(name)
+	game.Resource:add(name)
 end
 
 function ResourceType:getName()

@@ -20,6 +20,7 @@ local Action = Class(Pokeable)
 function Action:new(type)
 	Pokeable.new(self)
 
+	self.type = type
 	self.inputs = {}
 	self.outputs = {}
 	self.requirements = {}
@@ -46,7 +47,7 @@ function Action:poke(t)
 
 	for i = 1, #t do
 		if Class.isType(t[i], Input) then
-			table.insert(self.inputs, t[i]])
+			table.insert(self.inputs, t[i])
 		elseif Class.isType(t[i], Output) then
 			table.insert(self.outputs, t[i])
 		elseif Class.isType(t[i], Requirement) then
@@ -60,7 +61,7 @@ end
 -- Instantiates the Action, connecting all constraints (if any).
 function Action:instantiate(brochure)
 	if not self.instance then
-		self.instance = brochure:createAction(self.type)
+		self.instance = brochure:createAction(self.type:instantiate(brochure))
 
 		for i = 1, #self.inputs do
 			local input = self.inputs[i]
