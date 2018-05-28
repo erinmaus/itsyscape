@@ -17,7 +17,7 @@ local MetaInstance = require "ItsyScape.GameDB.Commands.MetaInstance"
 -- corresponding field.
 --
 -- For example, Meta "Foo" { ... } will created a field "Foo". Then, to
--- construct a Foo instance, simply call Game.Meta "Foo" { ... }.
+-- construct a Foo instance, simply call Game.Meta.Foo { ... }.
 local MetaCategory = Class()
 
 function MetaCategory:new(game)
@@ -30,7 +30,7 @@ end
 -- It is an error to create multiple Meta records with the same name.
 function MetaCategory:add(meta)
 	local name = meta:getName()
-	local records = {}
+	local records = { definition = meta }
 
 	assert(self[name] == nil, string.format("'%s' already exists", name))
 
@@ -38,7 +38,7 @@ function MetaCategory:add(meta)
 		local instance = MetaInstance(meta)
 		table.insert(records, instance)
 
-		return instance
+		return instance(t)
 	end
 
 	self._metas[name] = records
