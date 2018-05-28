@@ -34,6 +34,22 @@ local Path = require "ItsyScape.World.Path"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local TileSet = require "ItsyScape.World.TileSet"
 
+do
+	local cpath = package.cpath
+	local sourceDirectory = love.filesystem.getSourceBaseDirectory()
+	package.cpath = string.format(
+		"%s/ext/?.dll;%s/ext/?.so;%s",
+		sourceDirectory,
+		sourceDirectory,
+		cpath)
+end
+
+do
+	local GameDB = require "ItsyScape.GameDB.GameDB"
+	local g = GameDB.create("Resources/Game/DB/Init.lua", ":memory:")
+	print "Success!"
+end
+
 local Instance = {}
 local Input = {
 	isCameraDragging = false
