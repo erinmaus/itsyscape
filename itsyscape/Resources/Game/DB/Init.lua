@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Curve = require "ItsyScape.Game.Curve"
 
 Game "ItsyScape"
 	ResourceType "Object"
@@ -28,13 +29,15 @@ Game "ItsyScape"
 			StrengthRanged = Meta.TYPE_INTEGER,
 			StrengthMagic = Meta.TYPE_INTEGER,
 			Prayer = Meta.TYPE_INTEGER,
-			Item = Meta.TYPE_RESOURCE
+			Resource = Meta.TYPE_RESOURCE
 	}
 
 	Meta "Item" {
 		Name = Meta.TYPE_TEXT,
 		Value = Meta.TYPE_INTEGER,
-		Weight = Meta.TYPE_REAL
+		Weight = Meta.TYPE_REAL,
+		Untradeable = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
 	}
 
 	Meta "ItemTag" {
@@ -44,50 +47,54 @@ Game "ItsyScape"
 
 	ActionType "Equip"
 
-	include "Resources/Game/DB/Skills.lua"
-
-function ItsyScape.Utility.xpForLevel(level)
-	-- TODO
-	return 1
-end
-
-function ItsyScape.Utility.xpForResource(item)
-	-- TODO
-	return 1
-end
-
-function ItsyScape.Utility.valueForItem(tier)
-	-- TODO
-	return 1
-end
+ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
+ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
+ItsyScape.Utility.xpForResource = function() return 1 end -- TODO
 
 function ItsyScape.Utility.tag(Item, value)
-	ItsyScape.Meta "ItemTag" {
+	ItsyScape.Meta.ItemTag {
 		Value = value,
 		Resource = Item
 	}
 end
 
-ItsyScape.Resource.Item "Iron full helm" {
-	ItsyScape.Action.Smith() {
-		Input {
-			Resource = ItsyScape.Resource.Item "Iron bar",
-			Count = 2
-		},
+include "Resources/Game/DB/Skills.lua"
 
-		Output {
-			Resource = ItsyScape.Resource.Item "Iron full helm",
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Smithing",
-			Count = 50
-		},
-
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Smithing",
-			Count = ItsyScape.Utility.xpForLevel(22)
-		},
+do
+	ItsyScape.Resource.Item "AmuletOfYendor" {
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Magic",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			}
+		}
 	}
-}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = 50,
+		AccuracySlash = 50,
+		AccuracyCrush = 50,
+		AccuracyMagic = 50,
+		AccuracyRanged = 50,
+		DefenceStab = 50,
+		DefenceSlash = 50,
+		DefenceCrush = 50,
+		DefenceMagic = 50,
+		DefenceRanged = 50,
+		StrengthMelee = 50,
+		StrengthRanged = 50,
+		StrengthMagic = 50,
+		Prayer = 50,
+		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
+	}
+
+	ItsyScape.Meta.Item {
+		Name = "Amulet of yendor",
+		Value = ItsyScape.Utility.valueForItem(120),
+		Weight = -10,
+		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
+	}
+
+	ItsyScape.Utility.tag(ItsyScape.Resource.Item "AmuletOfYendor", "x_debug")
+end
