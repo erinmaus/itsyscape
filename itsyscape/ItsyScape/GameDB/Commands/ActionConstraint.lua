@@ -30,6 +30,14 @@ function ActionConstraint:new(t)
 	end
 end
 
+function ActionConstraint:getResource()
+	return self.resource
+end
+
+function ActionConstraint:getCount()
+	return self.count
+end
+
 -- Defines the constraint.
 --
 -- 't' can contain:

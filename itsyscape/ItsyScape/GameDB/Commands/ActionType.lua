@@ -8,8 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Game = require "ItsyScape.GameDB.Commands.Game"
 local Pokeable = require "ItsyScape.GameDB.Commands.Pokeable"
-local Game = require "ItsyScape.GameDB.Game"
 
 -- Constructs a new Mapp.ActionDefinition in the Brochure.
 --
@@ -22,7 +22,7 @@ function ActionType:new(name)
 
 	local game = Game.getGame()
 	game:addActionType(self)
-	game.Actions:add(name)
+	game.Action:add(name)
 end
 
 function ActionType:getName()

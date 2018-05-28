@@ -57,6 +57,8 @@ end
 -- See Pokeable.poke.
 function Metatable:__call(...)
 	self:poke(...)
+
+	return self
 end
 
 return Pokeable

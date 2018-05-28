@@ -38,6 +38,8 @@ function Resource:poke(t)
 		self.isSingleton = t.isSingleton or false
 	end
 
+	print('#t', #t)
+
 	for i = 1, #t do
 		table.insert(self.actions, t[i])
 	end
@@ -46,7 +48,7 @@ end
 function Resource:instantiate(brochure)
 	if not self.instance then
 		self.instance = brochure:createResource(
-			self.type,
+			self.type:instantiate(brochure),
 			self.name,
 			self.isSingleton)
 
