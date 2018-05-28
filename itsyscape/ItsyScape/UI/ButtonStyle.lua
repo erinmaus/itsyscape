@@ -13,22 +13,22 @@ local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
 local patchy = require "patchy"
 
 local ButtonStyle = Class(WidgetStyle)
-function ButtonStyle:new(t)
+function ButtonStyle:new(t, resources)
 	self.images = {}
 	if t.inactive then
-		self.images['inactive'] = patchy.load(t.inactive)
+		self.images['inactive'] = resources:load(patchy.load, t.inactive)
 	else
 		self.images['inactive'] = false
 	end
 
 	if t.hover then
-		self.images['hover'] = patchy.load(t.hover)
+		self.images['hover'] = resources:load(patchy.load, t.hover)
 	else
 		self.images['hover'] = false
 	end
 
 	if t.pressed then
-		self.images['pressed'] = patchy.load(t.pressed)
+		self.images['pressed'] = resources:load(patchy.load, t.pressed)
 	else
 		self.images['pressed'] = false
 	end
@@ -40,7 +40,7 @@ function ButtonStyle:new(t)
 	end
 
 	if t.font then
-		self.font = love.graphics.newFont(t.font, t.fontSize or 12)
+		self.font = resources:load(love.graphics.newFont, t.font, t.fontSize or 12)
 	else
 		self.font = false
 	end
@@ -49,7 +49,7 @@ function ButtonStyle:new(t)
 	self.textY = t.textY or 0.5
 
 	if t.icon and type(t.icon) == 'table' and t.icon.filename then
-		self.icon = love.graphics.newImage(t.icon.filename)
+		self.icon = resources:load(love.graphics.newImage, t.icon.filename)
 		self.iconX = t.icon.x or 0.0
 		self.iconY = t.icon.y or 0.5
 		self.iconWidth = t.icon.width or self.icon:getWidth()
