@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Init.lua
+-- ItsyScape/Game/Curve.lua
 --
 -- This file is a part of ItsyScape.
 --
