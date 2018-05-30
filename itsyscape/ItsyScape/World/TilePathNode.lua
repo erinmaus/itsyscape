@@ -15,9 +15,17 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TilePathNode = Class(PathNode)
 
 function TilePathNode:activate(peep)
+	PathNode.activate(self, peep)
+
 	local _, c = peep:addBehavior(TargetTileBehavior)
 	c.pathNode = self
 	c.nextPathNode = self:getNextNode()
+end
+
+function TilePathNode:interrupt(peep)
+	PathNode.interrupt(self, peep)
+
+	peep:removeBehavior(TargetTileBehavior)
 end
 
 return TilePathNode
