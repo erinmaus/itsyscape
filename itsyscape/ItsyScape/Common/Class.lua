@@ -85,6 +85,7 @@ local function __call(self, parent)
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
 	Class._METATABLE = Metatable
+	Class._PARENT = parent or false
 
 	-- Propagate metamethods.
 	--
