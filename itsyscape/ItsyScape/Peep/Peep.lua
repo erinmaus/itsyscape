@@ -10,6 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Behavior = require "ItsyScape.Peep.Behavior"
+local CommandQueue = require "ItsyScape.Peep.CommandQueue"
 
 -- Peep type. All objects (static or otherwise) are instances of this type.
 --
@@ -22,6 +23,9 @@ local Peep = Class()
 -- Total number of Peeps created.
 Peep.PEEPS_TALLY = 1
 
+-- Default channel.
+Peep.DEFAULT_CHANNEL = 1
+
 function Peep:new(name)
 	self.behaviors = {}
 	self.onBehaviorAdded = Callback()
@@ -33,6 +37,31 @@ function Peep:new(name)
 	Peep.PEEPS_TALLY = Peep.PEEPS_TALLY + 1
 
 	self.isReady = false
+
+	self.commandQueues = {
+		[Peep.DEFAULT_CHANNEL] = CommandQueue(self)
+	}
+end
+
+-- Returns the command queue on the provided channel.
+--
+-- Ideally 'channel' should be an integer though it doesn't matter.
+--
+-- Don't keep the reference around longer than necessary--if a channel is
+-- finished by the time the Peep updates, the queue is discardded.
+--
+-- 'DEFAULT_CHANNEL' is a reserved value. It follows slightly different
+-- semantics than any other channel: references to it are always valid.
+function Peep:getCommandQueue(channel)
+	channel = channel or Peep.DEFAULT_CHANNEL
+
+	local queue = self.commandQueues[channel]
+	if not queue then
+		queue = CommandQueue(self)
+		self.commandQueues[channel] = queue
+	end
+
+	return queue
 end
 
 -- Returns the name of the Peep.
@@ -163,6 +192,10 @@ function Peep:update(director, game)
 	if not self.isReady then
 		self:ready(director, game)
 		self.isReady = true
+	end
+
+	for _, queue in pairs(self.commandQueues) do
+		queue:update(game:getDelta())
 	end
 end
 

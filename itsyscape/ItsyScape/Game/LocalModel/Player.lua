@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Player = require "ItsyScape.Game.Model.Player"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
+local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local Player = Class()
 
@@ -48,8 +49,8 @@ function Player:walk(i, j, k)
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j })
 	if path then
-		path:activate(peep)
-		return true
+		local queue = self.actor:getPeep():getCommandQueue()
+		return queue:interrupt(ExecutePathCommand(path))
 	else
 		return false
 	end

@@ -7,7 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 
 local PathNode = Class()
@@ -22,6 +22,8 @@ function PathNode:new(i, j, layer)
 	self.j = j or 1
 	self.layer = layer or 1
 	self.next = false
+	self.onBegin = Callback()
+	self.onEnd = Callback()
 end
 
 -- Sets the next node, or unsets it if node is falsey.
@@ -56,8 +58,24 @@ end
 --
 -- A simple tile, for example, would make the peep walk, while a shortcut would
 -- make it teleport.
+--
+-- Invokes the 'onBegin' callback with 'peep'.
 function PathNode:activate(peep, nextNode)
-	Class.ABSTRACT()
+	self.onBegin(self, peep)
+end
+
+-- Called when the node is interrupted.
+--
+-- Should not invoke onEnd.
+function PathNode:interrupt(peep)
+	-- Nothing.
+end
+
+-- Called when the node is done.
+--
+-- Invokes onEnd callback with the 'peep'.
+function PathNode:finish(peep)
+	self.onEnd(self, peep)
 end
 
 return PathNode
