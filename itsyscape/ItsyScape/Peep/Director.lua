@@ -24,6 +24,16 @@ function Director:new()
 	self._previewPeep = function(peep, behavior)
 		self.pendingPeeps[peep] = true
 	end
+
+	self.maps = {}
+end
+
+function Director:setMap(layer, map)
+	self.maps[layer] = map
+end
+
+function Director:getMap(layer)
+	return self.maps[layer]
 end
 
 -- Gets the game instance (i.e., ItsyScape.Game.Model.Game).
@@ -71,6 +81,8 @@ function Director:addPeep(peepType, ...)
 
 	self.peeps[peep] = true
 	self.pendingPeeps[peep] = true
+
+	peep:assign(self)
 
 	return peep
 end

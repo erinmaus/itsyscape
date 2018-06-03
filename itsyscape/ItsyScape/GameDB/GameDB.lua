@@ -64,15 +64,47 @@ function GameDB.create(inputFilename, outputFilename)
 	brochure:create()
 	game:instantiate(brochure)
 
-	return GameDB(brochure)
+	return GameDB(brochure, game:getRecordDefinitions())
 end
 
-function GameDB:new(brochure)
+function GameDB:new(brochure, definitions)
 	self.brochure = brochure
+	self.definitions = {}
+
+	for key, value in pairs(definitions) do
+		if type(key) == 'string' then
+			self.definitions[key] = value
+		end
+	end
 end
 
 function GameDB:getBrochure()
 	return self.brochure
+end
+
+function GameDB:getRecordDefinition(name)
+	return self.definitions[name]
+end
+
+function GameDB:getRecords(name, t, limit)
+	local definition = self:getRecordDefinition(name)
+	local query = Mapp.Query(definition)
+	for k, v in pairs(t) do
+		query:set(k, v)
+	end
+
+	return self.brochure:select(definition, query, limit)
+end
+
+function GameDB:getResource(name, type)
+	local resourceType = Mapp.ResourceType()
+	if self.brochure:tryGetResourceType("Item", resourceType) then
+		for resource in self.brochure:findResourcesByNameAndType(name, resourceType) do
+			return resource
+		end
+	end
+
+	return nil
 end
 
 return GameDB

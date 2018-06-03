@@ -12,106 +12,76 @@ local ItemInstance = require "ItsyScape.Game.ItemInstance"
 
 local ItemManager = Class()
 
-function ItemManager:new(d)
+function ItemManager:new(gameDB)
 	self.items = {}
-
-	if type(d) == 'string' then
-		self:loadFromFile(d)
-	elseif type(d) == 'table' then
-		self:loadFromTable(d)
-	end
+	self.logic = {}
+	self.gameDB = gameDB
 end
 
-function ItemManager:loadFromFile(filename)
-	local data = "return " .. love.filesystem.read(filename)
-	local chunk = assert(loadstring(data))
-	local result = setfenv(chunk, {})() or {}
-
-	self:loadFromTable(result)
-end
-
-ItemManager.COLUMN_ID = 1
-ItemManager.COLUMN_NOTEABLE = 2
-ItemManager.COLUMN_STACKABLE = 3
-ItemManager.COLUMN_USERDATA = 4
-
-function ItemManager:loadFromTable(t)
-	for i = 1, #t do
-		local id, noteable, stackable, userdata = unpack(t[i])
-
-		self:addItem(
-			id,
-			{
-				noteable = noteable,
-				stackable = stackable,
-				userdata = userdata
-			})
+function ItemManager:getItemRecord(id)
+	local resource = self.gameDB:getResource(id, "Item")
+	if resource then
+		return self.gameDB:getRecords("Item", { Resource = resource }, 1)[1]
 	end
-end
-
--- Adds an item with the specified id and attributes.
---
--- Attributes can be:
---   * noteable (boolean): whether the item can be noted or not. Defaults to
---     true.
---   * stackable (boolean): whether the item is stackable. Defaults to true.
---   * userdata (boolean): whether the item has userdata. Defaults to false.
---
--- If userdata is true, noteable and stackable must be false. This is enforced.
-function ItemManager:addItem(id, t)
-	local item = self.items[id] or {}
-
-	function toBoolean(value)
-		if value == nil then
-			return false
-		else
-			if value ~= false then
-				return true
-			else
-				return false
-			end
-		end
-	end
-
-	item.noteable = toBoolean(t.noteable)
-	item.stackable = toBoolean(t.noteable)
-	item.userdata = toBoolean(t.userdata)
-
-	-- If an item has userdata, it can't be notable nor stackable.
-	-- How would that work?
-	if item.userdata then
-		item.noteable = false
-		item.stackable = false
-	end
-
-	self.items[id] = item
 end
 
 function ItemManager:isNoteable(id)
-	local item = self.items[id]
+	local item = self:getItemRecord(id)
 	if not item then
 		return true
 	else
-		return item.noteable
+		return item:get("Unnoteable") == 0
 	end
 end
 
 function ItemManager:isStackable(id)
-	local item = self.items[id]
+	local item = self:getItemRecord(id)
 	if not item then
-		return true
+		return false
 	else
-		return item.stackable
+		print(id, "stackable", item:get("Stackable") ~= 0)
+		return item:get("Stackable") ~= 0
 	end
 end
 
 function ItemManager:hasUserdata(id)
-	local item = self.items[id]
+	local item = self:getItemRecord(id)
 	if not item then
 		return false
 	else
-		return item.userdata
+		return item:get("HasUserdata") ~= 0
 	end
+end
+
+function ItemManager:isTradeable(id)
+	local item = self:getItemRecord(id)
+	if not item then
+		return false
+	else
+		return item:get("Untradeable") ~= 0
+	end
+end
+
+function ItemManager:getLogic(id)
+	if not self.logic[id] then
+		local Logic
+		do
+			local file = string.format("Resource.Game.Item.%s.Logic", id)
+			local s, r = pcall(require, file)
+			if s then
+				Logic = r
+			else
+				Logic = function(manager)
+					local Type = require "ItsyScape.Game.Item"
+					return Type(id, manager)
+				end
+			end
+		end
+
+		self.logic[id] = Logic(self)
+	end
+
+	return self.logic[id]
 end
 
 function ItemManager:instantiate(id)
