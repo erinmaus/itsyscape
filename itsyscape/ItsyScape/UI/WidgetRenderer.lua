@@ -43,7 +43,7 @@ function WidgetRenderer:draw(widget)
 
 	local color = { love.graphics.getColor() }
 	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.rectangle('fill', 0, 0, widget:getSize())
+	--love.graphics.rectangle('fill', 0, 0, widget:getSize())
 	love.graphics.setColor(color)
 end
 

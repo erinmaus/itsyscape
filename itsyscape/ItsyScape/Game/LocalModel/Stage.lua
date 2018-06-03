@@ -66,6 +66,7 @@ function LocalStage:newMap(width, height, layer, tileSetID)
 
 	self.map[layer] = Map(width, height, Stage.CELL_SIZE)
 	self.onLoadMap(self, self.map[layer], layer, tileSetID)
+	self.game:getDirector():setMap(layer, map)
 
 	self:updateMap(layer)
 end
@@ -80,6 +81,7 @@ function LocalStage:unloadMap(layer)
 	if self.map[layer] then
 		self.onUnloadMap(self, self.map[layer], layer)
 		self.map[layer] = nil
+		self.game:getDirector():setMap(layer, nil)
 	end
 end
 

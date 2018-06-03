@@ -14,7 +14,7 @@ local ItemInstance = Class()
 function ItemInstance:new(id, manager)
 	self.id = id
 	self.manager = manager
-	self.quantity = 1
+	self.count = 1
 	self.noted = false
 	self.userdata = {}
 end
@@ -45,9 +45,9 @@ function ItemInstance:getUserdata()
 	end
 end
 
-function ItemInstance:getQuantity()
+function ItemInstance:getCount()
 	if self.manager:isStackable(self.id) or self:isNoted() then
-		return self.quantity
+		return self.count
 	else
 		return 1
 	end
@@ -57,17 +57,17 @@ function ItemInstance:isStackable()
 	return self.manager:isStackable(self.id) or self.manager:isNoteable(self.id)
 end
 
-function ItemInstance:setQuantity(quantity)
+function ItemInstance:setCount(count)
 	if self:isNoted() or self.manager:isStackable(self.id) then
-		self.quantity = quantity or 1
+		self.count = math.max(math.floor(count or 1), 1)
 	end
 end
 
 function ItemInstance:clone()
 	local instance = ItemInstance(self.id, self.manager)
-	instance.quantity = quantity
+	instance.count = count
 	instance.noted = self.noted
-	instance.quantity = self.quantity
+	instance.count = self.count
 	-- TODO clone userdata
 	instance.userdata = self.userdata
 

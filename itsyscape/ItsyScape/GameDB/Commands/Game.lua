@@ -55,6 +55,16 @@ function Game:getName()
 	return self.name
 end
 
+-- Gets the underlying record definitions.
+function Game:getRecordDefinitions()
+	local definitions = {}
+	for name, meta in self.Meta:iterate() do
+		definitions[name] = meta.definition.definition
+	end
+
+	return definitions
+end
+
 -- Instantiates the GameDB.
 function Game:instantiate(brochure)
 	for _, metas in self.Meta:iterate() do
@@ -76,6 +86,8 @@ function Game:instantiate(brochure)
 			m:instantiate(brochure)
 		end
 	end
+
+	return true
 end
 
 --------------------------------------------------------------------------------

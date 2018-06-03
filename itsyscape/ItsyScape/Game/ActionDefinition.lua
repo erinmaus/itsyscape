@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/DraggablePanel.lua
+-- ItsyScape/Game/ActionDefinition.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,18 +8,20 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
-local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 
-local ButtonRenderer = Class(WidgetRenderer)
+local ActionDefinition = Class()
 
-function ButtonRenderer:draw(widget)
-	self:visit(widget)
-
-	local style = widget:getStyle()
-	if style and Class.isCompatibleType(style, ButtonStyle) then
-		style:draw(widget)
-	end
+function ActionDefinition:new(verb, id)
+	self.verb = verb or "???"
+	self.id = id or false
 end
 
-return ButtonRenderer
+function ActionDefinition:getVerb()
+	return self.verb
+end
+
+function ActionDefinition:getID()
+	return self.id
+end
+
+return ActionDefinition

@@ -78,6 +78,20 @@ function Map:getTile(i, j)
 	return self.tiles[j * self.width + i], i, j
 end
 
+-- Gets the tile position at (x, *, z).
+--
+-- Returns (nil, nil) if (x, z) are out of bounds.
+function Map:toTile(x, z)
+	i = math.floor(x / self.cellSize) + 1
+	j = math.floor(z / self.cellSize) + 1
+
+	if i < 0 or j < 0 or i > self.width or j > self.height then
+		return nil, nil
+	else
+		return i, j
+	end
+end
+
 -- Gets a tile at (x, *, z).
 --
 -- If x or z are outside the bounds of the heightmap, they are clamped to the

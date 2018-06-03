@@ -52,7 +52,9 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
 	   y >= py + wy and y < py + wy + wh
 	then
 		local sx, sy = widget:getScroll()
-		for _, w in widget:iterate() do
+
+		for i = #widget.children, 1, -1 do
+			local w = widget.children[i]
 			local f = self:getWidgetUnderPoint(
 				x, y,
 				px + wx - sx,

@@ -41,6 +41,20 @@ function Peep:new(name)
 	self.commandQueues = {
 		[Peep.DEFAULT_CHANNEL] = CommandQueue(self)
 	}
+
+	self.director = false
+end
+
+-- Assigns a director to this peep.
+--
+-- This is immediately called after the constructor by Good(tm) directors.
+function Peep:assign(director)
+	self.director = director
+end
+
+-- Gets the director this Peep was assigned to.
+function Peep:getDirector()
+	return self.director
 end
 
 -- Returns the command queue on the provided channel.

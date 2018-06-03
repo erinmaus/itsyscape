@@ -37,6 +37,9 @@ Game "ItsyScape"
 		Value = Meta.TYPE_INTEGER,
 		Weight = Meta.TYPE_REAL,
 		Untradeable = Meta.TYPE_INTEGER,
+		Unnoteable = Meta.TYPE_INTEGER,
+		Stackable = Meta.TYPE_INTEGER,
+		HasUserdata = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
