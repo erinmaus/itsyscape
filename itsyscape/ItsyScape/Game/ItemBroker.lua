@@ -331,14 +331,20 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
 
+		local s, r = pcall(source.onTransferFrom, source, item, count, purpose)
+		if not s then
+			io.stderr:write('error (onTransferFrom): ',  r, '\n')
+		end
+
 		if count == item:getCount() then
 			self.broker:removeItem(item)
 		else
 			item:setCount(item:getCount() - count)
 		end
 
-		local s, r = pcall(destination.onTransfer, destination, destinationItem, source, count, purpose)
+		s, r = pcall(destination.onTransferTo, destination, destinationItem, source, count, purpose)
 		if not s then
+			io.stderr:write('error (onTransferTo):', r, '\n')
 			return false, r
 		else
 			return true

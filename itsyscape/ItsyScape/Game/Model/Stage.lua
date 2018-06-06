@@ -24,6 +24,8 @@ function Stage:new()
 	self.onMapModified = Callback()
 	self.onActorSpawned = Callback()
 	self.onActorKilled = Callback()
+	self.onDropItem = Callback()
+	self.onTakeItem = Callback()
 end
 
 -- Spawns an Actor.

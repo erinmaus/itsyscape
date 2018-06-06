@@ -13,8 +13,10 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local ModelSceneNode = Class(SceneNode)
 ModelSceneNode.DEFAULT_SHADER = ShaderResource()
+ModelSceneNode.STATIC_SHADER = ShaderResource()
 do
 	ModelSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/SkinnedModel")
+	ModelSceneNode.STATIC_SHADER:loadFromFile("Resources/Shaders/StaticModel")
 end
 
 function ModelSceneNode:new()

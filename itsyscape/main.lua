@@ -62,6 +62,16 @@ function love.load()
 	Instance.GameView:getRenderer():setCamera(Instance.Camera)
 	Instance.UIView = UIView(Instance.Game)
 
+	Instance.Light = DirectionalLightSceneNode()
+	do
+		Instance.Light:setDirection(-Instance.Camera:getForward())
+		Instance.Light:setParent(Instance.GameView:getScene())
+		
+		local ambient = AmbientLightSceneNode()
+		ambient:setAmbience(0.4)
+		ambient:setParent(Instance.GameView:getScene())
+	end
+
 	Instance.Game:getStage():newMap(8, 8, 1)
 	local map = Instance.Game:getStage():getMap(1)
 	for j = 1, map:getHeight() do
@@ -135,6 +145,8 @@ function love.update(delta)
 		-- Store the previous frame time.
 		Instance.previousTickTime = love.timer.getTime()
 	end
+
+	Instance.Light:setDirection(-Instance.Camera:getStrafeForward())
 
 	Instance.GameView:update(delta)
 	Instance.UIView:update(delta)

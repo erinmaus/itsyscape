@@ -73,7 +73,7 @@ function InventoryProvider:onSpawn(item, count)
 	-- Nothing.
 end
 
--- Called when an item is transferred during a transaction.
+-- Called when an item is transferred to this provider during a transaction.
 --
 -- 'item' is the ItemInstance of the transferred item. 'count' is the number of
 -- items that were transferred. (This will be different from item.getCount() if
@@ -84,7 +84,20 @@ end
 -- 'purpose' is a special string that can be, for example, 'trade' or 'drop'.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onTransfer(item, source, count, purpose)
+function InventoryProvider:onTransferTo(item, source, count, purpose)
+	-- Nothing.
+end
+
+-- Called when an item is transferred from this provider during a transaction.
+--
+-- 'item' is the ItemInstance of the transferred item. 'count' is the number of
+-- items that were transferred. (This will be different from item.getCount() if
+-- the former).
+--
+-- 'purpose' is a special string that can be, for example, 'trade' or 'drop'.
+--
+-- If this method fails, the transaction still proceeds.
+function InventoryProvider:onTransferFrom(item, count, purpose)
 	-- Nothing.
 end
 
