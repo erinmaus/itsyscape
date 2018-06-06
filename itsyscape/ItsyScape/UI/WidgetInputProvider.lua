@@ -36,7 +36,7 @@ function WidgetInputProvider:getFocusedWidget()
 end
 
 function WidgetInputProvider:isBlocking(x, y)
-	return self:getWidgetUnderPoint(x, y) ~= nil
+	return self:getWidgetUnderPoint(x, y) ~= self.root
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
@@ -77,14 +77,14 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
 end
 
 function WidgetInputProvider:mousePress(x, y, button)
-	local widget = self:getWidgetUnderPoint(x, y)
+	local function f(w)
+		return w:getIsFocusable()
+	end
+
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
 	if widget then
 		self.clickedWidgets[button] = widget
 		widget:mousePress(x, y, button)
-	end
-
-	local function f(w)
-		return w:getIsFocusable()
 	end
 
 	local focusedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
@@ -98,7 +98,7 @@ function WidgetInputProvider:mousePress(x, y, button)
 	end
 
 	if focusedWidget then
-		focusedWidget:focus()
+		focusedWidget:focus('click')
 	end
 end
 
@@ -137,14 +137,14 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 	end
 end
 
-function WidgetInputProvider:tryFocusNext(widget)
+function WidgetInputProvider:tryFocusNext(widget, e)
 	if widget:getIsFocusable() then
 		local f = self:getFocusedWidget()
 		if f then
 			f:blur()
 		end
 		
-		widget:focus()
+		widget:focus(e)
 		self.focusedWidget = widget
 
 		return true
@@ -157,10 +157,10 @@ function WidgetInputProvider:tryFocusNext(widget)
 	end
 end
 
-function WidgetInputProvider:focusNext(w)
+function WidgetInputProvider:focusNext(w, e)
 	w = w or self.root
 
-	if self:tryFocusNext(w) then
+	if self:tryFocusNext(w, e) then
 		return true
 	elseif w:getParent() then
 		local p = w:getParent()
@@ -171,7 +171,7 @@ function WidgetInputProvider:focusNext(w)
 					passedFocus = true
 				end
 			else
-				if self:focusNext(child) then
+				if self:focusNext(child, e) then
 					return true
 				end
 			end
@@ -194,7 +194,7 @@ function WidgetInputProvider:keyDown(key, ...)
 
 	if not captured then
 		if key == 'tab' then
-			self:focusNext(self.focusedWidget)
+			self:focusNext(self.focusedWidget, 'key')
 		elseif key == 'escape' and self.focusedWidget then
 			self.focusedWidget:blur()
 			self.focusedWidget = false

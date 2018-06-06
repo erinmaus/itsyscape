@@ -12,8 +12,8 @@ local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 
 local ItemIconRenderer = Class(WidgetRenderer)
 
-function ItemIconRenderer:new()
-	WidgetRenderer.new(self)
+function ItemIconRenderer:new(resources)
+	WidgetRenderer.new(self, resources)
 
 	self.icons = {}
 	self.font = love.graphics.newFont("Resources/Renderers/Widget/ItemIcon/Font.ttf", 18)
@@ -38,24 +38,20 @@ function ItemIconRenderer:stop()
 	end
 end
 
-function ItemIconRenderer:draw(widget)
+function ItemIconRenderer:draw(widget, state)
 	self:visit(widget)
 
 	love.graphics.setColor(1, 1, 1, 1)
 
-	if widget:getItemIsNoted() then
+	if widget:get("itemIsNoted", state) then
 		-- TODO note icon
 		love.graphics.setColor(0.9, 0.82, 0.5)
 		love.graphics.rectangle('fill', 0, 0, widget:getSize())
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 
-	local itemID = widget:getItemID()
-	if not itemID then
-		love.graphics.setColor(1, 0, 0, 1)
-		love.graphics.rectangle('fill', 0, 0, widget:getSize())
-		love.graphics.setColor(1, 1, 1, 1)
-	else
+	local itemID = widget:get("itemID", state)
+	if itemID then
 		if not self.icons[itemID] then
 			-- TODO async load
 			local filename = string.format("Resources/Game/Items/%s/Icon.png", itemID)
@@ -74,7 +70,7 @@ function ItemIconRenderer:draw(widget)
 		love.graphics.draw(self.icons[itemID], 0, 0, 0, scaleX, scaleY)
 	end
 
-	local count = widget:getItemCount()
+	local count = widget:get("itemCount", state)
 	if count > 1 then
 		local oldFont = love.graphics.getFont()
 		love.graphics.setFont(self.font)

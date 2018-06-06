@@ -244,8 +244,9 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		end
 
 		for i = 1, #items do
-			local s, r = pcall(provider.onSpawn, provider, item, count)
+			local s, r = pcall(provider.onSpawn, provider, items[i], count)
 			if not s then
+				print(r)
 				return false, r
 			end
 		end
@@ -454,7 +455,7 @@ end
 function ItemBroker.Inventory:iterateKeys()
 	local index = 1
 	return function()
-		if index < #self.keys then
+		if index <= #self.keys then
 			local key = self.keys[index]
 			index = index + 1
 
@@ -502,7 +503,7 @@ function ItemBroker.Inventory:addKey(value)
 	end
 
 	local key = ItemBroker.Key(value)
-	table.insert(self.keys[value], key)
+	table.insert(self.keys, key)
 	table.sort(self.keys)
 
 	return key
@@ -512,7 +513,7 @@ end
 --
 -- If the item has no key, nil is returned.
 function ItemBroker.Inventory:getKey(value)
-	return self.itemsByKey[item]
+	return self.itemsByKey[value]
 end
 
 -- Assigns an item the specified key.
@@ -565,7 +566,7 @@ end
 -- Adds 'item' to this key. Does nothing if the item already is added.
 function ItemBroker.Key:add(item)
 	if not self.items[item] then
-		table.insert(self.items[item])
+		table.insert(self.items, item)
 		self.items[item] = true
 	end
 end
@@ -581,6 +582,20 @@ function ItemBroker.Key:remove(item)
 		end
 
 		self.items[item] = nil
+	end
+end
+
+function ItemBroker.Key:iterate()
+	local index = 1
+	return function()
+		if index <= #self.items then
+			local result = self.items[index]
+			index = index + 1
+
+			return result
+		else
+			return nil
+		end
 	end
 end
 
@@ -706,6 +721,9 @@ end
 
 -- Returns an iterator that iterators over items assigned 'key'.
 function ItemBroker:iterateItemsByKey(provider, key)
+	assert(provider ~= nil, "provider cannot be nil")
+	assert(self:hasProvider(provider), "provider does not exist")
+
 	return self.inventories[provider]:iterateByKey(key)
 end
 
@@ -718,15 +736,15 @@ function ItemBroker:tags(item)
 	return inventory:tags(item)
 end
 
--- Returns an iterator over the keys assigned to 'item'.
+-- Returns an iterator over the keys assigned to 'provider'.
 --
 -- The keys will be in the order for least to greatest, whatever that means. For
 -- an integer key, this will be smallest to largest, for example.
-function ItemBroker:keys(item)
-	assert(item ~= nil, "item is nil")
-	assert(self:hasItem(item), "item not in broker")
+function ItemBroker:keys(provider)
+	assert(provider ~= nil, "provider cannot be nil")
+	assert(self:hasProvider(provider), "provider does not exist")
 
-	local inventory = self.items[item]
+	local inventory = self.inventories[provider]
 	return inventory:iterateKeys()
 end
 
@@ -735,7 +753,8 @@ function ItemBroker:setItemKey(item, key)
 	assert(item ~= nil, "item is nil")
 	assert(self:hasItem(item), "item not in broker")
 
-	local inventory = self.items[item]
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
 	return inventory:setKey(item, key)
 end
 
@@ -744,8 +763,14 @@ function ItemBroker:getItemKey(item)
 	assert(item ~= nil, "item is nil")
 	assert(self:hasItem(item), "item not in broker")
 
-	local inventory = self.items[item]
-	return inventory:getKey(item)
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
+	local key = inventory:getKey(item)
+	if key then
+		return key:getValue()
+	else
+		return nil
+	end
 end
 
 -- Sets a tag 'key' with value 'value' for the item 'item'.
@@ -753,7 +778,8 @@ function ItemBroker:tagItem(item, key, value)
 	assert(item ~= nil, "item is nil")
 	assert(self:hasItem(item), "item not in broker")
 
-	local inventory = self.items[item]
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
 	return inventory:tag(item, key, value)
 end
 
@@ -762,7 +788,8 @@ function ItemBroker:untagItem(item, key)
 	assert(item ~= nil, "item is nil")
 	assert(self:hasItem(item), "item not in broker")
 
-	local inventory = self.items[item]
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
 	return inventory:untag(item, key)
 end
 

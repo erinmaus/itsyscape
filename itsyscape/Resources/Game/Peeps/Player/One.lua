@@ -9,10 +9,12 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
@@ -23,6 +25,7 @@ function One:new(...)
 
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(MovementBehavior)
+	self:addBehavior(InventoryBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
 
@@ -33,6 +36,23 @@ function One:new(...)
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 3
+
+	local inventory = self:getBehavior(InventoryBehavior)
+	inventory.inventory = PlayerInventoryProvider(self)
+end
+
+function One:assign(director)
+	Peep.assign(self, director)
+
+	local inventory = self:getBehavior(InventoryBehavior)
+	director:getItemBroker():addProvider(inventory.inventory)
+
+	-- DEBUG
+	local t = director:getItemBroker():createTransaction()
+	t:addParty(inventory.inventory)
+	t:spawn(inventory.inventory, "AmuletOfYendor")
+	t:spawn(inventory.inventory, "AmuletOfYendor", 10, true)
+	t:commit()
 end
 
 function One:ready(director, game)

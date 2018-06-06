@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local Property = require "ItsyScape.UI.Property"
 
 local Widget = Class()
 
@@ -23,6 +24,7 @@ function Widget:new()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
+	self.id = false
 	self.text = ""
 	self.isFocused = false
 	self.x = 0
@@ -36,17 +38,96 @@ function Widget:new()
 	self.children = {}
 	self.parent = false
 	self.style = false
+	self.properties = {}
+	self.data = {}
+end
+
+-- Binds 'property' to the path.
+function Widget:bind(property, path)
+	self.properties[property] = {
+		property = Property(path),
+		default = function(d)
+			if self[property] ~= nil then
+				return self[property]
+			else
+				return d
+			end
+		end
+	}
+end
+
+-- Gets a property.
+--
+-- 'p' is some data source that has overriden properties.
+--
+-- 'd' is the default value, or nil if there is none. This value is used if the
+-- property does not exist in 'p' and in the widget.
+function Widget:get(property, p, d)
+	local binding = self.properties[property]
+	if binding then
+		return binding.property:get(p, self.data, binding.default(d))
+	else
+		if self[property] ~= nil then
+			return self[property]
+		else
+			return nil
+		end
+	end
+end
+
+function Widget:setData(key, value)
+	self.data[key] = value
+end
+
+function Widget:unsetData(key)
+	self:setData(key, nil)
+end
+
+function Widget:getData(key)
+	return self.data[key]
 end
 
 function Widget:deserialize(t)
 	t = t or {}
 
+	self.id = t.id or false
 	self.text = t.text or ""
 	self:setPosition(t.x or self.x, t.y or self.y)
 	self:setScroll(t.scrollX or self.scrollX, t.scrollY or self.scrollY)
 	self:setScrollSize(t.scrollWidth or self.scrollWidth, t.scrollHeight or self.scrollHeight)
 	self:setSize(t.width or self.width, t.height or self.height)
 	self:setStyle(t.style or self.style)
+end
+
+function Widget:find(id, after, e)
+	e = e or false
+
+	for i = 1, #self.children do
+		if self.children[i].id == id then
+			if self.children[i] == after then
+				e = true
+			elseif e or after == nil then
+				return self.children[i]
+			end
+		end
+
+		local result = self.children:find(id, after, e)
+		if result then
+			return result
+		end
+	end
+end
+
+function Widget:findAll(id)
+	local current = nil
+	return function()
+		local c = self:find(id, current)
+		if c then
+			current = c
+		end
+
+		return c
+	end
 end
 
 function Widget:addChild(child)
@@ -81,6 +162,10 @@ end
 
 function Widget:getParent()
 	return self.parent
+end
+
+function Widget:getID()
+	return self.id
 end
 
 function Widget:getText()

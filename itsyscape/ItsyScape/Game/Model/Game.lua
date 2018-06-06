@@ -38,6 +38,14 @@ function Game:getStage()
 	return Class.ABSTRACT()
 end
 
+-- Returns the UI.
+--
+-- The ui is an implementation ot ItsyScape.Game.Model.UI. This value
+-- should be created by the Game object.
+function Game:getUI()
+	return Class.ABSTRACT()
+end
+
 -- Gets the tick rate of the world, in ticks-per-second.
 --
 -- For example, at a tick rate of 10 per second, this method returns 10. For

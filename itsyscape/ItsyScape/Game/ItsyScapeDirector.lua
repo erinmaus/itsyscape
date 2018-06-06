@@ -8,13 +8,15 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local ItemBroker = require "ItsyScape.Game.ItemBroker"
+local ItemManager = require "ItsyScape.Game.ItemManager"
 local Director = require "ItsyScape.Peep.Director"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
 
 local ItsyScapeDirector = Class(Director)
 
-function ItsyScapeDirector:new(game)
+function ItsyScapeDirector:new(game, gameDB)
 	Director.new(self)
 
 	self:addCortex(MovementCortex)
@@ -24,10 +26,26 @@ function ItsyScapeDirector:new(game)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")
 
 	self.game = game
+	self.gameDB = gameDB
+
+	self.itemManager = ItemManager(gameDB)
+	self.itemBroker = ItemBroker(self.itemManager)
 end
 
 function ItsyScapeDirector:getGameInstance()
 	return self.game
+end
+
+function ItsyScapeDirector:getGameDB()
+	return self.gameDB
+end
+
+function ItsyScapeDirector:getItemManager()
+	return self.itemManager
+end
+
+function ItsyScapeDirector:getItemBroker()
+	return self.itemBroker
 end
 
 return ItsyScapeDirector

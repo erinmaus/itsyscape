@@ -12,8 +12,13 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local WidgetRenderer = Class()
 
-function WidgetRenderer:new()
+function WidgetRenderer:new(resources)
 	self.widgets = {}
+	self.resources = resources
+end
+
+function WidgetRenderer:getResources()
+	return self.resources
 end
 
 function WidgetRenderer:start()
@@ -38,13 +43,8 @@ function WidgetRenderer:visit(widget)
 end
 
 -- This should be treated as abstract.
-function WidgetRenderer:draw(widget)
+function WidgetRenderer:draw(widget, state)
 	self:visit(widget)
-
-	local color = { love.graphics.getColor() }
-	love.graphics.setColor(1, 0, 0, 1)
-	--love.graphics.rectangle('fill', 0, 0, widget:getSize())
-	love.graphics.setColor(color)
 end
 
 return WidgetRenderer

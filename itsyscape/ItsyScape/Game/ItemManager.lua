@@ -39,7 +39,6 @@ function ItemManager:isStackable(id)
 	if not item then
 		return false
 	else
-		print(id, "stackable", item:get("Stackable") ~= 0)
 		return item:get("Stackable") ~= 0
 	end
 end
