@@ -28,10 +28,12 @@ function Director:new()
 	self.maps = {}
 end
 
+-- Sets the map for the specified layer.
 function Director:setMap(layer, map)
 	self.maps[layer] = map
 end
 
+-- Gets the map for the specified layer.
 function Director:getMap(layer)
 	return self.maps[layer]
 end

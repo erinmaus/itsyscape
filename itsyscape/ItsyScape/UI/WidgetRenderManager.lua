@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 
@@ -16,6 +17,32 @@ local WidgetRenderManager = Class()
 function WidgetRenderManager:new()
 	self.renderers = {}
 	self.defaultRenderer = WidgetRenderer()
+	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
+end
+
+function WidgetRenderManager:getCursor()
+	return self.cursor.widget
+end
+
+function WidgetRenderManager:setCursor(widget)
+	self.cursor = { widget = widget or false, state = {}, x = 0, y = 0 }
+
+	if widget then
+		local x, y = widget:getPosition()
+		local p = widget:getParent()
+		while p do
+			local px, py = p:getPosition()
+			local sx, sy = p:getScroll()
+			x = x - sx + px
+			y = y - sy + py
+
+			p = p:getParent()
+		end
+
+		local mouseX, mouseY = love.mouse.getPosition()
+		self.cursor.x = x - mouseX
+		self.cursor.y = y - mouseY
+	end
 end
 
 function WidgetRenderManager:hasRenderer(widgetType)
@@ -52,6 +79,14 @@ function WidgetRenderManager:start()
 end
 
 function WidgetRenderManager:stop()
+	if self.cursor.widget then
+		love.graphics.push('all')
+		love.graphics.translate(self.cursor.x, self.cursor.y)
+		love.graphics.translate(love.mouse.getPosition())
+		self:draw(self.cursor.widget, self.cursor.state, true)
+		love.graphics.pop()
+	end
+
 	for _, renderer in pairs(self.renderers) do
 		renderer:stop()
 	end
@@ -61,7 +96,16 @@ function WidgetRenderManager:stop()
 	end
 end
 
-function WidgetRenderManager:draw(widget)
+function WidgetRenderManager:draw(widget, state, cursor)
+	if widget == self.cursor.widget and not cursor then
+		self.cursor.state = state
+		return
+	end
+
+	if Class.isCompatibleType(widget, Interface) then
+		state = widget:getState()
+	end
+
 	love.graphics.push('all')
 	love.graphics.translate(widget:getPosition())
 
@@ -73,14 +117,14 @@ function WidgetRenderManager:draw(widget)
 
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer
 	if renderer then
-		renderer:draw(widget)
+		renderer:draw(widget, state)
 	end
 
 	local scrollX, scrollY = widget:getScroll()
 	love.graphics.translate(-scrollX, -scrollY)
 
 	for _, child in widget:iterate() do
-		self:draw(child)
+		self:draw(child, state)
 	end
 
 	love.graphics.pop()

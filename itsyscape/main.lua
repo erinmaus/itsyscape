@@ -1,8 +1,19 @@
+do
+	local cpath = package.cpath
+	local sourceDirectory = love.filesystem.getSourceBaseDirectory()
+	package.cpath = string.format(
+		"%s/ext/?.dll;%s/ext/?.so;%s",
+		sourceDirectory,
+		sourceDirectory,
+		cpath)
+end
+
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local GameDB = require "ItsyScape.GameDB.GameDB"
 local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
@@ -22,34 +33,12 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
-local Button = require "ItsyScape.UI.Button"
-local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
-local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
-local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
-local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
-local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
-local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
+local UIView = require "ItsyScape.UI.UIView"
 local Map = require "ItsyScape.World.Map"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local Path = require "ItsyScape.World.Path"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local TileSet = require "ItsyScape.World.TileSet"
-
-do
-	local cpath = package.cpath
-	local sourceDirectory = love.filesystem.getSourceBaseDirectory()
-	package.cpath = string.format(
-		"%s/ext/?.dll;%s/ext/?.so;%s",
-		sourceDirectory,
-		sourceDirectory,
-		cpath)
-end
-
-do
-	local GameDB = require "ItsyScape.GameDB.GameDB"
-	local g = GameDB.create("Resources/Game/DB/Init.lua", ":memory:")
-	print "Success!"
-end
 
 local Instance = {}
 local Input = {
@@ -67,9 +56,11 @@ function love.load()
 	Instance.previousTickTime = love.timer.getTime()
 	Instance.startDrawTime = false
 	Instance.time = 0
-	Instance.Game = LocalGame()
+	Instance.GameDB = GameDB.create("Resources/Game/DB/Init.lua", ":memory:")
+	Instance.Game = LocalGame(Instance.GameDB)
 	Instance.GameView = GameView(Instance.Game)
 	Instance.GameView:getRenderer():setCamera(Instance.Camera)
+	Instance.UIView = UIView(Instance.Game)
 
 	Instance.Game:getStage():newMap(8, 8, 1)
 	local map = Instance.Game:getStage():getMap(1)
@@ -122,32 +113,8 @@ function love.load()
 	Instance.playerPreviousPosition = position
 	Instance.playerCurrentPosition = position
 
-	local widgetResources = WidgetResourceManager() 
-
-	Instance.UI = DraggablePanel()
-	Instance.UI:setSize(200, 200)
-	local button = Button()
-	button:setSize(128, 32)
-	button:setPosition(32, 32)
-	button:setText("Teleport")
-	button.onClick:register(function()
-		local player = Instance.Game:getPlayer():getActor()
-		local map = Instance.Game:getStage():getMap(1)
-		local x = math.floor(math.random(0, map:getWidth() - 1)) + 0.5
-		local y = math.floor(math.random(0, map:getHeight() - 1)) + 0.5
-		player:teleport(Vector(x * map:getCellSize(), 2, y * map:getCellSize()))
-	end)
-	button:setStyle(ButtonStyle({
-		inactive = "Resources/Test/button.9.png",
-		hover = "Resources/Test/button-hover.9.png",
-		pressed = "Resources/Test/button-pressed.9.png",
-		color = { 1, 1, 1, 1 }
-	}, widgetResources))
-	Instance.UI:addChild(button)
-
-	Instance.WidgetInput = WidgetInputProvider(Instance.UI)
-	Instance.WidgetRenderer = WidgetRenderManager()
-	Instance.WidgetRenderer:addRenderer(Button, ButtonRenderer())
+	Instance.Game:getUI():open("PlayerInventory")
+	Instance.Game:getUI().onPoke("PlayerInventory", 1, "setSize", nil, { 248, 428 })
 end
 
 function love.update(delta)
@@ -170,11 +137,12 @@ function love.update(delta)
 	end
 
 	Instance.GameView:update(delta)
+	Instance.UIView:update(delta)
 end
 
 function love.mousepressed(x, y, button)
-	if Instance.WidgetInput:isBlocking(x, y) then
-		Instance.WidgetInput:mousePress(x, y, button)
+	if Instance.UIView:getInputProvider():isBlocking(x, y) then
+		Instance.UIView:getInputProvider():mousePress(x, y, button)
 	else
 		if button == 1 then
 			local width, height = love.window.getMode()
@@ -211,7 +179,7 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-	Instance.WidgetInput:mouseRelease(x, y, button)
+	Instance.UIView:getInputProvider():mouseRelease(x, y, button)
 
 	if button == 2 then
 		Input.isCameraDragging = false
@@ -224,7 +192,7 @@ function love.wheelmoved(x, y)
 end
 
 function love.mousemoved(x, y, dx, dy)
-	Instance.WidgetInput:mouseMove(x, y, dx, dy)
+	Instance.UIView:getInputProvider():mouseMove(x, y, dx, dy)
 
 	if Input.isCameraDragging then
 		local angle1 = dx / 128
@@ -235,11 +203,11 @@ function love.mousemoved(x, y, dx, dy)
 end
 
 function love.keypressed(...)
-	Instance.WidgetInput:keyDown(...)
+	Instance.UIView:getInputProvider():keyDown(...)
 end
 
 function love.keyreleased(...)
-	Instance.WidgetInput:keyUp(...)
+	Instance.UIView:getInputProvider():keyUp(...)
 end
 
 function love.draw()
@@ -273,7 +241,5 @@ function love.draw()
 	love.graphics.origin()
 	love.graphics.ortho(width, height)
 
-	Instance.WidgetRenderer:start()
-	Instance.WidgetRenderer:draw(Instance.UI)
-	Instance.WidgetRenderer:stop()
+	Instance.UIView:draw()
 end
