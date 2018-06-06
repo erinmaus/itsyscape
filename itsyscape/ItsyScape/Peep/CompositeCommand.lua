@@ -8,9 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Command = require "ItsyScape.Peep.Command"
 local CommandQueue = require "ItsyScape.Peep.CommandQueue"
 
-local CompositeCommand = Class()
+local CompositeCommand = Class(Command)
 
 -- Constructs a new composite command.
 --
@@ -33,15 +34,15 @@ end
 
 function CompositeCommand:getIsInterruptible()
 	if self.queue or self.queue:getIsPending() then
-		return return self.queue:getCurrent():getIsInterruptible()
+		return self.queue:getCurrent():getIsInterruptible()
 	else
 		return true
 	end
 end
 
 function CompositeCommand:getIsBlocking()
-	if self.queue or self.queue:getIsPending() then
-		return return self.queue:getCurrent():getIsBlocking()
+	if self.queue and self.queue:getIsPending() then
+		return self.queue:getCurrent():getIsBlocking()
 	else
 		return false
 	end
@@ -49,7 +50,7 @@ end
 
 function CompositeCommand:getIsFinished()
 	if self.queue then
-		return not return self.queue:getIsPending()
+		return not self.queue:getIsPending()
 	else
 		return true
 	end
@@ -57,7 +58,7 @@ end
 
 function CompositeCommand:onBegin(peep)
 	self.queue = CommandQueue(peep)
-	for i = 1, #self.commands.n do
+	for i = 1, self.commands.n do
 		local command = self.commands[i]
 		if command then
 			self.queue:push(command)

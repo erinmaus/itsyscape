@@ -246,7 +246,6 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		for i = 1, #items do
 			local s, r = pcall(provider.onSpawn, provider, items[i], count)
 			if not s then
-				print(r)
 				return false, r
 			end
 		end
@@ -265,7 +264,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 	count = count or item:getCount()
 
-	local condition = function()
+	local condition = function(state)
 		assert(self.broker:hasItem(item), "broker doesn't have item")
 
 		local source = self.broker.items[item]
@@ -275,6 +274,9 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 		assert(item:getCount() == count)
 		
+		local id = item:getID()
+		local noted = item:isNoted()
+
 		local logic = self.broker.manager:getLogic(id)
 		if not logic:canSpawn(item, source) and not force then
 			error("cannot spawn item")
@@ -286,6 +288,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 		end
 
 		if merge then
+			local inventory = self.broker.inventories[destination]
 			local item = inventory:findFirst(id, true, noted)
 			if not item then
 				if self.broker.manager:isStackable(id) or
@@ -297,14 +300,14 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 					c = count -- This should be 1 but w/e
 				end
 
-				if count + c > provider:getMaxInventorySpace() then
+				if count + c > destination:getMaxInventorySpace() then
 					error("inventory full")
 				else
-					local p = state[provider]
+					local p = state[destination]
 					p.count = p.count + c
 				end
 			else
-				local p = state[provider]
+				local p = state[destination]
 				p.count = p.count + 1
 			end
 		end
@@ -312,14 +315,17 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 	local step = function()
 		local source = self.broker.items[item]
+		local id = item:getID()
+		local count = item:getCount()
+		local noted = item:isNoted()
 
 		local destinationItem
 		if merge then
-			local inventory = self.broker.inventories[source]
+			local inventory = self.broker.inventories[destination]
 			destinationItem = inventory:findFirst(id, true, noted)
 		end
 
-		if not item then
+		if not destinationItem then
 			destinationItem = self.broker:addItem(destination, id, count, noted)
 		else
 			destinationItem:setCount(destinationItem:getCount() + count)
@@ -385,9 +391,7 @@ end
 function ItemBroker.Inventory:remove(item)
 	assert(self.items[item], "item not in inventory")
 
-	for i = 1, #self.keys do
-		self.keys[i]:remove(item)
-	end
+	self:unsetKey(item)
 
 	self.items[item] = nil
 	self.tags[item] = nil
@@ -542,6 +546,15 @@ function ItemBroker.Inventory:unsetKey(item)
 	if k then
 		k:remove(item)
 
+		if k:isEmpty() then
+			for i = 1, #self.keys do
+				if self.keys[i] == k then
+					table.remove(self.keys, i)
+					break
+				end
+			end
+		end
+
 		self.itemsByKey[item] = nil
 	end
 end
@@ -599,6 +612,10 @@ function ItemBroker.Key:iterate()
 	end
 end
 
+function ItemBroker.Key:isEmpty()
+	return #self.items == 0
+end
+
 -- Comparison operator; returns a:getValue() < b:getValue().
 function ItemBroker.Key._METATABLE.__lt(a, b)
 	return a.value < b.value
@@ -608,6 +625,7 @@ end
 function ItemBroker:new(manager)
 	self.manager = manager
 	self.items = {}
+	self.itemRefs = { n = 1 }
 	self.inventories = {}
 end
 
@@ -638,7 +656,10 @@ function ItemBroker:addItem(provider, id, count, noted)
 	item:setCount(count or 1)
 
 	self.items[item] = provider
+	self.itemRefs[item] = self.itemRefs.n
 	self.inventories[provider]:add(item)
+
+	self.itemRefs.n = self.itemRefs.n + 1
 
 	return item
 end
@@ -652,6 +673,7 @@ function ItemBroker:removeItem(item)
 
 	inventory:remove(item)
 	self.items[item] = nil
+	self.itemRefs[item] = nil
 end
 
 function ItemBroker:hasItem(item)
@@ -660,6 +682,12 @@ function ItemBroker:hasItem(item)
 	end
 
 	return false
+end
+
+function ItemBroker:getItemRef(item)
+	assert(self:hasItem(item), "item does not exist in broker")
+
+	return self.itemRefs[item]
 end
 
 -- Adds a provider, 'provider', to the ItemBroker.
@@ -707,6 +735,13 @@ end
 function ItemBroker:hasProvider(provider)
 	assert(provider ~= nil, "provider cannot be nil")
 	return self.inventories[provider] ~= nil
+end
+
+function ItemBroker:getItemProvider(item)
+	assert(item ~= nil, "item is nil")
+	assert(self:hasItem(item), "item not in broker")
+
+	return self.items[item]
 end
 
 -- Removes a provider, 'provider', from the ItemBroker.

@@ -115,7 +115,11 @@ function WidgetInputProvider:mouseRelease(x, y, button)
 end
 
 function WidgetInputProvider:mouseMove(x, y, dx, dy)
-	local widget = self:getWidgetUnderPoint(x, y)
+	local function f(w)
+		return w:getIsFocusable()
+	end
+
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
 	if widget ~= self.hoverWidget then
 		if self.hoverWidget then
 			self.hoverWidget:mouseLeave(x, y)

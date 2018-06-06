@@ -22,6 +22,8 @@ end
 function PlayerInventoryController:poke(actionID, actionIndex, e)
 	if actionID == "swap" then
 		self:swap(e)
+	elseif actionID == "activate" then
+		self:activate(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -78,12 +80,22 @@ function PlayerInventoryController:swap(e)
 end
 
 function PlayerInventoryController:activate(e)
-	assert(e.index == 'number', "index is not number")
+	assert(type(e.index) == 'number', "index is not number")
 
 	local inventory = self:getPeep():getBehavior(InventoryBehavior).inventory
 	if inventory then
-		local broker = inventory.inventory:getBroker()
-		print "activating item not yet implemented"
+		local broker = inventory:getBroker()
+		local item
+		for i in broker:iterateItemsByKey(inventory, e.index) do
+			item = i
+			break
+		end
+
+		-- TODO DEBUG
+		if item then
+			local game = self.director:getGameInstance()
+			game:getStage():dropItem(item, item:getCount())
+		end
 	end
 end
 

@@ -38,16 +38,21 @@ function Player:getActor()
 	return self.actor
 end
 
--- Moves the player to the specified position on the map via walking.
-function Player:walk(i, j, k)
+function Player:findPath(i, j, k)
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = self.game:getStage():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
 	local pathFinder = MapPathFinder(map)
-	local path = pathFinder:find(
+	return pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j })
+end
+
+-- Moves the player to the specified position on the map via walking.
+function Player:walk(i, j, k)
+	local peep = self.actor:getPeep()
+	local path = self:findPath(i, j, k)
 	if path then
 		local queue = self.actor:getPeep():getCommandQueue()
 		return queue:interrupt(ExecutePathCommand(path))
