@@ -46,7 +46,7 @@ function PlayerInventoryProvider:onSpawn(item, count)
 	self:assignKey(item)
 end
 
-function PlayerInventoryProvider:onTransfer(item, source, count, purpose)
+function PlayerInventoryProvider:onTransferTo(item, source, count, purpose)
 	local index = self:getBroker():getItemKey(item)
 	if index == nil then
 		self:assignKey(item)

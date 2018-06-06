@@ -10,9 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
+local ModelResource = require "ItsyScape.Graphics.ModelResource"
+local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local GameView = Class()
@@ -47,11 +51,33 @@ function GameView:new(game)
 	end
 	stage.onActorKilled:register(self._onActorKilled)
 
+	self._onDropItem = function(_, item, tile, position)
+		self:spawnItem(item, tile, position)
+	end
+	stage.onDropItem:register(self._onDropItem)
+
+	self._onTakeItem = function(_, item)
+		self:poofItem(item)
+	end
+	stage.onTakeItem:register(self._onTakeItem)
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
 
 	self.renderer = Renderer()
 	self.resourceManager = ResourceManager()
+
+	self.itemBagModel = self.resourceManager:load(
+		ModelResource,
+		"Resources/Game/Items/ItemBag.lmesh")
+	self.itemBagIconModel = self.resourceManager:load(
+		ModelResource,
+		"Resources/Game/Items/ItemBagIcon.lmesh")
+	self.items = {}
+
+	local imageData = love.image.newImageData(1, 1)
+	imageData:setPixel(0, 0, 1, 1, 1, 1)
+	self.whiteTexture = TextureResource(love.graphics.newImage(imageData))
 end
 
 function GameView:getRenderer()
@@ -77,6 +103,8 @@ function GameView:release()
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
+	stage.onTakeItem:unregister(self._onTakeItem)
+	stage.onDropItem:unregister(self._onDropItem)
 end
 
 function GameView:addMap(map, layer, tileSetID)
@@ -130,6 +158,49 @@ function GameView:removeActor(actor)
 	if self.actors[actor] then
 		self.actors[actor]:poof()
 		self.actors[actor] = nil
+	end
+end
+
+function GameView:spawnItem(item, tile, position)
+	local map = self.game:getStage():getMap(tile.layer)
+	if map then
+		position.y = map:getInterpolatedHeight(position.x, position.z)
+	end
+
+	local itemNode = SceneNode()
+	do
+		local lootBagNode = ModelSceneNode()
+		lootBagNode:setModel(self.itemBagModel)
+		lootBagNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
+		lootBagNode:getMaterial():setTextures(self.whiteTexture)
+		lootBagNode:setParent(itemNode)
+	end
+	do
+		local lootIconNode = ModelSceneNode(self.itemBagIconModel)
+		lootIconNode:setModel(self.itemBagIconModel)
+
+		local texture = self.resourceManager:load(
+			require "ItsyScape.Graphics.TextureResource",
+			string.format("Resources/Game/Items/%s/Icon.png", item.id))
+		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
+		lootIconNode:setParent(itemNode)
+		lootIconNode:getMaterial():setTextures(texture)
+
+		lootIconNode:setParent(itemNode)
+	end
+
+	itemNode:getTransform():translate(position)
+	itemNode:setParent(self.scene)
+
+	self.items[item.ref] = itemNode
+end
+
+function GameView:poofItem(item)
+	local node = self.items[item.ref]
+	if node then
+		node:setParent(nil)
+
+		self.items[item.ref] = nil
 	end
 end
 

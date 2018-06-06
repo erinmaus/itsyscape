@@ -18,7 +18,7 @@ local TextureResource = Resource()
 function TextureResource:new(image)
 	Resource.new(self)
 
-	if self.image then
+	if image then
 		self.image = image
 	else
 		self.image = false

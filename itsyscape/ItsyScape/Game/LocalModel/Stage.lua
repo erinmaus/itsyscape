@@ -15,6 +15,7 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Map = require "ItsyScape.World.Map"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
@@ -34,6 +35,31 @@ end
 
 function LocalStage:spawnGround()
 	self.ground = self.game:getDirector():addPeep(require "Resources.Game.Peeps.Ground")
+	local inventory = self.ground:getBehavior(InventoryBehavior).inventory
+	inventory.onTakeItem:register(self.notifyTakeItem, self)
+	inventory.onDropItem:register(self.notifyDropItem, self)
+end
+
+function LocalStage:notifyTakeItem(item, key)
+	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
+	self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+end
+
+function LocalStage:notifyDropItem(item, key, source)
+	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
+	local position = source:getPeep():getBehavior(PositionBehavior)
+	if position then
+		local p = position.position
+		position = Vector(p.x, p.y, p.z)
+	else
+		position = Vector(0)
+	end
+
+	self.onDropItem(
+		self,
+		{ ref = ref, id = item:getID(), noted = item:isNoted() },
+		{ i = key.i, j = key.j, layer = key.layer },
+		position)
 end
 
 function LocalStage:spawnActor(actorID)

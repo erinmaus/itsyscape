@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -42,6 +43,8 @@ end
 
 function GroundInventoryProvider:new(peep)
 	self.peep = peep
+	self.onDropItem = Callback()
+	self.onTakeItem = Callback()
 end
 
 function GroundInventoryProvider:getPeep()
@@ -52,7 +55,7 @@ function GroundInventoryProvider:getMaxInventorySpace()
 	return math.huge
 end
 
-function GroundInventoryProvider:onTransfer(item, source, count, purpose)
+function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 	local sourcePeep = source:getPeep()
 	local sourcePeepPosition = sourcePeep:getBehavior(PositionBehavior)
 	if sourcePeepPosition then
@@ -64,9 +67,15 @@ function GroundInventoryProvider:onTransfer(item, source, count, purpose)
 			if i and j then
 				local key = GroundInventoryProvider.Key(i, j, sourcePeepPosition.layer or 1)
 				self:getBroker():setItemKey(item, key)
+
+				self.onDropItem(item, key, source, count)
 			end
 		end
 	end
+end
+
+function GroundInventoryProvider:onTransferFrom(item, count, purpose)
+	self.onTakeItem(item, self:getBroker():getItemKey(item), count)
 end
 
 return GroundInventoryProvider
