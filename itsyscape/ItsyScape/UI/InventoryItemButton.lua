@@ -90,7 +90,7 @@ function InventoryItemButton:mouseRelease(x, y, button, ...)
 				local u, v = self.dragX, self.dragY
 				self.onDrop(self, s + u, t + v)
 			elseif self.isMouseOver then
-				self.onClick(self)
+				self.onLeftClick(self)
 			end
 		elseif self.button == 2 and self.isMouseOver then
 			self.onRightClick(self)
@@ -98,6 +98,7 @@ function InventoryItemButton:mouseRelease(x, y, button, ...)
 	end
 
 	self.isPressed = false
+	self.isDragging = false
 	self:blur()
 
 	self.icon:setPosition(2, 2)

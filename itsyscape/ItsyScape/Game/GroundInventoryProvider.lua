@@ -20,6 +20,10 @@ function GroundInventoryProvider.Key:new(i, j, layer)
 	self.layer = layer
 end
 
+function GroundInventoryProvider.Key._METATABLE.__eq(a, b)
+	return a.i == b.i and a.j == b.j and a.layer == b.layer
+end
+
 function GroundInventoryProvider.Key._METATABLE.__lt(a, b)
 	if a.i < b.i then
 		return true
@@ -52,11 +56,11 @@ function GroundInventoryProvider:onTransfer(item, source, count, purpose)
 	local sourcePeep = source:getPeep()
 	local sourcePeepPosition = sourcePeep:getBehavior(PositionBehavior)
 	if sourcePeepPosition then
-		local map = self.peep:getDirector():getMap()
+		local map = self.peep:getDirector():getMap(PositionBehavior.layer or 1)
 		if map then
 			local i, j = map:toTile(
 				sourcePeepPosition.position.x,
-				sourcePeepPosition.position.y)
+				sourcePeepPosition.position.z)
 			if i and j then
 				local key = GroundInventoryProvider.Key(i, j, sourcePeepPosition.layer or 1)
 				self:getBroker():setItemKey(item, key)

@@ -170,7 +170,17 @@ function love.mousepressed(x, y, button)
 			local best = tiles[1]
 			if best then
 				local player = Instance.Game:getPlayer()
-				player:walk(best[Map.RAY_TEST_RESULT_I], best[map.RAY_TEST_RESULT_J], 1)
+				local items = Instance.Game:getStage():getItemsAtTile(best[Map.RAY_TEST_RESULT_I], best[Map.RAY_TEST_RESULT_J], 1)
+				if #items == 0 then
+					player:walk(best[Map.RAY_TEST_RESULT_I], best[map.RAY_TEST_RESULT_J], 1)
+				else
+					print 'taking item'
+					Instance.Game:getStage():takeItem(
+						best[Map.RAY_TEST_RESULT_I],
+						best[map.RAY_TEST_RESULT_J],
+						1,
+						items[1].ref)
+				end
 			end
 		elseif button == 2 then
 			Input.isCameraDragging = true

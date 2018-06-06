@@ -100,4 +100,22 @@ function Stage:setGravity(value)
 	Class.ABSTRACT()
 end
 
+-- Gets the items at the tile.
+--
+-- Returns an array with tables in the form:
+--   * ref (number): unique reference to the item on the tile
+--   * id (string): ID of the item in small form (e.g., AmuletOfYendor)
+--   * count (number): number of the items in the stack
+--   * noted: whether or not the item is noted or not 
+function Stage:getItemsAtTile(i, j, layer)
+	return Class.ABSTRACT()
+end
+
+-- Takes the item with 'ref' at the provided tile.
+--
+-- Does nothing if the item doesn't exist.
+function Stage:takeItem(i, j, layer, ref)
+	Class.ABSTRACT()
+end
+
 return Stage
