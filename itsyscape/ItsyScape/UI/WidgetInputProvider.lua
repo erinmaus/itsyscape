@@ -17,8 +17,8 @@ function WidgetInputProvider:new(root)
 
 	self.root = root
 	self.focusedWidget = false
-	self.hoverWidget = false
 	self.clickedWidgets = {}
+	self.hoveredWidgets = {}
 end
 
 function WidgetInputProvider:getFocusedWidget()
@@ -33,6 +33,35 @@ function WidgetInputProvider:getFocusedWidget()
 	else
 		return nil
 	end
+end
+
+function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
+	px = px or 0
+	py = py or 0
+	widget = widget or self.root
+	result = result or {}
+
+	local wx, wy = widget:getPosition()
+	local ww, wh = widget:getSize()
+
+	if x >= px + wx and x < px + wx + ww and
+	   y >= py + wy and y < py + wy + wh
+	then
+		result[widget] = true
+
+		local sx, sy = widget:getScroll()
+		for i = #widget.children, 1, -1 do
+			local w = widget.children[i]
+			self:getWidgetsUnderPoint(
+				x, y,
+				px + wx - sx,
+				py + wy - sy,
+				w,
+				filter)
+		end
+	end
+
+	return result
 end
 
 function WidgetInputProvider:isBlocking(x, y)
@@ -119,20 +148,22 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 		return w:getIsFocusable()
 	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
-	if widget ~= self.hoverWidget then
-		if self.hoverWidget then
-			self.hoverWidget:mouseLeave(x, y)
-		end
-
-		if widget then
+	local widgets = self:getWidgetsUnderPoint(x, y)
+	for widget in pairs(widgets) do
+		if not self.hoveredWidgets[widget] then
 			widget:mouseEnter(x, y)
 		end
-
-		self.hoverWidget = widget
 	end
 
-	if widget then
+	for widget in pairs(self.hoveredWidgets) do
+		if not widgets[widget] then
+			widget:mouseLeave(x, y)
+		end
+	end
+
+	self.hoveredWidgets = widgets
+
+	for widget in pairs(self.hoveredWidgets) do
 		widget:mouseMove(x, y, dx, dy)
 	end
 
