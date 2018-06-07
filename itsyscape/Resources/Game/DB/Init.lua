@@ -33,7 +33,6 @@ Game "ItsyScape"
 	}
 
 	Meta "Item" {
-		Name = Meta.TYPE_TEXT,
 		Value = Meta.TYPE_INTEGER,
 		Weight = Meta.TYPE_REAL,
 		Untradeable = Meta.TYPE_INTEGER,
@@ -48,11 +47,32 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ActionVerb" {
+		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ResourceName" {
+		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "EquipAction" {
+		-- The equip slot.
+		--
+		-- For a player, this corresponds to ItsyScape.Game.Equipment.PLAYER_SLOT_*.
+		EquipSlot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Equip"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 ItsyScape.Utility.xpForResource = function() return 1 end -- TODO
+ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
 
 function ItsyScape.Utility.tag(Item, value)
 	ItsyScape.Meta.ItemTag {
@@ -64,13 +84,20 @@ end
 include "Resources/Game/DB/Skills.lua"
 
 do
-	ItsyScape.Resource.Item "AmuletOfYendor" {
-		ItsyScape.Action.Equip() {
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForLevel(10)
-			}
+	local equipAction =  ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(10)
 		}
+	}
+
+	ItsyScape.Meta.EquipAction {
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
+		Action = equipAction
+	}
+
+	ItsyScape.Resource.Item "AmuletOfYendor" {
+		equipAction
 	}
 
 	ItsyScape.Meta.Equipment {
@@ -92,10 +119,15 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Name = "Amulet of yendor",
 		Value = ItsyScape.Utility.valueForItem(120),
 		Weight = -10,
 		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Amulet of Yendor",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
 	}
 
