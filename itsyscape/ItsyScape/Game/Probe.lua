@@ -172,12 +172,13 @@ function Probe:loot()
 		for _, item in pairs(items) do
 			local name
 			do
+				-- TODO: [LANG]
 				local item = self.gameDB:getResource("Item", item.id)
-				local record = self.gameDB:getRecords("Item", { Resource = item }, 1)[1]
+				local record = self.gameDB:getRecords("ResourceName", { Resource = item, Language = "en-US" }, 1)[1]
 				if record then
-					name = record:get("Name")
+					name = record:get("Value")
 				else
-					name = "???"
+					name = item.id
 				end
 			end
 
