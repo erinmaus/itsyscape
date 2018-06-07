@@ -15,6 +15,7 @@ local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
 local InventoryItemButtonRenderer = require "ItsyScape.UI.InventoryItemButtonRenderer"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
+local PokeMenu = require "ItsyScape.UI.PokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local Widget = require "ItsyScape.UI.Widget"
@@ -43,8 +44,11 @@ function UIView:new(game)
 	self.renderManager:addRenderer(DraggablePanel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(InventoryItemButton, InventoryItemButtonRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
+	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 
 	self.interfaces = {}
+
+	self.pokeMenu = false
 end
 
 function UIView:release()
@@ -107,6 +111,24 @@ function UIView:poke(interfaceID, index, actionID, actionIndex, e)
 		if interface then
 			interface:poke(actionID, actionIndex, e)
 		end
+	end
+end
+
+function UIView:probe(actions)
+	if self.pokeMenu then
+		self.pokeMenu:close()
+	end
+
+	self.pokeMenu = PokeMenu(self, actions)
+	do
+		local mouseX, mouseY = love.mouse.getPosition()
+		self.pokeMenu:setPosition(
+			mouseX - PokeMenu.PADDING,
+			mouseY - PokeMenu.PADDING)
+
+		self.pokeMenu.onClose:register(function() self.pokeMenu = false end)
+
+		self.root:addChild(self.pokeMenu)
 	end
 end
 
