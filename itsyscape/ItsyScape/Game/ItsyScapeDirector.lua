@@ -17,7 +17,7 @@ local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
 local ItsyScapeDirector = Class(Director)
 
 function ItsyScapeDirector:new(game, gameDB)
-	Director.new(self)
+	Director.new(self, gameDB)
 
 	self:addCortex(MovementCortex)
 	self:addCortex(MoveToTileCortex)

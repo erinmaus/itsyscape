@@ -17,7 +17,8 @@ local Peep = require "ItsyScape.Peep.Peep"
 -- Peep.
 local Director = Class()
 
-function Director:new()
+function Director:new(gameDB)
+	self.gameDB = gameDB
 	self.peeps = {}
 	self.cortexes = {}
 	self.pendingPeeps = {}
@@ -26,6 +27,11 @@ function Director:new()
 	end
 
 	self.maps = {}
+end
+
+-- Gets the GameDB.
+function Director:getGameDB()
+	return self.gameDB
 end
 
 -- Sets the map for the specified layer.
