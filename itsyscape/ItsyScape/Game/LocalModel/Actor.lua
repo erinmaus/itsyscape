@@ -123,6 +123,22 @@ function LocalActor:getPosition()
 	end
 end
 
+function LocalActor:getTile()
+	if not self.peep then
+		return 0, 0, 0
+	end
+
+	local position = self.peep:getBehavior(PositionBehavior)
+	if position then
+		local map = self.game:getStage():getMap(position.layer or 1)
+		local i, j = map:getTileAt(position.position.x, position.position.z)
+
+		return i, j, position.layer or 1
+	else
+		return 0, 0, 0
+	end
+end
+
 function LocalActor:getCurrentHealth()
 	return 1
 end
