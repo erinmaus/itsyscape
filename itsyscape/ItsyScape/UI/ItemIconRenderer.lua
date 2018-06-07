@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
+local Utility = require "ItsyScape.Game.Utility"
 
 local ItemIconRenderer = Class(WidgetRenderer)
 
@@ -75,32 +76,7 @@ function ItemIconRenderer:draw(widget, state)
 		local oldFont = love.graphics.getFont()
 		love.graphics.setFont(self.font)
 
-		local HUNDRED_THOUSAND = 100000
-		local MILLION          = 1000000
-		local BILLION          = 1000000000
-		local TRILLION         = 1000000000000
-		local QUADRILLION      = 1000000000000000
-		local color, text
-		if count >= QUADRILLION then
-			text = string.format("%dq", count / QUADRILLION)
-			color = { 1, 0, 1, 1 }
-		elseif count >= TRILLION then
-			text = string.format("%dt", count / TRILLION)
-			color = { 0, 1, 1, 1 }
-		elseif count >= BILLION then
-			text = string.format("%db", count / BILLION)
-			color = { 1, 0.5, 0, 1 }
-		elseif count >= MILLION then
-			text = string.format("%dm", count / MILLION)
-			color = { 0, 1, 0.5, 1 }
-		elseif count >= HUNDRED_THOUSAND then
-			text = string.format("%dk", count / HUNDRED_THOUSAND * 100)
-			color = { 1, 1, 1, 1 }
-		else
-			text = string.format("%d", count)
-			color = { 1, 1, 0, 1 }
-		end
-
+		local text, color = Utility.Item.getItemCountShorthand(count)
 		local icon = self.icons[itemID]
 		local width = widget:getSize()
 		local scaleX = width / icon:getWidth()
