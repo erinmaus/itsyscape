@@ -39,7 +39,6 @@ function TransferItemCommand:onBegin(peep)
 		self.purpose,
 		self.merge)
 	local s, r = transaction:commit()
-	print(s, r)
 end
 
 return TransferItemCommand
