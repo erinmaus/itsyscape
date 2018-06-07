@@ -37,7 +37,7 @@ function ExecutePathCommand:onBegin(peep)
 end
 
 function ExecutePathCommand:onInterrupt(peep)
-	self.path:getNodeAtIndex(self.index - 1):interrupt(peep)
+	self.path:getNodeAtIndex(self.index):interrupt(peep)
 end
 
 return ExecutePathCommand
