@@ -15,4 +15,14 @@ function Skin:new()
 	-- Nothing.
 end
 
+-- Whether or not the skin is blocking or not.
+--
+-- A blocking skin hides all other skins.
+--
+-- Imagine a full helmet and a cliche wizard hat. The full helmet blocks the
+-- underlying head skin, while a wizard hat adds to it.
+function Skin:getIsBlocking()
+	return true
+end
+
 return Skin

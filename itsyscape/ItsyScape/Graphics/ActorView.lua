@@ -149,43 +149,17 @@ function ActorView:playAnimation(slot, animation, time)
 	self.animations[slot] = a
 end
 
-function ActorView:transmogrify(body)
-	self.body = body:load()
-
-	for _, slot in pairs(self.skins) do
-		if slot.sceneNode then
-			slot.sceneNode:setParent(nil)
-		end
-
-		if body then
-			-- TODO load queue
-			if slot.definition:isType(ModelSkin) then
-				slot.instance = skin:load(body:getSkeleton())
-				slot.sceneNode = ModelSceneNode(slot.instance:getModel():load())
-				slot.sceneNode:setParent(self.sceneNode)
-			end
-		else
-			slot.instance = false
-			slot.sceneNode = false
-		end
-	end
-end
-
-function ActorView:changeSkin(slot, priority, skin)
-	local slot = self.skins[slot] or { priority = -math.huge }
-
-	-- TODO actually have a skin queue; currently removing a skin doesn't work
-	--      Remember to update transmogrify!
-	if skin and slot.priority < priority then
-		slot.priority = slot.top
-		slot.definition = skin
+function ActorView:applySkin(slotNodes)
+	local ignore = false
+	for i = #slotNodes, 1, -1 do
+		local slot = slotNodes[i]
+		local skin = slot.definition
 
 		if slot.sceneNode then
 			slot.sceneNode:setParent(nil)
 		end
 
-		-- TODO load queue
-		if self.body then
+		if self.body and not self.ignore then
 			if skin:isType(ModelSkin) then
 				slot.instance = skin:load(self.body:getSkeleton())
 				slot.sceneNode = ModelSceneNode()
@@ -212,7 +186,38 @@ function ActorView:changeSkin(slot, priority, skin)
 			slot.instance = false
 			slot.sceneNode = false
 		end
+
+		if slot.instance and slot.instance:getIsBlocking() then
+			ignore = true
+		end
 	end
+end
+
+function ActorView:transmogrify(body)
+	self.body = body:load()
+
+	for _, slotNodes in pairs(self.skins) do
+		self:applySkin(slotNodes)
+	end
+end
+
+function ActorView:changeSkin(slot, priority, skin)
+	if not skin then
+		return
+	end
+
+	local s = {
+		definition = skin,
+		priority = priority
+	}
+
+	local slotNodes = self.skins[slot] or {}
+	table.insert(slotNodes, s)
+	table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
+
+	self:applySkin(slotNodes)
+
+	self.skins[slot] = slotNodes
 end
 
 function ActorView:move(position, instant)
