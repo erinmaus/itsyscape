@@ -48,7 +48,7 @@ function Interface:poke(actionID, actionIndex, e)
 		if func then
 			local s, r = pcall(func, self, unpack(e, e.n))
 			if not s then
-				print(r)
+				io.stderr:write("error: ", r, "\n")
 				self:sendPoke("$error", 1, { actionID = actionID, message = r })
 
 				return false
