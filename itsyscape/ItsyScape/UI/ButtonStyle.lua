@@ -15,23 +15,31 @@ local patchy = require "patchy"
 local ButtonStyle = Class(WidgetStyle)
 function ButtonStyle:new(t, resources)
 	self.images = {}
-	if t.inactive then
-		self.images['inactive'] = resources:load(patchy.load, t.inactive)
-	else
-		self.images['inactive'] = false
+	self.colors = {}
+	self.states = {}
+
+	local function loadStateStyle(state)
+		if t[state] then
+			if Class.isType(t[state], Color) then
+				self.colors[state] = Color(t[state]:get())
+				self.states[state] = function(width, height)
+					love.graphics.setColor(self.colors[state]:get())
+					love.graphics.rectangle('fill', 0, 0, width, height)
+				end
+			elseif type(t[state]) == 'string' then
+				self.images[t] = resources:load(patchy.load, t[state])
+				self.states[state] = function(width, height)
+					self.images[t]:draw(0, 0, width, height)
+				end
+			else
+				self.states[t] = function() --[[ Nothing. ]] end
+			end
+		end
 	end
 
-	if t.hover then
-		self.images['hover'] = resources:load(patchy.load, t.hover)
-	else
-		self.images['hover'] = false
-	end
-
-	if t.pressed then
-		self.images['pressed'] = resources:load(patchy.load, t.pressed)
-	else
-		self.images['pressed'] = false
-	end
+	loadStateStyle('inactive')
+	loadStateStyle('hover')
+	loadStateStyle('pressed')
 
 	if t.color then
 		self.color = Color(unpack(t.color))
@@ -47,6 +55,7 @@ function ButtonStyle:new(t, resources)
 
 	self.textX = t.textX or 0.5
 	self.textY = t.textY or 0.5
+	self.textAlign = t.textAlign or 'center'
 
 	if t.icon and type(t.icon) == 'table' and t.icon.filename then
 		self.icon = resources:load(love.graphics.newImage, t.icon.filename)
@@ -63,14 +72,14 @@ function ButtonStyle:draw(widget)
 	love.graphics.setColor(1, 1, 1, 1)
 
 	local width, height = widget:getSize()
-	if widget.isPressed and self.images['pressed'] then
-		self.images['pressed']:draw(0, 0, width, height)
+	if widget.isPressed and self.states['pressed'] then
+		self.states['pressed'](width, height)
 	elseif (widget.isMouseOver or widget:getIsFocused())
-	       and self.images['hover']
+	       and self.states['hover']
 	then
-		self.images['hover']:draw(0, 0, width, height)
-	elseif self.images['inactive'] then
-		self.images['inactive']:draw(0, 0, width, height)
+		self.states['hover'](width, height)
+	elseif self.states['inactive'] then
+		self.states['inactive'](width, height)
 	end
 
 	if self.icon then
@@ -92,12 +101,21 @@ function ButtonStyle:draw(widget)
 			love.graphics.setFont(self.font)
 		end
 
+		y = y - height / 2
+		if self.textAlign == 'center' then
+			x = x - width / 2
+		elseif self.textAlign == 'right' then
+			x = x - width
+		else
+			-- Nothing needed for 'left'.
+		end
+
 		love.graphics.printf(
 			widget:getText(),
-			x - width / 2,
-			y - font:getHeight() / 2,
+			x,
+			y,
 			width,
-			'center')
+			self.textAlign)
 		love.graphics.setFont(previousFont)
 	end
 end
