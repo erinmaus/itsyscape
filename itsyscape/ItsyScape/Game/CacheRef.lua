@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 
-local CacheRef = Class()
+local CacheRef, Metatable = Class()
 
 -- Creates a new CacheRef of the provided resourceTypeID.
 --
@@ -51,6 +51,10 @@ function CacheRef:load(...)
 	resource:loadFromFile(self.filename, ...)
 	
 	return resource
+end
+
+function Metatable.__eq(a, b)
+	return a.resourceTypeID == b.resourceTypeID and a.filename == b.filename
 end
 
 return CacheRef
