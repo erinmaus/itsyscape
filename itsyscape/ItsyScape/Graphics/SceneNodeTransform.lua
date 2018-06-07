@@ -113,7 +113,7 @@ end
 -- * scale defaults to 1
 function SceneNodeTransform:translate(direction, scale)
 	scale = scale or 1
-	offset = (direction or Vector.ZERO) * scale
+	local offset = (direction or Vector.ZERO) * scale
 
 	self.translation = self.translation + offset
 	self.isTransformDirty = true

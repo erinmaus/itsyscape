@@ -105,8 +105,8 @@ function Tile:testRay(ray, i, j, scale)
 
 	local success, point
 	do
-		s1, p1 = ray:hitTriangle(topLeft, topRight, bottomRight)
-		s2, p2 = ray:hitTriangle(topLeft, bottomRight, bottomLeft)
+		local s1, p1 = ray:hitTriangle(topLeft, topRight, bottomRight)
+		local s2, p2 = ray:hitTriangle(topLeft, bottomRight, bottomLeft)
 
 		success = s1 or s2
 		point = p1 or p2
