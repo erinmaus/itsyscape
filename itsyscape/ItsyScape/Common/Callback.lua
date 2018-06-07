@@ -41,7 +41,7 @@ function Callback:invoke(...)
 	local args = { n = select('#', ...), ... }
 
 	for handler, h in pairs(self.handlers) do
-		function callHandler()
+		local function callHandler()
 			local prefixArgs = h[1]
 			local concatArgs = { n = args.n + prefixArgs.n }
 			for i = 1, prefixArgs.n do

@@ -13,7 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
 -- Map type. Stores tiles.
-Map = Class()
+local Map = Class()
 
 -- Constructs a new stage with the provided dimensions.
 --
@@ -82,8 +82,8 @@ end
 --
 -- Returns (nil, nil) if (x, z) are out of bounds.
 function Map:toTile(x, z)
-	i = math.floor(x / self.cellSize) + 1
-	j = math.floor(z / self.cellSize) + 1
+	local i = math.floor(x / self.cellSize) + 1
+	local j = math.floor(z / self.cellSize) + 1
 
 	if i < 0 or j < 0 or i > self.width or j > self.height then
 		return nil, nil
@@ -100,8 +100,8 @@ end
 -- Returns a tuple of (tile, i, j), where i and j are the indices of the tile
 -- in the map.
 function Map:getTileAt(x, z)
-	i = math.floor(x / self.cellSize) + 1
-	j = math.floor(z / self.cellSize) + 1
+	local i = math.floor(x / self.cellSize) + 1
+	local j = math.floor(z / self.cellSize) + 1
 	return self:getTile(i, j)
 end
 
