@@ -206,17 +206,25 @@ function ActorView:changeSkin(slot, priority, skin)
 		return
 	end
 
-	local s = {
-		definition = skin,
-		priority = priority
-	}
-
 	local slotNodes = self.skins[slot] or {}
-	table.insert(slotNodes, s)
-	table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
+	if not priority then
+		for i = 1, #slotNodes do
+			if slotNodes[i].definition == skin then
+				table.remove(slotNodes, i)
+				break
+			end
+		end
+	else
+		local s = {
+			definition = skin,
+			priority = priority
+		}
+
+		table.insert(slotNodes, s)
+		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
+	end
 
 	self:applySkin(slotNodes)
-
 	self.skins[slot] = slotNodes
 end
 

@@ -168,22 +168,35 @@ function LocalActor:playAnimation(slot, priority, animation)
 end
 
 function LocalActor:setSkin(slot, priority, skin)
-	local slot = self.skin[slot] or {}
+	local s = self.skin[slot] or {}
 
 	-- Remove existing slot if necessary.
-	for i = 1, #slot do
-		if slot[i].priority == priority then
-			table.remove(slot, i)
+	for i = 1, #s do
+		if s[i].priority == priority then
+			table.remove(s, i)
 			break
 		end
 	end
 
 	if skin ~= nil then
-		table.insert(slot, { priority = priority, skin = skin })
-		table.sort(slot, function(a, b) return a.priority < b.priority end)
+		table.insert(s, { priority = priority, skin = skin })
+		table.sort(s, function(a, b) return a.priority < b.priority end)
 	end
 
 	self.onSkinChanged(self, slot, priority, skin)
+end
+
+function LocalActor:unsetSkin(slot, skin)
+	local s = self.skin[slot]
+	if s then
+		for i = 1, #s do
+			if s[i].skin == skin then
+				table.remove(s, i)
+				self.onSkinChanged(self, slot, false, skin)
+				break
+			end
+		end
+	end
 end
 
 function LocalActor:getSkin(index)

@@ -139,6 +139,16 @@ function Actor:setSkin(slot, priority, skin)
 	Class.ABSTRACT()
 end
 
+-- Unsets a skin at the provided slot.
+--
+-- skin should be CacheRef to an ItsyScape.Game.Skin-derived object.
+--
+-- Should invoke Actor.onSkinChanged with the slot, priority (false), and skin.
+-- A priority of false means the skin is to be removed.
+function Actor:unsetSkin(slot, skin)
+	Class.ABSTRACT()
+end
+
 -- Returns the skins at the slot, or nil if no skin is set.
 --
 -- Return values are in the order skin1, priority1, ..., skinN, priorityN.
