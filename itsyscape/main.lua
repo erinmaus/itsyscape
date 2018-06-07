@@ -11,8 +11,9 @@ end
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
-local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Probe = require "ItsyScape.Game.Probe"
+local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
@@ -44,7 +45,7 @@ local Instance = {}
 local Input = {
 	isCameraDragging = false
 }
-TICK_RATE = 1 / LocalGame.TICKS_PER_SECOND
+local TICK_RATE = 1 / LocalGame.TICKS_PER_SECOND
 
 function love.load()
 	Instance.Camera = ThirdPersonCamera()
@@ -167,32 +168,19 @@ function love.mousepressed(x, y, button)
 			local b = Vector(love.graphics.unproject(x, y, 0.1))
 			local r = Ray(a, b - a)
 
-			local map = Instance.Game:getStage():getMap(1)
-			local tiles = map:testRay(r)
-			local function sortFunc(a, b)
-				local i = a[Map.RAY_TEST_RESULT_POSITION]
-				local j = b[Map.RAY_TEST_RESULT_POSITION]
-				local s = Vector(love.graphics.project(i.x, i.y, i.z))
-				local t = Vector(love.graphics.project(j.x, j.y, j.z))
+			local probe = Probe(Instance.Game, Instance.GameDB, r)
+			probe:all()
 
-				return s.z < t.z
-			end
-			table.sort(tiles, sortFunc)
-
-			local best = tiles[1]
-			if best then
-				local player = Instance.Game:getPlayer()
-				local items = Instance.Game:getStage():getItemsAtTile(best[Map.RAY_TEST_RESULT_I], best[Map.RAY_TEST_RESULT_J], 1)
-				if #items == 0 then
-					player:walk(best[Map.RAY_TEST_RESULT_I], best[map.RAY_TEST_RESULT_J], 1)
-				else
-					print 'taking item'
-					Instance.Game:getStage():takeItem(
-						best[Map.RAY_TEST_RESULT_I],
-						best[map.RAY_TEST_RESULT_J],
-						1,
-						items[1].ref)
+			if probe:getCount() == 1 then
+				for action in probe:iterate() do
+					local s, r = pcall(action.callback)
+					if not s then
+						io.stderr:write("error: ", r, "\n")
+					end
+					break
 				end
+			else
+				Instance.UIView:probe(probe:toArray())
 			end
 		elseif button == 2 then
 			Input.isCameraDragging = true
