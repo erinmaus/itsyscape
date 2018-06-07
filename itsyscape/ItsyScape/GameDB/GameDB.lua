@@ -98,7 +98,7 @@ end
 
 function GameDB:getResource(name, type)
 	local resourceType = Mapp.ResourceType()
-	if self.brochure:tryGetResourceType("Item", resourceType) then
+	if self.brochure:tryGetResourceType(type, resourceType) then
 		for resource in self.brochure:findResourcesByNameAndType(name, resourceType) do
 			return resource
 		end
