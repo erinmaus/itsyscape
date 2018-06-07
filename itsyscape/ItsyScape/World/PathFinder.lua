@@ -98,6 +98,12 @@ function PathFinder.AStar:find(start, stop)
 	self.open = {}
 	self.closed = {}
 
+	if self:getPathFinder():sameLocation(start, stop) then
+		local path = Path()
+		path:prependNode(self:getPathFinder():materialize(start))
+		return path
+	end
+
 	local startEdge = self:getPathFinder():getEdge(start)
 	local nextEdge = nil
 	if startEdge ~= nil then
