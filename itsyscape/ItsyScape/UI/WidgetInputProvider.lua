@@ -57,7 +57,7 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 				px + wx - sx,
 				py + wy - sy,
 				w,
-				filter)
+				result)
 		end
 	end
 
