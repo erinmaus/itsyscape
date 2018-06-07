@@ -17,6 +17,7 @@ local ModelSkin = Class(Skin)
 function ModelSkin:new()
 	self.model = false
 	self.texture = false
+	self.isBlocking = true
 end
 
 -- Constructs a ModelSkin from a file at filename.
@@ -25,6 +26,8 @@ end
 -- {
 --   model = "<path to model>"     -- Absolute path to the model.
 --   texture = "<path to texture>" -- Optional. Absolute path to the texture.
+--   blocking = <boolean>          -- Optional. Whether or not the ModelSkin is blocking.
+--                                 -- Defaults to true.
 -- }
 function ModelSkin:loadFromFile(filename)
 	local file = "return " .. love.filesystem.read(filename)
@@ -37,6 +40,17 @@ function ModelSkin:loadFromFile(filename)
 	else
 		self.texture = false
 	end
+
+	if result.isBlocking == nil then
+		self.isBlocking = true
+	else
+		-- Ensure isBlocking is a boolean, not a truthy value.
+		if result.isBlocking then
+			self.isBlocking = true
+		else
+			self.isBlocking = false
+		end
+	end
 end
 
 -- Gets the model CacheRef.
@@ -47,6 +61,10 @@ end
 -- Gets the texture CacheRef. If the model is untextured, returns false.
 function ModelSkin:getTexture()
 	return self.texture
+end
+
+function ModelSkin:getIsBlocking()
+	return self.isBlocking
 end
 
 return ModelSkin
