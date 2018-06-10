@@ -65,4 +65,16 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	return text, color
 end
 
+function Utility.Item.getName(id, gameDB, lang)
+	lang = lang or "en-US"
+
+	local itemResource = gameDB:getResource(id, "Item")
+	local nameRecord = gameDB:getRecords("ResourceName", { Resource = itemResource, Language = "en-US" }, 1)[1]
+	if nameRecord then
+		return nameRecord:get("Value")
+	else
+		return false
+	end
+end
+
 return Utility

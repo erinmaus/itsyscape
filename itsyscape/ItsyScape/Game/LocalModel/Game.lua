@@ -20,12 +20,17 @@ LocalGame.TICKS_PER_SECOND = 10
 function LocalGame:new(gameDB)
 	Game.new(self)
 
+	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
 	self.player = LocalPlayer(self)
 	self.playerSpawned = false
 	self.stage = LocalStage(self)
 	self.ui = LocalUI(self)
 	self.ticks = 0
+end
+
+function LocalGame:getGameDB()
+	return self.gameDB
 end
 
 function LocalGame:getPlayer()

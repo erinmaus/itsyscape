@@ -173,12 +173,9 @@ function Probe:loot()
 			local name
 			do
 				-- TODO: [LANG]
-				local item = self.gameDB:getResource("Item", item.id)
-				local record = self.gameDB:getRecords("ResourceName", { Resource = item, Language = "en-US" }, 1)[1]
-				if record then
-					name = record:get("Value")
-				else
-					name = item.id
+				name = Utility.Item.getName(item.id, self.gameDB, "en-US")
+				if not name then
+					name = "*" .. item.id
 				end
 			end
 

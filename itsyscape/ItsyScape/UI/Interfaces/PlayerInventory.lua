@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
@@ -66,6 +67,7 @@ function PlayerInventory:setNumItems(value)
 				button.onDrop:register(self.swap, self)
 				button.onDrag:register(self.drag, self)
 				button.onLeftClick:register(self.activate, self)
+				button.onRightClick:register(self.probe, self)
 
 				self:addChild(button)
 				table.insert(self.buttons, button)
@@ -125,10 +127,74 @@ function PlayerInventory:swap(button, x, y)
 	end
 end
 
+function PlayerInventory:probe(button)
+	local index = button:getIcon():getData('index')
+	local items = self:getState().items or {}
+	local item = items[index]
+	if item then
+		local object
+		do
+			-- TODO: [LANG]
+			local gameDB = self:getView():getGame():getGameDB()
+			object = Utility.Item.getName(item.id, gameDB, "en-US")
+			if not object then
+				object = "*" .. item.id
+			end
+		end
+
+		local actions = {}
+		for i = 1, #item.actions do
+			table.insert(actions, {
+				id = item.actions[i].type,
+				verb = item.actions[i].verb,
+				object = object,
+				callback = function()
+					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
+				end
+			})
+		end
+
+		table.insert(actions, {
+			id = "Use",
+			verb = "Use", -- TODO: [LANG]
+			object = object,
+			callback = function()
+				Log.info("Not yet implemented.")
+			end
+		})
+
+		table.insert(actions, {
+			id = "Examine",
+			verb = "Examine", -- TODO: [LANG]
+			object = object,
+			callback = function()
+				-- TODO: examine item
+				Log.info("It's a %s.", object)
+			end
+		})
+
+		table.insert(actions, {
+			id = "Drop",
+			verb = "Drop", -- TODO: [LANG]
+			object = object,
+			callback = function()
+				self:sendPoke("drop", nil, { index = index })
+			end
+		})
+
+		self:getView():probe(actions)
+	end
+end
+
 function PlayerInventory:activate(button)
 	local index = button:getIcon():getData('index')
-	if index then
-		self:sendPoke("activate", nil, { index = index })
+	local items = self:getState().items or {}
+	local item = items[index]
+	if item then
+		local action = item.actions[1]
+		if action then
+			self:sendPoke("poke", nil, { index = index, id = action.id })
+		end
 	end
 end
 

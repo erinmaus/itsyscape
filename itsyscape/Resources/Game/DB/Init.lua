@@ -15,6 +15,7 @@ Game "ItsyScape"
 	ResourceType "Skill"
 
 	Meta "Equipment" {
+			-- Various stats.
 			AccuracyStab = Meta.TYPE_INTEGER,
 			AccuracySlash = Meta.TYPE_INTEGER,
 			AccuracyCrush = Meta.TYPE_INTEGER,
@@ -29,7 +30,20 @@ Game "ItsyScape"
 			StrengthRanged = Meta.TYPE_INTEGER,
 			StrengthMagic = Meta.TYPE_INTEGER,
 			Prayer = Meta.TYPE_INTEGER,
+
+			-- The equip slot.
+			--
+			-- For a player, this corresponds to ItsyScape.Game.Equipment.PLAYER_SLOT_*.
+			EquipSlot = Meta.TYPE_INTEGER,
+
+			-- The equipment resource. Should be an Item.
 			Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "EquipmentModel" {
+		Type = Meta.TYPE_TEXT,
+		Filename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
 	}
 
 	Meta "Item" {
@@ -59,14 +73,6 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
-	Meta "EquipAction" {
-		-- The equip slot.
-		--
-		-- For a player, this corresponds to ItsyScape.Game.Equipment.PLAYER_SLOT_*.
-		EquipSlot = Meta.TYPE_INTEGER,
-		Action = Meta.TYPE_ACTION
-	}
-
 	ActionType "Equip"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
@@ -91,11 +97,6 @@ do
 		}
 	}
 
-	ItsyScape.Meta.EquipAction {
-		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
-		Action = equipAction
-	}
-
 	ItsyScape.Resource.Item "AmuletOfYendor" {
 		equipAction
 	}
@@ -115,6 +116,13 @@ do
 		StrengthRanged = 50,
 		StrengthMagic = 50,
 		Prayer = 50,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
+		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/Amulets/AmuletOfYendor.lua",
 		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
 	}
 
