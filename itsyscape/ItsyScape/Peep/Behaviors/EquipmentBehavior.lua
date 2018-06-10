@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Peep/Behaviors/InventoryBehavior.lua
+-- ItsyScape/Peep/Behaviors/EquipmentBehavior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,15 +12,15 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies the position of a Peep.
-local InventoryBehavior = Behavior("Inventory")
+local EquipmentBehavior = Behavior("Equipment")
 
--- Constructs a InventoryBehavior.
+-- Constructs a EquipmentBehavior.
 --
--- 'inventory' should be false or an InventoryProvider.
-function InventoryBehavior:new()
+-- 'equipment' should be false or an EquipmentInventoryProvider.
+function EquipmentBehavior:new()
 	Behavior.Type.new(self)
 
-	self.inventory = false
+	self.equipment = false
 end
 
-return InventoryBehavior
+return EquipmentBehavior

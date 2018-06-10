@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/ActionDefinition.lua
+-- ItsyScape/Game/StateProvider.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,19 +9,14 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 
-local ActionDefinition = Class()
+local StateProvider = Class()
 
-function ActionDefinition:new(verb, id)
-	self.verb = verb or "???"
-	self.id = id or false
+function StateProvider:new()
+	-- Nothing.
 end
 
-function ActionDefinition:getVerb()
-	return self.verb
+function StateProvider:has(name, count, flags)
+	return Class.ABSTRACT()
 end
 
-function ActionDefinition:getID()
-	return self.id
-end
-
-return ActionDefinition
+return StateProvider

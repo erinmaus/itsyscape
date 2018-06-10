@@ -88,6 +88,10 @@ end
 
 function GameDB:getRecords(name, t, limit)
 	local definition = self:getRecordDefinition(name)
+	if not definition then
+		return {}
+	end
+
 	local query = Mapp.Query(definition)
 	for k, v in pairs(t) do
 		query:set(k, v)

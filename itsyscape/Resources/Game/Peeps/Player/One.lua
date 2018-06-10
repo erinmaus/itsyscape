@@ -10,8 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
+local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -23,6 +25,8 @@ local One = Class(Peep)
 function One:new(...)
 	Peep.new(self, 'Player', ...)
 
+	self:addBehavior(ActorReferenceBehavior)
+	self:addBehavior(EquipmentBehavior)
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(InventoryBehavior)
@@ -39,6 +43,9 @@ function One:new(...)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
+
+	local equipment = self:getBehavior(EquipmentBehavior)
+	equipment.equipment = EquipmentInventoryProvider(self)
 end
 
 function One:assign(director)
@@ -46,6 +53,9 @@ function One:assign(director)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)
+
+	local equipment = self:getBehavior(EquipmentBehavior)
+	director:getItemBroker():addProvider(equipment.equipment)
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()

@@ -491,10 +491,14 @@ function ItemBroker.Inventory:untag(item, key)
 end
 
 -- Returns an iterator over the tags for 'item'.
-function ItemBroker.Inventory:tags(item)
+function ItemBroker.Inventory:tags(item, key)
 	assert(self:has(item), "item not in inventory")
 
-	return pairs(self.tags[item])
+	if key == nil then
+		return pairs(self.tags[item])
+	else
+		return self.tags[item][key]
+	end
 end
 
 -- Adds a key with 'value' to the Inventory.
@@ -832,6 +836,16 @@ function ItemBroker:untagItem(item, key)
 	local provider = self.items[item]
 	local inventory = self.inventories[provider]
 	return inventory:untag(item, key)
+end
+
+-- Gets tag, 'key', belonging to the item.
+function ItemBroker:getItemTag(item, key)
+	assert(item ~= nil, "item is nil")
+	assert(self:hasItem(item), "item not in broker")
+
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
+	return inventory:tags(item, key)
 end
 
 -- Creates a transaction.

@@ -21,7 +21,7 @@ function Model:new(d, skeleton)
 end
 
 function Model:loadFromFile(filename, skeleton)
-	local data = "return " .. love.filesystem.read(filename)
+	local data = "return " .. (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
 	local result = setfenv(chunk, {})() or {}
 
@@ -81,7 +81,7 @@ function Model:loadFromTable(t, skeleton)
 	local format = t.format or {
 		{ 'VertexPosition', 'float', 3 },
 		{ 'VertexNormal', 'float', 3 },
-		{ 'VertexTexture', 'float', 3 },
+		{ 'VertexTexture', 'float', 2 },
 		{ 'VertexBoneIndex', 'float', 4 },
 		{ 'VertexBoneWeight', 'float', 4 },
 	}

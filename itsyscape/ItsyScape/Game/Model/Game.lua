@@ -22,6 +22,11 @@ function Game:new()
 	-- Nothing.
 end
 
+-- Gets the GameDB.
+function Game:getGameDB()
+	return Class.ABSTRACT()
+end
+
 -- Returns the player.
 --
 -- The player is an implementation of ItsyScape.Game.Model.Player. This value
