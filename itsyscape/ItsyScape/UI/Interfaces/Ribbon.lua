@@ -37,7 +37,7 @@ function Ribbon:new(id, index, ui)
 
 	self:addButton("PlayerInventory", "Resources/Game/UI/Icons/Common/Inventory.png")
 	self:addButton("PlayerEquipment", "Resources/Game/UI/Icons/Common/Equipment.png")
-	self:addButton("PlayerStats", nil)
+	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
 end
 
 function Ribbon:addButton(tab, icon)

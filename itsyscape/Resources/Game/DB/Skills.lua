@@ -9,9 +9,13 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Skill "Magic"
+ItsyScape.Resource.Skill "Wisdom"
+ItsyScape.Resource.Skill "Archery"
+ItsyScape.Resource.Skill "Dexterity"
 ItsyScape.Resource.Skill "Attack"
 ItsyScape.Resource.Skill "Strength"
 ItsyScape.Resource.Skill "Defense"
+ItsyScape.Resource.Skill "Constitution"
 
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"
