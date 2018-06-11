@@ -8,6 +8,8 @@ do
 		cpath)
 end
 
+Log = require "ItsyScape.Common.Log"
+
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -124,8 +126,7 @@ function love.load()
 	Instance.playerPreviousPosition = position
 	Instance.playerCurrentPosition = position
 
-	Instance.Game:getUI():open("PlayerInventory")
-	Instance.Game:getUI().onPoke("PlayerInventory", 1, "setSize", nil, { 248, 428 })
+	Instance.Game:getUI():open("Ribbon")
 end
 
 function love.update(delta)
