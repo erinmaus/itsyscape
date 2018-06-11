@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Actions/Equip.lua
+-- Resources/Game/Actions/Dequip.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,14 +13,10 @@ local Action = require "ItsyScape.Peep.Action"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 
-local Equip = Class(Action)
-Equip.SCOPES = { ['inventory'] = true }
+local Dequip = Class(Action)
+Dequip.SCOPES = { ['equipment'] = true }
 
-function Equip:perform(state, item, peep)
-	--if not self:canPerform(state) then
-	--	return false
-	--end
-
+function Dequip:perform(state, item, peep)
 	local director = peep:getDirector()
 	local inventory = peep:getBehavior(InventoryBehavior)
 	local equipment = peep:getBehavior(EquipmentBehavior)
@@ -37,7 +33,7 @@ function Equip:perform(state, item, peep)
 	local transaction = broker:createTransaction()
 	transaction:addParty(inventory)
 	transaction:addParty(equipment)
-	transaction:transfer(equipment, item)
+	transaction:transfer(inventory, item)
 	local s, r = transaction:commit()
 	if not s then
 		io.stderr:write("error: ", r, "\n")
@@ -47,4 +43,4 @@ function Equip:perform(state, item, peep)
 	return true
 end
 
-return Equip
+return Dequip

@@ -56,7 +56,7 @@ function EquipmentInventoryProvider:assignKey(item)
 	if equipmentRecord then
 		local slot = equipmentRecord:get("EquipSlot")
 		if slot then
-			self:getBroker():tagItem(item, slot)
+			self:getBroker():setItemKey(item, slot)
 			self:getBroker():tagItem(item, 'equip-record', equipmentRecord)
 			self:getBroker():tagItem(item, 'equip-slot', slot)
 
@@ -100,7 +100,7 @@ function EquipmentInventoryProvider:onTransferFrom(item, count, purpose)
 	if equipStatsTag then
 		for i = 1, #EquipmentInventoryProvider.STATS do
 			local stat = EquipmentInventoryProvider.STATS[i]
-			self.stats[stat] = self.stats[stat] - equipmentRecord:get(stat)
+			self.stats[stat] = self.stats[stat] - equipStatsTag:get(stat)
 		end
 	end
 
@@ -114,7 +114,7 @@ function EquipmentInventoryProvider:onTransferFrom(item, count, purpose)
 			local ref = CacheRef(
 				equipModelTag:get("Type"),
 				equipModelTag:get("Filename"))
-			actor:unsetSkin(slot, 1, ref)
+			actor:unsetSkin(equipSlotTag, ref)
 		end
 	end
 end

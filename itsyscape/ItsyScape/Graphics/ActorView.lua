@@ -159,7 +159,7 @@ function ActorView:applySkin(slotNodes)
 			slot.sceneNode:setParent(nil)
 		end
 
-		if self.body and not self.ignore then
+		if self.body and not ignore then
 			if skin:isType(ModelSkin) then
 				slot.instance = skin:load(self.body:getSkeleton())
 				slot.sceneNode = ModelSceneNode()
@@ -209,8 +209,14 @@ function ActorView:changeSkin(slot, priority, skin)
 	local slotNodes = self.skins[slot] or {}
 	if not priority then
 		for i = 1, #slotNodes do
-			if slotNodes[i].definition == skin then
+			local s = slotNodes[i]
+			if s.definition == skin then
 				table.remove(slotNodes, i)
+
+				if s.sceneNode then
+					s.sceneNode:setParent(nil)
+				end
+
 				break
 			end
 		end

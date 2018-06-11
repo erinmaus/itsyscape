@@ -27,6 +27,11 @@ function Controller:getDirector()
 	return self.director
 end
 
+-- Gets the game this controller belongs to.
+function Controller:getGame()
+	return self.director:getGameInstance()
+end
+
 -- Called when the Controller is first opened.
 function Controller:open()
 	-- Nothing.

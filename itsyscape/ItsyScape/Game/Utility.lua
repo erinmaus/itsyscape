@@ -15,6 +15,66 @@ local Color = require "ItsyScape.Graphics.Color"
 -- any resources.
 local Utility = {}
 
+function Utility.performAction(game, resource, id, scope, ...)
+	local gameDB = game:getGameDB()
+	local brochure = gameDB:getBrochure()
+	local foundAction = false
+	for action in brochure:findActionsByResource(resource) do
+		if action.id.value == id then
+			local definition = brochure:getActionDefinitionFromAction(action)
+			local typeName = string.format("Resources.Game.Actions.%s", definition.name)
+			local s, r = pcall(require, typeName)
+			if not s then
+				Log.error("failed to load action %s: %s", typeName, r)
+			else
+				local ActionType = r
+				if ActionType.SCOPES and ActionType.SCOPES[scope] then
+					local a = ActionType(game, action)
+					a:perform(...)
+
+					foundAction = true
+				else
+					Log.error(
+						"action %s cannot be performed from inventory (on item %s @ %d)",
+						typeName,
+						item:getID(),
+						e.index)
+				end
+			end
+		end
+	end
+
+	return foundAction
+end
+
+function Utility.getActions(game, resource, scope)
+	local actions = {}
+	local gameDB = game:getGameDB()
+	local brochure = gameDB:getBrochure()
+	for action in brochure:findActionsByResource(resource) do
+		local definition = brochure:getActionDefinitionFromAction(action)
+		local typeName = string.format("Resources.Game.Actions.%s", definition.name)
+		local s, r = pcall(require, typeName)
+		if not s then
+			Log.error("failed to load action %s: %s", typeName, r)
+		else
+			local ActionType = r
+			if ActionType.SCOPES and ActionType.SCOPES[scope] then
+				local a = ActionType(game, action)
+				local t = {
+					id = action.id.value,
+					type = definition.name,
+					verb = a:getVerb() or a:getName()
+				}
+
+				table.insert(actions, t)
+			end
+		end
+	end
+
+	return actions
+end
+
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 

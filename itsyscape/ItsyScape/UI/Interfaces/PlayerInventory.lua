@@ -10,16 +10,16 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
-local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
-local PlayerInventory = Class(Interface)
+local PlayerInventory = Class(PlayerTab)
 
 function PlayerInventory:new(id, index, ui)
-	Interface.new(self, id, index, ui)
+	PlayerTab.new(self, id, index, ui)
 
 	self.buttons = {}
 	self.numItems = 0
@@ -30,10 +30,14 @@ function PlayerInventory:new(id, index, ui)
 		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
 	self:addChild(self.panel)
+
+	self.panel:setSize(self:getSize())
+
+	self.buttons = {}
 end
 
 function PlayerInventory:poke(actionID, actionIndex, e)
-	if not Interface.poke(self, actionID, actionIndex, e) then
+	if not PlayerTab.poke(self, actionID, actionIndex, e) then
 		-- Nothing.
 	end
 end
@@ -87,18 +91,22 @@ function PlayerInventory:performLayout()
 	local padding = 8
 	local x, y = 0, padding
 
-	for _, child in ipairs(self.buttons) do
-		local childWidth, childHeight = child:getSize()
-		if x > 0 and x + childWidth + InventoryItemButton.DEFAULT_PADDING > width then
-			x = 0
-			y = y + childHeight + padding
+	-- performLayout is invoked in new so we can't depend on buttons being
+	-- non-nil since PlayerTab constructor runs first
+	if self.buttons then
+		for _, child in ipairs(self.buttons) do
+			local childWidth, childHeight = child:getSize()
+			if x > 0 and x + childWidth + InventoryItemButton.DEFAULT_PADDING > width then
+				x = 0
+				y = y + childHeight + padding
+			end
+
+			child:setPosition(x + padding, y)
+			x = x + childWidth + padding
 		end
 
-		child:setPosition(x + padding, y)
-		x = x + childWidth + padding
+		self.panel:setSize(width, height)
 	end
-
-	self.panel:setSize(width, height)
 end
 
 function PlayerInventory:drag(button, x, y)

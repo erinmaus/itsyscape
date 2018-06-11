@@ -74,6 +74,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Equip"
+	ActionType "Dequip"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
@@ -90,6 +91,8 @@ end
 include "Resources/Game/DB/Skills.lua"
 
 do
+	ActionType "Debug_Ascend"
+
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
@@ -97,8 +100,18 @@ do
 		}
 	}
 
+	local ascendAction = ItsyScape.Action.Debug_Ascend()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Ascend",
+		Language = "en-US",
+		Action = ascendAction
+	}
+
 	ItsyScape.Resource.Item "AmuletOfYendor" {
-		equipAction
+		equipAction,
+		ItsyScape.Action.Dequip(),
+		ascendAction
 	}
 
 	ItsyScape.Meta.Equipment {
@@ -140,4 +153,6 @@ do
 	}
 
 	ItsyScape.Utility.tag(ItsyScape.Resource.Item "AmuletOfYendor", "x_debug")
+
+	include "Resources/Game/DB/Items/ErrinTheHeathen.lua"
 end
