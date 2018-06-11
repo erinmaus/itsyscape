@@ -183,6 +183,8 @@ function LocalActor:setSkin(slot, priority, skin)
 		table.sort(s, function(a, b) return a.priority < b.priority end)
 	end
 
+	self.skin[slot] = s
+
 	self.onSkinChanged(self, slot, priority, skin)
 end
 

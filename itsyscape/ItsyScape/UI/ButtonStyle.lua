@@ -27,12 +27,12 @@ function ButtonStyle:new(t, resources)
 					love.graphics.rectangle('fill', 0, 0, width, height)
 				end
 			elseif type(t[state]) == 'string' then
-				self.images[t] = resources:load(patchy.load, t[state])
+				self.images[state] = resources:load(patchy.load, t[state])
 				self.states[state] = function(width, height)
-					self.images[t]:draw(0, 0, width, height)
+					self.images[state]:draw(0, 0, width, height)
 				end
 			else
-				self.states[t] = function() --[[ Nothing. ]] end
+				self.states[state] = function() --[[ Nothing. ]] end
 			end
 		end
 	end
@@ -83,8 +83,8 @@ function ButtonStyle:draw(widget)
 	end
 
 	if self.icon then
-		local x = width * self.iconX - self.iconWidth / 2
-		local y = height * self.iconY - self.iconHeight / 2
+		local x = width * self.iconX
+		local y = height * self.iconY
 		local scaleX = self.iconWidth / self.icon:getWidth()
 		local scaleY = self.iconHeight / self.icon:getHeight()
 		love.graphics.draw(self.icon, x, y, 0, scaleX, scaleY, self.iconWidth / 2, self.iconHeight / 2)

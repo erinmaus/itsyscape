@@ -12,13 +12,18 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local Action = Class()
 
-function Action:new(gameDB, action)
-	self.gameDB = gameDB
+function Action:new(game, action)
+	self.game = game
+	self.gameDB = game:getGameDB()
 	self.action = action
 
 	local definition = self.gameDB:getBrochure():getActionDefinitionFromAction(action)
 	self.definitionName = definition.name
 	self.definitionID = definition.id.value
+end
+
+function Action:getGame()
+	return self.game
 end
 
 function Action:getGameDB()

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Equipment = require "ItsyScape.Game.Equipment"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -62,6 +63,10 @@ function One:assign(director)
 	t:addParty(inventory.inventory)
 	t:spawn(inventory.inventory, "AmuletOfYendor")
 	t:spawn(inventory.inventory, "AmuletOfYendor", 10, true)
+	t:spawn(inventory.inventory, "ErrinTheHeathensHat")
+	t:spawn(inventory.inventory, "ErrinTheHeathensCoat")
+	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
+	t:spawn(inventory.inventory, "ErrinTheHeathensBoots")
 	t:commit()
 end
 
@@ -72,8 +77,24 @@ function One:ready(director, game)
 	end
 
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
-	actor:setSkin('body', 1, CacheRef("ItsyScape.Game.Skin.ModelSkin", "Resources/Game/Skins/Player_One/Body.lua"))
 	actor:setSkin('eyes', 1, CacheRef("ItsyScape.Game.Skin.ModelSkin", "Resources/Game/Skins/Player_One/Eyes.lua"))
+
+	local head = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Itsy/Helmet.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+	local body = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Itsy/Body.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+	local hands = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Itsy/Gloves.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
+	local feet = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Itsy/Boots.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
 end
 
 return One

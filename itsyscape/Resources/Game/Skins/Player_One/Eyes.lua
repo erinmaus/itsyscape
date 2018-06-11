@@ -1,4 +1,4 @@
 {
-	model = "Resources/Game/Skins/Player_One/Eyes.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Face.lmesh",
 	texture = "Resources/Game/Skins/Player_One/Eyes.png"
 }

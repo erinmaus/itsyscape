@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
@@ -61,37 +62,21 @@ function PlayerInventoryController:pullItem(item)
 end
 
 function PlayerInventoryController:pullActions(item, serializedItem)
-	serializedItem.actions = {}
-
 	-- Noted items don't have actions.
 	if item:isNoted() then
+		serializedItem.actions = {}
 		return
 	end
 
 	local gameDB = self:getDirector():getGameDB()
 	local itemResource = gameDB:getResource(item:getID(), "Item")
 	if itemResource then
-		local brochure = self:getDirector():getGameDB():getBrochure()
-		for action in brochure:findActionsByResource(itemResource) do
-			local definition = brochure:getActionDefinitionFromAction(action)
-			local typeName = string.format("Resources.Game.Actions.%s", definition.name)
-			local s, r = pcall(require, typeName)
-			if not s then
-				Log.error("failed to load action %s: %s", typeName, r)
-			else
-				local ActionType = r
-				if ActionType.SCOPES and ActionType.SCOPES['inventory'] then
-					local a = ActionType(self:getDirector():getGameDB(), action)
-					local t = {
-						id = action.id.value,
-						type = definition.name,
-						verb = a:getVerb() or a:getName()
-					}
-
-					table.insert(serializedItem.actions, t)
-				end
-			end
-		end
+		serializedItem.actions = Utility.getActions(
+			self:getDirector():getGameInstance(),
+			itemResource,
+			'inventory')
+	else
+		serializedItem.actions = {}
 	end
 end
 
@@ -117,37 +102,16 @@ function PlayerInventoryController:pokeItem(e)
 		return false
 	end
 
-	local gameDB = self:getDirector():getGameDB()
-	local itemResource = gameDB:getResource(item:getID(), "Item")
+	local itemResource = self:getGame():getGameDB():getResource(item:getID(), "Item")
 	if itemResource then
-		local brochure = self:getDirector():getGameDB():getBrochure()
-		local foundAction = false
-		for action in brochure:findActionsByResource(itemResource) do
-			if action.id.value == e.id then
-				local definition = brochure:getActionDefinitionFromAction(action)
-				local typeName = string.format("Resources.Game.Actions.%s", definition.name)
-				local s, r = pcall(require, typeName)
-				if not s then
-					Log.error("failed to load action %s: %s", typeName, r)
-				else
-					local ActionType = r
-					if ActionType.SCOPES and ActionType.SCOPES['inventory'] then
-						local a = ActionType(self:getDirector():getGameDB(), action)
-						a:perform(nil, item, self:getPeep())
+		local success = Utility.performAction(
+			self:getGame(),
+			itemResource,
+			e.id,
+			'inventory',
+			nil, item, self:getPeep())
 
-						foundAction = true
-					else
-						Log.error(
-							"action %s cannot be performed from inventory (on item %s @ %d)",
-							typeName,
-							item:getID(),
-							e.index)
-					end
-				end
-			end
-		end
-
-		if not foundAction then
+		if not success then
 			Log.error(
 				"action #%d not found (on item %s @ %d)",
 				e.id,

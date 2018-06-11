@@ -70,6 +70,15 @@ function LocalUI:getGame()
 	return self.game
 end
 
+function LocalUI:get(interfaceID, index)
+	local interfaces = self.interfaces[interfaceID]
+	if interfaces then
+		return interfaces[index]
+	end
+
+	return nil
+end
+
 function LocalUI:open(interfaceID)
 	local i = self.interfaces[interfaceID] or { n = 0, v = {} }
 	i.n = i.n + 1
@@ -88,6 +97,8 @@ function LocalUI:open(interfaceID)
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
 	self.onOpen(interfaceID, i.n)
+
+	return interfaceID, i.n
 end
 
 function LocalUI:close(interfaceID, index)
@@ -95,7 +106,7 @@ function LocalUI:close(interfaceID, index)
 		return false
 	end
 
-	local controller = self.interfaces[interfaceID][index]
+	local controller = self.interfaces[interfaceID].v[index]
 	if not controller then
 		return false
 	end

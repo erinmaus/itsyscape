@@ -121,10 +121,25 @@ function UIView:probe(actions)
 
 	self.pokeMenu = PokeMenu(self, actions)
 	do
+		local windowWidth, windowHeight = love.window.getMode()
+		local menuWidth, menuHeight = self.pokeMenu:getSize()
 		local mouseX, mouseY = love.mouse.getPosition()
+		local menuX = mouseX - PokeMenu.PADDING
+		local menuY = mouseY - PokeMenu.PADDING
+
+		if menuX + menuWidth > windowWidth then
+			local difference = menuX + menuWidth - windowWidth
+			menuX = menuX - difference
+		end
+
+		if menuY + menuHeight > windowHeight then
+			local difference = menuY + menuHeight - windowHeight
+			menuY = menuY - difference
+		end
+
 		self.pokeMenu:setPosition(
-			mouseX - PokeMenu.PADDING,
-			mouseY - PokeMenu.PADDING)
+			menuX,
+			menuY)
 
 		self.pokeMenu.onClose:register(function() self.pokeMenu = false end)
 
