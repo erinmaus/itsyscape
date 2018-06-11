@@ -10,8 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
-local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
+local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -20,6 +21,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local One = Class(Peep)
 
@@ -33,6 +35,7 @@ function One:new(...)
 	self:addBehavior(InventoryBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(StatsBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 16
@@ -57,6 +60,9 @@ function One:assign(director)
 
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
+
+	local stats = self:getBehavior(StatsBehavior)
+	stats.stats = Stats("Player.One", director:getGameDB())
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()

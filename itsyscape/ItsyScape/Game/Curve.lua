@@ -90,6 +90,23 @@ function Curve:compute(level)
 	return self.cache[level]
 end
 
+-- Computes the level for 'xp'.
+--
+-- Returns 'max' if xp exceeds 'max'. 'max' defaults to 99.
+function Curve:getLevel(xp, max)
+	max = math.min(max or 99, Curve.MAX)
+
+	-- Starts at level 2, since we consider level 1 at 0 XP.
+	for i = 2, max do
+		local j = self:compute(i)
+		if xp < j then
+			return i - 1
+		end
+	end
+
+	return max
+end
+
 -- Calls Curve.compute.
 --
 -- Allows treating a Curve as a function.
