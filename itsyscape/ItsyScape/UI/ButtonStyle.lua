@@ -87,7 +87,12 @@ function ButtonStyle:draw(widget)
 		local y = height * self.iconY
 		local scaleX = self.iconWidth / self.icon:getWidth()
 		local scaleY = self.iconHeight / self.icon:getHeight()
-		love.graphics.draw(self.icon, x, y, 0, scaleX, scaleY, self.iconWidth / 2, self.iconHeight / 2)
+		love.graphics.draw(
+			self.icon,
+			x, y,
+			0,
+			scaleX, scaleY,
+			self.icon:getWidth() / 2, self.icon:getHeight() / 2)
 	end
 
 	love.graphics.setColor(self.color:get())
@@ -100,6 +105,8 @@ function ButtonStyle:draw(widget)
 		if self.font then
 			love.graphics.setFont(self.font)
 		end
+
+		y = y + font:getLineHeight() / 2
 
 		y = y - height / 2
 		if self.textAlign == 'center' then
