@@ -294,7 +294,9 @@ function Widget:type(...)
 end
 
 function Widget:update(...)
-	-- Nothing.
+	for i = 1, #self.children do
+		self.children[i]:update(...)
+	end
 end
 
 return Widget

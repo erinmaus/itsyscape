@@ -141,7 +141,7 @@ end
 function Stats:getSkill(skill)
 	assert(self:hasSkill(skill), "skill not found")
 
-	return self:getSkill()
+	return self.skills[skill]
 end
 
 -- Loads the stats from a save file.
