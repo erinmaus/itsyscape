@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
@@ -63,6 +64,9 @@ function One:assign(director)
 
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Player.One", director:getGameDB())
+	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
+	stats.stats:getSkill("Attack"):setLevelBoost(1)
+	stats.stats:getSkill("Defense"):setLevelBoost(-1)
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()
