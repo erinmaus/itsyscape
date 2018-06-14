@@ -26,7 +26,7 @@ end
 function PlayAnimationInstance:pending(time)
 	if self.animation then
 		return self.command:getRepeatAnimation() or
-		       self.animation:getDuration() < time
+		       time < self.animation:getDuration()
 	end
 end
 

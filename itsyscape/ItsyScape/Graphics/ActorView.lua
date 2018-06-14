@@ -255,15 +255,24 @@ end
 function ActorView:update(delta)
 	local animations = {}
 	do
-		for _, animation in pairs(self.animations) do
-			table.insert(animations, animation)
+		for slot, animation in pairs(self.animations) do
+			table.insert(animations, { value = animation, key = slot })
 		end
-		table.sort(animations, function(a, b) return a.priorty < b.priorty end)
+		table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
 	end
 
-	for _, animation in ipairs(animations) do
+	for _, a in ipairs(animations) do
+		local animation = a.value
+		local slot = a.key
+
 		animation.time = animation.time + delta
-		animation.instance:play(animation.time)
+		if animation.instance:isDone(animation.time) then
+			self.animations[slot] = nil
+			self.actor:playAnimation(slot, false)
+
+		else
+			animation.instance:play(animation.time)
+		end
 	end
 
 	for model in pairs(self.models) do

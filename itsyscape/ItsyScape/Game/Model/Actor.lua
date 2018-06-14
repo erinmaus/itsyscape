@@ -111,13 +111,16 @@ end
 -- animation should be a CacheRef to an ItsyScape.Game.Animation.Animation.
 --
 -- If 'priority' is lower than the current animation's priority in the provided
--- slot, the animation is not played.
+-- slot, the animation is not played. If 'priority' is a falsey value, the
+-- animation is stopped.
+--
+-- If 'force' is set, then the animation always plays.
 --
 -- Should invoke Actor.onAnimationPlayed with the slot and animation if
 -- successful.
 --
 -- Returns true if the animation was played, false otherwise.
-function Actor:playAnimation(slot, priority, animation)
+function Actor:playAnimation(slot, priority, animation, force)
 	return Class.ABSTRACT()
 end
 

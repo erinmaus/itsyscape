@@ -66,6 +66,7 @@ function Animation:loadFromFile(filename)
 		self.id = result.id
 		self.blends = result.blends
 		self.skeleton = result.skeleton
+		self.duration = false
 	end
 end
 
@@ -116,6 +117,24 @@ end
 -- Returns an AnimationInstance.
 function Animation:play(animatable)
 	return AnimationInstance(self, animatable)
+end
+
+function Animation:getDuration()
+	if not self.duration then
+		local maxDuration = 0
+		for _, channel in ipairs(self.channels) do
+			local duration = 0
+			for _, command in channel:iterate() do
+				duration = duration + command:getDuration()
+			end
+
+			maxDuration = math.max(duration, maxDuration)
+		end
+
+		self.duration = maxDuration
+	end
+
+	return self.duration
 end
 
 -- See constructor.

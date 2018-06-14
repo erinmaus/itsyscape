@@ -19,4 +19,9 @@ function Command:instantiate()
 	return Class.ABSTRACT()
 end
 
+-- Returns the duration of the command in seconds.
+function Command:getDuration()
+	return Class.ABSTRACT()
+end
+
 return Command

@@ -30,7 +30,7 @@ function PlayAnimation:new(filename)
 	self.animationFilename = filename
 	self.repeatAnimation = false
 	self.bones = {}
-
+	self.duration = false
 end
 
 -- Sets some properties. See type description above. 
@@ -87,6 +87,21 @@ end
 
 function PlayAnimation:instantiate()
 	return PlayAnimationInstance(self)
+end
+
+function PlayAnimation:getDuration()
+	if not self.duration then
+		-- The fun never stops.
+		if self.repeatAnimation then
+			return math.huge
+		else
+			-- XXX: This is kind of gross.
+			local animation = SkeletonAnimation(self.animationFilename)
+			self.duration = animation:getDuration()
+		end
+	end
+
+	return self.duration
 end
 
 return PlayAnimation

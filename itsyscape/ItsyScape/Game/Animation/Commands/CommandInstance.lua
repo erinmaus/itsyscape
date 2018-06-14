@@ -16,6 +16,7 @@ end
 
 -- Binds the command to a skeleton.
 function CommandInstance:bind(animatable)
+	-- Nothing.
 end
 
 -- Prepares the command to play.
@@ -39,6 +40,13 @@ end
 -- Prepares the command to end.
 function CommandInstance:stop(animatable)
 	-- Nothing.
+end
+
+-- Gets the duration of the command.
+--
+-- Usually should be the same as the underlying Command.getDuration.
+function CommandInstance:getDuration()
+	return 0
 end
 
 return CommandInstance
