@@ -80,7 +80,7 @@ function ActorView:new(actor, actorID)
 
 	self.animations = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation)
-		self:playAnimation(slot, animation)
+		self:playAnimation(slot, animation, priority, 0)
 	end
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
 
@@ -133,7 +133,7 @@ function ActorView:getSceneNode()
 	return self.sceneNode
 end
 
-function ActorView:playAnimation(slot, animation, time)
+function ActorView:playAnimation(slot, animation, priority, time)
 	-- TODO blending
 	local a = self.animations[slot] or {}
 	if a.instance then
@@ -145,6 +145,7 @@ function ActorView:playAnimation(slot, animation, time)
 	a.definition = definition:getResource()
 	a.instance = a.definition:play(self.animatable)
 	a.time = time or 0
+	a.priority = priority or -math.huge
 
 	self.animations[slot] = a
 end
@@ -252,7 +253,15 @@ function ActorView:face(direction)
 end
 
 function ActorView:update(delta)
-	for _, animation in pairs(self.animations) do
+	local animations = {}
+	do
+		for _, animation in pairs(self.animations) do
+			table.insert(animations, animation)
+		end
+		table.sort(animations, function(a, b) return a.priorty < b.priorty end)
+	end
+
+	for _, animation in ipairs(animations) do
 		animation.time = animation.time + delta
 		animation.instance:play(animation.time)
 	end
