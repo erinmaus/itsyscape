@@ -45,6 +45,8 @@ function Peep:new(name)
 	self.director = false
 
 	self.pokes = {}
+
+	self.resources = {}
 end
 
 -- Adds a poke 'name'.
@@ -113,6 +115,68 @@ function Peep:poke(name, ...)
 
 	if self.pokes[name] then
 		self.pokes[name](self, ...)
+	end
+end
+
+-- Adds or replaces the CacheRef 'ref' to the resource 'name'.
+--
+-- 'index' defaults to 1. If 'index' is not a number, it also defaults to 1.
+--
+-- 'name' is unique per the type of CacheRef; for example, there can be an
+-- "attack" resource for both a ItsyScape.Game.Skin.ModelSkin and
+-- ItsyScape.Graphics.AnimationResource.
+function Peep:addResource(name, ref, index)
+	local r = self.resources[ref:getResourceTypeID()]
+	if not r then
+		r = {}
+		self.resources[ref:getResourceTypeID()] = r
+	end
+
+	index = index or 1
+	if type(index) ~= 'number' then
+		index = 1
+	end
+
+	local subR = r[name]
+	if not subR then
+		subR = {}
+		r[name] = {}
+	end
+
+	subR[name] = ref
+end
+
+-- Gets a resource 'name' belonging to the category 'resourceTypeID'.
+--
+-- 'index' defaults to 1.
+--
+-- See Peep.addResource.
+function Peep:getResource(name, resourceTypeID, index)
+	local r = self.resources[resourceTypeID]
+	if r then
+		index = index or 1
+		local subR = r[name]
+		if subR then
+			return subR[index]
+		end
+	end
+
+	return nil
+end
+
+-- Gets all resources associated with 'name' belonging to the category
+-- 'resourceTypeID'.
+--
+-- The return value is an iterator. The iterator returns (index, resource).
+-- There is no logic to the order the resources are returned in, since the
+-- collection can be sparse. (Implementation detail: it's just pairs, not
+-- ipairs).
+function Peep:getResources(name, resourceTypeID)
+	local r = self.resources[resourceTypeID]
+	if r then
+		return pairs(r)
+	else
+		return function() return nil end
 	end
 end
 
