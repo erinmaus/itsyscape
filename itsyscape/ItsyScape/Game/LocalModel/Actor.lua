@@ -152,9 +152,9 @@ function LocalActor:setBody(body)
 	self.onTransmogrified(self, body)
 end
 
-function LocalActor:playAnimation(slot, priority, animation)
+function LocalActor:playAnimation(slot, priority, animation, force)
 	local s = self.animations[slot] or { priority = -math.huge, animation = false }
-	if s.priority <= priority then
+	if s.priority <= priority or force then
 		s.priority = priority
 		s.animation = animation
 
