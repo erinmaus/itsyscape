@@ -11,6 +11,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
@@ -113,22 +114,27 @@ function PlayerStats:updateStats(skills)
 		button:setData(skills[i].name)
 		button:setText(string.format("%d/%d", skills[i].workingLevel, skills[i].baseLevel))
 
-		local image
+		local image, color
 		if skills[i].workingLevel > skills[i].baseLevel then
 			image = "Resources/Renderers/Widget/Button/Skill-Boosted.9.png"
+			color = { Color(0, 1, 0, 1):get() }
 		elseif skills[i].workingLevel < skills[i].baseLevel then
 			image = "Resources/Renderers/Widget/Button/Skill-Debuffed.9.png"
+			color = { Color(1, 0, 0, 1):get() }
 		else
 			image = "Resources/Renderers/Widget/Button/Skill-Base.9.png"
+			color = { Color(1, 1, 1, 1):get() }
 		end
-			
+
 		button:setStyle(ButtonStyle({
 			inactive = image, hover = image, pressed = image,
+			color = color,
 			icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skills[i].name), x = 0.25, y = 0.5, width = 32, height = 32 },
 			font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
 			fontSize = 18,
 			textX = 0.9,
 			textY = 0.6,
+			textShadow = true,
 			textAlign = 'right'
 		}, self:getView():getResources()))
 	end
