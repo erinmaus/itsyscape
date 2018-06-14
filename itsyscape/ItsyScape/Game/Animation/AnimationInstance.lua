@@ -20,7 +20,7 @@ function AnimationInstance:new(animation, animatable)
 		self:addChannel(animation:getChannel(i))
 	end
 
-	self.time = 0
+	self.times = {}
 end
 
 function AnimationInstance:addChannel(channel)
@@ -38,23 +38,35 @@ function AnimationInstance:stop()
 	-- Nothing.
 end
 
-function AnimationInstance:play(time)
-	if time < self.time then
-		return
-	end
+-- Returns true if the animation is done, false otherwise.
+--
+-- This does not take into account animation that repeat...
+function AnimationInstance:isDone(time)
+	return time > self.animation:getDuration()
+end
 
-	self.time = time
+function AnimationInstance:play(time)
 	for i = 1, #self.channels do
 		local channel = self.channels[i]
+		local relativeTime = self.times[channel]
+		if not relativeTime then
+			relativeTime = 0
+			self.times[channel] = time
+		else
+			relativeTime = time - relativeTime
+		end
+
 		for j = channel.current, #channel do
 			local command = channel[j]
-			if command:pending(time) then
+			if command:pending(relativeTime) then
 				if command.previous ~= j then
 					command:start(animatable)
 					command.previous = j
+
+					self.times[channel] = time
 				end
 
-				command:play(self.animatable, time)
+				command:play(self.animatable, relativeTime)
 
 				channel.current = j
 				break

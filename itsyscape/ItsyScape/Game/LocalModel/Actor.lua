@@ -153,15 +153,21 @@ function LocalActor:setBody(body)
 end
 
 function LocalActor:playAnimation(slot, priority, animation, force)
-	local s = self.animations[slot] or { priority = -math.huge, animation = false }
-	if s.priority <= priority or force then
-		s.priority = priority
-		s.animation = animation
-
-		self.onAnimationPlayed(self, slot, priority, animation)
-		self.animations[slot] = s
+	if not priority then
+		self.animations[slot] = nil
 
 		return true
+	else
+		local s = self.animations[slot] or { priority = -math.huge, animation = false }
+		if s.priority <= priority or force then
+			s.priority = priority
+			s.animation = animation
+
+			self.onAnimationPlayed(self, slot, priority, animation)
+			self.animations[slot] = s
+
+			return true
+		end
 	end
 
 	return false

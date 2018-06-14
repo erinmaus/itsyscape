@@ -75,8 +75,9 @@ end
 function SkeletonAnimation:loadFromTable(t, skeleton)
 	self.bones = {}
 
-	for index, bone in skeleton:iterate() do
-		local boneFramesDefinition = t[bone:getName()]
+	local duration = 0
+	local function addFrame(boneName)
+		local boneFramesDefinition = t[boneName]
 		if not boneFramesDefinition then
 			boneFramesDefinition = {
 				translation = { { time = 0, 0, 0, 0 } },
@@ -105,12 +106,25 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 
 			local keyFrame = SkeletonAnimation.KeyFrame(time, scale, rotation, translation)
 			table.insert(boneFrames, keyFrame)
+
+			duration = math.max(duration, time)
 		end
 
-		self.bones[bone:getName()] = boneFrames
+		self.bones[boneName] = boneFrames
 	end
 
-	self.skeleton = skeleton
+	if skeleton then
+		for index, bone in skeleton:iterate() do
+			addFrame(bone:getName())
+		end
+	else
+		for name in pairs(t) do
+			addFrame(name)
+		end
+	end
+
+	self.skeleton = skeleton or false
+	self.duration = duration
 end
 
 function SkeletonAnimation:getDuration()
