@@ -56,6 +56,7 @@ function ButtonStyle:new(t, resources)
 	self.textX = t.textX or 0.5
 	self.textY = t.textY or 0.5
 	self.textAlign = t.textAlign or 'center'
+	self.textShadow = t.textShadow or false
 
 	if t.icon and type(t.icon) == 'table' and t.icon.filename then
 		self.icon = resources:load(love.graphics.newImage, t.icon.filename)
@@ -95,7 +96,6 @@ function ButtonStyle:draw(widget)
 			self.icon:getWidth() / 2, self.icon:getHeight() / 2)
 	end
 
-	love.graphics.setColor(self.color:get())
 	if #widget:getText() > 0 then
 		local previousFont = love.graphics.getFont()
 		local x = width * self.textX
@@ -117,12 +117,24 @@ function ButtonStyle:draw(widget)
 			-- Nothing needed for 'left'.
 		end
 
+		if self.textShadow then
+			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.printf(
+				widget:getText(),
+				x + 1,
+				y + 1,
+				width,
+				self.textAlign)
+		end
+
+		love.graphics.setColor(self.color:get())
 		love.graphics.printf(
 			widget:getText(),
 			x,
 			y,
 			width,
 			self.textAlign)
+
 		love.graphics.setFont(previousFont)
 	end
 end
