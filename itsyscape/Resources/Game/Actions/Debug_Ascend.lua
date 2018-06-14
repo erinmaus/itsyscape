@@ -8,16 +8,23 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
-local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
-local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Equip = Class(Action)
 Equip.SCOPES = { ['inventory'] = true, ['equipment'] = true }
 
 function Equip:perform(state, item, peep)
-	Log.info("not yet implemented")
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+		for skill in stats:iterate() do
+			skill:setXP(Curve.XP_CURVE(99))
+			skill:setLevelBoost(20 + 1)
+		end
+	end
 end
 
 return Equip
