@@ -43,6 +43,77 @@ function Peep:new(name)
 	}
 
 	self.director = false
+
+	self.pokes = {}
+end
+
+-- Adds a poke 'name'.
+--
+-- A poke is a synonym for an event.
+--
+-- If 'name' exists, nothing happens.
+--
+-- Returns the poke.
+function Peep:addPoke(name)
+	if self.pokes[name] == nil then
+		self.pokes[name] = Callback()
+	end
+
+	return self.pokes[name]
+end
+
+-- Returns true if the poke 'name' exists, false otherwise.
+function Peep:hasPoke(name)
+	return self.pokes[name] ~= nil
+end
+
+-- Registers the callback 'c' with the poke 'name'. Any extra arguments are
+-- associated with the registration.
+--
+-- This is synonymous with Callback.register.
+--
+-- Returns true on success, false otherwise. Failure occurs if there is no poke
+-- 'name'.
+function Peep:listen(name, c, ...)
+	if self.pokes[name] then
+		self.pokes[name]:register(c, ...)
+
+		return true
+	end
+
+	return false
+end
+
+-- Unregisters the callback 'c' with the poke 'name'.
+--
+-- This is synonymous with Callback.unregister.
+--
+-- Does nothing if 'poke' does not exist or 'c' was not registered.
+function Peep:silence(name, c)
+	if self.pokes[name] then
+		self.pokes[name]:unregister(c)
+	end
+end
+
+-- Pokes the peep.
+--
+-- 'name' is expected to be camel case (e.g., fooBar). It is transformed into the
+-- form "onFooBar". If a method on the Peep exists with the name, then it is
+-- invoked.
+--
+-- If a poke with the name 'event' exists, it is also invoked.
+--
+-- Any extra arguments ('...') are passed on to the method and/or pokes.
+function Peep:poke(name, ...)
+	local callback = "on" .. value:sub(1, 1):upper() .. value:sub(2)
+
+	if self[callback] then
+		self[callback](self, ...)
+	end
+
+	if self.pokes[name] then
+		self.pokes[name](self, ...)
+	end
 end
 
 -- Assigns a director to this peep.
@@ -62,7 +133,7 @@ end
 -- Ideally 'channel' should be an integer though it doesn't matter.
 --
 -- Don't keep the reference around longer than necessary--if a channel is
--- finished by the time the Peep updates, the queue is discardded.
+-- finished by the time the Peep updates, the queue is discarded.
 --
 -- 'DEFAULT_CHANNEL' is a reserved value. It follows slightly different
 -- semantics than any other channel: references to it are always valid.
