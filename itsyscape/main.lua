@@ -45,7 +45,8 @@ local TileSet = require "ItsyScape.World.TileSet"
 
 local Instance = {}
 local Input = {
-	isCameraDragging = false
+	isCameraDragging = false,
+	isCameraDragPending = false
 }
 local TICK_RATE = 1 / LocalGame.TICKS_PER_SECOND
 
@@ -158,37 +159,41 @@ function love.update(delta)
 	Instance.UIView:update(delta)
 end
 
+local function performProbe(x, y, performDefault)
+	local width, height = love.window.getMode()
+	y = height - y
+
+	love.graphics.origin()
+	Instance.Camera:apply()
+
+	local a = Vector(love.graphics.unproject(x, y, 0.0))
+	local b = Vector(love.graphics.unproject(x, y, 0.1))
+	local r = Ray(a, b - a)
+
+	local probe = Probe(Instance.Game, Instance.GameDB, r)
+	probe:all()
+
+	if performDefault then
+		for action in probe:iterate() do
+			local s, r = pcall(action.callback)
+			if not s then
+				io.stderr:write("error: ", r, "\n")
+			end
+			break
+		end
+	else
+		Instance.UIView:probe(probe:toArray())
+	end
+end
+
 function love.mousepressed(x, y, button)
 	if Instance.UIView:getInputProvider():isBlocking(x, y) then
 		Instance.UIView:getInputProvider():mousePress(x, y, button)
 	else
 		if button == 1 then
-			local width, height = love.window.getMode()
-			y = height - y
-
-			love.graphics.origin()
-			Instance.Camera:apply()
-
-			local a = Vector(love.graphics.unproject(x, y, 0.0))
-			local b = Vector(love.graphics.unproject(x, y, 0.1))
-			local r = Ray(a, b - a)
-
-			local probe = Probe(Instance.Game, Instance.GameDB, r)
-			probe:all()
-
-			if probe:getCount() == 1 then
-				for action in probe:iterate() do
-					local s, r = pcall(action.callback)
-					if not s then
-						io.stderr:write("error: ", r, "\n")
-					end
-					break
-				end
-			else
-				Instance.UIView:probe(probe:toArray())
-			end
+			performProbe(x, y, true)
 		elseif button == 2 then
-			Input.isCameraDragging = true
+			Input.isCameraDragPending = true
 		end
 	end
 end
@@ -197,7 +202,14 @@ function love.mousereleased(x, y, button)
 	Instance.UIView:getInputProvider():mouseRelease(x, y, button)
 
 	if button == 2 then
+		if not Input.isCameraDragging and
+		   not Instance.UIView:getInputProvider():isBlocking(x, y)
+		then
+			performProbe(x, y, false)
+		end
+
 		Input.isCameraDragging = false
+		Input.isCameraDragPending = false
 	end
 end
 
@@ -209,7 +221,9 @@ end
 function love.mousemoved(x, y, dx, dy)
 	Instance.UIView:getInputProvider():mouseMove(x, y, dx, dy)
 
-	if Input.isCameraDragging then
+	if Input.isCameraDragPending or Input.isCameraDragging then
+		Input.isCameraDragging = true
+
 		local angle1 = dx / 128
 		local angle2 = -dy / 128
 		Instance.Camera:setVerticalRotation(Instance.Camera:getVerticalRotation() + angle1)
