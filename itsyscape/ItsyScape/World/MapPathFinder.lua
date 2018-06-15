@@ -106,6 +106,16 @@ function MapPathFinder:getEdge(location)
 	}
 end
 
+function MapPathFinder:getLocation(edge)
+	return edge
+end
+
+function MapPathFinder:getDistance(a, b)
+	local di = math.abs(a.i - b.i)
+	local dj = math.abs(a.j - b.j)
+	return di + dj
+end
+
 function MapPathFinder:sameLocation(a, b)
 	return a.i == b.i and a.j == b.j
 end
