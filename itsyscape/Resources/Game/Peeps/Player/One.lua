@@ -86,6 +86,7 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "ErrinTheHeathensCoat")
 	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
 	t:spawn(inventory.inventory, "ErrinTheHeathensBoots")
+	t:spawn(inventory.inventory, "ErrinTheHeathensStaff")
 	t:commit()
 
 	self:addPoke('initiateAttack')
