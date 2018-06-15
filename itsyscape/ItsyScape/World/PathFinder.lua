@@ -53,6 +53,16 @@ function PathFinder:getEdge(location)
 	return Class.ABSTRACT()
 end
 
+-- Gets a valid location for an edge.
+function PathFinder:getLocation(edge)
+	return Class.ABSTRACT()
+end
+
+-- Calculates the distance between two locations.
+function PathFinder:getDistance(a, b)
+	return Class.ABSTRACT()
+end
+
 -- Returns true if edge a and b are the same location, false otherwise.
 function PathFinder:sameLocation(a, b)
 	return Class.ABSTRACT()
@@ -69,8 +79,8 @@ function PathFinder:getParent(edge)
 end
 
 -- Returns a path from start to stop, or nil if no such path exists.
-function PathFinder:find(start, stop)
-	return self.algorithm:find(start, stop)
+function PathFinder:find(start, stop, ...)
+	return self.algorithm:find(start, stop, ...)
 end
 
 PathFinder.Algorithm = Class()
@@ -94,7 +104,19 @@ function PathFinder.AStar:new(pathFinder)
 	PathFinder.Algorithm.new(self, pathFinder)
 end
 
-function PathFinder.AStar:find(start, stop)
+function PathFinder.AStar:materialize(edge)
+	local path = Path()
+
+	local parent = edge
+	while parent ~= nil do
+		path:prependNode(self:getPathFinder():materialize(parent))
+		parent = self:getPathFinder():getParent(parent)
+	end
+
+	return path
+end
+
+function PathFinder.AStar:find(start, stop, nearest)
 	self.open = {}
 	self.closed = {}
 
@@ -114,18 +136,31 @@ function PathFinder.AStar:find(start, stop)
 	while nextEdge ~= nil do
 		local edge = self:processEdge(nextEdge, stop)
 		if edge ~= nil then
-			local path = Path()
-
-			local parent = edge
-			while parent ~= nil do
-				path:prependNode(self:getPathFinder():materialize(parent))
-				parent = self:getPathFinder():getParent(parent)
-			end
-
-			return path
+			return self:materialize(edge)
 		end
 
 		nextEdge = self:getBestOpenEdge()
+	end
+
+	if nearest then
+		local bestEdge = nil
+		local bestDistanceI = math.huge
+		local bestDistanceJ = math.huge
+		for _, closed in pairs(self.closed) do
+			local distanceI = self:getPathFinder():getDistance(stop, closed)
+			local distanceJ = self:getPathFinder():getDistance(start, closed)
+			if distanceI < bestDistanceI or
+			   (distanceI == bestDistanceI and distanceJ < bestDistanceJ)
+			then
+				bestEdge = closed
+				bestDistanceI = distanceI
+				bestDistanceJ = distanceJ
+			end
+		end
+
+		if bestEdge then
+			return self:materialize(bestEdge)
+		end
 	end
 
 	return nil
