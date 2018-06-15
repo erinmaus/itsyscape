@@ -152,7 +152,37 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensCoat"
 }
 
+ItsyScape.Resource.Item "ErrinTheHeathensStaff" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		}
+	},
+
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.Equipment {
+	-- TODO
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/ErrinTheHeathen/Staff.lua",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Errin the Heathen's Staff",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
+}
+
 ItsyScape.Utility.tag(ItsyScape.Resource.Item "ErrinTheHeathensHat", "x_debug")
 ItsyScape.Utility.tag(ItsyScape.Resource.Item "ErrinTheHeathensCoat", "x_debug")
 ItsyScape.Utility.tag(ItsyScape.Resource.Item "ErrinTheHeathensGloves", "x_debug")
 ItsyScape.Utility.tag(ItsyScape.Resource.Item "ErrinTheHeathensBoots", "x_debug")
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "ErrinTheHeathensStaff", "x_debug")
