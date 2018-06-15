@@ -203,7 +203,7 @@ function Probe:loot()
 				callback = function()
 					self.game:getStage():takeItem(i, j, k, item.ref)
 				end,
-				depth = position.z + (i / #items) -- This ensures items remain stable.
+				depth = position.z - (i / #items) -- This ensures items remain stable.
 			}
 
 			table.insert(self.actions, action)
