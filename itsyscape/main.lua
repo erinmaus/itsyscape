@@ -119,6 +119,10 @@ function love.load()
 
 	Instance.Game:getStage():updateMap(1)
 
+	do
+		local s = Instance.Game:getStage():spawnActor("Resources.Game.Peeps.Goblin.BaseGoblin")
+	end
+
 	Instance.GameView:tick()
 	Instance.Game:tick()
 	

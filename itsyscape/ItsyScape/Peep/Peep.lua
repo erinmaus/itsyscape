@@ -107,7 +107,7 @@ end
 --
 -- Any extra arguments ('...') are passed on to the method and/or pokes.
 function Peep:poke(name, ...)
-	local callback = "on" .. value:sub(1, 1):upper() .. value:sub(2)
+	local callback = "on" .. name:sub(1, 1):upper() .. name:sub(2)
 
 	if self[callback] then
 		self[callback](self, ...)
@@ -140,10 +140,10 @@ function Peep:addResource(name, ref, index)
 	local subR = r[name]
 	if not subR then
 		subR = {}
-		r[name] = {}
+		r[name] = subR
 	end
 
-	subR[name] = ref
+	subR[index] = ref
 end
 
 -- Gets a resource 'name' belonging to the category 'resourceTypeID'.
