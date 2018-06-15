@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Player/One.lua
+-- Resources/Peeps/Goblin/BaseGoblin.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -21,22 +21,22 @@ local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local MapPathFinder = require "ItsyScape.World.MapPathFinder"
+local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
-local One = Class(Peep)
+local BaseGoblin = Class(Peep)
 
-function One:new(...)
-	Peep.new(self, 'Player', ...)
+function BaseGoblin:new(...)
+	Peep.new(self, 'Goblin', ...)
 
 	self:addBehavior(ActorReferenceBehavior)
-	self:addBehavior(EquipmentBehavior)
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(MovementBehavior)
-	self:addBehavior(InventoryBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
-	self:addBehavior(StatsBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 16
@@ -46,81 +46,77 @@ function One:new(...)
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 3
 
-	local inventory = self:getBehavior(InventoryBehavior)
-	inventory.inventory = PlayerInventoryProvider(self)
-
-	local equipment = self:getBehavior(EquipmentBehavior)
-	equipment.equipment = EquipmentInventoryProvider(self)
-
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Walk_1/Script.lua")
+		"Resources/Game/Animations/Goblin_Walk/Script.lua")
 	self:addResource("animation-walk", walkAnimation)
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Idle_1/Script.lua")
+		"Resources/Game/Animations/Goblin_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
-end
-
-function One:assign(director)
-	Peep.assign(self, director)
-
-	local inventory = self:getBehavior(InventoryBehavior)
-	director:getItemBroker():addProvider(inventory.inventory)
-
-	local equipment = self:getBehavior(EquipmentBehavior)
-	director:getItemBroker():addProvider(equipment.equipment)
-
-	local stats = self:getBehavior(StatsBehavior)
-	stats.stats = Stats("Player.One", director:getGameDB())
-	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
-	stats.stats:getSkill("Attack"):setLevelBoost(1)
-	stats.stats:getSkill("Defense"):setLevelBoost(-1)
-
-	-- DEBUG
-	local t = director:getItemBroker():createTransaction()
-	t:addParty(inventory.inventory)
-	t:spawn(inventory.inventory, "AmuletOfYendor")
-	t:spawn(inventory.inventory, "AmuletOfYendor", 10, true)
-	t:spawn(inventory.inventory, "ErrinTheHeathensHat")
-	t:spawn(inventory.inventory, "ErrinTheHeathensCoat")
-	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
-	t:spawn(inventory.inventory, "ErrinTheHeathensBoots")
-	t:commit()
+	local punchAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Goblin_AttackUnarmed/Script.lua")
+	self:addResource("animation-attack-unarmed", punchAnimation)
+	self:addResource("animation-attack", punchAnimation)
+	local defendAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Goblin_Defend/Script.lua")
+	self:addResource("animation-defend", defendAnimation)
 
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
 end
 
-function One:ready(director, game)
+function BaseGoblin:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
 
-	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
-	actor:setSkin('eyes', 1, CacheRef("ItsyScape.Game.Skin.ModelSkin", "Resources/Game/Skins/Player_One/Eyes.lua"))
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Helmet.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
 	local body = CacheRef(
+		"ItsyScape.Game.Body",
+		"Resources/Game/Bodies/Goblin.lskel")
+	actor:setBody(body)
+
+	local skin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Body.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Gloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Boots.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
+		"Resources/Game/Skins/Goblin/Base.lua")
+	actor:setSkin('npc', 1, skin)
 end
 
-function One:update(director, game)
+function BaseGoblin:walk(i, j, k)
+	local position = self:getBehavior(PositionBehavior).position
+	local map = self:getDirector():getGameInstance():getStage():getMap(k)
+	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
+	local pathFinder = MapPathFinder(map)
+	local path = pathFinder:find(
+		{ i = playerI, j = playerJ },
+		{ i = i, j = j })
+	if path then
+		local queue = self:getCommandQueue()
+		queue:interrupt(ExecutePathCommand(path))
+	end
+end
+
+function BaseGoblin:update(director, game)
 	Peep.update(self, director, game)
+
+	local r = math.random()
+	if r < 0.05 then
+		local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+		self:poke('initiateAttack', AttackPoke({ attackType = 'stab' }))
+	elseif r < 0.1 then
+		local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+		self:poke('receiveAttack', AttackPoke({ attackType = 'stab' }))
+	end
+
+	if math.random() < 0.1 and not self:hasBehavior(TargetTileBehavior) then
+		local map = self:getDirector():getGameInstance():getStage():getMap(1)
+		local i = math.floor(math.random(1, map:getWidth()))
+		local j = math.floor(math.random(1, map:getHeight()))
+		self:walk(i, j, 1)
+	end
 end
 
-return One
+return BaseGoblin

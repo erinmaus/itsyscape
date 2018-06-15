@@ -16,14 +16,9 @@ local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
-HumanoidActorAnimatorCortex.WALK_ANIMATION = CacheRef(
-	"ItsyScape.Graphics.AnimationResource",
-	"Resources/Game/Animations/Human_Walk_1/Script.lua"
-)
-HumanoidActorAnimatorCortex.IDLE_ANIMATION = CacheRef(
-	"ItsyScape.Graphics.AnimationResource",
-	"Resources/Game/Animations/Human_Idle_1/Script.lua"
-)
+HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
+HumanoidActorAnimatorCortex.ATTACK_PRIORITY = math.huge
+HumanoidActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function HumanoidActorAnimatorCortex:new()
 	Cortex.new(self)
@@ -34,6 +29,64 @@ function HumanoidActorAnimatorCortex:new()
 
 	self.walking = {}
 	self.idling = {}
+end
+
+function HumanoidActorAnimatorCortex:addPeep(peep)
+	Cortex.addPeep(self, peep)
+
+	peep:listen('initiateAttack', self.onInitiateAttack, self)
+	peep:listen('receiveAttack', self.onReceiveAttack, self)
+end
+
+function HumanoidActorAnimatorCortex:removePeep(peep)
+	Cortex.removePeep(self, peep)
+
+	peep:silence('initiateAttack', self.onInitiateAttack)
+	peep:silence('receiveAttack', self.onReceiveAttack)
+end
+
+function HumanoidActorAnimatorCortex:playAnimation(peep, priority, resource)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor then
+		actor = actor.actor
+		actor:playAnimation('combat', priority, resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
+	local animations = {
+		string.format("animation-attack-%s-%s", p:getAttackType(), p:getWeaponType()),
+		string.format("animation-attack-%s", p:getWeaponType()),
+		string.format("animation-attack-%s", p:getAttackType()),
+		"animation-attack"
+	}
+
+	local playedAnimation = false
+	local time
+	for i = 1, #animations do
+		local resource = peep:getResource(
+			animations[i],
+			"ItsyScape.Graphics.AnimationResource")
+		if resource then
+			self:playAnimation(
+				peep,
+				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
+				resource)
+			break
+		end
+	end
+end
+
+function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
+	local resource = peep:getResource(
+		"animation-defend",
+		"ItsyScape.Graphics.AnimationResource")
+	if resource then
+		self:playAnimation(
+			peep,
+			HumanoidActorAnimatorCortex.DEFEND_PRIORITY,
+			resource)
+	end
 end
 
 function HumanoidActorAnimatorCortex:update(delta)
@@ -47,13 +100,19 @@ function HumanoidActorAnimatorCortex:update(delta)
 		-- TODO this needs to be better
 		if velocity:getLength() > 0.1 then
 			if not self.walking[actor] then
-				actor:playAnimation('main', 1, HumanoidActorAnimatorCortex.WALK_ANIMATION)
+				local resource = peep:getResource(
+					"animation-walk",
+					"ItsyScape.Graphics.AnimationResource")
+				actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
 				self.walking[actor] = true
 				self.idling[actor] = nil
 			end
 		else
 			if not self.idling[actor] then
-				actor:playAnimation('main', 1, HumanoidActorAnimatorCortex.IDLE_ANIMATION)
+				local resource = peep:getResource(
+					"animation-idle",
+					"ItsyScape.Graphics.AnimationResource")
+				actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
 				self.idling[actor] = true
 				self.walking[actor] = false
 			end
