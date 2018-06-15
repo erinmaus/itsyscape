@@ -31,22 +31,24 @@ end
 -- Interpolates this key frame with another, storing the result in 'transform'.
 function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 	assert(self.time <= other.time, "cannot interpolate into the past")
-	local timeDifference = time - self.time
+	local timeDifference = math.max(time - self.time, 0)
 	local frameDifference = other.time - self.time
 
 	local delta
 	if frameDifference == 0 then
 		delta = 1.0
+		--print(string.format("d %.3f T %.3f sT %.3f oT %.3f", delta, time, self.time, other.time))
 	else
 		delta = timeDifference / (other.time - self.time)
+		--print(string.format("d %.3f T %.3f sT %.3f oT %.3f", delta, time, self.time, other.time))
 	end
 
 	local rotation = self.rotation:slerp(other.rotation, delta):getNormal()
 	local scale = self.scale:lerp(other.scale, delta)
 	local translation = self.translation:lerp(other.translation, delta)
 
-	transform:scale(scale.x, scale.y, scale.z)
 	transform:translate(translation.x, translation.y, translation.z)
+	transform:scale(scale.x, scale.y, scale.z)
 	transform:applyQuaternion(rotation.x, rotation.y, rotation.z, rotation.w)
 
 	return transform
