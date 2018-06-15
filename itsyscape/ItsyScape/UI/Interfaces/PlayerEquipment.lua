@@ -31,6 +31,8 @@ function PlayerEquipment:new(id, index, ui)
 	self.panel:setSize(self:getSize())
 
 	self:addSlots({
+		Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Equipment.PLAYER_SLOT_LEFT_HAND,
 		Equipment.PLAYER_SLOT_HEAD,
 		Equipment.PLAYER_SLOT_NECK,
 		Equipment.PLAYER_SLOT_BODY,

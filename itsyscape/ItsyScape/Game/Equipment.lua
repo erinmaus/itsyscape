@@ -21,4 +21,7 @@ Equipment.PLAYER_SLOT_BACK   = 7
 Equipment.PLAYER_SLOT_FINGER = 8
 Equipment.PLAYER_SLOT_POCKET = 9
 
+Equipment.PLAYER_SLOT_RIGHT_HAND = 20
+Equipment.PLAYER_SLOT_LEFT_HAND = 21
+
 return Equipment
