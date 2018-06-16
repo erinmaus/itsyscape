@@ -60,6 +60,10 @@ function One:new(...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Idle_1/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
 end
 
 function One:assign(director)
@@ -86,6 +90,7 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "ErrinTheHeathensCoat")
 	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
 	t:spawn(inventory.inventory, "ErrinTheHeathensBoots")
+	t:spawn(inventory.inventory, "ErrinTheHeathensStaff")
 	t:spawn(inventory.inventory, "ErrinTheHeathensStaff")
 	t:commit()
 
@@ -122,6 +127,16 @@ end
 
 function One:update(director, game)
 	Peep.update(self, director, game)
+
+	if love.keyboard.isDown('space') then
+		if self.space then
+			local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+			self:poke('initiateAttack', AttackPoke({ attackType = 'stab' }))
+			self.space = false
+		end
+	else
+		self.space = true
+	end
 end
 
 return One

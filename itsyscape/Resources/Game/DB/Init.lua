@@ -15,29 +15,29 @@ Game "ItsyScape"
 	ResourceType "Skill"
 
 	Meta "Equipment" {
-			-- Various stats.
-			AccuracyStab = Meta.TYPE_INTEGER,
-			AccuracySlash = Meta.TYPE_INTEGER,
-			AccuracyCrush = Meta.TYPE_INTEGER,
-			AccuracyMagic = Meta.TYPE_INTEGER,
-			AccuracyRanged = Meta.TYPE_INTEGER,
-			DefenceStab = Meta.TYPE_INTEGER,
-			DefenceSlash = Meta.TYPE_INTEGER,
-			DefenceCrush = Meta.TYPE_INTEGER,
-			DefenceMagic = Meta.TYPE_INTEGER,
-			DefenceRanged = Meta.TYPE_INTEGER,
-			StrengthMelee = Meta.TYPE_INTEGER,
-			StrengthRanged = Meta.TYPE_INTEGER,
-			StrengthMagic = Meta.TYPE_INTEGER,
-			Prayer = Meta.TYPE_INTEGER,
+		-- Various stats.
+		AccuracyStab = Meta.TYPE_INTEGER,
+		AccuracySlash = Meta.TYPE_INTEGER,
+		AccuracyCrush = Meta.TYPE_INTEGER,
+		AccuracyMagic = Meta.TYPE_INTEGER,
+		AccuracyRanged = Meta.TYPE_INTEGER,
+		DefenceStab = Meta.TYPE_INTEGER,
+		DefenceSlash = Meta.TYPE_INTEGER,
+		DefenceCrush = Meta.TYPE_INTEGER,
+		DefenceMagic = Meta.TYPE_INTEGER,
+		DefenceRanged = Meta.TYPE_INTEGER,
+		StrengthMelee = Meta.TYPE_INTEGER,
+		StrengthRanged = Meta.TYPE_INTEGER,
+		StrengthMagic = Meta.TYPE_INTEGER,
+		Prayer = Meta.TYPE_INTEGER,
 
-			-- The equip slot.
-			--
-			-- For a player, this corresponds to ItsyScape.Game.Equipment.PLAYER_SLOT_*.
-			EquipSlot = Meta.TYPE_INTEGER,
+		-- The equip slot.
+		--
+		-- For a player, this corresponds to ItsyScape.Game.Equipment.PLAYER_SLOT_*.
+		EquipSlot = Meta.TYPE_INTEGER,
 
-			-- The equipment resource. Should be an Item.
-			Resource = Meta.TYPE_RESOURCE
+		-- The equipment resource. Should be an Item.
+		Resource = Meta.TYPE_RESOURCE
 	}
 
 	Meta "EquipmentModel" {

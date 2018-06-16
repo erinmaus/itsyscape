@@ -164,7 +164,11 @@ ItsyScape.Resource.Item "ErrinTheHeathensStaff" {
 }
 
 ItsyScape.Meta.Equipment {
-	-- TODO
+	AccuracyCrush = 117,
+	AccuracyMagic = 132,
+	StrengthMagic = 120,
+	StrengthMelee = 120,
+	Prayer = 20,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
 }
