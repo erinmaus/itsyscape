@@ -180,6 +180,7 @@ function LocalActor:setSkin(slot, priority, skin)
 	for i = 1, #s do
 		if s[i].priority == priority then
 			table.remove(s, i)
+			self.onSkinChanged(self, slot, false, skin)
 			break
 		end
 	end
