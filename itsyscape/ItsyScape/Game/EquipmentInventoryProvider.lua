@@ -48,6 +48,16 @@ function EquipmentInventoryProvider:getMaxInventorySpace()
 	return math.huge
 end
 
+-- Returns the first equipped item in 'slot'.
+function EquipmentInventoryProvider:getEquipped(slot)
+	local broker = self:getBroker()
+	for item in broker:iterateItemsByKey(self, slot) do
+		return item
+	end
+
+	return nil
+end
+
 function EquipmentInventoryProvider:assignKey(item)
 	local gameDB = self.peep:getDirector():getGameDB()
 	local resource = gameDB:getResource(item:getID(), "Item")
@@ -104,17 +114,21 @@ function EquipmentInventoryProvider:onTransferFrom(item, count, purpose)
 		end
 	end
 
+
 	local equipSlotTag = self:getBroker():getItemTag(item, 'equip-slot')
 	local equipModelTag = self:getBroker():getItemTag(item, 'equip-model')
 	if equipSlotTag and equipModelTag then
-		local actor = self.peep:getBehavior(ActorReferenceBehavior)
-		if actor.actor then
-			actor = actor.actor
+		local count = self:getBroker():countItemsByKey(self, equipSlotTag)
+		if count == 1 then
+			local actor = self.peep:getBehavior(ActorReferenceBehavior)
+			if actor.actor then
+				actor = actor.actor
 
-			local ref = CacheRef(
-				equipModelTag:get("Type"),
-				equipModelTag:get("Filename"))
-			actor:unsetSkin(equipSlotTag, ref)
+				local ref = CacheRef(
+					equipModelTag:get("Type"),
+					equipModelTag:get("Filename"))
+				actor:unsetSkin(equipSlotTag, ref)
+			end
 		end
 	end
 end

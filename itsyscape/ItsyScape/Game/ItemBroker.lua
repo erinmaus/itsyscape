@@ -772,6 +772,15 @@ function ItemBroker:iterateItemsByKey(provider, key)
 	return self.inventories[provider]:iterateByKey(key)
 end
 
+-- Counts how many items are stored at 'key'.
+function ItemBroker:countItemsByKey(provider, key)
+	local count = 0
+	for item in self:iterateItemsByKey(provider, key) do
+		count = count + 1
+	end
+	return count
+end
+
 -- Returns an iterator over the tags assigned to 'item'.
 function ItemBroker:tags(item)
 	assert(item ~= nil, "item is nil")

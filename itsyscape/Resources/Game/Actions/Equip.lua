@@ -38,6 +38,22 @@ function Equip:perform(state, item, peep)
 	transaction:addParty(inventory)
 	transaction:addParty(equipment)
 	transaction:transfer(equipment, item)
+	do
+		local gameDB = self:getGameDB()
+		local resource = gameDB:getResource(item:getID(), "Item")
+		if resource then
+			local equipmentRecord = gameDB:getRecords(
+				"Equipment", { Resource = resource }, 1)[1]
+			if equipmentRecord then
+				local slot = equipmentRecord:get("EquipSlot")
+				local equippedItem = equipment:getEquipped(slot)
+				if equippedItem then
+					transaction:transfer(inventory, equippedItem)
+				end
+			end
+		end
+	end
+
 	local s, r = transaction:commit()
 	if not s then
 		io.stderr:write("error: ", r, "\n")
