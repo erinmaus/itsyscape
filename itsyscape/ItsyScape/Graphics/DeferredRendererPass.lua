@@ -227,7 +227,7 @@ function DeferredRendererPass:drawLights(scene, delta)
 	end
 
 	self.lBuffer:use()
-	love.graphics.clear(0, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 1, false, false)
 
 	for i = 1, #self.lights do
 		local node = self.lights[i].node

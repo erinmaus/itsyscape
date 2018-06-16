@@ -128,7 +128,6 @@ function ForwardRendererPass:drawNodes(scene, delta)
 				for i = 1, numGlobalLights do
 					local p = self.globalLights[i]
 					local light = p.node:toLight(delta)
-					light:setPosition(p.worldPosition)
 
 					setLightProperties(currentShaderProgram, i, light)
 				end
@@ -136,6 +135,11 @@ function ForwardRendererPass:drawNodes(scene, delta)
 
 			-- TODO: Local lights
 			currentShaderProgram:send("scape_NumLights", numGlobalLights)
+
+			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
+				local d = node:getTransform():getGlobalDeltaTransform(delta)
+				currentShaderProgram:send("scape_WorldMatrix", d)
+			end
 
 			node:beforeDraw(self:getRenderer(), delta)
 			node:draw(self:getRenderer(), delta)
@@ -147,6 +151,7 @@ end
 function ForwardRendererPass:draw(scene, delta)
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('less', true)
+	love.graphics.setBlendMode('alpha')
 
 	self:getRenderer():getCamera():apply()
 	self:drawNodes(scene, delta)
