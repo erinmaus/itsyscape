@@ -54,7 +54,7 @@ function ItemInstance:getCount()
 end
 
 function ItemInstance:isStackable()
-	return self.manager:isStackable(self.id) or self.manager:isNoteable(self.id)
+	return self.manager:isStackable(self.id) or self:isNoted()
 end
 
 function ItemInstance:setCount(count)
