@@ -68,6 +68,7 @@ function love.load()
 
 	Instance.Light = DirectionalLightSceneNode()
 	do
+		Instance.Light:setIsGlobal(true)
 		Instance.Light:setDirection(-Instance.Camera:getForward())
 		Instance.Light:setParent(Instance.GameView:getScene())
 		

@@ -83,8 +83,8 @@ vec4 effect(
 			scape_Lights[i],
 			frag_Position,
 			frag_Normal,
-			diffuseColor);
+			diffuse.rgb);
 	}
 
-	return vec4(result, textureSample.a * color.a);
+	return vec4(result, diffuse.a * color.a);
 }

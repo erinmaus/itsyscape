@@ -65,7 +65,7 @@ end
 --
 -- All rendering will now occur on the LBuffer.
 function LBuffer:use()
-	love.graphics.setCanvas({ self.color, depthstencil = self.depthStencil })
+	love.graphics.setCanvas({ self.color, depthstencil = self:getDepthStencil() })
 end
 
 -- Gets the color binding of the LBuffer.
