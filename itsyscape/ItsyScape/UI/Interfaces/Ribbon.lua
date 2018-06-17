@@ -35,6 +35,7 @@ function Ribbon:new(id, index, ui)
 	self.buttons = {}
 	self.activeButton = false
 
+	self:addButton("PlayerStance", "Resources/Game/UI/Icons/Common/Stance.png")
 	self:addButton("PlayerInventory", "Resources/Game/UI/Icons/Common/Inventory.png")
 	self:addButton("PlayerEquipment", "Resources/Game/UI/Icons/Common/Equipment.png")
 	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
@@ -49,7 +50,7 @@ function Ribbon:addButton(tab, icon)
 	local button = Button()
 	button:setPosition(x, Ribbon.PADDING)
 	button:setSize(Ribbon.BUTTON_SIZE, Ribbon.BUTTON_SIZE)
-	button.onClick = function()
+	button.onClick:register(function()
 		if self.activeButton ~= button then
 			self:sendPoke("open", nil, { tab = tab })
 			self.activeButton = button
@@ -57,7 +58,7 @@ function Ribbon:addButton(tab, icon)
 			self:sendPoke("close", nil, {})
 			self.activeButton = false
 		end
-	end
+	end)
 
 	button:setStyle(ButtonStyle({
 		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",

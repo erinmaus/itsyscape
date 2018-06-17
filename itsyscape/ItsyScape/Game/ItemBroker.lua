@@ -66,6 +66,7 @@ function ItemBroker.Transaction:commit()
 	for i = 1, #conditions do
 		local s, r = pcall(conditions[i], state)
 		if not s then
+			print(s, r)
 			return false, r
 		end
 	end
@@ -300,7 +301,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 					c = count -- This should be 1 but w/e
 				end
 
-				if count + c > destination:getMaxInventorySpace() then
+				if state[destination].count + c > destination:getMaxInventorySpace() then
 					error("inventory full")
 				else
 					local p = state[destination]

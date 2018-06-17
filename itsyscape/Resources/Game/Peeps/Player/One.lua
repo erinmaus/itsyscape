@@ -22,6 +22,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local One = Class(Peep)
@@ -36,6 +37,7 @@ function One:new(...)
 	self:addBehavior(InventoryBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
@@ -91,7 +93,10 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
 	t:spawn(inventory.inventory, "ErrinTheHeathensBoots")
 	t:spawn(inventory.inventory, "ErrinTheHeathensStaff")
-	t:spawn(inventory.inventory, "ErrinTheHeathensStaff")
+	t:spawn(inventory.inventory, "AirRune", 100)
+	t:spawn(inventory.inventory, "EarthRune", 100)
+	t:spawn(inventory.inventory, "WaterRune", 100)
+	t:spawn(inventory.inventory, "FireRune", 100)
 	t:commit()
 
 	self:addPoke('initiateAttack')

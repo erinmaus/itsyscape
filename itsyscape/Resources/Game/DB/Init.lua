@@ -14,6 +14,23 @@ Game "ItsyScape"
 	ResourceType "Item"
 	ResourceType "Skill"
 
+	ResourceType "Peep"        -- NPCs
+	ResourceType "Creep"       -- Mobs
+	ResourceType "PlayerPeep"  -- Players
+
+	Meta "PeepStat" {
+		Skill = Meta.TYPE_RESOURCE,
+		Value = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PeepID" {
+		Value = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	ActionType "Attack"
+
 	Meta "Equipment" {
 		-- Various stats.
 		AccuracyStab = Meta.TYPE_INTEGER,
@@ -21,11 +38,11 @@ Game "ItsyScape"
 		AccuracyCrush = Meta.TYPE_INTEGER,
 		AccuracyMagic = Meta.TYPE_INTEGER,
 		AccuracyRanged = Meta.TYPE_INTEGER,
-		DefenceStab = Meta.TYPE_INTEGER,
-		DefenceSlash = Meta.TYPE_INTEGER,
-		DefenceCrush = Meta.TYPE_INTEGER,
-		DefenceMagic = Meta.TYPE_INTEGER,
-		DefenceRanged = Meta.TYPE_INTEGER,
+		DefenseStab = Meta.TYPE_INTEGER,
+		DefenseSlash = Meta.TYPE_INTEGER,
+		DefenseCrush = Meta.TYPE_INTEGER,
+		DefenseMagic = Meta.TYPE_INTEGER,
+		DefenseRanged = Meta.TYPE_INTEGER,
 		StrengthMelee = Meta.TYPE_INTEGER,
 		StrengthRanged = Meta.TYPE_INTEGER,
 		StrengthMagic = Meta.TYPE_INTEGER,
@@ -88,7 +105,14 @@ function ItsyScape.Utility.tag(Item, value)
 	}
 end
 
+-- Skills
 include "Resources/Game/DB/Skills.lua"
+
+-- Items
+include "Resources/Game/DB/Items/Runes.lua"
+
+-- Creeps
+include "Resources/Game/DB/Creeps/Goblin.lua"
 
 do
 	ActionType "Debug_Ascend"
@@ -120,11 +144,11 @@ do
 		AccuracyCrush = 50,
 		AccuracyMagic = 50,
 		AccuracyRanged = 50,
-		DefenceStab = 50,
-		DefenceSlash = 50,
-		DefenceCrush = 50,
-		DefenceMagic = 50,
-		DefenceRanged = 50,
+		DefenseStab = 50,
+		DefenseSlash = 50,
+		DefenseCrush = 50,
+		DefenseMagic = 50,
+		DefenseRanged = 50,
 		StrengthMelee = 50,
 		StrengthRanged = 50,
 		StrengthMagic = 50,
