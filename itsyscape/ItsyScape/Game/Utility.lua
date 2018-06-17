@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Color = require "ItsyScape.Graphics.Color"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -134,6 +135,15 @@ function Utility.Item.getName(id, gameDB, lang)
 		return nameRecord:get("Value")
 	else
 		return false
+	end
+end
+
+Utility.Peep = {}
+function Utility.Peep.getEquippedItem(peep, slot)
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	if equipment and equipment.equipment then
+		equipment = equipment.equipment
+		return equipment:getEquipped(slot)
 	end
 end
 

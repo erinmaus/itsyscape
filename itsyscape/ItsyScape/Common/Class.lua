@@ -81,6 +81,8 @@ end
 --
 -- Returns the class definition and the metatable.
 local function __call(self, parent)
+	local C = Class
+
 	local Type = { __index = parent or {}, __parent = parent, __c = Class }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
@@ -109,16 +111,7 @@ local function __call(self, parent)
 		end
 
 		function result:isCompatibleType(type)
-			local currentType = self:getType()
-			while currentType ~= nil do
-				if currentType == type then
-					return true
-				end
-
-				currentType = getmetatable(currentType).__parent
-			end
-
-			return false
+			return C.isCompatibleType(self, type)
 		end
 
 		if Class.new then

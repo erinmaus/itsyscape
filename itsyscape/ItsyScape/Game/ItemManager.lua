@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Item = require "ItsyScape.Game.Item"
 local ItemInstance = require "ItsyScape.Game.ItemInstance"
 
 local ItemManager = Class()
@@ -65,10 +66,12 @@ function ItemManager:getLogic(id)
 	if not self.logic[id] then
 		local Logic
 		do
-			local file = string.format("Resource.Game.Item.%s.Logic", id)
+			local file = string.format("Resources.Game.Items.%s.Logic", id)
 			local s, r = pcall(require, file)
-			if s then
-				Logic = r
+			if s and Class.isDerived(r, Item) then
+				Logic = function(manager)
+					return r(id, manager)
+				end
 			else
 				Logic = function(manager)
 					local Type = require "ItsyScape.Game.Item"

@@ -47,6 +47,16 @@ function Actor:getName()
 	return Class.ABSTRACT()
 end
 
+-- Gets the resource type of the Actor.
+function Actor:getResourceType()
+	return Class.ABSTRACT()
+end
+
+-- Gets the resource name of the Actor.
+function Actor:getResourceName()
+	return Class.ABSTRACT()
+end
+
 -- Sets the name of the Actor.
 function Actor:setName(value)
 	Class.ABSTRACT()
@@ -94,6 +104,18 @@ end
 -- Gets the tile as a tuple in the form (i, j, layer).
 function Actor:getTile()
 	return Class.ABSTRACT()
+end
+
+-- Returns the bounds, as (min, max).
+function Actor:getBounds()
+	return Class.ABSTRACT()
+end
+
+-- Pokes 'action' with the specified ID.
+--
+-- Actions are stored in the GameDB.
+function Actor:poke(action)
+	Class.ABSTRACT()
 end
 
 -- Gets the current health of the Actor.
