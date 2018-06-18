@@ -121,12 +121,19 @@ function love.load()
 
 	Instance.Game:getStage():updateMap(1)
 
-	do
-		Instance.Game:getStage():spawnActor("Resources.Game.Peeps.Goblin.BaseGoblin")
-	end
-
 	Instance.GameView:tick()
 	Instance.Game:tick()
+
+	do
+		local s, a = Instance.Game:getStage():spawnActor("Resources.Game.Peeps.Goblin.BaseGoblin")
+		if s then
+			local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+			local player = Instance.Game:getPlayer():getActor():getPeep()
+			player:addBehavior(CombatTargetBehavior)
+			player:getBehavior(CombatTargetBehavior).actor = a
+			print "TARGET FOUND"
+		end
+	end
 	
 	local position = Instance.Game:getPlayer():getActor():getPosition()
 	Instance.playerPreviousPosition = position

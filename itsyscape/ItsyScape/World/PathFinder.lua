@@ -109,8 +109,12 @@ function PathFinder.AStar:materialize(edge)
 
 	local parent = edge
 	while parent ~= nil do
-		path:prependNode(self:getPathFinder():materialize(parent))
-		parent = self:getPathFinder():getParent(parent)
+		local nextParent = self:getPathFinder():getParent(parent)
+		if nextParent ~= nil then
+			path:prependNode(self:getPathFinder():materialize(parent))
+		end
+
+		parent = nextParent
 	end
 
 	return path

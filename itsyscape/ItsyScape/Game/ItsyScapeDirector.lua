@@ -21,6 +21,7 @@ function ItsyScapeDirector:new(game, gameDB)
 
 	self:addCortex(MovementCortex)
 	self:addCortex(MoveToTileCortex)
+	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorPositionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")

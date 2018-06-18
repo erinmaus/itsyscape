@@ -9,9 +9,13 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Item = require "ItsyScape.Game.Item"
 
 local ErrinTheHeathensStaff = Class(Weapon)
+
+function ErrinTheHeathensStaff:getAttackRange(peep)
+	-- TODO: Take into account spell; range with spell is 10
+	return 1
+end
 
 function ErrinTheHeathensStaff:getStyle()
 	return Weapon.STYLE_MAGIC
