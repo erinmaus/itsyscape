@@ -20,7 +20,12 @@ ItsyScape.Resource.Item "ErrinTheHeathensHat" {
 }
 
 ItsyScape.Meta.Equipment {
-	-- TODO
+	DefenseStab    = ItsyScape.Utility.styleBonusForItem(105, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+	DefenseSlash   = ItsyScape.Utility.styleBonusForItem(110, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+	DefenseCrush   = ItsyScape.Utility.styleBonusForItem(120, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+	DefenseMagic   = ItsyScape.Utility.styleBonusForItem(125, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+	DefenseRanged  = ItsyScape.Utility.styleBonusForItem(100, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+	Prayer         = 20,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensHat"
 }
@@ -56,7 +61,12 @@ ItsyScape.Resource.Item "ErrinTheHeathensBoots" {
 }
 
 ItsyScape.Meta.Equipment {
-	-- TODO
+	DefenseStab    = ItsyScape.Utility.styleBonusForItem(105, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+	DefenseSlash   = ItsyScape.Utility.styleBonusForItem(110, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+	DefenseCrush   = ItsyScape.Utility.styleBonusForItem(120, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+	DefenseMagic   = ItsyScape.Utility.styleBonusForItem(125, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+	DefenseRanged  = ItsyScape.Utility.styleBonusForItem(100, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+	Prayer         = 5,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensBoots"
 }
@@ -92,7 +102,12 @@ ItsyScape.Resource.Item "ErrinTheHeathensGloves" {
 }
 
 ItsyScape.Meta.Equipment {
-	-- TODO
+	DefenseStab    = ItsyScape.Utility.styleBonusForItem(105, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+	DefenseSlash   = ItsyScape.Utility.styleBonusForItem(110, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+	DefenseCrush   = ItsyScape.Utility.styleBonusForItem(120, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+	DefenseMagic   = ItsyScape.Utility.styleBonusForItem(125, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+	DefenseRanged  = ItsyScape.Utility.styleBonusForItem(100, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+	Prayer         = 20,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensGloves"
 }
@@ -128,7 +143,12 @@ ItsyScape.Resource.Item "ErrinTheHeathensCoat" {
 }
 
 ItsyScape.Meta.Equipment {
-	-- TODO
+	DefenseStab    = ItsyScape.Utility.styleBonusForItem(105, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+	DefenseSlash   = ItsyScape.Utility.styleBonusForItem(110, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+	DefenseCrush   = ItsyScape.Utility.styleBonusForItem(120, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+	DefenseMagic   = ItsyScape.Utility.styleBonusForItem(125, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+	DefenseRanged  = ItsyScape.Utility.styleBonusForItem(100, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+	Prayer         = 30,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensCoat"
 }
@@ -164,10 +184,9 @@ ItsyScape.Resource.Item "ErrinTheHeathensStaff" {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = 117,
-	AccuracyMagic = 132,
-	StrengthMagic = 120,
-	StrengthMelee = 120,
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(110, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(120),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(120),
 	Prayer = 20,
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
