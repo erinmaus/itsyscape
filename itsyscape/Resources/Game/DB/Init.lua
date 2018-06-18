@@ -96,6 +96,44 @@ Game "ItsyScape"
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 ItsyScape.Utility.xpForResource = function() return 1 end -- TODO
+
+-- Calculates the sum style bonus for an item of the specified tier.
+--
+-- Modifications should be made to 'tier' for stylistic reasons. The result
+-- should be distributed among the armor pieces.
+--
+-- Weapons (offensive bonuses) are handled differently; use styleBonusForWeapon.
+function ItsyScape.Utility.styleBonusForItem(tier, weight)
+	weight = weight or 1
+
+	local A = 1 / 40
+	local B = 2
+	local C = 10
+
+	return math.floor(math.floor(A * tier ^ 2 + B * tier + C) * weight)
+end
+
+-- Calculates the style bonus for a weapon of the given 'tier'.
+function ItsyScape.Utility.styleBonusForWeapon(tier, weight)
+	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3, weight)
+end
+
+function ItsyScape.Utility.strengthBonusForWeapon(tier)
+	local A = 1 / 100
+	local B = 1.5
+	local C = 5
+
+	return math.floor(A * tier ^ 2 + B * tier + C)
+end
+
+ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 0.3
+ItsyScape.Utility.ARMOR_BODY_WEIGHT       = 0.5
+ItsyScape.Utility.ARMOR_GLOVES_WEIGHT     = 0.1
+ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 0.2
+ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT   = 1.0
+ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
+ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
+
 ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
 
 function ItsyScape.Utility.tag(Item, value)
