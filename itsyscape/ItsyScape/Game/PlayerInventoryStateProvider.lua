@@ -8,8 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
-local InventoryBehavior = require "ItsyScape.Peeps.Behaviors.InventoryBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local PlayerInventoryStateProvider = Class(StateProvider)
 
@@ -24,6 +25,10 @@ function PlayerInventoryStateProvider:new(peep)
 	self.peep = peep
 end
 
+function PlayerInventoryStateProvider:getPriority()
+	return State.PRIORITY_LOCAL
+end
+
 -- Flags:
 --  * noted: only search for noted items; otherwise, search for unnoted items.
 function PlayerInventoryStateProvider:has(name, count, flags)
@@ -31,20 +36,83 @@ function PlayerInventoryStateProvider:has(name, count, flags)
 		return false
 	end
 
+	if not flags['item-inventory'] then
+		return false
+	end
+
 	local noted = false
-	if flags['noted'] then
+	if flags['item-noted'] then
 		noted = true
 	end
 
 	local broker = self.inventory:getBroker()
-	local count = 0
+	local c = 0
 	for item in broker:iterateItems(self.inventory) do
 		if item:getID() == name and item:isNoted() == noted then
-			count = count + item:getCount()
+			c = c + item:getCount()
 		end
 	end
 
-	return count >= count
+	return count <= c
+end
+
+function PlayerInventoryStateProvider:take(name, count, flags)
+	if not self.inventory then
+		return false
+	end
+
+	local noted = false
+	if flags['item-noted'] then
+		noted = true
+	end
+
+	local items = { count = 0 }
+
+	local broker = self.inventory:getBroker()
+	for item in broker:iterateItems(self.inventory) do
+		if item:getID() == name and item:isNoted() == noted then
+			items.count = items.count + item:getCount()
+			table.insert(items, item)
+			if items.count > count then
+				break
+			end
+		end
+	end
+
+	if items.count < count then
+		return false
+	end
+
+	local transaction = broker:createTransaction()
+	do
+		transaction:addParty(self.inventory)
+		local remainder = count
+		for i = 1, #items do
+			local c = math.min(items[i]:getCount(), remainder)
+			transaction:consume(self.items[i], c)
+			remainder = remainder - c
+		end
+	end
+	return transaction:commit()
+end
+
+function PlayerInventoryStateProvider:give(name, count, flags)
+	if not self.inventory then
+		return false
+	end
+
+	local noted = false
+	if flags['item-noted'] then
+		noted = true
+	end
+
+	local broker = self.inventory:getBroker()
+	local transaction = broker:createTransaction()
+	do
+		transaction:addParty(self.inventory)
+		transaction:spawn(self.inventory, name, count, noted, true)
+	end
+	return transaction:commit()
 end
 
 return PlayerInventoryStateProvider

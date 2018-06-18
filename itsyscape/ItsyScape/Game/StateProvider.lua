@@ -15,7 +15,19 @@ function StateProvider:new()
 	-- Nothing.
 end
 
+function StateProvider:getPriority()
+	return Class.ABSTRACT()
+end
+
 function StateProvider:has(name, count, flags)
+	return Class.ABSTRACT()
+end
+
+function StateProvider:take(name, count, flags)
+	return Class.ABSTRACT()
+end
+
+function StateProvider:give(name, count, flags)
 	return Class.ABSTRACT()
 end
 
