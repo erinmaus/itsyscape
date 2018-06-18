@@ -70,16 +70,23 @@ end
 -- Returns true if the Action can be performed. Otherwise, returns false.
 --
 -- The default implementation only evaluates requirements, not inputs.
-function Action:canPerform(state)
+function Action:canPerform(state, flags)
 	local brochure = self.gameDB:getBrochure()
 	for requirement in brochure:getRequirements(self.action) do
 		local resource = brochure:getConstraintResource(requirement)
 		local resourceType = brochure:getResourceTypeFromResource(resource)
 
-		if not state:has(resourceType.name, resource.name, requirement.count) then
+		if not state:has(resourceType.name, resource.name, requirement.count, flags) then
+			Log.info(
+				"Requirement not met; need %d of %s %s",
+				requirement.count,
+				resourceType.name,
+				resource.name)
 			return false
 		end
 	end
+
+	return true
 end
 
 -- Performs the action.

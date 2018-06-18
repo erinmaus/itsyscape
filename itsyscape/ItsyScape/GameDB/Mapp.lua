@@ -15,6 +15,7 @@
 return {
 	Action = require "mapp.action",
 	ActionDefinition = require "mapp.actiondefinition",
+	Constraint = require "mapp.actionconstraint",
 	Brochure = require "mapp.brochure",
 	ID = require "mapp.id",
 	Query = require "mapp.query",

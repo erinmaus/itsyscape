@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
+local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
+local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
@@ -80,8 +82,7 @@ function One:assign(director)
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Player.One", director:getGameDB())
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
-	stats.stats:getSkill("Attack"):setLevelBoost(1)
-	stats.stats:getSkill("Defense"):setLevelBoost(-1)
+	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()
@@ -101,6 +102,9 @@ function One:assign(director)
 
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
+
+	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
+	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 
 function One:ready(director, game)

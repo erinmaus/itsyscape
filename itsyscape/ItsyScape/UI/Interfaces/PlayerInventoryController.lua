@@ -109,7 +109,7 @@ function PlayerInventoryController:pokeItem(e)
 			itemResource,
 			e.id,
 			'inventory',
-			nil, item, self:getPeep())
+			self:getPeep():getState(), item, self:getPeep())
 
 		if not success then
 			Log.error(

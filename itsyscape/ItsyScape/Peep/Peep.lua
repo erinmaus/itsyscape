@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local State = require "ItsyScape.Game.State"
 local Behavior = require "ItsyScape.Peep.Behavior"
 local CommandQueue = require "ItsyScape.Peep.CommandQueue"
 
@@ -47,6 +48,8 @@ function Peep:new(name)
 	self.pokes = {}
 
 	self.resources = {}
+
+	self.state = State()
 end
 
 -- Adds a poke 'name'.
@@ -178,6 +181,11 @@ function Peep:getResources(name, resourceTypeID)
 	else
 		return function() return nil end
 	end
+end
+
+-- Gets the game state of the Peep.
+function Peep:getState()
+	return self.state
 end
 
 -- Assigns a director to this peep.

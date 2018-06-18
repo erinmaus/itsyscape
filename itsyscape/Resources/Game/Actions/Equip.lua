@@ -16,10 +16,14 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local Equip = Class(Action)
 Equip.SCOPES = { ['inventory'] = true }
 
+function Equip:canPerform(state)
+	return Action.canPerform(self, state, { ["item-inventory"] = true })
+end
+
 function Equip:perform(state, item, peep)
-	--if not self:canPerform(state) then
-	--	return false
-	--end
+	if not self:canPerform(state) then
+		return false
+	end
 
 	local director = peep:getDirector()
 	local inventory = peep:getBehavior(InventoryBehavior)

@@ -47,7 +47,7 @@ end
 --
 -- 'xp' is clamped to 0.
 function Stats.Skill:setXP(value)
-	self.xp = math.max(value, 0)
+	self.xp = math.floor(math.max(value, 0))
 	self.isDirty = true
 end
 

@@ -11,6 +11,19 @@ local Class = require "ItsyScape.Common.Class"
 
 local State = Class()
 
+-- To change priority within a category, subtract to increase, add to decrease.
+--
+-- For example, if you want to be slightly less accessible than LOCAL priority,
+-- add 1. To be slightly more accessible, subtract 1.
+--
+-- Each category has a width of 100.
+--
+-- Priority is cached. It should constant per type, not per instance.
+State.PRIORITY_COSMIC    = 300 -- For things really far away. (???)
+State.PRIORITY_DISTANT   = 200 -- For things pretty far away, like banks.
+State.PRIORITY_LOCAL     = 100 -- For things nearby, like inventory.
+State.PRIORITY_IMMEDIATE =   0 -- For things *really* nearby, like equipment.
+
 function State:new()
 	self.providers = {}
 end
@@ -23,6 +36,21 @@ function State:addProvider(resource, provider)
 	end
 
 	table.insert(p, provider)
+	table.sort(p, function(a, b) return a:getPriority() < b:getPriority() end)
+end
+
+function State:removeProvider(resource, provider)
+	local p = self.providers[resource]
+	if p then
+		for i = 1, #p do
+			if p[i] == provider then
+				table.remove(p, i)
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 function State:has(resource, name, count, flags)
@@ -32,10 +60,12 @@ function State:has(resource, name, count, flags)
 	end
 
 	for i = 1, #p do
-		if p:has(name, count, flags) then
-			return true
+		if p[i]:has(name, count, flags) then
+			return true, p[i]
 		end
 	end
+
+	return false, nil
 end
 
 return State
