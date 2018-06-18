@@ -113,6 +113,25 @@ function CommandQueue:flush()
 	end
 end
 
+-- Flushes all pending events and interrupts the current command.
+--
+-- Returns true if the current command, if any, could be interrupted, false
+-- otherwise.
+function CommandQueue:clear()
+	self:flush()
+
+	if self:getIsPending() then
+		local currentCommand = self.queue[1]
+		if not currentCommand:getIsInterruptible() then
+			return false
+		end
+
+		currentCommand:onInterrupt(self.peep)
+		
+		self.queue = {}
+	end
+end
+
 -- Updates the command queue.
 --
 -- 'delta' is the time, in seconds, since last update. This should be 1 / TICKS,

@@ -9,6 +9,10 @@
 --------------------------------------------------------------------------------
 local Color = require "ItsyScape.Graphics.Color"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local MapPathFinder = require "ItsyScape.World.MapPathFinder"
+local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -74,6 +78,15 @@ function Utility.getActions(game, resource, scope)
 	end
 
 	return actions
+end
+
+-- Contains utility methods that deal with combat.
+Utility.Combat = {}
+
+-- Calculates the maximum hit given the level (including boosts), multiplier,
+-- and equipment strength bonus.
+function Utility.Combat.calcMaxHit(level, multiplier, bonus)
+	return math.floor(0.5 + level * multiplier * (bonus + 64) / 640)
 end
 
 -- Contains utility methods to deal with items.
@@ -145,6 +158,32 @@ function Utility.Peep.getEquippedItem(peep, slot)
 		equipment = equipment.equipment
 		return equipment:getEquipped(slot)
 	end
+end
+
+-- Makes the peep walk to the tile (i, j, k).
+--
+-- Returns true on success, false on failure.
+function Utility.Peep.walk(peep, i, j, k, ...)
+	if not peep:hasBehavior(PositionBehavior) or
+	   not peep:hasBehavior(MovementBehavior)
+	then
+		return false
+	end
+
+	local position = peep:getBehavior(PositionBehavior).position
+	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
+	local pathFinder = MapPathFinder(map)
+	local path = pathFinder:find(
+		{ i = playerI, j = playerJ },
+		{ i = i, j = j },
+		...)
+	if path then
+		local queue = peep:getCommandQueue()
+		return queue:interrupt(ExecutePathCommand(path))
+	end
+
+	return false
 end
 
 return Utility

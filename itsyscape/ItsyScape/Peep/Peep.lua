@@ -34,6 +34,7 @@ function Peep:new(name)
 
 	-- It's a RollerCoaster Tycoon reference.
 	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
+	self.index = Peep.PEEPS_TALLY
 
 	Peep.PEEPS_TALLY = Peep.PEEPS_TALLY + 1
 
@@ -219,6 +220,10 @@ function Peep:getCommandQueue(channel)
 	end
 
 	return queue
+end
+
+function Peep:getTally()
+	return self.index
 end
 
 -- Returns the name of the Peep.

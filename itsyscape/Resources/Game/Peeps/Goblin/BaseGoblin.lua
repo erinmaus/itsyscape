@@ -66,6 +66,10 @@ function BaseGoblin:new(...)
 
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
+
+	self:listen('receiveAttack', function(_, p)
+		print("The Goblin says ow!")
+	end)
 end
 
 function BaseGoblin:ready(director, game)
@@ -101,15 +105,6 @@ end
 
 function BaseGoblin:update(director, game)
 	Peep.update(self, director, game)
-
-	local r = math.random()
-	if r < 0.05 then
-		local AttackPoke = require "ItsyScape.Peep.AttackPoke"
-		self:poke('initiateAttack', AttackPoke({ attackType = 'stab' }))
-	elseif r < 0.1 then
-		local AttackPoke = require "ItsyScape.Peep.AttackPoke"
-		self:poke('receiveAttack', AttackPoke({ attackType = 'stab' }))
-	end
 
 	if math.random() < 0.1 and not self:hasBehavior(TargetTileBehavior) then
 		local map = self:getDirector():getGameInstance():getStage():getMap(1)
