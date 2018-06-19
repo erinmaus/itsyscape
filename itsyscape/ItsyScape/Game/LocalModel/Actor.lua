@@ -13,6 +13,9 @@ local Actor = require "ItsyScape.Game.Model.Actor"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 -- Represents an Actor that is simulated locally.
 local LocalActor = Class(Actor)
@@ -39,6 +42,10 @@ function LocalActor:spawn(id)
 	self.peep = self.game:getDirector():addPeep(self.peepType)
 	local _, actorReference = self.peep:addBehavior(ActorReferenceBehavior)
 	actorReference.actor = self
+
+	self.peep:listen("hit", function(_, p)
+		self.onDamage(self, p:getDamageType(), p:getDamage())
+	end)
 
 	self.id = id
 end
@@ -123,6 +130,34 @@ function LocalActor:getPosition()
 	end
 end
 
+-- Gets the current hitpoints of the Actor.
+function LocalActor:getCurrentHitpoints()
+	if not self.peep then
+		return 1
+	end
+
+	local combatStats = self.peep:getBehavior(CombatStatusBehavior)
+	if combatStats then
+		return combatStats.currentHitpoints
+	else
+		return 1
+	end
+end
+
+-- Gets the maximum hitpoints of the Actor.
+function LocalActor:getMaximumHitpoints()
+	if not self.peep then
+		return 1
+	end
+
+	local combatStats = self.peep:getBehavior(CombatStatusBehavior)
+	if combatStats then
+		return combatStats.maximumHitpoints
+	else
+		return 1
+	end
+end
+
 function LocalActor:getTile()
 	if not self.peep then
 		return 0, 0, 0
@@ -140,11 +175,49 @@ function LocalActor:getTile()
 end
 
 function LocalActor:getCurrentHealth()
-	return 1
+	if not self.peep then
+		return 1
+	end
+
+	local status = self.peep:getBehavior(CombatStatusBehavior)
+	if status then
+		return status.currentHitpoints
+	else
+		return 1
+	end
 end
 
 function LocalActor:getMaximumHealth()
-	return 1
+	if not self.peep then
+		return 1
+	end
+
+	local status = self.peep:getBehavior(CombatStatusBehavior)
+	if status then
+		return status.maxHitpoints
+	else
+		return 1
+	end
+end
+
+function LocalActor:getBounds()
+	if not self.peep then
+		return Vector.ZERO, Vector.ZERO
+	end
+
+	local position = self:getPosition()
+
+	local size = self.peep:getBehavior(SizeBehavior)
+	if size then
+		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2)
+		local ySize = Vector(0, size.size.y, 0)
+		local min = position - xzSize
+		local min = position + xzSize + ySize
+
+		return min, max
+	else
+		return position, position
+	end
 end
 
 function LocalActor:setBody(body)

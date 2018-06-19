@@ -111,6 +111,13 @@ function ActorView:new(actor, actorID)
 		self:face(direction)
 	end
 	actor.onDirectionChanged:register(self._onDirectionChanged)
+
+	self._onDamage = function(_, damageType, damage)
+		self:damage(damageType, damage)
+	end
+	actor.onDamage:register(self._onDamage)
+
+	self.healthBar = false
 end
 
 function ActorView:attach(game)
@@ -127,6 +134,7 @@ function ActorView:poof()
 	self.actor.onAnimationPlayed:unregister(self._onAnimationPlayed)
 	self.actor.onTransmogrified:unregister(self._onTransmogrified)
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
+	self.actor.onDamage:unregister(self._onDamage)
 end
 
 function ActorView:getSceneNode()
@@ -249,6 +257,21 @@ function ActorView:face(direction)
 		self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
 	elseif direction.x > 0.5 then
 		self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
+	end
+end
+
+function ActorView:damage(damageType, damage)
+	local sprite = self.game:getSpriteManager()
+	sprite:add("Damage", self.sceneNode, Vector(0, 1, 0), damageType, damage)
+
+	if self.healthBar and self.healthBar:getIsSpawned() then
+		self.game:getSpriteManager():reset(self.healthBar)
+	else
+		self.healthBar = self.game:getSpriteManager():add(
+			"HealthBar",
+			self.sceneNode,
+			Vector(0, 2, 0),
+			self.actor)
 	end
 end
 

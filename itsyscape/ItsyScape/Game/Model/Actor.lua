@@ -23,6 +23,9 @@ function Actor:new()
 	self.onAnimationPlayed = Callback()
 	self.onTransmogrified = Callback()
 	self.onSkinChanged = Callback()
+
+	-- Called with 'damageType' (string) and 'damage'.
+	self.onDamage = Callback()
 end
 
 -- Spawns the Actor, assigning it the given unique ID.
@@ -118,13 +121,13 @@ function Actor:poke(action)
 	Class.ABSTRACT()
 end
 
--- Gets the current health of the Actor.
-function Actor:getCurrentHealth()
+-- Gets the current hitpoints of the Actor.
+function Actor:getCurrentHitpoints()
 	return Class.ABSTRACT()
 end
 
--- Gets the maximum health of the Actor.
-function Actor:getMaximumHealth()
+-- Gets the maximum hitpoints of the Actor.
+function Actor:getMaximumHitpoints()
 	return Class.ABSTRACT()
 end
 

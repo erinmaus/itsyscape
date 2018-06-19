@@ -36,6 +36,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 
 	peep:listen('initiateAttack', self.onInitiateAttack, self)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
+	peep:listen('die', self.onDie, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -43,6 +44,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
+	peep:silence('die', self.onDie)
 end
 
 function HumanoidActorAnimatorCortex:playAnimation(peep, priority, resource)
@@ -85,6 +87,18 @@ function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
 		self:playAnimation(
 			peep,
 			HumanoidActorAnimatorCortex.DEFEND_PRIORITY,
+			resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:onDie(peep, p)
+	local resource = peep:getResource(
+		"animation-die",
+		"ItsyScape.Graphics.AnimationResource")
+	if resource then
+		self:playAnimation(
+			peep,
+			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 			resource)
 	end
 end

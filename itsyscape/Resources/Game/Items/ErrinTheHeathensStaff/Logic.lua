@@ -17,6 +17,15 @@ function ErrinTheHeathensStaff:getAttackRange(peep)
 	return 1
 end
 
+function ErrinTheHeathensStaff:getBonusForStance(peep)
+	-- TODO: Take into account spell
+	return Weapon.BONUS_CRUSH
+end
+
+function ErrinTheHeathensStaff:getWeaponType()
+	return 'staff'
+end
+
 function ErrinTheHeathensStaff:getStyle()
 	return Weapon.STYLE_MAGIC
 end

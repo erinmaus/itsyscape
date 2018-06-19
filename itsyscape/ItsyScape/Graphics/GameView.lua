@@ -15,6 +15,7 @@ local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
+local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local TileSet = require "ItsyScape.World.TileSet"
@@ -66,6 +67,7 @@ function GameView:new(game)
 
 	self.renderer = Renderer()
 	self.resourceManager = ResourceManager()
+	self.spriteManager = SpriteManager(self.resourceManager)
 
 	self.itemBagModel = self.resourceManager:load(
 		ModelResource,
@@ -86,6 +88,10 @@ end
 
 function GameView:getResourceManager()
 	return self.resourceManager
+end
+
+function GameView:getSpriteManager()
+	return self.spriteManager
 end
 
 function GameView:getScene()
@@ -208,6 +214,8 @@ function GameView:update(delta)
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
 	end
+
+	self.spriteManager:update(delta)
 end
 
 function GameView:tick()

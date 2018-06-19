@@ -21,12 +21,16 @@ local AttackPoke = Class(Poke)
 --               Defaults to 'none'.
 -- * damage: the total damage dealt by the attack. Defaults to 0. Values are
 --           clamped to 0. A value of 0 means the attack missed.
+-- * aggressor: who or what instigated the attack. Should be a peep or a falsey value.
+--              Defaults to false.
 function AttackPoke:new(t)
 	t = t or {}
 
 	self.attackType = t.attackType or 'none'
 	self.weaponType = t.weaponType or 'none'
+	self.damageType = t.damageType or 'none'
 	self.damage = math.max(t.damage or 0, 0)
+	self.aggressor = t.aggressor or false
 end
 
 function AttackPoke:getAttackType()
@@ -37,8 +41,16 @@ function AttackPoke:getWeaponType()
 	return self.weaponType
 end
 
+function AttackPoke:getDamageType()
+	return self.damageType
+end
+
 function AttackPoke:getDamage()
 	return self.damage
+end
+
+function AttackPoke:getAggressor()
+	return self.aggressor
 end
 
 return AttackPoke

@@ -33,6 +33,10 @@ function PlayAnimationInstance:pending(time)
 end
 
 function PlayAnimationInstance:play(animatable, time)
+	if self.command:getKeep() then
+		time = math.min(time, self.animation:getDuration())
+	end
+
 	if self.animation then
 		self.animation:computeTransforms(time, self.transforms)
 

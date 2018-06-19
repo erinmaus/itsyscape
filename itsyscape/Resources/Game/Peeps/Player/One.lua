@@ -83,6 +83,7 @@ function One:assign(director)
 	stats.stats = Stats("Player.One", director:getGameDB())
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
+	stats.stats:getSkill("Wisdom"):setXP(Curve.XP_CURVE:compute(10))
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()
