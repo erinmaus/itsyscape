@@ -125,14 +125,7 @@ function love.load()
 	Instance.Game:tick()
 
 	do
-		local s, a = Instance.Game:getStage():spawnActor("Resources.Game.Peeps.Goblin.BaseGoblin")
-		if s then
-			local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-			local player = Instance.Game:getPlayer():getActor():getPeep()
-			player:addBehavior(CombatTargetBehavior)
-			player:getBehavior(CombatTargetBehavior).actor = a
-			print "TARGET FOUND"
-		end
+		Instance.Game:getStage():spawnActor("resource://Goblin_Base")
 	end
 	
 	local position = Instance.Game:getPlayer():getActor():getPosition()
@@ -272,8 +265,10 @@ function love.draw()
 	-- Draw the scene.
 	Instance.GameView:getRenderer():draw(Instance.GameView:getScene(), delta)
 
+	-- Draw sprites.
+	Instance.GameView:getSpriteManager():draw(Instance.Camera, delta)
+
 	-- Draw UI
-	--local width, height = love.window.getMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.ortho(width, height)

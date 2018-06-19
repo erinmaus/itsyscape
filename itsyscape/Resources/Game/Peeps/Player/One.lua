@@ -67,7 +67,7 @@ function One:new(...)
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
-	self:addResource("animation-attack", attackAnimation)
+	self:addResource("animation-attack-crush-staff", attackAnimation)
 end
 
 function One:assign(director)

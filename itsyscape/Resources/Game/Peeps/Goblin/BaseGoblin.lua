@@ -24,8 +24,8 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local BaseGoblin = Class(Creep)
 
-function BaseGoblin:new(...)
-	Creep.new(self, 'Goblin', ...)
+function BaseGoblin:new(t, ...)
+	Creep.new(self, t or 'Goblin_Base', ...)
 
 	self:addBehavior(HumanoidBehavior)
 
@@ -53,6 +53,8 @@ function BaseGoblin:new(...)
 end
 
 function BaseGoblin:ready(director, game)
+	Creep.ready(self, director, game)
+
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor

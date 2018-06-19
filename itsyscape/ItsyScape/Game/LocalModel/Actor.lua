@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Actor = require "ItsyScape.Game.Model.Actor"
+local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -30,16 +31,17 @@ function LocalActor:new(game, peepType)
 	self.skin = {}
 	self.animations = {}
 	self.body = false
+	self.resource = false
 end
 
 function LocalActor:getPeep()
 	return self.peep
 end
 
-function LocalActor:spawn(id)
+function LocalActor:spawn(id, resource, ...)
 	assert(self.id == Actor.NIL_ID, "Actor already spawned")
 
-	self.peep = self.game:getDirector():addPeep(self.peepType)
+	self.peep = self.game:getDirector():addPeep(self.peepType, resource, ...)
 	local _, actorReference = self.peep:addBehavior(ActorReferenceBehavior)
 	actorReference.actor = self
 
@@ -48,6 +50,7 @@ function LocalActor:spawn(id)
 	end)
 
 	self.id = id
+	self.resource = resource or false
 end
 
 function LocalActor:depart()
@@ -212,11 +215,32 @@ function LocalActor:getBounds()
 		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2)
 		local ySize = Vector(0, size.size.y, 0)
 		local min = position - xzSize
-		local min = position + xzSize + ySize
+		local max = position + xzSize + ySize
 
 		return min, max
 	else
 		return position, position
+	end
+end
+
+function LocalActor:getActions(scope)
+	if self.resource then
+		return Utility.getActions(self.game, self.resource, scope or 'world')
+	else
+		return {}
+	end
+end
+
+function LocalActor:poke(action, scope)
+	if self.resource then
+		local player = self.game:getPlayer():getActor():getPeep()
+		local peep = self:getPeep()
+		Utility.performAction(
+			self.game,
+			self.resource,
+			action,
+			scope,
+			player:getState(), player, peep)
 	end
 end
 

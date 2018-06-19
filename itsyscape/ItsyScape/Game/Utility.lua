@@ -42,10 +42,11 @@ function Utility.performAction(game, resource, id, scope, ...)
 					foundAction = true
 				else
 					Log.error(
-						"action %s cannot be performed from inventory (on item %s @ %d)",
+						"action %s cannot be performed from scope %s (on resource '%s' [%d])",
 						typeName,
-						item:getID(),
-						e.index)
+						scope,
+						resource.name,
+						resource.id.value)
 				end
 			end
 		end
@@ -80,6 +81,17 @@ function Utility.getActions(game, resource, scope)
 	end
 
 	return actions
+end
+
+function Utility.getName(resource, gameDB, lang)
+	lang = lang or "en-US"
+
+	local nameRecord = gameDB:getRecords("ResourceName", { Resource = resource, Language = lang }, 1)[1]
+	if nameRecord then
+		return nameRecord:get("Value")
+	else
+		return false
+	end
 end
 
 -- Contains utility methods that deal with combat.
@@ -145,7 +157,7 @@ function Utility.Item.getName(id, gameDB, lang)
 	lang = lang or "en-US"
 
 	local itemResource = gameDB:getResource(id, "Item")
-	local nameRecord = gameDB:getRecords("ResourceName", { Resource = itemResource, Language = "en-US" }, 1)[1]
+	local nameRecord = gameDB:getRecords("ResourceName", { Resource = itemResource, Language = lang }, 1)[1]
 	if nameRecord then
 		return nameRecord:get("Value")
 	else

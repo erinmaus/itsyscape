@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Stats = require "ItsyScape.Game.Stats"
+local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -23,7 +24,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local Creep = Class(Peep)
 
-function Creep:new(...)
+function Creep:new(resource, ...)
 	Peep.new(self, ...)
 
 	self:addBehavior(ActorReferenceBehavior)
@@ -46,6 +47,26 @@ function Creep:new(...)
 	self:addPoke('hit')
 	self:addPoke('miss')
 	self:addPoke('die')
+	
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(1, 2, 1)
+
+	self.resource = resource or false
+end
+
+function Creep:ready(director, game)
+	Peep.ready(self, director, game)
+
+	if self.resource then
+		local gameDB = game:getGameDB()
+
+		local name = Utility.getName(self.resource, gameDB)
+		if name then
+			self:setName(name)
+		else
+			self:setName("*" .. self.resource.name)
+		end
+	end
 end
 
 function Creep:walk(i, j, k)
@@ -75,7 +96,6 @@ function Creep:onReceiveAttack(p)
 	})
 
 	if damage > 0 then
-		print(damage)
 		self:poke('hit', attack)
 	else
 		self:poke('miss', attack)

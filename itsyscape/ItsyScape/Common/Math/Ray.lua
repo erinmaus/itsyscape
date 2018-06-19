@@ -79,26 +79,26 @@ function Ray:hitBounds(min, max)
 	local inverseDirection = 1 / self.direction
 	local tMin, tMax
 
-	local tx1 = (b.min.x - self.origin.x) * inverseDirection.x
-	local tx2 = (b.max.x - self.origin.x) * inverseDirection.x
+	local tx1 = (min.x - self.origin.x) * inverseDirection.x
+	local tx2 = (max.x - self.origin.x) * inverseDirection.x
  
 	local tMin = math.min(tx1, tx2)
 	local tMax = math.max(tx1, tx2)
  
-	local ty1 = (b.min.y - self.origin.y) * inverseDirection.y
-	local ty2 = (b.max.y - self.origin.y) * inverseDirection.y
+	local ty1 = (min.y - self.origin.y) * inverseDirection.y
+	local ty2 = (max.y - self.origin.y) * inverseDirection.y
  
 	tMin = math.max(tMin, math.min(ty1, ty2))
 	tMax = math.min(tMax, math.max(ty1, ty2))
  
-	local tz1 = (b.min.z - self.origin.z) * inverseDirection.z
-	local tz2 = (b.max.z - self.origin.z) * inverseDirection.z
+	local tz1 = (min.z - self.origin.z) * inverseDirection.z
+	local tz2 = (max.z - self.origin.z) * inverseDirection.z
  
 	tMin = math.max(tMin, math.min(tz1, tz2))
 	tMax = math.min(tMax, math.max(tz1, tz2))
  
 	if tMax >= tMin then
-		return true, ray.origin + ray.direction * tMin
+		return true, self.origin + self.direction * tMin
 	else
 		return false
 	end
