@@ -8,41 +8,41 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Creep "Goblin_Base" {
+ItsyScape.Resource.Peep "Goblin_Base" {
 	ItsyScape.Action.Attack()
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Goblin.BaseGoblin",
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Goblin",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(5),
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
 	Value = ItsyScape.Utility.xpForLevel(5),
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(5),
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(15),
-	Resource = ItsyScape.Resource.Creep "Goblin_Base"
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }

@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -111,6 +112,13 @@ function CombatCortex:update(delta)
 								canAttack = cooldownFinishTicks < game:getCurrentTick() * game:getDelta()
 							else
 								canAttack = true
+							end
+						end
+						do
+							local combat = target:getBehavior(CombatStatusBehavior)
+							if combat and combat.currentHitpoints == 0 then
+								peep:removeBehavior(CombatTargetBehavior)
+								canAttack = false
 							end
 						end
 

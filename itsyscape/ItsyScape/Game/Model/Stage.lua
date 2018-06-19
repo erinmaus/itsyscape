@@ -120,4 +120,9 @@ function Stage:takeItem(i, j, layer, ref)
 	Class.ABSTRACT()
 end
 
+-- Returns an iterator over the actors.
+function Stage:iterateActors()
+	return Class.ABSTRACT()
+end
+
 return Stage

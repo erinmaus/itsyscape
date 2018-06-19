@@ -63,10 +63,49 @@ function LocalStage:notifyDropItem(item, key, source)
 end
 
 function LocalStage:spawnActor(actorID)
-	local Peep = require(actorID)
+	local Peep
+	local resource
+	do
+		local protocol, value = actorID:match("(.*)%:%/*(.*)")
+		if protocol and value then
+			if protocol:lower() == "resource" then
+				local gameDB = self.game:getGameDB()
+				local r = gameDB:getResource(value, "Peep")
+
+				if r then
+					local record = gameDB:getRecords("PeepID", { Resource = r }, 1)[1]
+					if record then
+						t = record:get("Value")
+
+						if not t or t == "" then
+							Log.error("PeepID malformed for Peep resource '%s'", value)
+							return false, nil
+						else
+							Peep = require(t)
+							resource = r
+						end
+					else
+						Log.error("no peep ID for resource '%s'", value)
+						return false, nil
+					end
+				else
+					Log.error("Peep resource '%s' not found.", value)
+					return false, nil
+				end
+			elseif protocol:lower() == "actor" then
+				Peep = require(value)
+			else
+				Log.error("bad protocol: '%s'", protocol:lower())
+				return false, nil
+			end
+		else
+			Peep = require(actorID)
+		end
+	end
+
 	if Peep then
 		local actor = LocalActor(self.game, Peep)
-		actor:spawn(self.currentActorID)
+		actor:spawn(self.currentActorID, resource)
 
 		self.onActorSpawned(self, actorID, actor)
 
@@ -224,6 +263,10 @@ function LocalStage:takeItem(i, j, layer, ref)
 			end
 		end
 	end
+end
+
+function LocalStage:iterateActors()
+	return pairs(self.actors)
 end
 
 return LocalStage

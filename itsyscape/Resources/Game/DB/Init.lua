@@ -14,9 +14,7 @@ Game "ItsyScape"
 	ResourceType "Item"
 	ResourceType "Skill"
 
-	ResourceType "Peep"        -- NPCs
-	ResourceType "Creep"       -- Mobs
-	ResourceType "PlayerPeep"  -- Players
+	ResourceType "Peep" -- NPCs, mobs, whatever
 
 	Meta "PeepStat" {
 		Skill = Meta.TYPE_RESOURCE,

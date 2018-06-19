@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Player = require "ItsyScape.Game.Model.Player"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
@@ -56,7 +57,15 @@ function Player:walk(i, j, k)
 	local path = self:findPath(i, j, k)
 	if path then
 		local queue = self.actor:getPeep():getCommandQueue()
-		return queue:interrupt(ExecutePathCommand(path))
+		if queue:interrupt(ExecutePathCommand(path)) then
+			-- TODO: move this somewhere else; some univer sal "interrupt player"
+			--       function...
+			peep:removeBehavior(CombatTargetBehavior)
+
+			return true
+		else
+			return false
+		end
 	else
 		return false
 	end

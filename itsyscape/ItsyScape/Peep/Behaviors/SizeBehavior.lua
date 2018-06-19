@@ -19,7 +19,7 @@ local SizeBehavior = Behavior("Size")
 -- Values default to 1.
 function SizeBehavior:new(width, height, depth)
 	Behavior.Type.new(self)
-	self.size = Vector(width or 1, height or 1, depth or 1)
+	self.size = Vector(width or 2, height or 1, depth or 2)
 end
 
 return SizeBehavior

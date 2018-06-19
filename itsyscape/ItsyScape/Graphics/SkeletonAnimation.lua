@@ -37,10 +37,8 @@ function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 	local delta
 	if frameDifference == 0 then
 		delta = 1.0
-		--print(string.format("d %.3f T %.3f sT %.3f oT %.3f", delta, time, self.time, other.time))
 	else
 		delta = timeDifference / (other.time - self.time)
-		--print(string.format("d %.3f T %.3f sT %.3f oT %.3f", delta, time, self.time, other.time))
 	end
 
 	local rotation = self.rotation:slerp(other.rotation, delta):getNormal()
