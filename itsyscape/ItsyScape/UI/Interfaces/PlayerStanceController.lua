@@ -35,14 +35,11 @@ function PlayerStanceController:pull()
 	if equippedItem then
 		local logic = self:getDirector():getItemManager():getLogic(equippedItem:getID())
 		if logic:isCompatibleType(Weapon) then
-			--print 'is weapon'
 			result.style = logic:getStyle()
 		else
-			--print 'not weapon'
 			result.style = Weapon.STYLE_MELEE
 		end
 	else
-		--print 'no equippedItem'
 		result.style = Weapon.STYLE_MELEE
 	end
 

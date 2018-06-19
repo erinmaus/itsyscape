@@ -149,7 +149,11 @@ function SkeletonAnimation:computeTransforms(time, transforms)
 		local duration = boneFrame[#boneFrame].time
 		local wrappedTime
 		if duration ~= 0 then
-			wrappedTime = time % duration
+			if time > duration then
+				wrappedTime = time % duration
+			else
+				wrappedTime = time
+			end
 		else
 			wrappedTime = 0
 		end

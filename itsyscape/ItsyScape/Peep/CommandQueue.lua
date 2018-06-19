@@ -130,6 +130,8 @@ function CommandQueue:clear()
 		
 		self.queue = {}
 	end
+
+	return true
 end
 
 -- Updates the command queue.

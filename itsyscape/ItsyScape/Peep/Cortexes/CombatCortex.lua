@@ -13,9 +13,12 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TilePathNode = require "ItsyScape.World.TilePathNode"
 
 local CombatCortex = Class(Cortex)
 
@@ -93,6 +96,33 @@ function CombatCortex:update(delta)
 						if self.walking[peep] then
 							if peep:getCommandQueue():clear() then
 								self.walking[peep] = nil
+
+								peep:addBehavior(TargetTileBehavior)
+								local targetTile = peep:getBehavior(TargetTileBehavior)
+								targetTile.pathNode = TilePathNode(selfI, selfJ, position.layer or 1)
+							end
+						end
+
+						local canAttack
+						do
+							local cooldown = peep:getBehavior(AttackCooldownBehavior)
+							if cooldown then
+								local cooldownFinishTicks = cooldown.cooldown + cooldown.ticks * game:getDelta()
+								canAttack = cooldownFinishTicks < game:getCurrentTick() * game:getDelta()
+							else
+								canAttack = true
+							end
+						end
+
+						if canAttack then
+							local weapon = Utility.Peep.getEquippedItem(
+								peep,
+								Equipment.PLAYER_SLOT_RIGHT_HAND)
+							if weapon then
+								local logic = itemManager:getLogic(weapon:getID())
+								if logic:isCompatibleType(Weapon) then
+									logic:perform(peep, target)
+								end
 							end
 						end
 					end
@@ -100,6 +130,6 @@ function CombatCortex:update(delta)
 			end
 		end
 	end
-end
+end -- oh my god
 
 return CombatCortex

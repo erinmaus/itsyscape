@@ -18,6 +18,7 @@ local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
 --
 -- PlayAnimation "<filename>" {
 --   [repeatAnimation = boolean (false)] -- Whether to repeat the animation.
+--   [keep = boolean (false)] -- Whether to keep the last frame of the animation.
 --   [bones = { <bone 1>, <bone N> }]    -- Bones to play this animation on.
 -- }
 local PlayAnimation, Metatable = Class(Command)
@@ -31,12 +32,14 @@ function PlayAnimation:new(filename)
 	self.repeatAnimation = false
 	self.bones = {}
 	self.duration = false
+	self.keep = false
 end
 
 -- Sets some properties. See type description above. 
 function Metatable:__call(t)
 	t = t or {}
 
+	self:setKeep(t.keep)
 	self:setRepeatAnimation(t.repeatAnimation)
 	self:setBones(t.bones)
 
@@ -58,6 +61,18 @@ end
 -- Sets a boolean indicating if the animation should repeat.
 function PlayAnimation:setRepeatAnimation(value)
 	self.repeatAnimation = value or false
+end
+
+-- Returns true if the animation should keep the last frame, false otherwise.
+--
+-- The default value is false.
+function PlayAnimation:getKeep()
+	return self.keep
+end
+
+-- Sets whether the animation should keep the last frame.
+function PlayAnimation:setKeep(value)
+	self.keep = value or false
 end
 
 -- Gets the bones this animation applies to.

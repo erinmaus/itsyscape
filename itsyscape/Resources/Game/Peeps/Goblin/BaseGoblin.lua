@@ -15,36 +15,19 @@ local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryPro
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
+local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
-local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
-local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
-local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
-local MapPathFinder = require "ItsyScape.World.MapPathFinder"
-local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
-local BaseGoblin = Class(Peep)
+local BaseGoblin = Class(Creep)
 
 function BaseGoblin:new(...)
-	Peep.new(self, 'Goblin', ...)
+	Creep.new(self, 'Goblin', ...)
 
-	self:addBehavior(ActorReferenceBehavior)
 	self:addBehavior(HumanoidBehavior)
-	self:addBehavior(MovementBehavior)
-	self:addBehavior(PositionBehavior)
-	self:addBehavior(SizeBehavior)
-
-	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 16
-	movement.maxAcceleration = 16
-	movement.decay = 0.6
-	movement.velocityMultiplier = 1
-	movement.accelerationMultiplier = 1
-	movement.stoppingForce = 3
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -63,13 +46,10 @@ function BaseGoblin:new(...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Goblin_Defend/Script.lua")
 	self:addResource("animation-defend", defendAnimation)
-
-	self:addPoke('initiateAttack')
-	self:addPoke('receiveAttack')
-
-	self:listen('receiveAttack', function(_, p)
-		print("The Goblin says ow!")
-	end)
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Goblin_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 end
 
 function BaseGoblin:ready(director, game)
@@ -87,31 +67,45 @@ function BaseGoblin:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Goblin/Base.lua")
 	actor:setSkin('npc', 1, skin)
-end
 
-function BaseGoblin:walk(i, j, k)
-	local position = self:getBehavior(PositionBehavior).position
-	local map = self:getDirector():getGameInstance():getStage():getMap(k)
-	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = MapPathFinder(map)
-	local path = pathFinder:find(
-		{ i = playerI, j = playerJ },
-		{ i = i, j = j })
-	if path then
-		local queue = self:getCommandQueue()
-		queue:interrupt(ExecutePathCommand(path))
-	end
+	local stats = self:getBehavior(StatsBehavior)
+	stats.stats = Stats("Goblin", game:getGameDB())
+	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(15))
+
+	local combat = self:getBehavior(CombatStatusBehavior)
+	combat.maximumHitpoints = 15
+	combat.currentHitpoints = 15
 end
 
 function BaseGoblin:update(director, game)
-	Peep.update(self, director, game)
+	Creep.update(self, director, game)
+
+	local isAlive
+	do
+		local combat = self:getBehavior(CombatStatusBehavior)
+		isAlive = combat.currentHitpoints > 0
+	end
 
 	if math.random() < 0.1 and not self:hasBehavior(TargetTileBehavior) then
-		local map = self:getDirector():getGameInstance():getStage():getMap(1)
-		local i = math.floor(math.random(1, map:getWidth()))
-		local j = math.floor(math.random(1, map:getHeight()))
-		self:walk(i, j, 1)
+		if isAlive then
+			local map = self:getDirector():getGameInstance():getStage():getMap(1)
+			local i = math.floor(math.random(1, map:getWidth()))
+			local j = math.floor(math.random(1, map:getHeight()))
+			self:walk(i, j, 1)
+		end
 	end
+end
+
+function BaseGoblin:onHit(p)
+	Creep.onHit(self, p)
+
+	print(string.format("Ow! The goblin took %d damage.", p:getDamage()))
+end
+
+function BaseGoblin:onDie(p)
+	Creep.onDie(self, p)
+
+	print("RIP, Goblin.")
 end
 
 return BaseGoblin

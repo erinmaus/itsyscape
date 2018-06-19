@@ -8,7 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Color = require "ItsyScape.Graphics.Color"
+local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
@@ -158,6 +160,35 @@ function Utility.Peep.getEquippedItem(peep, slot)
 		equipment = equipment.equipment
 		return equipment:getEquipped(slot)
 	end
+end
+
+function Utility.Peep.getEquipmentBonuses(peep)
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	if equipment and equipment.equipment then
+		equipment = equipment.equipment
+		local result = {}
+		for bonus, value in equipment:getStats() do
+			result[bonus] = value
+		end
+
+		return result
+	else
+		equipment = peep:getBehavior(EquipmentBonusesBehavior)
+		if equipment then
+			return equipment.bonuses
+		else
+			local result = {}
+			for i = 1, #EquipmentInventoryProvider.STATS do
+				local stat = EquipmentInventoryProvider.STATS[i]
+				result[stat] = 0
+			end
+
+			return result
+		end
+	end
+
+	assert(false, "Equipment bonuses conditions failed! This cannot be!")
+	return {}
 end
 
 -- Makes the peep walk to the tile (i, j, k).
