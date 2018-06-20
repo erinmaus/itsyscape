@@ -38,19 +38,7 @@ function SpellIconRenderer:stop()
 	end
 end
 
-function SpellIconRenderer:draw(widget, state)
-	self:visit(widget)
-
-	if widget:get("spellActive", state) then
-		love.graphics.setBlendMode('add')
-	end
-
-	if widget:get("spellEnabled", state) then
-		love.graphics.setColor(1, 1, 1, 1)
-	else
-		love.graphics.setColor(0.5, 0.5, 0.5, 1)
-	end
-
+function SpellIconRenderer:drawIcon(widget, state, x, y)
 	local spellID = widget:get("spellID", state)
 	if spellID then
 		if not self.icons[spellID] then
@@ -58,7 +46,7 @@ function SpellIconRenderer:draw(widget, state)
 			local filename = string.format("Resources/Game/Spells/%s/Icon.png", spellID)
 			self.icons[spellID] = love.graphics.newImage(filename)
 		end
-		self.unvisitedIcons[spellID] = false
+		self.unvisitedIcons[spellID] = nil
 
 		local icon = self.icons[spellID]
 		local scaleX, scaleY
@@ -68,10 +56,56 @@ function SpellIconRenderer:draw(widget, state)
 			scaleY = height / icon:getHeight()
 		end
 
-		love.graphics.draw(self.icons[spellID], 0, 0, 0, scaleX, scaleY)
+		love.graphics.draw(
+			icon,
+			(x or 0) * scaleX,
+			(y or 0) * scaleY,
+			0,
+			scaleX, scaleY)
 	end
+end
+
+function SpellIconRenderer:draw(widget, state)
+	self:visit(widget)
+
+	if widget:get("spellActive", state) then
+		love.graphics.setColor(0, 0, 0, 0.5)
+		for i = -1, 1 do
+			for j = -1, 1 do
+				self:drawIcon(widget, state, i, j)
+			end
+		end
+	end
+
+	if widget:get("spellEnabled", state) then
+		love.graphics.setColor(1.0, 1.0, 1.0, 1)
+	else
+		love.graphics.setColor(0.5, 0.5, 0.5, 1)
+	end
+
+	self:drawIcon(widget, state)
+
+	love.graphics.setColor(1, 1, 1, 1)
+	if widget:get("spellActive", state) then
+		love.graphics.setBlendMode('add')
+
+		self:drawIcon(widget, state)
 	
-	love.graphics.setBlendMode('alpha')
+		love.graphics.setBlendMode('alpha')
+
+		local LINE_WIDTH = 1.5
+		love.graphics.setLineWidth(LINE_WIDTH)
+
+		love.graphics.setColor(0, 1, 0, 1)
+		local w, h = widget:getSize()
+		love.graphics.rectangle(
+			'line',
+			LINE_WIDTH, LINE_WIDTH,
+			w - LINE_WIDTH * 2, h - LINE_WIDTH * 2,
+			w / 8, h / 8)
+
+		love.graphics.setLineWidth(1)
+	end
 end
 
 return SpellIconRenderer
