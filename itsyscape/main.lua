@@ -31,6 +31,8 @@ function love.load(args)
 		_APP = r(args)
 		_APP:initialize()
 	end
+
+	love.keyboard.setKeyRepeat(true)
 end
 
 function love.update(delta)
@@ -72,6 +74,12 @@ end
 function love.keyreleased(...)
 	if _APP then
 		_APP:keyUp(...)
+	end
+end
+
+function love.textinput(...)
+	if _APP then
+		_APP:type(...)
 	end
 end
 

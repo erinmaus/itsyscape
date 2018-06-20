@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/Label.lua
+-- ItsyScape/UI/DraggablePanel.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,13 +8,18 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Callback = require "ItsyScape.Common.Callback"
-local Widget = require "ItsyScape.UI.Widget"
+local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
+local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 
-local Label = Class(Widget)
+local TextInputRenderer = Class(WidgetRenderer)
 
-function Label:getOverflow()
-	return true
+function TextInputRenderer:draw(widget)
+	self:visit(widget)
+
+	local style = widget:getStyle()
+	if style and Class.isCompatibleType(style, TextInputStyle) then
+		style:draw(widget)
+	end
 end
 
-return Label
+return TextInputRenderer
