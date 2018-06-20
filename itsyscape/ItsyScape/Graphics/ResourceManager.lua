@@ -26,7 +26,7 @@ function ResourceManager:load(resourceType, filename, ...)
 		error("expected Resource-derived type")
 	end
 
-	local resourcesOfType = self.resources[resourceType] or {}
+	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
 	if not resourcesOfType[filename] then
 		local resource = resourceType()
 		resource:loadFromFile(filename, self, ...)
