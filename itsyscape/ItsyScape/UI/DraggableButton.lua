@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/InventoryItemButton.lua
+-- ItsyScape/UI/DraggableButton.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,14 +10,12 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Widget = require "ItsyScape.UI.Widget"
-local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 
-local InventoryItemButton = Class(Widget)
-InventoryItemButton.DEFAULT_ICON_SIZE = 48
-InventoryItemButton.DEFAULT_PADDING = 2
-InventoryItemButton.DEFAULT_SIZE = InventoryItemButton.DEFAULT_ICON_SIZE + InventoryItemButton.DEFAULT_PADDING * 2
+local DraggableButton = Class(Widget)
+DraggableButton.DEFAULT_DRAG_DISTANCE = 6
 
-function InventoryItemButton:new()
+function DraggableButton:new()
 	Widget.new(self)
 
 	self.onLeftClick = Callback()
@@ -32,44 +30,32 @@ function InventoryItemButton:new()
 	self.mouseY = 0
 	self.dragX = 0
 	self.dragY = 0
-
-	self.icon = ItemIcon()
-	self.icon:setSize(
-		InventoryItemButton.DEFAULT_ICON_SIZE,
-		InventoryItemButton.DEFAULT_ICON_SIZE)
-	self.icon:setPosition(
-		InventoryItemButton.DEFAULT_PADDING,
-		InventoryItemButton.DEFAULT_PADDING)
-	self:addChild(self.icon)
-
-	self:setSize(
-		InventoryItemButton.DEFAULT_SIZE,
-		InventoryItemButton.DEFAULT_SIZE)
+	self.dragDistance = DraggableButton.DEFAULT_DRAG_DISTANCE
 end
 
-function InventoryItemButton:getIsFocusable()
+function DraggableButton:getDragDistance()
+	return self.dragDistance
+end
+
+function DraggableButton:setDragDistance(value)
+	self.dragDistance = value or self.dragDistance
+end
+
+function DraggableButton:getIsFocusable()
 	return true
 end
 
-function InventoryItemButton:getIcon()
-	return self.icon
-end
-
-function InventoryItemButton:getOverflow()
-	return true
-end
-
-function InventoryItemButton:mouseEnter(...)
+function DraggableButton:mouseEnter(...)
 	self.isMouseOver = true
 	Widget.mouseEnter(self, ...)
 end
 
-function InventoryItemButton:mouseLeave(...)
+function DraggableButton:mouseLeave(...)
 	self.isMouseOver = false
 	Widget.mouseLeave(self, ...)
 end
 
-function InventoryItemButton:mousePress(x, y, button)
+function DraggableButton:mousePress(x, y, button)
 	if button == 1 or button == 2 then
 		if not self.isPressed then
 			self.button = button
@@ -82,7 +68,7 @@ function InventoryItemButton:mousePress(x, y, button)
 	end
 end
 
-function InventoryItemButton:mouseRelease(x, y, button, ...)
+function DraggableButton:mouseRelease(x, y, button, ...)
 	if button == self.button and self.isPressed then
 		if self.button == 1 then
 			if self.isDragging then
@@ -101,34 +87,35 @@ function InventoryItemButton:mouseRelease(x, y, button, ...)
 	self.isDragging = false
 	self:blur()
 
-	self.icon:setPosition(2, 2)
-
 	Widget.mouseRelease(self, x, y, button, ...)
 end
 
-function InventoryItemButton:mouseMove(x, y, ...)
+function DraggableButton:mouseMove(x, y, ...)
 	if self.isPressed and self.button == 1 then
-		self.isDragging = true
+		local distanceSquared = (self.mouseX - x) ^ 2 + (self.mouseY - y) ^ 2
+		if distanceSquared >= self.dragDistance * self.dragDistance then
+			self.isDragging = true
 
-		local s, t = self.dragX, self.dragY
-		s = s + (x - self.mouseX)
-		t = t + (y - self.mouseY)
-		self.onDrag(self, s, t)
+			local s, t = self.dragX, self.dragY
+			s = s + (x - self.mouseX)
+			t = t + (y - self.mouseY)
+			self.onDrag(self, s, t)
 
-		self.dragX = s
-		self.dragY = t
+			self.dragX = s
+			self.dragY = t
 
-		self.mouseX = x
-		self.mouseY = y
+			self.mouseX = x
+			self.mouseY = y
+		end
 	end
 
 	Widget.mouseMove(self, x, y, ...)
 end
 
-function InventoryItemButton:focus(e)
+function DraggableButton:focus(e)
 	if e == 'key' then
 		self:blur()
 	end
 end
 
-return InventoryItemButton
+return DraggableButton

@@ -15,10 +15,6 @@ local PanelRenderer = Class(WidgetRenderer)
 
 function PanelRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
-
-	self.style = PanelStyle({
-		image = "Resources/Renderers/Widget/InventoryItemButton/Background.9.png"
-	}, resources)
 end
 
 function PanelRenderer:draw(widget, state)

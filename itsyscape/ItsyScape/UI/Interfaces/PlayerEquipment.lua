@@ -12,13 +12,18 @@ local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Widget = require "ItsyScape.UI.Widget"
-local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local DraggableButton = require "ItsyScape.UI.DraggableButton"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerEquipment = Class(PlayerTab)
+PlayerEquipment.PADDING = 8
+PlayerEquipment.ICON_SIZE = 48
+PlayerEquipment.BUTTON_PADDING = 2
 
 function PlayerEquipment:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
@@ -32,10 +37,13 @@ function PlayerEquipment:new(id, index, ui)
 	self:addChild(panel)
 
 	self.layout = GridLayout()
+	self.layout:setPadding(
+		PlayerEquipment.PADDING,
+		PlayerEquipment.PADDING)
 	self.layout:setUniformSize(
 		true,
-		InventoryItemButton.DEFAULT_SIZE,
-		InventoryItemButton.DEFAULT_SIZE)
+		PlayerEquipment.ICON_SIZE + PlayerEquipment.BUTTON_PADDING * 2,
+		PlayerEquipment.ICON_SIZE + PlayerEquipment.BUTTON_PADDING * 2)
 	panel:addChild(self.layout)
 
 	self.layout:setSize(self:getSize())
@@ -64,12 +72,27 @@ end
 
 function PlayerEquipment:addSlots(slots)
 	for i = 1, #slots do
-		local button = InventoryItemButton()
-		button:getIcon():setData('index', slots[i])
-		button:getIcon():bind("itemID", "items[{index}].id")
-		button:getIcon():bind("itemCount", "items[{index}].count")
-		button:getIcon():bind("itemIsNoted", "items[{index}].noted")
+		local button = DraggableButton()
+		local icon = ItemIcon()
+		icon:setData('index', slots[i])
+		icon:bind("itemID", "items[{index}].id")
+		icon:bind("itemCount", "items[{index}].count")
+		icon:bind("itemIsNoted", "items[{index}].noted")
+		icon:setSize(
+			PlayerEquipment.ICON_SIZE,
+			PlayerEquipment.ICON_SIZE)
+		icon:setPosition(
+			PlayerEquipment.BUTTON_PADDING,
+			PlayerEquipment.BUTTON_PADDING)
 
+		button:setStyle(ButtonStyle({
+			inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
+		}, self:getView():getResources()))
+
+		button:addChild(icon)
+		button:setData('icon', icon)
 		button.onLeftClick:register(self.activate, self)
 		button.onRightClick:register(self.probe, self)
 
@@ -78,7 +101,7 @@ function PlayerEquipment:addSlots(slots)
 end
 
 function PlayerEquipment:probe(button)
-	local index = button:getIcon():getData('index')
+	local index = button:getData('icon'):getData('index')
 	local items = self:getState().items or {}
 	local item = items[index]
 	if item then
@@ -119,7 +142,7 @@ function PlayerEquipment:probe(button)
 end
 
 function PlayerEquipment:activate(button)
-	local index = button:getIcon():getData('index')
+	local index = button:getData('icon'):getData('index')
 	local items = self:getState().items or {}
 	local item = items[index]
 	if item then

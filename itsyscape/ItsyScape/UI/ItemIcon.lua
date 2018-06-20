@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ItemIcon = Class(Widget)
+ItemIcon.DEFAULT_SIZE = 48
 
 function ItemIcon:new()
 	Widget.new(self)
@@ -18,6 +19,8 @@ function ItemIcon:new()
 	self.itemID = false
 	self.itemCount = 1
 	self.itemIsNoted = false
+
+	self:setSize(ItemIcon.DEFAULT_SIZE, ItemIcon.DEFAULT_SIZE)
 end
 
 function ItemIcon:setItemIsNoted(value)
