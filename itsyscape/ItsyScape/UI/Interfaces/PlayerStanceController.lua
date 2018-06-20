@@ -12,6 +12,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Controller = require "ItsyScape.UI.Controller"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local PlayerStanceController = Class(Controller)
@@ -23,6 +24,8 @@ end
 function PlayerStanceController:poke(actionID, actionIndex, e)
 	if actionID == "setStance" then
 		self:setStance(e)
+	elseif actionID == "toggleSpell" then
+		self:toggleSpell(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -44,9 +47,15 @@ function PlayerStanceController:pull()
 	end
 
 	local stance = self:getPeep():getBehavior(StanceBehavior)
+	local spell = self:getPeep():getBehavior(ActiveSpellBehavior)
 	if stance then
 		result.stance = stance.stance
-		result.useSpell = stance.useSpell
+
+		if spell and spell.spell and result.style == Weapon.STYLE_MAGIC then
+			result.useSpell = stance.useSpell
+		else
+			result.useSpell = false
+		end
 	else
 		result.stance = false
 		result.useSpell = false
@@ -68,6 +77,19 @@ function PlayerStanceController:setStance(e)
 		end
 	else
 		error("expected STANCE_AGGRESSIVE, STANCE_CONTROLLED, or STANCE_DEFENSIVE")
+	end
+end
+
+function PlayerStanceController:toggleSpell(e)
+	local state = self:pull()
+
+	local stance = self:getPeep():getBehavior(StanceBehavior)
+	if stance then
+		if state.style == Weapon.STYLE_MAGIC then
+			stance.useSpell = not stance.useSpell
+		else
+			stance.useSpell = false
+		end
 	end
 end
 

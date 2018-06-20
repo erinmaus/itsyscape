@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/ItemManager.lua
+-- Resources/Game/Items/ErrinTheHeathensStaff/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,17 +9,24 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
+local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 
-local ErrinTheHeathensStaff = Class(Weapon)
+local ErrinTheHeathensStaff = Class(MagicWeapon)
 
-function ErrinTheHeathensStaff:getAttackRange(peep)
-	-- TODO: Take into account spell; range with spell is 10
+function ErrinTheHeathensStaff:getFarAttackRange(peep)
+	return 10
+end
+
+function ErrinTheHeathensStaff:getNearAttackRange(peep)
 	return 1
 end
 
 function ErrinTheHeathensStaff:getBonusForStance(peep)
-	-- TODO: Take into account spell
-	return Weapon.BONUS_CRUSH
+	if self:getSpell(peep) then
+		return Weapon.BONUS_MAGIC
+	else
+		return Weapon.BONUS_CRUSH
+	end
 end
 
 function ErrinTheHeathensStaff:getWeaponType()

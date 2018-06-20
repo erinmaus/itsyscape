@@ -89,7 +89,7 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 		local remainder = count
 		for i = 1, #items do
 			local c = math.min(items[i]:getCount(), remainder)
-			transaction:consume(self.items[i], c)
+			transaction:consume(items[i], c)
 			remainder = remainder - c
 		end
 	end

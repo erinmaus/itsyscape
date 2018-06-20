@@ -53,12 +53,11 @@ function PlayerInventory:setNumItems(value)
 	if value ~= #self.buttons then
 		if value < #self.buttons then
 			while #self.buttons > value do
-				local top = #self.buttons
+				local index = #self.buttons
+				local top = self.buttons[index]
 
-				top.onDrop:unregister(self.swap)
-				self:removeChild(self.buttons[top])
-
-				table.remove(self.buttons, top)
+				table.remove(self.buttons, index)
+				self:removeChild(top)
 			end
 		else
 			for i = #self.buttons + 1, value do

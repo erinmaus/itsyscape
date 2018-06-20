@@ -41,6 +41,45 @@ PlayerStance.STYLE = {
 	},
 }
 
+PlayerStance.ACTIVE_STYLE = function(skill)
+	local t = {
+		inactive = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Hover.9.png",
+		pressed = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Pressed.9.png",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
+		icon = { skill = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 },
+		fontSize = 26,
+		textX = 0.3,
+		textY = 0.7,
+		textAlign = 'left'
+	}
+
+	if skill then
+		t.icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
+	end
+
+	return t
+end
+
+PlayerStance.INACTIVE_STYLE = function(skill)
+	local t = {
+		inactive = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Hover.9.png",
+		pressed = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Pressed.9.png",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
+		fontSize = 26,
+		textX = 0.3,
+		textY = 0.7,
+		textAlign = 'left'
+	}
+
+	if skill then
+		t.icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
+	end
+
+	return t
+end
+
 function PlayerStance:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
 
@@ -62,16 +101,7 @@ function PlayerStance:new(id, index, ui)
 
 		button:setData('stance', stance)
 
-		button:setStyle(ButtonStyle({
-			inactive = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Inactive.9.png",
-			hover = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Hover.9.png",
-			pressed = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Pressed.9.png",
-			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
-			fontSize = 26,
-			textX = 0.3,
-			textY = 0.7,
-			textAlign = 'left'
-		}, self:getView():getResources()))
+		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
 
 		button:setText(name)
 
@@ -82,6 +112,20 @@ function PlayerStance:new(id, index, ui)
 	addButton(Weapon.STANCE_AGGRESSIVE, "Aggressive")
 	addButton(Weapon.STANCE_CONTROLLED, "Controlled")
 	addButton(Weapon.STANCE_DEFENSIVE, "Defensive")
+	do
+		local button = Button()
+
+		button.onClick:register(function()
+			self:sendPoke("toggleSpell", nil, {})
+		end)
+		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
+		button:setData('active', false)
+
+		button:setText("Use Spell")
+
+		self:addChild(button)
+		self.buttons.toggleSpell = button
+	end
 
 	self:performLayout()
 end
@@ -90,7 +134,6 @@ function PlayerStance:performLayout()
 	PlayerTab.performLayout(self)
 
 	local panelWidth, panelHeight = self:getSize()
-
 	if self.buttons then
 		local y = PlayerStance.PADDING
 		for _, button in ipairs(self.buttons) do
@@ -101,19 +144,36 @@ function PlayerStance:performLayout()
 
 			y = y + PlayerStance.BUTTON_HEIGHT + PlayerStance.PADDING
 		end
+
+		self.buttons.toggleSpell:setSize(
+			panelWidth - PlayerStance.PADDING * 2,
+			PlayerStance.BUTTON_HEIGHT)
+		self.buttons.toggleSpell:setPosition(PlayerStance.PADDING, y)
 	end
 end
 
 function PlayerStance:update(...)
 	PlayerTab.update(self, ...)
 
-
 	local state = self:getState()
 	local style
-	if state.useSpell then
-		style = Weapon.STYLE_MAGIC
-	else
-		style = state.style
+	do
+		local toggleButton = self.buttons.toggleSpell
+		if state.useSpell then
+			style = Weapon.STYLE_MAGIC
+
+			if not toggleButton:getData('active') then
+				toggleButton:setStyle(ButtonStyle(PlayerStance.ACTIVE_STYLE(), self:getView():getResources()))
+				toggleButton:setData('active', true)
+			end
+		else
+			style = state.style
+
+			if toggleButton:getData('active') then
+				toggleButton:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
+				toggleButton:setData('active', false)
+			end
+		end
 	end
 
 	for i = 1, #self.buttons do
@@ -124,32 +184,10 @@ function PlayerStance:update(...)
 		if stance == state.stance or self.style ~= style then
 			if not selected then
 				button:setData('selected', true)
-				button:setStyle(ButtonStyle({
-					inactive = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Inactive.9.png",
-					hover = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Hover.9.png",
-					pressed = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Pressed.9.png",
-					font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
-					icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 },
-					fontSize = 26,
-					textX = 0.3,
-					textY = 0.7,
-					textAlign = 'left'
-				}, self:getView():getResources()))
-
-				button:setData('selected', true)
+				button:setStyle(ButtonStyle(PlayerStance.ACTIVE_STYLE(skill), self:getView():getResources()))
 			end
 		elseif selected or self.style ~= style then
-			button:setStyle(ButtonStyle({
-				inactive = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Inactive.9.png",
-				hover = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Hover.9.png",
-				pressed = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Pressed.9.png",
-				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
-					icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 },
-				fontSize = 26,
-				textX = 0.3,
-				textY = 0.7,
-				textAlign = 'left'
-			}, self:getView():getResources()))
+			button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(skill), self:getView():getResources()))
 
 			button:setData('selected', false)
 		end

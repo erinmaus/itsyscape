@@ -75,8 +75,8 @@ function BaseGoblin:ready(director, game)
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(15))
 
 	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.maximumHitpoints = 15
-	combat.currentHitpoints = 15
+	combat.maximumHitpoints = 1000
+	combat.currentHitpoints = 1000
 end
 
 function BaseGoblin:update(director, game)

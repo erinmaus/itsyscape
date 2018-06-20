@@ -75,6 +75,8 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 			break
+		else
+			print(animations[i])
 		end
 	end
 end
