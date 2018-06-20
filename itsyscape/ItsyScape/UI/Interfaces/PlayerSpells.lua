@@ -11,13 +11,16 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Widget = require "ItsyScape.UI.Widget"
-local SpellButton = require "ItsyScape.UI.SpellButton"
+local DraggableButton = require "ItsyScape.UI.DraggableButton"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerSpells = Class(PlayerTab)
+PlayerSpells.ICON_SIZE = 48
+PlayerSpells.BUTTON_PADDING = 2
 
 function PlayerSpells:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
@@ -37,8 +40,8 @@ function PlayerSpells:new(id, index, ui)
 	self.layout = GridLayout()
 	self.layout:setUniformSize(
 		true,
-		SpellButton.DEFAULT_SIZE,
-		SpellButton.DEFAULT_SIZE)
+		PlayerSpells.ICON_SIZE + PlayerSpells.BUTTON_PADDING * 2,
+		PlayerSpells.ICON_SIZE + PlayerSpells.BUTTON_PADDING * 2)
 	panel:addChild(self.layout)
 
 	self.layout:setSize(self:getSize())
@@ -71,12 +74,19 @@ function PlayerSpells:setNumSpells(value)
 			end
 		else
 			for i = #self.buttons + 1, value do
-				local button = SpellButton()
-				button:getIcon():setData('index', i)
-				button:getIcon():bind("spellID", "spells[{index}].id")
-				button:getIcon():bind("spellEnabled", "spells[{index}].enabled")
-				button:getIcon():bind("spellActive", "spells[{index}].active")
+				local button = DraggableButton()
+				local icon = SpellIcon()
+				icon:setData('index', i)
+				icon:bind("spellID", "spells[{index}].id")
+				icon:bind("spellEnabled", "spells[{index}].enabled")
+				icon:bind("spellActive", "spells[{index}].active")
+				icon:setSize(PlayerSpells.ICON_SIZE, PlayerSpells.ICON_SIZE)
+				icon:setPosition(
+					PlayerSpells.BUTTON_PADDING,
+					PlayerSpells.BUTTON_PADDING)
 
+				button:addChild(icon)
+				button:setData('icon', icon)
 				button.onMouseEnter:register(self.hoverSpell, self)
 				button.onMouseLeave:register(self.unhoverSpell, self)
 				button.onLeftClick:register(self.castSpell, self)
@@ -97,13 +107,13 @@ function PlayerSpells:setNumSpells(value)
 end
 
 function PlayerSpells:drag(button, x, y)
-	if self:getView():getRenderManager():getCursor() ~= button:getIcon() then
-		self:getView():getRenderManager():setCursor(button:getIcon())
+	if self:getView():getRenderManager():getCursor() ~= button:getData('icon') then
+		self:getView():getRenderManager():setCursor(button:getData('icon'))
 	end
 end
 
 function PlayerSpells:drop(button, x, y)
-	if self:getView():getRenderManager():getCursor() == button:getIcon() then
+	if self:getView():getRenderManager():getCursor() == button:getData('icon') then
 		self:getView():getRenderManager():setCursor(nil)
 	end
 end
@@ -117,7 +127,7 @@ function PlayerSpells:unhoverSpell(button)
 end
 
 function PlayerSpells:castSpell(button)
-	local index = button:getIcon():getData('index')
+	local index = button:getData('icon'):getData('index')
 	local spells = self:getState().spells or {}
 	local spell = spells[index]
 	if spell then
