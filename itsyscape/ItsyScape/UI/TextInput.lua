@@ -12,12 +12,38 @@ local Callback = require "ItsyScape.Common.Callback"
 local Widget = require "ItsyScape.UI.Widget"
 
 local TextInput = Class(Widget)
+TextInput.CURSOR_LEFT  = 1
+TextInput.CURSOR_RIGHT = 2
 
 function TextInput:new()
 	Widget.new(self)
 	self.cursorIndex = 1
 	self.cursorLength = 0
 	self.isShiftDown = 0
+	self.isMouseOver = false
+	self.isPressed = false
+end
+
+function TextInput:getActiveCursor()
+	if self.cursorLength < 0 then
+		return TextInput.CURSOR_LEFT
+	else
+		return TextInput.CURSOR_RIGHT
+	end
+end
+
+function TextInput:getIsFocusable()
+	return true
+end
+
+function TextInput:mouseEnter(...)
+	self.isMouseOver = true
+	Widget.mouseEnter(self, ...)
+end
+
+function TextInput:mouseLeave(...)
+	self.isMouseOver = false
+	Widget.mouseLeave(self, ...)
 end
 
 function TextInput:getCursor()
@@ -25,46 +51,45 @@ function TextInput:getCursor()
 end
 
 function TextInput:getLeftCursor()
-	return self.cursorIndex
+	return math.min(self.cursorIndex, self.cursorIndex + self.cursorLength)
 end
 
 function TextInput:getRightCursor()
-	return self.cursorIndex + self.cursorLength
+	return math.max(self.cursorIndex, self.cursorIndex + self.cursorLength)
 end
 
 function TextInput:setCursor(index, length)
 	index = index or 1
 	length = length or 0
 
-	self.cursorIndex = math.max(math.min(index, #self.text), 1)
-	self.cursorLength = math.max(math.min(index + length, #self.text) - index, 0)
+	self.cursorIndex = math.max(math.min(index, #self.text), 0)
+	self.cursorLength = math.max(math.min(self.cursorIndex + length, #self.text) - self.cursorIndex, -#self.text)
 end
 
 function TextInput:select(a, b)
-	local left = math.min(a, b)
-	local right = math.max(a, b)
+	local index = a
+	local length = b - a
 
-	self:setCursor(left, right - left)
+	self:setCursor(index, length)
 end
 
 function TextInput:slideSelection(amount)
-	if amount < 0 then
-		if self.cursorIndex > 1 then
-			self.cursorIndex = self.cursorIndex - 1
-			self.cursorLength = self.cursorLength + 1
-		end
-	elseif amount > 0 then
-		if self.cursorIndex + self.cursorLength < #self.text then
-			self.cursorLength = self.cursorLength + 1
+	self:setCursor(self.cursorIndex, self.cursorLength + amount)
+end
+
+function TextInput:moveCursor(amount)
+	if self:getLeftCursor() == self:getRightCursor() then
+		self:setCursor(self.cursorIndex + amount, 0)
+	else
+		if self:getActiveCursor() == TextInput.CURSOR_LEFT then
+			self:setCursor(self:getLeftCursor() + amount, 0)
+		else
+			self:setCursor(self:getRightCursor() + amount, 0)
 		end
 	end
 end
 
-function TextInput:moveCursor(amount)
-	self:setCursor(self.cursorIndex + amount, 0)
-end
-
-function TextInput:keyPress(key, scan, isRepeat, ...)
+function TextInput:keyDown(key, scan, isRepeat, ...)
 	if key == 'left' then
 		if self.isShiftDown > 0 then
 			self:slideSelection(-1)
@@ -79,49 +104,67 @@ function TextInput:keyPress(key, scan, isRepeat, ...)
 		end
 	elseif key == 'home' then
 		if self.isShiftDown > 0 then
-			self:select(1, self:getRightCursor())
+			self:select(self.cursorIndex, 0)
 		else
-			self:setCursor(1)
+			self:setCursor(0)
 		end
 	elseif key == 'end' then
 		if self.isShiftDown > 0 then
-			self:select(self:getLeftCursor(), #self.text)
+			self:select(self.cursorIndex, #self.text)
 		else
 			self:setCursor(#self.text)
 		end
 	elseif key == 'backspace' then
+		if false then
 		if self.cursorIndex + self.cursorLength == #self.text and
 		   #self.text > 0
 		then
 			self.text = self.text:sub(1, #self.text - math.max(self.cursorLength, 1))
 		elseif self.cursorIndex > 1 then
-			self.text = self.text:sub(1, self.cursorIndex - 1) +
-			            self.text:sub(self.cursorIndex - 1 + math.max(self.cursorLength, 1))
+			if self.cursorIndex > #self.text then
+				self.text = self.text:sub(1, self.cursorIndex - 2)
+			else
+				self.text = self.text:sub(1, self.cursorIndex - 1) ..
+			                self.text:sub(self.cursorIndex - 1 + math.max(self.cursorLength, 1))
+			end
 			self:moveCursor(self:getLeftCursor() - 1)
+		end end
+
+		if self.cursorLength == 0 then
+			self.text = self.text:sub(1, self.cursorIndex - 1) ..
+			            self.text:sub(self.cursorIndex + 1)
+			self.cursorIndex = self.cursorIndex - 1
+		else
+			self.text = self.text:sub(1, self:getLeftCursor()) ..
+			            self.text:sub(self:getRightCursor() + 1)
 		end
+		self:setCursor(self:getLeftCursor(), 0)
 	elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 		self.isShiftDown = self.isShiftDown + 1
 	elseif key == 'tab' then
 		return false
 	end
 
-	Widget.keyPress(self, key, scan, isRepeat, ...)
+	Widget.keyDown(self, key, scan, isRepeat, ...)
 	return true
 end
 
-function TextInput:keyRelease(key, ...)
+function TextInput:keyUp(key, ...)
 	if key == 'lshift' or key == 'rshift' then
 		self.isShiftDown = self.isShiftDown - 1
 	end
 
-	Widget.keyRelease(self, key, ...)
+	Widget.keyUp(self, key, ...)
 end
 
 function TextInput:type(text, ...)
-	self.text = self.text:sub(0, self:getLeftCursor()) +
-	            text +
-	            self.text:sub(self:getRightCursor())
-	self:setCursor(self:getLeftCursor() + 1)
+	local left = self:getLeftCursor()
+	local right = self:getRightCursor()
+
+	self.text = self.text:sub(1, self:getLeftCursor()) ..
+	            text ..
+	            self.text:sub(self:getRightCursor() + 1)
+	self:setCursor(self:getLeftCursor() + 1, 0)
 
 	Widget.type(self, text, ...)
 end

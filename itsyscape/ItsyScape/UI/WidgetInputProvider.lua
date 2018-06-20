@@ -244,4 +244,11 @@ function WidgetInputProvider:keyUp(...)
 	end
 end
 
+function WidgetInputProvider:type(...)
+	local f = self:getFocusedWidget()
+	if f then
+		f:type(...)
+	end
+end
+
 return WidgetInputProvider
