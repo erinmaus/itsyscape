@@ -8,11 +8,14 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Spell = require "ItsyScape.Game.Spell"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Utility = require "ItsyScape.Game.Utility"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local PlayerSpellsController = Class(Controller)
@@ -99,6 +102,19 @@ function PlayerSpellsController:cast(e)
 		local s, b = peep:addBehavior(ActiveSpellBehavior)
 		if s then
 			b.spell = self.spells[e.spell]
+		end
+
+		local equippedItem = Utility.Peep.getEquippedItem(self:getPeep(), Equipment.PLAYER_SLOT_RIGHT_HAND)
+		if equippedItem then
+			local logic = self:getDirector():getItemManager():getLogic(equippedItem:getID())
+			if logic:isCompatibleType(Weapon) then
+				if logic:getStyle() == Weapon.STYLE_MAGIC then
+					local s, b = peep:addBehavior(StanceBehavior)
+					if s then
+						b.useSpell = true
+					end
+				end
+			end
 		end
 	else
 		Log.warn("cannot cast spell '%s': not yet implemented", e.spell)
