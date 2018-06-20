@@ -134,6 +134,15 @@ function CombatCortex:update(delta)
 							end
 						end
 					end
+
+					do
+						local movement = peep:getBehavior(MovementBehavior)
+						if selfI > targetI then
+							movement.facing = MovementBehavior.FACING_LEFT
+						elseif selfI < targetI then
+							movement.facing = MovementBehavior.FACING_RIGHT
+						end
+					end
 				end
 			end
 		end

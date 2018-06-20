@@ -102,6 +102,12 @@ function MovementCortex:update(delta)
 		else
 			position.position.y = math.max(position.position.y + gravity.y * delta, y)
 		end
+
+		if movement.velocity.x < -0.5 then
+			movement.facing = MovementBehavior.FACING_LEFT
+		elseif movement.velocity.x > 0.5 then
+			movement.facing = MovementBehavior.FACING_RIGHT
+		end
 	end
 end
 
