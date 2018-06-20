@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Widget = require "ItsyScape.UI.Widget"
 local SpellButton = require "ItsyScape.UI.SpellButton"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
@@ -25,13 +26,22 @@ function PlayerSpells:new(id, index, ui)
 	self.numSpells = 0
 	self.onSpellsResized = Callback()
 
-	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
+	local panel = Panel()
+	panel = Panel()
+	panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
-	self:addChild(self.panel)
+	panel:setSize(self:getSize())
+	self:addChild(panel)
 
-	self.panel:setSize(self:getSize())
+	self.layout = GridLayout()
+	self.layout:setUniformSize(
+		true,
+		SpellButton.DEFAULT_SIZE,
+		SpellButton.DEFAULT_SIZE)
+	panel:addChild(self.layout)
+
+	self.layout:setSize(self:getSize())
 
 	self.buttons = {}
 end
@@ -56,7 +66,7 @@ function PlayerSpells:setNumSpells(value)
 				local index = #self.buttons
 				local top = self.buttons[index]
 
-				self:removeChild(top)
+				self.layout:removeChild(top)
 				table.remove(self.buttons, index)
 			end
 		else
@@ -73,7 +83,7 @@ function PlayerSpells:setNumSpells(value)
 				button.onDrag:register(self.drag, self)
 				button.onDrop:register(self.drop, self)
 
-				self:addChild(button)
+				self.layout:addChild(button)
 				table.insert(self.buttons, button)
 			end
 		end
@@ -84,29 +94,6 @@ function PlayerSpells:setNumSpells(value)
 	self:performLayout()
 
 	self.numSpells = value
-end
-
-function PlayerSpells:performLayout()
-	local width, height = self:getSize()
-	local padding = 8
-	local x, y = 0, padding
-
-	-- performLayout is invoked in new so we can't depend on buttons being
-	-- non-nil since PlayerTab constructor runs first
-	if self.buttons then
-		for _, child in ipairs(self.buttons) do
-			local childWidth, childHeight = child:getSize()
-			if x > 0 and x + childWidth + SpellButton.DEFAULT_PADDING > width then
-				x = 0
-				y = y + childHeight + padding
-			end
-
-			child:setPosition(x + padding, y)
-			x = x + childWidth + padding
-		end
-
-		self.panel:setSize(width, height)
-	end
 end
 
 function PlayerSpells:drag(button, x, y)

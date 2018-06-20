@@ -39,6 +39,7 @@ function Widget:new()
 	self.parent = false
 	self.style = false
 	self.properties = {}
+	self.childProperties = {}
 	self.data = {}
 end
 
@@ -132,15 +133,10 @@ end
 
 function Widget:addChild(child)
 	if child.parent then
-		local c = child.parent.children
-		for i = 1, #c do
-			if c[i] == child then
-				table.remove(c, i)
-				break
-			end
-		end
+		child.parent:removeChild(child)
 	end
 
+	self.childProperties[child] = {}
 	table.insert(self.children, child)
 	child.parent = self
 end
@@ -149,11 +145,32 @@ function Widget:removeChild(child)
 	for i = 1, #self.children do
 		if self.children[i] == child then
 			table.remove(self.children, i)
+			self.childProperties[child] = {}
 			return true
 		end
 	end
 
 	return false
+end
+
+function Widget:setChildProperty(child, key, value)
+	local p = self.childProperties[child]
+	if p then
+		p[key] = value
+	end
+end
+
+function Widget:unsetChildProperty(child, key)
+	self:setChildProperty(child, key, nil)
+end
+
+function Widget:getChildProperty(child, key, default)
+	local p = self.childProperties[child]
+	if p then
+		return p[key] or default
+	end
+
+	return default
 end
 
 function Widget:iterate()

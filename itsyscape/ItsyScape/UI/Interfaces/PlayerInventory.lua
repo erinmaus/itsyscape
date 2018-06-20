@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Widget = require "ItsyScape.UI.Widget"
 local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
@@ -25,13 +26,22 @@ function PlayerInventory:new(id, index, ui)
 	self.numItems = 0
 	self.onInventoryResized = Callback()
 
-	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
+	local panel = Panel()
+	panel = Panel()
+	panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
-	self:addChild(self.panel)
+	panel:setSize(self:getSize())
+	self:addChild(panel)
 
-	self.panel:setSize(self:getSize())
+	self.layout = GridLayout()
+	self.layout:setUniformSize(
+		true,
+		InventoryItemButton.DEFAULT_SIZE,
+		InventoryItemButton.DEFAULT_SIZE)
+	panel:addChild(self.layout)
+
+	self.layout:setSize(self:getSize())
 
 	self.buttons = {}
 end
@@ -57,7 +67,7 @@ function PlayerInventory:setNumItems(value)
 				local top = self.buttons[index]
 
 				table.remove(self.buttons, index)
-				self:removeChild(top)
+				self.layout:removeChild(top)
 			end
 		else
 			for i = #self.buttons + 1, value do
@@ -72,7 +82,7 @@ function PlayerInventory:setNumItems(value)
 				button.onLeftClick:register(self.activate, self)
 				button.onRightClick:register(self.probe, self)
 
-				self:addChild(button)
+				self.layout:addChild(button)
 				table.insert(self.buttons, button)
 			end
 		end
@@ -80,32 +90,7 @@ function PlayerInventory:setNumItems(value)
 		self.onInventoryResized(self, #self.buttons)
 	end
 
-	self:performLayout()
-
 	self.numItems = value
-end
-
-function PlayerInventory:performLayout()
-	local width, height = self:getSize()
-	local padding = 8
-	local x, y = 0, padding
-
-	-- performLayout is invoked in new so we can't depend on buttons being
-	-- non-nil since PlayerTab constructor runs first
-	if self.buttons then
-		for _, child in ipairs(self.buttons) do
-			local childWidth, childHeight = child:getSize()
-			if x > 0 and x + childWidth + InventoryItemButton.DEFAULT_PADDING > width then
-				x = 0
-				y = y + childHeight + padding
-			end
-
-			child:setPosition(x + padding, y)
-			x = x + childWidth + padding
-		end
-
-		self.panel:setSize(width, height)
-	end
 end
 
 function PlayerInventory:drag(button, x, y)
