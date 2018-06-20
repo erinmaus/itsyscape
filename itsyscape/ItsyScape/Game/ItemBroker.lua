@@ -99,7 +99,7 @@ function ItemBroker.Transaction:consume(item, count)
 		local itemParty = self.broker.items[item]
 		assert(self.parties[itemParty], "inventory provider not party to transaction")
 
-		assert(count >= item:getCount(), "consume count exceeds item count")
+		assert(count <= item:getCount(), "consume count exceeds item count")
 		
 		local logic = self.broker.manager:getLogic(item:getID())
 		if not logic:canConsume(item, itemParty) then

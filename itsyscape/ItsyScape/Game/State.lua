@@ -68,4 +68,34 @@ function State:has(resource, name, count, flags)
 	return false, nil
 end
 
+function State:take(resource, name, count, flags)
+	local p = self.providers[resource]
+	if not p then
+		return false
+	end
+
+	for i = 1, #p do
+		if p[i]:take(name, count, flags) then
+			return true, p[i]
+		end
+	end
+
+	return false
+end
+
+function State:give(name, count, flags)
+	local p = self.providers[resource]
+	if not p then
+		return false
+	end
+
+	for i = 1, #p do
+		if p[i]:give(name, count, flags) then
+			return true, p[i]
+		end
+	end
+
+	return false
+end
+
 return State

@@ -18,6 +18,8 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local PokeMenu = require "ItsyScape.UI.PokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
+local SpellIconRenderer = require "ItsyScape.UI.SpellIconRenderer"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
@@ -45,6 +47,7 @@ function UIView:new(game)
 	self.renderManager:addRenderer(InventoryItemButton, InventoryItemButtonRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
+	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 
 	self.interfaces = {}
 

@@ -26,6 +26,7 @@ function RibbonController:new(peep, director)
 		["PlayerInventory"] = true,
 		["PlayerEquipment"] = true,
 		["PlayerStats"] = true,
+		["PlayerSpells"] = true
 	}
 end
 

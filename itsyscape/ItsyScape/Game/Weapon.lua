@@ -72,7 +72,10 @@ function Weapon:rollAttack(peep, target, bonus)
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
 
-function Weapon:rollDamage(peep)
+function Weapon:rollDamage(peep, multiplier, bonusStrength)
+	multiplier = 1
+	bonusStrength = bonusStrength or 0
+
 	local stats = peep:getBehavior(StatsBehavior)
 	if stats and stats.stats then
 		stats = stats.stats
@@ -104,9 +107,12 @@ function Weapon:rollDamage(peep)
 	end
 
 	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-	local strengthBonus = bonuses[bonus] or 0
+	local strengthBonus = (bonuses[bonus] or 0) + bonusStrength
 
-	local maxHit = Utility.Combat.calcMaxHit(level or 1, 1.0, strengthBonus)
+	local maxHit = Utility.Combat.calcMaxHit(
+		level or 1,
+		1.0 * multiplier,
+		strengthBonus)
 	return math.floor(math.random(1, math.max(maxHit, 1)))
 end
 

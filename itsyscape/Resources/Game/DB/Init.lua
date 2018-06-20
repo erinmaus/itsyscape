@@ -29,6 +29,14 @@ Game "ItsyScape"
 
 	ActionType "Attack"
 
+	ResourceType "Spell"
+	ActionType "Cast"
+
+	Meta "CombatSpell" {
+		Strength = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Equipment" {
 		-- Various stats.
 		AccuracyStab = Meta.TYPE_INTEGER,
@@ -71,7 +79,7 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
-	Meta "ItemTag" {
+	Meta "ResourceTag" {
 		Value = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -134,10 +142,10 @@ ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
 
 ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
 
-function ItsyScape.Utility.tag(Item, value)
-	ItsyScape.Meta.ItemTag {
+function ItsyScape.Utility.tag(resource, value)
+	ItsyScape.Meta.ResourceTag {
 		Value = value,
-		Resource = Item
+		Resource = resource
 	}
 end
 
@@ -149,6 +157,9 @@ include "Resources/Game/DB/Items/Runes.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Goblin.lua"
+
+-- Spells
+include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 do
 	ActionType "Debug_Ascend"

@@ -64,10 +64,14 @@ function One:new(...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Idle_1/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
-	local attackAnimation = CacheRef(
+	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
-	self:addResource("animation-attack-crush-staff", attackAnimation)
+	self:addResource("animation-attack-crush-staff", attackAnimationStaffCrush)
+	local attackAnimationStaffMagic = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
+	self:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
 end
 
 function One:assign(director)
