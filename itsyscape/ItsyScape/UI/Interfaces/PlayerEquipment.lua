@@ -13,6 +13,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Widget = require "ItsyScape.UI.Widget"
 local InventoryItemButton = require "ItsyScape.UI.InventoryItemButton"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
@@ -22,13 +23,22 @@ local PlayerEquipment = Class(PlayerTab)
 function PlayerEquipment:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
 
-	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
+	local panel = Panel()
+	panel = Panel()
+	panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
-	self:addChild(self.panel)
+	panel:setSize(self:getSize())
+	self:addChild(panel)
 
-	self.panel:setSize(self:getSize())
+	self.layout = GridLayout()
+	self.layout:setUniformSize(
+		true,
+		InventoryItemButton.DEFAULT_SIZE,
+		InventoryItemButton.DEFAULT_SIZE)
+	panel:addChild(self.layout)
+
+	self.layout:setSize(self:getSize())
 
 	self:addSlots({
 		Equipment.PLAYER_SLOT_RIGHT_HAND,
@@ -41,7 +51,8 @@ function PlayerEquipment:new(id, index, ui)
 		Equipment.PLAYER_SLOT_HANDS,
 		Equipment.PLAYER_SLOT_BACK,
 		Equipment.PLAYER_SLOT_FINGER,
-		Equipment.PLAYER_SLOT_POCKET
+		Equipment.PLAYER_SLOT_POCKET,
+		Equipment.PLAYER_SLOT_QUIVER,
 	})
 end
 
@@ -52,10 +63,6 @@ function PlayerEquipment:poke(actionID, actionIndex, e)
 end
 
 function PlayerEquipment:addSlots(slots)
-	local width, height = self:getSize()
-	local padding = 8
-	local x, y = 0, padding
-
 	for i = 1, #slots do
 		local button = InventoryItemButton()
 		button:getIcon():setData('index', slots[i])
@@ -66,16 +73,7 @@ function PlayerEquipment:addSlots(slots)
 		button.onLeftClick:register(self.activate, self)
 		button.onRightClick:register(self.probe, self)
 
-		local buttonWidth, buttonHeight = button:getSize()
-		if x > 0 and x + buttonWidth + InventoryItemButton.DEFAULT_PADDING > width then
-			x = 0
-			y = y + buttonHeight + padding
-		end
-
-		button:setPosition(x + padding, y)
-		x = x + buttonWidth + padding
-
-		self:addChild(button)
+		self.layout:addChild(button)
 	end
 end
 

@@ -15,6 +15,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
@@ -40,13 +41,23 @@ PlayerStats.SORT_ORDER = {
 function PlayerStats:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
 
-	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
+	local panel = Panel()
+	panel = Panel()
+	panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
-	self:addChild(self.panel)
+	panel:setSize(self:getSize())
+	self:addChild(panel)
 
-	self.panel:setSize(self:getSize())
+	self.layout = GridLayout()
+	self.layout:setUniformSize(
+		true,
+		PlayerStats.BUTTON_WIDTH,
+		PlayerStats.BUTTON_HEIGHT)
+	self.layout:setPadding(PlayerStats.PADDING, PlayerStats.PADDING)
+	panel:addChild(self.layout)
+
+	self.layout:setSize(self:getSize())
 end
 
 function PlayerStats:performLayout()
@@ -63,11 +74,18 @@ function PlayerStats:update(...)
 	PlayerTab.update(self, ...)
 
 	local state = self:getState()
+	table.sort(
+		state.skills,
+		function(a, b)
+			local i = PlayerStats.SORT_ORDER[a.name] or 0
+			local j = PlayerStats.SORT_ORDER[b.name] or 0
+			return i < j
+		end)
 
-	if not self.buttons or self.buttons ~= #state.skills then
+	if not self.buttons or #self.buttons ~= #state.skills then
 		if self.buttons then
 			for i = 1, #self.buttons do
-				self:removeChild(self.buttons[i])
+				self.layout:removeChild(self.buttons[i])
 			end
 		end
 
@@ -79,32 +97,11 @@ function PlayerStats:update(...)
 end
 
 function PlayerStats:populate(skills)
-	local width, height = self:getSize()
-	local x, y = 0, PlayerStats.PADDING
-
-	table.sort(
-		skills,
-		function(a, b)
-			local i = PlayerStats.SORT_ORDER[a.name] or 0
-			local j = PlayerStats.SORT_ORDER[b.name] or 0
-			return i < j
-		end)
-
 	for i = 1, #skills do
 		local button = Button()
 
-		button:setSize(PlayerStats.BUTTON_WIDTH, PlayerStats.BUTTON_HEIGHT)
-		local buttonWidth, buttonHeight = button:getSize()
-		if x > 0 and x + buttonWidth + PlayerStats.PADDING > width then
-			x = 0
-			y = y + buttonHeight + PlayerStats.PADDING
-		end
-
-		button:setPosition(x + PlayerStats.PADDING, y)
-		x = x + buttonWidth + PlayerStats.PADDING
-
 		table.insert(self.buttons, button)
-		self:addChild(button)
+		self.layout:addChild(button)
 	end
 end
 

@@ -30,6 +30,10 @@ function Spell:new(id, game)
 	end
 end
 
+function Spell:getID()
+	return self.id
+end
+
 function Spell:getResource()
 	return self.resource
 end

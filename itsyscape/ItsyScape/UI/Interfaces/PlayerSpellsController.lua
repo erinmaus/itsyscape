@@ -42,9 +42,12 @@ function PlayerSpellsController:getSpellState()
 		local resourceType = Mapp.ResourceType()
 		brochure:tryGetResourceType("Spell", resourceType)
 
-		local activeSpell = self:getPeep():getBehavior(ActiveSpellBehavior)
-		if activeSpell then
-			activeSpell = activeSpell.spell
+		local activeSpellID
+		do
+			local activeSpell = self:getPeep():getBehavior(ActiveSpellBehavior)
+			if activeSpell and activeSpell.spell then
+				activeSpellID = activeSpell.spell:getID()
+			end
 		end
 
 		local zValues = {}
@@ -72,7 +75,7 @@ function PlayerSpellsController:getSpellState()
 			zValues[resource.name] = z
 			table.insert(result.spells, {
 				enabled = spell:canCast(self:getPeep()):good(),
-				active = activeSpell == spell,
+				active = activeSpellID == spell:getID(),
 				id = resource.name
 			})
 		end
