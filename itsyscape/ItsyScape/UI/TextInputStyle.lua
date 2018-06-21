@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/DraggablePanel.lua
+-- ItsyScape/UI/TextInputStyle.lua
 --
 -- This file is a part of ItsyScape.
 --

@@ -21,6 +21,8 @@ local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpellIconRenderer = require "ItsyScape.UI.SpellIconRenderer"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputRenderer = require "ItsyScape.UI.TextInputRenderer"
+local Label = require "ItsyScape.UI.Label"
+local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
@@ -44,9 +46,10 @@ function UIView:new(game)
 	self.renderManager = WidgetRenderManager()
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggableButton, ButtonRenderer(self.resources))
-	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(DraggablePanel, PanelRenderer(self.resources))
+	self.renderManager:addRenderer(Label, LabelRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
+	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
