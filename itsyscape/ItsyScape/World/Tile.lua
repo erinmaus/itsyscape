@@ -40,16 +40,16 @@ function Tile:snapCorners(mode)
 	self.bottomLeft = math.floor(self.bottomLeft)
 	self.bottomRight = math.floor(self.bottomRight)
 
-	local reference
-	if mode == 'max' then
-		reference = math.max(self.topLeft, self.topRight, self.bottomLeft, self.bottomRight)
-	elseif mode == 'min' then
-		reference = math.min(self.topLeft, self.topRight, self.bottomLeft, self.bottomRight)
-	else
-		error("expected 'min' or 'max'", 2)
-	end
+	local function snap(v, s, t)
+		local reference
+		if mode == 'max' then
+			reference = math.max(v, s, t)
+		elseif mode == 'min' then
+			reference = math.min(v, s, t)
+		else
+			error("expected 'min' or 'max'", 2)
+		end
 
-	local function snap(v)
 		local difference = v - reference
 		if math.abs(difference) > 1 then
 			if difference < 0 then
@@ -62,10 +62,10 @@ function Tile:snapCorners(mode)
 		return v
 	end
 
-	self.topLeft = snap(self.topLeft)
-	self.topRight = snap(self.topRight)
-	self.bottomLeft = snap(self.bottomLeft)
-	self.bottomRight = snap(self.bottomRight)
+	self.topLeft = snap(self.topLeft, self.topRight, self.bottomLeft)
+	self.topRight = snap(self.topRight, self.topLeft, self.bottomRight)
+	self.bottomLeft = snap(self.bottomLeft, self.topLeft, self.bottomRight)
+	self.bottomRight = snap(self.bottomRight, self.bottomLeft, self.topRight)
 end
 
 -- Computes the interpolated height (y) at x%, z%.
