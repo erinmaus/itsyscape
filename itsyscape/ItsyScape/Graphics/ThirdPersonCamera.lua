@@ -149,7 +149,7 @@ function ThirdPersonCamera:getLeft()
 end
 
 function ThirdPersonCamera:getStrafeLeft()
-	return self.up:cross(self:getStafeForward())
+	return self.up:cross(self:getStrafeForward())
 end
 
 function ThirdPersonCamera:getPosition()
