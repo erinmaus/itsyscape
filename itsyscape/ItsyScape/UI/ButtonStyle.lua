@@ -106,7 +106,7 @@ function ButtonStyle:draw(widget)
 			love.graphics.setFont(self.font)
 		end
 
-		y = y + font:getLineHeight() / 2
+		y = y + font:getHeight() / 2
 
 		y = y - height / 2
 		if self.textAlign == 'center' then

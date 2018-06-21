@@ -173,7 +173,7 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 end
 
 function WidgetInputProvider:tryFocusNext(widget, e)
-	if widget:getIsFocusable() then
+	if widget:getIsFocusable() and widget ~= self:getFocusedWidget() then
 		local f = self:getFocusedWidget()
 		if f then
 			f:blur()
@@ -209,6 +209,12 @@ function WidgetInputProvider:focusNext(w, e)
 				if self:focusNext(child, e) then
 					return true
 				end
+			end
+		end
+
+		for _, child in p:iterate() do
+			if self:focusNext(child, e) then
+				return true
 			end
 		end
 	end

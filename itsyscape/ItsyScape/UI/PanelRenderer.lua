@@ -15,6 +15,10 @@ local PanelRenderer = Class(WidgetRenderer)
 
 function PanelRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
+
+	self.defaultStyle = PanelStyle({
+		image = "Resources/Renderers/Widget/Panel/Default.9.png"
+	}, resources)
 end
 
 function PanelRenderer:draw(widget, state)
@@ -23,6 +27,8 @@ function PanelRenderer:draw(widget, state)
 	local style = widget:getStyle()
 	if style then
 		style:draw(widget)
+	else
+		self.defaultStyle:draw(widget)
 	end
 end
 
