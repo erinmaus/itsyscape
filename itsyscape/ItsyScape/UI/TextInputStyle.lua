@@ -55,7 +55,7 @@ function TextButtonStyle:new(t, resources)
 	end
 
 	self.textShadow = t.textShadow or false
-	self.selectionColor = t.selectionColor or Color(0.5, 0.5, 0.5, 0.5)
+	self.selectionColor = Color(unpack(t.selectionColor)) or Color(0.5, 0.5, 0.5, 0.5)
 	self.padding = t.padding or 4
 end
 
@@ -70,11 +70,14 @@ function TextButtonStyle:draw(widget)
 		self.states['inactive'](width, height)
 	end
 
-	love.graphics.intersectScissor(
-		self.padding, self.padding,
-		width - self.padding * 2,
-		height - self.padding * 2)
-	love.graphics.translate(self.padding, self.padding)
+	do
+		local x, y = love.graphics.getScissor()
+		love.graphics.intersectScissor(
+			x + self.padding, y + self.padding,
+			width - self.padding * 2,
+			height - self.padding * 2)
+		love.graphics.translate(self.padding, self.padding)
+	end
 
 	if #widget:getText() > 0 then
 		local previousFont = love.graphics.getFont()
@@ -151,7 +154,11 @@ function TextButtonStyle:draw(widget)
 			textWidth,
 			self.textAlign)
 
-		love.graphics.line(cursorX, cursorY, cursorX, cursorY + font:getHeight())
+		if widget:getIsFocused() then
+			local alpha = math.abs(math.sin(love.timer.getTime() * math.pi))
+			love.graphics.setColor(self.color.r, self.color.b, self.color.g, alpha)
+			love.graphics.line(cursorX, cursorY, cursorX, cursorY + font:getHeight())
+		end
 
 		love.graphics.setFont(previousFont)
 	end
