@@ -25,7 +25,6 @@ function TileSet.loadFromFile(filename, loadTexture)
 	local t
 	do
 		local data = "return " .. (love.filesystem.read(filename) or "")
-		print(filename)
 		local chunk = assert(loadstring(data))
 		t = setfenv(chunk, {})() or {}
 		t.flags = t.flags or {}
@@ -55,13 +54,6 @@ function TileSet.loadFromFile(filename, loadTexture)
 			result:setTileProperty(i, 'textureRight', (tile.x + tile.width) / texture:getWidth())
 			result:setTileProperty(i, 'textureTop', tile.y / texture:getHeight())
 			result:setTileProperty(i, 'textureBottom', (tile.y + tile.height) / texture:getHeight())
-
-			print(
-				i,
-				'l', result:getTileProperty(i, 'textureLeft') * texture:getWidth(),
-				'r', result:getTileProperty(i, 'textureRight') * texture:getWidth(),
-				't', result:getTileProperty(i, 'textureTop') * texture:getHeight(),
-				'b', result:getTileProperty(i, 'textureBottom') * texture:getHeight())
 		end
 
 		-- We don't want these keys to propagate below.

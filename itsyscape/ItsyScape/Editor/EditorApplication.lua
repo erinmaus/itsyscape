@@ -15,10 +15,13 @@ function EditorApplication:new()
 	Application.new(self)
 
 	self.isCameraDragging = false
+	self.dragButton = 1
 end
 
 function EditorApplication:initialize()
 	self:getGame():getStage():newMap(1, 1, 1)
+
+	Application.initialize(self)
 end
 
 function EditorApplication:mousePress(x, y, button)
@@ -26,38 +29,58 @@ function EditorApplication:mousePress(x, y, button)
 		local isShiftDown = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
 		if button == 1 and isShiftDown then
 			self:probe(x, y, true)
+			return true
 		elseif button == 2 and isShiftDown then
 			self:probe(x, y, false)
-		elseif button == 3 then
+			return true
+		elseif button ~= 1 and not isShiftDown then
 			self.isCameraDragging = true
+			self.dragButton = button
+			return true
 		end
+	else
+		return true
 	end
+
+	return false
 end
 
 function EditorApplication:mouseRelease(x, y, button)
 	Application.mouseRelease(self, x, y, button)
 
-	if button == 3 then
+	if button ~= 1 then
 		self.isCameraDragging = false
 	end
+
+	return false
 end
 
 function EditorApplication:mouseScroll(x, y)
 	Application.mouseScroll(self, x, y)
 	local distance = self.camera:getDistance() - y * 0.5
 	self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
+
+	return false
 end
 
 function EditorApplication:mouseMove(x, y, dx, dy)
 	Application.mouseMove(self, x, y, dx, dy)
 
 	if self.isCameraDragging then
-		local angle1 = dx / 128
-		local angle2 = -dy / 128
-		self:getCamera():setVerticalRotation(
-			self:getCamera():getVerticalRotation() + angle1)
-		self:getCamera():setHorizontalRotation(
-			self:getCamera():getHorizontalRotation() + angle2)
+		local camera = self:getCamera()
+		if self.dragButton == 2 then
+			local offsetX = dx / 32 * camera:getStrafeLeft()
+			local offsetZ = dy / 32 * camera:getStrafeForward()
+			local position = camera:getPosition() + offsetX + offsetZ
+			camera:setPosition(position)
+		elseif self.dragButton == 3 then
+			local angle1 = dx / 128
+			local angle2 = -dy / 128
+			camera:setVerticalRotation(
+				camera:getVerticalRotation() + angle1)
+			camera:setHorizontalRotation(
+				camera:getHorizontalRotation() + angle2)
+		end
 	end
 end
 
