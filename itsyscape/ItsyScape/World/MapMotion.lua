@@ -14,8 +14,8 @@ local Tile = require "ItsyScape.World.Tile"
 
 MapMotion = Class()
 
-function MapMotion:new(stage)
-	self.stage = stage
+function MapMotion:new(map)
+	self.map = map
 	self.isDragging = false
 end
 
@@ -28,8 +28,8 @@ function MapMotion:onMousePressed(e)
 	-- TODO:
 	--   1. Allow button customization (instead of left/primary mouse button)
 	--   2. Raise entire tile if position is close to center (< cellSize / 2?)
-	local tiles = self.stage:testRay(e.ray)
-	table.sort(tiles, function(a, b) return a[2].z > b[2].z end)
+	local tiles = self.map:testRay(e.ray)
+	table.sort(tiles, function(a, b) return a[2].z < b[2].z end)
 
 	if #tiles >= 1 and e.button == 1 then
 		self.isDragging = true
@@ -40,11 +40,11 @@ function MapMotion:onMousePressed(e)
 		local _, _, corners = self.tile:findNearestCorner(
 			tiles[1][Map.RAY_TEST_RESULT_POSITION],
 			tiles[1][Map.RAY_TEST_RESULT_I], tiles[1][Map.RAY_TEST_RESULT_J],
-			self.stage.cellSize)
+			self.map.cellSize)
 		for i = 1, #corners do
 			local c = corners[i]
 			local distance = c[Tile.NEAREST_CORNER_RESULT_DISTANCE]
-			if distance < self.stage.cellSize * (2 / 3) then
+			if distance < self.map.cellSize * (2 / 3) then
 				table.insert(
 					self.corners,
 					corners[i][Tile.NEAREST_CORNER_RESULT_CORNER])
