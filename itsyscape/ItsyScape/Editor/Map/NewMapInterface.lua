@@ -9,6 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Button = require "ItsyScape.UI.Button"
+local GridLayout = require "ItsyScape.UI.GridLayout"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local Widget = require "ItsyScape.UI.Widget"
@@ -21,76 +24,116 @@ function NewMapInterface:new(application)
 
 	self.application = application
 
-	local windowWidth, windowHeight = love.window.getMode()
+	local width, height = love.window.getMode()
 	self:setPosition(
-		windowWidth / 2 - NewMapInterface.WIDTH / 2,
-		windowHeight / 2 - NewMapInterface.HEIGHT / 2)
+		width / 2 - NewMapInterface.WIDTH / 2,
+		height / 2 - NewMapInterface.HEIGHT / 2)
 	self:setSize(NewMapInterface.WIDTH, NewMapInterface.HEIGHT)
 
 	local panel = Panel()
 	panel:setSize(self:getSize())
 	self:addChild(panel)
 
+	local titleLabel = Label()
+	titleLabel:setText("Create map...")
+	titleLabel:setStyle(LabelStyle({
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		fontSize = 32,
+		color = { 1, 1, 1, 1 },
+		textShadow = true
+	}, application:getUIView():getResources()))
+	titleLabel:setPosition(16, -32)
+	self:addChild(titleLabel)
+
+	local inputsGridLayout = GridLayout()
+	inputsGridLayout:setPadding(16, 16)
+	inputsGridLayout:setUniformSize(true, NewMapInterface.WIDTH / 2 - 16 * 2, 32)
+	inputsGridLayout:setSize(NewMapInterface.WIDTH, NewMapInterface.HEIGHT * (2 / 3))
+
+	self:addChild(inputsGridLayout)
+
+	local widthLabel = Label()
+	widthLabel:setText("Width:")
+	inputsGridLayout:addChild(widthLabel)
+
 	self.widthInput = TextInput()
-	self.widthInput:setPosition(NewMapInterface.WIDTH - 128 - 16, 16)
-	self.widthInput:setSize(128, 32)
 	self.widthInput:setText("32")
-	self:addChild(self.widthInput)
+	inputsGridLayout:addChild(self.widthInput)
+
+	local heightLabel = Label()
+	heightLabel:setText("Height:")
+	inputsGridLayout:addChild(heightLabel)
 
 	self.heightInput = TextInput()
-	self.heightInput:setPosition(NewMapInterface.WIDTH - 128 - 16, 32 + 16 + 8)
-	self.heightInput:setSize(128, 32)
 	self.heightInput:setText("32")
-	self:addChild(self.heightInput)
+	inputsGridLayout:addChild(self.heightInput)
+
+	local tileSetLabel = Label()
+	tileSetLabel:setText("Tile Set:")
+	inputsGridLayout:addChild(tileSetLabel)
 
 	self.tileSetIDInput = TextInput()
-	self.tileSetIDInput:setPosition(NewMapInterface.WIDTH - 128 - 16, (32 + 8) * 2  + 16)
-	self.tileSetIDInput:setSize(128, 32)
 	self.tileSetIDInput:setText("GrassyPlain")
-	self:addChild(self.tileSetIDInput)
+	inputsGridLayout:addChild(self.tileSetIDInput)
+
+	local buttonsGridLayout = GridLayout()
+	buttonsGridLayout:setPadding(16, 0)
+	buttonsGridLayout:setUniformSize(true, NewMapInterface.WIDTH / 2 - 16 * 2, 32)
+	buttonsGridLayout:setSize(NewMapInterface.WIDTH, NewMapInterface.HEIGHT * (1 / 3))
+	buttonsGridLayout:setPosition(0, NewMapInterface.HEIGHT * (2 / 3))
+	self:addChild(buttonsGridLayout)
 
 	self.okButton = Button()
-	self.okButton:setPosition(NewMapInterface.WIDTH - 128 - 16, NewMapInterface.HEIGHT - 64 - 16)
-	self.okButton:setSize(128, 64)
 	self.okButton.onClick:register(function()
-		local stage = self.application:getGame():getStage()
-		local width = tonumber(self.heightInput:getText())
-		local height = tonumber(self.heightInput:getText())
-		if width and height then
-			stage:newMap(width, height, 1, self.tileSetIDInput:getText())
-			local map = stage:getMap(1)
-			if map then
-				for j = 1, map:getHeight() do
-					for i = 1, map:getWidth() do
-						local tile = map:getTile(i, j)
-						tile.flat = 1
-						tile.edge = 2
-						tile.topLeft = 1
-						tile.topRight = 1
-						tile.bottomLeft = 1
-						tile.bottomRight = 1
-					end
-				end
-
-				stage:updateMap(1)
-
-				self.application:getUIView():getRoot():removeChild(self)
-			end
-		end
+		self:createMap()
 	end)
 	self.okButton:setText("OK")
-	self:addChild(self.okButton)
+	buttonsGridLayout:addChild(self.okButton)
 
 	self.cancelButton = Button()
-	self.cancelButton:setPosition(
-		NewMapInterface.WIDTH - 128 - 16 - 128 - 8,
-		NewMapInterface.HEIGHT - 64 - 16)
-	self.cancelButton:setSize(128, 64)
 	self.cancelButton.onClick:register(function()
-		self.application:getUIView():getRoot():removeChild(self)
+		self:close()
 	end)
 	self.cancelButton:setText("Cancel")
-	self:addChild(self.cancelButton)
+	buttonsGridLayout:addChild(self.cancelButton)
+end
+
+function NewMapInterface:getOverflow()
+	return true
+end
+
+function NewMapInterface:createMap()
+	local stage = self.application:getGame():getStage()
+	local width = tonumber(self.widthInput:getText())
+	local height = tonumber(self.heightInput:getText())
+	if width and height then
+		stage:newMap(width, height, 1, self.tileSetIDInput:getText())
+		local map = stage:getMap(1)
+		if map then
+			for j = 1, map:getHeight() do
+				for i = 1, map:getWidth() do
+					local tile = map:getTile(i, j)
+					tile.flat = 1
+					tile.edge = 2
+					tile.topLeft = 1
+					tile.topRight = 1
+					tile.bottomLeft = 1
+					tile.bottomRight = 1
+				end
+			end
+
+			stage:updateMap(1)
+
+			self:close()
+		end
+	end
+end
+
+function NewMapInterface:close()
+	local p = self:getParent()
+	if p then
+		p:removeChild(self)
+	end
 end
 
 return NewMapInterface
