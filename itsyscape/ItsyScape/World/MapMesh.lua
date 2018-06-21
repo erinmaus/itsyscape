@@ -20,17 +20,17 @@ MapMesh = Class()
 -- Similar to the default, except:
 --
 -- 1) Position is 3D.
--- 2) VertexTexCoord is relative to VertexTileBounds
+-- 2) VertexTexture is relative to VertexTileBounds
 -- 3) VertexTileBounds is { left, right, top, bottom }
 --
--- Ergo, to properly wrap VertexTexCoord, you'd do something like this in the pixel shader:
+-- Ergo, to properly wrap VertexTexture, you'd do something like this in the pixel shader:
 --
--- s = mod(VertexTexCoord.s, (VertexTileBounds.y - VertexTileBounds.x)) + VertexTileBounds.x
--- t = mod(VertexTexCoord.t, (VertexTileBounds.w - VertexTileBounds.z)) + VertexTileBounds.z
+-- s = mod(VertexTexture.s, (VertexTileBounds.y - VertexTileBounds.x)) + VertexTileBounds.x
+-- t = mod(VertexTexture.t, (VertexTileBounds.w - VertexTileBounds.z)) + VertexTileBounds.z
 MapMesh.FORMAT = {
     { "VertexPosition", 'float', 3 },
     { "VertexNormal", 'float', 3 },
-    { "VertexTexCoord", 'float', 2 },
+    { "VertexTexture", 'float', 2 },
     { "VertexTileBounds", 'float', 4 },
     { "VertexColor", 'float', 4 }
 }
@@ -159,14 +159,32 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.map.cellSize
 	local worldPosition = localPosition * Vector(self.map.cellSize / 2, 1, self.map.cellSize / 2) + tileCenterPosition
 
-	local t = localPosition.y
-	local s
-	if side < 0 then
-		s = 0.0
-	elseif side > 0 then
-		s = 1.0
+	local s, t
+	if index == 'flat' then
+		if localPosition.x < 0 then
+			s = 0
+		else
+			s = 1
+		end
+
+		if localPosition.z < 0 then
+			t = 0.0
+		else
+			t = 1.0
+		end
+	elseif index == 'edge' then
+		t = localPosition.y / 4
+		if side < 0 then
+			s = 0.0
+		elseif side > 0 then
+			s = 1.0
+		else
+			assert(false, "side no good :(")
+		end
+		--print(s, t)
 	else
-		assert(false, "side no good :(")
+		s = 0
+		t = 0
 	end
 
 	local left = self.tileSet:getTileProperty(tile[index], 'textureLeft', 0)
@@ -209,6 +227,7 @@ local function addEdgeBuilder(func, side)
 		for k = 1, #vertices do
 			self:_buildVertex(vertices[k], normal, d:dot(vertices[k]), 'edge', i, j, tile)
 		end
+		--print()
 		return true
 	end
 end

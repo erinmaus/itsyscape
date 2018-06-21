@@ -10,14 +10,21 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local MapMesh = require "ItsyScape.World.MapMesh"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local MapMeshSceneNode = Class(SceneNode)
+MapMeshSceneNode.DEFAULT_SHADER = ShaderResource()
+do
+	MapMeshSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/BasicMapMesh")
+end
 
 function MapMeshSceneNode:new()
 	SceneNode.new(self)
 
 	self.mapMesh = false
 	self.isOwner = false
+
+	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 end
 
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h)
@@ -43,9 +50,13 @@ function MapMeshSceneNode:setMapMesh(mapMesh)
 end
 
 function MapMeshSceneNode:draw(renderer, delta)
+	local shader = renderer:getCurrentShader()
 	local texture = self:getMaterial():getTexture(1)
-	if texture and texture:getIsReady() then
-		texture = texture:getResource()
+	if shader:hasUniform("scape_DiffuseTexture") and
+	   texture and texture:getIsReady()
+	then
+		texture:getResource():setFilter('nearest', 'nearest')
+		shader:send("scape_DiffuseTexture", texture:getResource())
 	end
 
 	if self.mapMesh then

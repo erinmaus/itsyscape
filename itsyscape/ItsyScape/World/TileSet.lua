@@ -9,11 +9,74 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 -- Base tile set class.
 --
 -- Stores properties for tiles.
-TileSet = Class()
+local TileSet = Class()
+
+-- Loads a TileSet from 'filename'.
+--
+-- Optionally loads the texture if loadTexture is true.
+--
+-- Returns the TileSet and the TextureResource.
+function TileSet.loadFromFile(filename, loadTexture)
+	local t
+	do
+		local data = "return " .. (love.filesystem.read(filename) or "")
+		print(filename)
+		local chunk = assert(loadstring(data))
+		t = setfenv(chunk, {})() or {}
+		t.flags = t.flags or {}
+	end
+
+	local invertY = false
+	if t.flags['invert-y'] then
+		invertY = true
+	end
+
+	local texture
+	if loadTexture and t.texture then
+		texture = TextureResource()
+		texture:loadFromFile(t.texture)
+	end
+
+	local result = TileSet()
+	for i = 1, #t do
+		local tile = t[i]
+
+		if tile.x and tile.y and tile.width and tile.height and texture then
+			if invertY and texture then
+				tile.y = texture:getHeight() - (tile.y + tile.height)
+			end
+
+			result:setTileProperty(i, 'textureLeft', tile.x / texture:getWidth())
+			result:setTileProperty(i, 'textureRight', (tile.x + tile.width) / texture:getWidth())
+			result:setTileProperty(i, 'textureTop', tile.y / texture:getHeight())
+			result:setTileProperty(i, 'textureBottom', (tile.y + tile.height) / texture:getHeight())
+
+			print(
+				i,
+				'l', result:getTileProperty(i, 'textureLeft') * texture:getWidth(),
+				'r', result:getTileProperty(i, 'textureRight') * texture:getWidth(),
+				't', result:getTileProperty(i, 'textureTop') * texture:getHeight(),
+				'b', result:getTileProperty(i, 'textureBottom') * texture:getHeight())
+		end
+
+		-- We don't want these keys to propagate below.
+		tile.x = nil
+		tile.y = nil
+		tile.width = nil
+		tile.height = nil
+
+		for key, value in pairs(tile) do
+			result:setTileProperty(i, key, value)
+		end
+	end
+
+	return result, texture
+end
 
 -- Constructs the tile set.
 function TileSet:new()

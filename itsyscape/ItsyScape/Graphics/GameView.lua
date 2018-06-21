@@ -114,13 +114,10 @@ function GameView:release()
 end
 
 function GameView:addMap(map, layer, tileSetID)
-	local tileSet = TileSet()
-	tileSet:setTileProperty(1, 'colorRed', 128)
-	tileSet:setTileProperty(1, 'colorGreen', 192)
-	tileSet:setTileProperty(1, 'colorBlue', 64)
-	tileSet:setTileProperty(2, 'colorRed', 255)
-	tileSet:setTileProperty(2, 'colorGreen', 192)
-	tileSet:setTileProperty(2, 'colorBlue', 64)
+	local tileSetFilename = string.format(
+		"Resources/Game/TileSets/%s/Layout.lua",
+		tileSetID or "GrassyPlain")
+	local tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 
 	if self.mapMeshes[layer] then
 		self.mapMeshes[layer].node:setParent(nil)
@@ -133,6 +130,7 @@ function GameView:addMap(map, layer, tileSetID)
 		node = MapMeshSceneNode()
 	}
 	m.node:setParent(self.scene)
+	m.node:getMaterial():setTextures(texture)
 
 	self.mapMeshes[layer] = m
 end
