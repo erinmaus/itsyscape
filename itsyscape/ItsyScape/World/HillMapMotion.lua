@@ -12,6 +12,10 @@ local MapMotion = require "ItsyScape.World.MapMotion"
 
 HillMapMotion = Class(MapMotion)
 
+function HillMapMotion:endPerform(e)
+	self.direction = 0
+end
+
 -- Raises the corner of a tile. Default action.
 function HillMapMotion:perform(e, distance)
 	local tile, i, j = self:getTile()
@@ -20,11 +24,20 @@ function HillMapMotion:perform(e, distance)
 		tile.topLeft, tile.topRight,
 		tile.bottomLeft, tile.bottomRight)
 
-	local func
+	local func, direction
 	if distance < 0 then
 		func = math.min
+		direction = 0
 	else
 		func = math.max
+		direction = 1
+	end
+
+	if self.direction ~= direction then
+		self.start = math.min(
+			tile.topLeft, tile.topRight,
+			tile.bottomLeft, tile.bottomRight)
+		self.direction = direction
 	end
 
 	min = min + distance
@@ -34,13 +47,13 @@ function HillMapMotion:perform(e, distance)
 	tile.bottomRight = func(min, tile.bottomRight)
 
 	if min == tile.topRight and min == tile.topRight and
-	   min == tile.bottomLeft and min == tile.bottomRight
+	   min == tile.bottomLeft and min == tile.bottomRight or true
 	then
 		local stop
 		if distance < 0 then
-			stop = math.abs(min) + 1
+			stop = math.abs(min - self.start)
 		else
-			stop = min
+			stop = min - self.start + 1
 		end
 
 		local length = min * 2 + 1
@@ -48,11 +61,10 @@ function HillMapMotion:perform(e, distance)
 		local top = j - stop
 
 		for k = 0, stop do
-			local elevation
 			if distance > 0 then
 				elevation = k
 			else
-				elevation = -k + 2
+				elevation = -k + 1
 			end
 
 			for currentStep = 1, 2 do
@@ -62,9 +74,9 @@ function HillMapMotion:perform(e, distance)
 				local currentTop = j * 2 - currentLength
 				local stepElevation
 				if distance < 0 then
-					stepElevation = elevation - currentStep
+					stepElevation = elevation - currentStep + 1 + (self.start - 1)
 				else
-					stepElevation = elevation + currentStep - 1
+					stepElevation = elevation + currentStep - 1 + (self.start - 1)
 				end
 
 				self:rectangle(
