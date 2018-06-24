@@ -22,7 +22,7 @@ function MapMotion:new(map)
 end
 
 function MapMotion:getReferenceY(e)
-	local y = e.y / e.zoom
+	local y = e.y / 30
 
 	return -y
 end
