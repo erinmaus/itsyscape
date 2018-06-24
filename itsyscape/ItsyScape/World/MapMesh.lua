@@ -101,6 +101,22 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 		end
 	end
 
+	local yDifference = (self.maxY or 1) - (self.minY or 1)
+	local upper = math.min(yDifference / 10, 1) * 0.5
+	local lower = 1 - upper
+	local COLOR_INDEX = 13
+	local COLOR_COMPONENTS = 3
+	local Y_INDEX = 2
+	for i = 1, #self.vertices do
+		local vertex = self.vertices[i]
+		local y = vertex[Y_INDEX]
+		local grade = lower + y / yDifference * upper
+		for j = 1, COLOR_COMPONENTS do
+			local index = COLOR_INDEX + j - 1
+			vertex[index] = vertex[index] * grade
+		end
+	end
+
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
 	for i = 1, #MapMesh.FORMAT do
@@ -167,7 +183,6 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 		else
 			assert(false, "side no good :(")
 		end
-		--print(s, t)
 	else
 		s = 0
 		t = 0
@@ -213,7 +228,7 @@ local function addEdgeBuilder(func, side)
 		for k = 1, #vertices do
 			self:_buildVertex(vertices[k], normal, d:dot(vertices[k]), 'edge', i, j, tile)
 		end
-		--print()
+
 		return true
 	end
 end
