@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Button = require "ItsyScape.UI.Button"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Label = require "ItsyScape.UI.Label"
@@ -18,7 +19,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local NewMapInterface = Class(Widget)
 NewMapInterface.WIDTH = 320
-NewMapInterface.HEIGHT = 240
+NewMapInterface.HEIGHT = 320
 function NewMapInterface:new(application)
 	Widget.new(self)
 
@@ -68,6 +69,14 @@ function NewMapInterface:new(application)
 	self.heightInput:setText("32")
 	inputsGridLayout:addChild(self.heightInput)
 
+	local elevationLabel = Label()
+	elevationLabel:setText("Elevation:")
+	inputsGridLayout:addChild(elevationLabel)
+
+	self.elevationInput = TextInput()
+	self.elevationInput:setText("1")
+	inputsGridLayout:addChild(self.elevationInput)
+
 	local tileSetLabel = Label()
 	tileSetLabel:setText("Tile Set:")
 	inputsGridLayout:addChild(tileSetLabel)
@@ -104,8 +113,9 @@ end
 
 function NewMapInterface:createMap()
 	local stage = self.application:getGame():getStage()
-	local width = tonumber(self.widthInput:getText())
-	local height = tonumber(self.heightInput:getText())
+	local width = tonumber(self.widthInput:getText()) or 32
+	local height = tonumber(self.heightInput:getText()) or 32
+	local elevation = tonumber(self.elevationInput:getText()) or 1
 	if width and height then
 		stage:newMap(width, height, 1, self.tileSetIDInput:getText())
 		local map = stage:getMap(1)
@@ -115,14 +125,20 @@ function NewMapInterface:createMap()
 					local tile = map:getTile(i, j)
 					tile.flat = 1
 					tile.edge = 2
-					tile.topLeft = 1
-					tile.topRight = 1
-					tile.bottomLeft = 1
-					tile.bottomRight = 1
+					tile.topLeft = elevation
+					tile.topRight = elevation
+					tile.bottomLeft = elevation
+					tile.bottomRight = elevation
 				end
 			end
 
 			stage:updateMap(1)
+
+			local center = Vector(
+				map:getWidth() / 2 * map:getCellSize(),
+				elevation + 5,
+				map:getHeight() / 2 * map:getCellSize())
+			self.application:getCamera():setPosition(center)
 
 			self:close()
 		end
