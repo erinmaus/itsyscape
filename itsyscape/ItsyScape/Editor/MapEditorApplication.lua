@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local MapMotion = require "ItsyScape.World.MapMotion"
+local HillMapMotion = require "ItsyScape.World.HillMapMotion"
 
 local MapEditorApplication = Class(EditorApplication)
 function MapEditorApplication:new()
@@ -29,12 +30,15 @@ end
 function MapEditorApplication:mousePress(x, y, button)
 	if not EditorApplication.mousePress(self, x, y, button) then
 		if button == 1 then
-			self.motion = MapMotion(self:getGame():getStage():getMap(1))
+			self.motion = HillMapMotion(self:getGame():getStage():getMap(1))
 			self.motion:onMousePressed({
 				x = x,
 				y = y,
 				button = button,
-				ray = self:shoot(x, y)
+				ray = self:shoot(x, y),
+				forward = self:getCamera():getForward(),
+				left = self:getCamera():getLeft(),
+				zoom = self:getCamera():getDistance(),
 			})
 		end
 	end
@@ -46,8 +50,10 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			local r = self.motion:onMouseMoved({
 				x = x,
 				y = y,
-				button = button,
-				ray = self:shoot(x, y)
+				ray = self:shoot(x, y),
+				forward = self:getCamera():getForward(),
+				left = self:getCamera():getLeft(),
+				zoom = self:getCamera():getDistance(),
 			})
 
 			if r then
@@ -64,7 +70,10 @@ function MapEditorApplication:mouseRelease(x, y, button)
 				x = x,
 				y = y,
 				button = button,
-				ray = self:shoot(x, y)
+				ray = self:shoot(x, y),
+				forward = self:getCamera():getForward(),
+				left = self:getCamera():getLeft(),
+				zoom = self:getCamera():getDistance(),
 			})
 			self.motion = false
 		end
