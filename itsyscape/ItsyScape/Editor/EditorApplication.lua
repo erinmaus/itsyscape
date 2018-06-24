@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 
 local EditorApplication = Class(Application)
 function EditorApplication:new()
@@ -16,12 +17,29 @@ function EditorApplication:new()
 
 	self.isCameraDragging = false
 	self.dragButton = 1
+
+	self.light = DirectionalLightSceneNode()
+	do
+		self.light:setIsGlobal(true)
+		self.light:setDirection(-self:getCamera():getForward())
+		self.light:setParent(self:getGameView():getScene())
+		
+		local ambient = AmbientLightSceneNode()
+		ambient:setAmbience(0.4)
+		ambient:setParent(self:getGameView():getScene())
+	end
 end
 
 function EditorApplication:initialize()
 	self:getGame():getStage():newMap(1, 1, 1)
 
 	Application.initialize(self)
+end
+
+function EditorApplication:tick()
+	Application.tick(self)
+	
+	self.light:setDirection(-self:getCamera():getForward())
 end
 
 function EditorApplication:mousePress(x, y, button)
@@ -58,7 +76,7 @@ end
 function EditorApplication:mouseScroll(x, y)
 	Application.mouseScroll(self, x, y)
 	local distance = self.camera:getDistance() - y * 0.5
-	self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
+	self:getCamera():setDistance(math.max(distance, 1))
 
 	return false
 end
