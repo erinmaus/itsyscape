@@ -16,6 +16,9 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 -- Stores tile information.
 local Tile = Class()
 
+Tile.CREASE_FORWARD = 1
+Tile.CREASE_BACKWARD = 2
+
 function Tile:new()
 	-- The edge texture index. Defaults to the first edge texture.
 	self.edge = 1
@@ -28,6 +31,52 @@ function Tile:new()
 	self.topRight = 0
 	self.bottomLeft  = 0
 	self.bottomRight = 0
+end
+
+function Tile:getCrease()
+	if self.topLeft == self.bottomRight then
+		return Tile.CREASE_FORWARD
+	else
+		return Tile.CREASE_BACKWARD
+	end
+end
+
+function Tile:getCornerName(s, t)
+	local prefix
+	local suffix
+	if s == 1 then
+		suffix = 'Left'
+	elseif s == 2 then
+		suffix = 'Right'
+	end
+
+	if t == 1 then
+		prefix = 'top'
+	elseif t == 2 then
+		prefix = 'bottom'
+	end
+
+	if prefix and suffix then
+		return prefix .. suffix
+	else
+		return nil
+	end
+end
+
+function Tile:getCorner(s, t)
+	local corner = self:getCornerName(s, t)
+	if corner then
+		return self[corner]
+	else
+		return math.huge
+	end
+end
+
+function Tile:setCorner(s, t, value)
+	local corner = self:getCornerName(s, t)
+	if corner then
+		self[corner] = value
+	end
 end
 
 -- Ensures the corners are not fractional (i.e., they are integers).
