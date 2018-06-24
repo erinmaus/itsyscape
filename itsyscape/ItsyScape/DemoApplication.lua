@@ -11,6 +11,7 @@ local Application = require "ItsyScape.Application"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Class = require "ItsyScape.Common.Class"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local DemoApplication = Class(Application)
@@ -116,6 +117,8 @@ function DemoApplication:tick()
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = self.currentPlayerPosition or position
 	self.currentPlayerPosition = position
+
+	self.light:setDirection(-self:getCamera():getForward())
 end
 
 function DemoApplication:mousePress(x, y, button)
