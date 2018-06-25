@@ -17,6 +17,8 @@ TextInput.CURSOR_RIGHT = 2
 
 function TextInput:new()
 	Widget.new(self)
+	self.onValueChanged = Callback()
+	self.onSubmit = Callback()
 	self.cursorIndex = 1
 	self.cursorLength = 0
 	self.isShiftDown = 0
@@ -120,6 +122,7 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 		   #self.text > 0
 		then
 			self.text = self.text:sub(1, #self.text - math.max(self.cursorLength, 1))
+			self.onValueChanged(self, self.text)
 		elseif self.cursorIndex > 1 then
 			if self.cursorIndex > #self.text then
 				self.text = self.text:sub(1, self.cursorIndex - 2)
@@ -127,20 +130,25 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 				self.text = self.text:sub(1, self.cursorIndex - 1) ..
 			                self.text:sub(self.cursorIndex - 1 + math.max(self.cursorLength, 1))
 			end
+			self.onValueChanged(self, self.text)
 			self:moveCursor(self:getLeftCursor() - 1)
 		end end
 
 		if self.cursorLength == 0 then
 			self.text = self.text:sub(1, self.cursorIndex - 1) ..
 			            self.text:sub(self.cursorIndex + 1)
+			self.onValueChanged(self, self.text)
 			self.cursorIndex = self.cursorIndex - 1
 		else
 			self.text = self.text:sub(1, self:getLeftCursor()) ..
 			            self.text:sub(self:getRightCursor() + 1)
+			self.onValueChanged(self, self.text)
 		end
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 		self.isShiftDown = self.isShiftDown + 1
+	elseif key == 'enter' and not isRepeat then
+		self.onSubmit(self, self.text)
 	elseif key == 'tab' then
 		return false
 	end
@@ -164,6 +172,7 @@ function TextInput:type(text, ...)
 	self.text = self.text:sub(1, self:getLeftCursor()) ..
 	            text ..
 	            self.text:sub(self:getRightCursor() + 1)
+	self.onValueChanged(self, self.text)
 	self:setCursor(self:getLeftCursor() + 1, 0)
 
 	Widget.type(self, text, ...)
