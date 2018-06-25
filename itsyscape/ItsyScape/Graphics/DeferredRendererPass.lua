@@ -125,7 +125,7 @@ end
 
 function DeferredRendererPass:drawNodes(scene, delta)
 	love.graphics.setMeshCullMode('back')
-	love.graphics.setDepthMode('less', true)
+	love.graphics.setDepthMode('lequal', true)
 
 	if self.gBuffer then
 		self.gBuffer:use()

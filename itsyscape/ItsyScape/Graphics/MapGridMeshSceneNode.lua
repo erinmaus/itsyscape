@@ -62,14 +62,14 @@ function MapGridMeshSceneNode:setMapMesh(mapMesh)
 end
 
 function MapGridMeshSceneNode:draw(renderer, delta)
-	love.graphics.setDepthMode('less', false)
+	love.graphics.setDepthMode('lequal', false)
 	love.graphics.setLineWidth(self.lineWidth)
 
 	if self.mapMesh then
 		self.mapMesh:draw()
 	end
 
-	love.graphics.setDepthMode('less', true)
+	love.graphics.setDepthMode('lequal', true)
 end
 
 return MapGridMeshSceneNode
