@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/MapMotion.lua
+-- ItsyScape/World/HillMapMotion.lua
 --
 -- This file is a part of ItsyScape.
 --
