@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Button = require "ItsyScape.UI.Button"
@@ -24,6 +25,7 @@ function NewMapInterface:new(application)
 	Widget.new(self)
 
 	self.application = application
+	self.onSubmit = Callback()
 
 	local width, height = love.window.getMode()
 	self:setPosition(
@@ -140,6 +142,7 @@ function NewMapInterface:createMap()
 				map:getHeight() / 2 * map:getCellSize())
 			self.application:getCamera():setPosition(center)
 
+			self.onSubmit(self)
 			self:close()
 		end
 	end
