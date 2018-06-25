@@ -63,6 +63,17 @@ function DemoApplication:createMap()
 		end
 	end
 
+	table.insert(map:getTile(1, 1).decals, 8)
+	for i = 2, map:getWidth() do
+		local tile = map:getTile(i, 1)
+		table.insert(tile.decals, 4)
+	end
+
+	for j = 2, map:getHeight() do
+		local tile = map:getTile(1, j)
+		table.insert(tile.decals, 6)
+	end
+
 	for i = 2, map:getWidth() do
 		local tile = map:getTile(i, 1)
 		tile.topLeft = math.min(i - 1, math.ceil(map:getWidth() / 2))
