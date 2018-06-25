@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
+local Light = require "ItsyScape.Graphics.Light"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 
 -- Base renderer pass type. Manages logic for a specific pass.
@@ -68,7 +69,7 @@ function ForwardRendererPass:walk(node, delta)
 		end
 	else
 		local material = node:getMaterial()
-		if material:getIsTranslucent() then
+		if material:getIsTranslucent() or material:getIsFullLit() then
 			table.insert(self.nodes, PendingNode(node, delta))
 		end
 	end
@@ -121,16 +122,27 @@ function ForwardRendererPass:drawNodes(scene, delta)
 		local material = node:getMaterial()
 		local shader = material:getShader()
 		if shader then
+			local numLights
 			if previousShader ~= shader then
 				currentShaderProgram = self:useShader(material:getShader())
 				previousShader = shader
+			end
 
+			if material:getIsFullLit() then
+				local light = Light()
+				light:setAmbience(1.0)
+				setLightProperties(currentShaderProgram, 1, light)
+
+				numLights = 1
+			else
 				for i = 1, numGlobalLights do
 					local p = self.globalLights[i]
 					local light = p.node:toLight(delta)
 
 					setLightProperties(currentShaderProgram, i, light)
 				end
+
+				numLights = numGlobalLights
 			end
 
 			-- TODO: Local lights

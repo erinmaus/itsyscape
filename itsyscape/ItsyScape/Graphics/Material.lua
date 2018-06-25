@@ -20,6 +20,7 @@ function Material:new(shader, ...)
 	self.shader = shader or false
 	self:setTextures(...)
 	self.isTranslucent = false
+	self.isFullLit = false
 end
 
 -- Gets the shader this Material uses.
@@ -49,6 +50,15 @@ end
 -- Defaults to 'false'.
 function Material:setIsTranslucent(value)
 	self.isTranslucent = value or false
+end
+
+-- Returns true if the Material should be fully lit, false otherwise.
+function Material:getIsFullLit(value)
+	return self.isFullLit
+end
+
+function Material:setIsFullLit(value)
+	self.isFullLit = value or false
 end
 
 -- Gets the number of textures.

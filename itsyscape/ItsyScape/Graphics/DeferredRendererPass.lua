@@ -97,7 +97,7 @@ function DeferredRendererPass:walk(node, delta)
 		table.insert(self.lights, PendingNode(node, delta))
 	else
 		local material = node:getMaterial()
-		if not material:getIsTranslucent() then
+		if not material:getIsTranslucent() and not material:getIsFullLit() then
 			table.insert(self.nodes, PendingNode(node, delta))
 		end
 	end
