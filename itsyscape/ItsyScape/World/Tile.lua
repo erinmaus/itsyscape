@@ -73,13 +73,13 @@ function Tile:getCorner(s, t)
 end
 
 function Tile:clamp(s, t, value, direction, maxDistance)
-	local corner = self:getCorner(s, t)
-	local n = self:getCorner(s, nt) - value
-	if math.abs(value) > maxDistance then
+	local corner = self:getCornerName(s, t)
+	local n = self[corner] - value
+	if math.abs(n) > maxDistance then
 		if direction < 1 then
-			self[corner] = value + maxDistance
-		else
 			self[corner] = value - maxDistance
+		else
+			self[corner] = value + maxDistance
 		end
 	end
 end
@@ -90,11 +90,11 @@ function Tile:setCorner(s, t, value)
 	if corner then
 		self[corner] = value
 
-		local ns = (s + 1) % 2 + 1
-		local nt = (t + 1) % 2 + 1
+		local ns = (s % 2) + 1
+		local nt = (t % 2) + 1
 		self:clamp(ns, t, value, direction, 1)
-		self:clamp(s, nt, direction, direction, 1)
-		self:clamp(ns, nt, direction, direction, 2)
+		self:clamp(s, nt, value, direction, 1)
+		self:clamp(ns, nt, value, direction, 2)
 	end
 end
 
