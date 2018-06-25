@@ -65,11 +65,6 @@ function MapMesh:draw(texture, ...)
 	love.graphics.draw(self.mesh, ...)
 end
 
--- Releases all resources used by the mesh.
-function MapMesh:release()
-	self.mesh:release()
-end
-
 -- Builds a mesh within the provided bounds.
 function MapMesh:_buildMesh(left, right, top, bottom)
 	-- Build vertices.
