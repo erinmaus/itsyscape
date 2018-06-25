@@ -92,7 +92,10 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 			self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
 			self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
 
-			self:_addFlat(i, j, tile)
+			self:_addFlat(i, j, tile, 'flat')
+			for k = 1, #tile.decals do
+				self:_addFlat(i, j, tile, k)
+			end
 		end
 	end
 
@@ -157,7 +160,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 	local worldPosition = localPosition * Vector(self.map.cellSize / 2, 1, self.map.cellSize / 2) + tileCenterPosition
 
 	local s, t
-	if index == 'flat' then
+	if index == 'flat' or type(index) == 'number' then
 		if localPosition.x < 0 then
 			s = 0
 		else
@@ -183,14 +186,21 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 		t = 0
 	end
 
-	local left = self.tileSet:getTileProperty(tile[index], 'textureLeft', 0)
-	local right = self.tileSet:getTileProperty(tile[index], 'textureRight', 1)
-	local top = self.tileSet:getTileProperty(tile[index], 'textureTop', 0)
-	local bottom = self.tileSet:getTileProperty(tile[index], 'textureBottom', 1)
+	local tileIndex
+	if type(index) == 'number' then
+		tileIndex = tile.decals[index]
+	else
+		tileIndex = tile[index]
+	end
 
-	local red = self.tileSet:getTileProperty(tile[index], 'colorRed', 255)
-	local green = self.tileSet:getTileProperty(tile[index], 'colorGreen', 255)
-	local blue = self.tileSet:getTileProperty(tile[index], 'colorBlue', 255)
+	local left = self.tileSet:getTileProperty(tileIndex, 'textureLeft', 0)
+	local right = self.tileSet:getTileProperty(tileIndex, 'textureRight', 1)
+	local top = self.tileSet:getTileProperty(tileIndex, 'textureTop', 0)
+	local bottom = self.tileSet:getTileProperty(tileIndex, 'textureBottom', 1)
+
+	local red = self.tileSet:getTileProperty(tileIndex, 'colorRed', 255)
+	local green = self.tileSet:getTileProperty(tileIndex, 'colorGreen', 255)
+	local blue = self.tileSet:getTileProperty(tileIndex, 'colorBlue', 255)
 	local alpha = 255
 
 	local texture = { s = s, t = t }
@@ -378,7 +388,7 @@ MapMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
 MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
 -- Simply adds the flat (top).
-function MapMesh:_addFlat(i, j, tile)
+function MapMesh:_addFlat(i, j, tile, index)
 	local E = self.map.cellSize / 2
 	local topLeft = Vector(-E, tile.topLeft, -E)
 	local topRight = Vector(E, tile.topRight, -E)
@@ -395,27 +405,27 @@ function MapMesh:_addFlat(i, j, tile)
 	if crease == Tile.CREASE_FORWARD then
 		-- Triangle 1
 		local normal1 = calculateTriangleNormal(bottomLeft, topRight,  bottomRight)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal1, -1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, 'flat', i, j, tile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal1, -1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile)
 
 		-- Triangle 2
 		local normal2 = calculateTriangleNormal(topLeft, topRight, bottomLeft)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal2, 1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, 'flat', i, j, tile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal2, 1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile)
 	else
 		-- Triangle 1
 		local normal1 = calculateTriangleNormal(topLeft, topRight, bottomRight)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, 'flat', i, j, tile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile)
 
 		-- Triangle 2
 		local normal2 = calculateTriangleNormal(topLeft, bottomRight, bottomLeft)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal2, 1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, 'flat', i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, 'flat', i, j, tile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal2, 1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile)
 	end
 end
 

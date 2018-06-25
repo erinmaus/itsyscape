@@ -26,6 +26,9 @@ function Tile:new()
 	-- The flat texture index. Defaults to the first flat texture.
 	self.flat = 1
 
+	-- Decals. Corresponds to textures.
+	self.decals = {}
+
 	-- The heights at the four corners of the tile.
 	self.topLeft = 0
 	self.topRight = 0
