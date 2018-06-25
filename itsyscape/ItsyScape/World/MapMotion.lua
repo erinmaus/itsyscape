@@ -45,6 +45,11 @@ function MapMotion:onMousePressed(e)
 	--   1. Allow button customization (instead of left/primary mouse button)
 	--   2. Raise entire tile if position is close to center (< cellSize / 2?)
 	local tiles = self.map:testRay(e.ray)
+	local function compareZ(a, b)
+		local distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+		local distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+		return distance1 < distance2
+	end
 	table.sort(tiles, function(a, b) return a[2].z > b[2].z end)
 
 	if #tiles >= 1 and e.button == 1 then
@@ -143,14 +148,17 @@ end
 
 -- Raises the corner of a tile. Default action.
 function MapMotion:perform(e, distance)
-	for i = 1, #self.corners do
-		self.tile[self.corners[i]] = self.tile[self.corners[i]] + distance
-	end
+	local cornerOffset = {
+		["topLeft"] = { s = 1, t = 1 },
+		["topRight"] = { s = 2, t = 1 },
+		["bottomLeft"] = { s = 1, t = 2 },
+		["bottomRight"] = { s = 2, t = 2 },
+	}
 
-	if distance < 0 then
-		self.tile:snapCorners('min')
-	else
-		self.tile:snapCorners('max')
+	for i = 1, #self.corners do
+		local corner = cornerOffset[self.corners[i]]
+		self.tile:setCorner(corner.s, corner.t, self.tile:getCorner(corner.s, corner.t) + distance)
+		--self.tile[self.corners[i]] = self.tile[self.corners[i]] + distance
 	end
 end
 
