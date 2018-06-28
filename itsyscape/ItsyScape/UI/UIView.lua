@@ -21,6 +21,8 @@ local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpellIconRenderer = require "ItsyScape.UI.SpellIconRenderer"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputRenderer = require "ItsyScape.UI.TextInputRenderer"
+local Texture = require "ItsyScape.UI.Texture"
+local TextureRenderer = require "ItsyScape.UI.TextureRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local Widget = require "ItsyScape.UI.Widget"
@@ -53,6 +55,7 @@ function UIView:new(game)
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
+	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
 
 	self.interfaces = {}
 
