@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
@@ -48,6 +49,9 @@ function TileSetPalette:new(application)
 	self:addChild(self.gridLayout)
 
 	self.buttons = {}
+	self.currentButton = false
+
+	self.currentTile = false
 end
 
 function TileSetPalette:refresh(tileSet, tileSetTexture)
@@ -73,6 +77,8 @@ function TileSetPalette:refresh(tileSet, tileSetTexture)
 		texture:setPosition(TileSetPalette.PADDING, TileSetPalette.PADDING)
 		button:addChild(texture)
 
+		button.onClick:register(self.setTile, self, index)
+
 		button:setData('tile-index', index)
 		table.insert(self.buttons, button)
 	end
@@ -83,6 +89,40 @@ function TileSetPalette:refresh(tileSet, tileSetTexture)
 
 	for i = 1, #self.buttons do
 		self.gridLayout:addChild(self.buttons[i])
+	end
+end
+
+function TileSetPalette:setTile(value)
+	if self.currentTile == value then
+		value = false
+	end
+
+	self.currentTile = value
+
+	for i = 1, #self.buttons do
+		local button = self.buttons[i]
+		if button:getData('tile-index') == value then
+			button:setStyle(ButtonStyle({
+				pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+				inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+				hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+				color = { 1, 1, 1, 1 },
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				fontSize = 24,
+				textShadow = true,
+				padding = 4
+			}, self.application:getUIView():getResources()))
+		else
+			button:setStyle(nil)
+		end
+	end
+end
+
+function TileSetPalette:getCurrentTile()
+	if not self.currentTile then
+		return nil
+	else
+		return self.currentTile
 	end
 end
 

@@ -16,7 +16,7 @@ local Label = require "ItsyScape.UI.Label"
 local TextInput = require "ItsyScape.UI.TextInput"
 local Widget = require "ItsyScape.UI.Widget"
 
-TerrainToolPanel = Class(Widget)
+local TerrainToolPanel = Class(Widget)
 TerrainToolPanel.WIDTH = 320
 TerrainToolPanel.HEIGHT = 64
 TerrainToolPanel.SIZE_HILL = -1
@@ -100,6 +100,10 @@ end
 
 function TerrainToolPanel:getToolSize()
 	return self.toolSize
+end
+
+function TerrainToolPanel:setToolSize(value)
+	self.toolSize = math.max(value or self.toolSize, 1)
 end
 
 function TerrainToolPanel:open(x, y, parent)
