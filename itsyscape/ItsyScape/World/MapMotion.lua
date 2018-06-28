@@ -50,7 +50,7 @@ function MapMotion:onMousePressed(e)
 		local distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
 		return distance1 < distance2
 	end
-	table.sort(tiles, function(a, b) return a[2].z > b[2].z end)
+	table.sort(tiles, compareZ)
 
 	if #tiles >= 1 and e.button == 1 then
 		local v = e.ray.origin:cross(e.forward)
