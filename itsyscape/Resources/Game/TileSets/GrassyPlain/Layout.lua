@@ -26,7 +26,7 @@
 		y = 896,
 		width = 128,
 		height = 128,
-		name = "dirt_road.tl"
+		name = "dirt.road.tl"
 	},
 
 	{
@@ -34,7 +34,7 @@
 		y = 896,
 		width = 128,
 		height = 128,
-		name = "dirt_road.tm"
+		name = "dirt.road.tm"
 	},
 
 	{
@@ -42,7 +42,7 @@
 		y = 896,
 		width = 128,
 		height = 128,
-		name = "dirt_road.tr"
+		name = "dirt.road.tr"
 	},
 
 	{
@@ -50,7 +50,7 @@
 		y = 768,
 		width = 128,
 		height = 128,
-		name = "dirt_road.ml"
+		name = "dirt.road.ml"
 	},
 
 	{
@@ -58,7 +58,7 @@
 		y = 768,
 		width = 128,
 		height = 128,
-		name = "dirt_road.mr"
+		name = "dirt.road.mr"
 	},
 
 	{
@@ -66,7 +66,7 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "dirt_road.bl"
+		name = "dirt.road.bl"
 	},
 
 	{
@@ -74,7 +74,7 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "dirt_road.bm"
+		name = "dirt.road.bm"
 	},
 
 	{
@@ -82,6 +82,6 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "dirt_road.br"
+		name = "dirt.road.br"
 	}
 }
