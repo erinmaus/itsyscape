@@ -12,11 +12,13 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
+local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
-local MapMotion = require "ItsyScape.World.MapMotion"
-local HillMapMotion = require "ItsyScape.World.HillMapMotion"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
+local HillMapMotion = require "ItsyScape.World.HillMapMotion"
+local MapMotion = require "ItsyScape.World.MapMotion"
+local TileSet = require "ItsyScape.World.TileSet"
 
 local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_TERRAIN = 1
@@ -26,6 +28,7 @@ function MapEditorApplication:new()
 
 	self.motion = false
 	self.terrainToolPanel = TerrainToolPanel(self)
+	self.tileSetPalette = TileSetPalette(self)
 
 	self.currentTool = MapEditorApplication.TOOL_TERRAIN
 
@@ -36,6 +39,7 @@ function MapEditorApplication:new()
 	self.currentToolNode = false
 
 	self:getGame():getStage().onMapModified:register(self.updateGrid, self)
+	self:getGame():getStage().onLoadMap:register(self.updateTileSet, self)
 end
 
 function MapEditorApplication:initialize()
@@ -45,6 +49,7 @@ function MapEditorApplication:initialize()
 	self:getUIView():getRoot():addChild(newMapInterface)
 	newMapInterface.onSubmit:register(function()
 		self.terrainToolPanel:open()
+		self.tileSetPalette:open()
 	end)
 end
 
@@ -52,6 +57,15 @@ function MapEditorApplication:updateGrid(stage, map, layer)
 	if layer == 1 then
 		self.mapGridSceneNode:fromMap(map, false)
 	end
+end
+
+function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID)
+	local tileSetFilename = string.format(
+		"Resources/Game/TileSets/%s/Layout.lua",
+		tileSetID or "GrassyPlain")
+	self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
+
+	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture)
 end
 
 function MapEditorApplication:makeMotionEvent(x, y, button)
