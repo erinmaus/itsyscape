@@ -1,0 +1,111 @@
+--------------------------------------------------------------------------------
+-- ItsyScape/UI/Panel.lua
+--
+-- This file is a part of ItsyScape.
+--
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+--------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
+local Widget = require "ItsyScape.UI.Widget"
+local Panel = require "ItsyScape.UI.Panel"
+local ScrollBar = require "ItsyScape.UI.ScrollBar"
+
+local ScrollablePanel = Class(Panel)
+
+function ScrollablePanel:new(InnerPanelType)
+	Panel.new(self)
+
+	self.scrollBarSize = 48
+
+	self.verticalScroll = ScrollBar()
+	self.verticalScroll:setZDepth(2)
+	self.horizontalScroll = ScrollBar()
+	self.horizontalScroll:setZDepth(2)
+	self.panel = (InnerPanelType or Panel)()
+
+	self.verticalScroll:setTarget(self.panel)
+	self.horizontalScroll:setTarget(self.panel)
+
+	self.floatyScrollBars = false
+
+	Widget.addChild(self, self.panel)
+end
+
+function ScrollablePanel:setScrollSize(...)
+	Widget.setScrollSize(self, ...)
+	self.panel:setScrollSize(...)
+end
+
+function ScrollablePanel:performLayout()
+	Widget.performLayout(self)
+
+	local width, height = self:getSize()
+	local scrollSizeX, scrollSizeY = self:getScrollSize()
+
+	local panelWidth, panelHeight = width, height
+	if scrollSizeX > width then
+		if scrollSizeY > height then
+			self.horizontalScroll:setSize(
+				width - self.scrollBarSize,
+				self.scrollBarSize)
+			self.horizontalScroll:setPosition(0, height - self.scrollBarSize)
+		else
+			self.horizontalScroll:setSize(
+				width,
+				self.scrollBarSize)
+			self.horizontalScroll:setPosition(0, height - self.scrollBarSize)
+		end
+
+		Widget.addChild(self, self.horizontalScroll)
+
+		if not self.floatyScrollBars then
+			panelHeight = panelHeight - self.scrollBarSize
+		end
+	else
+		Widget.removeChild(self, self.verticalScroll)
+	end
+
+	if scrollSizeY > height then
+		if scrollSizeX > width then
+			self.verticalScroll:setSize(
+				self.scrollBarSize,
+				height - self.scrollBarSize)
+			self.verticalScroll:setPosition(width - self.scrollBarSize, 0)
+		else
+			self.verticalScroll:setSize(
+				self.scrollBarSize,
+				height)
+			self.verticalScroll:setPosition(width - self.scrollBarSize, 0)
+		end
+
+		Widget.addChild(self, self.verticalScroll)
+
+		if not self.floatyScrollBars then
+			panelWidth = panelWidth - self.scrollBarSize
+		end
+	else
+		Widget.removeChild(self, self.verticalScroll)
+	end
+
+	self.panel:setSize(panelWidth, panelHeight)
+end
+
+function ScrollablePanel:addChild(...)
+	self.panel:addChild(...)
+end
+
+function ScrollablePanel:removeChild(...)
+	self.panel:removeChild(...)
+end
+
+function ScrollablePanel:mouseScroll(x, y)
+	Widget.mouseScroll(self, x, y)
+
+	self.verticalScroll:mouseScroll(x, y)
+	self.horizontalScroll:mouseScroll(x, y)
+end
+
+return ScrollablePanel
