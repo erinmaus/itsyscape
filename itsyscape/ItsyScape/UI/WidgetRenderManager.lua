@@ -123,11 +123,33 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	local scrollX, scrollY = widget:getScroll()
 	love.graphics.translate(-scrollX, -scrollY)
 
-	for _, child in widget:iterate() do
-		self:draw(child, state)
-	end
+	self:drawChildren(widget, state, cursor)
 
 	love.graphics.pop()
+end
+
+function WidgetRenderManager:drawChildren(widget, state, cursor)
+	local c = {}
+	for index, child in widget:iterate() do
+		table.insert(c, {
+			index = index,
+			widget = child
+		})
+	end
+
+	table.sort(c, function(a, b)
+		local i = a.widget:getZDepth()
+		local j = b.widget:getZDepth()
+		if i < j then
+			return true
+		elseif i == j then
+			return a.index < b.index
+		end
+	end)
+
+	for i = 1, #c do
+		self:draw(c[i].widget, state, cursor)
+	end
 end
 
 return WidgetRenderManager
