@@ -173,11 +173,9 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 end
 
 function WidgetInputProvider:mouseScroll(x, y)
-	local widgets = self:getWidgetsUnderPoint(x, y)
+	local widgets = self:getWidgetsUnderPoint(love.mouse.getPosition())
 	for widget in pairs(widgets) do
-		if not self.hoveredWidgets[widget] then
-			widget:mouseScroll(x, y)
-		end
+		widget:mouseScroll(x, y)
 	end
 end
 
