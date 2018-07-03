@@ -34,9 +34,17 @@ function HillMapMotion:perform(e, distance)
 	end
 
 	if self.direction ~= direction then
-		self.start = math.min(
-			tile.topLeft, tile.topRight,
-			tile.bottomLeft, tile.bottomRight)
+		if direction > 0 and
+		   love.keyboard.isDown('lctrl') or
+		   love.keyboard.isDown('rctrl')
+		then
+			self.start = 0
+		else
+			self.start = math.min(
+				tile.topLeft, tile.topRight,
+				tile.bottomLeft, tile.bottomRight)
+		end
+
 		self.direction = direction
 	end
 
