@@ -35,6 +35,7 @@ function Widget:new()
 	self.scrollY = 0
 	self.scrollWidth = 0
 	self.scrollHeight = 0
+	self.zDepth = 1
 	self.children = {}
 	self.parent = false
 	self.style = false
@@ -240,6 +241,14 @@ function Widget:setScrollSize(w, h)
 	then
 		self:performLayout()
 	end
+end
+
+function Widget:getZDepth()
+	return self.zDepth
+end
+
+function Widget:setZDepth(value)
+	self.zDepth = value or self.zDepth
 end
 
 function Widget:performLayout()
