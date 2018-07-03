@@ -182,6 +182,19 @@ function MapEditorApplication:mousePress(x, y, button)
 			if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
 				self:makeMotion(x, y, button)
 				self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
+
+				if not self.currentToolNode then
+					self.currentToolNode = MapGridMeshSceneNode()
+					self.currentToolNode:getTransform():translate(Vector.UNIT_Y, 1 / 10)
+					self.currentToolNode:setParent(self:getGameView():getScene())
+					self.currentToolNode:setLineWidth(4)
+				end
+
+				local _, i, j = self.motion:getTile()
+				self.currentToolNode:fromMap(
+					self:getGame():getStage():getMap(1),
+					motion,
+					i, i, j, j)
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
@@ -201,8 +214,14 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 
 		do
-			local motion = MapMotion(self:getGame():getStage():getMap(1))
-			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+			local motion
+			if self.motion then
+				motion = self.motion
+			else
+				motion = MapMotion(self:getGame():getStage():getMap(1))
+				motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+			end
+
 			local _, i, j = motion:getTile()
 			self.previousI = self.currentI
 			self.previousJ = self.currentJ
@@ -211,15 +230,13 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 
 		if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
-			if not self.currentToolNode then
-				self.currentToolNode = MapGridMeshSceneNode()
-				self.currentToolNode:getTransform():translate(Vector.UNIT_Y, 1 / 10)
-				self.currentToolNode:setParent(self:getGameView():getScene())
-				self.currentToolNode:setLineWidth(4)
+			local motion
+			if self.motion then
+				motion = self.motion
+			else
+				motion = MapMotion(self:getGame():getStage():getMap(1))
+				motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 			end
-
-			local motion = MapMotion(self:getGame():getStage():getMap(1))
-			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 
 			local _, i, j = motion:getTile()
 			self.currentToolNode:fromMap(
