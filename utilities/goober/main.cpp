@@ -266,6 +266,68 @@ void exportMesh(const aiScene* scene, FILE* output)
 	std::fprintf(output, "}\n");
 }
 
+void exportStaticMesh(const aiScene* scene, const aiMesh* mesh, FILE* output)
+{
+	std::fprintf(output, "\t{\n");
+	std::fprintf(output, "\t\tname = \"%s\",\n", mesh->mName.C_Str());
+
+	for (int i = 0; i < mesh->mNumFaces; ++i)
+	{
+		auto face = mesh->mFaces[i];
+		for (int j = 0; j < face.mNumIndices; ++j)
+		{
+			std::fprintf(output, "\t\t{ ");
+			auto index = face.mIndices[j];
+			auto& position = mesh->mVertices[index];
+			auto& normal = mesh->mNormals[index];
+			auto& texture = mesh->mTextureCoords[0][index];
+			std::fprintf(
+				output,
+				"%f, %f, %f, ",
+				position.x,
+				position.y,
+				position.z);
+			std::fprintf(
+				output,
+				"%f, %f, %f, ",
+				normal.x,
+				normal.y,
+				normal.z);
+			std::fprintf(
+				output,
+				"%f, %f, ",
+				texture.x,
+				texture.y);
+			std::fprintf(output, "},\n");
+		}
+	}
+	std::fprintf(output, "\t},\n");
+}
+
+void exportStaticMeshes(const aiScene* scene, FILE* output)
+{
+	if (scene->mNumMeshes < 1)
+	{
+		std::fprintf(stderr, "no meshes\n");
+		return;
+	}
+
+	std::fprintf(output, "{\n");
+	std::fprintf(output, "\tformat =\n");
+	std::fprintf(output, "\t{\n");
+	std::fprintf(output, "\t\t{ 'VertexPosition', 'float', 3 },\n");
+	std::fprintf(output, "\t\t{ 'VertexNormal', 'float', 3 },\n");
+	std::fprintf(output, "\t\t{ 'VertexTexture', 'float', 2 },\n");
+	std::fprintf(output, "\t},\n");
+
+	for (int i = 0; i < scene->mNumMeshes; ++i)
+	{
+		exportStaticMesh(scene, scene->mMeshes[i], output);
+	}
+
+	std::fprintf(output, "}\n");
+}
+
 int main(int argc, const char* argv[])
 {
 	if (argc < 4)
@@ -301,9 +363,13 @@ int main(int argc, const char* argv[])
 	{
 		exportAnimation(scene, output);
 	}
+	else if (std::strcmp(argv[1], "static") == 0)
+	{
+		exportStaticMeshes(scene, output);
+	}
 	else
 	{
-		std::fprintf(stderr, "unknown action %s; must be either mesh, skeleton, or animation\n", argv[1]);
+		std::fprintf(stderr, "unknown action %s; must be either mesh, skeleton, animation, or static\n", argv[1]);
 		return 1;
 	}
 
