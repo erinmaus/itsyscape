@@ -38,6 +38,7 @@ function Button:mousePress(x, y, button)
 	if button == 1 then
 		self.isPressed = true
 	end
+	Widget.mousePress(self, x, y, button)
 end
 
 function Button:mouseRelease(x, y, button, ...)
