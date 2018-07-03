@@ -172,6 +172,15 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 	end
 end
 
+function WidgetInputProvider:mouseScroll(x, y)
+	local widgets = self:getWidgetsUnderPoint(x, y)
+	for widget in pairs(widgets) do
+		if not self.hoveredWidgets[widget] then
+			widget:mouseScroll(x, y)
+		end
+	end
+end
+
 function WidgetInputProvider:tryFocusNext(widget, e)
 	if widget:getIsFocusable() and widget ~= self:getFocusedWidget() then
 		local f = self:getFocusedWidget()
