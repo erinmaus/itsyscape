@@ -136,7 +136,8 @@ function Application:mouseRelease(x, y, button)
 end
 
 function Application:mouseScroll(x, y)
-	-- TODO: Pass on to UI view
+	self.uiView:getInputProvider():mouseScroll(x, y)
+
 	return false
 end
 

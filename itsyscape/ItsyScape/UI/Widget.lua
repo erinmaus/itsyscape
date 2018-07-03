@@ -19,6 +19,7 @@ function Widget:new()
 	self.onMouseEnter = Callback()
 	self.onMouseLeave = Callback()
 	self.onMouseMove = Callback()
+	self.onMouseScroll = Callback()
 	self.onFocus = Callback()
 	self.onBlur = Callback()
 	self.onKeyDown = Callback()
@@ -293,6 +294,10 @@ end
 
 function Widget:mouseMove(...)
 	self.onMouseMove(self, ...)
+end
+
+function Widget:mouseScroll(...)
+	self.onMouseScroll(self, ...)
 end
 
 function Widget:focus(...)
