@@ -49,7 +49,7 @@ function ScrollBar:mouseScroll(x, y)
 	Widget.mouseScroll(self, x, y)
 
 	if self:getIsVertical() then
-		self:scroll(y)
+		self:scroll(-y)
 	else
 		self:scroll(x)
 	end
