@@ -54,11 +54,13 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 				scale.z)
 		end
 
+		local group = feature:getID()
+
 		-- Assumes indices 1-3 are vertex positions. Bad.
 		if staticMesh:hasGroup(group) then
-			local group = staticMesh:getVertices(group)
-			for i = 1, #group do
-				local v = { unpack(group[i]) }
+			local groupVertices = staticMesh:getVertices(group)
+			for i = 1, #groupVertices do
+				local v = { unpack(groupVertices[i]) }
 				v[1], v[2], v[3] = transform:transformPoint(v[1], v[2], v[3])
 
 				table.insert(vertices, v)
@@ -69,7 +71,7 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 	local format = staticMesh:getFormat()
 	self.mesh = love.graphics.newMesh(format, vertices, 'triangles', 'static')	
 	for _, element in ipairs(format) do
-		format:setAttributeEnabled(element[1], true)
+		self.mesh:setAttributeEnabled(element[1], true)
 	end
 
 	self.isOwner = true
@@ -86,7 +88,7 @@ function DecorationSceneNode:draw(renderer, delta)
 	end
 
 	if self.mesh then
-		self.mesh:draw()
+		love.graphics.draw(self.mesh)
 	end
 end
 

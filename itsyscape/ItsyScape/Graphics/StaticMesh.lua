@@ -45,7 +45,7 @@ function StaticMesh:loadFromTable(t)
 end
 
 function StaticMesh:generate(t)
-	local vertices = t.vertices or { { 0, 0, 0, 0, 0, 1, 0, 0 } }
+	local vertices = t or { { 0, 0, 0, 0, 0, 1, 0, 0 } }
 
 	if t.name then
 		local m = self.groups[t.name]
@@ -58,7 +58,7 @@ function StaticMesh:generate(t)
 
 	local m = {
 		name = t.name,
-		vertices = t.vertices
+		vertices = vertices
 	}
 
 	m.mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
@@ -72,7 +72,7 @@ function StaticMesh:generate(t)
 end
 
 function StaticMesh:hasGroup(group)
-	return self.groups[grou] ~= nil
+	return self.groups[group] ~= nil
 end
 
 function StaticMesh:getMesh(group)
@@ -80,7 +80,7 @@ function StaticMesh:getMesh(group)
 end
 
 function StaticMesh:getVertices(group)
-	return self.groups[grou].vertices
+	return self.groups[group].vertices
 end
 
 function StaticMesh:iterate()
