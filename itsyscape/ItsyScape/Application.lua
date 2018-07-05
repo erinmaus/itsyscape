@@ -184,6 +184,7 @@ function Application:draw()
 		end
 
 		self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+		self.gameView:getRenderer():present()
 		self.gameView:getSpriteManager():draw(self.camera, delta)
 
 		love.graphics.setBlendMode('alpha')

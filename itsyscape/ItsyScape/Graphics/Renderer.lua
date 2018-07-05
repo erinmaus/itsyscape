@@ -47,17 +47,13 @@ function Renderer:drawFinalStep(scene, delta)
 	self.finalForwardPass:beginDraw(scene, delta)
 	self.finalForwardPass:draw(scene, delta)
 	self.finalForwardPass:endDraw(scene, delta)
-
-	love.graphics.setShader()
-	love.graphics.setCanvas()
-	love.graphics.origin()
-	love.graphics.setBlendMode('replace')
-	love.graphics.setDepthMode('always', false)
-	love.graphics.draw(cBuffer:getColor())
 end
 
-function Renderer:draw(scene, delta)
-	local width, height = love.window.getMode()
+function Renderer:draw(scene, delta, width, height)
+	if not width or not height then
+		width, height = love.window.getMode()
+	end
+
 	if width ~= self.width or height ~= self.height then
 		self.width = width
 		self.height = height
@@ -69,6 +65,27 @@ function Renderer:draw(scene, delta)
 	self:drawFinalStep(scene, delta)
 
 	self:setCurrentShader(false)
+end
+
+function Renderer:present()
+	local cBuffer = self.finalDeferredPass:getCBuffer()
+
+	love.graphics.setShader()
+	love.graphics.setCanvas()
+	love.graphics.origin()
+	love.graphics.setBlendMode('replace')
+	love.graphics.setDepthMode('always', false)
+	love.graphics.draw(cBuffer:getColor())
+end
+
+function Renderer:presentCurrent()
+	local cBuffer = self.finalDeferredPass:getCBuffer()
+
+	love.graphics.setShader()
+	love.graphics.setCanvas()
+	love.graphics.setBlendMode('alpha')
+	love.graphics.setDepthMode('always', false)
+	love.graphics.draw(cBuffer:getColor())
 end
 
 function Renderer:setCurrentShader(shader)
