@@ -10,8 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
-local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
+local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
+local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
@@ -87,6 +88,26 @@ function MapEditorApplication:initialize()
 	newMapInterface.onSubmit:register(function()
 		self:setTool(MapEditorApplication.TOOL_PAINT)
 	end)
+
+	local decorationPalette = DecorationPalette(self)
+	decorationPalette:open(0, 0)
+
+	do
+		local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
+		local Decoration = require "ItsyScape.Graphics.Decoration"
+		local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+		local TextureResource = require "ItsyScape.Graphics.TextureResource"
+
+		local staticMesh = StaticMesh("Resources/Game/TileSets/RumbridgeCastle/Layout.lstatic")
+		local texture = TextureResource()
+		texture:loadFromFile("Resources/Game/TileSets/RumbridgeCastle/Texture.png")
+
+		local decoration = Decoration({ { id = "StoneAndYellowWallpaper-wall-wall.corner.itr" } })
+		local sceneNode = DecorationSceneNode()
+		sceneNode:fromDecoration(decoration, staticMesh)
+		sceneNode:getMaterial():setTextures(texture)
+		sceneNode:setParent(self:getGameView():getScene())
+	end
 end
 
 function MapEditorApplication:updateGrid(stage, map, layer)
