@@ -20,7 +20,6 @@ end
 function TextureRenderer:drop(widget)
 	WidgetRenderer.drop(self, widget)
 	self.quads[widget] = nil
-	print("dropped", widget)
 end
 
 function TextureRenderer:draw(widget, state)

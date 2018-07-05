@@ -34,11 +34,19 @@ function WidgetRenderer:stop()
 	end
 end
 
+function WidgetRenderer:add(widget)
+	self.widgets[widget] = true
+end
+
 function WidgetRenderer:drop(widget)
 	self.widgets[widget] = nil
 end
 
 function WidgetRenderer:visit(widget)
+	if not self.widgets[widget] then
+		self:add(widget)
+	end
+
 	self.unvisitedWidgets[widget] = nil
 end
 
