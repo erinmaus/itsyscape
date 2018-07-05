@@ -21,27 +21,31 @@ function Decoration.Feature:new(tileID, position, rotation, scale)
 	self.scale = scale or Vector(1)
 end
 
-function Decoration:getPosition()
+function Decoration.Feature:getID()
+	return self.tileID
+end
+
+function Decoration.Feature:getPosition()
 	return self.position
 end
 
-function Decoration:setPosition(value)
+function Decoration.Feature:setPosition(value)
 	self.position = value or self.position
 end
 
-function Decoration:getRotation()
+function Decoration.Feature:getRotation()
 	return self.rotation
 end
 
-function Decoration:setRotation(value)
+function Decoration.Feature:setRotation(value)
 	self.rotation = value or self.rotation
 end
 
-function Decoration:getScale()
+function Decoration.Feature:getScale()
 	return self.scale
 end
 
-function Decoration:setScale(value)
+function Decoration.Feature:setScale(value)
 	self.scale = value or self.scale
 end
 
