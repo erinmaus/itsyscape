@@ -14,11 +14,12 @@ local Panel = require "ItsyScape.UI.Panel"
 local ScrollBar = require "ItsyScape.UI.ScrollBar"
 
 local ScrollablePanel = Class(Panel)
+ScrollablePanel.DEFAULT_SCROLL_SIZE = 48
 
 function ScrollablePanel:new(InnerPanelType)
 	Panel.new(self)
 
-	self.scrollBarSize = 48
+	self.scrollBarSize = ScrollablePanel.DEFAULT_SCROLL_SIZE
 
 	self.verticalScroll = ScrollBar()
 	self.verticalScroll:setZDepth(2)
@@ -34,9 +35,22 @@ function ScrollablePanel:new(InnerPanelType)
 	Widget.addChild(self, self.panel)
 end
 
+function ScrollablePanel:getInnerPanel()
+	return self.panel
+end
+
 function ScrollablePanel:setScrollSize(...)
 	Widget.setScrollSize(self, ...)
 	self.panel:setScrollSize(...)
+end
+
+function ScrollablePanel:getFloatyScrollBars()
+	return self.floatyScrollBars
+end
+
+function ScrollablePanel:setFloatyScrollBars(value)
+	self.floatyScrollBars = value or false
+	self:performLayout()
 end
 
 function ScrollablePanel:performLayout()
@@ -73,12 +87,12 @@ function ScrollablePanel:performLayout()
 			self.verticalScroll:setSize(
 				self.scrollBarSize,
 				height - self.scrollBarSize)
-			self.verticalScroll:setPosition(width - self.scrollBarSize, 0)
+			self.verticalScroll:setPosition(width - self.scrollBarSize - 4, 0)
 		else
 			self.verticalScroll:setSize(
 				self.scrollBarSize,
 				height)
-			self.verticalScroll:setPosition(width - self.scrollBarSize, 0)
+			self.verticalScroll:setPosition(width - self.scrollBarSize - 4, 0)
 		end
 
 		Widget.addChild(self, self.verticalScroll)
@@ -91,6 +105,7 @@ function ScrollablePanel:performLayout()
 	end
 
 	self.panel:setSize(panelWidth, panelHeight)
+	self.panel:performLayout()
 end
 
 function ScrollablePanel:addChild(...)
