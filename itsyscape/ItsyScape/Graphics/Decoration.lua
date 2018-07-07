@@ -62,12 +62,12 @@ function Decoration:new(d, skeleton)
 	end
 end
 
-function Decoration:loadFromFile(filename, skeleton)
+function Decoration:loadFromFile(filename)
 	local data = "return " .. (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
 	local result = setfenv(chunk, {})() or {}
 
-	self:loadFromTable(result, skeleton)
+	self:loadFromTable(result)
 end
 
 function Decoration:loadFromTable(t)
@@ -85,6 +85,82 @@ function Decoration:loadFromTable(t)
 			scale
 		))
 	end
+end
+
+function Decoration:add(id, position, rotation, scale)
+	table.insert(self.features, Decoration.Feature(
+			id,
+			position,
+			rotation,
+			scale
+		))
+end
+
+function Decoration:remove(feature)
+	for i = 1, #self.features do
+		if self.features[i] == feature then
+			table.remove(self.features, i)
+			return true
+		end
+	end
+
+	return false
+end
+
+Decoration.RAY_TEST_RESULT_FEATURE = 1
+Decoration.RAY_TEST_RESULT_POSITION = 2
+
+function Decoration:testRay(ray, staticMesh)
+	local result = {}
+
+	local transform = love.math.newTransform()
+	for feature in self:iterate() do
+		do
+			transform:reset()
+
+			local position = feature:getPosition()
+			transform:translate(position.x, position.y, position.z)
+
+			local rotation = feature:getRotation()
+			transform:applyQuaternion(
+				rotation.x,
+				rotation.y,
+				rotation.z,
+				rotation.w)
+
+			local scale = feature:getScale()
+			transform:scale(
+				scale.x,
+				scale.y,
+				scale.z)
+		end
+
+		local group = feature:getID()
+
+		-- Assumes indices 1-3 are vertex positions. Bad.
+		if staticMesh:hasGroup(group) then
+			local vertices = staticMesh:getVertices(group)
+			for i = 1, #vertices, 3 do
+				local v1 = vertices[i]
+				local v2 = vertices[i + 1]
+				local v3 = vertices[i + 2]
+
+				v1 = Vector(transform:transformPoint(unpack(v1)))
+				v2 = Vector(transform:transformPoint(unpack(v2)))
+				v3 = Vector(transform:transformPoint(unpack(v3)))
+
+				local s, p = ray:hitTriangle(v2, v1, v3)
+				if s then
+					table.insert(result, {
+						feature,
+						p
+					})
+				end
+			end
+		end
+	end
+
+	return result
 end
 
 function Decoration:getTileSetID()

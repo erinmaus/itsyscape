@@ -265,6 +265,10 @@ function LocalStage:takeItem(i, j, layer, ref)
 	end
 end
 
+function LocalStage:decorate(group, decoration)
+	self.onDecorate(self, group, decoration)
+end
+
 function LocalStage:iterateActors()
 	return pairs(self.actors)
 end

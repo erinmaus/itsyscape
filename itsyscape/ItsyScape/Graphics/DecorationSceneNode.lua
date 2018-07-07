@@ -68,13 +68,15 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 		end
 	end
 
-	local format = staticMesh:getFormat()
-	self.mesh = love.graphics.newMesh(format, vertices, 'triangles', 'static')	
-	for _, element in ipairs(format) do
-		self.mesh:setAttributeEnabled(element[1], true)
-	end
+	if #vertices > 0 then
+		local format = staticMesh:getFormat()
+		self.mesh = love.graphics.newMesh(format, vertices, 'triangles', 'static')	
+		for _, element in ipairs(format) do
+			self.mesh:setAttributeEnabled(element[1], true)
+		end
 
-	self.isOwner = true
+		self.isOwner = true
+	end
 end
 
 function DecorationSceneNode:draw(renderer, delta)
