@@ -147,7 +147,7 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 		self.isShiftDown = self.isShiftDown + 1
-	elseif key == 'enter' and not isRepeat then
+	elseif key == 'return' and not isRepeat then
 		self.onSubmit(self, self.text)
 	elseif key == 'tab' then
 		return false
