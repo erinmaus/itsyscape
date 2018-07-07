@@ -54,7 +54,7 @@ function EditorApplication:mousePress(x, y, button)
 		elseif button ~= 1 and not isShiftDown then
 			self.isCameraDragging = true
 			self.dragButton = button
-			return true
+			return false
 		end
 	else
 		return true

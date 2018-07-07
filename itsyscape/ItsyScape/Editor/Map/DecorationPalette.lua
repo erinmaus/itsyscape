@@ -17,6 +17,7 @@ local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
@@ -76,6 +77,8 @@ function DecorationPalette:new(application)
 		local sceneSnippet = SceneSnippet()
 		button:setData('tile-group', group)
 
+		button.onClick:register(self.select, self, group)
+
 		local decoration = Decoration({ { id = group } })
 		local sceneNode = DecorationSceneNode()
 		sceneNode:fromDecoration(decoration, self.staticMesh)
@@ -111,6 +114,9 @@ function DecorationPalette:new(application)
 
 	scrollablePanel:setSize(width, windowHeight)
 	scrollablePanel:setScrollSize(width, math.floor(#buttons / 2 + 0.5) * DecorationPalette.TILE_HEIGHT + DecorationPalette.PADDING * 2)
+
+	self.currentGroup = false
+	self.currentGroupButton = false
 end
 
 function DecorationPalette:open(x, y, parent)
@@ -126,6 +132,34 @@ function DecorationPalette:close()
 	if p then
 		p:removeChild(self)
 	end
+end
+
+function DecorationPalette:select(group, button)
+	if self.currentGroup == group then
+		button:setStyle(nil)
+		self.currentGroup = false
+	else
+		if self.currentGroupButton then
+			self.currentGroupButton:setStyle(false)
+		end
+
+		button:setStyle(ButtonStyle({
+			pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+			fontSize = 24,
+			textShadow = true,
+			padding = 4
+		}, self.application:getUIView():getResources()))
+		self.currentGroup = group
+		self.currentGroupButton = button
+	end
+end
+
+function DecorationPalette:getCurrentGroup()
+	return self.currentGroup
 end
 
 function DecorationPalette:update(...)

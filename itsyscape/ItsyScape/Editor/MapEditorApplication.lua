@@ -10,13 +10,16 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
+local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
-local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local Decoration = require "ItsyScape.Graphics.Decoration"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
 local HillMapMotion = require "ItsyScape.World.HillMapMotion"
 local MapMotion = require "ItsyScape.World.MapMotion"
@@ -26,19 +29,24 @@ local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_NONE = 0
 MapEditorApplication.TOOL_TERRAIN = 1
 MapEditorApplication.TOOL_PAINT = 2
+MapEditorApplication.TOOL_DECORATE = 3
 
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
 	self.motion = false
+	self.decorationList = DecorationList(self)
+	self.decorationPalette = DecorationPalette(self)
 	self.landscapeToolPanel = LandscapeToolPanel(self)
 	self.terrainToolPanel = TerrainToolPanel(self)
 	self.tileSetPalette = TileSetPalette(self)
 
 	self.windows = {
+		self.decorationList,
+		self.decorationPalette,
 		self.landscapeToolPanel,
 		self.terrainToolPanel,
-		self.tileSetPalette
+		self.tileSetPalette,
 	}
 
 	self.currentTool = MapEditorApplication.TOOL_NONE
@@ -77,6 +85,10 @@ function MapEditorApplication:setTool(tool)
 		self.tileSetPalette:open()
 		self.landscapeToolPanel:open()
 		self.landscapeToolPanel:setToolSize(0)
+	elseif tool == MapEditorApplication.TOOL_DECORATE then
+		self.currentTool = MapEditorApplication.TOOL_DECORATE
+		self.decorationList:open()
+		self.decorationPalette:open()
 	end
 end
 
@@ -88,26 +100,6 @@ function MapEditorApplication:initialize()
 	newMapInterface.onSubmit:register(function()
 		self:setTool(MapEditorApplication.TOOL_PAINT)
 	end)
-
-	local decorationPalette = DecorationPalette(self)
-	decorationPalette:open(0, 0)
-
-	do
-		local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
-		local Decoration = require "ItsyScape.Graphics.Decoration"
-		local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-		local TextureResource = require "ItsyScape.Graphics.TextureResource"
-
-		local staticMesh = StaticMesh("Resources/Game/TileSets/RumbridgeCastle/Layout.lstatic")
-		local texture = TextureResource()
-		texture:loadFromFile("Resources/Game/TileSets/RumbridgeCastle/Texture.png")
-
-		local decoration = Decoration({ { id = "StoneAndYellowWallpaper-wall-wall.corner.itr" } })
-		local sceneNode = DecorationSceneNode()
-		sceneNode:fromDecoration(decoration, staticMesh)
-		sceneNode:getMaterial():setTextures(texture)
-		sceneNode:setParent(self:getGameView():getScene())
-	end
 end
 
 function MapEditorApplication:updateGrid(stage, map, layer)
@@ -219,6 +211,51 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
+			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE then
+				local group, decoration = self.decorationList:getCurrentDecoration()
+				if group and decoration then
+					local tile = self.decorationPalette:getCurrentGroup()
+					if tile then
+						local motion = MapMotion(self:getGame():getStage():getMap(1))
+						motion:onMousePressed(self:makeMotionEvent(x, y, button))
+
+						local t, i, j = motion:getTile()
+						local y = t:getInterpolatedHeight(0.5, 0.5)
+						local x = (i - 1) * motion:getMap():getCellSize()
+						local z = (j - 1) * motion:getMap():getCellSize()
+
+						decoration:add(tile, Vector(x, y, z))
+						self:getGame():getStage():decorate(group, decoration)
+					end
+				end
+			end
+		elseif button == 2 then
+			local group, decoration = self.decorationList:getCurrentDecoration()
+			if group and decoration then
+				local tileSetFilename = string.format(
+					"Resources/Game/TileSets/%s/Layout.lstatic",
+					decoration:getTileSetID())
+				local staticMesh = self:getGameView():getResourceManager():load(
+					StaticMeshResource,
+					tileSetFilename)
+
+				local hit
+				do
+					local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
+					table.sort(hits, function(a, b)
+						local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
+						local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
+
+						return i:getLength() < j:getLength()
+					end)
+
+					hit = hits[1]
+				end
+
+				if hit then
+					decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
+					self:getGame():getStage():decorate(group, decoration)
+				end
 			end
 		end
 	end
@@ -320,6 +357,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_TERRAIN)
 			elseif key == 'f2' then
 				self:setTool(MapEditorApplication.TOOL_PAINT)
+			elseif key == 'f3' then
+				self:setTool(MapEditorApplication.TOOL_DECORATE)
 			end
 		end
 	end

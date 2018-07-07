@@ -26,6 +26,9 @@ function Stage:new()
 	self.onActorKilled = Callback()
 	self.onDropItem = Callback()
 	self.onTakeItem = Callback()
+
+	-- (group, value [nil/Decoration])
+	self.onDecorate = Callback()
 end
 
 -- Spawns an Actor.

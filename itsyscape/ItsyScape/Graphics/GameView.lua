@@ -9,10 +9,12 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
@@ -62,8 +64,15 @@ function GameView:new(game)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
+	self._onDecorate = function(_, group, decoration)
+		self:decorate(group, decoration)
+	end
+	stage.onDecorate:register(self._onDecorate)
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+
+	self.decorations = {}
 
 	self.renderer = Renderer()
 	self.resourceManager = ResourceManager()
@@ -111,6 +120,7 @@ function GameView:release()
 	stage.onActorKilled:unregister(self._onActorKilled)
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
+	stage.onDecorate:unregister(self._onDecorate)
 end
 
 function GameView:addMap(map, layer, tileSetID)
@@ -184,7 +194,7 @@ function GameView:spawnItem(item, tile, position)
 		lootIconNode:setModel(self.itemBagIconModel)
 
 		local texture = self.resourceManager:load(
-			require "ItsyScape.Graphics.TextureResource",
+			TextureResource,
 			string.format("Resources/Game/Items/%s/Icon.png", item.id))
 		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
 		lootIconNode:setParent(itemNode)
@@ -206,6 +216,48 @@ function GameView:poofItem(item)
 
 		self.items[item.ref] = nil
 	end
+end
+
+function GameView:decorate(group, decoration)
+	if self.decorations[group] then
+		self.decorations[group].node:setParent(nil)
+		self.decorations[group] = nil
+	end
+
+	if decoration then
+		local tileSetFilename = string.format(
+			"Resources/Game/TileSets/%s/Layout.lstatic",
+			decoration:getTileSetID())
+		local staticMesh = self.resourceManager:load(
+			StaticMeshResource,
+			tileSetFilename)
+
+		local textureFilename = string.format(
+			"Resources/Game/TileSets/%s/Texture.png",
+			decoration:getTileSetID())
+		local texture = self.resourceManager:load(
+			TextureResource,
+			textureFilename)
+
+		local sceneNode = DecorationSceneNode()
+		sceneNode:fromDecoration(decoration, staticMesh:getResource())
+		sceneNode:getMaterial():setTextures(texture)
+
+		sceneNode:setParent(self.scene)
+
+		self.decorations[group] = { node = sceneNode, decoration = decoration }
+	end
+end
+
+function GameView:getDecorations()
+	local result = {}
+	local count = 0
+	for k, v in pairs(self.decorations) do
+		result[k] = v.decoration
+		count = count + 1
+	end
+
+	return result, count
 end
 
 function GameView:update(delta)
