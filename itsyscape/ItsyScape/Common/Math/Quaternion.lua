@@ -15,12 +15,11 @@ local Quaternion, Metatable = Class()
 
 -- Creates a quaternion from an axis and angle.
 function Quaternion.fromAxisAngle(axis, angle)
-	local halfAngle = angle * 0.5
-	local halfAngleSine = math.sin(halfAngle)
-	local halfAngleCosine = math.cos(halfAngle)
+	local angleSine = math.sin(angle)
+	local angleCosine = math.cos(angle)
 
-	local xyz = axis:getNormal() * halfAngleSine
-	local w = halfAngleCosine
+	local xyz = axis:getNormal() * angleSine
+	local w = angleCosine
 
 	return Quaternion(xyz.x, xyz.y, xyz.z, w)
 end
