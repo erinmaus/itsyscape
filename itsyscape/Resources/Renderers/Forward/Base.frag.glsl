@@ -19,6 +19,7 @@
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
+varying vec2 frag_Texture;
 
 uniform int scape_NumLights;
 
@@ -74,7 +75,7 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec4 diffuse = performEffect(color, textureCoordinate);
+	vec4 diffuse = performEffect(color, frag_Texture);
 
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
@@ -86,5 +87,5 @@ vec4 effect(
 			diffuse.rgb);
 	}
 
-	return vec4(result, diffuse.a * color.a);
+	return vec4(result.rgb, diffuse.a * color.a);
 }

@@ -127,7 +127,7 @@ function Renderer:addCachedShader(rendererPassType, shader, pixelSource, vertexS
 end
 
 function Renderer:releaseCachedShaders()
-	for _, shaders in pairs(cachedShaders) do
+	for _, shaders in pairs(self.cachedShaders) do
 		for _, shader in pairs(shaders) do
 			shader:release()
 		end

@@ -11,11 +11,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform mat4 scape_WorldMatrix;
+uniform mat4 scape_NormalMatrix;
 
 attribute vec3 VertexNormal;
+attribute vec2 VertexTexture;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
+varying vec2 frag_Texture;
 
 void performTransform(
 	mat4 modelViewProjection,
@@ -34,7 +37,9 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 		projectedPosition);
 
 	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1)).xyz;
-	frag_Normal = normalize(mat3(scape_WorldMatrix) * VertexNormal);
+	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
+	//frag_Normal = normalize(ViewNormalFromLocal * VertexNormal);
+	frag_Texture = VertexTexture;
 
 	return projectedPosition;
 }
