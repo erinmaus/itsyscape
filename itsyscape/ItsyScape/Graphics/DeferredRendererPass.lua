@@ -152,6 +152,10 @@ function DeferredRendererPass:drawNodes(scene, delta)
 			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
 				local d = node:getTransform():getGlobalDeltaTransform(delta)
 				currentShaderProgram:send("scape_WorldMatrix", d)
+
+				if currentShaderProgram:hasUniform("scape_NormalMatrix") then
+					currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+				end
 			end
 
 			node:beforeDraw(self:getRenderer(), delta)
