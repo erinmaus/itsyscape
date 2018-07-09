@@ -33,9 +33,11 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 
 	local vertices = {}
 	local transform = love.math.newTransform()
+	local inverseTranspose = love.math.newTransform()
 	for feature in decoration:iterate() do
 		do
 			transform:reset()
+			inverseTranspose:reset()
 
 			local position = feature:getPosition()
 			transform:translate(position.x, position.y, position.z)
@@ -46,22 +48,41 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 				rotation.y,
 				rotation.z,
 				rotation.w)
+			inverseTranspose:applyQuaternion(
+				rotation.x,
+				rotation.y,
+				rotation.z,
+				rotation.w)
 
 			local scale = feature:getScale()
 			transform:scale(
 				scale.x,
 				scale.y,
 				scale.z)
+			inverseTranspose:scale(
+				scale.x,
+				scale.y,
+				scale.z)
+
+			inverseTranspose = inverseTranspose:inverseTranspose()
 		end
 
 		local group = feature:getID()
 
 		-- Assumes indices 1-3 are vertex positions. Bad.
+		-- Also assumes indices 4-6 are vertex normals. And also bad.
 		if staticMesh:hasGroup(group) then
 			local groupVertices = staticMesh:getVertices(group)
 			for i = 1, #groupVertices do
 				local v = { unpack(groupVertices[i]) }
 				v[1], v[2], v[3] = transform:transformPoint(v[1], v[2], v[3])
+				v[4], v[5], v[6] = inverseTranspose:transformPoint(v[4], v[5], v[6])
+				if false then
+					local l = 1 / math.sqrt(v[4] * v[4] + v[5] * v[5] + v[6] * v[6])
+					v[4] = v[4] * l
+					v[5] = v[5] * l
+					v[6] = v[6] * l
+				end
 
 				table.insert(vertices, v)
 			end
