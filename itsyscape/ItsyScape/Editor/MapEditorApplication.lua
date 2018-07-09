@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
@@ -65,6 +66,8 @@ function MapEditorApplication:new()
 	self.currentI = 0
 	self.previousJ = 0
 	self.currentJ = 0
+
+	self.lastDecorationFeature = false
 end
 
 function MapEditorApplication:setTool(tool)
@@ -86,6 +89,7 @@ function MapEditorApplication:setTool(tool)
 		self.landscapeToolPanel:open()
 		self.landscapeToolPanel:setToolSize(0)
 	elseif tool == MapEditorApplication.TOOL_DECORATE then
+		self.lastDecorationFeature = false
 		self.currentTool = MapEditorApplication.TOOL_DECORATE
 		self.decorationList:open()
 		self.decorationPalette:open()
@@ -189,6 +193,15 @@ function MapEditorApplication:makeMotion(x, y, button)
 	end
 end
 
+function MapEditorApplication:makeCurrentToolNode()
+	if not self.currentToolNode then
+		self.currentToolNode = MapGridMeshSceneNode()
+		self.currentToolNode:getTransform():translate(Vector.UNIT_Y, 1 / 10)
+		self.currentToolNode:setParent(self:getGameView():getScene())
+		self.currentToolNode:setLineWidth(4)
+	end
+end
+
 function MapEditorApplication:mousePress(x, y, button)
 	if not EditorApplication.mousePress(self, x, y, button) then
 		if button == 1 then
@@ -197,10 +210,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
 				if not self.currentToolNode then
-					self.currentToolNode = MapGridMeshSceneNode()
-					self.currentToolNode:getTransform():translate(Vector.UNIT_Y, 1 / 10)
-					self.currentToolNode:setParent(self:getGameView():getScene())
-					self.currentToolNode:setLineWidth(4)
+					self:makeCurrentToolNode()
 				end
 
 				local _, i, j = self.motion:getTile()
@@ -221,10 +231,20 @@ function MapEditorApplication:mousePress(x, y, button)
 
 						local t, i, j = motion:getTile()
 						local y = t:getInterpolatedHeight(0.5, 0.5)
-						local x = (i - 1) * motion:getMap():getCellSize()
-						local z = (j - 1) * motion:getMap():getCellSize()
+						local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+						local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
-						decoration:add(tile, Vector(x, y, z))
+						local rotation, scale
+						if self.lastDecorationFeature then
+							rotation = self.lastDecorationFeature:getRotation()
+							scale = self.lastDecorationFeature:getScale()
+						end
+
+						self.lastDecorationFeature = decoration:add(
+							tile,
+							Vector(x, y, z),
+							rotation,
+							scale)
 						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
@@ -297,16 +317,17 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 
 			local _, i, j = motion:getTile()
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
+
 			self.currentToolNode:fromMap(
 				self:getGame():getStage():getMap(1),
 				motion,
 				i, i, j, j)
 		elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 			if not self.currentToolNode then
-				self.currentToolNode = MapGridMeshSceneNode()
-				self.currentToolNode:getTransform():translate(Vector.UNIT_Y, 1 / 10)
-				self.currentToolNode:setParent(self:getGameView():getScene())
-				self.currentToolNode:setLineWidth(4)
+				self:makeCurrentToolNode()
 			end
 
 			local motion
@@ -359,6 +380,26 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_PAINT)
 			elseif key == 'f3' then
 				self:setTool(MapEditorApplication.TOOL_DECORATE)
+			end
+
+			if self.currentTool == MapEditorApplication.TOOL_DECORATE
+			   and self.lastDecorationFeature
+			then
+				if key == 'r' then
+					local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
+					local newRotation = self.lastDecorationFeature:getRotation() * yRotation
+					--newRotation = newRotation:getNormal()
+
+					local group, decoration = self.decorationList:getCurrentDecoration()
+					if decoration:remove(self.lastDecorationFeature) then
+						self.lastDecorationFeature = decoration:add(
+							self.lastDecorationFeature:getID(),
+							self.lastDecorationFeature:getPosition(),
+							newRotation,
+							self.lastDecorationFeature:getScale())
+						self:getGame():getStage():decorate(group, decoration)
+					end
+				end
 			end
 		end
 	end

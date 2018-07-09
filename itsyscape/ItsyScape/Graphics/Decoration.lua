@@ -88,12 +88,15 @@ function Decoration:loadFromTable(t)
 end
 
 function Decoration:add(id, position, rotation, scale)
-	table.insert(self.features, Decoration.Feature(
+	local feature = Decoration.Feature(
 			id,
 			position,
 			rotation,
 			scale
-		))
+		)
+	table.insert(self.features, feature)
+
+	return feature
 end
 
 function Decoration:remove(feature)
