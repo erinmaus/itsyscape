@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
@@ -108,6 +109,46 @@ function Decoration:remove(feature)
 	end
 
 	return false
+end
+
+function Decoration:toString()
+	local r = StringBuilder()
+
+	r:pushLine("{")
+	r:pushIndent(1)
+	r:pushFormatLine("tileSetID = %q,", self:getTileSetID())
+
+	for i = 1, #self.features do
+		local feature = self.features[i]
+
+		r:pushIndent(1)
+		r:pushLine("{")
+		do
+			local position = feature:getPosition()
+			local rotation = feature:getRotation()
+			local scale = feature:getScale()
+
+			r:pushIndent(2)
+			r:pushFormatLine("id = %q,", feature:getID())
+			r:pushIndent(2)
+			r:pushFormatLine(
+				"position = { %f, %f, %f },",
+				position.x, position.y, position.z)
+			r:pushIndent(2)
+			r:pushFormatLine(
+				"rotation = { %f, %f, %f, %f },",
+				rotation.x, rotation.y, rotation.z, rotation.w)
+			r:pushIndent(2)
+			r:pushFormatLine(
+				"scale = { %f, %f, %f },",
+				scale.x, scale.y, scale.z)
+		end
+		r:pushIndent(1)
+		r:pushLine("},")
+	end
+	r:pushLine("}")
+
+	return r:toString()
 end
 
 Decoration.RAY_TEST_RESULT_FEATURE = 1
