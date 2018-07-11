@@ -157,6 +157,7 @@ end
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
+		m.map = map
 		m.node:fromMap(m.map, m.tileSet)
 	end
 end

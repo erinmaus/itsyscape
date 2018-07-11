@@ -148,8 +148,12 @@ function LocalStage:newMap(width, height, layer, tileSetID)
 	self:updateMap(layer)
 end
 
-function LocalStage:updateMap(layer)
+function LocalStage:updateMap(layer, map)
 	if self.map[layer] then
+		if map then
+			self.map[layer] = map
+		end
+
 		self.onMapModified(self, self.map[layer], layer)
 	end
 end

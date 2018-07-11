@@ -8,9 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
+local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
+local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
@@ -23,6 +27,7 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
 local HillMapMotion = require "ItsyScape.World.HillMapMotion"
+local Map = require "ItsyScape.World.Map"
 local MapMotion = require "ItsyScape.World.MapMotion"
 local TileSet = require "ItsyScape.World.TileSet"
 
@@ -68,6 +73,7 @@ function MapEditorApplication:new()
 	self.currentJ = 0
 
 	self.lastDecorationFeature = false
+	self.filename = false
 end
 
 function MapEditorApplication:setTool(tool)
@@ -288,6 +294,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 			if r then
 				self:getGame():getStage():updateMap(1)
+				print(self:getGame():getStage():getMap(1):toString())
 			end
 		end
 
@@ -401,7 +408,159 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					end
 				end
 			end
+
+			if key == 's' and
+			   (love.keyboard.isDown('lctrl') or love.keyboard.isDown('rctrl'))
+			then
+				local newSave
+				if self.filename ~= false and
+				   not (love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift'))
+				then
+					newSave = false
+				else
+					newSave = true
+				end
+
+				if newSave then
+					local prompt = PromptWindow(self)
+					prompt.onSubmit:register(function(_, filename)
+						if not self:isResourceNameValid(filename) then
+							local alert = AlertWindow(self)
+							alert:open(string.format("Map name '%s' invalid.", filename))
+						else
+							local path = self:getOutputDirectoryName("Maps", filename)
+							if love.filesystem.getInfo(path) then
+								local confirm = ConfirmWindow(self)
+								confirm.onSubmit:register(function()
+									self:save(filename)
+								end)
+								confirm:open(string.format("Map '%s' already exists. Overwrite?", filename))
+							else
+								self:save(filename)
+							end
+						end
+					end)
+					prompt:open("What is the map name?", "Save", self.filename)
+				else
+					self:save(self.filename)
+				end
+			end
+
+			if key == 'o' and
+			   (love.keyboard.isDown('lctrl') or love.keyboard.isDown('rctrl'))
+			then
+				local preferExisting = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
+
+				local prompt = PromptWindow(self)
+				prompt.onSubmit:register(function(_, filename)
+					if not self:isResourceNameValid(filename) then
+						local alert = AlertWindow(self)
+						alert:open(string.format("Map name '%s' invalid.", filename))
+					else
+						if self:load(filename, preferExisting) then
+							self.filename = filename
+						end
+					end
+				end)
+				prompt:open("What is the map name?", "Load")
+			end
 		end
+	end
+end
+
+function MapEditorApplication:save(filename)
+	if self:makeOutputDirectory("Maps", filename) then
+		if not self:makeOutputSubdirectory("Maps", filename, "Decorations") then
+			Log.warn("Couldn't save map %s.", filename)
+			return false
+		end
+
+		local decorations = self:getGameView():getDecorations()
+		for group, decoration in pairs(decorations) do
+			local filename = self:getOutputFilename("Maps", filename, "Decorations", group .. ".ldeco")
+			local s, r = love.filesystem.write(filename, decoration:toString())
+			if not s then
+				Log.warn(
+					"Couldn't save decoration '%s' to %s: %s",
+					group, filename, r)
+			end
+		end
+
+		local layers = self:getGame():getStage():getLayers()
+		for i = 1, #layers do
+			local map = self:getGame():getStage():getMap(layers[i])
+			local index = tonumber(layers[i])
+			if index then
+				local filename = self:getOutputFilename(
+					"Maps",
+					filename,
+					StringBuilder.stringify(index, "%d") .. ".lmap")
+				local s, r = love.filesystem.write(filename, map:toString())
+				if not s then
+					Log.warn(
+						"Couldn't save map layer %d to %s: %s",
+						index, filename, r)
+				end
+			end
+		end
+
+		self.filename = filename
+		return true
+	end
+
+	return false
+end
+
+function MapEditorApplication:load(filename, preferExisting)
+	self:unload()
+
+	local path
+	if preferExisting then
+		path = self:getDirectoryName("Maps", filename)
+	end
+
+	if not path or not love.filesystem.getInfo(path) then
+		path = self:getOutputDirectoryName("Maps", filename)
+	end
+
+	if not love.filesystem.getInfo(path) then
+		Log.warn("Map '%s' doesn't exist.", filename)
+
+		return false
+	end
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
+		local layer = item:match(".*(-?%d)%.lmap$")
+		if layer then
+			layer = tonumber(layer)
+			local map = Map.loadFromFile(path .. item)
+
+			-- TODO TILE SET ID
+			self:getGame():getStage():newMap(map:getWidth(), map:getHeight(), layer)
+			self:getGame():getStage():updateMap(layer, map)
+		end
+	end
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems(path .. "/Decorations")) do
+		local group = item:match("(.*)%.ldeco$")
+		if group then
+			local decoration = Decoration(path .. "Decorations/" .. item)
+			self:getGame():getStage():decorate(group, decoration)
+		end
+	end
+
+	return true
+end
+
+function MapEditorApplication:unload()
+	local layers = self:getGame():getStage():getLayers()
+	for i = 1, #layers do
+		self:getGame():getStage():unloadMap(layers[i])
+	end
+
+	local decorations = self:getGameView():getDecorations()
+	for group, decoration in pairs(decorations) do
+		self:getGameView():getStage():decorate(group, nil)
 	end
 end
 

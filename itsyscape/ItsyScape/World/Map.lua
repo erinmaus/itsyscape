@@ -7,8 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
+local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
@@ -167,6 +167,129 @@ function Map:testRay(ray)
 	end
 
 	return hitTiles
+end
+
+-- Deserializes the Map.
+function Map.loadFromFile(filename)
+	print(filename)
+	local data = "return " .. (love.filesystem.read(filename) or "")
+	local chunk = assert(loadstring(data))
+	local t = setfenv(chunk, {})() or { width = 1, height = 1, cellSize = 2, tiles = { {} } }
+
+	local result = Map(t.width or 1, t.height or 1, t.cellSize or 2)
+	local index = 1
+	for j = 1, result.height do
+		for i = 1, result.width do
+			local inputTile = (t.tiles or {})[index] or {}
+			local outputTile = result:getTile(i, j)
+
+			outputTile.topLeft = inputTile.topLeft or 1
+			outputTile.topRight = inputTile.topRight or 1
+			outputTile.bottomLeft = inputTile.bottomLeft or 1
+			outputTile.bottomRight = inputTile.bottomRight or 1
+
+			outputTile.edge = inputTile.edge or 2
+			outputTile.flat = inputTile.flat or 1
+			for _, decal in ipairs(inputTile.decals or {}) do
+				table.insert(outputTile.decals, decal)
+			end
+
+			for flag in pairs(inputTile.flags or {}) do
+				outputTile:setFlag(flag)
+			end
+
+			for key, value in pairs(inputTile.data or {}) do
+				outputTile:setData(key, value)
+			end
+
+			index = index + 1
+		end
+	end
+
+	return result
+end
+
+-- Serializes the Map.
+function Map:toString()
+	local r = StringBuilder()
+
+	r:pushLine("{")
+	do
+		r:pushIndent(1)
+		r:pushFormatLine("width = %d,", self.width)
+		r:pushIndent(1)
+		r:pushFormatLine("height = %d,", self.height)
+		r:pushIndent(1)
+		r:pushFormatLine("cellSize = %d,", self.cellSize)
+
+		r:pushIndent(1)
+		r:pushLine("tiles =")
+		r:pushIndent(1)
+		r:pushLine("{")
+
+		local tiles = {}
+		for j = 1, self.height do
+			for i = 1, self.width do
+				local tile = self:getTile(i, j)
+				table.insert(tiles, tile)
+			end
+		end
+
+		for i = 1, #tiles do
+			local tile = tiles[i]
+
+			r:pushIndent(2)
+			r:pushLine("{")
+			do
+				r:pushIndent(3)
+				r:pushFormatLine(
+					"topLeft = %d, topRight = %d, bottomLeft = %d, bottomRight = %d,",
+					tile.topLeft, tile.topRight, tile.bottomLeft, tile.bottomRight)
+
+				r:pushIndent(3)
+				r:pushFormatLine(
+					"edge = %d, flat = %d, decals = { %s },",
+					tile.edge, tile.flat, table.concat(tile.decals, ", "))
+
+				r:pushIndent(3)
+				r:pushLine("data =")
+				r:pushIndent(3)
+				r:pushLine("{")
+				for key, value in tile:iterateData() do
+					local v
+					if type(value) == 'string' then
+						v = StringBuilder.stringify(value, "%q")
+					elseif type(value) ~= 'table' then
+						v = StringBuilder.stringify(value)
+					else
+						-- TODO
+						v = "nil --[[ table ]]"
+					end
+					
+					r:pushFormatLine("[%q] = %s", key, v)
+				end
+				r:pushIndent(3)
+				r:pushLine("},")
+
+				r:pushIndent(3)
+				r:pushLine("flags =")
+				r:pushIndent(3)
+				r:pushLine("{")
+				for flag in tile:iterateFlags() do
+					r:pushFormatLine("[%q] = true", flag)
+				end
+				r:pushIndent(3)
+				r:pushLine("},")
+			end
+			r:pushIndent(2)
+			r:pushLine("},")
+		end
+		r:pushIndent(1)
+		r:pushLine("}")
+	end
+	r:pushLine("}")
+
+	return r:toString()
 end
 
 return Map

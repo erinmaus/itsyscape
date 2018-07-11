@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local StringBuilder = require "ItsyScape.Common.StringBuilder"
+local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 
 local EditorApplication = Class(Application)
@@ -27,6 +29,101 @@ function EditorApplication:new()
 		local ambient = AmbientLightSceneNode()
 		ambient:setAmbience(0.4)
 		ambient:setParent(self:getGameView():getScene())
+	end
+end
+
+function EditorApplication:getOutputDirectoryName(category, resource)
+	return string.format(".editor/Resources/Game/%s/%s/", category, resource)
+end
+
+function EditorApplication:getOutputFilename(category, resource, ...)
+	local r = {
+		".editor",
+		"Resources",
+		"Game",
+		category,
+		resource,
+		...
+	}
+
+	return table.concat(r, "/")
+end
+
+function EditorApplication:getDirectoryName(category, resource)
+	return string.format("Resources/Game/%s/%s/", category, resource)
+end
+
+function EditorApplication:fromLocalToOutput(filename)
+	local category, resource = filename:match("^Resources%/Game%/([%w_%-]+)%/([%w_%-]+)")
+	if category and resource then
+		return self:getOutputDirectoryName(category, resource)
+	else
+		return nil
+	end
+end
+
+function EditorApplication:isResourceNameValid(resource)
+	resource = resource or ""
+	resource = StringBuilder.stringify(resource)
+
+	local valid = resource:match("^([%w_%-]+)$")
+	if valid then
+		return true
+	else
+		return false
+	end
+end
+
+function EditorApplication:makeOutputSubdirectory(category, resource, ...)
+	local path = self:getOutputFilename(category, resource, ...)
+	if not love.filesystem.createDirectory(path) then
+		Log.warn("Couldn't create output subdirectory: %s", path)
+		return false
+	else
+		return true
+	end
+end
+
+function EditorApplication:makeOutputDirectory(category, resource)
+	local function remove(path)
+		local items = love.filesystem.getDirectoryItems(path)
+		for i = 1, #items do
+			if love.filesystem.getInfo(items[i], 'directory') then
+				remove(items[i])
+			else
+				love.filesystem.remove(path .. "/" .. items[i])
+			end
+		end
+
+		love.filesystem.remove(path)
+	end
+
+	if not self:isResourceNameValid(resource) then
+		Log.warn("Resource name %q invalid.", StringBuilder.stringify(resource))
+		local alert = AlertWindow(self)
+		alert:open(string.format("Resource name '%s' invalid.", StringBuilder.stringify(resource)))
+
+		return false
+	end
+
+	if not self:isResourceNameValid(category) then
+		Log.error("Category name %q invalid.", StringBuilder.stringify(category))
+
+		local alert = AlertWindow(self)
+		alert:open(string.format("Uh-oh! Category name '%s' invalid.", StringBuilder.stringify(category)))
+
+		return false
+	end
+
+	local outputDirectory = self:getOutputDirectoryName(category, resource)
+	remove(outputDirectory)
+
+	if love.filesystem.createDirectory(outputDirectory) then
+		Log.info("Created game resource %s/%s.", category, resource)
+		return true
+	else
+		Log.warn("Couldn't created output directory '%s'", outputDirectory)
+		return false
 	end
 end
 

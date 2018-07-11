@@ -97,12 +97,13 @@ function PromptWindow:getOverflow()
 	return true
 end
 
-function PromptWindow:open(query, title, width, height)
+function PromptWindow:open(query, title, value, width, height)
 	width = width or PromptWindow.DEFAULT_WIDTH
 	height = height or PromptWindow.DEFAULT_HEIGHT
 
 	self.titleLabel:setText(title or "Prompt")
 	self.queryLabel:setText(query or "Please enter a value.")
+	self.input:setText(value or "")
 
 	self:setSize(width, height)
 
