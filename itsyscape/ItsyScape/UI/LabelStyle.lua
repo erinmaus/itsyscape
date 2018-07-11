@@ -39,13 +39,25 @@ function LabelStyle:draw(widget)
 			love.graphics.setFont(self.font)
 		end
 
+		local width, height = widget:getSize()
+		if width == 0 and height == 0 then
+			local p = widget:getParent()
+			if p then
+				width, height = p:getSize()
+			end
+		end
+
+		if width == 0 then
+			width = math.huge
+		end
+
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.print(widget:getText(), 1, 1)
+			love.graphics.printf(widget:getText(), 1, 1, width, 'left')
 		end
 
 		love.graphics.setColor(self.color:get())
-			love.graphics.print(widget:getText(), 0, 0)
+		love.graphics.printf(widget:getText(), 0, 0, width, 'left')
 
 		love.graphics.setFont(previousFont)
 	end

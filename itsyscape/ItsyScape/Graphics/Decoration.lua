@@ -50,14 +50,14 @@ function Decoration.Feature:setScale(value)
 	self.scale = value or self.scale
 end
 
-function Decoration:new(d, skeleton)
+function Decoration:new(d)
 	self.tileSetID = false
 	self.features = {}
 
 	if type(d) == 'string' then
-		self:loadFromFile(d, skeleton)
+		self:loadFromFile(d)
 	elseif type(d) == 'table' then
-		self:loadFromTable(d, skeleton)
+		self:loadFromTable(d)
 	else
 		error(("expected table or filename (string), got %s"):format(type(d)))
 	end

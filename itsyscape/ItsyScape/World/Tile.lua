@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
@@ -34,6 +33,53 @@ function Tile:new()
 	self.topRight = 0
 	self.bottomLeft  = 0
 	self.bottomRight = 0
+
+	self.flags = {}
+	self.data = {}
+end
+
+function Tile:setFlag(f)
+	self.flags[tostring(f)] = true
+end
+
+function Tile:unsetFlag(f)
+	self.flags[tostring(f)] = nil
+end
+
+function Tile:hasFlag(f)
+	return self.flags[tostring(f)] == true
+end
+
+function Tile:iterateFlags()
+	local c = nil
+	return function()
+		c = next(self.flags, c)
+		return c
+	end
+end
+
+function Tile:setData(key, value)
+	self.flags[tostring(key)] = value
+end
+
+function Tile:unsetData(key, value)
+	self.flags[tostring(key)] = nil
+end
+
+function Tile:hasData(key, value)
+	return self.flags[tostring(key)] ~= nil
+end
+
+function Tile:getData(key)
+	return self.flags[tostring(key)] ~= nil
+end
+
+function Tile:iterateData()
+	local c = nil
+	return function()
+		c = next(self.data, c)
+		return c, self.data[c]
+	end
 end
 
 function Tile:getCrease()
