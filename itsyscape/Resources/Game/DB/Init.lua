@@ -27,6 +27,41 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Prop" -- Trees, rocks, furnace, ...
+
+	Meta "PropGraphics" {
+		Mesh = Meta.TYPE_TEXT,
+		SubMesh = Meta.TYPE_TEXT,
+		Texture = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	ResourceType "MapObject"
+
+	Meta "MapObjectLocation" {
+		PositionX = Meta.TYPE_REAL,
+		PositionY = Meta.TYPE_REAL,
+		PositionZ = Meta.TYPE_REAL,
+		RotationX = Meta.TYPE_REAL,
+		RotationY = Meta.TYPE_REAL,
+		RotationZ = Meta.TYPE_REAL,
+		RotationW = Meta.TYPE_REAL,
+		ScaleX = Meta.TYPE_REAL,
+		ScaleY = Meta.TYPE_REAL,
+		ScaleZ = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PropMapObject" {
+		Prop = Meta.TYPE_RESOURCE,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PeepMapObject" {
+		Peep = Meta.TYPE_RESOURCE,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Attack"
 
 	ResourceType "Spell"

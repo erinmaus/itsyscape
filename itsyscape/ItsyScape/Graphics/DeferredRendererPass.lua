@@ -220,8 +220,27 @@ function DeferredRendererPass:drawAmbientLight(node, delta)
 	love.graphics.draw(self.gBuffer:getColor())
 end
 
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+function DeferredRendererPass:drawPointLight(node, delta)
+	local directionalLightShader = self:getLightShader('PointLight')
+	local light = node:toLight(delta)
+	local position = light:getPosition()
+	local attenuation = light:getAttenuation()
+	local color = light:getColor()
+
+	directionalLightShader:send('scape_PositionTexture', self.gBuffer:getPosition())
+	directionalLightShader:send('scape_LightPosition', { position.x, position.y, position.z })
+	directionalLightShader:send('scape_LightAttenuation', attenuation)
+	directionalLightShader:send('scape_LightColor', { color.r, color.g, color.b })
+
+	love.graphics.setDepthMode('always', false)
+	love.graphics.origin()
+	love.graphics.ortho(self.gBuffer:getWidth(), self.gBuffer:getHeight())
+	love.graphics.draw(self.gBuffer:getColor())
+end
+
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 
 function DeferredRendererPass:drawLights(scene, delta)
 	love.graphics.setBlendMode('add', 'premultiplied')
@@ -239,6 +258,8 @@ function DeferredRendererPass:drawLights(scene, delta)
 			self:drawDirectionalLight(node, delta)
 		elseif node:isCompatibleType(AmbientLightSceneNode) then
 			self:drawAmbientLight(node, delta)
+		elseif node:isCompatibleType(PointLightSceneNode) then
+			self:drawPointLight(node, delta)
 		end
 	end
 

@@ -10,7 +10,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+varying vec3 frag_Position;
+
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
+	frag_Position = (ViewSpaceFromLocal * vertexPosition).xyz;
 	return modelViewProjection * vertexPosition;
 }
