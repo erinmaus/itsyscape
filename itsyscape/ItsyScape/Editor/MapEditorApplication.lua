@@ -23,6 +23,8 @@ local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
@@ -394,7 +396,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 			   and self.lastDecorationFeature
 			then
 				if key == 'r' then
-					local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
+					local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
 					local newRotation = self.lastDecorationFeature:getRotation() * yRotation
 					--newRotation = newRotation:getNormal()
 

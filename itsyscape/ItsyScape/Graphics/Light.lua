@@ -105,7 +105,7 @@ function Light:setAttenuation(value)
 end
 
 -- Gets the attenuation of the light.
-function Light:getAttentuation()
+function Light:getAttenuation()
 	return self.attenuation
 end
 

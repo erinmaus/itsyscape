@@ -59,6 +59,7 @@ function MapMotion:onMousePressed(e)
 		self.tile = tiles[1][Map.RAY_TEST_RESULT_TILE]
 		self.tileI = tiles[1][Map.RAY_TEST_RESULT_I]
 		self.tileJ = tiles[1][Map.RAY_TEST_RESULT_J]
+		self.position = tiles[1][Map.RAY_TEST_RESULT_POSITION]
 
 		local tileCenter = self.map:getTileCenter(
 			tiles[1][Map.RAY_TEST_RESULT_I],
@@ -103,6 +104,10 @@ end
 
 function MapMotion:getTile()
 	return self.tile, self.tileI or 1, self.tileJ or 1
+end
+
+function MapMotion:getPosition()
+	return self.position or Vector.ZERO
 end
 
 function MapMotion:getMap()
