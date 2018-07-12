@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local Decoration = require "ItsyScape.Graphics.Decoration"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local DecorationSceneNode = Class(SceneNode)
@@ -24,6 +25,15 @@ function DecorationSceneNode:new()
 	self.isOwner = false
 
 	self:getMaterial():setShader(DecorationSceneNode.DEFAULT_SHADER)
+end
+
+function DecorationSceneNode:fromGroup(staticMesh, group)
+	local decoration = Decoration({
+		tileSetID = "anonymous",
+		{ id = group }
+	})
+
+	self:fromDecoration(decoration, staticMesh)
 end
 
 function DecorationSceneNode:fromDecoration(decoration, staticMesh)

@@ -27,6 +27,7 @@ local GameView = Class()
 function GameView:new(game)
 	self.game = game
 	self.actors = {}
+	self.props = {}
 
 	local stage = game:getStage()
 	self._onLoadMap = function(_, map, layer, tileSetID)
@@ -53,6 +54,16 @@ function GameView:new(game)
 		self:removeActor(actor)
 	end
 	stage.onActorKilled:register(self._onActorKilled)
+
+	self._onPropPlaced = function(_, propID, prop)
+		slef:addProp(propID, prop)
+	end
+	stage.onPropPlaced:register(self._onPropPlaced)
+
+	self._onPropRemoved = function(_, prop)
+		self:removeProp(prop)
+	end
+	stage.onPropRemoved(_, prop)
 
 	self._onDropItem = function(_, item, tile, position)
 		self:spawnItem(item, tile, position)
@@ -118,6 +129,8 @@ function GameView:release()
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
+	stage.onPropPlaced:unregister(self._onPropPlaced)
+	stage.onPropRemoved:unregister(self._onPropRemoved)
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
 	stage.onDecorate:unregister(self._onDecorate)
@@ -181,6 +194,23 @@ function GameView:removeActor(actor)
 	if self.actors[actor] then
 		self.actors[actor]:poof()
 		self.actors[actor] = nil
+	end
+end
+
+function GameView:addProp(propID, prop)
+	local PropViewTypeName = string.format("Resources.Game.Props.%sView.lua", propID)
+	local PropView = require(PropViewTypeName)
+	local view = PropView(prop, self)
+	view:attach()
+	view:load()
+
+	self.props[prop] = view
+end
+
+function GameView:removeActor(actor)
+	if self.props[prop] then
+		self.props[prop]:remove()
+		self.props[prop] = nil
 	end
 end
 
@@ -274,10 +304,18 @@ function GameView:update(delta)
 		actor:update(delta)
 	end
 
+	for _, prop in pairs(self.props) do
+		prop:update(delta)
+	end
+
 	self.spriteManager:update(delta)
 end
 
 function GameView:tick()
+	for _, prop in pairs(self.props) do
+		prop:tick()
+	end
+
 	self.scene:tick()
 end
 
