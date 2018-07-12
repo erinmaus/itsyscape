@@ -63,15 +63,15 @@ function DemoApplication:createMap()
 		end
 	end
 
-	table.insert(map:getTile(1, 1).decals, 8)
+	table.insert(map:getTile(1, 1).decals, 9)
 	for i = 2, map:getWidth() do
 		local tile = map:getTile(i, 1)
-		table.insert(tile.decals, 4)
+		table.insert(tile.decals, 5)
 	end
 
 	for j = 2, map:getHeight() do
 		local tile = map:getTile(1, j)
-		table.insert(tile.decals, 6)
+		table.insert(tile.decals, 7)
 	end
 
 	for i = 2, map:getWidth() do

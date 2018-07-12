@@ -256,31 +256,33 @@ function MapEditorApplication:mousePress(x, y, button)
 				end
 			end
 		elseif button == 2 then
-			local group, decoration = self.decorationList:getCurrentDecoration()
-			if group and decoration then
-				local tileSetFilename = string.format(
-					"Resources/Game/TileSets/%s/Layout.lstatic",
-					decoration:getTileSetID())
-				local staticMesh = self:getGameView():getResourceManager():load(
-					StaticMeshResource,
-					tileSetFilename)
+			if self.currentTool == MapEditorApplication.TOOL_DECORATE then
+				local group, decoration = self.decorationList:getCurrentDecoration()
+				if group and decoration then
+					local tileSetFilename = string.format(
+						"Resources/Game/TileSets/%s/Layout.lstatic",
+						decoration:getTileSetID())
+					local staticMesh = self:getGameView():getResourceManager():load(
+						StaticMeshResource,
+						tileSetFilename)
 
-				local hit
-				do
-					local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
-					table.sort(hits, function(a, b)
-						local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
-						local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
+					local hit
+					do
+						local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
+						table.sort(hits, function(a, b)
+							local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
+							local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
 
-						return i:getLength() < j:getLength()
-					end)
+							return i:getLength() < j:getLength()
+						end)
 
-					hit = hits[1]
-				end
+						hit = hits[1]
+					end
 
-				if hit then
-					decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
-					self:getGame():getStage():decorate(group, decoration)
+					if hit then
+						decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
+						self:getGame():getStage():decorate(group, decoration)
+					end
 				end
 			end
 		end
@@ -294,7 +296,6 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 			if r then
 				self:getGame():getStage():updateMap(1)
-				print(self:getGame():getStage():getMap(1):toString())
 			end
 		end
 
@@ -504,6 +505,19 @@ function MapEditorApplication:save(filename)
 			end
 		end
 
+		do
+			local meta = {}
+			for i = 1, #layers do
+				local _, tileSetID = self:getGameView():getMapTileSet(layers[i])
+				meta[layers[i]] = {
+					tileSetID = tileSetID,
+				}
+			end
+
+			local filename = self:getOutputFilename("Maps", filename, "meta")
+			love.filesystem.write(filename, StringBuilder.stringifyTable(meta))
+		end
+
 		self.filename = filename
 		return true
 	end
@@ -529,14 +543,29 @@ function MapEditorApplication:load(filename, preferExisting)
 		return false
 	end
 
+	local meta
+	do
+		local filename = self:getOutputFilename("Maps", filename, "meta")
+		local data = "return " .. (love.filesystem.read(filename) or "")
+		local chunk = assert(loadstring(data))
+		meta = setfenv(chunk, {})() or {}
+	end
+
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
 		local layer = item:match(".*(-?%d)%.lmap$")
 		if layer then
 			layer = tonumber(layer)
 			local map = Map.loadFromFile(path .. item)
 
-			-- TODO TILE SET ID
-			self:getGame():getStage():newMap(map:getWidth(), map:getHeight(), layer)
+			local tileSetID
+			if meta[layer] then
+				tileSetID = meta[layer].tileSetID
+			end
+
+			local layerMeta = meta[layer] or {}
+
+			self:getGame():getStage():newMap(
+				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID)
 			self:getGame():getStage():updateMap(layer, map)
 		end
 	end
@@ -560,7 +589,7 @@ function MapEditorApplication:unload()
 
 	local decorations = self:getGameView():getDecorations()
 	for group, decoration in pairs(decorations) do
-		self:getGameView():getStage():decorate(group, nil)
+		self:getGame():getStage():decorate(group, nil)
 	end
 end
 

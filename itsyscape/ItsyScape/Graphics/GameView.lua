@@ -136,6 +136,7 @@ function GameView:addMap(map, layer, tileSetID)
 
 	local m = {
 		tileSet = tileSet,
+		tileSetID = tileSetID or "GrassyPlain",
 		map = map,
 		node = MapMeshSceneNode()
 	}
@@ -159,6 +160,13 @@ function GameView:updateMap(map, layer)
 	if m then
 		m.map = map
 		m.node:fromMap(m.map, m.tileSet)
+	end
+end
+
+function GameView:getMapTileSet(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.tileSet, m.tileSetID
 	end
 end
 
