@@ -16,8 +16,13 @@ function StringBuilder.stringify(value, ...)
 		return b:toString(...)
 	elseif type(value) == 'table' then
 		local metatable = getmetatable(vaLue)
-		if metatable.__tostring then
+		if metatable and metatable.__tostring then
 			return metatable.__tostring(value, ...)
+		elseif select('#', ...) == 1 then
+			local format = select(1, ...)
+			if type(format) == 'string' and format == '%t' then
+				return StringBuilder.stringifyTable(value)
+			end
 		end
 	elseif select('#', ...) == 1 then
 		local format = select(1, ...)
@@ -32,6 +37,144 @@ function StringBuilder.stringify(value, ...)
 	return tostring(value)
 end
 
+local function isTableArray(t)
+	local numIndices = 0
+	local n = {}
+	for index in pairs(t) do
+		if type(index) == 'number' then
+			n[index] = true
+			numIndices = numIndices + 1
+		end
+	end
+
+	return #n == numIndices and #n > 0
+end
+
+local function isTableStructure(t)
+	for key in pairs(t) do
+		if type(key) == 'string' then
+			local match = key:match("^([%w_][%w%d_]*)$")
+			if not match then
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
+local function isTableEmpty(t)
+	return next(t) == nil
+end
+
+local function serializeObject(value, isStructure, isArray)
+	if type(value) == 'number' then
+		if not isArray then
+			if value == math.huge then
+				return "1 / 0", true
+			elseif value == -math.huge then
+				return "-(1 / 0)", true
+			elseif value - math.floor(value) > 0 then
+				return StringBuilder.stringify(value, "%f"), true
+			else
+				return StringBuilder.stringify(value, "%d"), true
+			end
+		end
+	elseif type(value) == 'string' then
+		if isStructure then
+			return value, false
+		else
+			return StringBuilder.stringify(value, "%q"), true
+		end
+	elseif type(value) == 'boolean' then
+		if value then
+			return "true", true
+		else
+			return "false", true
+		end
+	elseif type(value) == 'nil' then
+		return "nil", true
+	else
+		error(string.format("unhandled type %s", type(value)))
+	end
+end
+
+function StringBuilder.stringifyTable(t, result, depth, exceptions)
+	depth = depth or 0
+	result = result or StringBuilder()
+	exceptions = exceptions or {}
+
+	exceptions[t] = true
+
+	if isTableEmpty(t) then
+		result:push("{}")
+	else
+		result:pushLine("{")
+
+		local isStructure = isTableStructure(t)
+		local isArray = isTableArray(t)
+		
+		for key, value in pairs(t) do
+			local k, explicit = serializeObject(key, isStructure, isArray)
+			if k then
+				result:pushIndent(depth + 1)
+
+				if explicit then
+					result:pushFormat("[%s] =", k)
+				else
+					result:pushFormat("%s =", k)
+				end
+
+				if type(value) == 'table' then
+					if exceptions[value] then
+						error("recursive table")
+					end
+
+					if isTableEmpty(value) then
+						result:push(" ", "{}")
+					else
+						result:pushLine()
+						result:pushIndent(depth + 1)
+						StringBuilder.stringifyTable(value, result, depth + 1, exceptions)
+					end
+				else
+					result:push(" ")
+
+					local v = serializeObject(value, false, false)
+					result:push(v)
+				end
+
+				result:pushLine(",")
+			end
+		end
+
+		if isArray then
+			for i = 1, #t do
+				local value = t[i]
+				result:pushIndent(depth + 1)
+
+				if type(value) == 'table' then
+					if exceptions[value] then
+						error("recursive table")
+					end
+
+					StringBuilder.stringifyTable(value, result, depth + 1, exceptions)
+				else
+					local v = serializeObject(value, false, false)
+					result:push(v)
+				end
+
+				result:pushLine(",")
+			end
+		end
+
+		result:pushIndent(depth)
+		result:push("}")
+	end
+
+	return result:toString()
+end
+
 function StringBuilder:new()
 	self.m = {}
 	self.cache = false
@@ -40,7 +183,7 @@ end
 
 function StringBuilder:push(...)
 	local a = { n = select('#', ...), ... }
-	for i = 1, #a do
+	for i = 1, a.n do
 		table.insert(self.m, StringBuilder.stringify(a[i]))
 	end
 
@@ -65,7 +208,7 @@ function StringBuilder:pushFormatLine(m, ...)
 end
 
 function StringBuilder:pushIndent(depth, c, ...)
-	if not c then
+	if c == nil then
 		c = '\t'
 	else
 		c = StringBuilder.stringify(c, ...)
@@ -81,6 +224,7 @@ end
 function StringBuilder:toString()
 	if self.isDirty then
 		self.cache = table.concat(self.m)
+		self.isDirty = false
 	end
 
 	return self.cache

@@ -171,7 +171,6 @@ end
 
 -- Deserializes the Map.
 function Map.loadFromFile(filename)
-	print(filename)
 	local data = "return " .. (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
 	local t = setfenv(chunk, {})() or { width = 1, height = 1, cellSize = 2, tiles = { {} } }

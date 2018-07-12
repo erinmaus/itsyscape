@@ -146,6 +146,7 @@ function SceneNodeTransform:getLocalTransform()
 			self.scale.x,
 			self.scale.y,
 			self.scale.z)
+
 		self.isTransformDirty = false
 	end
 
