@@ -26,6 +26,8 @@ function Stage:new()
 	self.onActorKilled = Callback()
 	self.onDropItem = Callback()
 	self.onTakeItem = Callback()
+	self.onPropPlaced = Callback()
+	self.onPropRemoved = Callback()
 
 	-- (group, value [nil/Decoration])
 	self.onDecorate = Callback()
@@ -47,6 +49,14 @@ end
 --
 -- If the Actor was killed, invokes onActorKilled with the Actor.
 function Stage:killActor(actor)
+	Class.ABSTRACT()
+end
+
+function Stage:placeProp(propID)
+	return Class.ABSTRACT()
+end
+
+function Stage:removeProp(prop)
 	Class.ABSTRACT()
 end
 

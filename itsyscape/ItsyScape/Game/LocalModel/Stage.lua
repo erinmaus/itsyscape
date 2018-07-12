@@ -25,8 +25,10 @@ function LocalStage:new(game)
 	Stage.new(self)
 	self.game = game
 	self.actors = {}
+	self.props = {}
 	self.peeps = {}
 	self.currentActorID = 1
+	self.currentPropID = 1
 	self.map = {}
 	self.gravity = Vector(0, -9.8, 0)
 
@@ -62,15 +64,15 @@ function LocalStage:notifyDropItem(item, key, source)
 		position)
 end
 
-function LocalStage:spawnActor(actorID)
-	local Peep
+function LocalStage:lookupResource(resourceID, resourceType)
+	local Type
 	local resource
 	do
-		local protocol, value = actorID:match("(.*)%:%/*(.*)")
+		local protocol, value = resourceID:match("(.*)%:%/*(.*)")
 		if protocol and value then
 			if protocol:lower() == "resource" then
 				local gameDB = self.game:getGameDB()
-				local r = gameDB:getResource(value, "Peep")
+				local r = gameDB:getResource(value, resourceType)
 
 				if r then
 					local record = gameDB:getRecords("PeepID", { Resource = r }, 1)[1]
@@ -78,10 +80,10 @@ function LocalStage:spawnActor(actorID)
 						t = record:get("Value")
 
 						if not t or t == "" then
-							Log.error("PeepID malformed for Peep resource '%s'", value)
+							Log.error("resource ID malformed for resource '%s'", value)
 							return false, nil
 						else
-							Peep = require(t)
+							Type = require(t)
 							resource = r
 						end
 					else
@@ -89,19 +91,25 @@ function LocalStage:spawnActor(actorID)
 						return false, nil
 					end
 				else
-					Log.error("Peep resource '%s' not found.", value)
+					Log.error("resource ('%s') '%s' not found.", resourceType, value)
 					return false, nil
 				end
 			elseif protocol:lower() == "actor" then
-				Peep = require(value)
+				Type = require(value)
 			else
 				Log.error("bad protocol: '%s'", protocol:lower())
 				return false, nil
 			end
 		else
-			Peep = require(actorID)
+			Type = require(resourceID)
 		end
 	end
+
+	return Type, resource
+end
+
+function LocalStage:spawnActor(actorID)
+	local Peep, resource = self:lookupResource(actorID, "Peep")
 
 	if Peep then
 		local actor = LocalActor(self.game, Peep)
@@ -134,6 +142,43 @@ function LocalStage:killActor(actor)
 		self.peeps[peep] = nil
 
 		self.actors[actor] = nil
+	end
+end
+
+function LocalStage:placeProp(propID)
+	local Peep, resource = self:lookupResource(propID, "Peep")
+
+	if Peep then
+		local actor = LocalActor(self.game, Peep)
+		actor:spawn(self.currentPropID, resource)
+
+		self.onPropPlaced(self, propID, actor)
+
+		self.currentActorID = self.currentPropID + 1
+		self.actors[prop] = true
+
+		local peep = prop:getPeep()
+		self.peeps[prop] = peep
+		self.peeps[peep] = prop
+
+		return true, prop
+	end
+
+	return false, nil
+end
+
+function LocalStage:removeProp(prop)
+	if prop and self.props[prop] then
+		local p = self.props[prop]
+
+		self.onPropRemoved(self, p)
+		p:remove()
+
+		local peep = self.peeps[prop]
+		self.peeps[prop] = nil
+		self.peeps[peep] = nil
+
+		self.props[prop] = nil
 	end
 end
 
