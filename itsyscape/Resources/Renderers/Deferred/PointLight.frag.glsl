@@ -25,9 +25,8 @@ vec4 effect(
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz;
 
 	vec3 lightSurfaceDifference = scape_LightPosition - position;
-	vec3 direction = normalize(lightSurfaceDifference);
-	float attenuation = scape_LightAttenuation / length(lightSurfaceDifference);
+	float attenuation = clamp(1 - length(lightSurfaceDifference) / scape_LightAttenuation, 0.0, 1.0);
 
-	vec3 result = attenuation * scape_LightColor;
+	vec3 result = attenuation * attenuation * scape_LightColor;
 	return vec4(result, 1.0);
 }
