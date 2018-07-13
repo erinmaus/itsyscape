@@ -111,11 +111,23 @@ function DemoApplication:moveActorToTile(actor, i, j, k)
 end
 
 function DemoApplication:populateMap()
-	local s, a = self:getGame():getStage():spawnActor("resource://Goblin_Base")
-	if s then
-		local map = self:getGame():getStage():getMap(1)
-		local i, j = math.random(1, map:getWidth()), math.random(1, map:getHeight())
-		self:moveActorToTile(a, i, j)
+	do
+		local s, a = self:getGame():getStage():spawnActor("resource://Goblin_Base")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local i, j = math.random(1, map:getWidth()), math.random(1, map:getHeight())
+			self:moveActorToTile(a, i, j)
+		end
+	end
+
+	do
+		local s, a = self:getGame():getStage():placeProp("resource://Furnace_Default")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local position = a:getPeep():getBehavior(
+				require "ItsyScape.Peep.Behaviors.PositionBehavior")
+			position.position = map:getTileCenter(5, 2)
+		end
 	end
 
 	local player = self:getGame():getPlayer():getActor()

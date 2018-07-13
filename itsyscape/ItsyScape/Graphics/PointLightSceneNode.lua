@@ -16,24 +16,24 @@ PointLightSceneNode = Class(LightSceneNode)
 function PointLightSceneNode:new()
 	LightSceneNode.new(self)
 
-	self.attenutation = 1
+	self.attenuation = 1
 end
 
 function PointLightSceneNode:getAttenuation()
-	return self.attenutation
+	return self.attenuation
 end
 
 function PointLightSceneNode:setAttenuation(value)
-	self.attenutation = value or self.attenutation
+	self.attenuation = value or self.attenuation
 end
 
 function PointLightSceneNode:toLight(delta)
 	local result = LightSceneNode.toLight(self, delta)
 	local x, y, z = self:getTransform():getGlobalDeltaTransform(delta):transformPoint(0, 0, 0)
 
-	local previousAttenutation = self.previousAttenutation or self.attenutation
-	local attenutation = previousAttenutation * (1 - delta) + self.attenutation * delta
-	result:setAttenuation(attenutation)
+	local previousAttenutation = self.previousAttenutation or self.attenuation
+	local attenuation = self.attenuation * (1 - delta) + previousAttenutation * delta
+	result:setAttenuation(attenuation)
 	result:setPosition(Vector(x, y, z))
 
 	return result
@@ -42,7 +42,7 @@ end
 function PointLightSceneNode:tick()
 	LightSceneNode.tick(self)
 
-	self.previousAttenutation = self.attenutation
+	self.previousAttenutation = self.attenuation
 end
 
 return PointLightSceneNode
