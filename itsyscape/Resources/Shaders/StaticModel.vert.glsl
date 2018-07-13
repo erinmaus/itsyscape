@@ -4,6 +4,6 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	localPosition = (scape_WorldMatrix * position).xyz;
+	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
 }
