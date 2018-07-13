@@ -34,7 +34,7 @@ function LocalProp:place(id, resource, ...)
 	assert(self.id == Prop.NIL_ID, "Prop already spawned")
 
 	self.peep = self.game:getDirector():addPeep(self.peepType, resource, ...)
-	local _, propReference = self.peep:addBehavior(ActorReferenceBehavior)
+	local _, propReference = self.peep:addBehavior(PropReferenceBehavior)
 	propReference.prop = self
 
 	self.id = id

@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
 local TransferItemCommand = require "ItsyScape.Game.TransferItemCommand"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
+local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -66,10 +67,12 @@ end
 
 function LocalStage:lookupResource(resourceID, resourceType)
 	local Type
-	local resource
+	local realResourceID, resource
 	do
 		local protocol, value = resourceID:match("(.*)%:%/*(.*)")
 		if protocol and value then
+			realResourceID = value
+
 			if protocol:lower() == "resource" then
 				local gameDB = self.game:getGameDB()
 				local r = gameDB:getResource(value, resourceType)
@@ -102,20 +105,21 @@ function LocalStage:lookupResource(resourceID, resourceType)
 			end
 		else
 			Type = require(resourceID)
+			realResourceID = resourceID
 		end
 	end
 
-	return Type, resource
+	return Type, resource, realResourceID
 end
 
 function LocalStage:spawnActor(actorID)
-	local Peep, resource = self:lookupResource(actorID, "Peep")
+	local Peep, resource, realID = self:lookupResource(actorID, "Peep")
 
 	if Peep then
 		local actor = LocalActor(self.game, Peep)
 		actor:spawn(self.currentActorID, resource)
 
-		self.onActorSpawned(self, actorID, actor)
+		self.onActorSpawned(self, realID, actor)
 
 		self.currentActorID = self.currentActorID + 1
 		self.actors[actor] = true
@@ -146,16 +150,16 @@ function LocalStage:killActor(actor)
 end
 
 function LocalStage:placeProp(propID)
-	local Peep, resource = self:lookupResource(propID, "Peep")
+	local Peep, resource, realID = self:lookupResource(propID, "Prop")
 
 	if Peep then
-		local actor = LocalActor(self.game, Peep)
-		actor:spawn(self.currentPropID, resource)
+		local prop = LocalProp(self.game, Peep)
+		prop:place(self.currentPropID, resource)
 
-		self.onPropPlaced(self, propID, actor)
+		self.onPropPlaced(self, realID, prop)
 
 		self.currentActorID = self.currentPropID + 1
-		self.actors[prop] = true
+		self.props[prop] = true
 
 		local peep = prop:getPeep()
 		self.peeps[prop] = peep
@@ -320,6 +324,10 @@ end
 
 function LocalStage:iterateActors()
 	return pairs(self.actors)
+end
+
+function LocalStage:iterateProps()
+	return pairs(self.props)
 end
 
 return LocalStage

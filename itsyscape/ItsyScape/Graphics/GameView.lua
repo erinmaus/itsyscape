@@ -56,7 +56,7 @@ function GameView:new(game)
 	stage.onActorKilled:register(self._onActorKilled)
 
 	self._onPropPlaced = function(_, propID, prop)
-		slef:addProp(propID, prop)
+		self:addProp(propID, prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -198,7 +198,7 @@ function GameView:removeActor(actor)
 end
 
 function GameView:addProp(propID, prop)
-	local PropViewTypeName = string.format("Resources.Game.Props.%sView.lua", propID)
+	local PropViewTypeName = string.format("Resources.Game.Props.%s.View", propID, propID)
 	local PropView = require(PropViewTypeName)
 	local view = PropView(prop, self)
 	view:attach()
@@ -312,11 +312,11 @@ function GameView:update(delta)
 end
 
 function GameView:tick()
+	self.scene:tick()
+
 	for _, prop in pairs(self.props) do
 		prop:tick()
 	end
-
-	self.scene:tick()
 end
 
 return GameView

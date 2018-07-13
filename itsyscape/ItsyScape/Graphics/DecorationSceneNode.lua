@@ -87,7 +87,7 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 				local v = { unpack(groupVertices[i]) }
 				v[1], v[2], v[3] = transform:transformPoint(v[1], v[2], v[3])
 				v[4], v[5], v[6] = inverseTranspose:transformPoint(v[4], v[5], v[6])
-				if false then
+				do
 					local l = 1 / math.sqrt(v[4] * v[4] + v[5] * v[5] + v[6] * v[6])
 					v[4] = v[4] * l
 					v[5] = v[5] * l

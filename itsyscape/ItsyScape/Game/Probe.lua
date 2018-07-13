@@ -85,6 +85,7 @@ function Probe:all()
 	self:walk()
 	self:loot()
 	self:actors()
+	self:props()
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
@@ -248,6 +249,40 @@ function Probe:actors()
 	end
 
 	self.probes['actors'] = count
+	return count
+end
+
+-- Adds all prop actions, if possible.
+function Probe:props()
+	if self.probes['props'] then
+		return self.probes['props']
+	end
+
+	local count = 0
+	for actor in self.game:getStage():iterateProps() do
+		local min, max = actor:getBounds()
+		local s, p = self.ray:hitBounds(min, max)
+		if s then
+			local actions = actor:getActions('world')
+			for i = 1, #actions do
+				local action = {
+					id = actions[i].id,
+					verb = actions[i].verb,
+					object = actor:getName(),
+					callback = function()
+						actor:poke(actions[i].id, 'world')
+					end,
+					depth = -p.z + ((i / #actions) / 100)
+				}
+
+				table.insert(self.actions, action)
+				self.isDirty = true
+				count = count + 1
+			end
+		end
+	end
+
+	self.probes['props'] = count
 	return count
 end
 

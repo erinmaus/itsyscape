@@ -17,6 +17,7 @@ function PropView:new(prop, gameView)
 	self.gameView = gameView
 
 	self.sceneNode = SceneNode()
+	self.ready = false
 end
 
 function PropView:getProp()
@@ -41,6 +42,15 @@ end
 
 function PropView:attach()
 	self.sceneNode:setParent(self.gameView:getScene())
+	self:updateTransform()
+end
+
+function PropView:updateTransform()
+	local transform = self.sceneNode:getTransform()
+	transform:setLocalTranslation(self.prop:getPosition())
+	transform:setLocalRotation(self.prop:getRotation())
+	transform:setLocalScale(self.prop:getScale())
+	transform:tick()
 end
 
 function PropView:remove()
@@ -48,11 +58,14 @@ function PropView:remove()
 end
 
 function PropView:update(delta)
-	-- Nothing.
+	if not self.ready then
+		self:updateTransform()
+		self.ready = true
+	end
 end
 
 function PropView:tick()
-	-- Nothing.
+	self:updateTransform()
 end
 
 return PropView

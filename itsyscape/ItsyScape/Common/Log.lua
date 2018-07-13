@@ -20,7 +20,7 @@ function Log.error(format, ...)
 		Log.print("error", format)
 	end
 
-	local traceback = debug.traceback(2)
+	local traceback = debug.traceback("...", 2)
 	Log.print("traceback", traceback)
 end
 
