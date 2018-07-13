@@ -29,13 +29,6 @@ Game "ItsyScape"
 
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
-	Meta "PropGraphics" {
-		Mesh = Meta.TYPE_TEXT,
-		SubMesh = Meta.TYPE_TEXT,
-		Texture = Meta.TYPE_TEXT,
-		Resource = Meta.TYPE_RESOURCE
-	}
-
 	ResourceType "MapObject"
 
 	Meta "MapObjectLocation" {
@@ -60,6 +53,13 @@ Game "ItsyScape"
 	Meta "PeepMapObject" {
 		Peep = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE
+	}
+	
+	ActionType "OpenCraftWindow"
+
+	Meta "DelegatedActionTarget" {
+		ActionType = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
 	}
 
 	ActionType "Attack"
@@ -119,6 +119,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ResourceCategory" {
+		Key = Meta.TYPE_TEXT,
+		Value = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ActionVerb" {
 		Value = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
@@ -136,7 +142,7 @@ Game "ItsyScape"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
-ItsyScape.Utility.xpForResource = function() return 1 end -- TODO
+ItsyScape.Utility.xpForResource = Curve(nil, nil, nil, 10)
 
 -- Calculates the sum style bonus for an item of the specified tier.
 --
@@ -184,10 +190,20 @@ function ItsyScape.Utility.tag(resource, value)
 	}
 end
 
+function ItsyScape.Utility.categorize(resource, key, value)
+	ItsyScape.Meta.ResourceCategory {
+		Key = key,
+		Value = value,
+		Resource = resource
+	}
+end
+
 -- Skills
 include "Resources/Game/DB/Skills.lua"
 
 -- Items
+include "Resources/Game/DB/Items/Ores.lua"
+include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
 
 -- Creeps
@@ -195,6 +211,9 @@ include "Resources/Game/DB/Creeps/Goblin.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernCombat.lua"
+
+-- Props
+include "Resources/Game/DB/Props/Furnace.lua"
 
 do
 	ActionType "Debug_Ascend"

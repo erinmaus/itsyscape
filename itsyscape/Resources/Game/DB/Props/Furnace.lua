@@ -8,15 +8,29 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Prop "Furnace" {
-	ItsyScape.Action.Smelt() {
-		-- Nothing.
-	}
+local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
+ItsyScape.Meta.DelegatedActionTarget {
+	ActionType = "Smelt",
+	Action = FurnaceAction
 }
 
-ItsyScape.Meta.PropGraphics {
-	Mesh = "Resources/Game/Models/Furnace_Default/Model.lstatic",
-	Texture = "Resources/Game/Models/Furnace_Default/Texture.png",
-	Group = "furnace",
-	Resource = ItsyScape.Resource.Prop "Furnace"
+ItsyScape.Meta.ActionVerb {
+	Value = "Smelt",
+	Language = "en-US",
+	Action = FurnaceAction
+}
+
+ItsyScape.Resource.Prop "Furnace_Default" {
+	FurnaceAction
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicFurnace",
+	Resource = ItsyScape.Resource.Prop "Furnace_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Furnace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Furnace_Default"
 }
