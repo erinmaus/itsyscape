@@ -55,28 +55,37 @@ function Utility.performAction(game, resource, id, scope, ...)
 	return foundAction
 end
 
+function Utility.getAction(game, action, scope)
+	local gameDB = game:getGameDB()
+	local brochure = gameDB:getBrochure()
+	local definition = brochure:getActionDefinitionFromAction(action)
+	local typeName = string.format("Resources.Game.Actions.%s", definition.name)
+	local s, r = pcall(require, typeName)
+	if not s then
+		Log.error("failed to load action %s: %s", typeName, r)
+	else
+		local ActionType = r
+		if ActionType.SCOPES and ActionType.SCOPES[scope] then
+			local a = ActionType(game, action)
+			local t = {
+				id = action.id.value,
+				type = definition.name,
+				verb = a:getVerb() or a:getName()
+			}
+
+			return t, ActionType
+		end
+	end
+end
+
 function Utility.getActions(game, resource, scope)
 	local actions = {}
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	for action in brochure:findActionsByResource(resource) do
-		local definition = brochure:getActionDefinitionFromAction(action)
-		local typeName = string.format("Resources.Game.Actions.%s", definition.name)
-		local s, r = pcall(require, typeName)
-		if not s then
-			Log.error("failed to load action %s: %s", typeName, r)
-		else
-			local ActionType = r
-			if ActionType.SCOPES and ActionType.SCOPES[scope] then
-				local a = ActionType(game, action)
-				local t = {
-					id = action.id.value,
-					type = definition.name,
-					verb = a:getVerb() or a:getName()
-				}
-
-				table.insert(actions, t)
-			end
+		local action = Utility.getAction(game, action, scope)
+		if action then
+			table.insert(actions, action)
 		end
 	end
 
@@ -227,6 +236,28 @@ function Utility.Peep.walk(peep, i, j, k, ...)
 	end
 
 	return false
+end
+
+function Utility.Peep.getWalk(peep, i, j, k, ...)
+	if not peep:hasBehavior(PositionBehavior) or
+	   not peep:hasBehavior(MovementBehavior)
+	then
+		return false
+	end
+
+	local position = peep:getBehavior(PositionBehavior).position
+	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
+	local pathFinder = MapPathFinder(map)
+	local path = pathFinder:find(
+		{ i = playerI, j = playerJ },
+		{ i = i, j = j },
+		...)
+	if path then
+		return ExecutePathCommand(path)
+	else
+		return nil
+	end
 end
 
 return Utility

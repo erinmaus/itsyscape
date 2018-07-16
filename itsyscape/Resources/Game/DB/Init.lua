@@ -58,6 +58,8 @@ Game "ItsyScape"
 	ActionType "OpenCraftWindow"
 
 	Meta "DelegatedActionTarget" {
+		CategoryKey = Meta.TYPE_TEXT,
+		CategoryValue = Meta.TYPE_TEXT,
 		ActionType = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION
 	}
