@@ -262,10 +262,17 @@ function LocalStage:dropItem(item, count)
 	local destination = self.ground:getBehavior(InventoryBehavior).inventory
 	local broker = self.game:getDirector():getItemBroker()
 	local transaction = broker:createTransaction()
-	transaction:addParty(broker:getItemProvider(item))
+	local provider = broker:getItemProvider(item)
+	provider:getPeep():poke('dropItem', {
+		item = item,
+		count = count
+	})
+
+	transaction:addParty(provider)
 	transaction:addParty(destination)
 	transaction:transfer(destination, item, count, 'drop', false)
 	transaction:commit()
+
 end
 
 function LocalStage:takeItem(i, j, layer, ref)

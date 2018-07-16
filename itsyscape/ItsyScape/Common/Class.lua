@@ -107,7 +107,7 @@ local function __call(self, parent)
 		end
 
 		function result:isType(type)
-			return Class == self:getType()
+			return self:getType() == type
 		end
 
 		function result:isCompatibleType(type)

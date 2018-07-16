@@ -19,7 +19,22 @@ local OpenCraftWindow = Class(Action)
 OpenCraftWindow.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function OpenCraftWindow:perform(state, player, target)
-	-- nothing
+	local game = self:getGame()
+	local gameDB = game:getGameDB()
+	local target = gameDB:getRecords("DelegatedActionTarget", { Action = self:getAction() })[1]
+	if target then
+		local key = target:get("CategoryKey")
+		if key == "" then
+			key = nil
+		end
+
+		local value = target:get("CategoryValue")
+		if value == "" then
+			value = nil
+		end
+
+		self:getGame():getUI():openBlockingInterface("CraftWindow", key, value, target:get("ActionType"))
+	end
 end
 
 return OpenCraftWindow

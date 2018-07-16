@@ -10,6 +10,7 @@
 
 local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
 ItsyScape.Meta.DelegatedActionTarget {
+	CategoryKey = "Metal",
 	ActionType = "Smelt",
 	Action = FurnaceAction
 }

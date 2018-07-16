@@ -103,6 +103,8 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "EarthRune", 100)
 	t:spawn(inventory.inventory, "WaterRune", 100)
 	t:spawn(inventory.inventory, "FireRune", 100)
+	t:spawn(inventory.inventory, "TinOre", 1)
+	t:spawn(inventory.inventory, "CopperOre", 1)
 	t:commit()
 
 	self:addPoke('initiateAttack')
@@ -151,6 +153,16 @@ function One:update(director, game)
 	else
 		self.space = true
 	end
+end
+
+function One:onDropItem(e)
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
+end
+
+function One:onTransferItemTo(e)
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
 end
 
 return One

@@ -74,7 +74,7 @@ function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 	end
 end
 
-function GroundInventoryProvider:onTransferFrom(item, count, purpose)
+function GroundInventoryProvider:onTransferFrom(source, item, count, purpose)
 	self.onTakeItem(item, self:getBroker():getItemKey(item), count)
 end
 

@@ -37,7 +37,7 @@ function Curve:new(scale, step, base, divisor)
 		self.divisor = divisor
 	end
 
-	self.cache = {}
+	self.cache = { 0 }
 end
 
 -- Gets the scale value.

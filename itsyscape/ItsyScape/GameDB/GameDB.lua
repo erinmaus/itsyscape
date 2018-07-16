@@ -111,4 +111,14 @@ function GameDB:getResource(name, type)
 	return nil
 end
 
+function GameDB:getAction(id)
+	local id = Mapp.ID(tonumber(id))
+	local action = Mapp.Action()
+	if self.brochure:tryGetAction(id, action) then
+		return action
+	else
+		return nil
+	end
+end
+
 return GameDB

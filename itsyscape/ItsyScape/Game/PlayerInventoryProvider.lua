@@ -44,6 +44,11 @@ end
 
 function PlayerInventoryProvider:onSpawn(item, count)
 	self:assignKey(item)
+
+	self:getPeep():poke('spawnItem', {
+		item = item,
+		count = count
+	})
 end
 
 function PlayerInventoryProvider:onTransferTo(item, source, count, purpose)
@@ -51,6 +56,26 @@ function PlayerInventoryProvider:onTransferTo(item, source, count, purpose)
 	if index == nil then
 		self:assignKey(item)
 	end
+
+	self:getPeep():poke('transferItemTo', {
+		source = source:getPeep(),
+		item = item,
+		count = count,
+		purpose = purpose
+	})
+end
+
+function PlayerInventoryProvider:onTransferFrom(destination, item, count, purpose)
+	local index = self:getBroker():getItemKey(item)
+	if index == nil then
+		self:assignKey(item)
+	end
+
+	self:getPeep():poke('transferItemFrom', {
+		destination = destination:getPeep(),
+		item = item,
+		count = count
+	})
 end
 
 return PlayerInventoryProvider

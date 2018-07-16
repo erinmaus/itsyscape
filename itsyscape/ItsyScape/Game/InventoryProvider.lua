@@ -90,6 +90,8 @@ end
 
 -- Called when an item is transferred from this provider during a transaction.
 --
+-- 'destination' is the destination ItemProvider.
+--
 -- 'item' is the ItemInstance of the transferred item. 'count' is the number of
 -- items that were transferred. (This will be different from item.getCount() if
 -- the former).
@@ -97,7 +99,7 @@ end
 -- 'purpose' is a special string that can be, for example, 'trade' or 'drop'.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onTransferFrom(item, count, purpose)
+function InventoryProvider:onTransferFrom(destination, item, count, purpose)
 	-- Nothing.
 end
 

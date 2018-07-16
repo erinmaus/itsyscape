@@ -79,7 +79,7 @@ function LocalUI:get(interfaceID, index)
 	return nil
 end
 
-function LocalUI:open(interfaceID)
+function LocalUI:open(interfaceID, ...)
 	local i = self.interfaces[interfaceID] or { n = 0, v = {} }
 	i.n = i.n + 1
 
@@ -89,7 +89,8 @@ function LocalUI:open(interfaceID)
 	local ControllerType = require(ControllerTypeName)
 	local controller = ControllerType(
 		self.game:getPlayer():getActor():getPeep(),
-		self.game:getDirector())
+		self.game:getDirector(),
+		...)
 	controller:open()
 	i.v[i.n] = controller
 
@@ -99,6 +100,26 @@ function LocalUI:open(interfaceID)
 	self.onOpen(interfaceID, i.n)
 
 	return interfaceID, i.n
+end
+
+function LocalUI:openBlockingInterface(interfaceID, ...)
+	if self.blockingInterface then
+		self:interrupt()
+	end
+
+	local id, n = self:open(interfaceID, ...)
+	self.blockingInterface = {
+		id = id,
+		index = n
+	}
+end
+
+function LocalUI:interrupt()
+	if self.blockingInterface then
+		self:close(self.blockingInterface.id, self.blockingInterface.index)
+	end
+
+	self.blockingInterface = nil
 end
 
 function LocalUI:close(interfaceID, index)

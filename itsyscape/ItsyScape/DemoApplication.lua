@@ -42,6 +42,7 @@ function DemoApplication:initialize()
 	self:populateMap()
 
 	self:getGame():getUI():open("Ribbon")
+	--self:getGame():getUI():open("CraftWindow", "Metal", nil, "Smelt")
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = position

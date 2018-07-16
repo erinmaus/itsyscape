@@ -102,6 +102,10 @@ function GameView:new(game)
 	self.whiteTexture = TextureResource(love.graphics.newImage(imageData))
 end
 
+function GameView:getGame()
+	return self.game
+end
+
 function GameView:getRenderer()
 	return self.renderer
 end

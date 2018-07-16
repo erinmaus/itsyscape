@@ -169,7 +169,7 @@ function ActorView:applySkin(slotNodes)
 		end
 
 		if self.body and not ignore then
-			if skin:isType(ModelSkin) then
+			if Class.isDerived(skin:getResourceType(), ModelSkin) then
 				slot.instance = skin:load(self.body:getSkeleton())
 				slot.sceneNode = ModelSceneNode()
 

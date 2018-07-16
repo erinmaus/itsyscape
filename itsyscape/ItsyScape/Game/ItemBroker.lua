@@ -332,7 +332,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
 
-		local s, r = pcall(source.onTransferFrom, source, item, count, purpose)
+		local s, r = pcall(source.onTransferFrom, source, destination, item, count, purpose)
 		if not s then
 			io.stderr:write('error (onTransferFrom): ',  r, '\n')
 		end
