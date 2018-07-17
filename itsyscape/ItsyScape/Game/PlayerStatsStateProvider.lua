@@ -31,22 +31,7 @@ function PlayerStatsStateProvider:getPriority()
 end
 
 function PlayerStatsStateProvider:has(name, count, flags)
-	if not self.stats then
-		return false
-	end
-
-	if self.stats:hasSkill(name) then
-		local skill = self.stats:getSkill(name)
-		if skill then
-			if flags['skill-unboosted'] then
-				return count <= skill:getWorkingXP()
-			else
-				return count <= skill:getXP()
-			end
-		end
-	end
-
-	return false
+	return count <= self:count(name, flags)
 end
 
 function PlayerStatsStateProvider:take(name, count, flags)
@@ -66,6 +51,25 @@ function PlayerStatsStateProvider:give(name, count, flags)
 	end
 
 	return false
+end
+
+function PlayerStatsStateProvider:count(name, flags)
+	if not self.stats then
+		return 0
+	end
+
+	if self.stats:hasSkill(name) then
+		local skill = self.stats:getSkill(name)
+		if skill then
+			if flags['skill-unboosted'] then
+				return skill:getWorkingXP()
+			else
+				return skill:getXP()
+			end
+		end
+	end
+
+	return 0
 end
 
 return PlayerStatsStateProvider

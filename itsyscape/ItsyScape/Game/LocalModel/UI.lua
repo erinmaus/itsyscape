@@ -132,11 +132,26 @@ function LocalUI:close(interfaceID, index)
 		return false
 	end
 
+	if self.blockingInterface then
+		if self.blockingInterface.id == interfaceID and
+		   self.blockingInterface.index == index
+		then
+			self.blockingInterface = false
+		end
+	end
+
 	controller:close()
 	self.interfaces[interfaceID][index] = nil
 	self.controllers[controller] = nil
 
 	self.onClose(interfaceID, index)
+end
+
+function LocalUI:closeInstance(instance)
+	local c = self.controllers[instance]
+	if c then
+		self:close(c.id, c.index)
+	end
 end
 
 function LocalUI:update(delta)

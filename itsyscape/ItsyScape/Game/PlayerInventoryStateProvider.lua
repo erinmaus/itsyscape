@@ -30,30 +30,10 @@ function PlayerInventoryStateProvider:getPriority()
 end
 
 -- Flags:
---  * noted: only search for noted items; otherwise, search for unnoted items.
+--  * item-noted: only search for noted items; otherwise, search for unnoted
+--                items.
 function PlayerInventoryStateProvider:has(name, count, flags)
-	if not self.inventory then
-		return false
-	end
-
-	if not flags['item-inventory'] then
-		return false
-	end
-
-	local noted = false
-	if flags['item-noted'] then
-		noted = true
-	end
-
-	local broker = self.inventory:getBroker()
-	local c = 0
-	for item in broker:iterateItems(self.inventory) do
-		if item:getID() == name and item:isNoted() == noted then
-			c = c + item:getCount()
-		end
-	end
-
-	return count <= c
+	return count <= self:count(name, flags)
 end
 
 function PlayerInventoryStateProvider:take(name, count, flags)
@@ -113,6 +93,31 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		transaction:spawn(self.inventory, name, count, noted, true)
 	end
 	return transaction:commit()
+end
+
+function PlayerInventoryStateProvider:count(name, flags)
+	if not self.inventory then
+		return 0
+	end
+
+	if not flags['item-inventory'] then
+		return 0
+	end
+
+	local noted = false
+	if flags['item-noted'] then
+		noted = true
+	end
+
+	local broker = self.inventory:getBroker()
+	local c = 0
+	for item in broker:iterateItems(self.inventory) do
+		if item:getID() == name and item:isNoted() == noted then
+			c = c + item:getCount()
+		end
+	end
+
+	return c
 end
 
 return PlayerInventoryStateProvider

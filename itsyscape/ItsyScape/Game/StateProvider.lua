@@ -31,4 +31,8 @@ function StateProvider:give(name, count, flags)
 	return Class.ABSTRACT()
 end
 
+function StateProvider:count(name, flags)
+	return Class.ABSTRACT()
+end
+
 return StateProvider

@@ -238,6 +238,20 @@ function Utility.Peep.walk(peep, i, j, k, ...)
 	return false
 end
 
+function Utility.Peep.getTile(peep)
+	if not peep:hasBehavior(PositionBehavior) then
+		return 0, 0
+	end
+
+
+	local position = peep:getBehavior(PositionBehavior).position
+	local k = position.layer or 1
+	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local _, i, j = map:getTileAt(position.x, position.z)
+
+	return i, j, k
+end
+
 function Utility.Peep.getWalk(peep, i, j, k, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
