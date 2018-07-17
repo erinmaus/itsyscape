@@ -10,6 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local Utility = require "ItsyScape.Game.Utility"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
 local Action = require "ItsyScape.Peep.Action"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -18,7 +21,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local OpenCraftWindow = Class(Action)
 OpenCraftWindow.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
-function OpenCraftWindow:perform(state, player, target)
+function OpenCraftWindow:perform(state, player, prop)
 	local game = self:getGame()
 	local gameDB = game:getGameDB()
 	local target = gameDB:getRecords("DelegatedActionTarget", { Action = self:getAction() })[1]
@@ -33,7 +36,16 @@ function OpenCraftWindow:perform(state, player, target)
 			value = nil
 		end
 
-		self:getGame():getUI():openBlockingInterface("CraftWindow", key, value, target:get("ActionType"))
+		local i, j, k = Utility.Peep.getTile(prop)
+		local walk = Utility.Peep.getWalk(player, i, j, k)
+
+		if walk then
+			local open = OpenInterfaceCommand("CraftWindow", true, prop, key, value, target:get("ActionType"))
+			local command = CompositeCommand(true, walk, open)
+
+			local queue = player:getCommandQueue()
+			queue:interrupt(command)
+		end
 	end
 end
 

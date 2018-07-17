@@ -83,7 +83,21 @@ function State:take(resource, name, count, flags)
 	return false
 end
 
-function State:give(name, count, flags)
+function State:count(resource, name, flags)
+	local p = self.providers[resource]
+	if not p then
+		return false
+	end
+
+	local count = 0
+	for i = 1, #p do
+		count = count + p[i]:count(name, flags)
+	end
+
+	return count
+end
+
+function State:give(resource, name, count, flags)
 	local p = self.providers[resource]
 	if not p then
 		return false

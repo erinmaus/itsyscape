@@ -33,6 +33,12 @@ function ExecutePathCommand:next()
 end
 
 function ExecutePathCommand:onBegin(peep)
+	peep:poke('walk', {
+		i = i,
+		j = j,
+		k = k
+	})
+
 	self.path:activate(peep)
 end
 

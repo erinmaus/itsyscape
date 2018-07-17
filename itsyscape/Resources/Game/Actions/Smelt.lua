@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Actions/Smelt.lua
+-- Resources/Game/Makes/Smelt.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,40 +8,28 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Action = require "ItsyScape.Peep.Action"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+local Make = require "Resources.Game.Actions.Make"
 
-local Smelt = Class(Action)
+local Smelt = Class(Make)
 Smelt.SCOPES = { ['craft'] = true }
 
-function Smelt:canPerform(state, flags)
-	if Action.canPerform(self, state, flags) then
-		local brochure = self:getGameDB():getBrochure()
-		for input in brochure:getInputs(self.action) do
-			local resource = brochure:getConstraintResource(input)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+function Smelt:perform(state, player, prop)
+	local flags = { ['item-inventory'] = true }
 
-			if not state:has(resourceType.name, resource.name, input.count, flags) then
-				Log.info(
-					"Input not met; need %d of %s %s",
-					input.count,
-					resourceType.name,
-					resource.name)
-				return false
-			end
-		end
+	if self:canPerform(state, flags) then
+		local a = WaitCommand(self:getActionDuration(10))
+		local b = CallbackCommand(self.make, self, state, player, prop)
+
+		local queue = player:getCommandQueue()
+		queue:push(CompositeCommand(nil, a, b))
 
 		return true
 	end
 
-	return false
-end
-
-function Smelt:perform(state, player, prop)
-	if not self:canPerform(state) then
-		return false
-	end
-
-	-- Nothing.
+	return false, "can't perform"
 end
 
 return Smelt

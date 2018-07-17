@@ -22,6 +22,14 @@ function Action:new(game, action)
 	self.definitionID = definition.id.value
 end
 
+function Action:getActionDuration(ticks)
+	if ticks >= 0 then
+		return self.game:getDelta() * ticks
+	else
+		return 0
+	end
+end
+
 function Action:getGame()
 	return self.game
 end
@@ -87,6 +95,11 @@ function Action:canPerform(state, flags)
 	end
 
 	return true
+end
+
+-- Counts how many times the action can be performed.
+function Action:count(state, flags)
+	return 0
 end
 
 -- Performs the action.
