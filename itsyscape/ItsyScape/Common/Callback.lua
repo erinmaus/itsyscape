@@ -23,6 +23,7 @@ function Callback:new()
 	self.handlers = {}
 	self.errorHandler = Callback.DEFAULT_ERROR_HANDLER
 	self.yield = false
+	self.index = 1
 end
 
 -- Invokes the handler.
@@ -76,30 +77,12 @@ end
 -- to invoke. In essence, take the extra arguments here as the 'prefix' and the
 -- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
 function Callback:register(handler, ...)
-	self.handlers[handler] = { index = index, { n = select('#', ...), ... } }
-
-	return index
+	self.handlers[handler] = { { n = select('#', ...), ... } }
 end
 
 -- Unregisters a handler.
---
--- handler can either be an index (returned from Callback.register) or the
--- handler function itself. If the handler function does not exist, this method
--- does nothing.
 function Callback:unregister(handler)
-	if type(handler) == 'number' then
-		local h = self.handlers[handler]
-		if h then
-			table.remove(self.handlers, handler)
-			self.handlers[h] = false
-		end
-	elseif type(handler) == 'function' then
-		local i = self.handlers[handler]
-		if i then
-			table.remove(self.handlers, i)
-			self.handlers[handler] = false
-		end
-	end
+	self.handlers[handler] = nil
 end
 
 -- Sets if the callback should yield after invoking a handler.

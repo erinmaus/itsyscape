@@ -42,6 +42,7 @@ Game "ItsyScape"
 		ScaleX = Meta.TYPE_REAL,
 		ScaleY = Meta.TYPE_REAL,
 		ScaleZ = Meta.TYPE_REAL,
+		Map = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -53,6 +54,12 @@ Game "ItsyScape"
 	Meta "PeepMapObject" {
 		Peep = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableProp" {
+		Health = Meta.TYPE_INTEGER,
+		SpawnTime = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
 	}
 	
 	ActionType "OpenCraftWindow"
@@ -139,12 +146,21 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ActionDifficulty" {
+		Value = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Equip"
 	ActionType "Dequip"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
-ItsyScape.Utility.xpForResource = Curve(nil, nil, nil, 10)
+
+local RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+ItsyScape.Utility.xpForResource = function(a)
+	return RESOURCE_CURVE(a + 1)
+end
 
 -- Calculates the sum style bonus for an item of the specified tier.
 --

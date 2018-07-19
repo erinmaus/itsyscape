@@ -37,7 +37,7 @@ end
 --
 -- 'amount' is clamped to zero.
 function Stats.Skill:addXP(amount)
-	self.xp = math.max(math.floor(self.xp), 0)
+	self.xp = math.max(math.floor(self.xp + math.max(amount, 0)), 0)
 	self.isDirty = true
 end
 

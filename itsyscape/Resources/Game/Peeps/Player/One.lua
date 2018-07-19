@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
+local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Equipment = require "ItsyScape.Game.Equipment"
@@ -111,6 +112,7 @@ function One:assign(director)
 	self:addPoke('receiveAttack')
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
+	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
 	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 

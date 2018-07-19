@@ -11,37 +11,20 @@
 local ORES = {
 	["Copper"] = {
 		tier = 0,
-		weight = 10.5
+		weight = 10.5,
+		health = 8
 	},
 
 	["Tin"] = {
 		tier = 0,
-		weight = 9.1
+		weight = 9.1,
+		health = 8
 	}
 }
 
 for name, ore in pairs(ORES) do
 	local ItemName = string.format("%sOre", name)
 	local Ore = ItsyScape.Resource.Item(ItemName)
-
-	local MineAction = ItsyScape.Action.Mine()
-
-	MineAction {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 1))
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1))
-		},
-
-		Output {
-			Resource = Ore,
-			Count = 1
-		}
-	}
 
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(ore.tier),
@@ -59,5 +42,51 @@ for name, ore in pairs(ORES) do
 		Value = string.format("%s ore", name),
 		Language = "en-US",
 		Resource = Ore
+	}
+
+	local RockName = string.format("%sRock_Default", name)
+	local Rock = ItsyScape.Resource.Prop(RockName)
+
+	local MineAction = ItsyScape.Action.Mine()
+
+	MineAction {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 0))
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1))
+		},
+
+		Output {
+			Resource = Ore,
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.ActionDifficulty {
+		Value = math.max(ore.tier + 10),
+		Action = MineAction
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = ore.health,
+		SpawnTime = ore.tier + 10,
+		Resource = Rock
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicRock",
+		Resource = Rock
+	}
+
+	Rock { MineAction }
+
+	ItsyScape.Meta.ResourceName {
+		Value = string.format("%s rock", name),
+		Language = "en-US",
+		Resource = Rock
 	}
 end

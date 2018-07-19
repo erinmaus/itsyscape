@@ -100,6 +100,10 @@ function GameDB:getRecords(name, t, limit)
 	return self.brochure:select(definition, query, limit)
 end
 
+function GameDB:getRecord(name, t)
+	return self:getRecords(name, t, 1)[1]
+end
+
 function GameDB:getResource(name, type)
 	local resourceType = Mapp.ResourceType()
 	if self.brochure:tryGetResourceType(type, resourceType) then

@@ -30,6 +30,10 @@ function Prop:new(resource, ...)
 	self.resource = resource or false
 end
 
+function Prop:getGameDBResource()
+	return self.resource
+end
+
 function Prop:ready(director, game)
 	Peep.ready(self, director, game)
 
@@ -43,6 +47,10 @@ function Prop:ready(director, game)
 			self:setName("*" .. self.resource.name)
 		end
 	end
+end
+
+function Prop:getPropState()
+	return {}
 end
 
 return Prop
