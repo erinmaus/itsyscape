@@ -149,4 +149,13 @@ function LocalProp:poke(action, scope)
 	end
 end
 
+function LocalProp:getState()
+	local peep = self:getPeep()
+	if peep and peep.getPropState then
+		return peep:getPropState()
+	else
+		return {}
+	end
+end
+
 return LocalProp

@@ -54,6 +54,10 @@ function Creep:new(resource, ...)
 	self.resource = resource or false
 end
 
+function Creep:getGameDBResource()
+	return self.resource
+end
+
 function Creep:ready(director, game)
 	Peep.ready(self, director, game)
 

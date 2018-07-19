@@ -97,7 +97,7 @@ function LocalStage:lookupResource(resourceID, resourceType)
 					Log.error("resource ('%s') '%s' not found.", resourceType, value)
 					return false, nil
 				end
-			elseif protocol:lower() == "actor" then
+			elseif protocol:lower() == "peep" then
 				Type = require(value)
 			else
 				Log.error("bad protocol: '%s'", protocol:lower())

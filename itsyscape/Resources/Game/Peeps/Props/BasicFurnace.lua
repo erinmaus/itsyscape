@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Player/One.lua
+-- Resources/Peeps/Props/BasicFurnace.lua
 --
 -- This file is a part of ItsyScape.
 --

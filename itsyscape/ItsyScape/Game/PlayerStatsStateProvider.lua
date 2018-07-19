@@ -47,6 +47,7 @@ function PlayerStatsStateProvider:give(name, count, flags)
 	if self.stats:hasSkill(name) then
 		local skill = self.stats:getSkill(name)
 		skill:addXP(count)
+
 		return true
 	end
 

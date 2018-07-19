@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Color = require "ItsyScape.Graphics.Color"
+local Curve = require "ItsyScape.Game.Curve"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
@@ -101,6 +102,20 @@ function Utility.getName(resource, gameDB, lang)
 	else
 		return false
 	end
+end
+
+function Utility.guessTier(action, gameDB)
+	local brochure = gameDB:getBrochure()
+	local tier = 0
+	for requirement in brochure:getRequirements(action) do
+		local resource = brochure:getConstraintResource(requirement)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+		if resourceType.name == "Skill" then
+			tier = math.max(Curve.XP_CURVE:getLevel(requirement.count, tier))
+		end
+	end
+
+	return tier
 end
 
 -- Contains utility methods that deal with combat.

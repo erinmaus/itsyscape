@@ -23,6 +23,9 @@ Weapon.STYLE_MAGIC   = 1
 Weapon.STYLE_ARCHERY = 2
 Weapon.STYLE_MELEE   = 3
 
+Weapon.PURPOSE_KILL = 'kill'
+Weapon.PURPOSE_TOOL = 'tool'
+
 Weapon.BONUS_STAB    = 'Stab'
 Weapon.BONUS_SLASH   = 'Slash'
 Weapon.BONUS_CRUSH   = 'Crush'
@@ -72,7 +75,9 @@ function Weapon:rollAttack(peep, target, bonus)
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
 
-function Weapon:rollDamage(peep, multiplier, bonusStrength)
+function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
+	purpose = purpose or Weapon.PURPOSE_KILL
+
 	multiplier = 1
 	bonusStrength = bonusStrength or 0
 
@@ -86,23 +91,18 @@ function Weapon:rollDamage(peep, multiplier, bonusStrength)
 	-- TODO: combat multipliers
 	local style = self:getStyle()
 	local bonus, level
-	if style == Weapon.STYLE_MAGIC then
-		bonus = 'StrengthMagic'
-
-		if stats and stats:hasSkill("Wisdom") then
-			level = stats:getSkill("Wisdom"):getWorkingLevel()
+	do
+		if style == Weapon.STYLE_MAGIC then
+			bonus = 'StrengthMagic'
+		elseif style == Weapon.STYLE_ARCHERY then
+			bonus = 'StrengthRanged'
+		elseif style == Weapon.STYLE_MELEE then
+			bonus = 'StrengthMelee'
 		end
-	elseif style == Weapon.STYLE_ARCHERY then
-		bonus = 'StrengthRanged'
 
-		if stats and stats:hasSkill("Dexterity") then
-			level = stats:getSkill("Dexterity"):getWorkingLevel()
-		end
-	elseif style == Weapon.STYLE_MELEE then
-		bonus = 'StrengthMelee'
-
-		if stats and stats:hasSkill("Strength") then
-			level = stats:getSkill("Strength"):getWorkingLevel()
+		local success, skill = self:getSkill(purpose)
+		if success and stats and stats:hasSkill(skill) then
+			level = stats:getSkill(skill):getWorkingLevel()
 		end
 	end
 
@@ -173,6 +173,20 @@ end
 function Weapon:getStyle()
 	return Weapon.STYLE_MELEE
 end
+
+function Weapon:getSkill(purpose)
+	local style = self:getStyle()
+	if style == Weapon.STYLE_MAGIC then
+		return true, "Wisdom"
+	elseif style == Weapon.STYLE_ARCHERY then
+		return true, "Dexterity"
+	elseif style == Weapon.STYLE_MELEE then
+		return true, "Strength"
+	end
+
+	return false
+end
+
 
 function Weapon:getWeaponType()
 	return 'none'

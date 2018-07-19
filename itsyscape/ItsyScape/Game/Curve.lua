@@ -37,7 +37,7 @@ function Curve:new(scale, step, base, divisor)
 		self.divisor = divisor
 	end
 
-	self.cache = { 0 }
+	self.cache = { [0] = 0 }
 end
 
 -- Gets the scale value.
@@ -62,7 +62,7 @@ end
 
 -- Computes the value for 'level'.
 function Curve:compute(level)
-	level = math.max(math.floor(level), 1)
+	level = math.max(math.floor(level - 1), 0)
 
 	assert(level <= Curve.MAX, "level exceeds Curve.MAX")
 

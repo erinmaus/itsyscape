@@ -131,6 +131,26 @@ function DemoApplication:populateMap()
 		end
 	end
 
+	do
+		local s, a = self:getGame():getStage():placeProp("resource://CopperRock_Default")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local position = a:getPeep():getBehavior(
+				require "ItsyScape.Peep.Behaviors.PositionBehavior")
+			position.position = map:getTileCenter(7, 2)
+		end
+	end
+
+	do
+		local s, a = self:getGame():getStage():placeProp("resource://TinRock_Default")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local position = a:getPeep():getBehavior(
+				require "ItsyScape.Peep.Behaviors.PositionBehavior")
+			position.position = map:getTileCenter(3, 2)
+		end
+	end
+
 	local player = self:getGame():getPlayer():getActor()
 	self:moveActorToTile(player, 4, 4)
 end
