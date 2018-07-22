@@ -73,6 +73,10 @@ function One:new(...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
 	self:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
+	local skillAnimationMine = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
+	self:addResource("animation-skill-mining", skillAnimationMine)
 end
 
 function One:assign(director)
@@ -110,6 +114,7 @@ function One:assign(director)
 
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
+	self:addPoke('resourceHit')
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
