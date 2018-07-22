@@ -232,6 +232,7 @@ include "Resources/Game/DB/Creeps/Goblin.lua"
 include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 -- Props
+include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
 
 do

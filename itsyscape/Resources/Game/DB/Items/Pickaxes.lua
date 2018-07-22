@@ -37,7 +37,7 @@ for name, metal in pairs(METALS) do
 	local SmithAction = ItsyScape.Action.Smith()
 	SmithAction {
 		Input {
-			Resource = ItsyScape.Resource.Item(string.format("%sBar", metal)),
+			Resource = ItsyScape.Resource.Item(string.format("%sBar", name)),
 			Count = 1
 		},
 

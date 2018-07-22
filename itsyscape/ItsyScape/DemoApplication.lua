@@ -151,6 +151,16 @@ function DemoApplication:populateMap()
 		end
 	end
 
+	do
+		local s, a = self:getGame():getStage():placeProp("resource://Anvil_Default")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local position = a:getPeep():getBehavior(
+				require "ItsyScape.Peep.Behaviors.PositionBehavior")
+			position.position = map:getTileCenter(8, 8)
+		end
+	end
+
 	local player = self:getGame():getPlayer():getActor()
 	self:moveActorToTile(player, 4, 4)
 end
