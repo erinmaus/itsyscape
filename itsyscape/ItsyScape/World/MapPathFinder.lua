@@ -48,8 +48,9 @@ function MapPathFinder:getNeighbors(edge, goal)
 	local neighbors = {}
 	if i > 1 then
 		local left = self.map:getTile(i - 1, j)
-		if left.topRight <= tile.topLeft or
-		   left.bottomRight <= tile.bottomLeft
+		if (left.topRight <= tile.topLeft or
+		    left.bottomRight <= tile.bottomLeft) and
+		   not left:hasFlag('impassable')
 		then
 			table.insert(neighbors, self:makeEdge(i - 1, j, edge, goal))
 		end
@@ -57,8 +58,9 @@ function MapPathFinder:getNeighbors(edge, goal)
 
 	if i < self.map:getWidth() then
 		local right = self.map:getTile(i + 1, j)
-		if right.topLeft <= tile.topRight or
-		   right.bottomLeft <= tile.bottomRight
+		if (right.topLeft <= tile.topRight or
+		    right.bottomLeft <= tile.bottomRight) and
+		   not right:hasFlag('impassable')
 		then
 			table.insert(neighbors, self:makeEdge(i + 1, j, edge, goal))
 		end
@@ -66,8 +68,9 @@ function MapPathFinder:getNeighbors(edge, goal)
 
 	if j > 1 then
 		local top = self.map:getTile(i, j - 1)
-		if top.bottomLeft <= tile.topLeft or
-		   top.bottomRight <= tile.topLeft
+		if (top.bottomLeft <= tile.topLeft or
+		    top.bottomRight <= tile.topLeft) and
+		   not top:hasFlag('impassable')
 		then
 			table.insert(neighbors, self:makeEdge(i, j - 1, edge, goal))
 		end
@@ -75,8 +78,9 @@ function MapPathFinder:getNeighbors(edge, goal)
 
 	if j < self.map:getHeight() then
 		local bottom = self.map:getTile(i, j + 1)
-		if bottom.topLeft <= tile.bottomLeft or
-		   bottom.topRight <= tile.bottomRight
+		if (bottom.topLeft <= tile.bottomLeft or
+		    bottom.topRight <= tile.bottomRight) and
+		   not bottom:hasFlag('impassable')
 		then
 			table.insert(neighbors, self:makeEdge(i, j + 1, edge, goal))
 		end
