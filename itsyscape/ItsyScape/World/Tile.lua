@@ -36,6 +36,24 @@ function Tile:new()
 
 	self.flags = {}
 	self.data = {}
+
+	self.impassableDepth = 0
+end
+
+function Tile:pushImpassable()
+	self.impassableDepth = self.impassableDepth + 1
+
+	if self.impassableDepth > 0 then
+		self:setFlag('impassable')
+	end
+end
+
+function Tile:popImpassable()
+	self.impassableDepth = math.max(self.impassableDepth - 1, 0)
+
+	if self.impassableDepth == 0 then
+		self:unsetFlag('impassable')
+	end
 end
 
 function Tile:setFlag(f)
