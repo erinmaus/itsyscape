@@ -183,7 +183,7 @@ function ItsyScape.Utility.styleBonusForWeapon(tier, weight)
 	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3, weight)
 end
 
-function ItsyScape.Utility.strengthBonusForWeapon(tier)
+function ItsyScape.Utility.strengthBonusForWeapon(tier, weight)
 	local A = 1 / 100
 	local B = 1.5
 	local C = 5
@@ -223,6 +223,7 @@ include "Resources/Game/DB/Skills.lua"
 include "Resources/Game/DB/Items/Ores.lua"
 include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
+include "Resources/Game/DB/Items/Pickaxes.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Goblin.lua"

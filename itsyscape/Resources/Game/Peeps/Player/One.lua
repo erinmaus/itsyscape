@@ -73,6 +73,10 @@ function One:new(...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
 	self:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
+	local attackAnimationPickaxeStab = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
+	self:addResource("animation-attack-stab-pickaxe", attackAnimationPickaxeStab)
 	local skillAnimationMine = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
@@ -98,7 +102,6 @@ function One:assign(director)
 	local t = director:getItemBroker():createTransaction()
 	t:addParty(inventory.inventory)
 	t:spawn(inventory.inventory, "AmuletOfYendor")
-	t:spawn(inventory.inventory, "AmuletOfYendor", 10, true)
 	t:spawn(inventory.inventory, "ErrinTheHeathensHat")
 	t:spawn(inventory.inventory, "ErrinTheHeathensCoat")
 	t:spawn(inventory.inventory, "ErrinTheHeathensGloves")
@@ -110,6 +113,7 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "FireRune", 100)
 	t:spawn(inventory.inventory, "TinOre", 4)
 	t:spawn(inventory.inventory, "CopperOre", 2)
+	t:spawn(inventory.inventory, "BronzePickaxe", 1)
 	t:commit()
 
 	self:addPoke('initiateAttack')
