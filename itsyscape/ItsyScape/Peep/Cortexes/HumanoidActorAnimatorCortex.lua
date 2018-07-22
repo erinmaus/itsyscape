@@ -17,6 +17,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
+HumanoidActorAnimatorCortex.SKILL_PRIORITY = 5
 HumanoidActorAnimatorCortex.ATTACK_PRIORITY = math.huge
 HumanoidActorAnimatorCortex.DEFEND_PRIORITY = 10
 
@@ -37,6 +38,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('initiateAttack', self.onInitiateAttack, self)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
+	peep:listen('resourceHit', self.onResourceHit, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -45,6 +47,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
 	peep:silence('die', self.onDie)
+	peep:silence('resourceHit', self.onResourceHit)
 end
 
 function HumanoidActorAnimatorCortex:playAnimation(peep, priority, resource)
@@ -75,8 +78,6 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 			break
-		else
-			print(animations[i])
 		end
 	end
 end
@@ -102,6 +103,31 @@ function HumanoidActorAnimatorCortex:onDie(peep, p)
 			peep,
 			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 			resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
+	local skill = p.skill or "none"
+	local animations = {
+		string.format("animation-skill-%s", p.skill),
+		"animation-skill"
+	}
+
+	local playedAnimation = false
+	local time
+	for i = 1, #animations do
+		local resource = peep:getResource(
+			animations[i],
+			"ItsyScape.Graphics.AnimationResource")
+		if resource then
+			self:playAnimation(
+				peep,
+				HumanoidActorAnimatorCortex.SKILL_PRIORITY,
+				resource)
+			break
+		else
+			print(animations[i])
+		end
 	end
 end
 

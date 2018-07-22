@@ -19,6 +19,7 @@ function GatherResourceCommand:new(prop, tool, t)
 	t = t or {}
 	self.prop = prop
 	self.tool = tool
+	self.skill = t.skill or false
 	self.multiplier = t.multiplier or 1
 	self.bonusStrength = t.bonusStrength or 0
 	self.time = 0
@@ -44,6 +45,12 @@ function GatherResourceCommand:onBegin(peep)
 	end
 
 	self.prop:listen('resourceObtained', self.onResourceObtained, self, peep)
+
+	peep:poke('resourceHit', {
+		tool = self.tool,
+		damage = 0,
+		skill = self.skill
+	})
 end
 
 function GatherResourceCommand:onEnd(peep)
@@ -73,6 +80,12 @@ function GatherResourceCommand:attack(peep)
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
 			damage = damage
+		})
+
+		peep:poke('resourceHit', {
+			tool = self.tool,
+			damage = damage,
+			skill = self.skill
 		})
 	end
 end
