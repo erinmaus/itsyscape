@@ -14,6 +14,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Weapon = Class(Equipment)
 Weapon.STANCE_AGGRESSIVE = 1 -- Gives strength, wisdom, or dexterity XP
@@ -46,6 +47,9 @@ Weapon.BONUSES       = {
 -- Returns true if the attack succeeded, false otherwise. Also returns two integers:
 -- the attack roll and the defense roll. Thus, this method returns (success, attacck, defense).
 function Weapon:rollAttack(peep, target, bonus)
+	-- There's a cyclic dependency here. Ugly.
+	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+
 	-- TODO: Use tiny RNG
 	if not Weapon.BONUSES[bonus] then
 		return false, 0, 0
@@ -69,8 +73,53 @@ function Weapon:rollAttack(peep, target, bonus)
 		defenseBonus = bonuses[k] or 0
 	end
 
-	local attackRoll = math.floor(math.random(0, accuracyBonus))
-	local defenseRoll = math.floor(math.random(0, defenseBonus))
+	-- TODO: Handle prayers
+	local attackLevel
+	do
+		local stats = peep:getBehavior(StatsBehavior)
+		if stats and stats.stats then
+			stats = stats.stats
+			local _, _, accuracyStat = self:getSkill(Weapon.PURPOSE_KILL)
+			if stats:hasSkill(accuracyStat) then
+				attackLevel = stats:getSkill(accuracyStat):getWorkingLevel()
+			end
+		end
+
+		local stance = peep:getBehavior(StanceBehavior)
+		if stance then
+			if stance.stance == Weapon.STANCE_CONTROLLED then
+				attackLevel = (attackLevel or 1) + 8
+			end
+		end
+
+		attackLevel = attackLevel or 1
+	end
+
+	local defenceLevel
+	do
+		local stats = peep:getBehavior(StatsBehavior)
+		if stats and stats.stats then
+			stats = stats.stats
+			if stats:hasSkill("Defense") then
+				defenseLevel = stats:getSkill("Defense"):getWorkingLevel()
+			end
+		end
+
+		local stance = peep:getBehavior(StanceBehavior)
+		if stance then
+			if stance.stance == Weapon.STANCE_DEFENSIVE then
+				defenseLevel = (defenseLevel or 1) + 8
+			end
+		end
+
+		defenseLevel = defenseLevel or 1
+	end
+
+	local maxAttackRoll = Utility.Combat.calcAccuracyRoll(attackLevel, accuracyBonus)
+	local maxDefenseRoll = Utility.Combat.calcAccuracyRoll(defenseLevel, defenseBonus)
+
+	local attackRoll = math.floor(math.random(0, maxAttackRoll))
+	local defenseRoll = math.floor(math.random(0, maxDefenseRoll))
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
@@ -103,6 +152,17 @@ function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
 		local success, skill = self:getSkill(purpose)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
+		end
+	end
+
+	if purpose == Weapon.PURPOSE_KILL then
+		local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+
+		local stance = peep:getBehavior(StanceBehavior)
+		if stance then
+			if stance.stance == Weapon.STANCE_AGGRESSIVE then
+				level = (level or 1) + 8
+			end
 		end
 	end
 
@@ -177,11 +237,11 @@ end
 function Weapon:getSkill(purpose)
 	local style = self:getStyle()
 	if style == Weapon.STYLE_MAGIC then
-		return true, "Wisdom"
+		return true, "Wisdom", "Magic"
 	elseif style == Weapon.STYLE_ARCHERY then
-		return true, "Dexterity"
+		return true, "Dexterity", "Archery"
 	elseif style == Weapon.STYLE_MELEE then
-		return true, "Strength"
+		return true, "Strength", "Attack"
 	end
 
 	return false

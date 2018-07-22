@@ -19,7 +19,7 @@ end
 function CombatSpell:getStrengthBonus()
 	local gameDB = self:getGame():getGameDB()
 	local resource = self:getResource()
-	local record = gameDB:getRecords("Spell", { Resource = resource }, 1)[1]
+	local record = gameDB:getRecords("CombatSpell", { Resource = resource }, 1)[1]
 	if record then
 		return record:get("Strength") or 1
 	end

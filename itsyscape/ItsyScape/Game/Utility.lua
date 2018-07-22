@@ -127,6 +127,14 @@ function Utility.Combat.calcMaxHit(level, multiplier, bonus)
 	return math.floor(0.5 + level * multiplier * (bonus + 64) / 640)
 end
 
+function Utility.Combat.calcAccuracyRoll(level, bonus)
+	return (level + 16) * (bonus + 64) * 2
+end
+
+function Utility.Combat.calcDefenseRoll(level, bonus)
+	return (level + 8) * (bonus + 128)
+end
+
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
@@ -281,10 +289,11 @@ function Utility.Peep.getWalk(peep, i, j, k, ...)
 	local path = pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
-		...)
+		true, ...)
 	if path then
 		return ExecutePathCommand(path)
 	else
+		print(i, j, 'failed')
 		return nil
 	end
 end
