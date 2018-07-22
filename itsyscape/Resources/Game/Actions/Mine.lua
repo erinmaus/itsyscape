@@ -36,7 +36,7 @@ function Mine:perform(state, player, prop)
 				local i, j, k = Utility.Peep.getTile(prop)
 				local walk = Utility.Peep.getWalk(player, i, j, k)
 
-				if (equipmentType and equipmentType:get("Value") == "pickaxe") or true then
+				if (equipmentType and equipmentType:get("Value") == "pickaxe") then
 					local a = GatherResourceCommand(prop, equippedItem, { skill = "mining" })
 					local b = CallbackCommand(self.make, self, state, player, prop)
 					local queue = player:getCommandQueue()
