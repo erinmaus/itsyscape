@@ -105,7 +105,7 @@ function EquipmentInventoryProvider:onTransferTo(item, source, count, purpose)
 	end
 end
 
-function EquipmentInventoryProvider:onTransferFrom(item, count, purpose)
+function EquipmentInventoryProvider:onTransferFrom(destination, item, count, purpose)
 	local equipStatsTag = self:getBroker():getItemTag(item, 'equip-record')
 	if equipStatsTag then
 		for i = 1, #EquipmentInventoryProvider.STATS do

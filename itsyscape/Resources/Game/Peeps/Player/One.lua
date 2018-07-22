@@ -111,8 +111,6 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "EarthRune", 100)
 	t:spawn(inventory.inventory, "WaterRune", 100)
 	t:spawn(inventory.inventory, "FireRune", 100)
-	t:spawn(inventory.inventory, "TinOre", 4)
-	t:spawn(inventory.inventory, "CopperOre", 2)
 	t:spawn(inventory.inventory, "BronzePickaxe", 1)
 	t:commit()
 
