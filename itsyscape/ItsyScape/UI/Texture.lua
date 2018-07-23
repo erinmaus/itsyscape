@@ -22,6 +22,7 @@ function Texture:new()
 	self.top = 0
 	self.bottom = 1
 	self.keepAspect = true
+	self.rotation = 0
 end
 
 -- Sets the texture 'resource' (a Love2D image).
@@ -50,6 +51,14 @@ end
 
 function Texture:setKeepAspect(value)
 	self.keepAspect = value or false
+end
+
+function Texture:getRotation()
+	return self.rotation
+end
+
+function Texture:setRotation(value)
+	self.rotation = value or self.rotation
 end
 
 return Texture
