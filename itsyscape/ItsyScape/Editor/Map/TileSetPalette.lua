@@ -80,6 +80,7 @@ function TileSetPalette:refresh(tileSet, tileSetTexture)
 		button.onClick:register(self.setTile, self, index)
 
 		button:setData('tile-index', index)
+		button:setData('tile-texture', texture)
 		table.insert(self.buttons, button)
 	end
 
@@ -138,6 +139,18 @@ function TileSetPalette:close()
 	local p = self:getParent()
 	if p then
 		p:removeChild(self)
+	end
+end
+
+function TileSetPalette:update(...)
+	Widget.update(self, ...)
+
+	local rotation = self.application:getCamera():getVerticalRotation()
+	for i = 1, #self.buttons do
+		local texture = self.buttons[i]:getData('tile-texture')
+		if texture then
+			texture:setRotation(rotation - math.pi / 2)
+		end
 	end
 end
 
