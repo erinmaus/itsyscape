@@ -63,7 +63,7 @@ function GameView:new(game)
 	self._onPropRemoved = function(_, prop)
 		self:removeProp(prop)
 	end
-	stage.onPropRemoved(_, prop)
+	stage.onPropRemoved:register(self._onPropRemoved)
 
 	self._onDropItem = function(_, item, tile, position)
 		self:spawnItem(item, tile, position)
@@ -150,6 +150,8 @@ function GameView:addMap(map, layer, tileSetID)
 		self.mapMeshes[layer].node:setParent(nil)
 		self.mapMeshes[layer].node:setMapMesh(nil)
 	end
+	
+	print(tileSetID)
 
 	local m = {
 		tileSet = tileSet,
@@ -211,7 +213,7 @@ function GameView:addProp(propID, prop)
 	self.props[prop] = view
 end
 
-function GameView:removeActor(actor)
+function GameView:removeProp(prop)
 	if self.props[prop] then
 		self.props[prop]:remove()
 		self.props[prop] = nil

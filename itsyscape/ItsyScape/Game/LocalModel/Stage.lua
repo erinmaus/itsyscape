@@ -138,8 +138,8 @@ function LocalStage:killActor(actor)
 	if actor and self.actors[actor] then
 		local a = self.actors[actor]
 
-		self.onActorKilled(self, a)
-		a:depart()
+		self.onActorKilled(self, actor)
+		actor:depart()
 
 		local peep = self.peeps[actor]
 		self.peeps[actor] = nil
@@ -175,8 +175,8 @@ function LocalStage:removeProp(prop)
 	if prop and self.props[prop] then
 		local p = self.props[prop]
 
-		self.onPropRemoved(self, p)
-		p:remove()
+		self.onPropRemoved(self, prop)
+		prop:remove()
 
 		local peep = self.peeps[prop]
 		self.peeps[prop] = nil
