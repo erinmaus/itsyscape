@@ -19,7 +19,7 @@ function TextInput:new()
 	Widget.new(self)
 	self.onValueChanged = Callback()
 	self.onSubmit = Callback()
-	self.cursorIndex = 1
+	self.cursorIndex = 0
 	self.cursorLength = 0
 	self.isShiftDown = 0
 	self.isMouseOver = false
