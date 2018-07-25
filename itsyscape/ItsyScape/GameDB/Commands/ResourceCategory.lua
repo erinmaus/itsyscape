@@ -49,7 +49,8 @@ function ResourceCategory:add(name)
 
 	assert(self[name] == nil, string.format("'%s' already exists", name))
 
-	self[name] = function(resourceName)
+	local _C = {}
+	_C.__call = function(_, resourceName)
 		if not resources[resourceName] then
 			local resourceType = self._game:getResourceType(name)
 
@@ -59,6 +60,17 @@ function ResourceCategory:add(name)
 		return resources[resourceName]
 	end
 
+	local C = {}
+	C.Unique = function()
+		local resourceType = self._game:getResourceType(name)
+		local resourceName = string.format("*Unique %s #%d", name, #resources + 1)
+		local resource = Resource(resourceType, resourceName)
+		table.insert(resources, resource)
+
+		return resource
+	end
+
+	self[name] = setmetatable(C, _C)
 	self._resources[name] = resources
 end
 
