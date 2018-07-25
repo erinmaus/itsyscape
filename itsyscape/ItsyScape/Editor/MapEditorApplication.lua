@@ -547,8 +547,14 @@ function MapEditorApplication:load(filename, preferExisting)
 
 	local meta
 	do
-		local filename = self:getOutputFilename("Maps", filename, "meta")
-		local data = "return " .. (love.filesystem.read(filename) or "")
+		local metaFilename
+		if preferExisting then
+			metaFilename = self:getDirectoryName("Maps", filename) .. "meta"
+			print(metaFilename)
+		else
+			metaFilename = self:getOutputFilename("Maps", filename, "meta")
+		end
+		local data = "return " .. (love.filesystem.read(metaFilename) or "")
 		local chunk = assert(loadstring(data))
 		meta = setfenv(chunk, {})() or {}
 	end
