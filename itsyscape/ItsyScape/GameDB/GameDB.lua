@@ -53,9 +53,20 @@ function GameDB.create(inputFilename, outputFilename)
 
 	local game
 	do
-		local script = assert(loadstring(love.filesystem.read(inputFilename), inputFilename))
-		local chunk = setfenv(script, S)
-		chunk()
+		local inputs
+		if type(inputFilename) == 'string' then
+			inputs = { inputFilename }
+		elseif type(inputFilename) == 'table' then
+			inputs = inputFilename
+		else
+			error("exepcted filename or table of filenames")
+		end
+
+		for i = 1, #inputs do
+			local script = assert(loadstring(love.filesystem.read(inputs[i]), inputs[i]))
+			local chunk = setfenv(script, S)
+			chunk()
+		end
 
 		game = S.Game.getGame()
 	end
