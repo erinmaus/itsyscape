@@ -161,7 +161,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 
 	local s, t
 	if index == 'flat' or type(index) == 'number' then
-		if localPosition.x < 0 then
+		if localPosition.x > 0 then
 			s = 0
 		else
 			s = 1
