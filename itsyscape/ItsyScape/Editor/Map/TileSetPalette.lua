@@ -149,7 +149,7 @@ function TileSetPalette:update(...)
 	for i = 1, #self.buttons do
 		local texture = self.buttons[i]:getData('tile-texture')
 		if texture then
-			texture:setRotation(rotation - math.pi / 2)
+			texture:setRotation(-rotation + math.pi / 2)
 		end
 	end
 end
