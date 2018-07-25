@@ -57,7 +57,7 @@ for name, ore in pairs(ORES) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1))
+			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1)) * 3
 		},
 
 		Output {
