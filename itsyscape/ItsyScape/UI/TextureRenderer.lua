@@ -62,16 +62,20 @@ function TextureRenderer:draw(widget, state)
 			end
 		end
 
-		local hw, hh = widget:getSize()
+		local hw, hh = w, h
 		hw = hw / 2
 		hh = hh / 2
 
+		local x, y = widget:getSize()
+		x = x / 2
+		y = y / 2
+
 		love.graphics.draw(
 			texture, quad.q,
-			hw, hh,
+			x, y,
 			widget:getRotation(),
-			scaleX, -scaleY,
-			widget:getSize())
+			scaleX, scaleY,
+			hw, hh)
 	end
 end
 
