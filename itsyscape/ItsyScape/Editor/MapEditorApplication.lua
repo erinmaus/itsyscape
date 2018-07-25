@@ -18,6 +18,7 @@ local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
+local PropPalette = require "ItsyScape.Editor.Map.PropPalette"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
@@ -38,6 +39,7 @@ MapEditorApplication.TOOL_NONE = 0
 MapEditorApplication.TOOL_TERRAIN = 1
 MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
+MapEditorApplication.TOOL_PROP = 4
 
 function MapEditorApplication:new()
 	EditorApplication.new(self)
@@ -48,6 +50,7 @@ function MapEditorApplication:new()
 	self.landscapeToolPanel = LandscapeToolPanel(self)
 	self.terrainToolPanel = TerrainToolPanel(self)
 	self.tileSetPalette = TileSetPalette(self)
+	self.propPalette = PropPalette(self)
 
 	self.windows = {
 		self.decorationList,
@@ -55,6 +58,7 @@ function MapEditorApplication:new()
 		self.landscapeToolPanel,
 		self.terrainToolPanel,
 		self.tileSetPalette,
+		self.propPalette
 	}
 
 	self.currentTool = MapEditorApplication.TOOL_NONE
@@ -101,6 +105,9 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_DECORATE
 		self.decorationList:open()
 		self.decorationPalette:open()
+	elseif tool == MapEditorApplication.TOOL_PROP then
+		self.currentTool = MapEditorApplication.TOOL_PROP
+		self.propPalette:open()
 	end
 end
 
@@ -256,6 +263,24 @@ function MapEditorApplication:mousePress(x, y, button)
 						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
+			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
+				local prop = self.propPalette:getCurrentProp()
+				if prop then
+					local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name)
+					if s then
+						local motion = MapMotion(self:getGame():getStage():getMap(1))
+						motion:onMousePressed(self:makeMotionEvent(x, y, button))
+
+						local t, i, j = motion:getTile()
+						local y = t:getInterpolatedHeight(0.5, 0.5)
+						local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+						local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+
+						local peep = p:getPeep()
+						local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+						position.position = Vector(x, y, z)
+					end
+				end
 			end
 		elseif button == 2 then
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE then
@@ -285,6 +310,29 @@ function MapEditorApplication:mousePress(x, y, button)
 						decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
 						self:getGame():getStage():decorate(group, decoration)
 					end
+				end
+			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
+				local hit
+				do
+					local hits = {}
+					for prop in self:getGame():getStage():iterateProps() do
+						local ray = self:shoot(x, y)
+						local s, p = ray:hitBounds(prop:getBounds())
+						if s then
+							table.insert(hits, { position = p, prop = prop })
+						end
+					end
+
+					local eye = self:getCamera():getEye()
+					table.sort(hits, function(a, b)
+						return (a.position - eye):getLength() < (b.position - eye):getLength()
+					end)
+
+					hit = hits[1]
+				end
+
+				if hit then
+					self:getGame():getStage():removeProp(hit.prop)
 				end
 			end
 		end
@@ -390,6 +438,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_PAINT)
 			elseif key == 'f3' then
 				self:setTool(MapEditorApplication.TOOL_DECORATE)
+			elseif key == 'f4' then
+				self:setTool(MapEditorApplication.TOOL_PROP)
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE
