@@ -63,7 +63,11 @@ function LocalProp:getResourceType()
 end
 
 function LocalProp:getResourceName()
-	error("nyi")
+	if self.peep then
+		return self.peep:getGameDBResource().name
+	end
+
+	return nil
 end
 
 function LocalProp:setName(value)

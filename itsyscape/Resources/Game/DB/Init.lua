@@ -29,6 +29,7 @@ Game "ItsyScape"
 
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
+	ResourceType "Map"
 	ResourceType "MapObject"
 
 	Meta "MapObjectLocation" {
@@ -42,7 +43,8 @@ Game "ItsyScape"
 		ScaleX = Meta.TYPE_REAL,
 		ScaleY = Meta.TYPE_REAL,
 		ScaleZ = Meta.TYPE_REAL,
-		Map = Meta.TYPE_TEXT,
+		Name = Meta.TYPE_TEXT,
+		Map = Meta.TYPE_RESOURCE,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
