@@ -161,6 +161,18 @@ function DemoApplication:populateMap()
 		end
 	end
 
+	do
+		local s, a = self:getGame():getStage():placeProp("resource://IsabelleIsland_AbandonedMine_EntranceDoor")
+		if s then
+			local map = self:getGame():getStage():getMap(1)
+			local position = a:getPeep():getBehavior(
+				require "ItsyScape.Peep.Behaviors.PositionBehavior")
+			position.position = map:getTileCenter(4, 1)
+		else
+			print "nop"
+		end
+	end
+
 	local player = self:getGame():getPlayer():getActor()
 	self:moveActorToTile(player, 4, 4)
 end

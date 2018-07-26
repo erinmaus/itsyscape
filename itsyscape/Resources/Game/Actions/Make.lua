@@ -14,26 +14,7 @@ local Make = Class(Action)
 Make.SCOPES = { ['craft'] = true }
 
 function Make:canPerform(state, flags)
-	if Action.canPerform(self, state, flags) then
-		local brochure = self:getGameDB():getBrochure()
-		for input in brochure:getInputs(self.action) do
-			local resource = brochure:getConstraintResource(input)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
-
-			if not state:has(resourceType.name, resource.name, input.count, flags) then
-				Log.info(
-					"Input not met; need %d of %s %s",
-					input.count,
-					resourceType.name,
-					resource.name)
-				return false
-			end
-		end
-
-		return true
-	end
-
-	return false
+	return Action.canPerform(self, state, flags) and Action.canTransfer(self, state, flags)
 end
 
 function Make:count(state, flags)
@@ -61,20 +42,7 @@ end
 function Make:make(state, player, prop)
 	local flags = { ['item-inventory'] = true }
 
-	local brochure = self:getGameDB():getBrochure()
-	for input in brochure:getInputs(self.action) do
-		local resource = brochure:getConstraintResource(input)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
-
-		state:take(resourceType.name, resource.name, input.count, flags)
-	end
-
-	for output in brochure:getOutputs(self.action) do
-		local resource = brochure:getConstraintResource(output)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
-
-		state:give(resourceType.name, resource.name, output.count, flags)
-	end
+	self:transfer(state, player, flags)
 end
 
 return Make
