@@ -125,8 +125,6 @@ function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
 				HumanoidActorAnimatorCortex.SKILL_PRIORITY,
 				resource)
 			break
-		else
-			print(animations[i])
 		end
 	end
 end

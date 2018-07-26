@@ -150,8 +150,6 @@ function GameView:addMap(map, layer, tileSetID)
 		self.mapMeshes[layer].node:setParent(nil)
 		self.mapMeshes[layer].node:setMapMesh(nil)
 	end
-	
-	print(tileSetID)
 
 	local m = {
 		tileSet = tileSet,

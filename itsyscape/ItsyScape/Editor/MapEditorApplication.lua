@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local GameDB = require "ItsyScape.GameDB.GameDB"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
@@ -80,6 +81,8 @@ function MapEditorApplication:new()
 
 	self.lastDecorationFeature = false
 	self.filename = false
+
+	self.propNames = {}
 end
 
 function MapEditorApplication:setTool(tool)
@@ -279,6 +282,16 @@ function MapEditorApplication:mousePress(x, y, button)
 						local peep = p:getPeep()
 						local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
 						position.position = Vector(x, y, z)
+
+						local index = 1
+						local name
+						repeat
+							name = string.format("%s%d", prop.name, index)
+							index = index + 1
+						until self.propNames[name] == nil
+
+						self.propNames[name] = p
+						self.propNames[p] = name
 					end
 				end
 			end
@@ -570,6 +583,53 @@ function MapEditorApplication:save(filename)
 			love.filesystem.write(filename, StringBuilder.stringifyTable(meta))
 		end
 
+		do
+			local s = StringBuilder()
+			s:pushLine("local M = {}")
+			s:pushLine()
+
+			s:pushFormatLine("M._MAP = ItsyScape.Resource.Map %q", filename)
+			s:pushLine()
+
+			for prop in self:getGame():getStage():iterateProps() do
+				local position = prop:getPosition()
+				local rotation = prop:getRotation()
+				local scale = prop:getScale()
+				local name = self.propNames[prop]
+				if name then
+					s:pushFormatLine("M[%q] = ItsyScape.Resource.MapObject.Unique()", name)
+					s:pushLine("do")
+					s:pushLine("\tItsyScape.Meta.MapObjectLocation {")
+					s:pushFormatLine("\t\tPositionX = %f,", position.x)
+					s:pushFormatLine("\t\tPositionY = %f,", position.y)
+					s:pushFormatLine("\t\tPositionZ = %f,", position.z)
+					s:pushFormatLine("\t\tRotiationX = %f,", rotation.x)
+					s:pushFormatLine("\t\tRotiationY = %f,", rotation.y)
+					s:pushFormatLine("\t\tRotiationZ = %f,", rotation.z)
+					s:pushFormatLine("\t\tRotiationW = %f,", rotation.w)
+					s:pushFormatLine("\t\tScaleX = %f,", scale.x)
+					s:pushFormatLine("\t\tScaleY = %f,", scale.y)
+					s:pushFormatLine("\t\tScaleZ = %f,", scale.z)
+					s:pushFormatLine("\t\tName = %q,", name)
+					s:pushFormatLine("\t\tMap = M._MAP,")
+					s:pushFormatLine("\t\tResource = M[%q]", name)
+					s:pushFormatLine("\t}")
+					s:pushLine()
+					s:pushLine("\tItsyScape.Meta.PropMapObject {")
+					s:pushFormatLine("\t\tProp = ItsyScape.Resource.Prop %q,", prop:getResourceName())
+					s:pushFormatLine("\t\tMapObject = M[%q]", name)
+					s:pushFormatLine("\t}")
+					s:pushLine("end")
+				end
+			end
+
+			s:pushLine()
+			s:pushLine("return M")
+
+			local dbFilename = self:getOutputFilename("Maps", filename, "DB", "Default.lua")
+			love.filesystem.write(dbFilename, s:toString())
+		end
+
 		self.filename = filename
 		return true
 	end
@@ -636,6 +696,49 @@ function MapEditorApplication:load(filename, preferExisting)
 		end
 	end
 
+	if love.filesystem.getInfo(path .. "/DB/Default.lua") then
+		local gameDB = GameDB.create({
+			"Resources/Game/DB/Init.lua",
+			path .. "/DB/Default.lua"
+		}, ":memory:")
+
+		local resource = gameDB:getResource(filename, "Map")
+		if resource then
+			local objects = gameDB:getRecords("MapObjectLocation", {
+				Map = resource
+			})
+
+			for i = 1, #objects do
+				local x = objects[i]:get("PositionX") or 0
+				local y = objects[i]:get("PositionY") or 0
+				local z = objects[i]:get("PositionZ") or 0
+
+				do
+					local prop = gameDB:getRecord("PropMapObject", {
+						MapObject = objects[i]:get("Resource")
+					})
+
+					if prop then
+						prop = prop:get("Prop")
+						if prop then
+							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name)
+
+							if s then
+								local peep = p:getPeep()
+								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+								position.position = Vector(x, y, z)
+							end
+
+							local name = objects[i]:get("Name")
+							self.propNames[name] = p
+							self.propNames[p] = name
+						end
+					end
+				end
+			end
+		end
+	end
+
 	return true
 end
 
@@ -649,6 +752,12 @@ function MapEditorApplication:unload()
 	for group, decoration in pairs(decorations) do
 		self:getGame():getStage():decorate(group, nil)
 	end
+
+	for prop in self:getGame():getStage():iterateProps() do
+		self:getGame():getStage():removeProp(prop)
+	end
+
+	self.propNames = {}
 end
 
 return MapEditorApplication
