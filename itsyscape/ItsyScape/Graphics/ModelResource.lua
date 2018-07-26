@@ -31,8 +31,8 @@ function ModelResource:release()
 	end
 end
 
-function ModelResource:loadFromFile(filename)
-	self.model = Model(filename, self.skeleton)
+function ModelResource:loadFromFile(filename, _, skeleton)
+	self.model = Model(filename, skeleton or self.skeleton)
 end
 
 function ModelResource:getIsReady()

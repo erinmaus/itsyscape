@@ -620,10 +620,10 @@ function MapEditorApplication:save(filename)
 					s:pushFormatLine("\t\tMapObject = M[%q]", name)
 					s:pushFormatLine("\t}")
 					s:pushLine("end")
+					s:pushLine()
 				end
 			end
 
-			s:pushLine()
 			s:pushLine("return M")
 
 			local dbFilename = self:getOutputFilename("Maps", filename, "DB", "Default.lua")

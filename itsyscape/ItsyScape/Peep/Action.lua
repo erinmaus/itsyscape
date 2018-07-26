@@ -97,6 +97,25 @@ function Action:canPerform(state, flags)
 	return true
 end
 
+function Action:canTransfer(state, flags)
+	local brochure = self:getGameDB():getBrochure()
+	for input in brochure:getInputs(self.action) do
+		local resource = brochure:getConstraintResource(input)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		if not state:has(resourceType.name, resource.name, input.count, flags) then
+			Log.info(
+				"Input not met; need %d of %s %s",
+				input.count,
+				resourceType.name,
+				resource.name)
+			return false
+		end
+	end
+
+	return true
+end
+
 -- Counts how many times the action can be performed.
 function Action:count(state, flags)
 	return 0
@@ -114,6 +133,24 @@ end
 -- action fails, a message should be returned.
 function Action:perform(poke, ...)
 	return false, "not implemented"
+end
+
+-- Transfers inputs/outputs.
+function Action:transfer(state, player, flags)
+	local brochure = self:getGameDB():getBrochure()
+	for input in brochure:getInputs(self.action) do
+		local resource = brochure:getConstraintResource(input)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		state:take(resourceType.name, resource.name, input.count, flags)
+	end
+
+	for output in brochure:getOutputs(self.action) do
+		local resource = brochure:getConstraintResource(output)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		state:give(resourceType.name, resource.name, output.count, flags)
+	end
 end
 
 return Action

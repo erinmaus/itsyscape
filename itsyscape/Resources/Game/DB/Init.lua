@@ -156,6 +156,9 @@ Game "ItsyScape"
 	ActionType "Equip"
 	ActionType "Dequip"
 
+	ActionType "Open"
+	ActionType "Close"
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -236,6 +239,9 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
+
+-- Maps
+include "Resources/Game/DB/Maps/Rumbridge.lua"
 
 do
 	ActionType "Debug_Ascend"
