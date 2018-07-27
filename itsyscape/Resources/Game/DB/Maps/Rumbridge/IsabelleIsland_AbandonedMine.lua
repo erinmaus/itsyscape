@@ -18,26 +18,8 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_WroughtBronzeKey"
 }
 
-ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_EntranceDoor" {
-	ItsyScape.Action.Open() {
-		--Requirement {
-		--	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_WroughtBronzeKey",
-		--	Count = 1
-		--}
-	},
-
-	ItsyScape.Action.Close() {
-		-- Nothing.
-	}
-}
-
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicDoor",
-	Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_EntranceDoor"
-}
-
 ItsyScape.Meta.ResourceName {
-	Value = "Door",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_EntranceDoor"
+	Value = "Wrought bronze key",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_WroughtBronzeKey"
 }

@@ -52,10 +52,19 @@ function Creep:new(resource, ...)
 	size.size = Vector(1, 2, 1)
 
 	self.resource = resource or false
+	self.mapObject = false
 end
 
 function Creep:getGameDBResource()
 	return self.resource
+end
+
+function Creep:setMapObject(value)
+	self.mapObject = value or false
+end
+
+function Creep:getMapObject()
+	return self.mapObject
 end
 
 function Creep:ready(director, game)

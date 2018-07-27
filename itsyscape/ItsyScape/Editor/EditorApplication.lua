@@ -127,12 +127,6 @@ function EditorApplication:makeOutputDirectory(category, resource)
 	end
 end
 
-function EditorApplication:initialize()
-	self:getGame():getStage():newMap(1, 1, 1)
-
-	Application.initialize(self)
-end
-
 function EditorApplication:tick()
 	Application.tick(self)
 	

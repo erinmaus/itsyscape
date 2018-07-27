@@ -9,3 +9,16 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_AbandonedMine.lua"
+
+ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Dungeon door",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
+}

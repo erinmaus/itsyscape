@@ -56,23 +56,29 @@ function BasicDoor:spawnOrPoof(mode)
 			for x = p.x - halfSize.x, p.x + halfSize.x do
 				if mode == 'spawn' then
 					do
-						local tile, i, j = map:getTileAt(x, p.z - 0.5)
+						local tile, i, j = map:getTileAt(x, p.z)
 						tile:setFlag('wall-top')
 					end
 
 					do
-						local tile, i, j = map:getTileAt(x, p.z + 0.5)
+						local tile, i, j = map:getTileAt(x, p.z)
 						tile:setFlag('wall-bottom')
 					end
 				elseif mode == 'poof' then
 					do
-						local tile, i, j = map:getTileAt(x, p.z - 0.5)
+						local tile, i, j = map:getTileAt(x, p.z)
 						tile:unsetFlag('wall-top')
 					end
 
 					do
-						local tile, i, j = map:getTileAt(x, p.z + 0.5)
+						local tile, i, j = map:getTileAt(x, p.z)
 						tile:unsetFlag('wall-bottom')
+					end
+					do
+						local tile, i, j = map:getTileAt(x, p.z)
+
+						for k in pairs(tile.flags) do
+						end
 					end
 				end
 			end
