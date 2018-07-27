@@ -20,6 +20,10 @@ function Path:getNumNodes()
 end
 
 function Path:getNodeAtIndex(index)
+	if index < 0 then
+		index = #self.nodes - math.abs(index) + 1
+	end
+
 	return self.nodes[index]
 end
 

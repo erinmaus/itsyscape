@@ -167,9 +167,7 @@ function DemoApplication:populateMap()
 			local map = self:getGame():getStage():getMap(1)
 			local position = a:getPeep():getBehavior(
 				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(4, 1)
-		else
-			print "nop"
+			position.position = map:getTileCenter(4, 4) + Vector(0.5, 0, -0.5)
 		end
 	end
 

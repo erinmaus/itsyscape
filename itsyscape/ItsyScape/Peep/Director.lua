@@ -22,6 +22,8 @@ function Director:new(gameDB)
 	self.peeps = {}
 	self.cortexes = {}
 	self.pendingPeeps = {}
+	self.newPeeps = {}
+	self.oldPeeps = {}
 	self._previewPeep = function(peep, behavior)
 		self.pendingPeeps[peep] = true
 	end
@@ -87,7 +89,7 @@ function Director:addPeep(peepType, ...)
 	peep.onBehaviorAdded:register(self._previewPeep)
 	peep.onBehaviorRemoved:register(self._previewPeep)
 
-	self.peeps[peep] = true
+	self.newPeeps[peep] = true
 	self.pendingPeeps[peep] = true
 
 	peep:assign(self)
@@ -108,7 +110,7 @@ function Director:removePeep(peep)
 			cortex:removePeep(peep)
 		end
 
-		self.peeps[peep] = nil
+		self.oldPeeps[peep] = true
 	end
 end
 
@@ -118,17 +120,26 @@ end
 --
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
+	for peep in pairs(self.newPeeps) do
+		self.peeps[peep] = true
+	end
+	self.newPeeps = {}
+
+	for peep in pairs(self.oldPeeps) do
+		self.peeps[peep] = nil
+	end
+	self.oldPeeps = {}
+
+	for peep in pairs(self.peeps) do
+		peep:update(self, self:getGameInstance())
+	end
+
 	for _, cortex in ipairs(self.cortexes) do
 		for peep in pairs(self.pendingPeeps) do
 			cortex:previewPeep(peep)
 		end
 	end
-
 	self.pendingPeeps = {}
-
-	for peep in pairs(self.peeps) do
-		peep:update(self, self:getGameInstance())
-	end
 
 	for _, cortex in pairs(self.cortexes) do
 		cortex:update(delta)
