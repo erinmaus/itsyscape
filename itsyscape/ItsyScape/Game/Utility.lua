@@ -275,7 +275,7 @@ function Utility.Peep.getTile(peep)
 	return i, j, k
 end
 
-function Utility.Peep.getWalk(peep, i, j, k, ...)
+function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
@@ -291,9 +291,8 @@ function Utility.Peep.getWalk(peep, i, j, k, ...)
 		{ i = i, j = j },
 		true, ...)
 	if path then
-		return ExecutePathCommand(path)
+		return ExecutePathCommand(path, distance)
 	else
-		print(i, j, 'failed')
 		return nil
 	end
 end

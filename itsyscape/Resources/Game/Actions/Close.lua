@@ -31,7 +31,7 @@ end
 function Close:perform(state, player, prop)
 	if self:canPerform(state, player, prop) then
 		local i, j, k = Utility.Peep.getTile(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k)
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
 		if walk then
 			local close = CallbackCommand(function()
