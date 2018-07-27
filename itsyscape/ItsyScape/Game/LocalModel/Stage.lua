@@ -28,6 +28,7 @@ function LocalStage:new(game)
 	self.actors = {}
 	self.props = {}
 	self.peeps = {}
+	self.decorations = {}
 	self.currentActorID = 1
 	self.currentPropID = 1
 	self.map = {}
@@ -171,6 +172,78 @@ function LocalStage:placeProp(propID)
 	return false, nil
 end
 
+function LocalStage:instantiateMapObject(resource)
+	local gameDB = self.game:getGameDB()
+
+	local object = gameDB:getRecord("MapObjectLocation", {
+		Resource = resource
+	})
+
+	local actorInstance, propInstance
+
+	if object then
+		local x = object:get("PositionX") or 0
+		local y = object:get("PositionY") or 0
+		local z = object:get("PositionZ") or 0
+
+		do
+			local prop = gameDB:getRecord("PropMapObject", {
+				MapObject = object:get("Resource")
+			})
+
+			if prop then
+				prop = prop:get("Prop")
+				if prop then
+					local s, p = self:placeProp("resource://" .. prop.name)
+
+					if s then
+						local peep = p:getPeep()
+						local position = peep:getBehavior(PositionBehavior)
+						if position then
+							position.position = Vector(x, y, z)
+						end
+
+						propInstance = p
+
+						if peep.setMapObject then
+							peep:setMapObject(resource)
+						end
+					end
+				end
+			end
+		end
+
+		do
+			local actor = gameDB:getRecord("PeepMapObject", {
+				MapObject = object:get("Resource")
+			})
+
+			if actor then
+				actor = actor:get("Prop")
+				if actor then
+					local s, p = self:spawnActor("resource://" .. actor.name)
+
+					if s then
+						local peep = p:getPeep()
+						local position = peep:getBehavior(PositionBehavior)
+						if position then
+							position.position = Vector(x, y, z)
+						end
+
+						actorInstance = p
+
+						if peep.setMapObject then
+							peep:setMapObject(resource)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return actorInstance, propInstance
+end
+
 function LocalStage:removeProp(prop)
 	if prop and self.props[prop] then
 		local p = self.props[prop]
@@ -183,6 +256,19 @@ function LocalStage:removeProp(prop)
 		self.peeps[peep] = nil
 
 		self.props[prop] = nil
+	end
+end
+
+function LocalStage:loadMapFromFile(filename, layer, tileSetID)
+	self:unloadMap(layer)
+
+	local map = Map.loadFromFile(filename)
+	if map then
+		self.map[layer] = map
+		self.onLoadMap(self, self.map[layer], layer, tileSetID)
+		self.game:getDirector():setMap(layer, map)
+
+		self:updateMap(layer)
 	end
 end
 
@@ -212,6 +298,95 @@ function LocalStage:unloadMap(layer)
 		self.onUnloadMap(self, self.map[layer], layer)
 		self.map[layer] = nil
 		self.game:getDirector():setMap(layer, nil)
+	end
+end
+
+function LocalStage:unloadAll()
+	local layers = self:getLayers()
+	for i = 1, #layers do
+		self:unloadMap(layers[i])
+	end
+
+	for group, decoration in pairs(self.decorations) do
+		self:decorate(group, nil)
+	end
+
+	do
+		local p = {}
+
+		for prop in self:iterateProps() do
+			table.insert(p, prop)
+		end
+
+		for _, prop in ipairs(p) do
+			self:removeProp(prop)
+		end
+	end
+
+	do
+		local p = {}
+
+		for actor in self:iterateActors() do
+			if actor ~= self.game:getPlayer():getActor() then
+				table.insert(p, actor)
+			end
+		end
+
+		for _, actor in ipairs(p) do
+			self:killActor(actor)
+		end
+	end
+end
+
+function LocalStage:loadStage(filename)
+	self:unloadAll()
+
+	local directoryPath = "Resources/Game/Maps/" .. filename
+
+	local meta
+	do
+		local metaFilename = directoryPath .. "/meta"
+		local data = "return " .. (love.filesystem.read(metaFilename) or "")
+		local chunk = assert(loadstring(data))
+		meta = setfenv(chunk, {})() or {}
+	end
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
+		local layer = item:match(".*(-?%d)%.lmap$")
+		if layer then
+			layer = tonumber(layer)
+
+			local tileSetID
+			if meta[layer] then
+				tileSetID = meta[layer].tileSetID
+			end
+
+			print(directoryPath .. item)
+
+			local layerMeta = meta[layer] or {}
+
+			self:loadMapFromFile(directoryPath .. "/" .. item, layer, layerMeta.tileSetID)
+		end
+	end
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
+		local group = item:match("(.*)%.ldeco$")
+		if group then
+			local decoration = Decoration(path .. "Decorations/" .. item)
+			self:getGame():getStage():decorate(group, decoration)
+		end
+	end
+
+	local gameDB = self.game:getGameDB()
+	local resource = gameDB:getResource(filename, "Map")
+	if resource then
+		local objects = gameDB:getRecords("MapObjectLocation", {
+			Map = resource
+		})
+
+		for i = 1, #objects do
+			self:instantiateMapObject(objects[i]:get("Resource"))
+		end
 	end
 end
 
@@ -327,6 +502,7 @@ end
 
 function LocalStage:decorate(group, decoration)
 	self.onDecorate(self, group, decoration)
+	self.decorations[group] = decoration
 end
 
 function LocalStage:iterateActors()

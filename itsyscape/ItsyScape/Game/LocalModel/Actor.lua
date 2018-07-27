@@ -225,7 +225,19 @@ end
 
 function LocalActor:getActions(scope)
 	if self.resource then
-		return Utility.getActions(self.game, self.resource, scope or 'world')
+		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
+		if self.peep then
+			local mapObject = self.peep:getMapObject()
+			if mapObject then
+				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
+
+				for i = 1, #proxyActions do
+					table.insert(actions, proxyActions[i])
+				end
+			end
+		end
+
+		return actions
 	else
 		return {}
 	end
@@ -235,12 +247,20 @@ function LocalActor:poke(action, scope)
 	if self.resource then
 		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
-		Utility.performAction(
+		local s = Utility.performAction(
 			self.game,
 			self.resource,
 			action,
 			scope,
 			player:getState(), player, peep)
+		if not s and peep:getMapObject() then
+			Utility.performAction(
+				self.game,
+				peep:getMapObject(),
+				action,
+				scope,
+				player:getState(), player, peep)
+		end
 	end
 end
 

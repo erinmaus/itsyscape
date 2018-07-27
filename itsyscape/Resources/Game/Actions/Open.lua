@@ -29,13 +29,14 @@ function Open:canPerform(state, flags, prop)
 end
 
 function Open:perform(state, player, prop)
-	if self:canPerform(state, player, prop) then
+	local flags = { ['item-inventory'] = true }
+	if self:canPerform(state, flags, prop) then
 		local i, j, k = Utility.Peep.getTile(prop)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
 		if walk then
 			local open = CallbackCommand(function()
-				self:transfer(state, player, { ['item-inventory'] = true })
+				self:transfer(state, player, flags)
 				prop:poke('open')
 			end)
 			local command = CompositeCommand(true, walk, open)

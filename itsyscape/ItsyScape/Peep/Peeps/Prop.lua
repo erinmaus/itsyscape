@@ -28,13 +28,23 @@ function Prop:new(resource, ...)
 	size.size = Vector(1, 1, 1)
 
 	self.resource = resource or false
+	self.mapObject = false
 end
 
 function Prop:getGameDBResource()
 	return self.resource
 end
 
+function Prop:setMapObject(value)
+	self.mapObject = value or false
+end
+
+function Prop:getMapObject()
+	return self.mapObject
+end
+
 function Prop:spawnOrPoof(mode)
+	print(self:getName())
 	local game = self:getDirector():getGameInstance()
 	local position = self:getBehavior(PositionBehavior)
 	local size = self:getBehavior(SizeBehavior)

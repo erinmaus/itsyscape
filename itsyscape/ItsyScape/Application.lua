@@ -18,6 +18,24 @@ local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local UIView = require "ItsyScape.UI.UIView"
 
+local function createGameDB()
+	local t = {
+		"Resources/Game/DB/Init.lua"
+	}
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems("Resources/Game/Maps/")) do
+		local f1 = "Resources/Game/Maps/" .. item .. "/DB/Main.lua"
+		local f2 = "Resources/Game/Maps/" .. item .. "/DB/Default.lua"
+		if love.filesystem.getInfo(f1) then
+			table.insert(t, f1)
+		elseif love.filesystem.getInfo(f2) then
+			table.insert(t, f2)
+		end
+	end
+
+	return GameDB.create(t, ":memory:")
+end
+
 local Application = Class()
 function Application:new()
 	self.camera = ThirdPersonCamera()
@@ -32,7 +50,7 @@ function Application:new()
 	self.startDrawTime = false
 	self.time = 0
 
-	self.gameDB = GameDB.create("Resources/Game/DB/Init.lua", ":memory:")
+	self.gameDB = createGameDB()
 	self.game = LocalGame(self.gameDB)
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.game)
@@ -41,6 +59,8 @@ function Application:new()
 end
 
 function Application:initialize()
+	self:getGame():getStage():newMap(1, 1, 1)
+
 	self:tick()
 end
 

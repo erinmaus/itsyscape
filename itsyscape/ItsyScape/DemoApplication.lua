@@ -35,10 +35,10 @@ function DemoApplication:new()
 end
 
 function DemoApplication:initialize()
-	self:createMap()
-
 	Application.initialize(self)
 
+	--self:populateMap()
+	self:getGame():getStage():loadStage("IsabelleIsland_AbandonedMine")
 	self:populateMap()
 
 	self:getGame():getUI():open("Ribbon")
@@ -49,130 +49,14 @@ function DemoApplication:initialize()
 	self.currentPlayerPosition = position
 end
 
-function DemoApplication:createMap()
-	self:getGame():getStage():newMap(8, 8, 1)
-	local map = self:getGame():getStage():getMap(1)
-	for j = 1, map:getHeight() do
-		for i = 1, map:getWidth() do
-			local tile = map:getTile(i, j)
-			tile.flat = 1
-			tile.edge = 2
-			tile.topLeft = 1
-			tile.topRight = 1
-			tile.bottomLeft = 1
-			tile.bottomRight = 1
-		end
-	end
-
-	table.insert(map:getTile(1, 1).decals, 11)
-	for i = 2, map:getWidth() do
-		local tile = map:getTile(i, 1)
-		table.insert(tile.decals, 5)
-	end
-
-	for j = 2, map:getHeight() do
-		local tile = map:getTile(1, j)
-		table.insert(tile.decals, 7)
-	end
-
-	for i = 2, map:getWidth() do
-		local tile = map:getTile(i, 1)
-		tile.topLeft = math.min(i - 1, math.ceil(map:getWidth() / 2))
-		tile.topRight = math.min(i, math.ceil(map:getWidth() / 2))
-		tile.bottomLeft = math.min(i - 1, math.ceil(map:getWidth() / 2))
-		tile.bottomRight = math.min(i, math.ceil(map:getWidth() / 2))
-	end
-
-	for j = 2, map:getHeight() / 2 do
-		for i = 1, map:getWidth() / 2 do
-			if i % 2 ~= j % 2 then
-				local tile = map:getTile(i * 2, j * 2)
-				tile.topLeft = 2
-				tile.topRight = 2
-				tile.bottomLeft = 2
-				tile.bottomRight = 2
-			end
-		end
-	end
-
-	for j = 2, map:getHeight() do
-		local tile = map:getTile(3, j)
-		tile.topLeft = 1
-		tile.topRight = 1
-		tile.bottomLeft = 1
-		tile.bottomRight = 1
-	end
-
-	self.game:getStage():updateMap(1)
-end
-
 function DemoApplication:moveActorToTile(actor, i, j, k)
 	local map = self:getGame():getStage():getMap(k or 1)
 	actor:teleport(map:getTileCenter(i, j))
 end
 
 function DemoApplication:populateMap()
-	do
-		local s, a = self:getGame():getStage():spawnActor("resource://Goblin_Base")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local i, j = math.random(1, map:getWidth()), math.random(1, map:getHeight())
-			self:moveActorToTile(a, i, j)
-		end
-	end
-
-	do
-		local s, a = self:getGame():getStage():placeProp("resource://Furnace_Default")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local position = a:getPeep():getBehavior(
-				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(5, 2)
-		end
-	end
-
-	do
-		local s, a = self:getGame():getStage():placeProp("resource://CopperRock_Default")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local position = a:getPeep():getBehavior(
-				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(7, 2)
-		end
-	end
-
-	do
-		local s, a = self:getGame():getStage():placeProp("resource://TinRock_Default")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local position = a:getPeep():getBehavior(
-				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(3, 2)
-		end
-	end
-
-	do
-		local s, a = self:getGame():getStage():placeProp("resource://Anvil_Default")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local position = a:getPeep():getBehavior(
-				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(8, 8)
-		end
-	end
-
-	do
-		local s, a = self:getGame():getStage():placeProp("resource://IsabelleIsland_AbandonedMine_EntranceDoor")
-		if s then
-			local map = self:getGame():getStage():getMap(1)
-			local position = a:getPeep():getBehavior(
-				require "ItsyScape.Peep.Behaviors.PositionBehavior")
-			position.position = map:getTileCenter(4, 4) + Vector(0.5, 0, -0.5)
-		end
-	end
-
 	local player = self:getGame():getPlayer():getActor()
-	self:moveActorToTile(player, 4, 4)
+	self:moveActorToTile(player, 40, 4)
 end
 
 function DemoApplication:tick()
