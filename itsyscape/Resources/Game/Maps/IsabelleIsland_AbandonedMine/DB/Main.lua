@@ -12,3 +12,26 @@ M["EntranceDoor"] {
 		-- Nothing.
 	}
 }
+
+M["CraftingRoomDoor"] {
+	ItsyScape.Action.Open() {
+		-- Nothing.
+	},
+
+	ItsyScape.Action.Close() {
+		-- Nothing.
+	}
+}
+
+M["BossDoor"] {
+	ItsyScape.Action.Open() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Close() {
+		-- Nothing.
+	}
+}
