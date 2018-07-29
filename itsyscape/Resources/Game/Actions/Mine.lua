@@ -44,7 +44,7 @@ function Mine:perform(state, player, prop)
 							local a = GatherResourceCommand(prop, equippedItem, { skill = "mining" })
 							local b = CallbackCommand(self.make, self, state, player, prop)
 							local queue = player:getCommandQueue()
-							queue:push(CompositeCommand(nil, walk, a, b))
+							queue:interrupt(CompositeCommand(nil, walk, a, b))
 
 							return true
 						else
