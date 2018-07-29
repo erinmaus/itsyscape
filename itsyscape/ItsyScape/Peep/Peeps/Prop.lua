@@ -44,7 +44,6 @@ function Prop:getMapObject()
 end
 
 function Prop:spawnOrPoof(mode)
-	print(self:getName())
 	local game = self:getDirector():getGameInstance()
 	local position = self:getBehavior(PositionBehavior)
 	local size = self:getBehavior(SizeBehavior)
