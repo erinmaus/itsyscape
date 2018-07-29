@@ -40,6 +40,7 @@ function PlayerInventoryProvider:assignKey(item)
 
 	index = index or previousIndex + 1
 	self:getBroker():setItemKey(item, index)
+	self:getBroker():setItemZ(item, index)
 end
 
 function PlayerInventoryProvider:onSpawn(item, count)

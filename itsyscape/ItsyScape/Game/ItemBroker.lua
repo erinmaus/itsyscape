@@ -367,6 +367,8 @@ function ItemBroker.Inventory:new(provider)
 	self.items = {}
 	self.keys = {}
 	self.itemsByKey = {}
+	self.zValues = {}
+	self.itemsByZ = {}
 	self.tags = {}
 	self.count = 0
 end
@@ -390,6 +392,8 @@ function ItemBroker.Inventory:add(item)
 	self.items[item] = {}
 	self.tags[item] = {}
 	self.count = self.count + 1
+	table.insert(self.itemsByZ, item)
+	self:sortItems()
 end
 
 -- Removes item 'item' from the inventory.
@@ -402,7 +406,15 @@ function ItemBroker.Inventory:remove(item)
 
 	self.items[item] = nil
 	self.tags[item] = nil
+	self.zValues[item] = nil
 	self.count = self.count - 1
+
+	for i = 1, #self.itemsByZ do
+		if self.itemsByZ[i] == item then
+			table.remove(self.itemsByZ, i)
+			break
+		end
+	end
 
 	assert(self.count >= 0, "critical logic error! count desynchronized")
 end
@@ -436,7 +448,11 @@ end
 
 -- Returns an iterator over the items in the Inventory.
 function ItemBroker.Inventory:iterate()
-	return pairs(self.items)
+	local index = 0
+	return function()
+		index = index + 1
+		return self.itemsByZ[index]
+	end
 end
 
 -- Iterates by key 'value'.
@@ -568,6 +584,25 @@ function ItemBroker.Inventory:unsetKey(item)
 
 		self.itemsByKey[item] = nil
 	end
+end
+
+function ItemBroker.Inventory:setZ(item, value)
+	assert(self:has(item), "item is not in Inventory")
+
+	self.zValues[item] = value
+	self:sortItems()
+end
+
+function ItemBroker.Inventory:getZ(item)
+	assert(self:has(item), "item is not in Inventory")
+
+	return self.zValues[item] or 0
+end
+
+function ItemBroker.Inventory:sortItems()
+	table.sort(self.itemsByZ, function(a, b)
+		return self:getZ(a) < self:getZ(b)
+	end)
 end
 
 ItemBroker.Key = Class()
@@ -826,6 +861,26 @@ function ItemBroker:getItemKey(item)
 	else
 		return nil
 	end
+end
+
+-- Sets the 'Z' (or sorting order) for 'item'.
+function ItemBroker:setItemZ(item, value)
+	assert(item ~= nil, "item is nil")
+	assert(self:hasItem(item), "item not in broker")
+
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
+	return inventory:setZ(item, value)
+end
+
+-- Gets the 'Z' (or sorting order) for 'item'.
+function ItemBroker:getItemZ(item)
+	assert(item ~= nil, "item is nil")
+	assert(self:hasItem(item), "item not in broker")
+
+	local provider = self.items[item]
+	local inventory = self.inventories[provider]
+	inventory:getZ(item)
 end
 
 -- Sets a tag 'key' with value 'value' for the item 'item'.
