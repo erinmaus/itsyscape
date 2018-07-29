@@ -1,8 +1,16 @@
 do
-	local cpath = package.cpath
 	local sourceDirectory = love.filesystem.getSourceBaseDirectory()
+
+	local cpath = package.cpath
 	package.cpath = string.format(
 		"%s/ext/?.dll;%s/ext/?.so;%s",
+		sourceDirectory,
+		sourceDirectory,
+		cpath)
+
+	local path = package.path
+	package.path = string.format(
+		"%s/ext/?.lua;%s/ext/?/init.lua;%s",
 		sourceDirectory,
 		sourceDirectory,
 		cpath)
