@@ -361,8 +361,6 @@ function LocalStage:loadStage(filename)
 				tileSetID = meta[layer].tileSetID
 			end
 
-			print(directoryPath .. item)
-
 			local layerMeta = meta[layer] or {}
 
 			self:loadMapFromFile(directoryPath .. "/" .. item, layer, layerMeta.tileSetID)
@@ -376,6 +374,8 @@ function LocalStage:loadStage(filename)
 			self:getGame():getStage():decorate(group, decoration)
 		end
 	end
+
+	self:spawnGround()
 
 	local gameDB = self.game:getGameDB()
 	local resource = gameDB:getResource(filename, "Map")
