@@ -660,7 +660,6 @@ function MapEditorApplication:load(filename, preferExisting)
 		local metaFilename
 		if preferExisting then
 			metaFilename = self:getDirectoryName("Maps", filename) .. "meta"
-			print(metaFilename)
 		else
 			metaFilename = self:getOutputFilename("Maps", filename, "meta")
 		end
