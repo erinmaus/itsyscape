@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
@@ -23,9 +24,11 @@ Stats.Skill.MAX = 99
 function Stats.Skill:new(name)
 	self.name = name
 	self.xp = 0
+	self.nextLevelXP = Curve.XP_CURVE:compute(2)
 	self.level = 1
 	self.levelBoost = 0
 	self.isDirty = false
+	self.levelUp = Callback()
 end
 
 -- Gets the name of the skill.
@@ -39,6 +42,11 @@ end
 function Stats.Skill:addXP(amount)
 	self.xp = math.max(math.floor(self.xp + math.max(amount, 0)), 0)
 	self.isDirty = true
+
+	if self.xp > self.nextLevelXP then
+		self.levelUp(self, self.level)
+		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
+	end
 end
 
 -- Sets the XP directly.
@@ -99,12 +107,15 @@ function Stats:new(id, gameDB)
 	self.id = id
 	self.skills = {}
 	self.skillsByIndex = {}
+	self.levelUp = Callback()
 
 	local brochure = gameDB:getBrochure()
 	local resourceType = Mapp.ResourceType()
 	if brochure:tryGetResourceType("Skill", resourceType) then
 		for resource in brochure:findResourcesByType(resourceType) do
 			local skill = Stats.Skill(resource.name)
+			skill.levelUp:register(self.levelUp, self)
+
 			self.skills[resource.name] = skill
 			table.insert(self.skillsByIndex, skill)
 		end
