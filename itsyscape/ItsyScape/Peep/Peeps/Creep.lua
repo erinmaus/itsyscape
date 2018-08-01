@@ -79,6 +79,28 @@ function Creep:ready(director, game)
 		else
 			self:setName("*" .. self.resource.name)
 		end
+
+		local stats = self:getBehavior(StatsBehavior)
+		if stats and stats.stats then
+			stats = stats.stats
+			local function setStats(records)
+				for i = 1, #records do
+					local skill = records[i]:get("Skill").name
+					local xp = records[i]:get("Value")
+
+					if stats:hasSkill(skill) then
+						stats:getSkill(skill):setXP(xp)
+					else
+						Log.warn("Skill %s not found on Peep %s.", skill, self:getName())
+					end
+				end
+			end
+
+			setStats(gameDB:getRecords("PeepStat", { Resource = self.resource }))
+			if self.mapObject then
+				setStats(gameDB:getRecords("PeepStat", { Resource = self.mapObject }))
+			end
+		end
 	end
 end
 
@@ -93,7 +115,11 @@ function Creep:walk(i, j, k)
 	if path then
 		local queue = self:getCommandQueue()
 		queue:interrupt(ExecutePathCommand(path))
+
+		return true
 	end
+
+	return false
 end
 
 function Creep:onReceiveAttack(p)

@@ -53,8 +53,6 @@ function BaseGoblin:new(t, ...)
 end
 
 function BaseGoblin:ready(director, game)
-	Creep.ready(self, director, game)
-
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -72,11 +70,12 @@ function BaseGoblin:ready(director, game)
 
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Goblin", game:getGameDB())
-	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(15))
+
+	Creep.ready(self, director, game)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.maximumHitpoints = 1000
-	combat.currentHitpoints = 1000
+	combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
+	combat.currentHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
 end
 
 function BaseGoblin:update(director, game)
@@ -91,9 +90,12 @@ function BaseGoblin:update(director, game)
 	if math.random() < 0.1 and not self:hasBehavior(TargetTileBehavior) then
 		if isAlive then
 			local map = self:getDirector():getGameInstance():getStage():getMap(1)
-			local i = math.floor(math.random(1, map:getWidth()))
-			local j = math.floor(math.random(1, map:getHeight()))
-			self:walk(i, j, 1)
+			local success
+			repeat
+				local i = math.floor(math.random(1, map:getWidth()))
+				local j = math.floor(math.random(1, map:getHeight()))
+				success = self:walk(i, j, 1)
+			until success
 		end
 	end
 end
