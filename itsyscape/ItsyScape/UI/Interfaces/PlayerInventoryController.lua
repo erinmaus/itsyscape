@@ -143,10 +143,12 @@ function PlayerInventoryController:swap(e)
 
 		if item1 then
 			broker:setItemKey(item1, e.b)
+			broker:setItemZ(item1, e.b)
 		end
 
 		if item2 then
 			broker:setItemKey(item2, e.a)
+			broker:setItemZ(item2, e.a)
 		end
 	end
 end
