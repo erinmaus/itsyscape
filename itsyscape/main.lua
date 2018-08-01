@@ -16,6 +16,11 @@ do
 		cpath)
 end
 
+do
+	local B = require "B"
+	B._ROOT = "ItsyScape.Mashina"
+end
+
 Log = require "ItsyScape.Common.Log"
 _APP = false
 
