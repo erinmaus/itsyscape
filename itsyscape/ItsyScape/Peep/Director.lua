@@ -114,6 +114,28 @@ function Director:removePeep(peep)
 	end
 end
 
+function Director:probe(...)
+	local args = { n = select('#', ...), ... }
+
+	local result = {}
+	for peep in pairs(self.peeps) do
+		local match = true
+		for i = 1, args.n do
+			local func = args[i]
+			if not func(peep) then
+				match = false
+				break
+			end
+		end
+
+		if match then
+			table.insert(result, peep)
+		end
+	end
+
+	return result
+end
+
 -- Updates the Director.
 --
 -- First updates Peeps.

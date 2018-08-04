@@ -219,18 +219,18 @@ function LocalStage:instantiateMapObject(resource)
 			})
 
 			if actor then
-				actor = actor:get("Prop")
+				actor = actor:get("Peep")
 				if actor then
-					local s, p = self:spawnActor("resource://" .. actor.name)
+					local s, a = self:spawnActor("resource://" .. actor.name)
 
 					if s then
-						local peep = p:getPeep()
+						local peep = a:getPeep()
 						local position = peep:getBehavior(PositionBehavior)
 						if position then
 							position.position = Vector(x, y, z)
 						end
 
-						actorInstance = p
+						actorInstance = a
 
 						if peep.setMapObject then
 							peep:setMapObject(resource)

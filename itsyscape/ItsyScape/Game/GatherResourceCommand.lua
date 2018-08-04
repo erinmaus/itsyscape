@@ -24,6 +24,9 @@ function GatherResourceCommand:new(prop, tool, t)
 	self.bonusStrength = t.bonusStrength or 0
 	self.time = 0
 	self.isFinished = false
+	self._onResourceObtained = function(...)
+		self:onResourceObtained(...)
+	end
 end
 
 function GatherResourceCommand:getIsFinished()
@@ -44,7 +47,7 @@ function GatherResourceCommand:onBegin(peep)
 		self.cooldown = math.huge
 	end
 
-	self.prop:listen('resourceObtained', self.onResourceObtained, self, peep)
+	self.prop:listen('resourceObtained', self._onResourceObtained, self, peep)
 
 	peep:poke('resourceHit', {
 		tool = self.tool,
@@ -54,11 +57,11 @@ function GatherResourceCommand:onBegin(peep)
 end
 
 function GatherResourceCommand:onEnd(peep)
-	self.prop:silence('resourceObtained', self.onResourceObtained)
+	self.prop:silence('resourceObtained', self._onResourceObtained)
 end
 
 function GatherResourceCommand:onInterrupt(peep)
-	self.prop:silence('resourceObtained', self.onResourceObtained)
+	self.prop:silence('resourceObtained', self._onResourceObtained)
 end
 
 function GatherResourceCommand:update(delta, peep)

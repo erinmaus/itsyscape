@@ -71,7 +71,8 @@ function Utility.getAction(game, action, scope)
 			local t = {
 				id = action.id.value,
 				type = definition.name,
-				verb = a:getVerb() or a:getName()
+				verb = a:getVerb() or a:getName(),
+				instance = ActionType(game, action)
 			}
 
 			return t, ActionType
@@ -265,7 +266,6 @@ function Utility.Peep.getTile(peep)
 	if not peep:hasBehavior(PositionBehavior) then
 		return 0, 0
 	end
-
 
 	local position = peep:getBehavior(PositionBehavior).position
 	local k = position.layer or 1

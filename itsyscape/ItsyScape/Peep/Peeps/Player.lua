@@ -8,7 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
@@ -17,11 +20,14 @@ local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryPro
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -56,31 +62,6 @@ function Player:new(resource, ...)
 	local equipment = self:getBehavior(EquipmentBehavior)
 	equipment.equipment = EquipmentInventoryProvider(self)
 
-	local walkAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Walk_1/Script.lua")
-	self:addResource("animation-walk", walkAnimation)
-	local idleAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Idle_1/Script.lua")
-	self:addResource("animation-idle", idleAnimation)
-	local attackAnimationStaffCrush = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
-	self:addResource("animation-attack-crush-staff", attackAnimationStaffCrush)
-	local attackAnimationStaffMagic = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
-	self:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
-	local attackAnimationPickaxeStab = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
-	self:addResource("animation-attack-stab-pickaxe", attackAnimationPickaxeStab)
-	local skillAnimationMine = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
-	self:addResource("animation-skill-mining", skillAnimationMine)
-
 	self.resource = resource or false
 	self.mapObject = false
 end
@@ -109,6 +90,88 @@ function Player:ready(director, game)
 		else
 			self:setName("*" .. self.resource.name)
 		end
+
+		local stats = self:getBehavior(StatsBehavior)
+		if stats and stats.stats then
+			stats = stats.stats
+			local function setStats(records)
+				for i = 1, #records do
+					local skill = records[i]:get("Skill").name
+					local xp = records[i]:get("Value")
+
+					if stats:hasSkill(skill) then
+						stats:getSkill(skill):setXP(xp)
+					else
+						Log.warn("Skill %s not found on Peep %s.", skill, self:getName())
+					end
+				end
+			end
+
+			setStats(gameDB:getRecords("PeepStat", { Resource = self.resource }))
+			if self.mapObject then
+				setStats(gameDB:getRecords("PeepStat", { Resource = self.mapObject }))
+			end
+		end
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		if combat and stats then
+			combat.maximumHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+			combat.currentHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+		end
+
+		do
+			local function setMashinaStates(records)
+				if #records > 0 then
+					local s, m = self:addBehavior(MashinaBehavior)
+					if s then
+						for i = 1, #records do
+							local record = records[i]
+							local state = record:get("State")
+							local tree = record:get("Tree")
+							m.states[state] = love.filesystem.load(tree)()
+
+							local default = record:get("IsDefault")
+							if default or default ~= 0 then
+								m.currentState = state
+							end
+						end
+					end
+				end
+			end
+
+			setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = self.resource }))
+			if self.mapObject then
+				setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = self.mapObject }))
+			end
+		end
+
+		do
+			local broker = director:getItemBroker()
+			local function equipItems(records)
+				local equipment = self:getBehavior(EquipmentBehavior)
+				if equipment and equipment.equipment then
+					equipment = equipment.equipment
+					for i = 1, #records do
+						local record = records[i]
+						local item = record:get("Item")
+						local count = record:get("Count") or 1
+
+						local transaction = broker:createTransaction()
+						transaction:addParty(equipment)
+						transaction:spawn(equipment, item.name, count, false)
+						local s, r = transaction:commit()
+						if not s then
+							Log.error("Failed to equip item: %s", r)
+						end
+					end
+				end
+			end
+
+			equipItems(gameDB:getRecords("PeepEquipmentItem", { Resource = self.resource }))
+			if self.mapObject then
+				equipItems(gameDB:getRecords("PeepEquipmentItem", { Resource = self.mapObject }))
+			end
+		end
 	end
 end
 
@@ -123,7 +186,7 @@ function Player:assign(director)
 
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats(self:getName(), director:getGameDB())
-	stats:getSkill("Constitution").levelUp:register(function(skill, oldLevel)
+	stats.stats:getSkill("Constitution").levelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getLevel() - oldLevel, 0)
 
 		local combat = self:getBehavior(CombatStatusBehavior)

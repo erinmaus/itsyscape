@@ -10,24 +10,26 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
+local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
-local Creep = require "ItsyScape.Peep.Peeps.Creep"
+local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
-local BaseGoblin = Class(Creep)
+local BaseGoblin = Class(Player)
 
-function BaseGoblin:new(t, ...)
-	Creep.new(self, t or 'Goblin_Base', ...)
+function BaseGoblin:new(resource, name, ...)
+	Player.new(self, resource, name or 'Goblin_Base', ...)
 
 	self:addBehavior(HumanoidBehavior)
+	self:addBehavior(CombatStatusBehavior)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -71,43 +73,21 @@ function BaseGoblin:ready(director, game)
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Goblin", game:getGameDB())
 
-	Creep.ready(self, director, game)
+	Player.ready(self, director, game)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
 	combat.currentHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
 end
 
-function BaseGoblin:update(director, game)
-	Creep.update(self, director, game)
-
-	local isAlive
-	do
-		local combat = self:getBehavior(CombatStatusBehavior)
-		isAlive = combat.currentHitpoints > 0
-	end
-
-	if math.random() < 0.1 and not self:hasBehavior(TargetTileBehavior) then
-		if isAlive then
-			local map = self:getDirector():getGameInstance():getStage():getMap(1)
-			local success
-			repeat
-				local i = math.floor(math.random(1, map:getWidth()))
-				local j = math.floor(math.random(1, map:getHeight()))
-				success = self:walk(i, j, 1)
-			until success
-		end
-	end
-end
-
 function BaseGoblin:onHit(p)
-	Creep.onHit(self, p)
+	Player.onHit(self, p)
 
 	print(string.format("Ow! The goblin took %d damage.", p:getDamage()))
 end
 
 function BaseGoblin:onDie(p)
-	Creep.onDie(self, p)
+	Player.onDie(self, p)
 
 	print("RIP, Goblin.")
 end

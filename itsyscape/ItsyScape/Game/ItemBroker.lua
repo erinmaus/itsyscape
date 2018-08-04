@@ -213,8 +213,16 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		else
 			local p = state[provider]
 			if isStackable then
+				if p.count + 1 > provider:getMaxInventorySpace() then
+					error("inventory full")
+				end
+
 				p.count = p.count + 1
 			else
+				if p.count + count > provider:getMaxInventorySpace() then
+					error("inventory full")
+				end
+
 				p.count = p.count + count
 			end
 		end
