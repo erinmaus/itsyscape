@@ -27,6 +27,26 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepMashinaState" {
+		State = Meta.TYPE_TEXT,
+		Tree = Meta.TYPE_TEXT,
+		IsDefault = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PeepEquipmentItem" {
+		Item = Meta.TYPE_RESOURCE,
+		Count = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PeepInventoryItem" {
+		Item = Meta.TYPE_RESOURCE,
+		Count = Meta.TYPE_INTEGER,
+		Noted = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
 	ResourceType "Map"

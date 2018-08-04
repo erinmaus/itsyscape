@@ -40,11 +40,11 @@ function MashinaCortex:update(delta)
 		local p = self.states[peep]
 		local mashina = peep:getBehavior(MashinaBehavior)
 		if p then
-			if mashina.currentState ~= p.current then
+			if mashina.currentState ~= p.currentState then
 				if mashina.currentState and mashina.states[mashina.currentState] then
 					local s = mashina.states[mashina.currentState]
 					p.executor = B.Executor(peep)
-					p.tree = B.TreeBuilder.materialize(peep)
+					p.tree = BTreeBuilder.materialize(peep, s)
 				else
 					p.executor = nil
 					p.tree = false

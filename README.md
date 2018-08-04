@@ -1,14 +1,10 @@
-# ItsyScape, a WIP RPG-slash-Tycoon game
+# ItsyRealm, a tiny RPG game
 
-ItsyScape is a small tycoon game built on [Love2d](http://love2d.org). It's very
-much a work in progress.
+ItsyRealm is a small RPG built on a slightly modified version of [Love2d](http://love2d.org). It's very much a work in progress.
 
-The general idea is you are a god-in-progress trying to obtain Elder artifacts,
-like the Staff of Armadyllo, to ascend to godhood. Using a legion of peeps,
-you have to defeat enemies, create stuff, and explore in order to find the
-artifacts. Once you do, you can become a god, which has a few perks I guess.
+The general idea is you're a would-be hero trying to save the world from mad gods who wish to conquer it. You start out as a weak nobody and can choose how to proceed based on your own desires. Throughout the game, you use combat and skills (like a game it's concindentally similar to) to advance and hopefully save the world.
 
-Currently, none of that is implemented :). How lame.
+Currently, none of that is implemented :). How lame! But there should be a dungeon you can explore soon enough...
 
 Any similarities to [RuneScape](http://runescape.com) now or in the future are
 only a coincidence ;).

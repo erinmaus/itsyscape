@@ -759,4 +759,14 @@ function MapEditorApplication:unload()
 	self.propNames = {}
 end
 
+function MapEditorApplication:draw(...)
+	EditorApplication.draw(self, ...)
+
+	local m = string.format(
+		"(%d, %d)",
+		self.currentI,
+		self.currentJ)
+	love.graphics.print(m, 0, 0)
+end
+
 return MapEditorApplication
