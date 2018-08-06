@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_MineLogic.lua
+-- Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_SmeltLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,35 +12,16 @@ local Mashina = require "ItsyScape.Mashina"
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
-		Mashina.Navigation.WalkToTile {
-			i = 16,
-			j = 21
+		Mashina.Skills.CraftViaNearbyProp {
+			prop = "Furnace_Default",
+			action = "Smelt",
+			resource = "BronzeBar"
 		},
 
 		Mashina.Peep.Wait,
 
-		Mashina.Repeat {
-			Mashina.Invert {
-				Mashina.Peep.IsInventoryFull
-			},
-
-			Mashina.Step {
-				Mashina.Skills.Mining.MineNearbyRock {
-					resource = "CopperOre"
-				},
-
-				Mashina.Peep.Wait,
-
-				Mashina.Skills.Mining.MineNearbyRock {
-					resource = "TinOre"
-				},
-
-				Mashina.Peep.Wait
-			}
-		},
-
 		Mashina.Peep.SetState {
-			state = "smelt"
+			state = "mine"
 		}
 	}
 }

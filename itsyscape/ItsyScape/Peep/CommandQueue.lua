@@ -168,6 +168,7 @@ function CommandQueue:update(delta)
 				currentCommand:update(delta, self.peep)
 
 				if currentCommand:getIsFinished() then
+
 					-- Handle the case where the current command switches to
 					-- blocking from non-blocking.
 					--
@@ -177,7 +178,10 @@ function CommandQueue:update(delta)
 					end
 
 					currentCommand:onEnd(self.peep)
-					table.remove(self.queue, 1)
+
+					if self.queue[1] == currentCommand then
+						table.remove(self.queue, 1)
+					end
 				end
 			end
 		until currentCommand == nil or currentCommand:getIsPending()

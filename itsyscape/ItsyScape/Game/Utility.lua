@@ -239,7 +239,9 @@ end
 -- Makes the peep walk to the tile (i, j, k).
 --
 -- Returns true on success, false on failure.
-function Utility.Peep.walk(peep, i, j, k, ...)
+function Utility.Peep.walk(peep, i, j, k, distance, ...)
+	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
+
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
@@ -249,14 +251,14 @@ function Utility.Peep.walk(peep, i, j, k, ...)
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = MapPathFinder(map)
+	local pathFinder = SmartPathFinder(map, peep)
 	local path = pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
-		...)
+		true, ...)
 	if path then
 		local queue = peep:getCommandQueue()
-		return queue:interrupt(ExecutePathCommand(path))
+		return queue:interrupt(ExecutePathCommand(path, distance))
 	end
 
 	return false
@@ -276,6 +278,8 @@ function Utility.Peep.getTile(peep)
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
+	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
+
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
@@ -285,7 +289,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = MapPathFinder(map)
+	local pathFinder = SmartPathFinder(map, peep)
 	local path = pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },

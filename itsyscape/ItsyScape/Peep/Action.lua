@@ -54,6 +54,11 @@ function Action:getName()
 	return self.definitionName
 end
 
+-- Returns true if the action is of the specified name, false otherwise.
+function Action:is(name)
+	return self.definitionName:lower() == name:lower()
+end
+
 -- Gets the definition ID, as a number.
 --
 -- This should be the GameDB ID.
@@ -85,11 +90,6 @@ function Action:canPerform(state, flags)
 		local resourceType = brochure:getResourceTypeFromResource(resource)
 
 		if not state:has(resourceType.name, resource.name, requirement.count, flags) then
-			Log.info(
-				"Requirement not met; need %d of %s %s",
-				requirement.count,
-				resourceType.name,
-				resource.name)
 			return false
 		end
 	end

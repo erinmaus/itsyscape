@@ -131,7 +131,7 @@ function Player:ready(director, game)
 							m.states[state] = love.filesystem.load(tree)()
 
 							local default = record:get("IsDefault")
-							if default or default ~= 0 then
+							if default and default ~= 0 then
 								m.currentState = state
 							end
 						end

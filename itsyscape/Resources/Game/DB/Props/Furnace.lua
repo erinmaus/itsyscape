@@ -22,7 +22,9 @@ ItsyScape.Meta.ActionVerb {
 }
 
 ItsyScape.Resource.Prop "Furnace_Default" {
-	FurnaceAction
+	FurnaceAction,
+
+	ItsyScape.Action.UseCraftWindow()
 }
 
 ItsyScape.Meta.PeepID {

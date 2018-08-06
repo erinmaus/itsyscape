@@ -18,18 +18,20 @@ Close.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function Close:canPerform(state, flags, prop)
 	if Action.canPerform(self, state, flags) then
-		if prop:isType(require "Resources.Game.Peeps.Props.BasicDoor") then
-			return prop:getIsOpen()
-		end
-
 		return true
 	end
 
 	return false
 end
 
-function Close:perform(state, player, prop)
+function Close:perform(state, player, prop, channel)
 	if self:canPerform(state, player, prop) then
+		if prop:isType(require "Resources.Game.Peeps.Props.BasicDoor") then
+			if not prop:getIsOpen() then
+				return false
+			end
+		end
+
 		local i, j, k = Utility.Peep.getTile(prop)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
@@ -39,10 +41,12 @@ function Close:perform(state, player, prop)
 			end)
 			local command = CompositeCommand(true, walk, close)
 
-			local queue = player:getCommandQueue()
-			queue:interrupt(command)
+			local queue = player:getCommandQueue(channel)
+			return queue:push(command)
 		end
 	end
+
+	return false
 end
 
 return Close
