@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Game.Model.Player"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
@@ -54,21 +55,7 @@ end
 -- Moves the player to the specified position on the map via walking.
 function Player:walk(i, j, k)
 	local peep = self.actor:getPeep()
-	local path = self:findPath(i, j, k)
-	if path then
-		local queue = self.actor:getPeep():getCommandQueue()
-		if queue:interrupt(ExecutePathCommand(path)) then
-			-- TODO: move this somewhere else; some univer sal "interrupt player"
-			--       function...
-			peep:removeBehavior(CombatTargetBehavior)
-
-			return true
-		else
-			return false
-		end
-	else
-		return false
-	end
+	return Utility.Peep.walk(peep, i, j, k)
 end
 
 return Player

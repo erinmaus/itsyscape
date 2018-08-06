@@ -52,11 +52,15 @@ function MashinaCortex:update(delta)
 				p.currentState = mashina.currentState
 			end
 
+			local oldState = mashina.currentState
+
 			if p.tree and p.executor then
 				local s = p.tree:execute(p.executor)
-				local oldState = mashina.currentState
-				if s == B.Status.Success then
-					mashina.currentState = false
+				if s == B.Status.Success or oldState ~= mashina.currentState then
+					if oldState == mashina.currentState then
+						mashina.currentState = false
+					end
+
 					peep:poke('mashinaFinished', {
 						success = true,
 						state = oldState

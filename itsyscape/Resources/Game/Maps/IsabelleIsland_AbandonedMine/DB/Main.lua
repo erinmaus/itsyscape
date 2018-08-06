@@ -19,7 +19,13 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "mine",
 		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_MineLogic.lua",
-		Default = 1,
+		IsDefault = 1,
+		Resource = M["Goblin"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "smelt",
+		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_SmeltLogic.lua",
 		Resource = M["Goblin"]
 	}
 

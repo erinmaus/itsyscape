@@ -36,8 +36,21 @@ function Tile:new()
 
 	self.flags = {}
 	self.data = {}
+	self.links = {}
 
 	self.impassableDepth = 0
+end
+
+function Tile:addLink(link)
+	self.links[link] = true
+end
+
+function Tile:removeLink(link)
+	self.links[link] = false
+end
+
+function Tile:iterateLinks()
+	return pairs(self.links)
 end
 
 function Tile:pushImpassable()
