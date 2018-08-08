@@ -1,38 +1,54 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_AbandonedMine/DB/Default.lua"
 
-M["Goblin"] = ItsyScape.Resource.MapObject.Unique()
+M["SkeletonMinerJoe"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 16.5 * 2,
 		PositionY = 3,
 		PositionZ = 21.5 * 2,
-		Name = "Goblin",
+		Name = "Skeleton",
 		Map = M._MAP,
-		Resource = M["Goblin"]
+		Resource = M["SkeletonMinerJoe"]
+	}
+
+	M["SkeletonMinerJoe"] {
+		ItsyScape.Action.Attack()
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Goblin_Base",
-		MapObject = M["Goblin"]
+		Peep = ItsyScape.Resource.Peep "Skeleton_Base",
+		MapObject = M["SkeletonMinerJoe"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "mine",
 		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_MineLogic.lua",
 		IsDefault = 1,
-		Resource = M["Goblin"]
+		Resource = M["SkeletonMinerJoe"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "smelt",
 		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_SmeltLogic.lua",
-		Resource = M["Goblin"]
+		Resource = M["SkeletonMinerJoe"]
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "BronzePickaxe",
 		Count = 1,
-		Resource = M["Goblin"]
+		Resource = M["SkeletonMinerJoe"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Skeleton Miner Joe",
+		Language = "en-US",
+		Resource = M["SkeletonMinerJoe"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = M["SkeletonMinerJoe"]
 	}
 end
 

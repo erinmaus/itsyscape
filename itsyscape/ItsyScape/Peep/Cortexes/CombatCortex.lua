@@ -8,10 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -38,6 +41,19 @@ function CombatCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
 
 	self.walking[peep] = nil
+end
+
+function CombatCortex:resume(peep, target)
+	local actor = target:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+		local s, b = peep:addBehavior(CombatTargetBehavior)
+		if s then
+			b.actor = actor
+		end
+
+		peep:getCommandQueue():push(AttackCommand())
+	end
 end
 
 function CombatCortex:update(delta)
@@ -83,12 +99,17 @@ function CombatCortex:update(delta)
 					if distanceToTarget > weaponRange then
 						local tile = self.walking[peep]
 						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
-							if not Utility.Peep.walk(peep, targetI, targetJ, targetPosition.layer or 1, true) then
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 1)
+							if not walk then
 								Log.info(
 									"Peep %s (%d) couldn't reach target Peep %s (%d); abandoning.",
 									peep:getName(), peep:getTally(),
 									target:getName(), target:getTally())
 								peep:removeBehavior(CombatTargetBehavior)
+							else
+								local callback = CallbackCommand(self.resume, self, peep, target)
+								local c = CompositeCommand(true, walk, callback)
+								peep:getCommandQueue():interrupt(c)
 							end
 
 							self.walking[peep] = { i = targetI, j = targetJ }

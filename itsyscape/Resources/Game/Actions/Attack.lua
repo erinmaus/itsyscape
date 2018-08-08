@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
+local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
@@ -25,9 +26,12 @@ function Attack:perform(state, player, target)
 
 	local targetActor = target:getBehavior(ActorReferenceBehavior)
 	if targetActor and targetActor.actor then
-		local s, b = player:addBehavior(CombatTargetBehavior)
-		if s then
-			b.actor = targetActor.actor
+		local attack = AttackCommand()
+		if player:getCommandQueue():interrupt(attack) then
+			local s, b = player:addBehavior(CombatTargetBehavior)
+			if s then
+				b.actor = targetActor.actor
+			end
 		end
 	end
 end
