@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
@@ -57,30 +58,7 @@ function One:new(...)
 	local equipment = self:getBehavior(EquipmentBehavior)
 	equipment.equipment = EquipmentInventoryProvider(self)
 
-	local walkAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Walk_1/Script.lua")
-	self:addResource("animation-walk", walkAnimation)
-	local idleAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_Idle_1/Script.lua")
-	self:addResource("animation-idle", idleAnimation)
-	local attackAnimationStaffCrush = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
-	self:addResource("animation-attack-crush-staff", attackAnimationStaffCrush)
-	local attackAnimationStaffMagic = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
-	self:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
-	local attackAnimationPickaxeStab = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
-	self:addResource("animation-attack-stab-pickaxe", attackAnimationPickaxeStab)
-	local skillAnimationMine = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
-	self:addResource("animation-skill-mining", skillAnimationMine)
+	Utility.Peep.makeHuman(self)
 end
 
 function One:assign(director)
@@ -139,20 +117,6 @@ function One:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Itsy/Boots.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
-end
-
-function One:update(director, game)
-	Peep.update(self, director, game)
-
-	if love.keyboard.isDown('space') then
-		if self.space then
-			local AttackPoke = require "ItsyScape.Peep.AttackPoke"
-			self:poke('initiateAttack', AttackPoke({ attackType = 'stab' }))
-			self.space = false
-		end
-	else
-		self.space = true
-	end
 end
 
 function One:onDropItem(e)

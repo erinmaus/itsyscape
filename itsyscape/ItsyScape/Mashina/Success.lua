@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
+local Success = B.Node("Success")
+
 function Success:update(mashina, state, executor)
 	local child = self.tree:children(self.node)
 	if child then

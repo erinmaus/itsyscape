@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
+local Failure = B.Node("Failure")
+
 function Failure:update(mashina, state, executor)
 	local child = self.tree:children(self.node)
 	if child then

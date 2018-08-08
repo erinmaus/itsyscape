@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
+local Invert = B.Node("Invert")
+
 function Invert:update(mashina, state, executor)
 	local child = self.tree:children(self.node)
 	if child then

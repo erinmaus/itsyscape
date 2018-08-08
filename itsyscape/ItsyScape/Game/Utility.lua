@@ -8,14 +8,17 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Color = require "ItsyScape.Graphics.Color"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
+
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -299,6 +302,35 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
 	else
 		return nil
 	end
+end
+
+function Utility.Peep.makeHuman(peep)
+	peep:addBehavior(HumanoidBehavior)
+
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Walk_1/Script.lua")
+	peep:addResource("animation-walk", walkAnimation)
+	local idleAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Idle_1/Script.lua")
+	peep:addResource("animation-idle", idleAnimation)
+	local attackAnimationStaffCrush = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
+	peep:addResource("animation-attack-crush-staff", attackAnimationStaffCrush)
+	local attackAnimationStaffMagic = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
+	peep:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
+	local attackAnimationPickaxeStab = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
+	peep:addResource("animation-attack-stab-pickaxe", attackAnimationPickaxeStab)
+	local skillAnimationMine = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
+	peep:addResource("animation-skill-mining", skillAnimationMine)
 end
 
 return Utility
