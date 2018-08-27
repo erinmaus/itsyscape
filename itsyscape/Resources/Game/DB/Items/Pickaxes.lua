@@ -13,6 +13,11 @@ local METALS = {
 		tier = 1,
 		weight = 12.5,
 		health = 8
+	},
+
+	["Iron"] = {
+		tier = 10,
+		weight = 14.5
 	}
 }
 

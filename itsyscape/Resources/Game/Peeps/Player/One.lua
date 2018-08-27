@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
@@ -20,6 +21,7 @@ local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -43,6 +45,7 @@ function One:new(...)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
+	self:addBehavior(CombatStatusBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 16
@@ -75,6 +78,10 @@ function One:assign(director)
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Wisdom"):setXP(Curve.XP_CURVE:compute(10))
+
+	local combat = self:getBehavior(CombatStatusBehavior)
+	combat.currentHitpoints = 10
+	combat.maximumHitpoints = 10
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()
@@ -137,6 +144,27 @@ end
 function One:onWalk(e)
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt()
+end
+
+function One:onHit(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
+
+	if math.floor(combat.currentHitpoints) == 0 then
+		self:poke('die', p)
+	end
+end
+
+function One:onMiss(p)
+	-- Nothing.
+end
+
+function One:onDie(p)
+	self:getCommandQueue():clear()
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.velocity = Vector.ZERO
+	movement.acceleration = Vector.ZERO
 end
 
 return One

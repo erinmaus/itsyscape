@@ -331,6 +331,13 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
 	peep:addResource("animation-skill-mining", skillAnimationMine)
+
+	peep:addPoke('initiateAttack')
+	peep:addPoke('receiveAttack')
+	peep:addPoke('resourceHit')
+	peep:addPoke('hit')
+	peep:addPoke('miss')
+	peep:addPoke('die')
 end
 
 return Utility
