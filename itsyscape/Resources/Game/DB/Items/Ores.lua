@@ -19,6 +19,12 @@ local ORES = {
 		tier = 0,
 		weight = 9.1,
 		health = 8
+	},
+
+	["Iron"] = {
+		tier = 10,
+		weight = 11.5,
+		health = 20
 	}
 }
 

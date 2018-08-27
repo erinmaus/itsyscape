@@ -23,6 +23,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -227,6 +228,32 @@ function Peep:onReceiveAttack(p)
 		damage = damage,
 		aggressor = p:getAggressor()
 	})
+
+	local target = self:getBehavior(CombatTargetBehavior)
+	if not target then
+		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			local _, target = self:addBehavior(CombatTargetBehavior)
+			target.actor = actor.actor
+
+			local mashina = self:getBehavior(MashinaBehavior)
+			if mashina then
+				if mashina.currentState ~= 'begin-attack' and
+				   mashina.currentState ~= 'attack'
+				then
+					if mashina.states['begin-attack'] then
+						mashina.currentState = 'begin-attack'
+					elseif mashina.states['attack'] then
+						mashina.currentState = 'attack'
+					else
+						mashina.currentState = false
+					end
+
+					self:poke('firstStrike', attack)
+				end
+			end
+		end
+	end
 
 	if damage > 0 then
 		self:poke('hit', attack)

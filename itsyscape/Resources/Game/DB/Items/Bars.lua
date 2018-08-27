@@ -26,6 +26,12 @@ local BARS = {
 		tier = 0,
 		weight = 5.1,
 		{ name = "TinOre", count = 1 }
+	},
+
+	["Iron"] = {
+		tier = 10,
+		weigght = 8,
+		{ name = "IronOre", count = 1 }
 	}
 }
 

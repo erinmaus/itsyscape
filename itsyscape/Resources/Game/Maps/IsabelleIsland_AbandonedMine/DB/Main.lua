@@ -34,7 +34,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzePickaxe",
+		Item = ItsyScape.Resource.Item "IronPickaxe",
 		Count = 1,
 		Resource = M["SkeletonMinerJoe"]
 	}

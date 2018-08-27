@@ -78,7 +78,11 @@ function CombatCortex:update(delta)
 			end
 		end
 
-		local target = peep:getBehavior(CombatTargetBehavior).actor
+		local target = peep:getBehavior(CombatTargetBehavior)
+		if target then
+			target = target.actor
+		end
+
 		if target then
 			target = target:getPeep()
 
