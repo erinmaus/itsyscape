@@ -117,6 +117,11 @@ function ActorView:new(actor, actorID)
 	end
 	actor.onDamage:register(self._onDamage)
 
+	self._onHUDMessage = function(_, message, ...)
+		self:flash(message, ...)
+	end
+	actor.onHUDMessage:register(self._onHUDMessage)
+
 	self.healthBar = false
 end
 
@@ -135,6 +140,7 @@ function ActorView:poof()
 	self.actor.onTransmogrified:unregister(self._onTransmogrified)
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
 	self.actor.onDamage:unregister(self._onDamage)
+	self.actor.onHUDMessage:unregister(self._onHUDMessage)
 end
 
 function ActorView:getSceneNode()
@@ -273,6 +279,11 @@ function ActorView:damage(damageType, damage)
 			Vector(0, 2, 0),
 			self.actor)
 	end
+end
+
+function ActorView:flash(message, ...)
+	local sprite = self.game:getSpriteManager()
+	sprite:add(message, self.sceneNode, Vector(0, 1, 0), ...)
 end
 
 function ActorView:update(delta)

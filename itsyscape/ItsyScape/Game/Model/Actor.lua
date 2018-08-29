@@ -26,6 +26,7 @@ function Actor:new()
 
 	-- Called with 'damageType' (string) and 'damage'.
 	self.onDamage = Callback()
+	self.onHUDMessage = Callback()
 end
 
 -- Spawns the Actor, assigning it the given unique ID.

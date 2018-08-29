@@ -197,12 +197,20 @@ function Player:assign(director)
 
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats(self:getName(), director:getGameDB())
-	stats.stats:getSkill("Constitution").levelUp:register(function(skill, oldLevel)
+	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getLevel() - oldLevel, 0)
 
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.maximumHitpoints = combat.maximumHitpoints + difference
 		combat.currentHitpoints = combat.currentHitpoints + difference
+	end)
+
+	stats.stats.onXPGain:register(function(_, skill, xp)
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:flash("XPPopup", skill:getName(), xp)
+		end
 	end)
 
 	self:addPoke('initiateAttack')
