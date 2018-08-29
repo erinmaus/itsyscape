@@ -337,4 +337,8 @@ function LocalActor:getSkin(index)
 	return unpack(result)
 end
 
+function LocalActor:flash(message, ...)
+	self.onHUDMessage(self, message, ...)
+end
+
 return LocalActor

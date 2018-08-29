@@ -28,7 +28,8 @@ function Stats.Skill:new(name)
 	self.level = 1
 	self.levelBoost = 0
 	self.isDirty = false
-	self.levelUp = Callback()
+	self.onLevelUp = Callback()
+	self.onXPGain = Callback()
 end
 
 -- Gets the name of the skill.
@@ -43,8 +44,10 @@ function Stats.Skill:addXP(amount)
 	self.xp = math.max(math.floor(self.xp + math.max(amount, 0)), 0)
 	self.isDirty = true
 
+	self.onXPGain(self, amount)
+
 	if self.xp > self.nextLevelXP then
-		self.levelUp(self, self.level)
+		self.onLevelUp(self, self.level)
 		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
 	end
 end
@@ -107,14 +110,16 @@ function Stats:new(id, gameDB)
 	self.id = id
 	self.skills = {}
 	self.skillsByIndex = {}
-	self.levelUp = Callback()
+	self.onLevelUp = Callback()
+	self.onXPGain = Callback()
 
 	local brochure = gameDB:getBrochure()
 	local resourceType = Mapp.ResourceType()
 	if brochure:tryGetResourceType("Skill", resourceType) then
 		for resource in brochure:findResourcesByType(resourceType) do
 			local skill = Stats.Skill(resource.name)
-			skill.levelUp:register(self.levelUp, self)
+			skill.onLevelUp:register(self.onLevelUp, self)
+			skill.onXPGain:register(self.onXPGain, self)
 
 			self.skills[resource.name] = skill
 			table.insert(self.skillsByIndex, skill)
