@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/GameDB/GameDB.lua
+-- ItsyScape/Common/Sandbox.lua
 --
 -- This file is a part of ItsyScape.
 --
