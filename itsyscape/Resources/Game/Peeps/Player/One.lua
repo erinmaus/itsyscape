@@ -20,6 +20,7 @@ local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryPro
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -146,6 +147,25 @@ function One:onWalk(e)
 	game:getUI():interrupt()
 end
 
+function One:onReceiveAttack(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
+
+	local attack = AttackPoke({
+		attackType = p:getAttackType(),
+		weaponType = p:getWeaponType(),
+		damageType = p:getDamageType(),
+		damage = damage,
+		aggressor = p:getAggressor()
+	})
+
+	if damage > 0 then
+		self:poke('hit', attack)
+	else
+		self:poke('miss', attack)
+	end
+end
+
 function One:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
@@ -153,10 +173,14 @@ function One:onHit(p)
 	if math.floor(combat.currentHitpoints) == 0 then
 		self:poke('die', p)
 	end
+
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
 end
 
 function One:onMiss(p)
-	-- Nothing.
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
 end
 
 function One:onDie(p)
@@ -165,6 +189,9 @@ function One:onDie(p)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO
 	movement.acceleration = Vector.ZERO
+
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
 end
 
 return One
