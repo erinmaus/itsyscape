@@ -225,7 +225,7 @@ function Player:assign(director)
 	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 
-function Peep:onReceiveAttack(p)
+function Player:onReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
