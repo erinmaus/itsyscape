@@ -37,7 +37,7 @@ end
 function Property:fromPath(path)
 	self.path = {}
 
-	local IDENTIFIER = "(%w[%w%d]+)"
+	local IDENTIFIER = "(%w[%w%d]*)"
 	local ARRAY = "^(%b[])"
 	local REF = "%{(%w[%w%d]+)%}"
 	local NUMBER = "(%d+)"
