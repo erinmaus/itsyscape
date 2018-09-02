@@ -11,7 +11,22 @@ do
 		Resource = M["SkeletonMinerJoe"]
 	}
 
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SkeletonMinerJoe"],
+		Name = "Joe",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/SkeletonMinerJoe_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
 	M["SkeletonMinerJoe"] {
+		TalkAction,
 		ItsyScape.Action.Attack()
 	}
 

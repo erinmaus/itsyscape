@@ -25,7 +25,7 @@ function SelectPacket:getOptionAtIndex(index)
 end
 
 function SelectPacket:step(index)
-	return dialog:next(self.options[index])
+	return self:getDialog():next(self.options[index])
 end
 
 return SelectPacket

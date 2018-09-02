@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/Dialog/MessagePacket.lua
+-- ItsyScape/Game/Dialog/SpeakerPacket.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,18 +10,18 @@
 local Class = require "ItsyScape.Common.Class"
 local Packet = require "ItsyScape.Game.Dialog.Packet"
 
-local MessagePacket = Class(Packet)
-function MessagePacket:new(executor, message)
+local SpeakerPacket = Class(Packet)
+function SpeakerPacket:new(executor, speaker)
 	Packet.new(self, executor)
-	self.message = message
+	self.speaker = speaker
 end
 
-function MessagePacket:getMessage()
-	return self.message
+function SpeakerPacket:getSpeaker()
+	return self.speaker
 end
 
-function MessagePacket:step()
+function SpeakerPacket:step()
 	return self:getDialog():next()
 end
 
-return MessagePacket
+return SpeakerPacket

@@ -12,6 +12,7 @@ local Message = require "ItsyScape.Game.Dialog.Message"
 local Executor = require "ItsyScape.Game.Dialog.Executor"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
 local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
+local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
 
 local Dialog = Class()
 function Dialog:new(filename)
@@ -21,8 +22,24 @@ function Dialog:new(filename)
 			error(m)
 		end
 
-		self.executor = Executor:new(c)
+		self.executor = Executor(c)
 	end
+end
+
+function Dialog:setTarget(target)
+	self.executor:getG()._TARGET = target
+end
+
+function Dialog:getTarget(target)
+	return self.executor:getG()._TARGET or false
+end
+
+function Dialog:setDirector(target)
+	self.executor:getG()._DIRECTOR = target
+end
+
+function Dialog:getDirector(target)
+	return self.executor:getG()._DIRECTOR or false
 end
 
 function Dialog:start()
@@ -30,14 +47,21 @@ function Dialog:start()
 end
 
 function Dialog:next(...)
-	local t, messages = self.executor:step()
+	local s, t, messages = self.executor:step(...)
+
+	if not s then
+		Log.warn(s)
+		return false
+	end
 
 	if t == 'message' then
 		return MessagePacket(self, messages)
 	elseif t == 'select' then
 		return SelectPacket(self, messages)
-	else
-		Log.error("Expected message or select packet, got %s.", tostring(t))
+	elseif t == 'speaker' then
+		return SpeakerPacket(self, messages)
+	elseif t ~= nil then
+		Log.error("Expected message, select, or speaker packet, got %s.", tostring(t))
 	end
 
 	return false
