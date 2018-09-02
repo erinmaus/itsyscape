@@ -201,6 +201,15 @@ function Utility.Item.getName(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
+	local flags = {}
+	if noted then
+		flags['item-noted'] = true
+	end
+
+	return peep:getState():give("Item", item, quantity, flags)
+end
+
 Utility.Peep = {}
 function Utility.Peep.getEquippedItem(peep, slot)
 	local equipment = peep:getBehavior(EquipmentBehavior)

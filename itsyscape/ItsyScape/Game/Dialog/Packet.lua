@@ -11,8 +11,12 @@ local Class = require "ItsyScape.Common.Class"
 
 local Packet = Class(Packet)
 
-function Packet:new(executor)
-	self.executor = executor
+function Packet:new(dialog)
+	self.dialog = dialog
+end
+
+function Packet:getDialog()
+	return self.dialog
 end
 
 function Packet:step()

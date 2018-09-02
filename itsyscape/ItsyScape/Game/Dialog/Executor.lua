@@ -14,14 +14,14 @@ local Message = require "ItsyScape.Game.Dialog.Message"
 local Executor = Class()
 function Executor.message(g)
 	return function(t)
-		local message = Message(t)
+		local message = Message(t, g)
 		return coroutine.yield('message', { message })
 	end
 end
 
 function Executor.option(g)
 	return function(t)
-		return Message(t)
+		return Message(t, g)
 	end
 end
 
@@ -29,13 +29,19 @@ function Executor.select(g)
 	return function(t)
 		local m = {}
 		for i = 1, #t do
-			local message = Message(t[i])
-			m[i] = message
+			m[i] = t[i]
 		end
 
 		return coroutine.yield('select', m)
 	end
 end
+
+function Executor.speaker(g)
+	return function(t)
+		return coroutine.yield('speaker', t)
+	end
+end
+
 
 function Executor:new(chunk)
 	self.g, self.sandbox = MirrorSandbox()
@@ -43,9 +49,11 @@ function Executor:new(chunk)
 	self.logic = coroutine.create(self.chunk)
 
 	self.sandbox.Utility = require "ItsyScape.Game.Utility"
+	self.sandbox.xselect = select
 	self.sandbox.message = Executor.message(self.g)
 	self.sandbox.option = Executor.option(self.g)
 	self.sandbox.select = Executor.select(self.g)
+	self.sandbox.speaker = Executor.speaker(self.g)
 end
 
 function Executor:getG()

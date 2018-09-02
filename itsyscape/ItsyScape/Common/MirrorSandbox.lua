@@ -34,3 +34,5 @@ local function MirrorSandbox(writeThrough)
 
 	return setmetatable({}, M), s
 end
+
+return MirrorSandbox

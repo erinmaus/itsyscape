@@ -83,6 +83,20 @@ Game "ItsyScape"
 		SpawnTime = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
+
+	ActionType "Talk"
+
+	Meta "TalkSpeaker" {
+		Name = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "TalkDialog" {
+		Script = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
 	
 	ActionType "OpenCraftWindow"
 	ActionType "UseCraftWindow"
