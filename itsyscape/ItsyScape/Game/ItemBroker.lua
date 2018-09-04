@@ -184,7 +184,7 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		assert(self.parties[provider], "inventory provider not party to transaction")
 		
 		local logic = self.broker.manager:getLogic(id)
-		if not logic:canSpawn(itemParty) and not force then
+		if not logic or not logic:canSpawn(itemParty) and not force then
 			error("cannot spawn item")
 		end
 

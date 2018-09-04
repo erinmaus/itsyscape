@@ -73,11 +73,18 @@ function ItemManager:getLogic(id)
 					return r(id, manager)
 				end
 			else
-				Logic = function(manager)
-					local Type = require "ItsyScape.Game.Item"
-					return Type(id, manager)
+				local resource = self.gameDB:getResource(id, "Item")
+				if resource then
+					Logic = function(manager)
+						local Type = require "ItsyScape.Game.Item"
+						return Type(id, manager)
+					end
 				end
 			end
+		end
+
+		if not Logic then
+			return nil
 		end
 
 		self.logic[id] = Logic(self)

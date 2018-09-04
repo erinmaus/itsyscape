@@ -9,18 +9,25 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Stats = require "ItsyScape.Game.Stats"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
+local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
+local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local CreepBehavior = require "ItsyScape.Peep.Behaviors.CreepBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
-local MapPathFinder = require "ItsyScape.World.MapPathFinder"
-local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local Creep = Class(Peep)
 
@@ -29,27 +36,21 @@ function Creep:new(resource, ...)
 
 	self:addBehavior(ActorReferenceBehavior)
 	self:addBehavior(CombatStatusBehavior)
+	self:addBehavior(CreepBehavior)
+	self:addBehavior(EquipmentBehavior)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 12
-	movement.maxAcceleration = 12
-	movement.decay = 0.6
+	movement.maxAcceleration = 8
+	movement.decay = 0.7
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
-	movement.stoppingForce = 3
-
-	self:addPoke('initiateAttack')
-	self:addPoke('receiveAttack')
-	self:addPoke('hit')
-	self:addPoke('miss')
-	self:addPoke('die')
-	
-	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1, 2, 1)
+	movement.stoppingForce = 4
 
 	self.resource = resource or false
 	self.mapObject = false
@@ -73,16 +74,28 @@ function Creep:ready(director, game)
 	if self.resource then
 		local gameDB = game:getGameDB()
 
-		local name = Utility.getName(self.resource, gameDB)
-		if name then
-			self:setName(name)
-		else
-			self:setName("*" .. self.resource.name)
+		do
+			local name
+			if self.mapObject then
+				name = Utility.getName(self.mapObject, gameDB)
+			end
+
+			if not name and self.resource then
+				name = Utility.getName(self.resource, gameDB)
+			end
+
+			if name then
+				self:setName(name)
+			else
+				self:setName("*" .. self.resource.name)
+			end
 		end
 
 		local stats = self:getBehavior(StatsBehavior)
-		if stats and stats.stats then
+		if stats then
+			stats.stats = Stats(self:getName(), game:getGameDB())
 			stats = stats.stats
+
 			local function setStats(records)
 				for i = 1, #records do
 					local skill = records[i]:get("Skill").name
@@ -101,25 +114,53 @@ function Creep:ready(director, game)
 				setStats(gameDB:getRecords("PeepStat", { Resource = self.mapObject }))
 			end
 		end
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		if combat and stats then
+			combat.maximumHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+			combat.currentHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+		end
+
+		do
+			local function setMashinaStates(records)
+				if #records > 0 then
+					local s, m = self:addBehavior(MashinaBehavior)
+					if s then
+						for i = 1, #records do
+							local record = records[i]
+							local state = record:get("State")
+							local tree = record:get("Tree")
+							m.states[state] = love.filesystem.load(tree)()
+
+							local default = record:get("IsDefault")
+							if default and default ~= 0 then
+								m.currentState = state
+							end
+						end
+					end
+				end
+			end
+
+			setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = self.resource }))
+			if self.mapObject then
+				setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = self.mapObject }))
+			end
+		end
 	end
 end
 
-function Creep:walk(i, j, k)
-	local position = self:getBehavior(PositionBehavior).position
-	local map = self:getDirector():getGameInstance():getStage():getMap(k)
-	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = MapPathFinder(map)
-	local path = pathFinder:find(
-		{ i = playerI, j = playerJ },
-		{ i = i, j = j })
-	if path then
-		local queue = self:getCommandQueue()
-		queue:interrupt(ExecutePathCommand(path))
+function Creep:assign(director)
+	Peep.assign(self, director)
 
-		return true
-	end
+	self:addPoke('initiateAttack')
+	self:addPoke('receiveAttack')
+	self:addPoke('resourceHit')
+	self:addPoke('hit')
+	self:addPoke('miss')
+	self:addPoke('die')
+	self:addPoke('firstStrike')
 
-	return false
+	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 end
 
 function Creep:onReceiveAttack(p)
@@ -133,6 +174,32 @@ function Creep:onReceiveAttack(p)
 		damage = damage,
 		aggressor = p:getAggressor()
 	})
+
+	local target = self:getBehavior(CombatTargetBehavior)
+	if not target then
+		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			local _, target = self:addBehavior(CombatTargetBehavior)
+			target.actor = actor.actor
+
+			local mashina = self:getBehavior(MashinaBehavior)
+			if mashina then
+				if mashina.currentState ~= 'begin-attack' and
+				   mashina.currentState ~= 'attack'
+				then
+					if mashina.states['begin-attack'] then
+						mashina.currentState = 'begin-attack'
+					elseif mashina.states['attack'] then
+						mashina.currentState = 'attack'
+					else
+						mashina.currentState = false
+					end
+
+					self:poke('firstStrike', attack)
+				end
+			end
+		end
+	end
 
 	if damage > 0 then
 		self:poke('hit', attack)
@@ -156,6 +223,7 @@ end
 
 function Creep:onDie(p)
 	self:getCommandQueue():clear()
+	self:removeBehavior(CombatTargetBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO

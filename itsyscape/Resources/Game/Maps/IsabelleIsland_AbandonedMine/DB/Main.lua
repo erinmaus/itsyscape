@@ -67,6 +67,24 @@ do
 	}
 end
 
+M["CopperSkelemental1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 16.5 * 2,
+		PositionY = 3,
+		PositionZ = 21.5 * 2,
+		Name = "CopperSkelemental",
+		Map = M._MAP,
+		Resource = M["CopperSkelemental1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CopperSkelemental",
+		MapObject = M["CopperSkelemental1"]
+	}
+end
+
+
 M["EntranceDoor"] {
 	ItsyScape.Action.Open() {
 		Requirement {
