@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Player/Player.lua
+-- ItsyScape/Peep/Peeps/Player.lua
 --
 -- This file is a part of ItsyScape.
 --

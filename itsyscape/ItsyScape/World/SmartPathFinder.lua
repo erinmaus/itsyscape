@@ -11,6 +11,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local PathFinder = require "ItsyScape.World.PathFinder"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local PokePropPathNode = require "ItsyScape.World.PokePropPathNode"
@@ -22,6 +23,7 @@ function SmartPathFinder:new(map, peep)
 	self.map = map
 	self.peep = peep
 	self.game = peep:getDirector():getGameInstance()
+	self.canUseObjects = peep:getBehavior(HumanoidBehavior)
 end
 
 function SmartPathFinder:getSmart()
@@ -55,6 +57,10 @@ end
 
 function SmartPathFinder:getDoor(tile)
 	if not self.game then
+		return false
+	end
+
+	if not self.canUseObjects then
 		return false
 	end
 

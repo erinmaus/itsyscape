@@ -35,6 +35,7 @@ function CombatCortex:new()
 	self:require(PositionBehavior)
 
 	self.walking = {}
+	self.defaultWeapon = Weapon()
 end
 
 function CombatCortex:removePeep(peep)
@@ -156,6 +157,8 @@ function CombatCortex:update(delta)
 								if logic:isCompatibleType(Weapon) then
 									logic:perform(peep, target)
 								end
+							else
+								self.defaultWeapon:perform(peep, target)
 							end
 						end
 					end

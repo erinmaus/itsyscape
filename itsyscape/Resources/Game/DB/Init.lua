@@ -267,6 +267,7 @@ include "Resources/Game/DB/Items/Pickaxes.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Goblin.lua"
+include "Resources/Game/DB/Creeps/Skelemental.lua"
 include "Resources/Game/DB/Creeps/Skeleton.lua"
 
 -- Spells
