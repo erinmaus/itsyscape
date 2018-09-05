@@ -130,11 +130,16 @@ function Creep:ready(director, game)
 							local record = records[i]
 							local state = record:get("State")
 							local tree = record:get("Tree")
-							m.states[state] = love.filesystem.load(tree)()
+							local s, r = love.filesystem.load(tree)
+							if not s then
+								Log.warn("error loading %s: %s", tree, r)
+							else
+								m.states[state] = love.filesystem.load(tree)()
 
-							local default = record:get("IsDefault")
-							if default and default ~= 0 then
-								m.currentState = state
+								local default = record:get("IsDefault")
+								if default and default ~= 0 then
+									m.currentState = state
+								end
 							end
 						end
 					end
