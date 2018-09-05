@@ -33,7 +33,6 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	for i = 1, #resources do
 		local resource = resources[i]:get("Resource")
 
-
 		for action in brochure:findActionsByResource(resource) do
 			local actionType = brochure:getActionDefinitionFromAction(action)
 			if actionType.name == actionTypeFilter then
