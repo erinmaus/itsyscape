@@ -307,7 +307,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
 		{ i = i, j = j },
 		true, ...)
 	if path then
-		return ExecutePathCommand(path, distance)
+		return ExecutePathCommand(path, distance), path
 	else
 		return nil
 	end

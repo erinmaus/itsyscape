@@ -79,6 +79,21 @@ function One:assign(director)
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Wisdom"):setXP(Curve.XP_CURVE:compute(10))
+	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
+		local difference = math.max(skill:getLevel() - oldLevel, 0)
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumHitpoints = combat.maximumHitpoints + difference
+		combat.currentHitpoints = combat.currentHitpoints + difference
+	end)
+
+	stats.stats.onXPGain:register(function(_, skill, xp)
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:flash("XPPopup", skill:getName(), xp)
+		end
+	end)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.currentHitpoints = 10

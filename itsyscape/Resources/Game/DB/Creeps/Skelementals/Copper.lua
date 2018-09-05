@@ -46,3 +46,10 @@ ItsyScape.Meta.PeepStat {
 	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Skelemental/Skelemental_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
+}

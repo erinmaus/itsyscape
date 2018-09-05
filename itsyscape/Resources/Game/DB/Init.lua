@@ -194,6 +194,18 @@ Game "ItsyScape"
 	ActionType "Open"
 	ActionType "Close"
 
+	ActionType "Loot"
+	ResourceType "DropTable"
+
+	Meta "DropTableEntry" {
+		Item = Meta.TYPE_RESOURCE,
+		Weight = Meta.TYPE_REAL,
+		Count = Meta.TYPE_INTEGER,
+		Range = Meta.TYPE_INTEGER,
+		Noted = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 

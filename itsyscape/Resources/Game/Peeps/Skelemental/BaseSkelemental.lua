@@ -48,10 +48,10 @@ function BaseSkelemental:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Skelemental_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
-	local attackAnimationMelee = CacheRef(
+	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Skelemental_Attack/Script.lua")
-	self:addResource("skelemental-attack", attackAnimationMelee)
+	self:addResource("animation-attack", attackAnimation)
 	local defendAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Skelemental_Defend/Script.lua")
