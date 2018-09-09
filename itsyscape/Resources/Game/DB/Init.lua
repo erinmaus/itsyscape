@@ -277,6 +277,7 @@ include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"
+include "Resources/Game/DB/Items/Bones.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Goblin.lua"

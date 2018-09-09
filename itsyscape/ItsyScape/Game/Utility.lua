@@ -69,7 +69,7 @@ function Utility.getAction(game, action, scope)
 		Log.error("failed to load action %s: %s", typeName, r)
 	else
 		local ActionType = r
-		if ActionType.SCOPES and ActionType.SCOPES[scope] then
+		if ActionType.SCOPES and ActionType.SCOPES[scope] or not scope then
 			local a = ActionType(game, action)
 			local t = {
 				id = action.id.value,

@@ -443,12 +443,15 @@ function ItemBroker.Inventory:findAll(id, stackable, noted)
 	return function()
 		local item = iterator(current)
 		current = item
-		if item then
+		while item do
 			if item:getID() == id
 			   and item:isStackable() == stackable
 			   and item:isNoted() == noted
 			then
 				return item
+			else
+				item = iterator(current)
+				current = item
 			end
 		end
 	end
