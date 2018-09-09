@@ -46,6 +46,8 @@ function love.load(args)
 	end
 
 	love.keyboard.setKeyRepeat(true)
+
+	math.randomseed(os.time())
 end
 
 function love.update(delta)

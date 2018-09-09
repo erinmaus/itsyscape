@@ -28,6 +28,8 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
+local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -65,6 +67,13 @@ function Player:new(resource, ...)
 
 	self.resource = resource or false
 	self.mapObject = false
+
+	if self.resource then
+		local s, b = self:addBehavior(MappResourceBehavior)
+		if s then
+			b.resource = self.resource
+		end
+	end
 end
 
 function Player:getGameDBResource()
@@ -73,6 +82,16 @@ end
 
 function Player:setMapObject(value)
 	self.mapObject = value or false
+
+
+	if self.mapObject then
+		local s, b = self:addBehavior(MappObjectBehavior)
+		if s then
+			b.mapObject = self.mapObject
+		end
+	else
+		self:removeBehavior(MapObjectBehavior)
+	end
 end
 
 function Player:getMapObject()

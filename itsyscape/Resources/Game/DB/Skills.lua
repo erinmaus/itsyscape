@@ -16,7 +16,9 @@ ItsyScape.Resource.Skill "Strength"
 ItsyScape.Resource.Skill "Attack"
 ItsyScape.Resource.Skill "Defense"
 ItsyScape.Resource.Skill "Constitution"
+
 ItsyScape.Resource.Skill "Faith"
+	ActionType "Bury"
 
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"

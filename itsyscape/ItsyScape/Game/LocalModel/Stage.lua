@@ -447,7 +447,6 @@ function LocalStage:dropItem(item, count)
 	transaction:addParty(destination)
 	transaction:transfer(destination, item, count, 'drop', false)
 	transaction:commit()
-
 end
 
 function LocalStage:takeItem(i, j, layer, ref)

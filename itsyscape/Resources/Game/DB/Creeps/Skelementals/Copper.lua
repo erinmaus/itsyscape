@@ -9,7 +9,21 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "CopperSkelemental" {
-	ItsyScape.Action.Attack()
+	ItsyScape.Action.Attack(),
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Secondary",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.PeepID {
@@ -52,4 +66,76 @@ ItsyScape.Meta.PeepMashinaState {
 	Tree = "Resources/Game/Peeps/Skelemental/Skelemental_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(2) / 5,
+	Weight = 0,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "CopperFlake"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Copper flake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CopperFlake"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "CopperFlake",
+	Weight = 100,
+	Count = 15,
+	Range = 5,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzeGloves",
+	Weight = 10,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzeBoots",
+	Weight = 10,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzeHelmet",
+	Weight = 5,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzePlatebody",
+	Weight = 5,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "CopperBar",
+	Weight = 25,
+	Count = 1,
+	Noted = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "CopperOre",
+	Weight = 25,
+	Count = 1,
+	Noted = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Bones",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Secondary"	
 }

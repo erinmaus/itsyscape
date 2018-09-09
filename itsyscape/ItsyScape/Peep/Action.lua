@@ -137,19 +137,21 @@ end
 
 -- Transfers inputs/outputs.
 function Action:transfer(state, player, flags)
-	local brochure = self:getGameDB():getBrochure()
-	for input in brochure:getInputs(self.action) do
-		local resource = brochure:getConstraintResource(input)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
+	if self:canTransfer(state, flags) then
+		local brochure = self:getGameDB():getBrochure()
+		for input in brochure:getInputs(self.action) do
+			local resource = brochure:getConstraintResource(input)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-		state:take(resourceType.name, resource.name, input.count, flags)
-	end
+			state:take(resourceType.name, resource.name, input.count, flags)
+		end
 
-	for output in brochure:getOutputs(self.action) do
-		local resource = brochure:getConstraintResource(output)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
+		for output in brochure:getOutputs(self.action) do
+			local resource = brochure:getConstraintResource(output)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-		state:give(resourceType.name, resource.name, output.count, flags)
+			state:give(resourceType.name, resource.name, output.count, flags)
+		end
 	end
 end
 

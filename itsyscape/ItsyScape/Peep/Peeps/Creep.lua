@@ -19,8 +19,11 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local CreepBehavior = require "ItsyScape.Peep.Behaviors.CreepBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local LootDropperBehavior = require "ItsyScape.Peep.Behaviors.LootDropperBehavior"
+local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
+local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
@@ -38,6 +41,7 @@ function Creep:new(resource, ...)
 	self:addBehavior(CombatStatusBehavior)
 	self:addBehavior(CreepBehavior)
 	self:addBehavior(EquipmentBehavior)
+	self:addBehavior(LootDropperBehavior)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
@@ -54,6 +58,13 @@ function Creep:new(resource, ...)
 
 	self.resource = resource or false
 	self.mapObject = false
+
+	if self.resource then
+		local s, b = self:addBehavior(MappResourceBehavior)
+		if s then
+			b.resource = self.resource
+		end
+	end
 end
 
 function Creep:getGameDBResource()
@@ -62,6 +73,15 @@ end
 
 function Creep:setMapObject(value)
 	self.mapObject = value or false
+
+	if self.mapObject then
+		local s, b = self:addBehavior(MappObjectBehavior)
+		if s then
+			b.mapObject = self.mapObject
+		end
+	else
+		self:removeBehavior(MapObjectBehavior)
+	end
 end
 
 function Creep:getMapObject()
