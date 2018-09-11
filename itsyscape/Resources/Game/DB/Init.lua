@@ -206,6 +206,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Eat"
+	Meta "HealingPower" {
+		HitPoints = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -278,6 +284,7 @@ include "Resources/Game/DB/Items/Runes.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"
 include "Resources/Game/DB/Items/Bones.lua"
+include "Resources/Game/DB/Items/MiscFood.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Goblin.lua"

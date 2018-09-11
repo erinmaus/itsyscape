@@ -347,6 +347,7 @@ function Utility.Peep.makeHuman(peep)
 	peep:addPoke('hit')
 	peep:addPoke('miss')
 	peep:addPoke('die')
+	peep:addPoke('heal')
 end
 
 return Utility

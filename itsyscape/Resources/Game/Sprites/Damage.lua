@@ -36,7 +36,11 @@ function Damage:draw(position)
 	local text = tostring(self.damage)
 	local width = font:getWidth(text)
 
-	love.graphics.setColor(1, 0, 0, 0.5)
+	if self.damageType == 'heal' then
+		love.graphics.setColor(0, 0, 1, 0.5)
+	else
+		love.graphics.setColor(1, 0, 0, 0.5)
+	end
 	love.graphics.rectangle(
 		'fill',
 		position.x - (width * 1.5) / 2,

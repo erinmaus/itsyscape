@@ -289,6 +289,18 @@ function Player:onReceiveAttack(p)
 	end
 end
 
+function Player:onHeal(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints >= 0 then
+		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
+		if not p.zealous then
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
+		end
+
+		combat.currentHitpoints = newHitPoints
+	end
+end
+
 function Player:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)

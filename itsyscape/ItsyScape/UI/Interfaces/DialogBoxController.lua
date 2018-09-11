@@ -62,9 +62,9 @@ function DialogBoxController:select(e)
 end
 
 function DialogBoxController:next(e)
-	assert(self.currentPacket:isType(MessagePacket), "current packet not message packet")
-
-	self:pump(self.currentPacket)
+	if self.currentPacket:isType(MessagePacket) then
+		self:pump(self.currentPacket)
+	end
 end
 
 function DialogBoxController:pump(e, ...)

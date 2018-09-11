@@ -162,6 +162,21 @@ function One:onWalk(e)
 	game:getUI():interrupt()
 end
 
+function One:onHeal(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints >= 0 then
+		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
+		if not p.zealous then
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
+		end
+
+		combat.currentHitpoints = newHitPoints
+	end
+
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt()
+end
+
 function One:onReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
