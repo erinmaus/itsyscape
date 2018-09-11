@@ -9,11 +9,17 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Creeps/Skelementals/Copper.lua"
+include "Resources/Game/DB/Creeps/Skelementals/Tin.lua"
 
 local BARS = {
 	["Copper"] = {
 		tier = 1,
 		{ name = "CopperFlake", count = 5 }
+	},
+
+	["Tin"] = {
+		tier = 1,
+		{ name = "TinFlake", count = 5 }
 	},
 
 	["Bronze"] = {

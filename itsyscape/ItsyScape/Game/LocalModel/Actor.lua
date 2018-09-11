@@ -48,6 +48,9 @@ function LocalActor:spawn(id, resource, ...)
 	self.peep:listen("hit", function(_, p)
 		self.onDamage(self, p:getDamageType(), p:getDamage())
 	end)
+	self.peep:listen("heal", function(_, p)
+		self.onDamage(self, 'heal', p.hitPoints)
+	end)
 
 	self.id = id
 	self.resource = resource or false
