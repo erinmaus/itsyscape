@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
@@ -260,23 +261,26 @@ function Player:onReceiveAttack(p)
 	if not target then
 		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
-			local _, target = self:addBehavior(CombatTargetBehavior)
-			target.actor = actor.actor
+			if self:getCommandQueue():interrupt(AttackCommand()) then
+				local _, target = self:addBehavior(CombatTargetBehavior)
+				target.actor = actor.actor
 
-			local mashina = self:getBehavior(MashinaBehavior)
-			if mashina then
-				if mashina.currentState ~= 'begin-attack' and
-				   mashina.currentState ~= 'attack'
-				then
-					if mashina.states['begin-attack'] then
-						mashina.currentState = 'begin-attack'
-					elseif mashina.states['attack'] then
-						mashina.currentState = 'attack'
-					else
-						mashina.currentState = false
+
+				local mashina = self:getBehavior(MashinaBehavior)
+				if mashina then
+					if mashina.currentState ~= 'begin-attack' and
+					   mashina.currentState ~= 'attack'
+					then
+						if mashina.states['begin-attack'] then
+							mashina.currentState = 'begin-attack'
+						elseif mashina.states['attack'] then
+							mashina.currentState = 'attack'
+						else
+							mashina.currentState = false
+						end
+
+						self:poke('firstStrike', attack)
 					end
-
-					self:poke('firstStrike', attack)
 				end
 			end
 		end
@@ -316,6 +320,7 @@ end
 
 function Player:onDie(p)
 	self:getCommandQueue():clear()
+	self:removeBehavior(CombatTargetBehavior)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO
