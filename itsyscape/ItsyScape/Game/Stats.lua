@@ -58,8 +58,15 @@ end
 --
 -- 'xp' is clamped to 0.
 function Stats.Skill:setXP(value)
+	local previousLevel = self:getBaseLevel()
 	self.xp = math.floor(math.max(value, 0))
 	self.isDirty = true
+	local currentLevel = self:getBaseLevel()
+
+	if previousLevel ~= currentLevel then
+		self.onLevelUp(self, previousLevel)
+		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
+	end
 end
 
 -- Gets how much XP the skill has.

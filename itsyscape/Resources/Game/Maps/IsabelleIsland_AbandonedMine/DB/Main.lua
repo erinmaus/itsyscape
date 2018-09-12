@@ -70,9 +70,9 @@ end
 M["CopperSkelemental1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16.5 * 2,
+		PositionX = 41.5 * 2,
 		PositionY = 3,
-		PositionZ = 21.5 * 2,
+		PositionZ = 19.5 * 2,
 		Name = "CopperSkelemental",
 		Map = M._MAP,
 		Resource = M["CopperSkelemental1"]
@@ -84,12 +84,46 @@ do
 	}
 end
 
+M["CopperSkelemental2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.5 * 2,
+		PositionY = 3,
+		PositionZ = 24.5 * 2,
+		Name = "CopperSkelemental",
+		Map = M._MAP,
+		Resource = M["CopperSkelemental2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CopperSkelemental",
+		MapObject = M["CopperSkelemental2"]
+	}
+end
+
+M["CopperSkelemental3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 14.5 * 2,
+		PositionY = 3,
+		PositionZ = 33.5 * 2,
+		Name = "CopperSkelemental",
+		Map = M._MAP,
+		Resource = M["CopperSkelemental3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CopperSkelemental",
+		MapObject = M["CopperSkelemental3"]
+	}
+end
+
 M["TinSkelemental1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16.5 * 2,
+		PositionX = 39.5 * 2,
 		PositionY = 3,
-		PositionZ = 21.5 * 2,
+		PositionZ = 18.5 * 2,
 		Name = "TinSkelemental",
 		Map = M._MAP,
 		Resource = M["TinSkelemental1"]
@@ -101,6 +135,39 @@ do
 	}
 end
 
+M["TinSkelemental2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33.5 * 2,
+		PositionY = 3,
+		PositionZ = 22.5 * 2,
+		Name = "TinSkelemental",
+		Map = M._MAP,
+		Resource = M["TinSkelemental2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TinSkelemental",
+		MapObject = M["TinSkelemental2"]
+	}
+end
+
+M["TinSkelemental3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 14.5 * 2,
+		PositionY = 3,
+		PositionZ = 33.5 * 2,
+		Name = "TinSkelemental",
+		Map = M._MAP,
+		Resource = M["TinSkelemental3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TinSkelemental",
+		MapObject = M["TinSkelemental3"]
+	}
+end
 
 M["EntranceDoor"] {
 	ItsyScape.Action.Open() {

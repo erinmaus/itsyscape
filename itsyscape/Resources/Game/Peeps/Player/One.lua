@@ -80,7 +80,7 @@ function One:assign(director)
 	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Wisdom"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
-		local difference = math.max(skill:getLevel() - oldLevel, 0)
+		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.maximumHitpoints = combat.maximumHitpoints + difference
@@ -103,6 +103,7 @@ function One:assign(director)
 	local t = director:getItemBroker():createTransaction()
 	t:addParty(inventory.inventory)
 	t:spawn(inventory.inventory, "BronzePickaxe", 1)
+	t:spawn(inventory.inventory, "AmuletOfYendor", 1)
 	t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
 	t:commit()
 

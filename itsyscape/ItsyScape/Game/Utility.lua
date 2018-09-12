@@ -324,6 +324,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Idle_1/Script.lua")
 	peep:addResource("animation-idle", idleAnimation)
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Die_1/Script.lua")
+	peep:addResource("animation-die", dieAnimation)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
