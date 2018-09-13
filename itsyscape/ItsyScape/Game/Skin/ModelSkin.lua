@@ -20,6 +20,19 @@ function ModelSkin:new()
 	self.isBlocking = true
 end
 
+function ModelSkin:getResource()
+	return self
+end
+
+function ModelSkin:release()
+	self.model = false
+	self.texture = false
+end
+
+function ModelSkin:getIsReady()
+	return self.model and self.texture
+end
+
 -- Constructs a ModelSkin from a file at filename.
 --
 -- Structure of file is:

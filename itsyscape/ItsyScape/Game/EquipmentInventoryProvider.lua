@@ -114,21 +114,17 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 		end
 	end
 
-
 	local equipSlotTag = self:getBroker():getItemTag(item, 'equip-slot')
 	local equipModelTag = self:getBroker():getItemTag(item, 'equip-model')
 	if equipSlotTag and equipModelTag then
-		local count = self:getBroker():countItemsByKey(self, equipSlotTag)
-		if count == 1 then
-			local actor = self.peep:getBehavior(ActorReferenceBehavior)
-			if actor.actor then
-				actor = actor.actor
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor.actor then
+			actor = actor.actor
 
-				local ref = CacheRef(
-					equipModelTag:get("Type"),
-					equipModelTag:get("Filename"))
-				actor:unsetSkin(equipSlotTag, ref)
-			end
+			local ref = CacheRef(
+				equipModelTag:get("Type"),
+				equipModelTag:get("Filename"))
+			actor:unsetSkin(equipSlotTag, ref)
 		end
 	end
 end

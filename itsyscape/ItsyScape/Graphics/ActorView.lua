@@ -176,7 +176,7 @@ function ActorView:applySkin(slotNodes)
 
 		if self.body and not ignore then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
-				slot.instance = skin:load(self.body:getSkeleton())
+				slot.instance = self.game:getResourceManager():loadCacheRef(skin, self.body:getSkeleton())
 				slot.sceneNode = ModelSceneNode()
 
 				local model = self.game:getResourceManager():loadCacheRef(slot.instance:getModel())

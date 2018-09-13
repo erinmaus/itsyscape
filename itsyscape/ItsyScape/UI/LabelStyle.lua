@@ -30,8 +30,10 @@ function LabelStyle:new(t, resources)
 	self.textShadow = t.textShadow or false
 end
 
-function LabelStyle:draw(widget)
-	if #widget:getText() > 0 then
+function LabelStyle:draw(widget, state)
+	local text = tostring(widget:get("text", state, ""))
+
+	if #text > 0 then
 		local previousFont = love.graphics.getFont()
 
 		local font = self.font or previousFont
@@ -53,11 +55,11 @@ function LabelStyle:draw(widget)
 
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(widget:getText(), 1, 1, width, 'left')
+			love.graphics.printf(text, 1, 1, width, 'left')
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(widget:getText(), 0, 0, width, 'left')
+		love.graphics.printf(text, 0, 0, width, 'left')
 
 		love.graphics.setFont(previousFont)
 	end

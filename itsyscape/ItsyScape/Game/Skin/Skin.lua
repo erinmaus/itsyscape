@@ -8,8 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Resource = require "ItsyScape.Graphics.Resource"
 
-local Skin = Class()
+local Skin = Resource()
 
 function Skin:new()
 	-- Nothing.

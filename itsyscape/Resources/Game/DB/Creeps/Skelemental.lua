@@ -118,3 +118,58 @@ do
 		Resource = ItsyScape.Resource.Item "TinCan"
 	}
 end
+
+-- Copper badge. Since there's no copper armor...
+do
+	ItsyScape.Resource.Item "CopperBadge" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Smith() {
+			Input {
+				Resource = ItsyScape.Resource.Item "CopperBar",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(2)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "CopperBadge",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Copper badge",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 14,
+		Weight = 0.0,
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/CopperBadge/CopperBadge.lua",
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+
+	ItsyScape.Meta.Equipment {
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1, 0.5),
+		Prayer = 1,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+end

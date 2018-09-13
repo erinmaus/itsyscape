@@ -18,12 +18,40 @@ local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerEquipment = Class(PlayerTab)
 PlayerEquipment.PADDING = 8
 PlayerEquipment.ICON_SIZE = 48
 PlayerEquipment.BUTTON_PADDING = 2
+
+PlayerEquipment.ACCURACY = {
+	{ "AccuracyStab", "Stab" },
+	{ "AccuracySlash", "Slash" },
+	{ "AccuracyCrush", "Crush" },
+	{ "AccuracyMagic", "Magic" },
+	{ "AccuracyRanged", "Ranged" }
+}
+
+PlayerEquipment.DEFENSE = {
+	{ "DefenseStab", "Stab" },
+	{ "DefenseSlash", "Slash" },
+	{ "DefenseCrush", "Crush" },
+	{ "DefenseMagic", "Magic" },
+	{ "DefenseRanged", "Ranged" }
+}
+
+PlayerEquipment.STRENGTH = {
+	{ "StrengthMelee", "Melee" },
+	{ "StrengthMagic", "Magic" },
+	{ "StrengthRanged", "Ranged" }
+}
+
+PlayerEquipment.MISC = {
+	{ "Prayer", "Divinity" }
+}
 
 function PlayerEquipment:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
@@ -62,6 +90,70 @@ function PlayerEquipment:new(id, index, ui)
 		Equipment.PLAYER_SLOT_POCKET,
 		Equipment.PLAYER_SLOT_QUIVER,
 	})
+
+	local width, height = self:getSize()
+
+	local stats = {}
+	local statLayout = GridLayout()
+	statLayout:setSize(width, height / 2 + PlayerEquipment.PADDING * 4)
+	statLayout:setPadding(2)
+	statLayout:setUniformSize(
+		true,
+		width / 2 - PlayerEquipment.PADDING / 2,
+		height / 4 + 8)
+	statLayout:setPosition(0, height / 2 - 32)
+
+	local function emitLayout(t, title)
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }))
+		local titleLabel = Label()
+		panel:setSize(width / 2 - PlayerEquipment.PADDING / 2, height / 4)
+		titleLabel:setText(title)
+		titleLabel:setPosition(
+			PlayerEquipment.PADDING / 2,
+			PlayerEquipment.PADDING / 2)
+		titleLabel:setStyle(LabelStyle({
+			fontSize = 16,
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			textShadow = true
+		}, self:getView():getResources()))
+		panel:addChild(titleLabel)
+
+		local layout = GridLayout()
+		layout:setPadding(PlayerEquipment.PADDING / 2)
+		layout:setSize(width / 2, height / 4)
+		layout:setUniformSize(true, width / 4 - PlayerEquipment.PADDING, 8)
+		layout:setPosition(PlayerEquipment.PADDING / 2, 20)
+		panel:addChild(layout)
+
+		for i = 1, #t do
+			local style = LabelStyle({
+				fontSize = 12,
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				textShadow = true
+			}, self:getView():getResources())
+
+			local left = Label()
+			left:setText(t[i][2])
+			left:setStyle(style)
+			layout:addChild(left)
+
+			local right = Label()
+			right:setData('stat', t[i][1])
+			right:setStyle(style)
+			right:bind("text", "stats[{stat}]")
+			layout:addChild(right)
+		end
+
+		statLayout:addChild(panel)
+	end
+
+	emitLayout(PlayerEquipment.ACCURACY, "Accuracy")
+	emitLayout(PlayerEquipment.DEFENSE, "Defense")
+	emitLayout(PlayerEquipment.STRENGTH, "Strength")
+	emitLayout(PlayerEquipment.MISC, "Misc")
+
+	self:addChild(statLayout)
 end
 
 function PlayerEquipment:poke(actionID, actionIndex, e)
