@@ -103,7 +103,6 @@ function One:assign(director)
 	local t = director:getItemBroker():createTransaction()
 	t:addParty(inventory.inventory)
 	t:spawn(inventory.inventory, "BronzePickaxe", 1)
-	t:spawn(inventory.inventory, "AmuletOfYendor", 1)
 	t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
 	t:commit()
 
@@ -116,30 +115,68 @@ function One:assign(director)
 	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 
+One.HEADS = {
+	"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
+	"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
+	"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
+	"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
+}
+
+One.EYES = {
+	"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua"
+}
+
+One.SHOES = {
+	"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua"
+}
+
+One.SHIRTS = {
+	"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
+	"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
+	"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
+	"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua"
+}
+
+One.HAIR = {
+	"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
+	"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
+	"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
+	"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
+}
+
 function One:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
 
+	local function roll(t)
+		local index = math.random(1, #t)
+		return t[index]
+	end
+
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
-	actor:setSkin('eyes', 1, CacheRef("ItsyScape.Game.Skin.ModelSkin", "Resources/Game/Skins/Player_One/Eyes.lua"))
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, CacheRef("ItsyScape.Game.Skin.ModelSkin", roll(One.EYES)))
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Helmet.lua")
+		roll(One.HEADS))
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+	local hair = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		roll(One.HAIR))
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hair)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Body.lua")
+		roll(One.SHIRTS))
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Gloves.lua")
+		"Resources/Game/Skins/Bronze/Gloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Itsy/Boots.lua")
+		roll(One.SHOES))
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
 end
 

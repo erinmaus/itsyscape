@@ -24,6 +24,8 @@ end
 Log = require "ItsyScape.Common.Log"
 _APP = false
 
+math.randomseed(os.time())
+
 function love.load(args)
 	local main
 
@@ -46,8 +48,6 @@ function love.load(args)
 	end
 
 	love.keyboard.setKeyRepeat(true)
-
-	math.randomseed(os.time())
 end
 
 function love.update(delta)

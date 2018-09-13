@@ -23,14 +23,14 @@ function LabelRenderer:new(resources)
 	}, resources)
 end
 
-function LabelRenderer:draw(widget)
+function LabelRenderer:draw(widget, state)
 	self:visit(widget)
 
 	local style = widget:getStyle()
 	if style and Class.isCompatibleType(style, LabelStyle) then
-		style:draw(widget)
+		style:draw(widget, state)
 	else
-		self.defaultStyle:draw(widget)
+		self.defaultStyle:draw(widget, state)
 	end
 end
 

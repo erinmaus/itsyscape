@@ -88,7 +88,7 @@ for name, metal in pairs(METALS) do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyStab  = ItsyScape.Utility.styleBonusForWeapon(metal.tier),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(metal.tier),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(metal.tier),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = Item
 	}

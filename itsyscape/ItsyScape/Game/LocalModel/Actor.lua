@@ -296,15 +296,6 @@ end
 function LocalActor:setSkin(slot, priority, skin)
 	local s = self.skin[slot] or {}
 
-	-- Remove existing slot if necessary.
-	for i = 1, #s do
-		if s[i].priority == priority then
-			table.remove(s, i)
-			self.onSkinChanged(self, slot, false, skin)
-			break
-		end
-	end
-
 	if skin ~= nil then
 		table.insert(s, { priority = priority, skin = skin })
 		table.sort(s, function(a, b) return a.priority < b.priority end)

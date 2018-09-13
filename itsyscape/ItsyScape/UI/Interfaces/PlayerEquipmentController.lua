@@ -32,8 +32,8 @@ end
 function PlayerEquipmentController:pull()
 	local equipment = self:getPeep():getBehavior(EquipmentBehavior)
 
-	local result = { items = {} }
-	if equipment then
+	local result = { items = {}, stats = {} }
+	if equipment and equipment.equipment then
 		local broker = equipment.equipment:getBroker()
 		for key in broker:keys(equipment.equipment) do
 			for item in broker:iterateItemsByKey(equipment.equipment, key) do
@@ -42,6 +42,10 @@ function PlayerEquipmentController:pull()
 				result.items[key] = resultItem
 				break
 			end
+		end
+
+		for name, value in equipment.equipment:getStats() do
+			result.stats[name] = value
 		end
 	end
 
