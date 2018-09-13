@@ -87,7 +87,7 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_RumbridgeDungeon2",
+		Name = "BossDoor",
 		Map = M._MAP,
 		Resource = M["BossDoor"]
 	}
@@ -135,7 +135,7 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_RumbridgeDungeon1",
+		Name = "CraftingRoomDoor",
 		Map = M._MAP,
 		Resource = M["CraftingRoomDoor"]
 	}

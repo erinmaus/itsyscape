@@ -67,6 +67,23 @@ do
 	}
 end
 
+M["GhostlyMinerForeman"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31.5 * 2,
+		PositionY = 3,
+		PositionZ = 34.5 * 2,
+		Name = "GhostlyMinerForeman",
+		Map = M._MAP,
+		Resource = M["GhostlyMinerForeman"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GhostlyMinerForeman",
+		MapObject = M["GhostlyMinerForeman"]
+	}
+end
+
 M["CopperSkelemental1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -198,9 +215,5 @@ M["BossDoor"] {
 			Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey",
 			Count = 1
 		}
-	},
-
-	ItsyScape.Action.Close() {
-		-- Nothing.
 	}
 }

@@ -89,6 +89,7 @@ function DialogBox:next()
 		self.messageLabel:setText(table.concat(state.content[1], "\n"))
 		self:addChild(self.nextButton)
 	elseif state.options then
+		self.messageLabel:setText("")
 		local y = DialogBox.PADDING
 		local w, h = self:getSize()
 		for i = 1, #state.options do

@@ -50,7 +50,7 @@ function Dialog:next(...)
 	local s, t, messages = self.executor:step(...)
 
 	if not s then
-		Log.warn(s)
+		Log.warn(t)
 		return false
 	end
 
