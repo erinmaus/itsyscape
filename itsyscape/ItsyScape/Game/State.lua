@@ -54,6 +54,8 @@ function State:removeProvider(resource, provider)
 end
 
 function State:has(resource, name, count, flags)
+	flags = flags or {}
+
 	local p = self.providers[resource]
 	if not p then
 		return false
@@ -69,6 +71,8 @@ function State:has(resource, name, count, flags)
 end
 
 function State:take(resource, name, count, flags)
+	flags = flags or {}
+
 	local p = self.providers[resource]
 	if not p then
 		return false
@@ -84,6 +88,8 @@ function State:take(resource, name, count, flags)
 end
 
 function State:count(resource, name, flags)
+	flags = flags or {}
+
 	local p = self.providers[resource]
 	if not p then
 		return false
@@ -98,6 +104,8 @@ function State:count(resource, name, flags)
 end
 
 function State:give(resource, name, count, flags)
+	flags = flags or {}
+
 	local p = self.providers[resource]
 	if not p then
 		return false

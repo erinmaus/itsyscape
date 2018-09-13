@@ -166,7 +166,7 @@ end
 
 function ForwardRendererPass:draw(scene, delta)
 	love.graphics.setMeshCullMode('back')
-	love.graphics.setDepthMode('lequal', true)
+	love.graphics.setDepthMode('lequal', false)
 	love.graphics.setBlendMode('alpha')
 
 	self:getRenderer():getCamera():apply()

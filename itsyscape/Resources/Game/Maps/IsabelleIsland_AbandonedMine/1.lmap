@@ -10414,6 +10414,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -12340,6 +12342,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -13273,7 +13277,7 @@
 			},
 		},
 		{
-			topLeft = 3, topRight = 3, bottomLeft = 3, bottomRight = 3,
+			topLeft = 3, topRight = 2, bottomLeft = 3, bottomRight = 2,
 			edge = 3, flat = 1, decals = {  },
 			data =
 			{
@@ -13283,7 +13287,7 @@
 			},
 		},
 		{
-			topLeft = 3, topRight = 3, bottomLeft = 3, bottomRight = 3,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			edge = 3, flat = 1, decals = {  },
 			data =
 			{
@@ -13753,7 +13757,7 @@
 			},
 		},
 		{
-			topLeft = 3, topRight = 3, bottomLeft = 2, bottomRight = 2,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			edge = 3, flat = 1, decals = {  },
 			data =
 			{
@@ -13763,7 +13767,7 @@
 			},
 		},
 		{
-			topLeft = 3, topRight = 3, bottomLeft = 2, bottomRight = 2,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			edge = 3, flat = 1, decals = {  },
 			data =
 			{

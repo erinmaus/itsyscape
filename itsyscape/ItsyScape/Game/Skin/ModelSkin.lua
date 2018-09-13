@@ -18,6 +18,7 @@ function ModelSkin:new()
 	self.model = false
 	self.texture = false
 	self.isBlocking = true
+	self.isTranslucent = false
 end
 
 function ModelSkin:getResource()
@@ -64,6 +65,12 @@ function ModelSkin:loadFromFile(filename)
 			self.isBlocking = false
 		end
 	end
+
+	if result.isTranslucent then
+		self.isTranslucent = true
+	else
+		self.isTranslucent = false
+	end
 end
 
 -- Gets the model CacheRef.
@@ -78,6 +85,10 @@ end
 
 function ModelSkin:getIsBlocking()
 	return self.isBlocking
+end
+
+function ModelSkin:getIsTranslucent()
+	return self.isTranslucent
 end
 
 return ModelSkin

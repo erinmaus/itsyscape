@@ -189,6 +189,10 @@ function ActorView:applySkin(slotNodes)
 					slot.sceneNode:getMaterial():setTextures(textureResource)
 				end
 
+				if slot.instance:getIsTranslucent() then
+					slot.sceneNode:getMaterial():setIsTranslucent(true)
+				end
+
 				slot.sceneNode:setParent(self.sceneNode)
 
 				self.models[slot.sceneNode] = true
