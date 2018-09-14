@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Anvil_Default/View.lua
+-- Resources/Game/Props/Chest_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,13 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local AnvilView = Class(PropView)
+local ChestView = Class(PropView)
 
-function AnvilView:new(prop, gameView)
+function ChestView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 end
 
-function AnvilView:load()
+function ChestView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
@@ -27,15 +27,15 @@ function AnvilView:load()
 
 	local mesh = resources:load(
 		StaticMeshResource,
-		"Resources/Game/Props/Anvil_Default/Anvil.lstatic")
+		"Resources/Game/Props/Chest_Default/Chest.lstatic")
 	local texture = resources:load(
 		TextureResource,
-		"Resources/Game/Props/Anvil_Default/Texture.png")
+		"Resources/Game/Props/Chest_Default/Texture.png")
 
 	self.decoration = DecorationSceneNode()
-	self.decoration:fromGroup(mesh:getResource(), "CommonAnvil")
+	self.decoration:fromGroup(mesh:getResource(), "CommonChest")
 	self.decoration:getMaterial():setTextures(texture)
 	self.decoration:setParent(root)
 end
 
-return AnvilView
+return ChestView

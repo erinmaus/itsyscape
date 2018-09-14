@@ -193,6 +193,11 @@ function ActorView:applySkin(slotNodes)
 					slot.sceneNode:getMaterial():setIsTranslucent(true)
 				end
 
+				local transform = slot.sceneNode:getTransform()
+				transform:setLocalTranslation(slot.instance:getPosition())
+				transform:setLocalScale(slot.instance:getScale())
+				transform:setLocalRotation(slot.instance:getRotation())
+
 				slot.sceneNode:setParent(self.sceneNode)
 
 				self.models[slot.sceneNode] = true

@@ -57,7 +57,7 @@ for name, bar in pairs(BARS) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Smithing",
-			Count = ItsyScape.Utility.xpForResource(math.max(bar.tier, 1))
+			Count = ItsyScape.Utility.xpForResource(math.max(bar.tier, 1)) * #bar
 		},
 
 		Output {

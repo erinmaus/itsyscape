@@ -79,7 +79,7 @@ Game "ItsyScape"
 	}
 
 	Meta "GatherableProp" {
-		Health = Meta.TYPE_INTEGER,
+		Health = Meta.TYPE_REAL,
 		SpawnTime = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -297,6 +297,7 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
+include "Resources/Game/DB/Props/Chest.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

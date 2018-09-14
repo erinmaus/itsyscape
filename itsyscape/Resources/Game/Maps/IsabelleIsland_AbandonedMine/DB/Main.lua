@@ -48,6 +48,12 @@ do
 		Resource = M["SkeletonMinerJoe"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "deposit",
+		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_DepositLogic.lua",
+		Resource = M["SkeletonMinerJoe"]
+	}
+
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "IronPickaxe",
 		Count = 1,
@@ -81,6 +87,47 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "GhostlyMinerForeman",
 		MapObject = M["GhostlyMinerForeman"]
+	}
+end
+
+M["Chest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.5 * 2,
+		PositionY = 2,
+		PositionZ = 13.5 * 2,
+		Name = "Chest",
+		Map = M._MAP,
+		Resource = M["Chest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["Chest"]
+	}
+
+	local WithdrawAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Withdraw",
+		Language = "en-US",
+		Action = WithdrawAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Chest"],
+		Name = "Chest",
+		Action = WithdrawAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Chest_Withdraw_en-US.lua",
+		Language = "en-US",
+		Action = WithdrawAction
+	}
+
+	M["Chest"] {
+		WithdrawAction
 	}
 end
 

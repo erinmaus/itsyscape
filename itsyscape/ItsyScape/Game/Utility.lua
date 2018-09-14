@@ -189,6 +189,30 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	return text, color
 end
 
+function Utility.Item.parseItemCountInput(value)
+	value = value:gsub("%s*(.*)%s*", "%1"):gsub(",", ""):lower()
+
+	local num, modifier = value:match("^(%d*)([kmbq]?)$")
+	if num then
+		num = tonumber(num)
+		if modifier then
+			if modifier == 'k' then
+				num = num * 100
+			elseif modifier == 'm' then
+				num = num * 1000000
+			elseif modifier == 'b' then
+				num = num * 1000000000
+			elseif modifier == 'q' then
+				num = num * 1000000000000
+			end
+		end
+
+		return true, num
+	end
+
+	return false, 0
+end
+
 function Utility.Item.getName(id, gameDB, lang)
 	lang = lang or "en-US"
 

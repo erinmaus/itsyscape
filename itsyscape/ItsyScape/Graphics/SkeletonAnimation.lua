@@ -46,8 +46,8 @@ function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 	local translation = self.translation:lerp(other.translation, delta)
 
 	transform:translate(translation.x, translation.y, translation.z)
-	transform:scale(scale.x, scale.y, scale.z)
 	transform:applyQuaternion(rotation.x, rotation.y, rotation.z, rotation.w)
+	transform:scale(scale.x, scale.y, scale.z)
 
 	return transform
 end

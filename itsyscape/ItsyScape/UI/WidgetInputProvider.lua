@@ -21,6 +21,18 @@ function WidgetInputProvider:new(root)
 	self.hoveredWidgets = {}
 end
 
+function WidgetInputProvider:setFocusedWidget(widget, reason)
+	local current = self:getFocusedWidget()
+	if current then
+		current:blur()
+	end
+
+	self.focusedWidget = widget or false
+	if self.focusedWidget then
+		self.focusedWidget:focus(reason or 'force')
+	end
+end
+
 function WidgetInputProvider:getFocusedWidget()
 	if self.focusedWidget then
 		if not self.focusedWidget:getIsFocused() then
@@ -204,7 +216,10 @@ function WidgetInputProvider:focusNext(w, e)
 
 	if self:tryFocusNext(w, e) then
 		return true
-	elseif w:getParent() then
+	end
+
+	-- This is broken.
+	--[[elseif w:getParent() then
 		local p = w:getParent()
 		local passedFocus = false
 		for _, child in p:iterate() do
@@ -224,7 +239,7 @@ function WidgetInputProvider:focusNext(w, e)
 				return true
 			end
 		end
-	end
+	end]]
 
 	return false
 end

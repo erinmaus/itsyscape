@@ -203,6 +203,35 @@ function Player:ready(director, game)
 				equipItems(gameDB:getRecords("PeepEquipmentItem", { Resource = self.mapObject }))
 			end
 		end
+
+		do
+			local broker = director:getItemBroker()
+			local function spawnItems(records)
+				local inventory = self:getBehavior(InventoryBehavior)
+				if inventory and inventory.inventory then
+					inventory = inventory.inventory
+					for i = 1, #records do
+						local record = records[i]
+						local item = record:get("Item")
+						local count = record:get("Count") or 1
+						local noted = record:get("Noted") ~= 0
+
+						local transaction = broker:createTransaction()
+						transaction:addParty(inventory)
+						transaction:spawn(inventory, item.name, count, noted)
+						local s, r = transaction:commit()
+						if not s then
+							Log.error("Failed to spawn item: %s", r)
+						end
+					end
+				end
+			end
+
+			spawnItems(gameDB:getRecords("PeepInventoryItem", { Resource = self.resource }))
+			if self.mapObject then
+				spawnItems(gameDB:getRecords("PeepInventoryItem", { Resource = self.mapObject }))
+			end
+		end
 	end
 end
 

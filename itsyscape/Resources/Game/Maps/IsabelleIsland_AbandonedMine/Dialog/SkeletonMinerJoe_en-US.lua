@@ -1,6 +1,7 @@
 speaker "Joe"
 
-message "Hey, I'm Skeleton Miner Joe."
+JOE_NAME = _SPEAKERS["Joe"]:getName()
+message "Hey, I'm ${JOE_NAME}."
 message "I'm just mining my own business. He he he..."
 
 if Utility.Item.spawnInPeepInventory(_TARGET, "CavePotato", 1) then

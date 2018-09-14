@@ -78,3 +78,38 @@ ItsyScape.Meta.PeepStat {
 	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
+
+do
+	local MineAction = ItsyScape.Action.Mine() {
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+
+	ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar" {
+		MineAction
+	}
+
+	ItsyScape.Meta.ActionDifficulty {
+		Value = math.max(10),
+		Action = MineAction
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 10,
+		SpawnTime = math.huge,
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.IsabelleIsland.AbandonedMine.Pillar",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = string.format("Runic pillar", name),
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
+	}
+end
