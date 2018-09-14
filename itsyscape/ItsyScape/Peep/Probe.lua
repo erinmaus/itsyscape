@@ -56,6 +56,36 @@ function Probe.resource(resourceType, resourceName)
 	end
 end
 
+function Probe.mapObject(obj)
+	return function(peep)
+		if peep.getMapObject then
+			local resource = peep:getMapObject()
+			if resource then
+				return resource.id == obj.id
+			end
+		end
+
+		return false
+	end
+end
+
+function Probe.namedMapObject(name)
+	return function(peep)
+		local gameDB = peep:getDirector():getGameDB()
+		if peep.getMapObject then
+			local resource = peep:getMapObject()
+			if resource then
+				local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
+				if location:get("Name") == name then
+					return true
+				end
+			end
+		end
+
+		return false
+	end
+end
+
 function Probe.actionOutput(actionType, outputName, outputType)
 	return function(peep)
 		if peep.getGameDBResource then

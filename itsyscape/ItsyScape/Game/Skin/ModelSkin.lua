@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Skin = require "ItsyScape.Game.Skin.Skin"
 
@@ -19,6 +21,9 @@ function ModelSkin:new()
 	self.texture = false
 	self.isBlocking = true
 	self.isTranslucent = false
+	self.position = Vector(0)
+	self.scale = Vector(1)
+	self.rotation = Quaternion(0, 0, 0, 1)
 end
 
 function ModelSkin:getResource()
@@ -71,6 +76,27 @@ function ModelSkin:loadFromFile(filename)
 	else
 		self.isTranslucent = false
 	end
+
+	if result.position and
+	   type(result.position) == 'table' and
+	   #result.position == 3
+	then
+		self.position = Vector(unpack(result.position))
+	end
+
+	if result.scale and
+	   type(result.scale) == 'table' and
+	   #result.scale == 3
+	then
+		self.scale = Vector(unpack(result.scale))
+	end
+
+	if result.rotation and
+	   type(result.rotation) == 'table' and
+	   #result.rotation == 4
+	then
+		self.rotation = Vector(unpack(result.rotation))
+	end
 end
 
 -- Gets the model CacheRef.
@@ -89,6 +115,18 @@ end
 
 function ModelSkin:getIsTranslucent()
 	return self.isTranslucent
+end
+
+function ModelSkin:getPosition()
+	return self.position
+end
+
+function ModelSkin:getScale()
+	return self.scale
+end
+
+function ModelSkin:getRotation()
+	return self.rotation
 end
 
 return ModelSkin

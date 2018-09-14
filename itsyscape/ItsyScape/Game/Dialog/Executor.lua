@@ -12,6 +12,12 @@ local MirrorSandbox = require "ItsyScape.Common.MirrorSandbox"
 local Message = require "ItsyScape.Game.Dialog.Message"
 
 local Executor = Class()
+function Executor.input(g)
+	return function(t)
+		return coroutine.yield('input', Message(t, g))
+	end
+end
+
 function Executor.message(g)
 	return function(t)
 		local message = Message(t, g)
@@ -42,7 +48,6 @@ function Executor.speaker(g)
 	end
 end
 
-
 function Executor:new(chunk)
 	self.g, self.sandbox = MirrorSandbox()
 	self.chunk = setfenv(chunk, self.g)
@@ -50,6 +55,7 @@ function Executor:new(chunk)
 
 	self.sandbox.Utility = require "ItsyScape.Game.Utility"
 	self.sandbox.xselect = select
+	self.sandbox.input = Executor.input(self.g)
 	self.sandbox.message = Executor.message(self.g)
 	self.sandbox.option = Executor.option(self.g)
 	self.sandbox.select = Executor.select(self.g)

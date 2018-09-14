@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_MineLogic.lua
+-- Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_TradeLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -7,40 +7,33 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
+local PEEP = B.Reference("Miner", "PEEP")
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
-		Mashina.Navigation.WalkToTile {
-			i = 16,
-			j = 21
+		Mashina.Peep.FindNearbyMapObject {
+			prop = "Chest",
+			[PEEP] = B.Output.RESULT
+		},
+
+		Mashina.Navigation.WalkToPeep {
+			peep = PEEP,
+			distance = 1
 		},
 
 		Mashina.Peep.Wait,
 
-		Mashina.Repeat {
-			Mashina.Invert {
-				Mashina.Peep.IsInventoryFull
-			},
-
-			Mashina.Step {
-				Mashina.Skills.Mining.MineNearbyRock {
-					resource = "CopperOre"
-				},
-
-				Mashina.Peep.Wait,
-
-				Mashina.Skills.Mining.MineNearbyRock {
-					resource = "TinOre"
-				},
-
-				Mashina.Peep.Wait
-			},
+		Mashina.Peep.Trade {
+			item = "BronzeBar",
+			quantity = math.huge,
+			target = PEEP,
 		},
 
 		Mashina.Peep.SetState {
-			state = "smelt"
+			state = "mine"
 		}
 	}
 }

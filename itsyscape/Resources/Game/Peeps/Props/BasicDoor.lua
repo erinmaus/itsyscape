@@ -19,7 +19,7 @@ function BasicDoor:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4, 4, 2)
+	size.size = Vector(4, 3, 2)
 
 	self:addPoke('open')
 	self:addPoke('close')

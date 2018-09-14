@@ -161,6 +161,13 @@ function TextButtonStyle:draw(widget)
 		end
 
 		love.graphics.setFont(previousFont)
+	else
+		if widget:getIsFocused() then
+			local font = self.font or love.graphics.getFont()
+			local alpha = math.abs(math.sin(love.timer.getTime() * math.pi))
+			love.graphics.setColor(self.color.r, self.color.b, self.color.g, alpha)
+			love.graphics.line(2, 0, 2, font:getHeight())
+		end
 	end
 end
 

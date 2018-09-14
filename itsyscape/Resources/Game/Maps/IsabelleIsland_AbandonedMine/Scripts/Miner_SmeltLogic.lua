@@ -21,7 +21,7 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Peep.Wait,
 
 		Mashina.Peep.SetState {
-			state = "mine"
+			state = "deposit"
 		}
 	}
 }

@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
@@ -21,12 +22,29 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 
 local GhostlyMinerForeman = Class(Creep)
 
 function GhostlyMinerForeman:new(resource, name, ...)
 	Creep.new(self, resource, name or 'GhostlyMinerForeman', ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(2, 4, 2)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = 4
+
+	self:addPoke('pillarMined')
+end
+
+function GhostlyMinerForeman:onPillarMined(e)
+	self:poke('hit', AttackPoke({
+		damage = 9,
+		aggressor = e.pillar
+	}))
 end
 
 function GhostlyMinerForeman:ready(director, game)

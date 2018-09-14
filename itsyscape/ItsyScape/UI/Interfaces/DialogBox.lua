@@ -18,6 +18,7 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local TextInput = require "ItsyScape.UI.TextInput"
 
 local DialogBox = Class(Interface)
 DialogBox.PADDING = 16
@@ -56,6 +57,10 @@ function DialogBox:new(id, index, ui)
 	self.messageLabel:setPosition(DialogBox.PADDING, DialogBox.PADDING)
 	panel:addChild(self.messageLabel)
 
+	self.inputBox = TextInput()
+	self.inputBox:setSize(w - DialogBox.PADDING * 2, 32)
+	self.inputBox:setPosition(DialogBox.PADDING, DialogBox.HEIGHT / 2 - 16)
+
 	self.nextButton = Button()
 	self.nextButton:setText("Continue >")
 	self.nextButton:setSize(128, 32)
@@ -70,7 +75,13 @@ function DialogBox:getOverflow()
 end
 
 function DialogBox:pump()
-	self:sendPoke("next", nil, {})
+	local state = self:getState()
+
+	if state.input then
+		self:sendPoke("submit", nil, { value = self.inputBox:getText() })
+	else
+		self:sendPoke("next", nil, {})
+	end
 end
 
 function DialogBox:select(index)
@@ -88,8 +99,18 @@ function DialogBox:next()
 	if state.content then
 		self.messageLabel:setText(table.concat(state.content[1], "\n"))
 		self:addChild(self.nextButton)
+		self:removeChild(self.inputBox)
+	elseif state.input then
+		self.messageLabel:setText(table.concat(state.input, "\n"))
+
+		self:getView():getInputProvider():setFocusedWidget(self.inputBox)
+		self.inputBox:setText("")
+
+		self:addChild(self.inputBox)
+		self:addChild(self.nextButton)
 	elseif state.options then
 		self.messageLabel:setText("")
+		self:removeChild(self.inputBox)
 		local y = DialogBox.PADDING
 		local w, h = self:getSize()
 		for i = 1, #state.options do

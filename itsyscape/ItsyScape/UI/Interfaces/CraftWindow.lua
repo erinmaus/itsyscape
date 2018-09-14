@@ -67,7 +67,7 @@ function CraftWindow:new(id, index, ui)
 	self.quantityInput:setSize(192, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self.controlLayout:addChild(self.quantityInput)
 	self.quantityInput.onFocus:register(function()
-		self.quantityInput:setCursor(1, #self.quantityInput:getText())
+		self.quantityInput:setCursor(0, #self.quantityInput:getText() + 1)
 	end)
 
 	self.craftButton = Button()

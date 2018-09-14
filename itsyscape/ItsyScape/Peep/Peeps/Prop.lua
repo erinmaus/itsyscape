@@ -74,11 +74,21 @@ function Prop:ready(director, game)
 	if self.resource then
 		local gameDB = game:getGameDB()
 
-		local name = Utility.getName(self.resource, gameDB)
-		if name then
-			self:setName(name)
-		else
-			self:setName("*" .. self.resource.name)
+		do
+			local name
+			if self.mapObject then
+				name = Utility.getName(self.mapObject, gameDB)
+			end
+
+			if not name and self.resource then
+				name = Utility.getName(self.resource, gameDB)
+			end
+
+			if name then
+				self:setName(name)
+			else
+				self:setName("*" .. self.resource.name)
+			end
 		end
 
 		self:spawnOrPoof('spawn')

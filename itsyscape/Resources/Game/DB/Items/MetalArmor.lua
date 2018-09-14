@@ -69,7 +69,7 @@ for name, metal in pairs(METALS) do
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForResource(math.max(metal.tier + itemProps.bars + 2, 1))
+				Count = ItsyScape.Utility.xpForResource(math.max(metal.tier + itemProps.bars + 2, 1)) * itemProps.bars
 			},
 
 			Output {

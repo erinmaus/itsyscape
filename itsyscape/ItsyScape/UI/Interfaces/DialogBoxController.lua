@@ -10,9 +10,11 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Dialog = require "ItsyScape.Game.Dialog.Dialog"
+local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
 local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
 local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
+local Probe = require "ItsyScape.Peep.Probe"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DialogBoxController = Class(Controller)
@@ -35,6 +37,16 @@ function DialogBoxController:new(peep, director, action)
 				self.dialog:setTarget(peep)
 				self.dialog:getDirector(director)
 
+				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
+				for i = 1, #speakers do
+					local speaker = speakers[i]
+					local peeps = director:probe(Probe.mapObject(speaker:get("Resource")))
+					for _, peep in ipairs(peeps) do
+						self.dialog:setSpeaker(speaker:get("Name"), peep)
+						break
+					end
+				end
+
 				self:pump()
 			end
 		end
@@ -48,6 +60,8 @@ function DialogBoxController:poke(actionID, actionIndex, e)
 		self:select(e)
 	elseif actionID == "next" then
 		self:next(e)
+	elseif actionID == "submit" then
+		self:submit(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -59,6 +73,12 @@ function DialogBoxController:select(e)
 	assert(e.index > 0 and e.index <= self.currentPacket:getNumOptions(), "option out-of-bounds")
 
 	self:pump(self.currentPacket, e.index)
+end
+
+function DialogBoxController:submit(e)
+	assert(type(e.value) == "string", "input must be string")
+
+	self:pump(self.currentPacket, e.value or "")
 end
 
 function DialogBoxController:next(e)
@@ -75,7 +95,12 @@ function DialogBoxController:pump(e, ...)
 	end
 
 	if self.currentPacket then
-		if self.currentPacket:isType(MessagePacket) then
+		if self.currentPacket:isType(InputPacket) then
+			self.state = {
+				speaker = self.state.speaker,
+				input = self.currentPacket:getQuestion():inflate()
+			}
+		elseif self.currentPacket:isType(MessagePacket) then
 			self.state = {
 				speaker = self.state.speaker or "",
 				content = { self.currentPacket:getMessage()[1]:inflate() }
@@ -106,6 +131,7 @@ function DialogBoxController:pump(e, ...)
 	end
 
 	if not self.currentPacket or
+	   self.currentPacket:isType(InputPacket) or
 	   self.currentPacket:isType(SelectPacket) or
 	   self.currentPacket:isType(MessagePacket)
 	then
