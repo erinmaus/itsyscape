@@ -56,9 +56,13 @@ end
 
 function DemoApplication:populateMap()
 	local player = self:getGame():getPlayer():getActor()
-	--self:moveActorToTile(player, 40, 4)
+	-- Entrance
+	self:moveActorToTile(player, 40, 4)
+	-- Mine
 	--self:moveActorToTile(player, 16, 21)
-	self:moveActorToTile(player, 32, 37)
+	-- Furnace
+	--self:moveActorToTile(player, 32, 37)
+	-- Boss
 	--self:moveActorToTile(player, 30, 15)
 end
 

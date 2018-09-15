@@ -50,6 +50,16 @@ function GhostlyMinerForeman:onPillarMined(e)
 	}))
 end
 
+function GhostlyMinerForeman:onDie(e)
+	Creep.onDie(self, e)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+		actor:flash('Message', 1, "I have failed the Empty King!")
+	end
+end
+
 function GhostlyMinerForeman:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -73,6 +83,10 @@ function GhostlyMinerForeman:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/GhostlyMinerForeman_Attack/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/GhostlyMinerForeman_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 
 	local bodySkin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
