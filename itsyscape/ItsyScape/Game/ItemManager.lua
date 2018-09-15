@@ -19,6 +19,10 @@ function ItemManager:new(gameDB)
 	self.gameDB = gameDB
 end
 
+function ItemManager:getResource(id)
+	return self.gameDB:getResource(id, "Item")
+end
+
 function ItemManager:getItemRecord(id)
 	local resource = self.gameDB:getResource(id, "Item")
 	if resource then

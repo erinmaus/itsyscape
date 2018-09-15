@@ -16,22 +16,10 @@ FindNearbyCombatTarget.FILTER = B.Reference()
 FindNearbyCombatTarget.FILTERS = B.Reference()
 FindNearbyCombatTarget.DISTANCE = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
-FindNearbyCombatTarget.SUCCESS = B.Local()
-
 function FindNearbyCombatTarget:update(mashina, state, executor)
-	local s = state[self.SUCCESS]
-	if s then
-		return B.Status.Success
-	else
-		return B.Status.Failure
-	end
-end
-
-function FindNearbyCombatTarget:activated(mashina, state)
-	local ore = state[self.RESOURCE]
 	local director = mashina:getDirector()
 
-	local p = director:probe(Probe.attackable(), Probe.near(mashina, state[self.DISTANCE] or math.huge, state[self.FILTER], unpack(state[self.FILTERS]))
+	local p = director:probe(Probe.attackable(), Probe.near(mashina, state[self.DISTANCE] or math.huge), state[self.FILTER], unpack(state[self.FILTERS] or {}))
 	if p and #p > 0 then
 		table.sort(
 			p,
@@ -45,17 +33,12 @@ function FindNearbyCombatTarget:activated(mashina, state)
 				return aDistance < bDistance
 			end)
 
-		state[self.SUCCESS] = true
 		state[self.RESULT] = p[1]
+		return B.Status.Success
 	else
-		state[self.SUCCESS] = false
 		state[self.RESULT] = nil
+		return B.Status.Failure
 	end
-end
-
-function FindNearbyCombatTarget:deactivated(mashina, state)
-	state[self.SUCCESS] = nil
-	state[self.RESULT] = nil
 end
 
 return FindNearbyCombatTarget

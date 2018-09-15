@@ -18,8 +18,8 @@ SetState.STATE = B.Reference()
 function SetState:update(mashina, state, executor)
 	local mashina = mashina:getBehavior(MashinaBehavior)
 	if mashina then
-		mashina.currentState = state[self.STATE] or false
-
+		local s = state[self.STATE] or false
+		mashina.currentState = s
 		return B.Status.Success
 	end
 

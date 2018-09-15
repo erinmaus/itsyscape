@@ -26,6 +26,11 @@ ItsyScape.Resource.Peep "CopperSkelemental" {
 	}
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
+}
+
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Skelemental.CopperSkelemental",
 	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
@@ -63,7 +68,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepMashinaState {
 	State = "idle",
-	Tree = "Resources/Game/Peeps/Skelemental/Skelemental_IdleLogic.lua",
+	Tree = "Resources/Game/Peeps/Skelemental/CopperSkelemental_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
 }

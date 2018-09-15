@@ -58,8 +58,8 @@ function DemoApplication:populateMap()
 	local player = self:getGame():getPlayer():getActor()
 	--self:moveActorToTile(player, 40, 4)
 	--self:moveActorToTile(player, 16, 21)
-	--self:moveActorToTile(player, 32, 37)
-	self:moveActorToTile(player, 30, 15)
+	self:moveActorToTile(player, 32, 37)
+	--self:moveActorToTile(player, 30, 15)
 end
 
 function DemoApplication:tick()

@@ -33,7 +33,7 @@ function CompositeCommand:new(condition, ...)
 end
 
 function CompositeCommand:getIsInterruptible()
-	if self.queue or self.queue:getIsPending() then
+	if self.queue and self.queue:getIsPending() then
 		return self.queue:getCurrent():getIsInterruptible()
 	else
 		return true

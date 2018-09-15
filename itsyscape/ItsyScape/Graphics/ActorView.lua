@@ -290,9 +290,17 @@ function ActorView:damage(damageType, damage)
 	end
 end
 
-function ActorView:flash(message, ...)
+function ActorView:flash(message, anchor, ...)
 	local sprite = self.game:getSpriteManager()
-	sprite:add(message, self.sceneNode, Vector(0, 1, 0), ...)
+
+	if type(anchor) == 'number' then
+		anchor = Vector(0, anchor, 0)
+	end
+
+	local min, max = self.actor:getBounds()
+	local size = max - min
+
+	sprite:add(message, self.sceneNode, size * anchor, ...)
 end
 
 function ActorView:update(delta)

@@ -26,6 +26,11 @@ ItsyScape.Resource.Peep "TinSkelemental" {
 	}
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "TinSkelemental"
+}
+
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Skelemental.TinSkelemental",
 	Resource = ItsyScape.Resource.Peep "TinSkelemental"
@@ -63,7 +68,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepMashinaState {
 	State = "idle",
-	Tree = "Resources/Game/Peeps/Skelemental/Skelemental_IdleLogic.lua",
+	Tree = "Resources/Game/Peeps/Skelemental/TinSkelemental_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "TinSkelemental"
 }

@@ -13,7 +13,7 @@ local Try = B.Node("Try")
 Try.INDEX = B.Local()
 
 function Try:update(mashina, state, executor)
-	local index = state[self.INDEX] or 1
+	local index = 1--state[self.INDEX] or 1
 	local children = { self.tree:children(self.node) }
 	for i = 1, #children do
 		if i >= index then

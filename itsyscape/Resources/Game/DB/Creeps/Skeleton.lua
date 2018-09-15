@@ -12,6 +12,11 @@ ItsyScape.Resource.Peep "Skeleton_Base" {
 	-- Nothing.
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "Skeleton_Base"
+}
+
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Skeleton.BaseSkeleton",
 	Resource = ItsyScape.Resource.Peep "Skeleton_Base"
@@ -49,6 +54,11 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Resource.Peep "Skeleton_Base_Attackable" {
 	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "Skeleton_Base_Attackable"
 }
 
 ItsyScape.Meta.PeepID {

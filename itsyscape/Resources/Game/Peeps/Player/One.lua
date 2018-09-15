@@ -93,13 +93,13 @@ function One:assign(director)
 		local actor = self:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor = actor.actor
-			actor:flash("XPPopup", skill:getName(), xp)
+			actor:flash("XPPopup", 1, skill:getName(), xp)
 		end
 	end)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.currentHitpoints = 100
-	combat.maximumHitpoints = 100
+	combat.currentHitpoints = 10
+	combat.maximumHitpoints = 10
 	combat.maxChaseDistance = math.huge
 
 	-- DEBUG

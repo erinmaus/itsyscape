@@ -7,7 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local Utility = "ItsyScape.Game.Utility"
+local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
@@ -27,10 +27,12 @@ function Probe.near(peep, distance)
 		return function(other)
 			local p = other:getBehavior(PositionBehavior)
 			if p and position.layer == p.layer then
-				local dx = position.position.x - p.position.x
-				local dz = position.position.z - p.position.z
-				local difference = math.sqrt(dx ^ 2 + dz ^ 2)
-				if difference < distance then
+				local s, t = Utility.Peep.getTile(peep)
+				local i, j = Utility.Peep.getTile(other)
+				local u = math.abs(s - i)
+				local v = math.abs(t - j)
+				local difference = u + v
+				if difference <= distance then
 					return true
 				end
 			end
