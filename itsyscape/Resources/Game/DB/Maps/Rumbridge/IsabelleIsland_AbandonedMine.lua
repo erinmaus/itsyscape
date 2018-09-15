@@ -79,6 +79,11 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
 do
 	local MineAction = ItsyScape.Action.Mine() {
 		Output {

@@ -107,6 +107,7 @@ function CombatCortex:update(delta)
 					local differenceI = math.abs(selfI - targetI)
 					local differenceJ = math.abs(selfJ - targetJ)
 					local distanceToTarget = differenceI + differenceJ
+
 					if distanceToTarget > combat.maxChaseDistance then
 						peep:getCommandQueue():clear()
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })

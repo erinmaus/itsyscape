@@ -193,7 +193,7 @@ end
 function Creep:onTargetFled(p)
 	local mashina = self:getBehavior(MashinaBehavior)
 	if mashina then
-		if not mashina.currentState and mashina.states['idle'] then
+		if (not mashina.currentState or not mashina.states[mashina.currentState]) and mashina.states['idle'] then
 			mashina.currentState = 'idle'
 		end
 	end

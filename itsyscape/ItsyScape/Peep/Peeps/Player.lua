@@ -258,7 +258,7 @@ function Player:assign(director)
 		local actor = self:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor = actor.actor
-			actor:flash("XPPopup", skill:getName(), xp)
+			actor:flash("XPPopup", 1, skill:getName(), xp)
 		end
 	end)
 
@@ -278,7 +278,7 @@ end
 function Player:onTargetFled(p)
 	local mashina = self:getBehavior(MashinaBehavior)
 	if mashina then
-		if not mashina.currentState and mashina.states['idle'] then
+		if (not mashina.currentState or not mashina.states[mashina.currentState]) and mashina.states['idle'] then
 			mashina.currentState = 'idle'
 		end
 	end

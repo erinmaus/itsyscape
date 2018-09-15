@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
@@ -22,11 +23,15 @@ local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseSkelemental = Class(Creep)
 
 function BaseSkelemental:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Skelemental_Base', ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(2, 3, 2)
 end
 
 function BaseSkelemental:ready(director, game)
