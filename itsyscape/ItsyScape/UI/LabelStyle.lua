@@ -27,6 +27,10 @@ function LabelStyle:new(t, resources)
 		self.font = false
 	end
 
+	if t.width then
+		self.width = t.width
+	end
+
 	self.textShadow = t.textShadow or false
 end
 
@@ -55,11 +59,11 @@ function LabelStyle:draw(widget, state)
 
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(text, 1, 1, width, 'left')
+			love.graphics.printf(text, 1, 1, self.width or width, 'left')
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(text, 0, 0, width, 'left')
+		love.graphics.printf(text, 0, 0, self.width or width, 'left')
 
 		love.graphics.setFont(previousFont)
 	end

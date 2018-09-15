@@ -33,6 +33,7 @@ function Message:isDone(time)
 end
 
 function Message:draw(position, time)
+	local oldFont = love.graphics.getFont()
 	local font = self.font:getResource()
 
 	love.graphics.setFont(font)
@@ -59,6 +60,7 @@ function Message:draw(position, time)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(oldFont)
 end
 
 return Message

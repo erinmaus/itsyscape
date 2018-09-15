@@ -29,6 +29,8 @@ function ScrollablePanel:new(InnerPanelType)
 
 	self.verticalScroll:setTarget(self.panel)
 	self.horizontalScroll:setTarget(self.panel)
+	self.isVerticalScroll = false
+	self.isHorizontalScroll = false
 
 	self.floatyScrollBars = false
 
@@ -59,7 +61,7 @@ function ScrollablePanel:performLayout()
 	local width, height = self:getSize()
 	local scrollSizeX, scrollSizeY = self:getScrollSize()
 
-	local panelWidth, panelHeight = width, height
+	local panelWidth, panelHeight = scrollSizeX, scrollSizeY
 	if scrollSizeX > width then
 		if scrollSizeY > height then
 			self.horizontalScroll:setSize(
@@ -74,12 +76,15 @@ function ScrollablePanel:performLayout()
 		end
 
 		Widget.addChild(self, self.horizontalScroll)
+		self.horizontalScroll:performLayout()
+		self.isHorizontalScroll = true
 
 		if not self.floatyScrollBars then
 			panelHeight = panelHeight - self.scrollBarSize
 		end
 	else
-		Widget.removeChild(self, self.verticalScroll)
+		Widget.removeChild(self, self.horizontalScroll)
+		self.isHorizontalScroll = false
 	end
 
 	if scrollSizeY > height then
@@ -96,12 +101,15 @@ function ScrollablePanel:performLayout()
 		end
 
 		Widget.addChild(self, self.verticalScroll)
+		self.verticalScroll:performLayout()
+		self.isVerticalScroll = true
 
 		if not self.floatyScrollBars then
 			panelWidth = panelWidth - self.scrollBarSize
 		end
 	else
 		Widget.removeChild(self, self.verticalScroll)
+		self.isVerticalScroll = false
 	end
 
 	self.panel:setSize(panelWidth, panelHeight)
@@ -119,8 +127,13 @@ end
 function ScrollablePanel:mouseScroll(x, y)
 	Widget.mouseScroll(self, x, y)
 
-	self.verticalScroll:mouseScroll(x, y)
-	self.horizontalScroll:mouseScroll(x, y)
+	if self.isVerticalScroll then
+		self.verticalScroll:mouseScroll(x, y)
+	end
+
+	if self.isHorizontalScroll then
+		self.horizontalScroll:mouseScroll(x, y)
+	end
 end
 
 return ScrollablePanel

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
@@ -16,18 +17,22 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local TextInput = require "ItsyScape.UI.TextInput"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local Widget = require "ItsyScape.UI.Widget"
 
 local CraftWindow = Class(Interface)
 CraftWindow.WIDTH = 480
 CraftWindow.HEIGHT = 320
 CraftWindow.BUTTON_SIZE = 48
 CraftWindow.BUTTON_PADDING = 4
+CraftWindow.PADDING = 4
 
 function CraftWindow:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -48,8 +53,15 @@ function CraftWindow:new(id, index, ui)
 		CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2,
 		CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2)
 	self.grid:getInnerPanel():setPadding(CraftWindow.BUTTON_PADDING)
-	self.grid:setSize(CraftWindow.WIDTH * (3 / 4), CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
+	self.grid:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
 	self:addChild(self.grid)
+
+	self.requirementsPanel = ScrollablePanel(GridLayout)
+	self.requirementsPanel:getInnerPanel():setPadding(0, 0)
+	self.requirementsPanel:getInnerPanel():setWrapContents(true)
+	self.requirementsPanel:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
+	self.requirementsPanel:setPosition(CraftWindow.WIDTH * (1 / 2), CraftWindow.PADDING)
+	self:addChild(self.requirementsPanel)
 
 	self.controlLayout = GridLayout()
 	self.controlLayout:setSize(CraftWindow.WIDTH, CraftWindow.BUTTON_SIZE)
@@ -134,10 +146,126 @@ function CraftWindow:selectAction(action, button)
 		self.previousSelection = button
 
 		self.quantityInput:setText(tostring(action.count))
+
+		self:sendPoke("select", nil, { id = action.id })
 	else
 		self.activeAction = false
 		self.previousSelection = false
 	end
+end
+
+function CraftWindow:populateRequirements(e)
+	local width = self.requirementsPanel:getSize()
+	local height = 0
+
+	local function emitSection(t, title, options)
+		options = options or {}
+
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }))
+		local titleLabel = Label()
+		titleLabel:setPosition(CraftWindow.PADDING, CraftWindow.PADDING)
+		titleLabel:setStyle(LabelStyle({
+			fontSize = 16,
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			textShadow = true
+		}, self:getView():getResources()))
+		titleLabel:setText(title)
+		panel:addChild(titleLabel)
+
+		local layout = GridLayout()
+		layout:setPadding(CraftWindow.PADDING)
+		layout:setSize(width, 0)
+		layout:setWrapContents(true)
+		layout:setPosition(CraftWindow.PADDING, 16 + CraftWindow.PADDING)
+		layout:setPadding(CraftWindow.PADDING, CraftWindow.PADDING)
+		panel:addChild(layout)
+
+		local leftWidth = 32
+		local rightWidth = width - leftWidth - CraftWindow.PADDING * 3
+		local rowHeight = 32
+		for i = 1, #t do
+			local left
+			if t[i].type:lower() == 'skill' then
+				-- this is terrible
+				-- TODO: Add Icon widget or something
+				left = Button()
+				left:setSize(leftWidth, rowHeight)
+				left:setStyle(ButtonStyle({
+					icon = {
+						filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", t[i].resource),
+						x = 0.5, y = 0.5,
+						width = leftWidth - 1, height = rowHeight - 1
+					},
+				}, self:getView():getResources()))
+			elseif t[i].type:lower() == 'item' then
+				left = ItemIcon()
+				left:setSize(leftWidth, rowHeight)
+				left:setItemID(t[i].resource)
+			else
+				left = Widget()
+				left:setSize(leftWidth, rowHeight)
+			end
+			layout:addChild(left)
+
+			local right = Label()
+			right:setStyle(LabelStyle({
+				fontSize = 16,
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				width = math.huge
+			}, self:getView():getResources()))
+			if t[i].type:lower() == 'skill' then
+				if options.skillAsLevel then
+					local level = Curve.XP_CURVE:getLevel(t[i].count)
+					local text = string.format("Lvl %d %s", level, t[i].name)
+					right:setText(text)
+				else
+					local text = string.format("+%d %s XP", math.floor(t[i].count), t[i].name)
+					right:setText(text)
+				end
+			elseif t[i].type:lower() == 'item' then
+				local text
+				if t[i].count <= 1 then
+					text = t[i].name
+				else
+					text = string.format("%dx %s", t[i].count, t[i].name)
+				end
+				right:setText(text)
+			else
+				local text
+				if t[i].count <= 1 then
+					text = t[i].name
+				else
+					text = string.format("%d %s", t[i].count, t[i].name)
+				end
+				right:setText(text)
+			end
+			right:setSize(rightWidth, rowHeight)
+			layout:addChild(right)
+		end
+
+		local innerWidth, innerHeight = layout:getSize()
+		panel:setSize(innerWidth, innerHeight + 16 + CraftWindow.PADDING)
+
+		self.requirementsPanel:addChild(panel)
+	end
+
+	local c = {}
+	for _, child in self.requirementsPanel:getInnerPanel():iterate() do
+		c[child] = true
+	end
+
+	for child in pairs(c) do
+		self.requirementsPanel:removeChild(child)
+	end
+
+	emitSection(e.requirements, "Requirements", { skillAsLevel = true })
+	emitSection(e.inputs, "Inputs")
+	emitSection(e.outputs, "Outputs")
+
+	local _, innerPanelHeight = self.requirementsPanel:getInnerPanel():getSize()
+	self.requirementsPanel:setScrollSize(width, innerPanelHeight)
+	self.requirementsPanel:performLayout()
 end
 
 function CraftWindow:craft()

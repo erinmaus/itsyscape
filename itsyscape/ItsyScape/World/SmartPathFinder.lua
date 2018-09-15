@@ -36,10 +36,30 @@ function SmartPathFinder:getMapObject()
 	return self.map
 end
 
+local D1 = 1
+local D2 = math.sqrt(2)
 function SmartPathFinder:makeEdge(i, j, parent, goal)
-	local di = i - goal.i
-	local dj = j - goal.j
-	local d = math.abs(di) + math.abs(dj)
+	-- This heuristic combines Manhattan distance and diagonal distance.
+	-- We weight more heavily towards going straight unless the diagonal is much
+	-- more optimal than doing straight. This prevents an annoying zig-zag when
+	-- on cases where the diagonal and straight have the same weight.
+	--
+	-- Diagonal distance ise used from node to goal, Manhattan is used from node
+	-- to parent.
+	--
+	-- In essence, we take diagonal distance and sum it with Manhattan distance.
+	-- This gives more organic looking pathfinding. If you don't believe me,
+	-- switch to just diagonal distance and see for yourself.
+	--
+	-- D2 being sqrt(2) works better than D2 being 2 as well. If D2 is 2,
+	-- diagonals are too rare. Again, it looks worse.
+	local di = math.abs(i - goal.i)
+	local dj = math.abs(j - goal.j)
+	local ds = math.abs(i - parent.i)
+	local dt = math.abs(j - parent.j)
+	local d = (D1 * (di + dj) + (D2 - 2 * D1) * math.min(di, dj)) + (ds + dt)
+	--        [                      DD                         ]   [  MD   ]
+	-- where DD = diagonal distance and MD = Manhattan distance
 
 	local edge = {
 		i = i,

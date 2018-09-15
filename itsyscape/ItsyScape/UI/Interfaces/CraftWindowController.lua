@@ -52,6 +52,8 @@ end
 function CraftWindowController:poke(actionID, actionIndex, e)
 	if actionID == "craft" then
 		self:craft(e)
+	elseif actionID == "select" then
+		self:select(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -82,6 +84,72 @@ function CraftWindowController:craft(e)
 	end
 
 	self:getGame():getUI():closeInstance(self)
+end
+
+function CraftWindowController:select(e)
+	assert(type(e.id) == "number", "action ID must be number")
+	assert(self.actionsByID[e.id] ~= nil, "action with ID not found")
+
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	local action = self.actionsByID[e.id]:getAction()
+	local result = {}
+	do
+		result.requirements = {}
+		for requirement in brochure:getRequirements(action) do
+			local resource = brochure:getConstraintResource(requirement)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.requirements,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					count = requirement.count
+				})
+		end
+	end
+	do
+		result.inputs = {}
+		for input in brochure:getInputs(action) do
+			local resource = brochure:getConstraintResource(input)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.inputs,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					count = input.count
+				})
+		end
+	end
+	do
+		result.outputs = {}
+		for output in brochure:getOutputs(action) do
+			local resource = brochure:getConstraintResource(output)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.outputs,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					count = output.count
+				})
+		end
+	end
+
+	director:getGameInstance():getUI():sendPoke(
+		self,
+		"populateRequirements",
+		nil,
+		{ result })
 end
 
 return CraftWindowController

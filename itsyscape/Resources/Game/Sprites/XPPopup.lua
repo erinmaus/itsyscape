@@ -35,6 +35,8 @@ function XPPopup:isDone(time)
 end
 
 function XPPopup:draw(position, time)
+	local oldFont = love.graphics.getFont()
+
 	local font = self.font:getResource()
 	local icon = self.skillIcon:getResource()
 
@@ -77,6 +79,7 @@ function XPPopup:draw(position, time)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(oldFont)
 end
 
 return XPPopup
