@@ -204,7 +204,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33.5 * 2,
 		PositionY = 3,
-		PositionZ = 22.5 * 2,
+		PositionZ = 24.5 * 2,
 		Name = "TinSkelemental",
 		Map = M._MAP,
 		Resource = M["TinSkelemental2"]

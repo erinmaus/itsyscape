@@ -53,7 +53,7 @@ function BasicDoor:spawnOrPoof(mode)
 			local p = position.position
 			local halfSize = size.size / 2
 
-			for x = p.x - halfSize.x, p.x + halfSize.x do
+			for x = p.x - halfSize.x, p.x + halfSize.x - 1 do
 				if mode == 'spawn' then
 					do
 						local tile, i, j = map:getTileAt(x, p.z)

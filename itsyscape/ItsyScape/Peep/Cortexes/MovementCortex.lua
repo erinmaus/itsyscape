@@ -66,6 +66,8 @@ function MovementCortex:update(delta)
 		movement.velocity = movement.velocity + acceleration
 		clampVector(movement.velocity)
 
+		local oldPosition = position.position
+
 		local velocity = movement.velocity * delta * movement.velocityMultiplier
 		position.position = position.position + velocity
 
@@ -101,6 +103,11 @@ function MovementCortex:update(delta)
 			end
 		else
 			position.position.y = math.max(position.position.y + gravity.y * delta, y)
+		end
+
+		local stepY = position.position.y - oldPosition.y 
+		if stepY > movement.maxStepHeight then
+			position.position = oldPosition
 		end
 
 		if movement.velocity.x < -0.5 then
