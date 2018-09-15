@@ -14,7 +14,6 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local Wander = B.Node("Wander")
 Wander.RADIAL_DISTANCE = B.Reference()
-Wander.MAX_PATH_LENGTH = B.Reference()
 
 function Wander:update(mashina, state, executor)
 	local k
@@ -48,7 +47,6 @@ function Wander:update(mashina, state, executor)
 	end
 
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
-	local maxPathLength = state[self.PATH_DISTANCE] or 10
 
 	local s = math.random(-radialDistance, radialDistance)
 	local t = math.random(-radialDistance, radialDistance)
@@ -61,7 +59,7 @@ function Wander:update(mashina, state, executor)
 		targetI,
 		targetJ,
 		k)
-	if command and path:getNumNodes() <= maxPathLength then
+	if command then
 		if mashina:getCommandQueue():interrupt(command) then
 			return B.Status.Success
 		else

@@ -122,7 +122,7 @@ function Director:probe(...)
 		local match = true
 		for i = 1, args.n do
 			local func = args[i]
-			if not func(peep) then
+			if func and not func(peep) then
 				match = false
 				break
 			end

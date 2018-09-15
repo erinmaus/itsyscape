@@ -18,15 +18,21 @@ local PokePropPathNode = require "ItsyScape.World.PokePropPathNode"
 
 local SmartPathFinder = Class(PathFinder)
 
-function SmartPathFinder:new(map, peep)
+function SmartPathFinder:new(map, peep, t)
+	t = t or {}
+
 	PathFinder.new(self, PathFinder.AStar(self))
+
 	self.map = map
 	self.peep = peep
 	self.game = peep:getDirector():getGameInstance()
-	self.canUseObjects = peep:getBehavior(HumanoidBehavior)
+
+	if t.canUseObjects ~= false and peep:getBehavior(HumanoidBehavior) then
+		self.canUseObjects = peep:getBehavior(HumanoidBehavior)
+	end
 end
 
-function SmartPathFinder:getSmart()
+function SmartPathFinder:getMapObject()
 	return self.map
 end
 

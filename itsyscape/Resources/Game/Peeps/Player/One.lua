@@ -25,6 +25,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local HumanPlayerBehavior = require "ItsyScape.Peep.Behaviors.HumanPlayerBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -40,6 +41,7 @@ function One:new(...)
 	self:addBehavior(ActorReferenceBehavior)
 	self:addBehavior(EquipmentBehavior)
 	self:addBehavior(HumanoidBehavior)
+	self:addBehavior(HumanPlayerBehavior)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(InventoryBehavior)
 	self:addBehavior(PositionBehavior)
@@ -96,8 +98,9 @@ function One:assign(director)
 	end)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.currentHitpoints = 10
-	combat.maximumHitpoints = 10
+	combat.currentHitpoints = 100
+	combat.maximumHitpoints = 100
+	combat.maxChaseDistance = math.huge
 
 	-- DEBUG
 	local t = director:getItemBroker():createTransaction()
@@ -260,6 +263,15 @@ function One:onDie(p)
 
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt()
+end
+
+function One:update(...)
+	Peep.update(self, ...)
+
+	local c = 0
+	for k, v in pairs(self.commandQueues) do
+		c = c + 1
+	end
 end
 
 return One
