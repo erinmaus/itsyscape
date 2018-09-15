@@ -73,7 +73,10 @@ function ScrollBar:scroll(direction)
 
 	local p = self:getTarget()
 	if p then
+		local parentWidth, parentHeight = self:getParent():getSize()
 		local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
+		parentScrollSizeX = parentScrollSizeX - parentWidth
+		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
 		if self:getIsVertical() then
 			local y = parentScrollY + direction * self.scrollTick
@@ -90,7 +93,10 @@ end
 function ScrollBar:drag(button, x, y)
 	local p = self:getTarget()
 	if p then
+		local parentWidth, parentHeight = self:getParent():getSize()
 		local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
+		parentScrollSizeX = parentScrollSizeX - parentWidth
+		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
 		if self:getIsVertical() then
 			if not self.dragStart then
@@ -154,10 +160,11 @@ function ScrollBar:performLayout()
 		self.downButton:setText("v")
 
 		if buttonHeight < height then
-			local p = self:getTarget()
+			local p  = self:getParent() --= self:getTarget()
 			if p then
-				local parentWidth, parentHeight = p:getSize()
+				local parentWidth, parentHeight = self:getParent():getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
+
 				local ratio = parentHeight / parentScrollSizeY
 
 				local remainingHeight = height - buttonHeight * 2
@@ -188,7 +195,7 @@ function ScrollBar:performLayout()
 		if buttonWidth < width then
 			local p = self:getTarget()
 			if p then
-				local parentWidth, parentHeight = p:getSize()
+				local parentWidth, parentHeight = self:getParent():getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
 				local ratio = parentHeight / parentScrollSizeX
 
@@ -216,7 +223,10 @@ function ScrollBar:update(...)
 
 	local p = self:getTarget()
 	if p then
+		local parentWidth, parentHeight = self:getParent():getSize()
 		local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
+		parentScrollSizeX = parentScrollSizeX - parentWidth
+		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
 		if self:getIsVertical() then
 			local y = math.floor(parentScrollY / parentScrollSizeY * self.scrollArea) + self.scrollAreaStart
