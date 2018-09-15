@@ -54,6 +54,8 @@ function CraftWindowController:poke(actionID, actionIndex, e)
 		self:craft(e)
 	elseif actionID == "select" then
 		self:select(e)
+	elseif actionID == "close" then
+		self:getGame():getUI():closeInstance(self)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -69,6 +71,8 @@ function CraftWindowController:craft(e)
 	assert(type(e.count) == "number", "count must be number")
 	assert(e.count > 0, "count must be greater than zero")
 	assert(e.count < math.huge, "count must be less than infinity")
+
+	e.count = math.min(e.count, 60)
 
 	local action = self.actionsByID[e.id]
 	local player = self:getPeep()

@@ -37,6 +37,9 @@ function GhostlyMinerForeman:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 4
 
+	local combat = self:getBehavior(CombatStatusBehavior)
+	combat.maxChaseDistance = math.huge
+
 	self:addPoke('pillarMined')
 end
 
