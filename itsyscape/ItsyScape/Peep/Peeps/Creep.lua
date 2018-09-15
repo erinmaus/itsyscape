@@ -185,8 +185,18 @@ function Creep:assign(director)
 	self:addPoke('miss')
 	self:addPoke('die')
 	self:addPoke('firstStrike')
+	self:addPoke('targetFled')
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
+end
+	
+function Creep:onTargetFled(p)
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		if not mashina.currentState and mashina.states['idle'] then
+			mashina.currentState = 'idle'
+		end
+	end
 end
 
 function Creep:onReceiveAttack(p)

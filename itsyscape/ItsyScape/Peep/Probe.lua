@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Utility = "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
@@ -83,6 +84,12 @@ function Probe.namedMapObject(name)
 		end
 
 		return false
+	end
+end
+
+function Probe.attackable()
+	return function(peep)
+		return Utility.Peep.canAttack(peep)
 	end
 end
 

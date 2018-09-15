@@ -38,6 +38,10 @@ function CombatCortex:new()
 	self.defaultWeapon = Weapon()
 end
 
+function CombatCortex:addPeep(peep)
+	Cortex.addPeep(self, peep)
+end
+
 function CombatCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
 
@@ -97,11 +101,16 @@ function CombatCortex:update(delta)
 					local targetI, targetJ = map:toTile(
 						targetPosition.position.x,
 						targetPosition.position.z)
+					
+					local combat = peep:getBehavior(CombatStatusBehavior)
 
 					local differenceI = math.abs(selfI - targetI)
 					local differenceJ = math.abs(selfJ - targetJ)
 					local distanceToTarget = differenceI + differenceJ
-					if distanceToTarget > weaponRange then
+					if distanceToTarget > combat.maxChaseDistance then
+						peep:getCommandQueue():clear()
+						peep:poke('targetFled', { target = target, distance = distanceToTarget })
+					elseif distanceToTarget > weaponRange then
 						local tile = self.walking[peep]
 						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 1)
@@ -141,8 +150,8 @@ function CombatCortex:update(delta)
 							end
 						end
 						do
-							local combat = target:getBehavior(CombatStatusBehavior)
-							if combat and combat.currentHitpoints == 0 then
+							local targetCombat = target:getBehavior(CombatStatusBehavior)
+							if targetCombat and targetCombat.currentHitpoints == 0 then
 								peep:removeBehavior(CombatTargetBehavior)
 								canAttack = false
 							end

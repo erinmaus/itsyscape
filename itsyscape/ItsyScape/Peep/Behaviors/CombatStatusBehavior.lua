@@ -19,6 +19,8 @@ local CombatStatusBehavior = Behavior("CombatStatus")
 -- * maximumHitpoints: Maximum hitpoints. Defaults to 1.
 -- * currentPrayer: Current prayer. Defaults to 1.
 -- * maximumPrayer: Current prayer. Defaults to 1.
+-- * maxChaseDistance: Maximum distance to chase the target.
+--                     Defaults to 4.
 function CombatStatusBehavior:new()
 	Behavior.Type.new(self)
 	
@@ -26,6 +28,7 @@ function CombatStatusBehavior:new()
 	self.maximumHitpoints = 1
 	self.currentPrayer = 1
 	self.maximumPrayer = 1
+	self.maxChaseDistance = 4
 end
 
 return CombatStatusBehavior

@@ -272,6 +272,10 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return {}
 end
 
+function Utility.Peep.canAttack(peep)
+	return peep:hasBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+end
+
 -- Makes the peep walk to the tile (i, j, k).
 --
 -- Returns true on success, false on failure.
@@ -313,7 +317,7 @@ function Utility.Peep.getTile(peep)
 	return i, j, k
 end
 
-function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
+function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 
 	if not peep:hasBehavior(PositionBehavior) or
@@ -325,7 +329,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, ...)
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = SmartPathFinder(map, peep)
+	local pathFinder = SmartPathFinder(map, peep, t)
 	local path = pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
