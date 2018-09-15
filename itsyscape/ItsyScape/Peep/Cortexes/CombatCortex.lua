@@ -38,10 +38,6 @@ function CombatCortex:new()
 	self.defaultWeapon = Weapon()
 end
 
-function CombatCortex:addPeep(peep)
-	Cortex.addPeep(self, peep)
-end
-
 function CombatCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
 
@@ -131,13 +127,11 @@ function CombatCortex:update(delta)
 						end
 					else
 						if self.walking[peep] then
-							if peep:getCommandQueue():clear() then
-								self.walking[peep] = nil
+							self.walking[peep] = nil
 
-								peep:addBehavior(TargetTileBehavior)
-								local targetTile = peep:getBehavior(TargetTileBehavior)
-								targetTile.pathNode = TilePathNode(selfI, selfJ, position.layer or 1)
-							end
+							peep:addBehavior(TargetTileBehavior)
+							local targetTile = peep:getBehavior(TargetTileBehavior)
+							targetTile.pathNode = TilePathNode(selfI, selfJ, position.layer or 1)
 						end
 
 						local canAttack

@@ -88,6 +88,15 @@ function CraftWindow:new(id, index, ui)
 	self.craftButton:setText("Make it!")
 	self.controlLayout:addChild(self.craftButton)
 
+	self.closeButton = Button()
+	self.closeButton:setSize(CraftWindow.BUTTON_SIZE, CraftWindow.BUTTON_SIZE)
+	self.closeButton:setPosition(CraftWindow.WIDTH - CraftWindow.BUTTON_SIZE, 0)
+	self.closeButton:setText("X")
+	self.closeButton.onClick:register(function()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(self.closeButton)
+
 	self.ready = false
 	self.previousSelection = false
 	self.activeAction = false

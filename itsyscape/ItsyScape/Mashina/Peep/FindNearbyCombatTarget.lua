@@ -33,12 +33,16 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 				return aDistance < bDistance
 			end)
 
-		state[self.RESULT] = p[1]
-		return B.Status.Success
-	else
-		state[self.RESULT] = nil
-		return B.Status.Failure
+		for i = 1, #p do
+			if p[i] ~= mashina then
+				state[self.RESULT] = p[i]
+				return B.Status.Success
+			end
+		end
 	end
+
+	state[self.RESULT] = nil
+	return B.Status.Failure
 end
 
 return FindNearbyCombatTarget

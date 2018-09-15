@@ -84,6 +84,13 @@ ItsyScape.Meta.ResourceTag {
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/GhostlyMinerForeman/GhostlyMinerForeman_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
 do
 	local MineAction = ItsyScape.Action.Mine() {
 		Output {
