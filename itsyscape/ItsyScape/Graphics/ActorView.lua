@@ -155,11 +155,15 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	end
 
 	-- TODO load queue
-	local definition = self.game:getResourceManager():loadCacheRef(animation)
-	a.definition = definition:getResource()
-	a.instance = a.definition:play(self.animatable)
-	a.time = time or 0
-	a.priority = priority or -math.huge
+	if priority then
+		local definition = self.game:getResourceManager():loadCacheRef(animation)
+		a.definition = definition:getResource()
+		a.instance = a.definition:play(self.animatable)
+		a.time = time or 0
+		a.priority = priority or -math.huge
+	else
+		a = nil
+	end
 
 	self.animations[slot] = a
 end

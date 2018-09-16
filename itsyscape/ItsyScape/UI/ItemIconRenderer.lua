@@ -58,7 +58,7 @@ function ItemIconRenderer:draw(widget, state)
 			local filename = string.format("Resources/Game/Items/%s/Icon.png", itemID)
 			self.icons[itemID] = love.graphics.newImage(filename)
 		end
-		self.unvisitedIcons[itemID] = false
+		self.unvisitedIcons[itemID] = nil
 
 		local icon = self.icons[itemID]
 		local scaleX, scaleY
