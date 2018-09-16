@@ -275,6 +275,7 @@ end
 function LocalActor:playAnimation(slot, priority, animation, force)
 	if not priority then
 		self.animations[slot] = nil
+		self.onAnimationPlayed(self, slot, priority, animation)
 
 		return true
 	else

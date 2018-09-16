@@ -71,6 +71,11 @@ do
 		ItsyScape.Action.Equip(),
 		ItsyScape.Action.Dequip(),
 		ItsyScape.Action.Smith() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
 			Input {
 				Resource = ItsyScape.Resource.Item "TinBar",
 				Count = 1
@@ -125,6 +130,11 @@ do
 		ItsyScape.Action.Equip(),
 		ItsyScape.Action.Dequip(),
 		ItsyScape.Action.Smith() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
 			Input {
 				Resource = ItsyScape.Resource.Item "CopperBar",
 				Count = 1

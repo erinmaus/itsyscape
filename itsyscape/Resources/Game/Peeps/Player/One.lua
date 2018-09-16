@@ -79,8 +79,6 @@ function One:assign(director)
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Player.One", director:getGameDB())
 	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
-	stats.stats:getSkill("Magic"):setXP(Curve.XP_CURVE:compute(10))
-	stats.stats:getSkill("Wisdom"):setXP(Curve.XP_CURVE:compute(10))
 	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 

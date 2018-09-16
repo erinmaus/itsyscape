@@ -42,7 +42,7 @@ function PillarView:load()
 		skeleton:getResource())
 	local animation = resources:load(
 		SkeletonAnimationResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/animation.lanim",
+		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Animation.lanim",
 		skeleton:getResource())
 	local texture = resources:load(
 		TextureResource,

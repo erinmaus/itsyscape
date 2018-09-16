@@ -32,6 +32,8 @@ function DemoApplication:new()
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
+
+	self.playerDead = false
 end
 
 function DemoApplication:initialize()
@@ -56,14 +58,19 @@ end
 
 function DemoApplication:populateMap()
 	local player = self:getGame():getPlayer():getActor()
+
+	local peep = player:getPeep()
+	peep:listen('die', function()
+		self.playerDead = true
+	end)
 	-- Entrance
 	self:moveActorToTile(player, 40, 4)
 	-- Mine
 	--self:moveActorToTile(player, 16, 21)
 	-- Furnace
-	--self:moveActorToTile(player, 32, 37)
-	-- Boss
 	--self:moveActorToTile(player, 30, 15)
+	-- Boss
+	--self:moveActorToTile(player, 32, 37)
 end
 
 function DemoApplication:tick()
@@ -74,6 +81,18 @@ function DemoApplication:tick()
 	self.currentPlayerPosition = position
 
 	self.light:setDirection(-self:getCamera():getForward())
+
+	if self.playerDead then
+		local player = self:getGame():getPlayer():getActor()
+		local peep = player:getPeep()
+		local combat = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+		combat.currentHitPoints = combat.maximumHitpoints
+
+		player:playAnimation('combat', false)
+
+		self:moveActorToTile(player, 40, 4)
+		self.playerDead = false
+	end
 end
 
 function DemoApplication:mousePress(x, y, button)
