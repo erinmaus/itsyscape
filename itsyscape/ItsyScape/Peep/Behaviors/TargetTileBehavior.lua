@@ -19,10 +19,12 @@ local TargetTileBehavior = Behavior("Path")
 --  * pathNode: The target tile. Should be a TilePathNode.
 --  * nextPathNode: The next path node, or nil if there is none.
 --  * index: Index of path.
+--  * distance: Desired distance from tile center.
 function TargetTileBehavior:new(node, nextNode)
 	Behavior.Type.new(self)
 	self.pathNode = node or false
 	self.nextPathNode = nextNode or false
+	self.distance = 0.5
 end
 
 return TargetTileBehavior

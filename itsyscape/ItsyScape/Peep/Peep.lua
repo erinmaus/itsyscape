@@ -51,6 +51,10 @@ function Peep:new(name)
 	self.resources = {}
 
 	self.state = State()
+
+	self:addPoke('ready')
+	self:addPoke('assign')
+	self:addPoke('finalize')
 end
 
 -- Adds a poke 'name'.
@@ -194,6 +198,8 @@ end
 -- This is immediately called after the constructor by Good(tm) directors.
 function Peep:assign(director)
 	self.director = director
+
+	self:poke('assign', director)
 end
 
 -- Gets the director this Peep was assigned to.
@@ -301,6 +307,7 @@ function Peep:addBehavior(b, ...)
 
 		return true, behavior
 	else
+		Log.error("invalid type '%s' for behavior", type(b))
 		return false, nil
 	end
 end
@@ -344,7 +351,8 @@ end
 --
 -- This should never be called externally.
 function Peep:ready(director, game)
-	-- Nothing.
+	self:poke('ready', director, game)
+	self:poke('finalize', director, game)
 end
 
 -- Updates the Peep.

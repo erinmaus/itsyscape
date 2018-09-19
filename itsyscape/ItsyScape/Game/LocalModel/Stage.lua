@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
 local TransferItemCommand = require "ItsyScape.Game.TransferItemCommand"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
@@ -205,9 +206,7 @@ function LocalStage:instantiateMapObject(resource)
 
 						propInstance = p
 
-						if peep.setMapObject then
-							peep:setMapObject(resource)
-						end
+						Utility.Peep.setMapObject(peep, resource)
 					end
 				end
 			end
@@ -232,9 +231,7 @@ function LocalStage:instantiateMapObject(resource)
 
 						actorInstance = a
 
-						if peep.setMapObject then
-							peep:setMapObject(resource)
-						end
+						Utility.Peep.setMapObject(peep, resource)
 					end
 				end
 			end

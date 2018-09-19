@@ -21,12 +21,14 @@ function IsInventoryFull:update(mashina, state, executor)
 
 		broker = inventory:getBroker()
 		if broker:count(inventory) == inventory:getMaxInventorySpace() then
+			print 'yes #1'
 			return B.Status.Success
 		else
 			return B.Status.Failure
 		end
 	end
 
+	print 'yes #2'
 	return B.Status.Success
 end
 

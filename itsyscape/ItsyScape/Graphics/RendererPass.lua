@@ -82,9 +82,17 @@ function RendererPass:useShader(shader)
 		local finalPixelSource = self.pixelSource .. source:getPixelSource()
 		local finalVertexSource = self.vertexSource .. source:getVertexSource()
 
-		s = self.renderer:addCachedShader(
+		local success, result = pcall(
+			self.renderer.addCachedShader,
+			self.renderer,
 			self:getType(), shader,
 			finalPixelSource, finalVertexSource)
+		if success then
+			s = result
+		else
+			local _, filename = shader:getResource()
+			error(string.format("shader %s:\n\t%s", filename, result))
+		end
 	end
 
 	self.renderer:setCurrentShader(s)

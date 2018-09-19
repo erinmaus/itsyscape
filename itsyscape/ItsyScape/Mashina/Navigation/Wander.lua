@@ -27,18 +27,20 @@ function Wander:update(mashina, state, executor)
 	end
 
 	local i, j
-	if mashina.getMapObject then
-		local mapObject = mashina:getMapObject()
-		local gameDB = mashina:getDirector():getGameDB()
-		local record = gameDB:getRecord("MapObjectLocation", { Resource = mapObject })
-		if record then
+	do
+		local maPobject = Utility.Peep.getMapObject(mashina)
+		if mapObject then
+			local gameDB = mashina:getDirector():getGameDB()
+			local record = gameDB:getRecord("MapObjectLocation", { Resource = mapObject })
+			if record then
 
-			local map = mashina:getDirector():getGameInstance():getStage():getMap(k)
-			local x = record:get("PositionX") or 0
-			local y = record:get("PositionY") or 0
-			local z = record:get("PositionZ") or 0
-			local tile
-			tile, i, j = map:getTileAt(x, z)
+				local map = mashina:getDirector():getGameInstance():getStage():getMap(k)
+				local x = record:get("PositionX") or 0
+				local y = record:get("PositionY") or 0
+				local z = record:get("PositionZ") or 0
+				local tile
+				tile, i, j = map:getTileAt(x, z)
+			end
 		end
 	end
 

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
@@ -30,7 +31,7 @@ end
 function BasicRock:ready(director, game)
 	Prop.ready(self, director, game)
 
-	local resource = self:getGameDBResource()
+	local resource = Utility.Peep.getResource(self)
 	if resource then
 		local gameDB = director:getGameDB()
 		local health = gameDB:getRecord("GatherableProp", {
@@ -58,7 +59,7 @@ function BasicRock:onResourceHit(e)
 		self:poke('mined', e)
 		self:poke('resourceObtained', e)
 
-		local resource = self:getGameDBResource()
+		local resource = Utility.Peep.getResource(self)
 		if resource then
 			local gameDB = self:getDirector():getGameDB()
 			local p = gameDB:getRecord("GatherableProp", {

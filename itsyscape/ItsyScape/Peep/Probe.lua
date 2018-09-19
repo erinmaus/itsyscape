@@ -44,25 +44,24 @@ end
 
 function Probe.resource(resourceType, resourceName)
 	return function(peep)
-		if peep.getGameDBResource then
-			local resource = peep:getGameDBResource()
-			if resource then
-				local gameDB = peep:getDirector():getGameDB()
-				
-				local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
-				return t.name:lower() == resourceType:lower() and
-				       resourceName:lower() == resource.name:lower()
-			end
-
-			return false
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			local gameDB = peep:getDirector():getGameDB()
+			
+			local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
+			return t.name:lower() == resourceType:lower() and
+			       resourceName:lower() == resource.name:lower()
 		end
+
+		return false
 	end
 end
 
 function Probe.mapObject(obj)
 	return function(peep)
-		if peep.getMapObject then
-			local resource = peep:getMapObject()
+		local mapObject = Utility.Peep.getMapObject(peep)
+		if mapObject then
+			local resource = mapObject
 			if resource then
 				return resource.id == obj.id
 			end
@@ -97,30 +96,28 @@ end
 
 function Probe.actionOutput(actionType, outputName, outputType)
 	return function(peep)
-		if peep.getGameDBResource then
-			local resource = peep:getGameDBResource()
-			if resource then
-				local gameDB = peep:getDirector():getGameDB()
-				local brochure = gameDB:getBrochure()
-				
-				for action in brochure:findActionsByResource(resource) do
-					local a = brochure:getActionDefinitionFromAction(action)
-					if a.name:lower() == actionType:lower() then
-						for output in brochure:getOutputs(action) do
-							local outputResource = brochure:getConstraintResource(output)
-							local outputResourceType = brochure:getResourceTypeFromResource(outputResource)
-							if outputResourceType.name:lower() == outputType:lower() and
-							   outputResource.name:lower() == outputName:lower()
-							then
-								return true
-							end
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			local gameDB = peep:getDirector():getGameDB()
+			local brochure = gameDB:getBrochure()
+			
+			for action in brochure:findActionsByResource(resource) do
+				local a = brochure:getActionDefinitionFromAction(action)
+				if a.name:lower() == actionType:lower() then
+					for output in brochure:getOutputs(action) do
+						local outputResource = brochure:getConstraintResource(output)
+						local outputResourceType = brochure:getResourceTypeFromResource(outputResource)
+						if outputResourceType.name:lower() == outputType:lower() and
+						   outputResource.name:lower() == outputName:lower()
+						then
+							return true
 						end
 					end
 				end
 			end
-
-			return false
 		end
+
+		return false
 	end
 end
 

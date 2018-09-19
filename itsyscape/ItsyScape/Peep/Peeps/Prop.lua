@@ -27,20 +27,7 @@ function Prop:new(resource, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)
 
-	self.resource = resource or false
-	self.mapObject = false
-end
-
-function Prop:getGameDBResource()
-	return self.resource
-end
-
-function Prop:setMapObject(value)
-	self.mapObject = value or false
-end
-
-function Prop:getMapObject()
-	return self.mapObject
+	Utility.Peep.setResource(self, resource)
 end
 
 function Prop:spawnOrPoof(mode)
@@ -71,28 +58,8 @@ end
 function Prop:ready(director, game)
 	Peep.ready(self, director, game)
 
-	if self.resource then
-		local gameDB = game:getGameDB()
-
-		do
-			local name
-			if self.mapObject then
-				name = Utility.getName(self.mapObject, gameDB)
-			end
-
-			if not name and self.resource then
-				name = Utility.getName(self.resource, gameDB)
-			end
-
-			if name then
-				self:setName(name)
-			else
-				self:setName("*" .. self.resource.name)
-			end
-		end
-
-		self:spawnOrPoof('spawn')
-	end
+	Utility.Peep.setNameMagically(self)
+	self:spawnOrPoof('spawn')
 end
 
 function Prop:getPropState()

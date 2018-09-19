@@ -48,7 +48,7 @@ function MineNearbyRock:activated(mashina, state)
 		local best = p[i]
 		local health = best:getBehavior(PropResourceHealthBehavior)
 		if health and health.currentProgress < health.maxProgress then
-			local actions = Utility.getActions(game, best:getGameDBResource(), 'world')
+			local actions = Utility.getActions(game, Utility.Peep.getResource(best), 'world')
 			for _, action in ipairs(actions) do
 				if action.instance:getName():lower() == "mine" then
 					local s = action.instance:perform(

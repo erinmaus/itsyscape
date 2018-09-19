@@ -32,7 +32,7 @@ function SmartPathFinder:new(map, peep, t)
 	end
 end
 
-function SmartPathFinder:getMapObject()
+function SmartPathFinder:getMap()
 	return self.map
 end
 
@@ -107,13 +107,13 @@ function SmartPathFinder:getDoor(tile)
 
 			local s, a, l
 			do
-				s, a, l = viable(link:getGameDBResource())
+				s, a, l = viable(Utility.Peep.getResource(link))
 				if s then
 					return s, a, l
 				end
 			end
 			do
-				local r = link:getMapObject()
+				local r = Utility.Peep.getMapObject(link)
 				if r then
 					s, a, l = viable(r)
 					if s then
