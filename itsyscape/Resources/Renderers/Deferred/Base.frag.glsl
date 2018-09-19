@@ -26,8 +26,6 @@ void effect()
 	}
 
 	love_Canvases[0] = vec4(diffuse.rgb, 1.0);
-	//love_Canvases[0] = vec4((frag_Normal + 1.0) / 2.0, 1);
-	//love_Canvases[0] = vec4((frag_Position - 10) / 10, 1.0);
 	love_Canvases[1] = vec4(frag_Position, 1.0);
 	love_Canvases[2] = vec4(frag_Normal, 1.0);
 }

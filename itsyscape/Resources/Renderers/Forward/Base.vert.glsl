@@ -28,17 +28,16 @@ void performTransform(
 
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
-	vec3 localPosition = vec3(0);
-	vec4 projectedPosition = vec4(0);
+	vec3 localPosition = vec3(0.0);
+	vec4 projectedPosition = vec4(0.0);
 	performTransform(
 		modelViewProjection,
 		vertexPosition,
 		localPosition,
 		projectedPosition);
 
-	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1)).xyz;
+	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1.0)).xyz;
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
-	//frag_Normal = normalize(ViewNormalFromLocal * VertexNormal);
 	frag_Texture = VertexTexture;
 
 	return projectedPosition;
