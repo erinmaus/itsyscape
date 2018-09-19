@@ -1,19 +1,30 @@
 do
-	local sourceDirectory = love.filesystem.getSourceBaseDirectory()
+	if love.system.getOS() == "Android" then
+		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
-	local cpath = package.cpath
-	package.cpath = string.format(
-		"%s/ext/?.dll;%s/ext/?.so;%s",
-		sourceDirectory,
-		sourceDirectory,
-		cpath)
+		local cpath = package.cpath
+		package.cpath = string.format(
+			"%s/lib/lib?.so;%s/lib?.so;%s",
+			sourceDirectory,
+			sourceDirectory,
+			cpath)
+	else
+		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
-	local path = package.path
-	package.path = string.format(
-		"%s/ext/?.lua;%s/ext/?/init.lua;%s",
-		sourceDirectory,
-		sourceDirectory,
-		cpath)
+		local cpath = package.cpath
+		package.cpath = string.format(
+			"%s/ext/?.dll;%s/ext/?.so;%s",
+			sourceDirectory,
+			sourceDirectory,
+			cpath)
+
+		local path = package.path
+		package.path = string.format(
+			"%s/ext/?.lua;%s/ext/?/init.lua;%s",
+			sourceDirectory,
+			sourceDirectory,
+			cpath)
+	end
 end
 
 do
