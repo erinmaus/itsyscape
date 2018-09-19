@@ -22,7 +22,7 @@ vec4 effect(
 	vec2 screenCoordinate)
 {
 	vec3 normal = Texel(scape_NormalSpecularTexture, textureCoordinate).xyz;
-	float lightDotSurface = max(dot(scape_LightDirection, normal), 0);
+	float lightDotSurface = max(dot(scape_LightDirection, normal), 0.0);
 
 	vec3 result = lightDotSurface * scape_LightColor;
 

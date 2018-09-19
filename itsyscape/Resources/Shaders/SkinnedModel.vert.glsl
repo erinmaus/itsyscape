@@ -10,11 +10,15 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	vec4 weightedBonePosition = vec4(0);
-	weightedBonePosition += scape_Bones[int(VertexBoneIndex.x) - 1]  * position * VertexBoneWeight.x;
-	weightedBonePosition += scape_Bones[int(VertexBoneIndex.y) - 1]  * position * VertexBoneWeight.y;
-	weightedBonePosition += scape_Bones[int(VertexBoneIndex.z) - 1]  * position * VertexBoneWeight.z;
-	weightedBonePosition += scape_Bones[int(VertexBoneIndex.w) - 1]  * position * VertexBoneWeight.w;
+	vec4 weightedBonePosition = vec4(0.0);
+	mat4 m1 = scape_Bones[int(VertexBoneIndex.x) - 1];
+	mat4 m2 = scape_Bones[int(VertexBoneIndex.y) - 1];
+	mat4 m3 = scape_Bones[int(VertexBoneIndex.z) - 1];
+	mat4 m4 = scape_Bones[int(VertexBoneIndex.w) - 1];
+	weightedBonePosition += m1 * position * VertexBoneWeight.x;
+	weightedBonePosition += m2 * position * VertexBoneWeight.y;
+	weightedBonePosition += m3 * position * VertexBoneWeight.z;
+	weightedBonePosition += m4 * position * VertexBoneWeight.w;
 
 	localPosition = weightedBonePosition.xyz;
 	projectedPosition = modelViewProjectionMatrix * weightedBonePosition;
