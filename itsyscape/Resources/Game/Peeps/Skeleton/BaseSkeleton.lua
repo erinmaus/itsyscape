@@ -27,11 +27,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local BaseSkeleton = Class(Player)
 
 function BaseSkeleton:new(resource, name, ...)
-	Player.new(self, resource, name or 'Goblin_Base', ...)
-
-	self:addBehavior(CombatStatusBehavior)
-
-	Utility.Peep.makeHuman(self)
+	Player.new(self, resource, name or 'Skeleton', ...)
 end
 
 function BaseSkeleton:ready(director, game)

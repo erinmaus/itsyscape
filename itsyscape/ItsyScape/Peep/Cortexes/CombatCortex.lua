@@ -132,6 +132,7 @@ function CombatCortex:update(delta)
 							peep:addBehavior(TargetTileBehavior)
 							local targetTile = peep:getBehavior(TargetTileBehavior)
 							targetTile.pathNode = TilePathNode(selfI, selfJ, position.layer or 1)
+							targetTile.distance = 0.25
 						end
 
 						local canAttack

@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local Utility = require "ItsyScape.Game.Utility"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -64,7 +65,7 @@ end
 
 function LocalProp:getResourceName()
 	if self.peep then
-		return self.peep:getGameDBResource().name
+		return Utility.Peep.getResource(self.peep).name
 	end
 
 	return nil
@@ -136,7 +137,7 @@ function LocalProp:getActions(scope)
 	if self.resource then
 		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
 		if self.peep then
-			local mapObject = self.peep:getMapObject()
+			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
 				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
 
@@ -162,10 +163,11 @@ function LocalProp:poke(action, scope)
 			action,
 			scope,
 			player:getState(), player, peep)
-		if not s and peep:getMapObject() then
+		local m = Utility.Peep.getMapObject(peep)
+		if not s and m then
 			Utility.performAction(
 				self.game,
-				peep:getMapObject(),
+				m,
 				action,
 				scope,
 				player:getState(), player, peep)

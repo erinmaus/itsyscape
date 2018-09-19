@@ -42,7 +42,7 @@ end
 
 -- Gets the underlying shader source, as a ShaderResource.Source object.
 function ShaderResource:getResource()
-	return self.shader
+	return self.shader, self.filename
 end
 
 -- Releases the underlying shader.
@@ -74,6 +74,7 @@ function ShaderResource:loadFromFile(filename)
 	self.shader = ShaderResource.Source(
 		love.filesystem.read(pixelFilename),
 		love.filesystem.read(vertexFilename))
+	self.filename = filename
 end
 
 function ShaderResource:getIsReady()

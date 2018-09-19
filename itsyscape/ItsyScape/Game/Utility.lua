@@ -7,18 +7,32 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local Color = require "ItsyScape.Graphics.Color"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
+local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
+local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
+local Stats = require "ItsyScape.Game.Stats"
+local Color = require "ItsyScape.Graphics.Color"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
+local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
-
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -341,7 +355,471 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	end
 end
 
+function Utility.Peep.getResource(peep)
+	local resource = peep:getBehavior(MappResourceBehavior)
+	if resource then
+		return resource.resource
+	else
+		return false
+	end
+end
+
+function Utility.Peep.setResource(peep, resource)
+	if resource == false then
+		peep:removeBehavior(MappResourceBehavior)
+	else
+		local behavior = peep:getBehavior(MappResourceBehavior)
+		if not behavior then
+			if not peep:addBehavior(MappResourceBehavior) then
+				return false
+			end
+
+			behavior = peep:getBehavior(MappResourceBehavior)
+		end
+
+		assert(behavior, "couldn't add MappResourceBehavior")
+		behavior.resource = resource
+	end
+end
+
+function Utility.Peep.getMapObject(peep)
+	local mapObject = peep:getBehavior(MapObjectBehavior)
+	if mapObject then
+		return mapObject.mapObject
+	else
+		return false
+	end
+end
+
+function Utility.Peep.setMapObject(peep, mapObject)
+	if mapObject == false then
+		peep:removeBehavior(MapObjectBehavior)
+	else
+		local behavior = peep:getBehavior(MapObjectBehavior)
+		if not behavior then
+			if not peep:addBehavior(MapObjectBehavior) then
+				return false
+			end
+
+			behavior = peep:getBehavior(MapObjectBehavior)
+		end
+
+		assert(behavior, "couldn't add MapObjectBehavior")
+		behavior.mapObject = mapObject
+	end
+end
+
+function Utility.Peep.setNameMagically(peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(peep)
+	local mapObject = Utility.Peep.getMapObject(peep)
+
+	local name
+	if mapObject then
+		name = Utility.getName(mapObject, gameDB)
+	end
+
+	if not name and resource then
+		name = Utility.getName(resource, gameDB)
+	end
+
+	if name then
+		peep:setName(name)
+	elseif resource then
+		peep:setName("*" .. resource.name)
+	end
+end
+
+Utility.Peep.Stats = {}
+function Utility.Peep.Stats:onAssign(director)
+	local stats = self:getBehavior(StatsBehavior)
+	if stats then
+		stats.stats = Stats(self:getName(), director:getGameDB())
+		stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
+			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+			local combat = self:getBehavior(CombatStatusBehavior)
+			if combat then
+				combat.maximumHitpoints = combat.maximumHitpoints + difference
+				combat.currentHitpoints = combat.currentHitpoints + difference
+			end
+		end)
+	end
+end
+
+function Utility.Peep.Stats:onReady(director)
+	local stats = self:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+		local function setStats(records)
+			for i = 1, #records do
+				local skill = records[i]:get("Skill").name
+				local xp = records[i]:get("Value")
+
+				if stats:hasSkill(skill) then
+					stats:getSkill(skill):setXP(xp)
+				else
+					Log.warn("Skill %s not found on Peep %s.", skill, self:getName())
+				end
+			end
+		end
+
+		local gameDB = director:getGameDB()
+		local resource = Utility.Peep.getResource(self)
+		local mapObject = Utility.Peep.getMapObject(self)
+
+		if resource then
+			setStats(gameDB:getRecords("PeepStat", { Resource = resource }))
+		end
+
+		if mapObject then
+			setStats(gameDB:getRecords("PeepStat", { Resource = mapObject }))
+		end
+	end
+
+	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
+end
+
+function Utility.Peep.Stats:onFinalize(director)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat and stats then
+		combat.maximumHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+		combat.currentHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+	end
+end
+
+function Utility.Peep.addStats(peep)
+	peep:addBehavior(StatsBehavior)
+
+	peep:listen('assign', Utility.Peep.Stats.onAssign)
+	peep:listen('ready', Utility.Peep.Stats.onReady)
+	peep:listen('finalize', Utility.Peep.Stats.onFinalize)
+end
+
+Utility.Peep.Mashina = {}
+function Utility.Peep.Mashina:onReady(director)
+	local function setMashinaStates(records)
+		if #records > 0 then
+			local s, m = self:addBehavior(MashinaBehavior)
+			if s then
+				for i = 1, #records do
+					local record = records[i]
+					local state = record:get("State")
+					local tree = record:get("Tree")
+					m.states[state] = love.filesystem.load(tree)()
+
+					local default = record:get("IsDefault")
+					if default and default ~= 0 then
+						m.currentState = state
+					end
+				end
+			end
+		end
+	end
+
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	if resource then
+		setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = resource }))
+	end
+
+	if mapObject then
+		setMashinaStates(gameDB:getRecords("PeepMashinaState", { Resource = mapObject }))
+	end
+end
+
+function Utility.Peep.makeMashina(peep)
+	peep:addBehavior(MashinaBehavior)
+
+	peep:listen('ready', Utility.Peep.Mashina.onReady)
+end
+
+Utility.Peep.Inventory = {}
+function Utility.Peep.Inventory:onAssign(director)
+	local inventory = self:getBehavior(InventoryBehavior)
+	director:getItemBroker():addProvider(inventory.inventory)
+
+	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
+end
+
+function Utility.Peep.Inventory:onReady(director)
+	local broker = director:getItemBroker()
+	local function spawnItems(records)
+		local inventory = self:getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			inventory = inventory.inventory
+			for i = 1, #records do
+				local record = records[i]
+				local item = record:get("Item")
+				local count = record:get("Count") or 1
+				local noted = record:get("Noted") ~= 0
+
+				local transaction = broker:createTransaction()
+				transaction:addParty(inventory)
+				transaction:spawn(inventory, item.name, count, noted)
+				local s, r = transaction:commit()
+				if not s then
+					Log.error("Failed to spawn item: %s", r)
+				end
+			end
+		end
+	end
+	
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	if resource then
+		spawnItems(gameDB:getRecords("PeepInventoryItem", { Resource = resource }))
+	end
+
+	if mapObject then
+		spawnItems(gameDB:getRecords("PeepInventoryItem", { Resource = mapObject }))
+	end
+end
+
+function Utility.Peep.addInventory(peep, InventoryType)
+	InventoryType = InventoryType or require "ItsyScape.Game.PlayerInventoryProvider"
+
+	peep:addBehavior(InventoryBehavior)
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory.inventory = InventoryType(peep)
+
+	peep:listen('assign', Utility.Peep.Inventory.onAssign)
+	peep:listen('ready', Utility.Peep.Inventory.onReady)
+end
+
+Utility.Peep.Equipment = {}
+function Utility.Peep.Equipment:onAssign(director)
+	local equipment = self:getBehavior(EquipmentBehavior)
+	director:getItemBroker():addProvider(equipment.equipment)
+
+	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
+end
+
+function Utility.Peep.Equipment:onReady(director)
+	local broker = director:getItemBroker()
+	local function equipItems(records)
+		local equipment = self:getBehavior(EquipmentBehavior)
+		if equipment and equipment.equipment then
+			equipment = equipment.equipment
+			for i = 1, #records do
+				local record = records[i]
+				local item = record:get("Item")
+				local count = record:get("Count") or 1
+
+				local transaction = broker:createTransaction()
+				transaction:addParty(equipment)
+				transaction:spawn(equipment, item.name, count, false)
+				local s, r = transaction:commit()
+				if not s then
+					Log.error("Failed to equip item: %s", r)
+				end
+			end
+		end
+	end
+	
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	if resource then
+		equipItems(gameDB:getRecords("PeepEquipmentItem", { Resource = resource }))
+	end
+
+	if mapObject then
+		equipItems(gameDB:getRecords("PeepEquipmentItem", { Resource = mapObject }))
+	end
+end
+
+function Utility.Peep.addEquipment(peep, EquipmentType)
+	EquipmentType = EquipmentType or require "ItsyScape.Game.EquipmentInventoryProvider"
+
+	peep:addBehavior(EquipmentBehavior)
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment.equipment = EquipmentType(peep)
+
+	peep:listen('assign', Utility.Peep.Equipment.onAssign)
+	peep:listen('ready', Utility.Peep.Equipment.onReady)
+end
+
+Utility.Peep.Attackable = {}
+function Utility.Peep.Attackable:onInitiateAttack()
+	-- Nothing.
+end
+
+function Utility.Peep.Attackable:onTargetFled(p)
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		if (not mashina.currentState or not mashina.states[mashina.currentState]) and mashina.states['idle'] then
+			mashina.currentState = 'idle'
+		end
+	end
+end
+
+function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
+
+	local attack = AttackPoke({
+		attackType = p:getAttackType(),
+		weaponType = p:getWeaponType(),
+		damageType = p:getDamageType(),
+		damage = damage,
+		aggressor = p:getAggressor()
+	})
+
+	if retaliate then
+		local target = self:getBehavior(CombatTargetBehavior)
+		if not target then
+			local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				if self:getCommandQueue():interrupt(AttackCommand()) then
+					local _, target = self:addBehavior(CombatTargetBehavior)
+					target.actor = actor.actor
+
+					local mashina = self:getBehavior(MashinaBehavior)
+					if mashina then
+						if mashina.currentState ~= 'begin-attack' and
+						   mashina.currentState ~= 'attack'
+						then
+							if mashina.states['begin-attack'] then
+								mashina.currentState = 'begin-attack'
+							elseif mashina.states['attack'] then
+								mashina.currentState = 'attack'
+							else
+								mashina.currentState = false
+							end
+
+							self:poke('firstStrike', attack)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if damage > 0 then
+		self:poke('hit', attack)
+	else
+		self:poke('miss', attack)
+	end
+end
+
+function Utility.Peep.Attackable:onReceiveAttack(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
+
+	local attack = AttackPoke({
+		attackType = p:getAttackType(),
+		weaponType = p:getWeaponType(),
+		damageType = p:getDamageType(),
+		damage = damage,
+		aggressor = p:getAggressor()
+	})
+
+	if damage > 0 then
+		self:poke('hit', attack)
+	else
+		self:poke('miss', attack)
+	end
+end
+
+function Utility.Peep.Attackable:onHeal(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints >= 0 then
+		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
+		if not p.zealous then
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
+		end
+
+		combat.currentHitpoints = newHitPoints
+	end
+end
+
+function Utility.Peep.Attackable:onHit(p)
+	local combat = self:getBehavior(CombatStatusBehavior)
+	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
+
+	if math.floor(combat.currentHitpoints) == 0 then
+		self:poke('die', p)
+	end
+end
+
+function Utility.Peep.Attackable:onMiss(p)
+	-- Nothing.
+end
+
+function Utility.Peep.Attackable:onDie(p)
+	self:getCommandQueue():clear()
+	self:removeBehavior(CombatTargetBehavior)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.velocity = Vector.ZERO
+	movement.acceleration = Vector.ZERO
+end
+
+function Utility.Peep.makeAttackable(peep, retaliate)
+	if retaliate == nil then
+		retaliate = true
+	end
+
+	peep:addBehavior(CombatStatusBehavior)
+
+	peep:addPoke('initiateAttack')
+	peep:listen('initiateAttack', Utility.Peep.Attackable.onInitiateAttack)
+	peep:addPoke('receiveAttack')
+
+	if retaliate then
+		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	else
+		peep:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+	end
+
+	peep:addPoke('targetFled')
+	peep:listen('targetFled', Utility.Peep.Attackable.onTargetFled)
+	peep:addPoke('hit')
+	peep:listen('hit', Utility.Peep.Attackable.onHit)
+	peep:addPoke('miss')
+	peep:listen('miss', Utility.Peep.Attackable.onMiss)
+	peep:addPoke('die')
+	peep:listen('die', Utility.Peep.Attackable.onDie)
+	peep:addPoke('heal')
+	peep:listen('heal', Utility.Peep.Attackable.onHeal)
+end
+
+function Utility.Peep.makeSkiller(peep)
+	peep:addPoke('resourceHit')
+end
+
+Utility.Peep.Human = {}
+function Utility.Peep.Human:onFinalize(director)
+	local stats = self:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+		stats.onXPGain:register(function(_, skill, xp)
+			local actor = self:getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				actor = actor.actor
+				actor:flash("XPPopup", 1, skill:getName(), xp)
+			end
+		end)
+	end
+end
+
 function Utility.Peep.makeHuman(peep)
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		movement.maxSpeed = 16
+		movement.maxAcceleration = 16
+		movement.decay = 0.6
+		movement.velocityMultiplier = 1
+		movement.accelerationMultiplier = 1
+		movement.stoppingForce = 3
+	end
+
 	peep:addBehavior(HumanoidBehavior)
 
 	local walkAnimation = CacheRef(
@@ -373,13 +851,7 @@ function Utility.Peep.makeHuman(peep)
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
 	peep:addResource("animation-skill-mining", skillAnimationMine)
 
-	peep:addPoke('initiateAttack')
-	peep:addPoke('receiveAttack')
-	peep:addPoke('resourceHit')
-	peep:addPoke('hit')
-	peep:addPoke('miss')
-	peep:addPoke('die')
-	peep:addPoke('heal')
+	peep:listen('finalize', Utility.Peep.Human.onFinalize)
 end
 
 return Utility

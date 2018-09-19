@@ -45,7 +45,7 @@ function MoveToTileCortex:update(delta)
 		local distance = positionDifference:getLength()
 		local direction = positionDifference:getNormal()
 
-		if distance > 0.5 then
+		if distance > targetTile.distance then
 			-- If we're too far from the tile, steer towards it.
 			local currentVelocityMagnitude = movement.velocity:getLength()
 			local desiredSpeed = movement.maxSpeed * movement.velocityMultiplier

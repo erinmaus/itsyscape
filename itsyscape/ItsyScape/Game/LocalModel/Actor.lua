@@ -227,10 +227,10 @@ function LocalActor:getBounds()
 end
 
 function LocalActor:getActions(scope)
-	if self.resource then
+	if self.resource and self:getCurrentHealth() > 0 then
 		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
 		if self.peep then
-			local mapObject = self.peep:getMapObject()
+			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
 				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
 
@@ -256,10 +256,11 @@ function LocalActor:poke(action, scope)
 			action,
 			scope,
 			player:getState(), player, peep)
-		if not s and peep:getMapObject() then
+		local m = Utility.Peep.getMapObject(peep)
+		if not s and m then
 			Utility.performAction(
 				self.game,
-				peep:getMapObject(),
+				m,
 				action,
 				scope,
 				player:getState(), player, peep)

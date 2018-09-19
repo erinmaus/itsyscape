@@ -65,6 +65,7 @@ function One:new(...)
 	equipment.equipment = EquipmentInventoryProvider(self)
 
 	Utility.Peep.makeHuman(self)
+	Utility.Peep.makeAttackable(self)
 end
 
 function One:assign(director)
@@ -85,6 +86,7 @@ function One:assign(director)
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.maximumHitpoints = combat.maximumHitpoints + difference
 		combat.currentHitpoints = combat.currentHitpoints + difference
+		print("hp", combat.currentHitpoints)
 	end)
 
 	stats.stats.onXPGain:register(function(_, skill, xp)
@@ -202,47 +204,11 @@ function One:onWalk(e)
 end
 
 function One:onHeal(p)
-	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat.currentHitpoints >= 0 then
-		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
-		if not p.zealous then
-			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
-		end
-
-		combat.currentHitpoints = newHitPoints
-	end
-
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt()
 end
 
-function One:onReceiveAttack(p)
-	local combat = self:getBehavior(CombatStatusBehavior)
-	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
-
-	local attack = AttackPoke({
-		attackType = p:getAttackType(),
-		weaponType = p:getWeaponType(),
-		damageType = p:getDamageType(),
-		damage = damage,
-		aggressor = p:getAggressor()
-	})
-
-	if damage > 0 then
-		self:poke('hit', attack)
-	else
-		self:poke('miss', attack)
-	end
-end
-
 function One:onHit(p)
-	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
-
-	if math.floor(combat.currentHitpoints) == 0 then
-		self:poke('die', p)
-	end
-
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt()
 end

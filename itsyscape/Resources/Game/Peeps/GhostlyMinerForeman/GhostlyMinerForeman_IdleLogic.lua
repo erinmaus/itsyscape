@@ -19,7 +19,7 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Try {
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
-				distance = 6,
+				distance = 4,
 				[TARGET] = B.Output.RESULT
 			},
 
