@@ -51,8 +51,6 @@ function GhostlyMinerForeman:onPillarMined(e)
 end
 
 function GhostlyMinerForeman:onDie(e)
-	Creep.onDie(self, e)
-
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
