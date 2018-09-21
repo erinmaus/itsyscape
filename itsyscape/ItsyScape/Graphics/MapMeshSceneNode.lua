@@ -32,7 +32,7 @@ function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h)
 		self.mapMesh:release()
 	end
 
-	self.mapMesh = MapMesh(map, tileSet, x, y, w, h)
+	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1))
 	self.isOwner = true
 end
 

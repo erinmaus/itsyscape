@@ -20,12 +20,24 @@ function Message:new(...)
 	Sprite.new(self, ...)
 
 	local resources = self:getSpriteManager():getResources()
-	self.font = resources:load(FontResource, "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24")
+	resources:queue(
+		FontResource,
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24",
+		function(font)
+			self.font = font
+		end)
+
+	self.ready = false
 end
 
 function Message:spawn(message, color)
 	self.message = message
 	self.color = color or Color(1, 1, 0, 1)
+
+	local resources = self:getSpriteManager():getResources()
+	resources:queueEvent(function()
+		self.ready = true
+	end)
 end
 
 function Message:isDone(time)
@@ -33,6 +45,10 @@ function Message:isDone(time)
 end
 
 function Message:draw(position, time)
+	if not self.ready then
+		return false
+	end
+
 	local oldFont = love.graphics.getFont()
 	local font = self.font:getResource()
 

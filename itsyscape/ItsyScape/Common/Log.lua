@@ -27,7 +27,7 @@ end
 function Log.warn(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
-		Log.print("error", r)
+		Log.print("warning", r)
 	end
 end
 

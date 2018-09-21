@@ -33,38 +33,50 @@ function PillarView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local skeleton = resources:load(
+	resources:queue(
 		SkeletonResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Skeleton.lskel")
-	local model = resources:load(
+		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Skeleton.lskel",
+		function(skeleton)
+			self.skeleton = skeleton
+		end)
+	resources:queue(
 		ModelResource,
 		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Model.lmesh",
-		skeleton:getResource())
-	local animation = resources:load(
-		SkeletonAnimationResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Animation.lanim",
-		skeleton:getResource())
-	local texture = resources:load(
+		function(model)
+			model:getResource():bindSkeleton(self.skeleton:getResource())
+			self.model = model
+		end)
+	resources:queueEvent(function()
+		resources:queue(
+			SkeletonAnimationResource,
+			"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Animation.lanim",
+			function(animation)
+				self.animation = animation
+
+				resources:queueEvent(function()
+					local transforms = {}
+					self.animation:getResource():computeTransforms(0, transforms)
+					self.node:setTransforms(transforms)
+
+					self.node:setParent(root)
+				end)
+			end,
+			self.skeleton:getResource())
+		end)
+	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Texture.png")
-	local texture = resources:load(
-		TextureResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Texture.png")
+		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Texture.png",
+		function(texture)
+			self.texture = texture
+		end)
+	resources:queueEvent(function()
+		self.node = ModelSceneNode()
+		self.node:setModel(model)
+		self.node:getMaterial():setTextures(texture)
 
-	self.node = ModelSceneNode()
-	self.node:setModel(model)
-	self.node:getMaterial():setTextures(texture)
-	self.node:setParent(root)
-
-	self.node:getTransform():setLocalScale(Vector(2))
-	self.node:getTransform():setLocalTranslation(Vector(0, 1, 0))
-
-	self.animation = animation
-	do
-		local transforms = {}
-		self.animation:getResource():computeTransforms(0, transforms)
-		self.node:setTransforms(transforms)
-	end
+		self.node:getTransform():setLocalScale(Vector(2))
+		self.node:getTransform():setLocalTranslation(Vector(0, 1, 0))
+	end)
 end
 
 function PillarView:update(delta)
@@ -72,15 +84,20 @@ function PillarView:update(delta)
 
 	local time
 	if self.time then
-		self.time = math.min(
-			self.time + delta,
-			self.animation:getResource():getDuration())
+		if self.animation then
+			self.time = math.min(
+				self.time + delta,
+				self.animation:getResource():getDuration())
+		else
+			self.time = self.time + delta
+		end
+
 		time = self.time
 	else
 		time = 0
 	end
 
-	do
+	if self.node and self.animation then
 		local transforms = {}
 		self.animation:getResource():computeTransforms(time, transforms)
 		self.node:setTransforms(transforms)

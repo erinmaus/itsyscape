@@ -18,6 +18,14 @@ Callback.DEFAULT_ERROR_HANDLER = function(message)
 	error(message)
 end
 
+-- Binds arguments to a function via the callback mechanism and returns it.
+function Callback.bind(func, ...)
+	local result = Callback()
+	result:register(func, ...)
+
+	return result
+end
+
 -- Creates a new, empty Callback.
 function Callback:new()
 	self.handlers = {}
@@ -40,6 +48,7 @@ end
 -- default error handler simply propagates the error.
 function Callback:invoke(...)
 	local args = { n = select('#', ...), ... }
+	local results = { n = 0 }
 
 	for handler, h in pairs(self.handlers) do
 		local function callHandler()
@@ -54,18 +63,34 @@ function Callback:invoke(...)
 			return handler(unpack(concatArgs, 1, concatArgs.n))
 		end
 
-		local success, result = xpcall(callHandler, debug.traceback)
-		if not success then
-			local continue = self.errorHandler(result)
-			if not continue then
-				break
-			end
-		else
-			if self.yield then
-				coroutine.yield(result)
+		local continue = true
+		local function process(...)
+			local a = { n = select('#', ...), ... }
+			local success = a[1]
+
+			if not success then
+				local result = a[2]
+				continue = self.errorHandler(result)
+			else
+				for i = 2, a.n do
+					results.n = results.n + 1
+					results[results.n] = a[i]
+				end
+
+				if self.yield then
+					coroutine.yield(result)
+				end
 			end
 		end
+
+		process(xpcall(callHandler, debug.traceback))
+
+		if not continue then
+			break
+		end
 	end
+
+	return unpack(results, 1, results.n)
 end
 
 -- Registers a handler.
@@ -131,7 +156,7 @@ end
 --
 -- See Callback.invoke for behavior.
 function Metatable:__call(...)
-	self:invoke(...)
+	return self:invoke(...)
 end
 
 return Callback

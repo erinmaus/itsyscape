@@ -20,13 +20,30 @@ function XPPopup:new(...)
 	Sprite.new(self, ...)
 
 	local resources = self:getSpriteManager():getResources()
-	self.font = resources:load(FontResource, "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24")
+	resources:queue(
+		FontResource,
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24",
+		function(font)
+			self.font = font
+		end)
+
+	self.ready = false
 end
 
 function XPPopup:spawn(skill, xp)
 	local resources = self:getSpriteManager():getResources()
 	local filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill)
-	self.skillIcon = resources:load(TextureResource, filename)
+
+	resources:queue(
+		TextureResource,
+		filename,
+		function(icon)
+			self.skillIcon = icon
+		end)
+	resources:queueEvent(function()
+		self.ready = true
+	end)
+
 	self.xp = xp
 end
 
@@ -35,6 +52,10 @@ function XPPopup:isDone(time)
 end
 
 function XPPopup:draw(position, time)
+	if not self.ready then
+		return
+	end
+
 	local oldFont = love.graphics.getFont()
 
 	local font = self.font:getResource()
