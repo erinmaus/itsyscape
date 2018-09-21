@@ -71,7 +71,7 @@ function CraftViaNearbyProp:activated(mashina, state)
 	if craftAction and craftActionCount > 0 then
 		local best = p[1]
 		if best then
-			local actions = Utility.getActions(game, best:getGameDBResource(), 'hidden')
+			local actions = Utility.getActions(game, Utility.Peep.getResource(best), 'hidden')
 			for i = 1, #actions do
 				local action = actions[i].instance
 				if action:is("UseCraftWindow") then

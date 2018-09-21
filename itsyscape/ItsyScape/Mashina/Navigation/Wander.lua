@@ -28,7 +28,7 @@ function Wander:update(mashina, state, executor)
 
 	local i, j
 	do
-		local maPobject = Utility.Peep.getMapObject(mashina)
+		local mapObject = Utility.Peep.getMapObject(mashina)
 		if mapObject then
 			local gameDB = mashina:getDirector():getGameDB()
 			local record = gameDB:getRecord("MapObjectLocation", { Resource = mapObject })

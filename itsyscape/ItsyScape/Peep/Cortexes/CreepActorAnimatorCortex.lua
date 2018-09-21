@@ -46,6 +46,9 @@ function CreepActorAnimatorCortex:removePeep(peep)
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
 	peep:silence('die', self.onDie)
+
+	self.walking[peep] = nil
+	self.idling[peep] = nil
 end
 
 function CreepActorAnimatorCortex:playAnimation(peep, priority, resource)
@@ -112,22 +115,22 @@ function CreepActorAnimatorCortex:update(delta)
 
 		-- TODO this needs to be better
 		if velocity:getLength() > 0.1 then
-			if not self.walking[actor] then
+			if not self.walking[peep] then
 				local resource = peep:getResource(
 					"animation-walk",
 					"ItsyScape.Graphics.AnimationResource")
 				actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.walking[actor] = true
-				self.idling[actor] = nil
+				self.walking[peep] = true
+				self.idling[peep] = nil
 			end
 		else
-			if not self.idling[actor] then
+			if not self.idling[peep] then
 				local resource = peep:getResource(
 					"animation-idle",
 					"ItsyScape.Graphics.AnimationResource")
 				actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.idling[actor] = true
-				self.walking[actor] = false
+				self.idling[peep] = true
+				self.walking[peep] = nil
 			end
 		end
 	end

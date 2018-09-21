@@ -45,9 +45,9 @@ function MapMesh:new(map, tileSet, left, right, top, bottom)
 	self.tileSet = tileSet
 
 	left = math.max(left or 1, 1)
-	right = math.max(right or map.width, map.width)
+	right = math.min(right or map.width, map.width)
 	top = math.max(top or 1, 1)
-	bottom = math.max(bottom or map.height, map.height)
+	bottom = math.min(bottom or map.height, map.height)
 
 	self:_buildMesh(left, right, top, bottom)
 end

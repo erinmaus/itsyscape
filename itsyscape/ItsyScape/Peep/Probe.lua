@@ -74,13 +74,11 @@ end
 function Probe.namedMapObject(name)
 	return function(peep)
 		local gameDB = peep:getDirector():getGameDB()
-		if peep.getMapObject then
-			local resource = peep:getMapObject()
-			if resource then
-				local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
-				if location:get("Name") == name then
-					return true
-				end
+		local resource = Utility.Peep.getMapObject(peep)
+		if resource then
+			local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
+			if location:get("Name") == name then
+				return true
 			end
 		end
 
