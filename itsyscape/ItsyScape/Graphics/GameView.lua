@@ -23,6 +23,7 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local GameView = Class()
+GameView.MAP_MESH_DIVISIONS = 16
 
 function GameView:new(game)
 	self.game = game
@@ -147,18 +148,18 @@ function GameView:addMap(map, layer, tileSetID)
 	local tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 
 	if self.mapMeshes[layer] then
-		self.mapMeshes[layer].node:setParent(nil)
-		self.mapMeshes[layer].node:setMapMesh(nil)
+		self:removeMap(layer)
 	end
 
 	local m = {
 		tileSet = tileSet,
+		texture = texture,
 		tileSetID = tileSetID or "GrassyPlain",
 		map = map,
-		node = MapMeshSceneNode()
+		node = SceneNode(),
+		parts = {}
 	}
 	m.node:setParent(self.scene)
-	m.node:getMaterial():setTextures(texture)
 
 	self.mapMeshes[layer] = m
 end
@@ -167,7 +168,11 @@ function GameView:removeMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		m.node:setParent(nil)
-		m.node:setMapMesh(nil)
+
+		for i = 1, #m.parts do
+			m.parts:setMapMesh(nil)
+		end
+
 		self.mapMeshes[layer] = nil
 	end
 end
@@ -175,8 +180,34 @@ end
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		m.map = map
-		m.node:fromMap(m.map, m.tileSet)
+		for i = 1, #m.parts do
+			m.parts:setParent(nil)
+			m.parts:setMapMesh(false)
+		end
+		m.parts = {}
+
+		local w = math.max(map:getWidth() / GameView.MAP_MESH_DIVISIONS, 1)
+		local h = math.max(map:getHeight() / GameView.MAP_MESH_DIVISIONS, 1)
+
+		for j = 1, h do
+			for i = 1, w do
+				local x = (i - 1) * GameView.MAP_MESH_DIVISIONS + 1
+				local y = (j - 1) * GameView.MAP_MESH_DIVISIONS + 1
+
+				self.resourceManager:queueEvent(function()
+					local node = MapMeshSceneNode()
+					node:fromMap(
+						m.map,
+						m.tileSet,
+						x, y,
+						GameView.MAP_MESH_DIVISIONS,
+						GameView.MAP_MESH_DIVISIONS)
+					node:setParent(m.node)
+					node:getMaterial():setTextures(m.texture)
+					table.insert(m.parts, node)
+				end)
+			end
+		end
 	end
 end
 
@@ -236,13 +267,15 @@ function GameView:spawnItem(item, tile, position)
 		local lootIconNode = ModelSceneNode(self.itemBagIconModel)
 		lootIconNode:setModel(self.itemBagIconModel)
 
-		local texture = self.resourceManager:load(
+		local texture = self.resourceManager:queue(
 			TextureResource,
-			string.format("Resources/Game/Items/%s/Icon.png", item.id))
+			string.format("Resources/Game/Items/%s/Icon.png", item.id),
+			function(texture)
+				lootIconNode:getMaterial():setTextures(texture)
+			end)
+
 		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
 		lootIconNode:setParent(itemNode)
-		lootIconNode:getMaterial():setTextures(texture)
-
 		lootIconNode:setParent(itemNode)
 	end
 
@@ -304,6 +337,8 @@ function GameView:getDecorations()
 end
 
 function GameView:update(delta)
+	self.resourceManager:update()
+
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
 	end

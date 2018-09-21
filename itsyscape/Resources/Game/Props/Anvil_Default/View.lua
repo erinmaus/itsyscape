@@ -25,17 +25,24 @@ function AnvilView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local mesh = resources:load(
+	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/Anvil_Default/Anvil.lstatic")
-	local texture = resources:load(
+		"Resources/Game/Props/Anvil_Default/Anvil.lstatic",
+		function(mesh)
+			self.mesh = mesh
+		end)
+	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/Anvil_Default/Texture.png")
-
-	self.decoration = DecorationSceneNode()
-	self.decoration:fromGroup(mesh:getResource(), "CommonAnvil")
-	self.decoration:getMaterial():setTextures(texture)
-	self.decoration:setParent(root)
+		"Resources/Game/Props/Anvil_Default/Texture.png",
+		function(texture)
+			self.texture = texture
+		end)
+	resources:queueEvent(function()
+		self.decoration = DecorationSceneNode()
+		self.decoration:fromGroup(self.mesh:getResource(), "CommonAnvil")
+		self.decoration:getMaterial():setTextures(self.texture)
+		self.decoration:setParent(root)
+	end)
 end
 
 return AnvilView

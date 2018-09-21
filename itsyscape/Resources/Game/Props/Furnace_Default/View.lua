@@ -36,38 +36,47 @@ function FurnaceView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local mesh = resources:load(
+	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/Furnace_Default/Furnace.lstatic")
-	local texture = resources:load(
+		"Resources/Game/Props/Furnace_Default/Furnace.lstatic",
+		function(mesh)
+			self.mesh = mesh
+		end)
+	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/Furnace_Default/Texture.png")
+		"Resources/Game/Props/Furnace_Default/Texture.png",
+		function(texture)
+			self.texture = texture
+		end)
+	resources:queueEvent(function()
+		self.decoration = DecorationSceneNode()
+		self.decoration:fromGroup(self.mesh:getResource(), "Furnace")
+		self.decoration:getMaterial():setTextures(self.texture)
+		self.decoration:setParent(root)
 
-	self.decoration = DecorationSceneNode()
-	self.decoration:fromGroup(mesh:getResource(), "Furnace")
-	self.decoration:getMaterial():setTextures(texture)
-	self.decoration:setParent(root)
+		self.light = PointLightSceneNode()
+		self.light:getTransform():setLocalTranslation(Vector(0, 2, 0))
+		self.light:setParent(root)
 
-	self.light = PointLightSceneNode()
-	self.light:getTransform():setLocalTranslation(Vector(0, 2, 0))
-	self.light:setParent(root)
-
-	self:flicker()
+		self:flicker()
+	end)
 end
 
 function FurnaceView:flicker()
-	local flickerWidth = FurnaceView.MAX_FLICKER_TIME - FurnaceView.MIN_FLICKER_TIME
-	self.flickerTime = math.random() * flickerWidth + FurnaceView.MIN_FLICKER_TIME
+	if self.light then
+		local flickerWidth = FurnaceView.MAX_FLICKER_TIME - FurnaceView.MIN_FLICKER_TIME
+		self.flickerTime = math.random() * flickerWidth + FurnaceView.MIN_FLICKER_TIME
 
-	local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
-	local attenuationWidth = FurnaceView.MAX_ATTENUATION - FurnaceView.MIN_ATTENUATION
-	local attenuation = math.random() * attenuationWidth + FurnaceView.MAX_ATTENUATION
-	self.light:setAttenuation(attenuation)
+		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
+		local attenuationWidth = FurnaceView.MAX_ATTENUATION - FurnaceView.MIN_ATTENUATION
+		local attenuation = math.random() * attenuationWidth + FurnaceView.MAX_ATTENUATION
+		self.light:setAttenuation(attenuation)
 
-	local brightnessWidth = FurnaceView.MAX_COLOR_BRIGHTNESS - FurnaceView.MIN_COLOR_BRIGHTNESS
-	local brightness = math.random() * brightnessWidth + FurnaceView.MAX_COLOR_BRIGHTNESS
-	local color = Color(brightness, brightness, brightness, 1)
-	self.light:setColor(color)
+		local brightnessWidth = FurnaceView.MAX_COLOR_BRIGHTNESS - FurnaceView.MIN_COLOR_BRIGHTNESS
+		local brightness = math.random() * brightnessWidth + FurnaceView.MAX_COLOR_BRIGHTNESS
+		local color = Color(brightness, brightness, brightness, 1)
+		self.light:setColor(color)
+	end
 end
 
 function FurnaceView:update(delta)

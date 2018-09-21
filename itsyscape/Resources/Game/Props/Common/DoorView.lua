@@ -13,11 +13,13 @@ local Color = require "ItsyScape.Graphics.Color"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
-local Skeleton = require "ItsyScape.Graphics.Skeleton"
-local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
+local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
+local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local DoorView = Class(PropView)
+DoorView.ANIMATION_OPEN = 1
+DoorView.ANIMATION_CLOSE = 2
 
 function DoorView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -36,34 +38,77 @@ function DoorView:getResourcePath(resource)
 	return string.format("%s/%s", self:getBaseFilename(), resource)
 end
 
+function DoorView:getCurrentAnimation()
+	if self.currentAnimation == DoorView.ANIMATION_OPEN then
+		return self.openAnimation
+	elseif self.currentAnimation == DoorView.ANIMATION_CLOSE then
+		return self.closeAnimation
+	else
+		return nil
+	end
+end
+
 function DoorView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local skeleton = Skeleton(self:getResourcePath("Door.lskel"))
-	local model = resources:load(
+	resources:queue(
+		SkeletonResource,
+		self:getResourcePath("Door.lskel"),
+		function(skeleton)
+			self.skeleton = skeleton
+
+			resources:queue(
+				SkeletonAnimationResource,
+				self:getResourcePath("DoorOpen.lanim"),
+				function(animation)
+					self.openAnimation = animation:getResource()
+				end,
+				skeleton:getResource())
+			resources:queue(
+				SkeletonAnimationResource,
+				self:getResourcePath("DoorClose.lanim"),
+				function(animation)
+					self.closeAnimation = animation:getResource()
+				end,
+				skeleton:getResource())
+			resources:queueEvent(function()
+				self.node = ModelSceneNode()
+				self.node:setModel(self.model)
+				self.node:getMaterial():setTextures(self.texture)
+				self.node:setParent(root)
+
+				self.openAnimation:computeTransforms(0, self.transforms)
+				self.node:setTransforms(self.transforms)
+
+				local state = self:getProp():getState()
+				if state.open then
+					self.currentAnimation = DoorView.ANIMATION_OPEN
+					self.open = true
+				else
+					self.currentAnimation = DoorView.ANIMATION_CLOSE
+					self.open = false
+				end
+
+				self.time = self:getCurrentAnimation():getDuration()
+				self.spawned = true
+			end)
+		end)
+	resources:queue(
 		ModelResource,
 		self:getResourcePath("Door.lmodel"),
-		skeleton)
-	local texture = resources:load(
+		function(model)
+			model:getResource():bindSkeleton(self.skeleton:getResource())
+			self.model = model
+		end)
+	resources:queue(
 		TextureResource,
-		self:getResourcePath("Texture.png"))
-	self.openAnimation = SkeletonAnimation(
-		self:getResourcePath("DoorOpen.lanim"),
-		skeleton)
-	self.closeAnimation = SkeletonAnimation(
-		self:getResourcePath("DoorClose.lanim"),
-		skeleton)
-
-	self.model = ModelSceneNode()
-	self.model:setModel(model)
-	self.model:getMaterial():setTextures(texture)
-	self.model:setParent(root)
-
-	self.openAnimation:computeTransforms(0, self.transforms)
-	self.model:setTransforms(self.transforms)
+		self:getResourcePath("Texture.png"),
+		function(texture)
+			self.texture = texture
+		end)
 end
 
 function DoorView:tick()
@@ -72,10 +117,10 @@ function DoorView:tick()
 	local state = self:getProp():getState()
 	if state.open ~= self.open then
 		if state.open then
-			self.currentAnimation = self.openAnimation
+			self.currentAnimation = DoorView.ANIMATION_OPEN
 			self.open = true
 		else
-			self.currentAnimation = self.closeAnimation
+			self.currentAnimation = DoorView.ANIMATION_CLOSE
 			self.open = false
 		end
 
@@ -86,23 +131,11 @@ end
 function DoorView:update(delta)
 	PropView.update(self, delta)
 
-	if not self.spawned then
-		local state = self:getProp():getState()
-		if state.open then
-			self.currentAnimation = self.openAnimation
-			self.open = true
-		else
-			self.currentAnimation = self.closeAnimation
-			self.open = false
-		end
-
-		self.time = self.currentAnimation:getDuration()
-		self.spawned = true
+	if self.spawned then
+		self.time = math.min(self.time + delta, self:getCurrentAnimation():getDuration())
+		self:getCurrentAnimation():computeTransforms(self.time, self.transforms)
+		self.node:setTransforms(self.transforms)
 	end
-
-	self.time = math.min(self.time + delta, self.currentAnimation:getDuration())
-	self.currentAnimation:computeTransforms(self.time, self.transforms)
-	self.model:setTransforms(self.transforms)
 end
 
 return DoorView

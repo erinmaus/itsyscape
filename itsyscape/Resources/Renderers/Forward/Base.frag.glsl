@@ -76,6 +76,12 @@ vec4 effect(
 	vec2 screenCoordinate)
 {
 	vec4 diffuse = performEffect(color, frag_Texture);
+	float alpha = diffuse.a * color.a;
+
+	if (alpha < 0.1)
+	{
+		discard;
+	}
 
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)

@@ -17,12 +17,24 @@ function Damage:new(...)
 	Sprite.new(self, ...)
 
 	local resources = self:getSpriteManager():getResources()
-	self.font = resources:load(FontResource, "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24")
+	resources:queue(
+		FontResource,
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24",
+		function(font)
+			self.font = font
+		end)
+
+	self.ready = false
 end
 
 function Damage:spawn(damageType, damage)
 	self.damage = damage or 0
 	self.damageType = damageType or 'none'
+
+	local resources = self:getSpriteManager():getResources()
+	resources:queueEvent(function()
+		self.ready = true
+	end)
 end
 
 function Damage:isDone(time)
@@ -30,6 +42,10 @@ function Damage:isDone(time)
 end
 
 function Damage:draw(position)
+	if not self.ready then
+		return
+	end
+
 	local font = self.font:getResource()
 
 	love.graphics.setFont(font)

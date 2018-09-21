@@ -34,20 +34,28 @@ function RockView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local mesh = resources:load(
-		StaticMeshResource,
-		"Resources/Game/Props/Common/Rock/Model.lstatic")
-	self.depletedTexture = resources:load(
-		TextureResource,
-		"Resources/Game/Props/Common/Rock/Texture.png")
-	self.texture = resources:load(
-		TextureResource,
-		self:getTextureFilename())
-
 	self.decoration = DecorationSceneNode()
-	self.decoration:fromGroup(mesh:getResource(), "CommonRock")
-	self.decoration:getMaterial():setTextures(self.texture)
-	self.decoration:setParent(root)
+
+	resources:queue(
+		TextureResource,
+		"Resources/Game/Props/Common/Rock/Texture.png",
+		function(texture)
+			self.depletedTexture = texture
+		end)
+	resources:queue(
+		TextureResource,
+		self:getTextureFilename(),
+		function(texture)
+			self.texture = texture
+		end)
+	resources:queue(
+		StaticMeshResource,
+		"Resources/Game/Props/Common/Rock/Model.lstatic",
+		function(mesh)
+			self.decoration:fromGroup(mesh:getResource(), "CommonRock")
+			self.decoration:getMaterial():setTextures(self.texture)
+			self.decoration:setParent(root)
+		end)
 end
 
 function RockView:tick()
@@ -65,11 +73,13 @@ function RockView:tick()
 		end
 
 		if r.depleted ~= self.depleted then
-			if r.depleted then
-				self.decoration:getMaterial():setTextures(self.depletedTexture)
-			else
-				self.decoration:getMaterial():setTextures(self.texture)
-			end
+			self:getResources():queueEvent(function()
+				if r.depleted then
+					self.decoration:getMaterial():setTextures(self.depletedTexture)
+				else
+					self.decoration:getMaterial():setTextures(self.texture)
+				end
+			end)
 
 			self.depleted = r.depleted
 		end

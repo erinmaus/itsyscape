@@ -49,6 +49,16 @@ function ActorView.Animatable:removeSceneNode(sceneNode)
 end
 
 function ActorView.Animatable:getTransforms()
+	local skeleton = self:getSkeleton()
+	local numBones = skeleton:getNumBones()
+	if #self.transforms ~= numBones then
+		for i = 1, numBones do
+			if not self.transforms[i] then
+				self.transforms[i] = love.math.newTransform()
+			end
+		end
+	end
+
 	return self.transforms
 end
 
@@ -156,55 +166,82 @@ function ActorView:playAnimation(slot, animation, priority, time)
 
 	-- TODO load queue
 	if priority then
-		local definition = self.game:getResourceManager():loadCacheRef(animation)
-		a.definition = definition:getResource()
-		a.instance = a.definition:play(self.animatable)
-		a.time = time or 0
-		a.priority = priority or -math.huge
+		self.game:getResourceManager():queueCacheRef(animation, function(definition)
+			a.definition = definition:getResource()
+			a.instance = a.definition:play(self.animatable)
+			a.time = time or 0
+			a.priority = priority or -math.huge
+
+			self.animations[slot] = a
+		end)
 	else
 		a = nil
 	end
+end
 
-	self.animations[slot] = a
+function ActorView:applySkinSlot(body, slot, ignore)
+	coroutine.yield()
 end
 
 function ActorView:applySkin(slotNodes)
 	local ignore = false
-	for i = #slotNodes, 1, -1 do
+	local i = #slotNodes
+	local iterate
+	local function step()
+		if i > 1 then
+			self.game:getResourceManager():queueEvent(iterate)
+			i = i - 1
+		end
+	end
+	iterate = function()
 		local slot = slotNodes[i]
-		local skin = slot.definition
+		if not slot then
+			step()
+			return
+		end
 
+		local skin = slot.definition
 		if slot.sceneNode then
-			slot.sceneNode:setParent(nil)
+			slot.sceneNode:setParent(false)
 		end
 
 		if self.body and not ignore then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
-				slot.instance = self.game:getResourceManager():loadCacheRef(skin, self.body:getSkeleton())
-				slot.sceneNode = ModelSceneNode()
+				self.game:getResourceManager():queueCacheRef(skin, function(instance)
+					slot.instance = instance
+					slot.sceneNode = ModelSceneNode()
 
-				local model = self.game:getResourceManager():loadCacheRef(slot.instance:getModel())
-				model:getResource():bindSkeleton(self.body:getSkeleton())
+					self.game:getResourceManager():queueCacheRef(slot.instance:getModel(), function(model)
+						model:getResource():bindSkeleton(self.body:getSkeleton())
+						slot.sceneNode:setModel(model)
 
-				slot.sceneNode:setModel(model)
-				local texture = slot.instance:getTexture()
-				if texture then
-					local textureResource = self.game:getResourceManager():loadCacheRef(texture)
-					slot.sceneNode:getMaterial():setTextures(textureResource)
-				end
+						local texture = slot.instance:getTexture()
+						if texture then
+							self.game:getResourceManager():queueCacheRef(texture, function(textureResource)
+								slot.sceneNode:getMaterial():setTextures(textureResource)
+							end)
+						end
 
-				if slot.instance:getIsTranslucent() then
-					slot.sceneNode:getMaterial():setIsTranslucent(true)
-				end
+						if slot.instance:getIsTranslucent() then
+							slot.sceneNode:getMaterial():setIsTranslucent(true)
+						end
 
-				local transform = slot.sceneNode:getTransform()
-				transform:setLocalTranslation(slot.instance:getPosition())
-				transform:setLocalScale(slot.instance:getScale())
-				transform:setLocalRotation(slot.instance:getRotation())
+						local transform = slot.sceneNode:getTransform()
+						transform:setLocalTranslation(slot.instance:getPosition())
+						transform:setLocalScale(slot.instance:getScale())
+						transform:setLocalRotation(slot.instance:getRotation())
 
-				slot.sceneNode:setParent(self.sceneNode)
+						slot.sceneNode:setParent(self.sceneNode)
 
-				self.models[slot.sceneNode] = true
+						self.models[slot.sceneNode] = true
+
+						if slot.instance:getIsBlocking() then
+							ignore = true
+						end
+
+						step()
+					end)
+				end, self.body:getSkeleton())
 			end
 		else
 			if slot.sceneNode then
@@ -213,11 +250,13 @@ function ActorView:applySkin(slotNodes)
 
 			slot.instance = false
 			slot.sceneNode = false
-		end
 
-		if slot.instance and slot.instance:getIsBlocking() then
-			ignore = true
+			step()
 		end
+	end
+
+	if i > 0 then
+		self.game:getResourceManager():queueEvent(iterate)
 	end
 end
 
