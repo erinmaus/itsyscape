@@ -671,30 +671,28 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		aggressor = p:getAggressor()
 	})
 
-	if retaliate then
-		local target = self:getBehavior(CombatTargetBehavior)
-		if not target then
-			local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
-			if actor and actor.actor then
-				if self:getCommandQueue():interrupt(AttackCommand()) then
-					local _, target = self:addBehavior(CombatTargetBehavior)
-					target.actor = actor.actor
+	local target = self:getBehavior(CombatTargetBehavior)
+	if not target then
+		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			if self:getCommandQueue():interrupt(AttackCommand()) then
+				local _, target = self:addBehavior(CombatTargetBehavior)
+				target.actor = actor.actor
 
-					local mashina = self:getBehavior(MashinaBehavior)
-					if mashina then
-						if mashina.currentState ~= 'begin-attack' and
-						   mashina.currentState ~= 'attack'
-						then
-							if mashina.states['begin-attack'] then
-								mashina.currentState = 'begin-attack'
-							elseif mashina.states['attack'] then
-								mashina.currentState = 'attack'
-							else
-								mashina.currentState = false
-							end
-
-							self:poke('firstStrike', attack)
+				local mashina = self:getBehavior(MashinaBehavior)
+				if mashina then
+					if mashina.currentState ~= 'begin-attack' and
+					   mashina.currentState ~= 'attack'
+					then
+						if mashina.states['begin-attack'] then
+							mashina.currentState = 'begin-attack'
+						elseif mashina.states['attack'] then
+							mashina.currentState = 'attack'
+						else
+							mashina.currentState = false
 						end
+
+						self:poke('firstStrike', attack)
 					end
 				end
 			end
@@ -755,6 +753,11 @@ end
 function Utility.Peep.Attackable:onDie(p)
 	self:getCommandQueue():clear()
 	self:removeBehavior(CombatTargetBehavior)
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = false
+	end
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO
