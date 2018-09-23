@@ -159,7 +159,8 @@ function DeferredRendererPass:drawNodes(scene, delta)
 			local min, max = node:getBounds()
 			min, max = Vector.transformBounds(min, max, d)
 
-			if viewProjection:boxInsideFrustum(min.x, min.y, min.z, max.x, max.y, max.z) then
+			--- XXX fix culling
+			if viewProjection:boxInsideFrustum(min.x, min.y, min.z, max.x, max.y, max.z) or true then
 				if currentShaderProgram:hasUniform("scape_WorldMatrix") then
 					currentShaderProgram:send("scape_WorldMatrix", d)
 
