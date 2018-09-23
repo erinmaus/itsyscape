@@ -65,7 +65,7 @@ function One:new(...)
 	equipment.equipment = EquipmentInventoryProvider(self)
 
 	Utility.Peep.makeHuman(self)
-	Utility.Peep.makeAttackable(self)
+	Utility.Peep.makeAttackable(self, false)
 end
 
 function One:assign(director)
