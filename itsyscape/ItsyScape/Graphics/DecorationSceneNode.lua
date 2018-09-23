@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -40,6 +41,8 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 	if self.isOwner and self.mesh then
 		self.mesh:release()
 	end
+
+	min, max = Vector(math.huge), Vector(-math.huge)
 
 	local vertices = {}
 	local transform = love.math.newTransform()
@@ -94,6 +97,10 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 					v[6] = v[6] * l
 				end
 
+				local p = Vector(v[1], v[2], v[3])
+				min = min:min(p)
+				max = max:max(p)
+
 				table.insert(vertices, v)
 			end
 		end
@@ -107,6 +114,9 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 		end
 
 		self.isOwner = true
+		self:setBounds(min, max)
+	else
+		self:setBounds(Vector(0), Vector(0))
 	end
 end
 

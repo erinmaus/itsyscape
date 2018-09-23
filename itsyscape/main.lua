@@ -30,6 +30,36 @@ end
 do
 	local B = require "B"
 	B._ROOT = "ItsyScape.Mashina"
+
+	local Node = B.Node
+	function B.Node(name)
+		local Proxy = Node(name)
+		local Node = setmetatable({}, getmetatable(Proxy))
+
+		Proxy._ACTIVATED = B.Local()
+
+		function Proxy:activate(mashina, state, executor)
+			state[self._ACTIVATED] = true
+
+			Node.activate(self, mashina, state, executor)
+		end
+
+		function Proxy:deactivated(mashina, state, executor)
+			state[self._ACTIVATED] = nil
+			Node.deactivate(self, mashina, state, executor)
+		end
+
+		function Proxy:update(mashina, state, executor)
+			if state[self._ACTIVATED] then
+				state[self._ACTIVATED] = false
+				return B.Status.Working
+			end
+
+			return Node.update(self, mashina, state, executor)
+		end
+
+		return Node
+	end
 end
 
 Log = require "ItsyScape.Common.Log"
@@ -43,6 +73,10 @@ function love.load(args)
 	for i = 1, #args do
 		if args[i] == "/main" or args[i] == "--main" then
 			main = args[i + 1]
+		end
+
+		if args[i] == "/debug" or args[i] == "--debug" then
+			_DEBUG = true
 		end
 	end
 
@@ -95,6 +129,14 @@ function love.keypressed(...)
 	if _APP then
 		_APP:keyDown(...)
 	end
+
+	if _DEBUG then
+		if (select(1, ...) == 'f12') then
+			local p = require "ProFi"
+			p:setGetTimeMethod(love.timer.getTime)
+			p:start()
+		end
+	end
 end
 
 function love.keyreleased(...)
@@ -112,5 +154,13 @@ end
 function love.draw()
 	if _APP then
 		_APP:draw()
+	end
+end
+
+function love.quit()
+	if _DEBUG then
+		local p = require "ProFi"
+		p:stop()
+		p:writeReport("itsyscape.log")
 	end
 end

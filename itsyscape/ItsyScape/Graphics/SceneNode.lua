@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
 
@@ -21,6 +22,16 @@ function SceneNode:new()
 	self.material = Material()
 	self.parent = false
 	self.children = {}
+	self.min, self.max = Vector(), Vector()
+end
+
+function SceneNode:getBounds()
+	return self.min, self.max
+end
+
+function SceneNode:setBounds(min, max)
+	self.min = min or self.min
+	self.max = max or self.max
 end
 
 function SceneNode:setParent(parent)
@@ -60,6 +71,14 @@ function SceneNode:tick()
 
 	for child in self:iterate() do
 		child:tick()
+	end
+end
+
+function SceneNode:frame(delta)
+	self.transform:frame(delta)
+
+	for child in self:iterate() do
+		child:frame(delta)
 	end
 end
 

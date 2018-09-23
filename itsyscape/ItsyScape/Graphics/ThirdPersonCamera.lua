@@ -28,6 +28,29 @@ function ThirdPersonCamera:new()
 	self.position = Vector(0, 0, 0)
 end
 
+function ThirdPersonCamera:getTransforms(projection, view)
+	projection = projection or love.math.newTransform()
+	do
+		projection:reset()
+		projection:perspective(
+			self.fieldOfView,
+			self.width / self.height,
+			self.near, self.far)
+	end
+
+	view = view or love.math.newTransform()
+	do
+		view:reset()
+		local eye = self:getEye()
+		view:lookAt(
+			eye.x, eye.y, eye.z,
+			self.position.x, self.position.y, self.position.z,
+			self.up.x, self.up.y, self.up.z)
+	end
+
+	return projection, view
+end
+
 function ThirdPersonCamera:getWidth()
 	return self.width
 end

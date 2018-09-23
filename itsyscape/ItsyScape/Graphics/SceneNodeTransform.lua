@@ -27,6 +27,7 @@ function SceneNodeTransform:new()
 	self.localDeltaTransform = love.math.newTransform()
 	self.globalTransform = love.math.newTransform()
 	self.globalDeltaTransform = love.math.newTransform()
+	self.globalDeltaTransformDirty = true
 
 	self.parentTransform = false
 end
@@ -199,16 +200,19 @@ function SceneNodeTransform:getGlobalTransform()
 end
 
 function SceneNodeTransform:getGlobalDeltaTransform(delta)
-	local localDeltaTransform = self:getLocalDeltaTransform(delta)
+	if self.globalDeltaTransformDirty then
+		local localDeltaTransform = self:getLocalDeltaTransform(delta)
 
-	self.globalDeltaTransform:reset()
-	do
-		if self.parentTransform then
-			local parentGlobalDeltaTransform = self.parentTransform:getGlobalDeltaTransform(delta)
-			self.globalDeltaTransform:apply(parentGlobalDeltaTransform)
+		self.globalDeltaTransform:reset()
+		do
+			if self.parentTransform then
+				local parentGlobalDeltaTransform = self.parentTransform:getGlobalDeltaTransform(delta)
+				self.globalDeltaTransform:apply(parentGlobalDeltaTransform)
+			end
 		end
+		self.globalDeltaTransform:apply(localDeltaTransform)
+		self.globalDeltaTransformDirty = false
 	end
-	self.globalDeltaTransform:apply(localDeltaTransform)
 
 	return self.globalDeltaTransform 
 end
@@ -217,6 +221,10 @@ function SceneNodeTransform:tick()
 	self.previousRotation = self.rotation
 	self.previousScale = self.scale
 	self.previousTranslation = self.translation
+end
+
+function SceneNodeTransform:frame(delta)
+	self.globalDeltaTransformDirty = true
 end
 
 return SceneNodeTransform

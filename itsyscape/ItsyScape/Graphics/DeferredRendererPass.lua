@@ -115,7 +115,7 @@ function DeferredRendererPass:beginDraw(scene, delta)
 	self.nodes = {}
 	self.lights = {}
 
-	self:walk(scene, delta)
+	self:walk(scene, delta, viewProjection, worldViewProjection)
 	self:sortPendingNodes()
 end
 
@@ -127,14 +127,20 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('lequal', true)
 
+	local camera = self:getRenderer():getCamera()
 	if self.gBuffer then
 		self.gBuffer:use()
 		love.graphics.clear(0, 0.39, 0.58, 0.93)
 
-		self:getRenderer():getCamera():apply()
+		camera:apply()
 	else
 		error("no GBuffer")
 	end
+
+	local visible, invisible = 0, 0
+
+	local projection, view = camera:getTransforms()
+	local viewProjection = projection * view
 
 	local previousShader = nil
 	local currentShaderProgram
@@ -149,18 +155,23 @@ function DeferredRendererPass:drawNodes(scene, delta)
 				previousShader = shader
 			end
 
-			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
-				local d = node:getTransform():getGlobalDeltaTransform(delta)
-				currentShaderProgram:send("scape_WorldMatrix", d)
+			local d = node:getTransform():getGlobalDeltaTransform(delta)
+			local min, max = node:getBounds()
+			min, max = Vector.transformBounds(min, max, d)
 
-				if currentShaderProgram:hasUniform("scape_NormalMatrix") then
-					currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+			if viewProjection:boxInsideFrustum(min.x, min.y, min.z, max.x, max.y, max.z) then
+				if currentShaderProgram:hasUniform("scape_WorldMatrix") then
+					currentShaderProgram:send("scape_WorldMatrix", d)
+
+					if currentShaderProgram:hasUniform("scape_NormalMatrix") then
+						currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+					end
 				end
-			end
 
-			node:beforeDraw(self:getRenderer(), delta)
-			node:draw(self:getRenderer(), delta)
-			node:afterDraw(self:getRenderer(), delta)
+				node:beforeDraw(self:getRenderer(), delta)
+				node:draw(self:getRenderer(), delta)
+				node:afterDraw(self:getRenderer(), delta)
+			end
 		end
 	end
 end

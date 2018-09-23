@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 
 local Model = Class()
 function Model:new(d, skeleton)
@@ -31,9 +32,10 @@ end
 function Model:bindSkeleton(skeleton)
 	local vertices = {}
 
-	-- Gets the number of bone indices and the offset.
 	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
 	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
+
+	-- Gets the number of bone indices and the offset.
 	local boneIndexOffset = 0
 	local maxBonesPerVertex = 0
 	local numPositionComponents = 0
@@ -45,7 +47,21 @@ function Model:bindSkeleton(skeleton)
 		boneIndexOffset = boneIndexOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
 	end
 
+	local positionOffset = 0
+	local positionCount = 0
+	for i = 1, #self.format do
+		if self.format[i][LOVE_VERTEX_FORMAT_NAME_INDEX] == 'VertexPosition' then
+			positionCount = self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+			break
+		end
+
+		positionOffset = postionOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+	end
+
+	local min, max = Vector(math.huge), Vector(-math.huge)
+
 	-- Convert bone names to bone indices.
+	-- Also update min max.
 	for i = 1, #self.vertices do
 		local vertex = { unpack(self.vertices[i]) }
 		vertices[i] = vertex
@@ -62,6 +78,10 @@ function Model:bindSkeleton(skeleton)
 				vertex[boneIndex] = 1
 			end
 		end
+
+		local p = Vector(unpack(self.vertices[i], positionOffset + 1, positionOffset + positionCount))
+		min = min:min(p)
+		max = max:max(p)
 	end
 
 	-- Generate mesh.
@@ -73,6 +93,9 @@ function Model:bindSkeleton(skeleton)
 	for _, element in ipairs(self.format) do
 		self.mesh:setAttributeEnabled(element[1], true)
 	end
+
+	self.min = min
+	self.max = max
 
 	self.skeleton = skeleton or false
 end
@@ -91,6 +114,10 @@ function Model:loadFromTable(t, skeleton)
 	self.format = format
 
 	self:bindSkeleton(skeleton)
+end
+
+function Model:getBounds()
+	return self.min, self.max
 end
 
 function Model:getSkeleton()
