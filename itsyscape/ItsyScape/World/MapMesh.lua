@@ -43,6 +43,7 @@ function MapMesh:new(map, tileSet, left, right, top, bottom)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
+	self.min, self.max = Vector(math.huge), Vector(-math.huge)
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
@@ -50,6 +51,10 @@ function MapMesh:new(map, tileSet, left, right, top, bottom)
 	bottom = math.min(bottom or map.height, map.height)
 
 	self:_buildMesh(left, right, top, bottom)
+end
+
+function MapMesh:getBounds()
+	return self.min, self.max
 end
 
 -- Frees underlying resources.
@@ -144,6 +149,8 @@ function MapMesh:_addVertex(position, normal, texture, tile, color)
 	table.insert(self.vertices, vertex)
 	self.minY = math.min(self.minY or math.huge, position.y)
 	self.maxY = math.max(self.maxY or -math.huge, position.y)
+	self.min = self.min:min(position)
+	self.max = self.max:max(position)
 end
 
 -- Builds a vertex from a local position.

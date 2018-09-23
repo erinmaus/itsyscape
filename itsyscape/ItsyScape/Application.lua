@@ -36,6 +36,8 @@ local function createGameDB()
 	return GameDB.create(t, ":memory:")
 end
 
+local FONT = love.graphics.getFont()
+
 local Application = Class()
 function Application:new()
 	self.camera = ThirdPersonCamera()
@@ -50,12 +52,33 @@ function Application:new()
 	self.startDrawTime = false
 	self.time = 0
 
+	self.frames = 0
+	self.frameTime = 0
+
 	self.gameDB = createGameDB()
 	self.game = LocalGame(self.gameDB)
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.game)
 
+	self.times = {}
+
 	self.gameView:getRenderer():setCamera(self.camera)
+end
+
+function Application:measure(name, func, ...)
+	local before = love.timer.getTime()
+	func(...)
+	local after = love.timer.getTime()
+
+	local index
+	if not self.times[name] then
+		index = #self.times + 1
+		self.times[name] = index
+	else
+		index = self.times[name]
+	end
+
+	self.times[index] = { value = after - before, name = name }
 end
 
 function Application:initialize()
@@ -131,13 +154,17 @@ function Application:update(delta)
 		self.previousTickTime = love.timer.getTime()
 	end
 
-	self.gameView:update(delta)
-	self.uiView:update(delta)
+	self:measure('gameView:update()', function() self.gameView:update(delta) end)
+	self:measure('uiView:update()', function() self.uiView:update(delta) end)
+	--self.gameView:update(delta)
+	--self.uiView:update(delta)
 end
 
 function Application:tick()
-	self.gameView:tick()
-	self.game:tick()
+	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self:measure('game:tick()', function() self.game:tick() end)
+	--self.gameView:tick()
+	--self.game:tick()
 end
 
 function Application:mousePress(x, y, button)
@@ -199,10 +226,6 @@ function Application:draw()
 		self.camera:setWidth(width)
 		self.camera:setHeight(height)
 
-		if not self.startDrawTime then
-			self.startDrawTime = currentTime
-		end
-
 		self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
 		self.gameView:getRenderer():present()
 		self.gameView:getSpriteManager():draw(self.camera, delta)
@@ -214,13 +237,55 @@ function Application:draw()
 		self.uiView:draw()
 	end
 
-	local s, r = xpcall(draw, debug.traceback)
+	local s, r = xpcall(function() self:measure('draw', draw) end, debug.traceback)
 	if not s then
 		love.graphics.setBlendMode('alpha')
 		love.graphics.origin()
 		love.graphics.ortho(width, height)
 
 		error(r, 0)
+	end
+
+	if _DEBUG then
+		love.graphics.setFont(FONT)
+
+		local width = love.window.getMode()
+		local r = string.format("FPS: %d\n", self.fps or 0)
+		local sum = 0
+		for i = 1, #self.times do
+			r = r .. string.format(
+				"%s: %.04f (%010d)\n",
+				self.times[i].name,
+				self.times[i].value,
+				1 / self.times[i].value)
+			sum = sum + self.times[i].value
+		end
+		if 1 / sum < 60 then
+			r = r .. string.format(
+					"!!! sum: %.04f (%010d)\n",
+					sum,
+					1 / sum)
+		else
+			r = r .. string.format(
+					"sum: %.04f (%010d)\n",
+					sum,
+					1 / sum)
+		end
+
+		love.graphics.printf(
+			r,
+			width - 300,
+			0,
+			300,
+			'right')
+	end
+
+	self.frames = self.frames + 1
+	local currentTime = love.timer.getTime()
+	if currentTime > self.frameTime + 1 then
+		self.fps = math.floor(self.frames / (currentTime - self.frameTime))
+		self.frames = 0
+		self.frameTime = currentTime
 	end
 end
 

@@ -30,6 +30,45 @@ function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
+-- Returns a vector with the minimum components of both vectors.
+function Vector:min(other)
+	return Vector(
+		math.min(self.x, other.x),
+		math.min(self.y, other.y),
+		math.min(self.z, other.z))
+end
+
+-- Returns a vector with the maximum components of both vectors.
+function Vector:max(other)
+	return Vector(
+		math.max(self.x, other.x),
+		math.max(self.y, other.y),
+		math.max(self.z, other.z))
+end
+
+function Vector.transformBounds(min, max, transform)
+	local corners = {
+		Vector(min.x, min.y, min.z),
+		Vector(max.x, min.y, min.z),
+		Vector(min.x, max.y, min.z),
+		Vector(min.x, min.y, max.z),
+		Vector(max.x, max.y, min.z),
+		Vector(max.x, min.y, max.z),
+		Vector(min.x, max.y, max.z),
+		Vector(max.x, max.y, max.z)
+	}
+
+	local min, max = Vector(math.huge), Vector(-math.huge)
+	for i = 1, #corners do
+		local corner = corners[i]
+		corner = Vector(transform:transformPoint(corner.x, corner.y, corner.z))
+		min = min:min(corner)
+		max = max:max(corner)
+	end
+
+	return min, max
+end
+
 -- Linearly interpolates this vector with other.
 --
 -- delta is clamped to 0 .. 1 inclusive.

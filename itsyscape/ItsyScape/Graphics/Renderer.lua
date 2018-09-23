@@ -54,6 +54,8 @@ function Renderer:draw(scene, delta, width, height)
 		width, height = love.window.getMode()
 	end
 
+	scene:frame(delta)
+
 	if width ~= self.width or height ~= self.height then
 		self.width = width
 		self.height = height
@@ -95,6 +97,8 @@ function Renderer:setCurrentShader(shader)
 		if self.currentShader ~= shader then
 			self.currentShader = shader
 			love.graphics.setShader(shader)
+		else
+			print 'sameshader'
 		end
 	end
 end

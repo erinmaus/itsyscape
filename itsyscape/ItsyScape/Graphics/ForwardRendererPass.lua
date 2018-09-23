@@ -50,6 +50,9 @@ function ForwardRendererPass:new(renderer)
 	self:loadBaseShaderFromFile(
 		"Resources/Renderers/Forward/Base.frag.glsl",
 		"Resources/Renderers/Forward/Base.vert.glsl")
+
+	self.lightTypes = {}
+	self.nodeTypes = {}
 end
 
 function ForwardRendererPass:setLBuffer(value)
@@ -61,13 +64,18 @@ function ForwardRendererPass:setLBuffer(value)
 end
 
 function ForwardRendererPass:walk(node, delta)
-	if node:isCompatibleType(LightSceneNode) then
+	local nodeType = node:getType()
+	if self.lightTypes[nodeType] or
+	   not self.nodeTypes[nodeType] and node:isCompatibleType(LightSceneNode)
+	then
+		self.lightTypes[nodeType] = true
 		if node:getIsGlobal() then
 			table.insert(self.globalLights, PendingNode(node, delta))
 		else
 			table.insert(self.lights, PendingNode(node, delta))
 		end
 	else
+		self.nodeTypes[nodeType] = true
 		local material = node:getMaterial()
 		if material:getIsTranslucent() or material:getIsFullLit() then
 			table.insert(self.nodes, PendingNode(node, delta))
@@ -116,6 +124,9 @@ function ForwardRendererPass:drawNodes(scene, delta)
 	local currentShaderProgram = nil
 	local numGlobalLights = math.min(#self.globalLights, ForwardRendererPass.MAX_LIGHTS)
 
+	local projection, view = self:getRenderer():getCamera():getTransforms()
+	local viewProjection = projection * view
+
 	for i = 1, #self.nodes do
 		local node = self.nodes[i].node
 
@@ -126,31 +137,40 @@ function ForwardRendererPass:drawNodes(scene, delta)
 			if previousShader ~= shader then
 				currentShaderProgram = self:useShader(material:getShader())
 				previousShader = shader
-			end
 
-			if material:getIsFullLit() then
-				local light = Light()
-				light:setAmbience(1.0)
-				setLightProperties(currentShaderProgram, 1, light)
+				if material:getIsFullLit() then
+					local light = Light()
+					light:setAmbience(1.0)
+					setLightProperties(currentShaderProgram, 1, light)
 
-				numLights = 1
-			else
-				for i = 1, numGlobalLights do
-					local p = self.globalLights[i]
-					local light = p.node:toLight(delta)
+					numLights = 1
+				else
+					for i = 1, numGlobalLights do
+						local p = self.globalLights[i]
+						local light = p.node:toLight(delta)
 
-					setLightProperties(currentShaderProgram, i, light)
+						setLightProperties(currentShaderProgram, i, light)
+					end
+
+					numLights = numGlobalLights
 				end
 
-				numLights = numGlobalLights
+				-- TODO: Local lights
+				currentShaderProgram:send("scape_NumLights", numGlobalLights)
 			end
 
-			-- TODO: Local lights
-			currentShaderProgram:send("scape_NumLights", numGlobalLights)
+			local d = node:getTransform():getGlobalDeltaTransform(delta)
+			local min, max = node:getBounds()
+			min, max = Vector.transformBounds(min, max, d)
 
-			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
-				local d = node:getTransform():getGlobalDeltaTransform(delta)
-				currentShaderProgram:send("scape_WorldMatrix", d)
+			if viewProjection:boxInsideFrustum(min.x, min.y, min.z, max.x, max.y, max.z) then
+				if currentShaderProgram:hasUniform("scape_WorldMatrix") then
+					currentShaderProgram:send("scape_WorldMatrix", d)
+
+					if currentShaderProgram:hasUniform("scape_NormalMatrix") then
+						currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+					end
+				end
 
 				if currentShaderProgram:hasUniform("scape_NormalMatrix") then
 					currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
@@ -166,7 +186,7 @@ end
 
 function ForwardRendererPass:draw(scene, delta)
 	love.graphics.setMeshCullMode('back')
-	love.graphics.setDepthMode('lequal', false)
+	love.graphics.setDepthMode('lequal', true)
 	love.graphics.setBlendMode('alpha')
 
 	self:getRenderer():getCamera():apply()

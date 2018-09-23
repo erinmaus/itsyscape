@@ -12,6 +12,8 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local ModelSceneNode = Class(SceneNode)
+-- Because of skeletal animation, the bounds may expand.
+ModelSceneNode.BOUNDS_BUFFER = 2
 ModelSceneNode.DEFAULT_SHADER = ShaderResource()
 ModelSceneNode.STATIC_SHADER = ShaderResource()
 do
@@ -38,6 +40,12 @@ end
 function ModelSceneNode:setModel(model)
 	if model then
 		self.model = model
+
+		local min, max = model:getResource():getBounds()
+		local size = max - min
+		local center = min + size / 2
+		size = size * ModelSceneNode.BOUNDS_BUFFER
+		self:setBounds(center - size, center + size)
 	else
 		self.model = false
 	end
