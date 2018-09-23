@@ -105,6 +105,7 @@ function One:assign(director)
 	local t = director:getItemBroker():createTransaction()
 	t:addParty(inventory.inventory)
 	t:spawn(inventory.inventory, "BronzePickaxe", 1)
+	if false then
 	t:spawn(inventory.inventory, "BronzePlatebody", 1)
 	t:spawn(inventory.inventory, "BronzeGloves", 1)
 	t:spawn(inventory.inventory, "BronzeBoots", 1)
@@ -117,7 +118,7 @@ function One:assign(director)
 	t:spawn(inventory.inventory, "ErrinTheHeathensStaff", 1)
 	t:spawn(inventory.inventory, "AirRune", 1000000)
 	t:spawn(inventory.inventory, "TinCan", 1)
-	t:spawn(inventory.inventory, "CopperBadge", 1)
+	t:spawn(inventory.inventory, "CopperBadge", 1) end
 	t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
 	t:commit()
 
