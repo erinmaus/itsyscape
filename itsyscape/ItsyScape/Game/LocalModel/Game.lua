@@ -22,9 +22,9 @@ function LocalGame:new(gameDB)
 
 	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
-	self.player = LocalPlayer(self)
-	self.playerSpawned = false
 	self.stage = LocalStage(self)
+	self.player = LocalPlayer(self, self.stage)
+	self.playerSpawned = false
 	self.ui = LocalUI(self)
 	self.ticks = 0
 end

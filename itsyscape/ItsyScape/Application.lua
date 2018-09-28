@@ -250,7 +250,7 @@ function Application:draw()
 		love.graphics.setFont(FONT)
 
 		local width = love.window.getMode()
-		local r = string.format("FPS: %d\n", self.fps or 0)
+		local r = string.format("FPS: %d\n", love.timer.getFPS())
 		local sum = 0
 		for i = 1, #self.times do
 			r = r .. string.format(

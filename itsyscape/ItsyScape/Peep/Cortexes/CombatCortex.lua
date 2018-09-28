@@ -89,7 +89,7 @@ function CombatCortex:update(delta)
 
 			local targetPosition = target:getBehavior(PositionBehavior)
 			if targetPosition and targetPosition.layer == position.layer then
-				local map = game:getStage():getMap(targetPosition.layer or 1)
+				local map = game:getDirector():getMap(targetPosition.layer or 1)
 				if map then
 					local selfI, selfJ = map:toTile(
 						position.position.x,

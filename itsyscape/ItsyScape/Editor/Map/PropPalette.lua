@@ -203,7 +203,11 @@ function PropPalette:select(p, button)
 end
 
 function PropPalette:getCurrentProp()
-	return self.currentProp.resource
+	if self.currentProp then
+		return self.currentProp.resource
+	end
+
+	return false
 end
 
 function PropPalette:update(...)

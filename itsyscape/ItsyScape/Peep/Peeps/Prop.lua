@@ -35,7 +35,7 @@ function Prop:spawnOrPoof(mode)
 	local position = self:getBehavior(PositionBehavior)
 	local size = self:getBehavior(SizeBehavior)
 	if position then
-		local map = game:getStage():getMap(position.layer or 1)
+		local map = self:getDirector():getMap(position.layer or 1)
 		if map then
 			local p = position.position
 			local halfSize = size.size / 2

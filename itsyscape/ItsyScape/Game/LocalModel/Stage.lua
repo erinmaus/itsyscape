@@ -16,9 +16,12 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local Map = require "ItsyScape.World.Map"
+local Decoration = require "ItsyScape.Graphics.Decoration"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalStage = Class(Stage)
@@ -34,12 +37,17 @@ function LocalStage:new(game)
 	self.currentPropID = 1
 	self.map = {}
 	self.gravity = Vector(0, -9.8, 0)
+	self.stageName = "::orphan"
 
 	self:spawnGround()
 end
 
 function LocalStage:spawnGround()
-	self.ground = self.game:getDirector():addPeep(require "Resources.Game.Peeps.Ground")
+	if self.ground then
+		self.game:getDirector():removePeep(self.ground)
+	end
+
+	self.ground = self.game:getDirector():addPeep(self.stageName, require "Resources.Game.Peeps.Ground")
 	local inventory = self.ground:getBehavior(InventoryBehavior).inventory
 	inventory.onTakeItem:register(self.notifyTakeItem, self)
 	inventory.onDropItem:register(self.notifyDropItem, self)
@@ -119,7 +127,7 @@ function LocalStage:spawnActor(actorID)
 
 	if Peep then
 		local actor = LocalActor(self.game, Peep)
-		actor:spawn(self.currentActorID, resource)
+		actor:spawn(self.currentActorID, self.stageName, resource)
 
 		self.onActorSpawned(self, realID, actor)
 
@@ -156,7 +164,7 @@ function LocalStage:placeProp(propID)
 
 	if Peep then
 		local prop = LocalProp(self.game, Peep)
-		prop:place(self.currentPropID, resource)
+		prop:place(self.currentPropID, self.stageName, resource)
 
 		self.onPropPlaced(self, realID, prop)
 
@@ -171,6 +179,21 @@ function LocalStage:placeProp(propID)
 	end
 
 	return false, nil
+end
+
+function LocalStage:removeProp(prop)
+	if prop and self.props[prop] then
+		local p = self.props[prop]
+
+		self.onPropRemoved(self, prop)
+		prop:remove()
+
+		local peep = self.peeps[prop]
+		self.peeps[prop] = nil
+		self.peeps[peep] = nil
+
+		self.props[prop] = nil
+	end
 end
 
 function LocalStage:instantiateMapObject(resource)
@@ -241,21 +264,6 @@ function LocalStage:instantiateMapObject(resource)
 	return actorInstance, propInstance
 end
 
-function LocalStage:removeProp(prop)
-	if prop and self.props[prop] then
-		local p = self.props[prop]
-
-		self.onPropRemoved(self, prop)
-		prop:remove()
-
-		local peep = self.peeps[prop]
-		self.peeps[prop] = nil
-		self.peeps[peep] = nil
-
-		self.props[prop] = nil
-	end
-end
-
 function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	self:unloadMap(layer)
 
@@ -284,6 +292,7 @@ function LocalStage:updateMap(layer, map)
 	if self.map[layer] then
 		if map then
 			self.map[layer] = map
+			self.game:getDirector():setMap(layer, map)
 		end
 
 		self.onMapModified(self, self.map[layer], layer)
@@ -299,6 +308,8 @@ function LocalStage:unloadMap(layer)
 end
 
 function LocalStage:unloadAll()
+	self.game:getDirector():removeLayer(self.stageName)
+
 	local layers = self:getLayers()
 	for i = 1, #layers do
 		self:unloadMap(layers[i])
@@ -335,8 +346,46 @@ function LocalStage:unloadAll()
 	end
 end
 
+function LocalStage:movePeep(peep, filename, anchor)
+	local playerPeep = self.game:getPlayer():getActor():getPeep()
+	if playerPeep == peep then
+		self:loadStage(filename)
+
+		playerPeep = self.game:getPlayer():getActor():getPeep()
+		local position = playerPeep:getBehavior(PositionBehavior)
+
+		local gameDB = self.game:getGameDB()
+		local map = gameDB:getResource(filename, "Map")
+		if map then
+			local mapObject = gameDB:getRecord("MapObjectLocation", {
+				Name = anchor,
+				Map = map
+			})
+
+			local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
+			position.position = Vector(x, y, z)
+		end
+	else
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		if actor and actor.actor then
+			self:killActor(actor.actor)
+		elseif prop and prop.prop then
+			self:removeProp(prop.prop)
+		else
+			Log.error("Cannot move peep '%s'; not player, actor, or prop.", peep:getName())
+			Log.warn("Removing peep '%s' anyway; may cause bad references.", peep:getName())
+			self.game:getDirector():removePeep(peep)
+		end
+	end
+end
+
 function LocalStage:loadStage(filename)
 	self:unloadAll()
+	self.game:getPlayer():poof()
+
+	self.stageName = filename
+	self.game:getPlayer():spawn()
 
 	local directoryPath = "Resources/Game/Maps/" .. filename
 
@@ -367,8 +416,8 @@ function LocalStage:loadStage(filename)
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
 		local group = item:match("(.*)%.ldeco$")
 		if group then
-			local decoration = Decoration(path .. "Decorations/" .. item)
-			self:getGame():getStage():decorate(group, decoration)
+			local decoration = Decoration(directoryPath .. "/Decorations/" .. item)
+			self:decorate(group, decoration)
 		end
 	end
 

@@ -4,6 +4,8 @@
 	},
 
 	texture = "Resources/Game/TileSets/GrassyPlain/Texture.png",
+	textureWidth = 1024,
+	textureHeight = 1024,
 
 	{
 		x = 128,

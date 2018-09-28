@@ -38,10 +38,10 @@ function LocalActor:getPeep()
 	return self.peep
 end
 
-function LocalActor:spawn(id, resource, ...)
+function LocalActor:spawn(id, group, resource, ...)
 	assert(self.id == Actor.NIL_ID, "Actor already spawned")
 
-	self.peep = self.game:getDirector():addPeep(self.peepType, resource, ...)
+	self.peep = self.game:getDirector():addPeep(group, self.peepType, resource, ...)
 	local _, actorReference = self.peep:addBehavior(ActorReferenceBehavior)
 	actorReference.actor = self
 
@@ -171,7 +171,7 @@ function LocalActor:getTile()
 
 	local position = self.peep:getBehavior(PositionBehavior)
 	if position then
-		local map = self.game:getStage():getMap(position.layer or 1)
+		local map = self.game:getDirector():getMap(position.layer or 1)
 		local i, j = map:getTileAt(position.position.x, position.position.z)
 
 		return i, j, position.layer or 1

@@ -40,7 +40,7 @@ function ExecutePathCommand:step(peep)
 	if position then
 		position = position.position
 
-		local map = game:getStage():getMap(position.layer or 1)
+		local map = game:getDirector():getMap(position.layer or 1)
 		if map then
 			local tile, i, j = map:getTileAt(position.x, position.z)
 			if tile then

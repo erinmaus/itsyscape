@@ -303,7 +303,7 @@ function Utility.Peep.walk(peep, i, j, k, distance, ...)
 	end
 
 	local position = peep:getBehavior(PositionBehavior).position
-	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local map = peep:getDirector():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
 	local pathFinder = SmartPathFinder(map, peep)
 	local path = pathFinder:find(
@@ -325,7 +325,7 @@ function Utility.Peep.getTile(peep)
 
 	local position = peep:getBehavior(PositionBehavior).position
 	local k = position.layer or 1
-	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local map = peep:getDirector():getMap(k)
 	local _, i, j = map:getTileAt(position.x, position.z)
 
 	return i, j, k
@@ -341,7 +341,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	end
 
 	local position = peep:getBehavior(PositionBehavior).position
-	local map = peep:getDirector():getGameInstance():getStage():getMap(k)
+	local map = peep:getDirector():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
 	local pathFinder = SmartPathFinder(map, peep, t)
 	local path = pathFinder:find(

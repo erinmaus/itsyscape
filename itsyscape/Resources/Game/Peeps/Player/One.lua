@@ -68,8 +68,8 @@ function One:new(...)
 	Utility.Peep.makeAttackable(self, false)
 end
 
-function One:assign(director)
-	Peep.assign(self, director)
+function One:assign(director, key, ...)
+	Peep.assign(self, director, key)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)

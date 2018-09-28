@@ -34,7 +34,7 @@ function CraftViaNearbyProp:activated(mashina, state)
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
-	local p = director:probe(Probe.resource("Prop", state[self.PROP] or ""))
+	local p = director:probe(mashina:getLayerName(), Probe.resource("Prop", state[self.PROP] or ""))
 	table.sort(
 		p,
 		function(a, b)

@@ -36,9 +36,13 @@ function TileSet.loadFromFile(filename, loadTexture)
 	end
 
 	local texture
+	local textureWidth, textureHeight
 	if loadTexture and t.texture then
 		texture = TextureResource()
 		texture:loadFromFile(t.texture)
+
+		textureWidth = t.textureWidth or texture:getWidth()
+		textureHeight = t.textureHeight or texture:getHeight()
 	end
 
 	local result = TileSet()
@@ -47,13 +51,13 @@ function TileSet.loadFromFile(filename, loadTexture)
 
 		if tile.x and tile.y and tile.width and tile.height and texture then
 			if invertY and texture then
-				tile.y = texture:getHeight() - (tile.y + tile.height)
+				tile.y = textureHeight - (tile.y + tile.height)
 			end
 
-			result:setTileProperty(i, 'textureLeft', tile.x / texture:getWidth())
-			result:setTileProperty(i, 'textureRight', (tile.x + tile.width) / texture:getWidth())
-			result:setTileProperty(i, 'textureTop', tile.y / texture:getHeight())
-			result:setTileProperty(i, 'textureBottom', (tile.y + tile.height) / texture:getHeight())
+			result:setTileProperty(i, 'textureLeft', tile.x / textureWidth)
+			result:setTileProperty(i, 'textureRight', (tile.x + tile.width) / textureWidth)
+			result:setTileProperty(i, 'textureTop', tile.y / textureHeight)
+			result:setTileProperty(i, 'textureBottom', (tile.y + tile.height) / textureHeight)
 		end
 
 		-- We don't want these keys to propagate below.

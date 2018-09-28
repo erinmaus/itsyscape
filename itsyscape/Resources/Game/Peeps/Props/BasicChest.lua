@@ -29,8 +29,8 @@ function BasicChest:new(...)
 	inventory.inventory = SimpleInventoryProvider(self)
 end
 
-function BasicChest:assign(director)
-	Prop.assign(self, director)
+function BasicChest:assign(director, key)
+	Prop.assign(self, director, key)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)

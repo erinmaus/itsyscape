@@ -31,10 +31,10 @@ function LocalProp:getPeep()
 	return self.peep
 end
 
-function LocalProp:place(id, resource, ...)
+function LocalProp:place(id, group, resource, ...)
 	assert(self.id == Prop.NIL_ID, "Prop already spawned")
 
-	self.peep = self.game:getDirector():addPeep(self.peepType, resource, ...)
+	self.peep = self.game:getDirector():addPeep(group, self.peepType, resource, ...)
 	local _, propReference = self.peep:addBehavior(PropReferenceBehavior)
 	propReference.prop = self
 
@@ -103,7 +103,7 @@ function LocalProp:getTile()
 
 	local position = self.peep:getBehavior(PositionBehavior)
 	if position then
-		local map = self.game:getStage():getMap(position.layer or 1)
+		local map = self.game:getDirector():getMap(position.layer or 1)
 		local i, j = map:getTileAt(position.position.x, position.position.z)
 
 		return i, j, position.layer or 1

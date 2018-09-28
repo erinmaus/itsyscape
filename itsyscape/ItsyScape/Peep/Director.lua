@@ -29,6 +29,7 @@ function Director:new(gameDB)
 	end
 
 	self.maps = {}
+	self.peepsByLayer = {}
 end
 
 -- Gets the GameDB.
@@ -82,17 +83,25 @@ end
 -- Adds a Peep of the provided type to the Director.
 --
 -- If no type is provided, just adds a plain 'ol Peep.
-function Director:addPeep(peepType, ...)
+function Director:addPeep(key, peepType, ...)
 	peepType = peepType or Peep
 
 	local peep = peepType(...)
 	peep.onBehaviorAdded:register(self._previewPeep)
 	peep.onBehaviorRemoved:register(self._previewPeep)
 
-	self.newPeeps[peep] = true
+	self.newPeeps[peep] = { key = key }
 	self.pendingPeeps[peep] = true
 
-	peep:assign(self)
+	local layer = self.peepsByLayer[key]
+	if not layer then
+		layer = {}
+		self.peepsByLayer[key] = layer
+	end
+
+	layer[peep] = true
+
+	peep:assign(self, key)
 
 	return peep
 end
@@ -106,23 +115,38 @@ function Director:removePeep(peep)
 		peep.onBehaviorAdded:unregister(self._previewPeep)
 		peep.onBehaviorRemoved:unregister(self._previewPeep)
 
-		for _, cortex in ipairs(self.cortexes) do
-			cortex:removePeep(peep)
-		end
-
 		self.oldPeeps[peep] = true
 	end
 end
 
+function Director:removeLayer(key)
+	local layer = self.peepsByLayer[key]
+	if layer then
+		for peep in pairs(layer) do
+			self:removePeep(peep)
+		end
+	end
+end
+
 function Director:probe(...)
+	local peeps
+	do
+		local key = select(1, ...)
+		if type(key) == 'string' then
+			peeps = self.peepsByLayer[key] or {}
+		else
+			peeps = self.peeps
+		end
+	end
+
 	local args = { n = select('#', ...), ... }
 
 	local result = {}
-	for peep in pairs(self.peeps) do
+	for peep in pairs(peeps) do
 		local match = true
 		for i = 1, args.n do
 			local func = args[i]
-			if func and not func(peep) then
+			if func and type(func) ~= 'string' and not func(peep) then
 				match = false
 				break
 			end
@@ -143,11 +167,25 @@ end
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
 	for peep in pairs(self.newPeeps) do
-		self.peeps[peep] = true
+		self.peeps[peep] = peep
 	end
 	self.newPeeps = {}
 
 	for peep in pairs(self.oldPeeps) do
+		for _, cortex in ipairs(self.cortexes) do
+			cortex:removePeep(peep)
+		end
+
+		local key = self.peeps[peep].key
+		local layer = self.peepsByLayer[key]
+		if layer then
+			layer[peep] = nil
+
+			if not next(layer)  then
+				self.peepsByLayer[key] = nil
+			end
+		end
+
 		self.peeps[peep] = nil
 	end
 	self.oldPeeps = {}

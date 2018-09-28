@@ -29,7 +29,7 @@ function FindNearbyMapObject:activated(mashina, state)
 	local ore = state[self.RESOURCE]
 	local director = mashina:getDirector()
 
-	local p = director:probe(Probe.namedMapObject(state[self.PROP]))[1]
+	local p = director:probe(mashina:getLayerName(), Probe.namedMapObject(state[self.PROP]))[1]
 	if p then
 		state[self.SUCCESS] = true
 		state[self.RESULT] = p

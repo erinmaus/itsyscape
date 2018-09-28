@@ -33,7 +33,7 @@ function UseNearbyFurnace:activated(mashina, state)
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
-	local p = director:probe(Probe.resource("Prop", state[self.FURNACE] or "Furnace_Default"))
+	local p = director:probe(Probe.resource(director:getLayerName(), "Prop", state[self.FURNACE] or "Furnace_Default"))
 	table.sort(
 		p,
 		function(a, b)
