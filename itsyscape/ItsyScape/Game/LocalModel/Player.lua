@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Game.Model.Player"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
@@ -20,19 +21,28 @@ local Player = Class()
 -- Constructs a new player.
 --
 -- The Actor isn't created until Player.spawn is called.
-function Player:new(game)
+function Player:new(game, stage)
 	self.game = game
+	self.stage = stage
 	self.actor = false
 end
 
 function Player:spawn()
-	local stage = self.game:getStage()
-	local success, actor = stage:spawnActor("Resources.Game.Peeps.Player.One")
+	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One")
 	if success then
 		self.actor = actor
+		actor:getPeep():addBehavior(PlayerBehavior)
 	else
 		self.actor = false
 	end
+end
+
+function Player:poof()
+	if self.actor then
+		self.stage:killActor(self.actor)
+	end
+
+	self.actor = false
 end
 
 -- Gets the Actor this Player is represented by.
@@ -43,7 +53,7 @@ end
 function Player:findPath(i, j, k)
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
-	local map = self.game:getStage():getMap(k)
+	local map = self.game:getDirector():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
 	local pathFinder = MapPathFinder(map)
 	return pathFinder:find(

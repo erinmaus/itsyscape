@@ -55,7 +55,7 @@ function MovementCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
-		local map = game:getStage():getMap(position.layer or 1)
+		local map = self:getDirector():getMap(position.layer or 1)
 
 		movement:clampMovement()
 

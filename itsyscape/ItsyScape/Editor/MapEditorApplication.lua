@@ -626,8 +626,13 @@ function MapEditorApplication:save(filename)
 
 			s:pushLine("return M")
 
+			self:makeOutputSubdirectory("Maps", filename, "DB")
+
 			local dbFilename = self:getOutputFilename("Maps", filename, "DB", "Default.lua")
-			love.filesystem.write(dbFilename, s:toString())
+			local s, r = love.filesystem.write(dbFilename, s:toString())
+			if not s then
+				Log.warn("couldn't save DB script: %s", r)
+			end
 		end
 
 		self.filename = filename

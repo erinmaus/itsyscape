@@ -180,9 +180,13 @@ end
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
+		if map then
+			m.map = map
+		end
+
 		for i = 1, #m.parts do
-			m.parts:setParent(nil)
-			m.parts:setMapMesh(false)
+			m.parts[i]:setParent(nil)
+			m.parts[i]:setMapMesh(false)
 		end
 		m.parts = {}
 

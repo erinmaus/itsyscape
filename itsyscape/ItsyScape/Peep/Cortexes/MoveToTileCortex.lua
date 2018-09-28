@@ -32,7 +32,7 @@ function MoveToTileCortex:update(delta)
 		local position = peep:getBehavior(PositionBehavior).position
 		local targetTile = peep:getBehavior(TargetTileBehavior)
 		local movement = peep:getBehavior(MovementBehavior)
-		local map = game:getStage():getMap(peep:getBehavior(PositionBehavior).layer or 1)
+		local map = game:getDirector():getMap(peep:getBehavior(PositionBehavior).layer or 1)
 		movement.isStopping = false
 
 		local currentTile, currentTileI, currentTileJ = map:getTileAt(position.x, position.z)

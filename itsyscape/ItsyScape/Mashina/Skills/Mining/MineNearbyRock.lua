@@ -29,7 +29,7 @@ function MineNearbyRock:activated(mashina, state)
 	local ore = state[self.RESOURCE]
 	local director = mashina:getDirector()
 	local game = director:getGameInstance()
-	local p = director:probe(Probe.actionOutput("Mine", ore, "Item"))
+	local p = director:probe(mashina:getLayerName(), Probe.actionOutput("Mine", ore, "Item"))
 	table.sort(
 		p,
 		function(a, b)

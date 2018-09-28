@@ -45,6 +45,7 @@ function Peep:new(name)
 	}
 
 	self.director = false
+	self.layerName = "::orphan"
 
 	self.pokes = {}
 
@@ -193,13 +194,23 @@ function Peep:getState()
 	return self.state
 end
 
+-- Returns the layer name.
+function Peep:getLayerName()
+	return self.layerName
+end
+
 -- Assigns a director to this peep.
 --
 -- This is immediately called after the constructor by Good(tm) directors.
-function Peep:assign(director)
+function Peep:assign(director, key)
 	self.director = director
+	self.layerName = key or self.layerName
+	
+	if key == nil or type(key) ~= 'string' then
+		Log.error("Bad key for peep: %s", tostring(key))
+	end
 
-	self:poke('assign', director)
+	self:poke('assign', director, key)
 end
 
 -- Gets the director this Peep was assigned to.

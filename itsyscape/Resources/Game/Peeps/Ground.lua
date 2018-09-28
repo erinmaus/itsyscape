@@ -25,8 +25,8 @@ function Ground:new(...)
 	inventory.inventory = GroundInventoryProvider(self)
 end
 
-function Ground:assign(director)
-	Peep.assign(self, director)
+function Ground:assign(director, key)
+	Peep.assign(self, director, key)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)

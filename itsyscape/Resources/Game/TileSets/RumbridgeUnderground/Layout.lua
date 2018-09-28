@@ -4,6 +4,8 @@
 	},
 
 	texture = "Resources/Game/TileSets/RumbridgeUnderground/Texture.png",
+	textureWidth = 1024,
+	textureHeight = 1024,
 
 	{
 		x = 128,
