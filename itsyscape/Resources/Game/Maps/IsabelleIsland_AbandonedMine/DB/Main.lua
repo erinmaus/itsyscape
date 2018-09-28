@@ -264,3 +264,5 @@ M["BossDoor"] {
 		}
 	}
 }
+
+return M
