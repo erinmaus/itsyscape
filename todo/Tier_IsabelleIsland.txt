@@ -1,0 +1,98 @@
+# Goal: Tutorial Island
+## Main
+1) Character creation screen.
+	a. Set aesthetics.
+	b. Set gender, pronouns, etc. (Anything controversial behind "Advanced.")
+	   - This is also where you'd set disability settings. (Also under
+	     "Advanced.")
+	c. Set graphics settings.
+2) Spawn in Isabelle Island Tower, Recruitment Office.
+	- "Start Quest: Calm Before the Storm"
+3) Talk to Isabelle.
+	- Can't leave room until you talk to her.
+	- Summary:
+		a. Bought island from Duke Frederich of Rumbridge.
+		b. Island is haunted; some horror came to the island a hundred years
+		   ago, had been abandoned since.
+		c. Isabelle seeks to eliminate the horrors and reclaim the island for
+		   the Vizier-King Yohn and the Kingdom of Mysthalon. (It's a lie.)
+		d. Options are "Yes!", "Definitely!", "Absolutely!".
+		e. Advises you to speak to her advisor in the lobby.
+4) Talk to Advisor.
+	- Tells you about the Island.
+		a. Portmaster Jenkins needs help fishing, but there's a giant squid
+		   that keeps attacking the ship.
+		b. Needs crawling copper and tense tin for a reinforced bronze bar,
+		   but it's protected by the Ghostly Miner Foreman.
+		c. Need logs from the Ancient Driftwood, but it's protected by nymphs.
+	- Gives you advice on where to start. (Portmaster Jenkins).
+	- Says talk to him if you need any help.
+	- If you talk to him again:
+		a. Gives you a bronze pickaxe and wrought bronze key if you want to go
+		   to the abandoned mine. (Can repeat so long as you don't have any.)
+		b. Gives you a tinderbox and a bronze hatchet if you want to go to the
+		   misty forest.
+		c. Tells you to meet with Portmaster Jenkins if you want to do that.
+5) So...
+	a. Portmaster Jenkins
+		- ???
+	b. Abandoned Mine
+		i. Make a reinforced bronze key.
+		ii. Defeat the Ghostly Miner Foreman.
+		iii. Obtain crawling copper and tense tin.
+		- Optional:
+			i. Kill all the Skelementals.
+			ii. Make a full set of bronze armor.
+			iii. Get level 10 mining and smithing.
+		- By doing the optional content, Isabelle's Advisor gives you some XP
+		  and gold.
+	c. Misty Forest
+		- ???
+6) After completing all three tasks, you can go back to Isabelle.
+	- If you "Listen" to Door, you can overhear Isabelle talking to ...
+	  something. Basically, she mentions her real goal in vague terms: to
+	  find the bloody chalice.
+	- Isabelle congratulates you.
+		- You can confront her if you listened to the door.
+		- This just gives extra dialog / context.
+	- Offers you a reward and bids you on your way. Says Jenkins will take you
+	  to South Rumbridge Port.
+7) Upon reaching Jenkins, there's an earthquake coming from abandoned mine.
+   - Jenkins says it's too dangerous since there's a chance of a tsunami.
+   - Tells you to rest for the night.
+   - If you rest for the night, this happens again... and again... and again.
+   - GOTTA INVESTIGATE!
+8) Upon repeating the Abandoned Mine section (make key, defeat Ghostly Miner
+   Foreman, go to room with crawling copper and tense tin), there's a ladder.
+   Oooh!
+9) Enter dungeon.
+	- There's a sack of hay you can rest at.
+10) Complete dungeon. Boss at end is Isabelle. She has the bloody chalice and
+    uses archery with the occasional spell.
+    - Has ~50 health. No tricks to deal lots of damage this time.
+    - Uses the bloody chalice once when she is low on health.
+    - There's some skeletons in the room. She resurrects them if you kill them.
+      But the resurrection takes time; gives you a chance to DPS her.
+11) Upon defeating her, she dies.
+    - Wow!
+    a. She drops an eerie iron key. This unlocks an unreachable room in the
+       dungeon. If you jump down the hole you enter a room with the horrifying
+       remains of Yendor, Slain Angel. He's dead though. There's runic pillars
+       in the room.
+    b. She also drops the bloody chalice (assuming you don't have it).
+    c. The skeletons in the room die as well.
+12) You can go back to Portmaster Jenkins and he says the ship was damaged and
+    needs repaired. FIN.
+    - Complete Quest: "Calm Before the Storm."
+
+## Miscellaneous
+1) There's a banker in the Tower.
+   - There's deposit chests in the Misty Forest, Port, and Abandoned Mine.
+2) There's an air obelisk in the Misty Forest. Can use rune essence to make
+   air runes.
+   - Mining the runic pillars in the Abandoned Mine give 30 runic essence each.
+3) Nymphs sometimes drop mystic cotton. Can be made into magic armor. Must be
+   enchanted with cosmic rune + 10 air runes. Cosmic runes are dropped by nymphs
+   on occasion, 1-3.
+4) Can make incense. Get ingredients from cutting trees and shrubs. Provides
+   buffs when burnt. Making incense requires firemaking. Ranges from lvl 1-10.
