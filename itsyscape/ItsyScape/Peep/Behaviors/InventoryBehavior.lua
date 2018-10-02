@@ -17,10 +17,12 @@ local InventoryBehavior = Behavior("Inventory")
 -- Constructs a InventoryBehavior.
 --
 -- 'inventory' should be false or an InventoryProvider.
+-- 'bank' should be false or an InventoryProvider.
 function InventoryBehavior:new()
 	Behavior.Type.new(self)
 
 	self.inventory = false
+	self.bank = false
 end
 
 return InventoryBehavior

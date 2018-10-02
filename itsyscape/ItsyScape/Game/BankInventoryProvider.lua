@@ -1,0 +1,144 @@
+--------------------------------------------------------------------------------
+-- ItsyScape/Game/BankInventoryProvider.lua
+--
+-- This file is a part of ItsyScape.
+--
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+--------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
+
+local BankInventoryProvider = Class(InventoryProvider)
+
+function BankInventoryProvider:new(peep)
+	self.peep = peep
+end
+
+function BankInventoryProvider:getPeep()
+	return self.peep
+end
+
+function BankInventoryProvider:getMaxInventorySpace()
+	return math.huge
+end
+
+function BankInventoryProvider:deposit(item, count, clamp)
+	local broker = self:getBroker()
+	local manager = self.peep:getDirector():getItemManager()
+	do
+		local transaction = broker:createTransaction()
+		transaction:addParty(self)
+		transaction:addParty(broker:getItemProvider(item))
+		transaction:transfer(self, item, count, 'bank-deposit', true)
+		if not transaction:commit() then
+			return false
+		end
+	end
+
+	if manager:isNoteable(item:getID()) then
+		local transaction = broker:createTransaction()
+		transaction:addParty(self)
+		transaction:note(self, item, count)
+		if not transaction:commit() then
+			return false
+		end
+	end
+
+	return true
+end
+
+function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
+	if clamp == nil then
+		clamp = true
+	end
+
+	local broker = self:getBroker()
+	local manager = self.peep:getDirector():getItemManager()
+	local transaction = broker:createTransaction()
+	transaction:addParty(self)
+	transaction:addParty(destination)
+
+	if noted and not manager:isNoteable(id) then
+		return false, 0
+	end
+
+	local hasNotedItem
+	if manager:isNoteable(id) then
+		for item in broker:iterateItems(destination) do
+			if item:getID() == id and item:isNoted() then
+				hasNotedItem = true
+				break
+			end
+		end
+	else
+		hasNotedItem = false
+	end
+
+	local requiredSpace
+	if hasNotedItem then
+		if noted then
+			requiredSpace = 0
+		else
+			requiredSpace = count - 1
+		end
+	else
+		if noted then
+			requiredSpace = 1
+		else
+			requiredSpace = count
+		end
+	end
+
+	local freeSpace = destination:getMaxInventorySpace() - broker:count(destination)
+	if freeSpace < requiredSpace then
+		if not clamp then
+			return false, 0
+		else
+			-- If there's no room for even a noted item, then there's nothing we can do.
+			if requiredSpace == 0 then
+				return false, 0
+			end
+
+			count = freeSpace
+		end
+	end
+
+	local remainingCount = count
+	for item in broker:iterateItems(self) do
+		if item:getID() == id then
+			local transferCount = math.min(remainingCount, item:getCount())
+			transaction:transfer(destination, item, transferCount, 'bank-withdraw')
+
+			remainingCount = remainingCount - transferCount
+		end
+	end
+
+	if remainingCount > 0 then
+		if not clamp then
+			return false, 0
+		end
+	end
+
+	if not transaction:commit() then
+		return false, 0
+	end
+
+	if not noted then
+		if manager:isNoteable(id) then
+			for item in broker:iterateItems(destination) do
+				if item:getID() == id and item:isNoted() then
+					local unnoteTransaction = broker:createTransaction()
+					unnoteTransaction:addParty(destination)
+					unnoteTransaction:unnote(item, count)
+					if not unnoteTransaction:commit() then
+						Log.warn("Couldn't unnote items.")
+					end
+				end
+			end
+		end
+	end
+
+	return true, count
+end
