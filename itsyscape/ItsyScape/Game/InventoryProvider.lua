@@ -49,18 +49,51 @@ function InventoryProvider:getMaxInventorySpace()
 end
 
 
--- Called when an item is destroyed during a transaction.
+-- Called when an item is consumed during a transaction.
 --
--- 'item' is the ItemInstance of the transferred item.
+-- 'item' is the ItemInstance of the consumed item.
 --
 -- 'item' will not be valid; it is no longer a part of the ItemBroker when this
 -- method is called.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onSpawn(item)
+function InventoryProvider:onConsume(item)
 	-- Nothing.
 end
 
+
+-- Called when an item is destroyed during a transaction.
+--
+-- 'item' is the ItemInstance of the destroyed item.
+--
+-- 'item' will not be valid; it is no longer a part of the ItemBroker when this
+-- method is called.
+--
+-- If this method fails, the transaction still proceeds.
+function InventoryProvider:onDestroy(item)
+	-- Nothing.
+end
+
+-- Called when an item is destroyed during a transaction.
+--
+-- 'item' is the ItemInstance of the noted item.
+--
+-- If this method fails, the transaction still proceeds.
+function InventoryProvider:onNote(item)
+	-- Nothing.
+end
+
+-- Called when an item is destroyed during a transaction.
+--
+-- 'item' is the ItemInstance of the noted item. This may no longer be valid if the
+-- entire item was unnoted.
+--
+-- 'items' is an array of ItemInstances of the newly spawned items.
+--
+-- If this method fails, the transaction still proceeds.
+function InventoryProvider:onUnnoted(item, items)
+	-- Nothing.
+end
 
 -- Called when an item is spawned during a transaction.
 --

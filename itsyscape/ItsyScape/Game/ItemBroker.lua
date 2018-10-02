@@ -249,6 +249,7 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 				end
 			end
 		else
+			item:setCount(item:getCount() + count)
 			items = { item }
 		end
 
@@ -260,6 +261,136 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		end
 
 		return true
+	end
+
+	table.insert(self.conditions, condition)
+	table.insert(self.steps, step)
+end
+
+function ItemBroker.Transaction:note(destination, id, count)
+	local condition = function(state)
+		assert(self.parties[destination], "destination inventory provider not party to transaction")
+
+		assert(self.broker.manager:isNoteable(id), "item cannot be noted")
+
+		local items = {}
+		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			table.insert(items, item)
+			if #items >= count then
+				assert(#items == count, "found more items than requested")
+				break
+			end
+		end
+
+		assert(#items >= count, "not tenough items in inventory")
+
+		local p = state[destination]
+		local destinationItem = inventory:findFirst(id, false, true)
+		if destinationItem then
+			p.count = p.count - #items
+		else
+			p.count = p.count - #items + 1
+		end
+	end
+
+	local step = function()
+		local inventory = self.broker.inventories[destination]
+
+		local items = {}
+		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			table.insert(items, item)
+			if #items >= count then
+				assert(#items == count, "found more items than requested")
+				break
+			end
+		end
+
+		assert(#items >= count, "not enough items in inventory")
+
+		local destinationItem = inventory:findFirst(id, false, true)
+		for _, item in pairs(items) do
+			self.broker:removeItem(item)
+		end 
+
+		if not destinationItem then
+			destinationItem = self.broker:addItem(destination, id, count, true)
+		else
+			destinationItem:setCount(destinationItem:getCount() + #items)
+		end
+
+		local s, r = pcall(provider.onNote, provider, destinationItem, items)
+		if not s then
+			return false, r
+		end
+	end
+
+	table.insert(self.conditions, condition)
+	table.insert(self.steps, step)
+end
+
+function ItemBroker.Transaction:unnote(item, count)
+	local condition = function(state)
+		local destination = self.broker:getItemProvider(item)
+		assert(self.parties[destination], "destination inventory provider not party to transaction")
+		assert(item:isNoted(), "item isn't noted")
+		assert(item:getCount() >= count, "item stack too small")
+
+		if self.broker.manager:isStackable(item:getID()) then
+			local destinationItem = inventory:findFirst(id, true, false)
+			if not destinationItem then
+				local c = state[destination].count + 1
+
+				if c > destination:getMaxInventorySpace() then
+					error("inventory full")
+				end
+
+				p.count = c
+			end
+		else
+			local c = state[destination].count
+			if count >= item:getCount() then
+				c = c - 1
+			end
+
+			c = c + count
+
+			if c > destination:getMaxInventorySpace() then
+				error("inventory full")
+			end
+
+			p.count = c
+		end
+	end
+
+	local step = function()
+		local destination = self.broker:getItemProvider(item)
+		local inventory = self.broker.inventories[destination]
+
+		if count >= item:getCount() then
+			self.broker:removeItem(item)
+		end
+
+		local items
+		if self.broker.manager:isStackable(item:getID()) then
+			local destinationItem = inventory:findFirst(id, true, false)
+			if destinationItem then
+				destinationItem:setCount(destinationItem:getCount() + count)
+			else
+				destinationItem = self.broker:addItem(destination, id, count, false)
+			end
+
+			items = { destinationItem }
+		else
+			items = {}
+			for i = 1, count do
+				table.insert(self.broker:addItem(destination, id, 1, false))
+			end
+		end
+
+		local s, r = pcall(provider.onUnnote, provider, item, items)
+		if not s then
+			return false, r
+		end
 	end
 
 	table.insert(self.conditions, condition)
