@@ -10,9 +10,11 @@
 local Class = require "ItsyScape.Common.Class"
 local ItemBroker = require "ItsyScape.Game.ItemBroker"
 local ItemManager = require "ItsyScape.Game.ItemManager"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Director = require "ItsyScape.Peep.Director"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local ItsyScapeDirector = Class(Director)
 
@@ -34,6 +36,23 @@ function ItsyScapeDirector:new(game, gameDB)
 
 	self.itemManager = ItemManager(gameDB)
 	self.itemBroker = ItemBroker(self.itemManager)
+
+	self.playerStorage = {}
+end
+
+function ItsyScapeDirector:getPlayerStorage(peep)
+	local player = peep:getBehavior(PlayerBehavior)
+	if player and player.id then
+		local storage = self.playerStorage[player.id]
+		if not storage then
+			storage = PlayerStorage()
+			self.playerStorage[player.id] = storage
+		end
+
+		return storage
+	end
+
+	return nil
 end
 
 function ItsyScapeDirector:getGameInstance()

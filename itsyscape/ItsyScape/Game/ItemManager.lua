@@ -35,7 +35,7 @@ function ItemManager:isNoteable(id)
 	if not item then
 		return true
 	else
-		return item:get("Unnoteable") == 0
+		return item:get("Unnoteable") == 0 and not self:isStackable(id)
 	end
 end
 
@@ -44,7 +44,7 @@ function ItemManager:isStackable(id)
 	if not item then
 		return false
 	else
-		return item:get("Stackable") ~= 0
+		return item:get("Stackable") ~= 0 and not self:hasUserdata(id)
 	end
 end
 

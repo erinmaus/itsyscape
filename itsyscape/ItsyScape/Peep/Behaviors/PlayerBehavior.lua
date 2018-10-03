@@ -15,8 +15,12 @@ local Behavior = require "ItsyScape.Peep.Behavior"
 local PlayerBehavior = Behavior("Player")
 
 -- Constructs a PlayerBehavior.
+--
+-- "id": Unique ID of player. False if no ID is assigned.
 function PlayerBehavior:new(x, y, z)
 	Behavior.Type.new(self)
+
+	self.id = false
 end
 
 return PlayerBehavior

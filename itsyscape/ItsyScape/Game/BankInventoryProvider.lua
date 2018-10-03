@@ -31,7 +31,38 @@ function BankInventoryProvider:deposit(item, count, clamp)
 		local transaction = broker:createTransaction()
 		transaction:addParty(self)
 		transaction:addParty(broker:getItemProvider(item))
-		transaction:transfer(self, item, count, 'bank-deposit', true)
+
+		if not manager:isStackable(item:getID()) and
+		   not item:isNoted()
+		then
+			transaction:transfer(self, item, 1, 'bank-deposit', true)
+
+			local remainingCount = count - 1
+			for i in broker:iterateItems(broker:getItemProvider(item)) do
+				if i:getID() == item:getID() and
+				   remainingCount > 0 and
+				   i ~= item
+				then
+					local c = math.min(remainingCount, i:getCount())
+					transaction:transfer(
+						self,
+						i,
+						c,
+						'bank-deposit',
+						true)
+					remainingCount = remainingCount - c
+				end
+			end
+
+			if not clamp and remainingCount > 0 then
+				return false
+			end
+
+			count = count - remainingCount
+		else
+			transaction:transfer(self, item, count, 'bank-deposit', true)
+		end
+
 		if not transaction:commit() then
 			return false
 		end
@@ -40,7 +71,7 @@ function BankInventoryProvider:deposit(item, count, clamp)
 	if manager:isNoteable(item:getID()) then
 		local transaction = broker:createTransaction()
 		transaction:addParty(self)
-		transaction:note(self, item, count)
+		transaction:note(self, item:getID(), count)
 		if not transaction:commit() then
 			return false
 		end
@@ -76,6 +107,18 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 		hasNotedItem = false
 	end
 
+	local hasStackableItem
+	if manager:isStackable(id) then
+		for item in broker:iterateItems(destination) do
+			if item:getID() == id  then
+				hasStackableItem = true
+				break
+			end
+		end
+	else
+		hasStackableItem = true
+	end
+
 	local requiredSpace
 	if hasNotedItem then
 		if noted then
@@ -86,6 +129,12 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 	else
 		if noted then
 			requiredSpace = 1
+		elseif manager:isStackable(id) then
+			if hasStackableItem then
+				requiredSpace = 0
+			else
+				requiredSpace = 1
+			end
 		else
 			requiredSpace = count
 		end
@@ -142,3 +191,59 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 
 	return true, count
 end
+
+function BankInventoryProvider:assignKey(item)
+	local index
+	local previousIndex = 0
+	for currentIndex in self:getBroker():keys(self) do
+		if currentIndex - previousIndex > 1 then
+			index = previousIndex + 1
+			break
+		end
+
+		previousIndex = currentIndex
+	end
+
+	index = index or previousIndex + 1
+	self:getBroker():setItemKey(item, index)
+	self:getBroker():setItemZ(item, index)
+end
+
+function BankInventoryProvider:onSpawn(item, count)
+	self:assignKey(item)
+end
+
+function BankInventoryProvider:onTransferTo(item, source, count, purpose)
+	local index = self:getBroker():getItemKey(item)
+	if index == nil then
+		self:assignKey(item)
+	end
+end
+
+function BankInventoryProvider:onTransferFrom(destination, item, count, purpose)
+	local broker = self:getBroker()
+	local index = broker:getItemKey(item)
+	if index ~= nil and item:getCount() == count then
+		local keys = {}
+		for key in broker:keys(self) do
+			if key > index then
+				table.insert(keys, key)
+			end
+		end
+
+		for _, key in pairs(keys) do
+			for item in broker:iterateItemsByKey(self, key) do
+				broker:setItemKey(item, key - 1)
+				local z = broker:getItemZ(item)
+				if z then
+					broker:setItemZ(item, z - 1)
+				end
+				break
+			end
+		end
+
+		self:assignKey(item)
+	end
+end
+
+return BankInventoryProvider

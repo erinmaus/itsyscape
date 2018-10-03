@@ -45,11 +45,12 @@ function DemoApplication:initialize()
 	self:getGame():getStage():movePeep(
 		self:getGame():getPlayer():getActor():getPeep(),
 		"IsabelleIsland_Tower",
-		"Anchor_FromPort")
+		"Anchor_StartGame")
 	self:populateMap()
 
 	self:getGame():getUI():open("Ribbon")
 	--self:getGame():getUI():open("CraftWindow", "Metal", nil, "Smelt")
+	self:getGame():getUI():open("Bank")
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = position

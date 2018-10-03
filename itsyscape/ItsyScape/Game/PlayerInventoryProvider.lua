@@ -79,4 +79,14 @@ function PlayerInventoryProvider:onTransferFrom(destination, item, count, purpos
 	})
 end
 
+function PlayerInventoryProvider:onUnnote(item, items)
+	for i = 1, #items do
+		self:assignKey(items[i])
+	end
+end
+
+function PlayerInventoryProvider:onNote(item)
+	self:assignKey(item)
+end
+
 return PlayerInventoryProvider

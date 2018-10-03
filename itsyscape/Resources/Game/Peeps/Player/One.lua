@@ -12,7 +12,9 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
+local BankInventoryProvider = require "ItsyScape.Game.BankInventoryProvider"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
+local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Equipment = require "ItsyScape.Game.Equipment"
@@ -60,6 +62,7 @@ function One:new(...)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
+	inventory.bank = BankInventoryProvider(self)
 
 	local equipment = self:getBehavior(EquipmentBehavior)
 	equipment.equipment = EquipmentInventoryProvider(self)
@@ -73,6 +76,7 @@ function One:assign(director, key, ...)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)
+	director:getItemBroker():addProvider(inventory.bank)
 
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
@@ -102,25 +106,32 @@ function One:assign(director, key, ...)
 	combat.maxChaseDistance = math.huge
 
 	-- DEBUG
-	local t = director:getItemBroker():createTransaction()
-	t:addParty(inventory.inventory)
-	t:spawn(inventory.inventory, "BronzePickaxe", 1)
-	if false then
-	t:spawn(inventory.inventory, "BronzePlatebody", 1)
-	t:spawn(inventory.inventory, "BronzeGloves", 1)
-	t:spawn(inventory.inventory, "BronzeBoots", 1)
-	t:spawn(inventory.inventory, "BronzeHelmet", 1)
-	t:spawn(inventory.inventory, "AmuletOfYendor", 1)
-	t:spawn(inventory.inventory, "ErrinTheHeathensHat", 1)
-	t:spawn(inventory.inventory, "ErrinTheHeathensBoots", 1)
-	t:spawn(inventory.inventory, "ErrinTheHeathensGloves", 1)
-	t:spawn(inventory.inventory, "ErrinTheHeathensCoat", 1)
-	t:spawn(inventory.inventory, "ErrinTheHeathensStaff", 1)
-	t:spawn(inventory.inventory, "AirRune", 1000000)
-	t:spawn(inventory.inventory, "TinCan", 1)
-	t:spawn(inventory.inventory, "CopperBadge", 1) end
-	t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
-	t:commit()
+	do
+		local t = director:getItemBroker():createTransaction()
+		t:addParty(inventory.inventory)
+		t:spawn(inventory.inventory, "BronzePickaxe", 1)
+		t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
+		t:commit()
+	end
+
+	do
+		local t = director:getItemBroker():createTransaction()
+		t:addParty(inventory.bank)
+		t:spawn(inventory.bank, "BronzePlatebody", 100, true)
+		t:spawn(inventory.bank, "BronzeGloves", 100, true)
+		t:spawn(inventory.bank, "BronzeBoots", 100, true)
+		t:spawn(inventory.bank, "BronzeHelmet", 100, true)
+		t:spawn(inventory.bank, "AmuletOfYendor", 100, true)
+		t:spawn(inventory.bank, "ErrinTheHeathensHat", 10, true)
+		t:spawn(inventory.bank, "ErrinTheHeathensBoots", 10, true)
+		t:spawn(inventory.bank, "ErrinTheHeathensGloves", 10, true)
+		t:spawn(inventory.bank, "ErrinTheHeathensCoat", 10, true)
+		t:spawn(inventory.bank, "ErrinTheHeathensStaff", 10, true)
+		t:spawn(inventory.bank, "AirRune", 2000000)
+		t:spawn(inventory.bank, "TinCan", 100, true)
+		t:spawn(inventory.bank, "CopperBadge", 100, true)
+		t:commit()
+	end
 
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
