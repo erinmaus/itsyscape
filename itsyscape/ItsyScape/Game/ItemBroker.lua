@@ -269,23 +269,27 @@ end
 
 function ItemBroker.Transaction:note(destination, id, count)
 	local condition = function(state)
+		assert(self.broker.manager:isNoteable(id), "item cannot be noted")
 		assert(self.parties[destination], "destination inventory provider not party to transaction")
-
 		assert(self.broker.manager:isNoteable(id), "item cannot be noted")
 
-		local items = {}
+		local inventory = self.broker.inventories[destination]
+
+		local items = { count = 0 }
 		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
 			table.insert(items, item)
 			if #items >= count then
 				assert(#items == count, "found more items than requested")
 				break
 			end
+
+			items.count = items.count + item:getCount()
 		end
 
-		assert(#items >= count, "not tenough items in inventory")
+		assert(#items >= count, "not enough items in inventory")
 
 		local p = state[destination]
-		local destinationItem = inventory:findFirst(id, false, true)
+		local destinationItem = inventory:findFirst(id, true, true)
 		if destinationItem then
 			p.count = p.count - #items
 		else
@@ -307,10 +311,10 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		assert(#items >= count, "not enough items in inventory")
 
-		local destinationItem = inventory:findFirst(id, false, true)
+		local destinationItem = inventory:findFirst(id, true, true)
 		for _, item in pairs(items) do
 			self.broker:removeItem(item)
-		end 
+		end
 
 		if not destinationItem then
 			destinationItem = self.broker:addItem(destination, id, count, true)
@@ -318,7 +322,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 			destinationItem:setCount(destinationItem:getCount() + #items)
 		end
 
-		local s, r = pcall(provider.onNote, provider, destinationItem, items)
+		local s, r = pcall(destination.onNote, destination, destinationItem, items)
 		if not s then
 			return false, r
 		end
@@ -358,7 +362,7 @@ function ItemBroker.Transaction:unnote(item, count)
 				error("inventory full")
 			end
 
-			p.count = c
+			state[destination].count = c
 		end
 	end
 
@@ -372,22 +376,23 @@ function ItemBroker.Transaction:unnote(item, count)
 
 		local items
 		if self.broker.manager:isStackable(item:getID()) then
-			local destinationItem = inventory:findFirst(id, true, false)
+			local destinationItem = inventory:findFirst(item:getID(), true, false)
 			if destinationItem then
 				destinationItem:setCount(destinationItem:getCount() + count)
 			else
-				destinationItem = self.broker:addItem(destination, id, count, false)
+				destinationItem = self.broker:addItem(destination, item:getID(), count, false)
 			end
 
 			items = { destinationItem }
 		else
 			items = {}
 			for i = 1, count do
-				table.insert(self.broker:addItem(destination, id, 1, false))
+				local item = self.broker:addItem(destination, item:getID(), 1, false)
+				table.insert(items, item)
 			end
 		end
 
-		local s, r = pcall(provider.onUnnote, provider, item, items)
+		local s, r = pcall(destination.onUnnote, destination, item, items)
 		if not s then
 			return false, r
 		end
@@ -409,10 +414,8 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 		local source = self.broker.items[item]
 		assert(self.parties[source], "source inventory provider not party to transaction")
-		
 		assert(self.parties[destination], "destination inventory provider not party to transaction")
-
-		assert(item:getCount() == count)
+		assert(item:getCount() >= count, "count exceeds item count")
 		
 		local id = item:getID()
 		local noted = item:isNoted()
@@ -456,7 +459,6 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 	local step = function()
 		local source = self.broker.items[item]
 		local id = item:getID()
-		local count = item:getCount()
 		local noted = item:isNoted()
 
 		local destinationItem
@@ -528,9 +530,41 @@ end
 function ItemBroker.Inventory:add(item)
 	assert(not self:has(item), "item already in inventory")
 
+	local zValue
+	do
+		local maxZ
+		local minZ
+		local zValues = {}
+		for _, z in pairs(self.zValues) do
+			zValues[z] = true
+			minZ = math.min(minZ or z, z)
+			maxZ = math.max(maxZ or z, z)
+		end
+
+		if not minZ or not maxZ then
+			zValue = 1
+		else
+			if minZ > 1 then
+				zValue = 1
+			else
+				for i = minZ, maxZ do
+					if not zValues[i] then
+						zValue = i
+						break
+					end
+				end
+
+				if not zValue then
+					zValue = maxZ + 1
+				end
+			end
+		end
+	end
+
 	self.items[item] = {}
 	self.tags[item] = {}
 	self.count = self.count + 1
+	self.zValues[item] = zValue
 	table.insert(self.itemsByZ, item)
 	self:sortItems()
 end
