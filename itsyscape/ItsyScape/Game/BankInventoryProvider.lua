@@ -234,15 +234,10 @@ function BankInventoryProvider:onTransferFrom(destination, item, count, purpose)
 		for _, key in pairs(keys) do
 			for item in broker:iterateItemsByKey(self, key) do
 				broker:setItemKey(item, key - 1)
-				local z = broker:getItemZ(item)
-				if z then
-					broker:setItemZ(item, z - 1)
-				end
+				broker:setItemZ(item, key - 1)
 				break
 			end
 		end
-
-		self:assignKey(item)
 	end
 end
 
