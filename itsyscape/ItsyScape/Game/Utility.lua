@@ -332,12 +332,13 @@ function Utility.Peep.getTile(peep)
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	local distance = distance or 0
 	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
-		return false
+		return nil
 	end
 
 	local position = peep:getBehavior(PositionBehavior).position
@@ -349,6 +350,14 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		{ i = i, j = j },
 		true, ...)
 	if path then
+		local n = path:getNodeAtIndex(-1)
+		if n then
+			local d = math.abs(n.i - i) + math.abs(n.j - j)
+			if d > distance then
+				return nil
+			end
+		end
+
 		return ExecutePathCommand(path, distance), path
 	else
 		return nil

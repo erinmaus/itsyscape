@@ -38,7 +38,11 @@ function Mine:perform(state, player, prop)
 				if progress then
 					if progress.currentProgress < progress.maxProgress then
 						local i, j, k = Utility.Peep.getTile(prop)
-						local walk = Utility.Peep.getWalk(player, i, j, k)
+						local walk = Utility.Peep.getWalk(player, i, j, k, 1)
+
+						if not walk then
+							return false
+						end
 
 						if (equipmentType and equipmentType:get("Value") == "pickaxe") then
 							local a = GatherResourceCommand(prop, equippedItem, { skill = "mining" })
