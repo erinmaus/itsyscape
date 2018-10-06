@@ -50,6 +50,11 @@ function ExecutePathCommand:step(peep)
 					local dj = math.abs(j - target.j)
 
 					if di + dj <= self.distance then
+						local n = self.path:getNodeAtIndex(self.index)
+						if n then
+							n:interrupt(peep)
+						end
+
 						self.index = self.path:getNumNodes() + 1
 
 						return false
@@ -82,7 +87,9 @@ function ExecutePathCommand:onInterrupt(peep)
 end
 
 function ExecutePathCommand:update(delta, peep)
-	self:step(peep)
+	if not self:step(peep) then
+
+	end
 end
 
 return ExecutePathCommand

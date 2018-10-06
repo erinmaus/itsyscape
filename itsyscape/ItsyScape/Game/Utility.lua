@@ -294,6 +294,8 @@ end
 --
 -- Returns true on success, false on failure.
 function Utility.Peep.walk(peep, i, j, k, distance, ...)
+	local distance = distance or 0
+
 	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 
 	if not peep:hasBehavior(PositionBehavior) or
@@ -311,6 +313,14 @@ function Utility.Peep.walk(peep, i, j, k, distance, ...)
 		{ i = i, j = j },
 		true, ...)
 	if path then
+		local n = path:getNodeAtIndex(-1)
+		if n then
+			local d = math.abs(n.i - i) + math.abs(n.j - j)
+			if d > distance then
+				return nil
+			end
+		end
+
 		local queue = peep:getCommandQueue()
 		return queue:interrupt(ExecutePathCommand(path, distance))
 	end

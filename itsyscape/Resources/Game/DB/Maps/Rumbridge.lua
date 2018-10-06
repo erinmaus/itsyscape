@@ -22,3 +22,16 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
 }
+
+ItsyScape.Resource.Prop "Door_RumbridgeStone"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeStone"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Door",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeStone"
+}
