@@ -80,7 +80,7 @@ function ScrollablePanel:performLayout()
 		self.isHorizontalScroll = true
 
 		if not self.floatyScrollBars then
-			panelHeight = panelHeight - self.scrollBarSize
+			panelHeight = height - self.scrollBarSize
 		end
 	else
 		Widget.removeChild(self, self.horizontalScroll)
@@ -105,7 +105,7 @@ function ScrollablePanel:performLayout()
 		self.isVerticalScroll = true
 
 		if not self.floatyScrollBars then
-			panelWidth = panelWidth - self.scrollBarSize
+			panelWidth = width - self.scrollBarSize
 		end
 	else
 		Widget.removeChild(self, self.verticalScroll)

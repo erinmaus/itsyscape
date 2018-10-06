@@ -28,13 +28,13 @@ Bank.HEIGHT = 320
 Bank.TAB_SIZE = 48
 Bank.ITEM_SIZE = 48
 Bank.BUTTON_SIZE = 48
-Bank.PADDING = 4
+Bank.PADDING = 12
 Bank.ICON_PADDING = 2
 
 Bank.ACTIVE_TAB_STYLE = function(icon)
 	return {
-		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
+		inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
+		hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 		icon = { filename = icon, x = 0.5, y = 0.5 }
 	}
@@ -42,8 +42,8 @@ end
 
 Bank.INACTIVE_TAB_STYLE = function(icon)
 	return {
-		inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
+		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
 		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 		icon = { filename = icon, x = 0.5, y = 0.5 }
 	}
@@ -76,16 +76,18 @@ function Bank:new(id, index, ui)
 
 	local inventoryButton = Button()
 	inventoryButton:setStyle(ButtonStyle(
-		Bank.ACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Common/Inventory.png"),
+		Bank.INACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Common/Inventory.png"),
 		self:getView():getResources()))
 	inventoryButton.onClick:register(self.openInventory, self)
+	inventoryButton:setData('tab-icon', "Resources/Game/UI/Icons/Common/Inventory.png")
 	self.tabsLayout:addChild(inventoryButton)
 
 	local bankButton = Button()
 	bankButton:setStyle(ButtonStyle(
-		Bank.ACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Common/Inventory.png"),
+		Bank.ACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Things/Chest.png"),
 		self:getView():getResources()))
 	bankButton.onClick:register(self.openBank, self)
+	bankButton:setData('tab-icon', "Resources/Game/UI/Icons/Things/Chest.png")
 	self.tabsLayout:addChild(bankButton)
 
 	self.tabContent = { max = 0}
@@ -104,6 +106,10 @@ function Bank:new(id, index, ui)
 	self.tabContentLayout:setSize(
 		Bank.WIDTH - Bank.PADDING * 2,
 		Bank.HEIGHT - Bank.TAB_SIZE - Bank.PADDING * 2)
+	self.tabContentLayout:getInnerPanel():setSize(
+		Bank.WIDTH - Bank.PADDING * 2,
+		Bank.HEIGHT - Bank.TAB_SIZE - Bank.PADDING * 2)
+	self.tabContentLayout:setFloatyScrollBars(false)
 	self:addChild(self.tabContentLayout)
 
 	self.closeButton = Button()
@@ -115,16 +121,32 @@ function Bank:new(id, index, ui)
 	end)
 	self:addChild(self.closeButton)
 
-	self.currentSource = 'items'
+	self:activateTab(bankButton)
 	self.previousSource = false
-end
-
-function Bank:openInventory()
-	self.currentSource = 'inventory'
-end
-
-function Bank:openBank()
 	self.currentSource = 'items'
+end
+
+function Bank:activateTab(button)
+	if self.activeButton then
+		local style = Bank.INACTIVE_TAB_STYLE(self.activeButton:getData('tab-icon'))
+		self.activeButton:setStyle(ButtonStyle(style, self:getView():getResources()))
+	end
+
+	local style = Bank.ACTIVE_TAB_STYLE(button:getData('tab-icon'))
+	button:setStyle(ButtonStyle(style, self:getView():getResources()))
+	self.activeButton = button
+
+	self.tabContentLayout:setScroll(0, 0)
+end
+
+function Bank:openInventory(button)
+	self.currentSource = 'inventory'
+	self:activateTab(button)
+end
+
+function Bank:openBank(button)
+	self.currentSource = 'items'
+	self:activateTab(button)
 end
 
 function Bank:update(...)
@@ -181,40 +203,91 @@ function Bank:update(...)
 	end
 end
 
-function Bank:drag(button, x, y)
-	if self:getView():getRenderManager():getCursor() ~= button:getData('icon') then
-		self:getView():getRenderManager():setCursor(button:getData('icon'))
+function Bank:getRightHandItem(x, y)
+	if self.currentSource == 'items' then
+		for i = 1, #self.tabContent do
+			local buttonX, buttonY = self.tabContent[i]:getPosition()
+			local buttonWidth, buttonHeight = self.tabContent[i]:getSize()
+
+			if x >= buttonX + buttonWidth and y >= buttonY and
+			   x <= buttonX + buttonWidth + self.PADDING and y <= buttonY + buttonHeight
+			then
+				return self.tabContent[i]:getData('icon'):getData('index')
+			elseif i == 1 and
+			       x >= buttonX - self.PADDING and y >= buttonY and
+			       x <= buttonX and y <= buttonY + buttonHeight
+			then
+				return 0
+			end
+		end
+	end
+end
+
+function Bank:drag(button, x, y, absoluteX, absoluteY)
+	local icon = button:getData('icon')
+	local rightHandItem = self:getRightHandItem(absoluteX, absoluteY)
+	if rightHandItem then
+		local SHRINKAGE = 0.5
+		icon:setSize(self.ITEM_SIZE * SHRINKAGE, self.ITEM_SIZE * SHRINKAGE)
+		icon:setPosition(
+			self.ICON_PADDING + (self.ITEM_SIZE * SHRINKAGE / 2),
+			self.ICON_PADDING + (self.ITEM_SIZE * SHRINKAGE / 2))
+	else
+		icon:setSize(self.ITEM_SIZE, self.ITEM_SIZE)
+		icon:setPosition(self.ICON_PADDING, self.ICON_PADDING)
+	end
+	if self:getView():getRenderManager():getCursor() ~= icon then
+		self:getView():getRenderManager():setCursor(icon)
 	end
 end
 
 function Bank:swap(button, x, y)
-	local index = button:getData('icon'):getData('index')
+	local icon = button:getData('icon')
+	local index = icon:getData('index')
 	if index then
 		local inputProvider = self:getView():getInputProvider()
 		local destination
 		do
-			local widgets = inputProvider:getWidgetsUnderPoint(x, y)
-			for i = 1, #widgets do
-				if widgets[i]:getData('bank-droppable-target') then
-					destination = widgets[i]
+			for i = 1, #self.tabContent do
+				local buttonX, buttonY = self.tabContent[i]:getPosition()
+				local buttonWidth, buttonHeight = self.tabContent[i]:getSize()
+
+				if x >= buttonX and y >= buttonY and
+				   x <= buttonX + buttonWidth and y <= buttonY + buttonHeight
+				then
+					destination = self.tabContent[i]
 					break
 				end
 			end
 		end
 
 		if destination then
+			local newIndex = destination:getData('icon'):getData('index')
 			if self.currentSource == 'items' then
-				self:sendPoke("bankSwap", nil, { a = index, b = newIndex })
+				self:sendPoke("swapBank", nil, { tab = 0, a = index, b = newIndex })
 			elseif self.currentSource == 'inventory' then
-				self:sendPoke("inventorySwap", nil, { a = index, b = newIndex })
+				self:sendPoke("swapInventory", nil, { a = index, b = newIndex })
+			end
+		else
+			if self.currentSource == 'items' then
+				local rightHandItem = self:getRightHandItem(x, y)
+				if rightHandItem then
+					if rightHandItem <= index then
+						rightHandItem = rightHandItem + 1
+					end
+
+					self:sendPoke("insertBank", nil, { tab = 0, a = index, b = rightHandItem })
+				end
 			end
 		end
 	end
 
-
-	if self:getView():getRenderManager():getCursor() == button:getData('icon') then
+	if self:getView():getRenderManager():getCursor() == icon then
 		self:getView():getRenderManager():setCursor(nil)
 	end
+
+	icon:setSize(self.ITEM_SIZE, self.ITEM_SIZE)
+	icon:setPosition(self.ICON_PADDING, self.ICON_PADDING)
 end
 
 function Bank:probe(button)

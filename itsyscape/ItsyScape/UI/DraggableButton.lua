@@ -30,6 +30,8 @@ function DraggableButton:new()
 	self.mouseY = 0
 	self.dragX = 0
 	self.dragY = 0
+	self.offsetX = 0
+	self.offsetY = 0
 	self.dragDistance = DraggableButton.DEFAULT_DRAG_DISTANCE
 end
 
@@ -64,6 +66,10 @@ function DraggableButton:mousePress(x, y, button)
 			self.mouseY = y
 			self.dragX = 0
 			self.dragY = 0
+
+			local absoluteX, absoluteY = self:getAbsolutePosition()
+			self.offsetX = x - absoluteX
+			self.offsetY = y - absoluteY
 		end
 	end
 end
@@ -74,7 +80,7 @@ function DraggableButton:mouseRelease(x, y, button, ...)
 			if self.isDragging then
 				local s, t = self:getPosition()
 				local u, v = self.dragX, self.dragY
-				self.onDrop(self, s + u, t + v)
+				self.onDrop(self, s + u + self.offsetX, t + v + self.offsetY)
 			elseif self.isMouseOver then
 				self.onLeftClick(self)
 			end
@@ -97,9 +103,10 @@ function DraggableButton:mouseMove(x, y, ...)
 			self.isDragging = true
 
 			local s, t = self.dragX, self.dragY
+			local u, v = self:getPosition()
 			s = s + (x - self.mouseX)
 			t = t + (y - self.mouseY)
-			self.onDrag(self, s, t)
+			self.onDrag(self, s, t, s + u + self.offsetX, t + v + self.offsetY)
 
 			self.dragX = s
 			self.dragY = t

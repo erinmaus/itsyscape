@@ -199,6 +199,20 @@ function Widget:getPosition()
 	return self.x, self.y
 end
 
+function Widget:getAbsolutePosition()
+	local x, y = self.x, self.y
+	local parent = self:getParent()
+	while parent do
+		local px, py = parent:getPosition()
+		local sx, sy = parent:getScroll()
+		x = x + px - sx
+		y = y + py - sy
+		parent = parent:getParent()
+	end
+
+	return x, y
+end
+
 function Widget:setPosition(x, y)
 	self.x = x or self.x
 	self.y = y or self.y
