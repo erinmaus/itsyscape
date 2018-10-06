@@ -40,12 +40,12 @@ function DemoApplication:initialize()
 	Application.initialize(self)
 
 	--self:populateMap()
-	--self:getGame():getStage():loadStage("IsabelleIsland_AbandonedMine")
+	self:getGame():getStage():loadStage("IsabelleIsland_AbandonedMine")
 	--self:getGame():getStage():loadStage("IsabelleIsland_Tower")
-	self:getGame():getStage():movePeep(
+	--[[self:getGame():getStage():movePeep(
 		self:getGame():getPlayer():getActor():getPeep(),
 		"IsabelleIsland_Tower",
-		"Anchor_StartGame")
+		"Anchor_StartGame")]]
 	self:populateMap()
 
 	self:getGame():getUI():open("Ribbon")
@@ -74,7 +74,7 @@ function DemoApplication:populateMap()
 	-- Mine
 	--self:moveActorToTile(player, 16, 21)
 	-- Furnace
-	--self:moveActorToTile(player, 30, 15)
+	self:moveActorToTile(player, 30, 15)
 	-- Boss
 	--self:moveActorToTile(player, 32, 37)
 end

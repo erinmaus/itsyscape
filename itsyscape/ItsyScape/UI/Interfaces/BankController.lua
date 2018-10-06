@@ -153,9 +153,9 @@ function BankController:swapInventory(e)
 end
 
 function BankController:swapBank(e)
-	assert(type(e.tab == 'number'), "tab is not a number")
-	assert(type(e.a == "number"), "a is not a number")
-	assert(type(e.b == "number"), "b is not a number")
+	assert(type(e.tab) == 'number', "tab is not a number")
+	assert(type(e.a) == "number", "a is not a number")
+	assert(type(e.b) == "number", "b is not a number")
 
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank then
@@ -183,6 +183,63 @@ function BankController:swapBank(e)
 				broker:setItemKey(item2, e.a)
 				broker:setItemZ(item2, e.a)
 			end
+		end
+	end
+end
+
+function BankController:insert(e)
+	assert(type(e.tab) == 'number', "tab is not a number")
+	assert(type(e.a) == "number", "a is not a number")
+	assert(type(e.b) == "number", "b is not a number")
+
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	if inventory and inventory.bank then
+		if e.tab < 1 then
+			local broker = inventory.bank:getBroker()
+
+			local item1
+			for item in broker:iterateItemsByKey(inventory.bank, e.a) do
+				item1 = item
+				break
+			end
+
+			broker:setItemKey(item1, -1)
+			broker:setItemZ(item1, -1)
+
+			do
+				local items = {}
+				for key in broker:keys(inventory.bank) do
+					if key >= e.a then
+						for item in broker:iterateItemsByKey(inventory.bank, key) do
+							table.insert(items, { item = item, key = key })
+						end
+					end
+				end
+
+				for i = 1, #items do
+					broker:setItemKey(items[i].item, items[i].key - 1)
+					broker:setItemZ(items[i].item, items[i].key - 1)
+				end
+			end
+
+			do
+				local items = {}
+				for key in broker:keys(inventory.bank) do
+					if key >= e.b then
+						for item in broker:iterateItemsByKey(inventory.bank, key) do
+							table.insert(items, { item = item, key = key })
+						end
+					end
+				end
+
+				for i = 1, #items do
+					broker:setItemKey(items[i].item, items[i].key + 1)
+					broker:setItemZ(items[i].item, items[i].key + 1)
+				end
+			end
+
+			broker:setItemKey(item1, e.b)
+			broker:setItemZ(item1, e.b)
 		end
 	end
 end
