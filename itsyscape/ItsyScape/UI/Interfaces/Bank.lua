@@ -340,7 +340,7 @@ function Bank:probe(button)
 				verb = "Deposit-All", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("deposit", nil, { index = index, count = item.count })
+					self:sendPoke("deposit", nil, { index = index, count = math.huge })
 				end
 			})
 		elseif self.currentSource == 'items' then
@@ -376,7 +376,7 @@ function Bank:probe(button)
 				verb = "Withdraw-All", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { index = index, count = item.count })
+					self:sendPoke("withdraw", nil, { index = index, count = math.huge })
 				end
 			})
 		end

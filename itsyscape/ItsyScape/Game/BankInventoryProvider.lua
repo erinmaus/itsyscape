@@ -38,6 +38,7 @@ function BankInventoryProvider:deposit(item, count, clamp)
 			transaction:transfer(self, item, 1, 'bank-deposit', true)
 
 			local remainingCount = count - 1
+			local newCount = 1
 			for i in broker:iterateItems(broker:getItemProvider(item)) do
 				if i:getID() == item:getID() and
 				   remainingCount > 0 and
@@ -50,6 +51,7 @@ function BankInventoryProvider:deposit(item, count, clamp)
 						c,
 						'bank-deposit',
 						true)
+					newCount = newCount + c
 					remainingCount = remainingCount - c
 				end
 			end
@@ -58,7 +60,7 @@ function BankInventoryProvider:deposit(item, count, clamp)
 				return false
 			end
 
-			count = count - remainingCount
+			count = newCount
 		else
 			transaction:transfer(self, item, count, 'bank-deposit', true)
 		end
