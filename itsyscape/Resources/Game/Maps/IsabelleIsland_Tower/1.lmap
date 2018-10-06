@@ -4602,6 +4602,32 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -4662,6 +4688,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -4672,6 +4700,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -4682,26 +4712,8 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -5642,6 +5654,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -5652,6 +5666,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -5662,6 +5678,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -6862,6 +6880,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -6872,6 +6892,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -6882,6 +6904,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -7182,6 +7206,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -7192,6 +7218,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{
@@ -7202,6 +7230,8 @@
 			},
 			flags =
 			{
+				["wall-bottom"] = true,
+				["wall-top"] = true,
 			},
 		},
 		{

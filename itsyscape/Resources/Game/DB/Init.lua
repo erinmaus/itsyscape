@@ -68,6 +68,13 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MapObjectSize" {
+		SizeX = Meta.TYPE_REAL,
+		SizeY = Meta.TYPE_REAL,
+		SizeZ = Meta.TYPE_REAL,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PropMapObject" {
 		Prop = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE

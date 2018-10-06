@@ -24,4 +24,49 @@ do
 	}
 end
 
+M["Door_Office"] {
+	ItsyScape.Action.Open() {
+	},
+
+	ItsyScape.Action.Close() {
+	}
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 2,
+	SizeZ = 2,
+	MapObject = M["Door_Office"]
+}
+
+M["Door_Tower"] {
+	ItsyScape.Action.Open() {
+	},
+
+	ItsyScape.Action.Close() {
+	}
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 2,
+	SizeZ = 2,
+	MapObject = M["Door_Tower"]
+}
+
+M["Door_Merchant"] {
+	ItsyScape.Action.Open() {
+	},
+
+	ItsyScape.Action.Close() {
+	}
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 2,
+	SizeZ = 2,
+	MapObject = M["Door_Tower"]
+}
+
 return M

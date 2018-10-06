@@ -62,7 +62,18 @@ function BankInventoryProvider:deposit(item, count, clamp)
 
 			count = newCount
 		else
-			transaction:transfer(self, item, count, 'bank-deposit', true)
+			if not clamp then
+				if count > item:getCount() then
+					return false
+				end
+			end
+
+			transaction:transfer(
+				self,
+				item,
+				math.min(count, item:getCount()),
+				'bank-deposit',
+				true)
 		end
 
 		if not transaction:commit() then

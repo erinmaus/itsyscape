@@ -54,6 +54,8 @@ function DoorView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
+	self.node = ModelSceneNode()
+
 	resources:queue(
 		SkeletonResource,
 		self:getResourcePath("Door.lskel"),
@@ -75,7 +77,6 @@ function DoorView:load()
 				end,
 				skeleton:getResource())
 			resources:queueEvent(function()
-				self.node = ModelSceneNode()
 				self.node:setModel(self.model)
 				self.node:getMaterial():setTextures(self.texture)
 				self.node:setParent(root)

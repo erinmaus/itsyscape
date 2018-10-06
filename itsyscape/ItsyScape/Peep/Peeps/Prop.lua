@@ -58,6 +58,19 @@ end
 function Prop:ready(director, game)
 	Peep.ready(self, director, game)
 
+	local mapObject = Utility.Peep.getMapObject(self)
+	if mapObject then
+		local gameDB = game:getGameDB()
+		local sizeRecord = gameDB:getRecord("MapObjectSize", { MapObject = mapObject })
+		if sizeRecord then
+			local size = self:getBehavior(SizeBehavior)
+			size.size = Vector(
+				sizeRecord:get("SizeX") or size.size.x,
+				sizeRecord:get("SizeY") or size.size.y,
+				sizeRecord:get("SizeZ") or size.size.z)
+		end
+	end
+
 	Utility.Peep.setNameMagically(self)
 	self:spawnOrPoof('spawn')
 end

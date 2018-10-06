@@ -37,7 +37,7 @@ function OpenCraftWindow:perform(state, player, prop)
 		end
 
 		local i, j, k = Utility.Peep.getTile(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k)
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
 		if walk then
 			local open = OpenInterfaceCommand("CraftWindow", true, prop, key, value, target:get("ActionType"))
