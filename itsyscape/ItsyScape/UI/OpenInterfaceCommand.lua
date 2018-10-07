@@ -30,11 +30,13 @@ function OpenInterfaceCommand:onBegin(peep)
 
 	if self.blocking then
 		local _, n = ui:openBlockingInterface(
+			peep,
 			self.interfaceID,
 			unpack(self.arguments, 1, self.arguments.n))
 		self.index = n
 	else
 		local _, n = ui:open(
+			peep,
 			self.interfaceID,
 			unpack(self.arguments, 1, self.arguments.n))
 		self.index = n

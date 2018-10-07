@@ -24,6 +24,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
@@ -151,6 +152,47 @@ end
 
 function Utility.Combat.calcDefenseRoll(level, bonus)
 	return (level + 8) * (bonus + 128)
+end
+
+-- Contains utility methods to deal with text.
+Utility.Text = {}
+
+Utility.Text.PRONOUN_SUBJECT    = GenderBehavior.PRONOUN_SUBJECT
+Utility.Text.PRONOUN_OBJECT     = GenderBehavior.PRONOUN_OBJECT
+Utility.Text.PRONOUN_POSSESSIVE = GenderBehavior.PRONOUN_POSSESSIVE
+Utility.Text.FORMAL_ADDRESS     = GenderBehavior.FORMAL_ADDRESS
+Utility.Text.DEFAULT_PRONOUNS   = {
+	["en-US"] = {
+		"they",
+		"them",
+		"theirs",
+		"ma'ser"
+	}
+}
+
+function Utility.Text.getPronoun(peep, class, lang)
+	lang = lang or "en-US"
+
+	do
+		local gender = peep:getBehavior(GenderBehavior)
+		if gender then
+			return gender.pronouns[class] or "*None"
+		else
+			return Utility.Text.DEFAULT_PRONOUNS[lang][class] or "*Default"
+		end
+	end
+end
+
+Utility.UI = {}
+function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
+	local ui = peep:getDirector():getGameInstance():getUI()
+	if blocking then
+		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
+		return n ~= nil, n
+	else
+		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
+		return n ~= nil, n
+	end
 end
 
 -- Contains utility methods to deal with items.

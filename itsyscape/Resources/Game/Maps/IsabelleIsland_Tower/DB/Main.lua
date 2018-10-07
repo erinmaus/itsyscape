@@ -24,6 +24,44 @@ do
 	}
 end
 
+M["Banker"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 16.5 * 2,
+		PositionY = 4,
+		PositionZ = 9.5 * 2,
+		Name = "Banker",
+		Map = M._MAP,
+		Resource = M["Banker"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "FancyBanker_Default",
+		MapObject = M["Banker"]
+	}
+end
+
+M["BankerChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 16.5 * 2,
+		PositionY = 4,
+		PositionZ = 8.5 * 2,
+		Name = "BankerChest",
+		Map = M._MAP,
+		Resource = M["BankerChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["BankerChest"]
+	}
+
+	M["BankerChest"] {
+		ItsyScape.Action.Bank()
+	}
+end
+
 M["Door_Office"] {
 	ItsyScape.Action.Open() {
 	},

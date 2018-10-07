@@ -45,7 +45,13 @@ function MapGridMesh:buildMesh(left, right, top, bottom)
 			local r = l + self.map:getCellSize()
 			local t = (j - 1) * self.map:getCellSize()
 			local b = t + self.map:getCellSize()
-			local color = Color(1, 1, 1, 0.5)
+			local color
+
+			if tile:hasFlag('impassable') then
+				color = Color(1, 0, 0, 1.0)
+			else
+				color = Color(1, 1, 1, 0.5)
+			end
 
 			self:addVertex(Vector(l, tile.topLeft, t), color)
 			self:addVertex(Vector(r, tile.topRight, t), color)
