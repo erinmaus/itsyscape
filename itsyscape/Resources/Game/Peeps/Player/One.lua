@@ -26,6 +26,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local HumanPlayerBehavior = require "ItsyScape.Peep.Behaviors.HumanPlayerBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -42,6 +43,7 @@ function One:new(...)
 
 	self:addBehavior(ActorReferenceBehavior)
 	self:addBehavior(EquipmentBehavior)
+	self:addBehavior(GenderBehavior)
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(HumanPlayerBehavior)
 	self:addBehavior(MovementBehavior)

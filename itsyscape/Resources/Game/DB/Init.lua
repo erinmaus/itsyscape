@@ -47,6 +47,8 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Bank"
+
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
 	ResourceType "Map"
@@ -297,6 +299,9 @@ include "Resources/Game/DB/Items/MiscFood.lua"
 include "Resources/Game/DB/Creeps/Goblin.lua"
 include "Resources/Game/DB/Creeps/Skelemental.lua"
 include "Resources/Game/DB/Creeps/Skeleton.lua"
+
+-- Peeps
+include "Resources/Game/DB/Peeps/Banker.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernCombat.lua"

@@ -455,6 +455,18 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_PROP)
 			end
 
+			if key == 'i' then
+				local map = self:getGame():getStage():getMap(1)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				if tile:hasFlag('impassable') then
+					tile:unsetFlag('impassable')
+				else
+					tile:setFlag('impassable')
+				end
+
+				self:getGame():getStage():updateMap(1)
+			end
+
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE
 			   and self.lastDecorationFeature
 			then

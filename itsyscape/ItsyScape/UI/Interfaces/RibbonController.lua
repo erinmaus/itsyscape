@@ -49,7 +49,7 @@ function RibbonController:openTab(e)
 		ui:close(self.currentInterfaceID, self.currentInterfaceIndex)
 	end
 
-	self.currentInterfaceID, self.currentInterfaceIndex = ui:open(e.tab)
+	self.currentInterfaceID, self.currentInterfaceIndex = ui:open(self:getPeep(), e.tab)
 	ui:sendPoke(self, "activate", nil, { self.currentInterfaceID })
 end
 

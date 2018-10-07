@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Goblin/BaseSkeleton.lua
+-- Resources/Peeps/Goblin/FancyBanker.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,28 +9,17 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
-local Utility = require "ItsyScape.Game.Utility"
-local Curve = require "ItsyScape.Game.Curve"
-local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
-local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
-local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
-local Stats = require "ItsyScape.Game.Stats"
-local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
-local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
-local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
-local BaseSkeleton = Class(Player)
+local FancyBanker = Class(Player)
 
-function BaseSkeleton:new(resource, name, ...)
-	Player.new(self, resource, name or 'Skeleton', ...)
+function FancyBanker:new(resource, name, ...)
+	Player.new(self, resource, name or 'FancyBanker', ...)
 end
 
-function BaseSkeleton:ready(director, game)
+function FancyBanker:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -43,22 +32,30 @@ function BaseSkeleton:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Skeleton/Head.lua")
+		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+	local eyes = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, eyes)
+	local hair = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Hair/FancyOld.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hair)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Skeleton/Body.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/BankerSuit.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Skeleton/Hands.lua")
+		"Resources/Game/Skins/PlayerKit1/Hands/GoldGloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Skeleton/Feet.lua")
+		"Resources/Game/Skins/PlayerKit1/Shoes/FancyShoes1.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
 
 	Player.ready(self, director, game)
 end
 
-return BaseSkeleton
+return FancyBanker
