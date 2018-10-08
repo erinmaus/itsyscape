@@ -80,6 +80,17 @@ function Director:removeCortex(cortex)
 	return false
 end
 
+-- Moves a Peep.
+function Director:movePeep(peep, key)
+	local p = self.peeps[peep]
+	if p then
+		self.peepsByLayer[p.key][peep] = nil
+		p.key = key
+	end
+
+	peep:move(self, key)
+end
+
 -- Adds a Peep of the provided type to the Director.
 --
 -- If no type is provided, just adds a plain 'ol Peep.
@@ -166,8 +177,8 @@ end
 --
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
-	for peep in pairs(self.newPeeps) do
-		self.peeps[peep] = peep
+	for peep, info in pairs(self.newPeeps) do
+		self.peeps[peep] = info
 	end
 	self.newPeeps = {}
 

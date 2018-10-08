@@ -97,8 +97,6 @@ function Renderer:setCurrentShader(shader)
 		if self.currentShader ~= shader then
 			self.currentShader = shader
 			love.graphics.setShader(shader)
-		else
-			print 'sameshader'
 		end
 	end
 end

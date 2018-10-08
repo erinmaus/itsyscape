@@ -22,7 +22,7 @@ function Bank:perform(state, player, target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2)
 
 		if walk then
-			local open = OpenInterfaceCommand("Bank", true)
+			local open = OpenInterfaceCommand("Bank", false)
 			local command = CompositeCommand(true, walk, open)
 
 			local queue = player:getCommandQueue()

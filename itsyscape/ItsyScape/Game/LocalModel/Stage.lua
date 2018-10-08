@@ -381,11 +381,14 @@ function LocalStage:movePeep(peep, filename, anchor)
 end
 
 function LocalStage:loadStage(filename)
+	do
+		local director = self.game:getDirector()
+		director:movePeep(self.game:getPlayer():getActor():getPeep(), filename)
+	end
+
 	self:unloadAll()
-	self.game:getPlayer():poof()
 
 	self.stageName = filename
-	self.game:getPlayer():spawn()
 
 	local directoryPath = "Resources/Game/Maps/" .. filename
 
