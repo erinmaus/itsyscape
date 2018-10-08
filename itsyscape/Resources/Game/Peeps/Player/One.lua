@@ -215,13 +215,17 @@ function One:onDropItem(e)
 end
 
 function One:onTransferItemTo(e)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	if e.purpose ~= 'bank-withdraw' then
+		local game = self:getDirector():getGameInstance()
+		game:getUI():interrupt()
+	end
 end
 
 function One:onTransferItemFrom(e)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	if e.purpose ~= 'bank-deposit' then
+		local game = self:getDirector():getGameInstance()
+		game:getUI():interrupt()
+	end
 end
 
 function One:onWalk(e)

@@ -55,6 +55,7 @@ function Peep:new(name)
 
 	self:addPoke('ready')
 	self:addPoke('assign')
+	self:addPoke('move')
 	self:addPoke('finalize')
 end
 
@@ -211,6 +212,12 @@ function Peep:assign(director, key)
 	end
 
 	self:poke('assign', director, key)
+end
+
+function Peep:move(director, key)
+	self.layerName = key or self.layerName
+
+	self:poke('move', key)
 end
 
 -- Gets the director this Peep was assigned to.
