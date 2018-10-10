@@ -133,6 +133,7 @@ function ActorView:new(actor, actorID)
 	actor.onHUDMessage:register(self._onHUDMessage)
 
 	self.healthBar = false
+	self.sprites = setmetatable({}, { __mode = 'k' })
 end
 
 function ActorView:attach(game)
@@ -151,6 +152,10 @@ function ActorView:poof()
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
 	self.actor.onDamage:unregister(self._onDamage)
 	self.actor.onHUDMessage:unregister(self._onHUDMessage)
+
+	for sprite in pairs(self.sprites) do
+		self.game:getSpriteManager():poof(sprite)
+	end
 end
 
 function ActorView:getSceneNode()
@@ -165,7 +170,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	end
 
 	-- TODO load queue
-	if priority then
+	if priority and animation then
 		self.game:getResourceManager():queueCacheRef(animation, function(definition)
 			a.definition = definition:getResource()
 			a.instance = a.definition:play(self.animatable)
@@ -322,6 +327,8 @@ function ActorView:damage(damageType, damage)
 	local sprite = self.game:getSpriteManager()
 	sprite:add("Damage", self.sceneNode, Vector(0, 1, 0), damageType, damage)
 
+	self.sprites[sprite] = true
+
 	if self.healthBar and self.healthBar:getIsSpawned() then
 		self.game:getSpriteManager():reset(self.healthBar)
 	else
@@ -335,6 +342,8 @@ end
 
 function ActorView:flash(message, anchor, ...)
 	local sprite = self.game:getSpriteManager()
+
+	self.sprites[sprite] = true
 
 	if type(anchor) == 'number' then
 		anchor = Vector(0, anchor, 0)

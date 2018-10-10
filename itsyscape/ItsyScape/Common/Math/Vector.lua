@@ -76,7 +76,11 @@ end
 -- Returns the interpolated vector.
 function Vector:lerp(other, delta)
 	delta = math.min(math.max(delta, 0.0), 1.0)
-	return other * delta + self * (1 - delta)
+	local result = Vector()
+	result.x = other.x * delta + self.x * (1 - delta)
+	result.y = other.y * delta + self.y * (1 - delta)
+	result.z = other.z * delta + self.z * (1 - delta)
+	return result
 end
 
 -- Calculates the cross product of two vectors.

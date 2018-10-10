@@ -17,7 +17,12 @@ local Bank = Class(Action)
 Bank.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function Bank:perform(state, player, target)
-	if target then
+	local FLAGS = {
+		['item-inventory'] = true,
+		['item-equipment'] = true
+	}
+
+	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2)
 

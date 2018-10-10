@@ -177,7 +177,7 @@ function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
 end
 
 function Weapon:getBonusForStance(peep)
-	return Weapon.BONUS_NONE
+	return Weapon.BONUS_CRUSH
 end
 
 function Weapon:getAttackRange(peep)

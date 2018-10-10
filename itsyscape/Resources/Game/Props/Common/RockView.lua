@@ -58,6 +58,14 @@ function RockView:load()
 		end)
 end
 
+function RockView:remove()
+	PropView.remove(self)
+
+	if self.progressBar then
+		self:getGameView():getSpriteManager():poof(self.progressBar)
+	end
+end
+
 function RockView:tick()
 	PropView.tick(self)
 

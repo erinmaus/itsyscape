@@ -1,5 +1,37 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_AbandonedMine/DB/Default.lua"
 
+M["Anchor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39.5 * 2,
+		PositionY = 3,
+		PositionZ = 3.5 * 2,
+		Name = "Anchor_Entrance",
+		Map = M._MAP,
+		Resource = M["Anchor_Entrance"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_AbandonedMine",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["EntranceLadder"] {
+		TravelAction
+	}
+end
+
 M["SkeletonMinerJoe"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

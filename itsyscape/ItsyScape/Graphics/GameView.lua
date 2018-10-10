@@ -36,10 +36,10 @@ function GameView:new(game)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
-	self.onUnloadMap = function(_, map, layer)
+	self._onUnloadMap = function(_, map, layer)
 		self:removeMap(map, layer)
 	end
-	stage.onUnloadMap:register(self._onLoadMap)
+	stage.onUnloadMap:register(self._onUnloadMap)
 
 	self._onMapModified = function(_, map, layer)
 		self:updateMap(map, layer)
@@ -170,7 +170,7 @@ function GameView:removeMap(map, layer)
 		m.node:setParent(nil)
 
 		for i = 1, #m.parts do
-			m.parts:setMapMesh(nil)
+			m.parts[i]:setMapMesh(nil)
 		end
 
 		self.mapMeshes[layer] = nil
@@ -234,6 +234,10 @@ function GameView:removeActor(actor)
 		self.actors[actor]:poof()
 		self.actors[actor] = nil
 	end
+end
+
+function GameView:hasActor(actor)
+	return self.actors[actor] ~= nil
 end
 
 function GameView:addProp(propID, prop)

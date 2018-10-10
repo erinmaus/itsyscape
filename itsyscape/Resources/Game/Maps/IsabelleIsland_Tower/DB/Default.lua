@@ -26,30 +26,6 @@ do
 	}
 end
 
-M["Door_Tower"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
-		PositionY = 4.000000,
-		PositionZ = 43.750000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_Tower",
-		Map = M._MAP,
-		Resource = M["Door_Tower"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
-		MapObject = M["Door_Tower"]
-	}
-end
-
 M["Door_Office"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -71,6 +47,54 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
 		MapObject = M["Door_Office"]
+	}
+end
+
+M["AbandonedMineLadder"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57.000000,
+		PositionY = 3.000000,
+		PositionZ = 59.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "AbandonedMineLadder",
+		Map = M._MAP,
+		Resource = M["AbandonedMineLadder"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["AbandonedMineLadder"]
+	}
+end
+
+M["Door_Tower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.000000,
+		PositionY = 4.000000,
+		PositionZ = 43.750000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Door_Tower",
+		Map = M._MAP,
+		Resource = M["Door_Tower"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
+		MapObject = M["Door_Tower"]
 	}
 end
 

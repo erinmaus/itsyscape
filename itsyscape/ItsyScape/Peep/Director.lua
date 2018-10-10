@@ -88,6 +88,16 @@ function Director:movePeep(peep, key)
 		p.key = key
 	end
 
+	if key then
+		local layer = self.peepsByLayer[key]
+		if not layer then
+			layer = {}
+			self.peepsByLayer[key] = layer
+		end
+
+		layer[peep] = true
+	end
+
 	peep:move(self, key)
 end
 
@@ -149,6 +159,7 @@ function Director:probe(...)
 			peeps = self.peeps
 		end
 	end
+
 
 	local args = { n = select('#', ...), ... }
 

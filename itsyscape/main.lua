@@ -65,6 +65,8 @@ end
 Log = require "ItsyScape.Common.Log"
 _APP = false
 
+_DEBUG = true
+
 math.randomseed(os.time())
 
 function love.load(args)
@@ -133,6 +135,7 @@ function love.keypressed(...)
 	if _DEBUG then
 		if (select(1, ...) == 'f12') then
 			local p = require "ProFi"
+			jit.off()
 			p:setGetTimeMethod(love.timer.getTime)
 			p:start()
 		end
