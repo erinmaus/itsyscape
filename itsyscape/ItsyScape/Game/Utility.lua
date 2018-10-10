@@ -190,7 +190,7 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
 		return n ~= nil, n
 	else
-		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
+		local _, n = ui:openInterface(peep, interfaceID, ...)
 		return n ~= nil, n
 	end
 end

@@ -87,6 +87,14 @@ Game "ItsyScape"
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Travel"
+
+	Meta "TravelDestination" {
+		Map = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
 	Meta "GatherableProp" {
 		Health = Meta.TYPE_REAL,
 		SpawnTime = Meta.TYPE_REAL,
@@ -310,6 +318,7 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
 include "Resources/Game/DB/Props/Chest.lua"
+include "Resources/Game/DB/Props/Ladder.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

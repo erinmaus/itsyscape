@@ -35,6 +35,15 @@ function SpriteManager:add(spriteID, node, offset, ...)
 	return sprite
 end
 
+function SpriteManager:poof(sprite)
+	for i = 1, #self.sprites do
+		if self.sprites[i] == sprite then
+			table.remove(self.sprites, i)
+			self.times[sprite] = nil
+		end
+	end
+end
+
 function SpriteManager:reset(sprite)
 	if self.times[sprite] then
 		self.times[sprite] = 0

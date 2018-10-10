@@ -24,6 +24,18 @@ do
 	}
 end
 
+M["Anchor_AbandonedMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 3,
+		PositionZ = 59,
+		Name = "Anchor_AbandonedMine",
+		Map = M._MAP,
+		Resource = M["Anchor_AbandonedMine"]
+	}
+end
+
 M["Banker"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -59,6 +71,26 @@ do
 
 	M["BankerChest"] {
 		ItsyScape.Action.Bank()
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Entrance",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_AbandonedMine",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["AbandonedMineLadder"] {
+		TravelAction
 	}
 end
 

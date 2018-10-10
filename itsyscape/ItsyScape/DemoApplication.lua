@@ -46,7 +46,7 @@ function DemoApplication:initialize()
 	self:getGame():getStage():movePeep(
 		playerPeep,
 		"IsabelleIsland_Tower",
-		"Anchor_StartGame")
+		"Anchor_AbandonedMine")
 	self:populateMap()
 
 

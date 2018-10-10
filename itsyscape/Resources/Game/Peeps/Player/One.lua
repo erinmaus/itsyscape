@@ -113,6 +113,12 @@ function One:assign(director, key, ...)
 		t:addParty(inventory.inventory)
 		t:spawn(inventory.inventory, "BronzePickaxe", 1)
 		t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1)
+		t:spawn(inventory.inventory, "AmuletOfYendor", 1)
+		t:spawn(inventory.inventory, "ErrinTheHeathensHat", 1)
+		t:spawn(inventory.inventory, "ErrinTheHeathensBoots", 1)
+		t:spawn(inventory.inventory, "ErrinTheHeathensGloves", 1)
+		t:spawn(inventory.inventory, "ErrinTheHeathensCoat", 1)
+		t:spawn(inventory.inventory, "ErrinTheHeathensStaff", 1)
 		t:commit()
 	end
 
@@ -261,11 +267,6 @@ end
 
 function One:update(...)
 	Peep.update(self, ...)
-
-	local c = 0
-	for k, v in pairs(self.commandQueues) do
-		c = c + 1
-	end
 end
 
 return One
