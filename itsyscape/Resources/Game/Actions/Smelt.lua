@@ -24,9 +24,7 @@ function Smelt:perform(state, player, prop)
 		local b = CallbackCommand(self.make, self, state, player, prop)
 
 		local queue = player:getCommandQueue()
-		queue:push(CompositeCommand(nil, a, b))
-
-		return true
+		return queue:push(CompositeCommand(nil, a, b))
 	end
 
 	return false, "can't perform"

@@ -103,7 +103,7 @@ function PlayerEquipmentController:pokeItem(e)
 			itemResource,
 			e.id,
 			'equipment',
-			self:getPeep():getState(), item, self:getPeep())
+			self:getPeep():getState(), self:getPeep(), peep)
 
 		if not success then
 			Log.error(

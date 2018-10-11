@@ -44,7 +44,7 @@ function OpenCraftWindow:perform(state, player, prop)
 			local command = CompositeCommand(true, walk, open)
 
 			local queue = player:getCommandQueue()
-			queue:interrupt(command)
+			return queue:interrupt(command)
 		end
 	end
 end

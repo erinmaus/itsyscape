@@ -25,12 +25,14 @@ function Talk:perform(state, player, target)
 
 	local i, j, k = Utility.Peep.getTile(target)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 2)
-	local interface = OpenInterfaceCommand("DialogBox", true, self:getAction())
-	local command = CompositeCommand(true, walk, interface)
+	if walk then
+		local interface = OpenInterfaceCommand("DialogBox", true, self:getAction())
+		local command = CompositeCommand(true, walk, interface)
 
-	if player:getCommandQueue():interrupt(command) then
-		return true
+		return player:getCommandQueue():interrupt(command)
 	end
+
+	return false
 end
 
 return Talk

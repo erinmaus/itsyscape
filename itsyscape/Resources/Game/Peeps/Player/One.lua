@@ -71,6 +71,8 @@ function One:new(...)
 
 	Utility.Peep.makeHuman(self)
 	Utility.Peep.makeAttackable(self, false)
+
+	self:addPoke('actionFailed')
 end
 
 function One:assign(director, key, ...)
@@ -267,6 +269,10 @@ end
 
 function One:update(...)
 	Peep.update(self, ...)
+end
+
+function One:onActionFailed(e)
+	Utility.UI.openInterface(self, "Notification", false, e)
 end
 
 return One

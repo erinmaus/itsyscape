@@ -16,7 +16,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local Equip = Class(Action)
 Equip.SCOPES = { ['inventory'] = true, ['equipment'] = true }
 
-function Equip:perform(state, item, peep)
+function Equip:perform(state, peep, item)
 	local stats = peep:getBehavior(StatsBehavior)
 	if stats and stats.stats then
 		stats = stats.stats
@@ -25,6 +25,8 @@ function Equip:perform(state, item, peep)
 			skill:setLevelBoost(20 + 1)
 		end
 	end
+
+	return true
 end
 
 return Equip

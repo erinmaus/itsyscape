@@ -19,6 +19,7 @@ local GridLayout = require "ItsyScape.UI.GridLayout"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
+local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -198,15 +199,9 @@ function CraftWindow:populateRequirements(e)
 			if t[i].type:lower() == 'skill' then
 				-- this is terrible
 				-- TODO: Add Icon widget or something
-				left = Button()
+				left = Icon()
 				left:setSize(leftWidth, rowHeight)
-				left:setStyle(ButtonStyle({
-					icon = {
-						filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", t[i].resource),
-						x = 0.5, y = 0.5,
-						width = leftWidth - 1, height = rowHeight - 1
-					},
-				}, self:getView():getResources()))
+				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", t[i].resource))
 			elseif t[i].type:lower() == 'item' then
 				left = ItemIcon()
 				left:setSize(leftWidth, rowHeight)

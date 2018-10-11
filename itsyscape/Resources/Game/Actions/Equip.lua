@@ -20,7 +20,7 @@ function Equip:canPerform(state)
 	return Action.canPerform(self, state, { ["item-inventory"] = true })
 end
 
-function Equip:perform(state, item, peep)
+function Equip:perform(state, peep, item)
 	if not self:canPerform(state) then
 		return false
 	end

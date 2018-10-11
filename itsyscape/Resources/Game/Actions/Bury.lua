@@ -18,7 +18,7 @@ Bury.SCOPES = { ['inventory'] = true }
 Bury.QUEUE = {}
 Bury.DURATION = 0.5
 
-function Bury:perform(state, item, player)
+function Bury:perform(state, player, item)
 	local flags = { ['item-equipment'] = true }
 
 	local gameDB = self:getGame():getGameDB()
