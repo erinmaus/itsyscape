@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local Action = Class()
@@ -84,6 +85,8 @@ end
 --
 -- The default implementation only evaluates requirements, not inputs.
 function Action:canPerform(state, flags)
+	flags = flags or self.FLAGS or { ['item-inventory'] = true }
+
 	local brochure = self.gameDB:getBrochure()
 	for requirement in brochure:getRequirements(self.action) do
 		local resource = brochure:getConstraintResource(requirement)
@@ -97,7 +100,12 @@ function Action:canPerform(state, flags)
 	return true
 end
 
+-- Returns true if the Action can be performed. Otherwise, returns false.
+--
+-- The default implementation only evaluates inputs, not requirements.
 function Action:canTransfer(state, flags)
+	flags = flags or self.FLAGS or { ['item-inventory'] = true }
+
 	local brochure = self:getGameDB():getBrochure()
 	for input in brochure:getInputs(self.action) do
 		local resource = brochure:getConstraintResource(input)
@@ -153,6 +161,45 @@ function Action:transfer(state, player, flags)
 			state:give(resourceType.name, resource.name, output.count, flags)
 		end
 	end
+end
+
+function Action:getFailureReason(state, peep)
+	local brochure = self.gameDB:getBrochure()
+
+	local requirements = {}
+	for requirement in brochure:getRequirements(self.action) do
+		local resource = brochure:getConstraintResource(requirement)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		table.insert(requirements, {
+			type = resourceType.name,
+			resource = resource.name,
+			name = Utility.getName(resource, self.gameDB) or resource.name,
+			count = requirement.count
+		})
+	end
+
+	local inputs = {}
+	for requirement in brochure:getInputs(self.action) do
+		local resource = brochure:getConstraintResource(requirement)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		table.insert(inputs, {
+			type = resourceType.name,
+			resource = resource.name,
+			name = Utility.getName(resource, self.gameDB) or resource.name,
+			count = requirement.count
+		})
+	end
+
+	return { requirements = requirements, inputs = inputs }
+end
+
+-- Called when the action fails
+function Action:fail(state, peep)
+	local reason = self:getFailureReason(state, peep)
+
+	peep:poke('actionFailed', reason)
 end
 
 return Action

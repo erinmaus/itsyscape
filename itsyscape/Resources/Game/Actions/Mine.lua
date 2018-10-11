@@ -71,4 +71,33 @@ function Mine:perform(state, player, prop)
 	return false
 end
 
+function Mine:getFailureReason(state, player)
+	local reason = Make.getFailureReason(self, state, player)
+
+	local equippedItem = Utility.Peep.getEquippedItem(player, Equipment.PLAYER_SLOT_RIGHT_HAND)
+	if equippedItem then
+		local gameDB = self:getGame():getGameDB()
+		local itemResource = gameDB:getResource(equippedItem:getID(), "Item") 
+		if itemResource then
+			local equipmentType = gameDB:getRecord("ResourceCategory", {
+				Key = "WeaponType",
+				Resource = itemResource
+			})
+
+			if (equipmentType and equipmentType:get("Value") == "pickaxe") then
+				return reason
+			end
+		end
+	end
+
+	table.insert(reason.requirements, {
+		type = "Item",
+		resource = "BronzePickaxe",
+		name = "Pickaxe",
+		count = 1
+	})
+
+	return reason
+end
+
 return Mine

@@ -37,6 +37,8 @@ function Travel:perform(state, player, target)
 			return queue:interrupt(command)
 		end
 	end
+
+	return false
 end
 
 function Travel:travel(state, peep, target)

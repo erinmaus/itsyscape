@@ -31,9 +31,12 @@ function Attack:perform(state, player, target)
 			local s, b = player:addBehavior(CombatTargetBehavior)
 			if s then
 				b.actor = targetActor.actor
+				return true
 			end
 		end
 	end
+
+	return false
 end
 
 return Attack

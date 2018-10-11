@@ -20,7 +20,7 @@ function Eat:canPerform(state)
 	return Action.canPerform(self, state, { ["item-inventory"] = true })
 end
 
-function Eat:perform(state, item, peep)
+function Eat:perform(state, peep, item)
 	if not self:canPerform(state) then
 		return false
 	end

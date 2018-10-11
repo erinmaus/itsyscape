@@ -12,6 +12,8 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
+local Icon = require "ItsyScape.UI.Icon"
+local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
@@ -52,6 +54,7 @@ function UIView:new(game)
 	self.renderManager:addRenderer(DraggableButton, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggablePanel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(Label, LabelRenderer(self.resources))
+	self.renderManager:addRenderer(Icon, IconRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
 	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
@@ -93,6 +96,10 @@ end
 
 function UIView:getResources()
 	return self.resources
+end
+
+function UIView:getInterfaces(interfaceID)
+	return pairs(self.interfaces[interfaceID] or {})
 end
 
 function UIView:open(interfaceID, index)

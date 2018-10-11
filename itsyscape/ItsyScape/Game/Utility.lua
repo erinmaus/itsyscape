@@ -56,7 +56,9 @@ function Utility.performAction(game, resource, id, scope, ...)
 				local ActionType = r
 				if ActionType.SCOPES and ActionType.SCOPES[scope] then
 					local a = ActionType(game, action)
-					a:perform(...)
+					if not a:perform(...) then
+						a:fail(...)
+					end
 
 					foundAction = true
 				else
@@ -190,7 +192,7 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
 		return n ~= nil, n
 	else
-		local _, n = ui:openInterface(peep, interfaceID, ...)
+		local _, n = ui:open(peep, interfaceID, ...)
 		return n ~= nil, n
 	end
 end
