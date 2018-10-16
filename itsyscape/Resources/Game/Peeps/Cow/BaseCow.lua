@@ -51,6 +51,11 @@ function BaseCow:ready(director, game)
 		"Resources/Game/Animations/Cow_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
 
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Cow_Attack/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Cow/Cow.lua")
