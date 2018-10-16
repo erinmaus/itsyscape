@@ -115,7 +115,8 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 	
-	ActionType "OpenCraftWindow"
+	ActionType "OpenCraftWindow"          -- Invoked from world.
+	ActionType "OpenInventoryCraftWindow" -- Invoked from inventory.
 	ActionType "UseCraftWindow"
 
 	Meta "DelegatedActionTarget" {
@@ -298,8 +299,10 @@ include "Resources/Game/DB/Skills.lua"
 include "Resources/Game/DB/Items/Ores.lua"
 include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
+include "Resources/Game/DB/Items/Leathers.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"
+include "Resources/Game/DB/Items/LeatherArmor.lua"
 include "Resources/Game/DB/Items/Bones.lua"
 include "Resources/Game/DB/Items/MiscFood.lua"
 

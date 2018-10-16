@@ -26,3 +26,6 @@ ItsyScape.Resource.Skill "Mining"
 ItsyScape.Resource.Skill "Smithing"
 	ActionType "Smith"
 	ActionType "Smelt"
+
+ItsyScape.Resource.Skill "Crafting"
+	ActionType "Craft"

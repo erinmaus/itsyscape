@@ -129,6 +129,7 @@ function CraftWindow:update(...)
 
 					local itemIcon = ItemIcon()
 					itemIcon:setItemID(item.name)
+					itemIcon:setPosition(2, 2)
 					button:addChild(itemIcon)
 
 					self.grid:addChild(button)

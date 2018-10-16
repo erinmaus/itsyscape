@@ -20,6 +20,7 @@ function ModelSkin:new()
 	self.model = false
 	self.texture = false
 	self.isBlocking = true
+	self.isOccluded = false
 	self.isTranslucent = false
 	self.position = Vector(0)
 	self.scale = Vector(1)
@@ -77,6 +78,12 @@ function ModelSkin:loadFromFile(filename)
 		self.isTranslucent = false
 	end
 
+	if result.isOccluded then
+		self.isOccluded = true
+	else
+		self.isOccluded = false
+	end
+
 	if result.position and
 	   type(result.position) == 'table' and
 	   #result.position == 3
@@ -111,6 +118,10 @@ end
 
 function ModelSkin:getIsBlocking()
 	return self.isBlocking
+end
+
+function ModelSkin:getIsOccluded()
+	return self.isOccluded
 end
 
 function ModelSkin:getIsTranslucent()
