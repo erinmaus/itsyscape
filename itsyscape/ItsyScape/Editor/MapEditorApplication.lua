@@ -779,11 +779,19 @@ end
 function MapEditorApplication:draw(...)
 	EditorApplication.draw(self, ...)
 
-	local m = string.format(
-		"(%d, %d)",
-		self.currentI,
-		self.currentJ)
-	love.graphics.print(m, 0, 0)
+	do
+		local map = self:getGame():getStage():getMap(1)
+		local tile = map:getTile(self.currentI, self.currentJ)
+
+		local m = string.format(
+			"(%d, %d [IJ]; %.02f, %.02f, %.02f [XYZ])",
+			self.currentI,
+			self.currentJ,
+			(self.currentI - 0.5) * 2,
+			tile:getInterpolatedHeight(0.5, 0.5),
+			(self.currentJ - 0.5) * 2)
+		love.graphics.print(m, 0, 0)
+	end
 end
 
 return MapEditorApplication

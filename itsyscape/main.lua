@@ -65,8 +65,6 @@ end
 Log = require "ItsyScape.Common.Log"
 _APP = false
 
-_DEBUG = true
-
 math.randomseed(os.time())
 
 function love.load(args)
