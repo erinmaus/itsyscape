@@ -169,6 +169,100 @@ function Map:testRay(ray)
 	return hitTiles
 end
 
+function Map:canMove(i, j, di, dj)
+	if math.abs(di) > 1 or math.abs(dj) > 1 then
+		return false
+	end
+
+	local tile = self:getTile(i, j)
+
+	local isLeftPassable, isRightPassable
+	local isTopPassable, isBottomPassable
+	if di < 0 and i > 1 then
+		local left = self:getTile(i - 1, j)
+		if (left.topRight <= tile.topLeft or
+		    left.bottomRight <= tile.bottomLeft) and
+		   not left:hasFlag('impassable') and
+		   not left:hasFlag('wall-right')
+		then
+			isLeftPassable = true
+		end
+	end
+
+	if di > 0 and i < self:getWidth() then
+		local right = self:getTile(i + 1, j)
+		if (right.topLeft <= tile.topRight or
+		    right.bottomLeft <= tile.bottomRight) and
+		   not right:hasFlag('impassable') and
+		   not right:hasFlag('wall-left')
+		then
+			isRightPassable = true
+		end
+	end
+
+	if dj < 0 and j > 1 then
+		local top = self:getTile(i, j - 1)
+		if (top.bottomLeft <= tile.topLeft or
+		    top.bottomRight <= tile.topLeft) and
+		   not top:hasFlag('impassable') and
+		   not top:hasFlag('wall-bottom')
+		then
+			isTopPassable = true
+		end
+	end
+
+	if dj > 0 and j < self:getHeight() then
+		local bottom = self:getTile(i, j + 1)
+		if (bottom.topLeft <= tile.bottomLeft or
+		    bottom.topRight <= tile.bottomRight) and
+		   not bottom:hasFlag('impassable') and
+		   not bottom:hasFlag('wall-top')
+		then
+			isBottomPassable = true
+		end
+	end
+
+	if math.abs(di) + math.abs(dj) > 0 then
+		if di < 0 and dj < 0 and i > 1 and j > 1 and isTopPassable and isLeftPassable then
+			local topLeft = self:getTile(i - 1, j - 1)
+			if topLeft.bottomRight <= tile.topLeft and
+			   not topLeft:hasFlag('impassable')
+			then
+				return true
+			end
+		end
+
+		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() and isBottomPassable and isLeftPassable then
+			local bottomLeft = self:getTile(i - 1, j + 1)
+			if bottomLeft.topRight <= tile.bottomLeft and
+			   not bottomLeft:hasFlag('impassable')
+			then
+				return true
+			end
+		end
+
+		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 and isTopPassable and isRightPassable then
+			local topRight = self:getTile(i + 1, j - 1)
+			if topRight.bottomLeft <= tile.topRight and
+			   not topRight:hasFlag('impassable')
+			then
+				return true
+			end
+		end
+
+		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() and isBottomPassable and isRightPassable then
+			local bottomRight = self:getTile(i + 1, j + 1)
+			if bottomRight.topLeft <= tile.bottomRight and
+			   not bottomRight:hasFlag('impassable')
+			then
+				return true
+			end
+		end
+	end
+
+	return isLeftPassable or isRightPassable or isTopPassable or isBottomPassable
+end
+
 -- Deserializes the Map.
 function Map.loadFromFile(filename)
 	local data = "return " .. (love.filesystem.read(filename) or "")
