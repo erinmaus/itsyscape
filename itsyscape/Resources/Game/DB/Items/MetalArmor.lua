@@ -80,7 +80,7 @@ for name, metal in pairs(METALS) do
 
 		ItsyScape.Meta.Item {
 			Value = ItsyScape.Utility.valueForItem(metal.tier + itemProps.bars + 2) * itemProps.bars,
-			Weight = metal.weight,
+			Weight = metal.weight * itemProps.bars,
 			Resource = Item
 		}
 

@@ -198,6 +198,7 @@ function ActorView:applySkin(slotNodes)
 			i = i - 1
 		end
 	end
+
 	iterate = function()
 		local slot = slotNodes[i]
 		if not slot then
@@ -213,6 +214,11 @@ function ActorView:applySkin(slotNodes)
 		if self.body and not ignore then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
 				self.game:getResourceManager():queueCacheRef(skin, function(instance)
+					if i + 1 < #slotNodes and instance:getIsOccluded() then
+						step()
+						return
+					end
+
 					slot.instance = instance
 					slot.sceneNode = ModelSceneNode()
 

@@ -154,7 +154,7 @@ function CombatCortex:update(delta)
 							local targetIsPlayer = target:hasBehavior(PlayerBehavior)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
 							if targetIsPlayer and not selfIsPlayer then
-								if distanceToTarget < selfRadius + targetRadius then
+								if distanceToTarget <= selfRadius + targetRadius then
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then

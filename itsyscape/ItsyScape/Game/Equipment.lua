@@ -25,4 +25,8 @@ Equipment.PLAYER_SLOT_QUIVER = 10
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND = 21
 
+Equipment.SKIN_PRIORITY_BASE       = 0
+Equipment.SKIN_PRIORITY_ACCENT     = 10
+Equipment.SKIN_PRIORITY_EQUIPMENT  = 100
+
 return Equipment

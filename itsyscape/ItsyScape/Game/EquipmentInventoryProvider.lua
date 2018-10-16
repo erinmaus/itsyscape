@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Equipment = require "ItsyScape.Game.Equipment"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
@@ -86,7 +87,7 @@ function EquipmentInventoryProvider:assignKey(item)
 				local ref = CacheRef(
 					equipmentModelRecord:get("Type"),
 					equipmentModelRecord:get("Filename"))
-				actor:setSkin(slot, 1, ref)
+				actor:setSkin(slot, Equipment.SKIN_PRIORITY_EQUIPMENT, ref)
 
 				self:getBroker():tagItem(item, 'equip-model', equipmentModelRecord)
 			end

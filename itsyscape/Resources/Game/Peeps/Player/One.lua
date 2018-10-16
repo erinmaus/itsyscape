@@ -140,6 +140,9 @@ function One:assign(director, key, ...)
 		t:spawn(inventory.bank, "AirRune", 2000000)
 		t:spawn(inventory.bank, "TinCan", 100, true)
 		t:spawn(inventory.bank, "CopperBadge", 100, true)
+		t:spawn(inventory.bank, "MooishLeatherHide", 100, true)
+		t:spawn(inventory.bank, "PlainThread", 100, true)
+		t:spawn(inventory.bank, "Needle", 10, true)
 		t:commit()
 	end
 
@@ -198,23 +201,23 @@ function One:ready(director, game)
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		roll(One.HEADS))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		roll(One.HAIR))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hair)
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		roll(One.SHIRTS))
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Bronze/Gloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
+	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		roll(One.SHOES))
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
+	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
 end
 
 function One:onDropItem(e)
