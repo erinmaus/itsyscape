@@ -46,7 +46,7 @@ function DemoApplication:initialize()
 	self:getGame():getStage():movePeep(
 		playerPeep,
 		"IsabelleIsland_Tower",
-		"Banker")
+		"Cow1")
 	self:populateMap()
 
 

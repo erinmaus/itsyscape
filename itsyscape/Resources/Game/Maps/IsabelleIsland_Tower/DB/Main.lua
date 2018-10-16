@@ -74,6 +74,23 @@ do
 	}
 end
 
+M["Cow1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 28.5 * 2,
+		PositionY = 1,
+		PositionZ = 15.5 * 2,
+		Name = "Cow1",
+		Map = M._MAP,
+		Resource = M["Cow1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		MapObject = M["Cow1"]
+	}
+end
+
 do
 	local TravelAction = ItsyScape.Action.Travel()
 
