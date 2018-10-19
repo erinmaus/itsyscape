@@ -44,10 +44,13 @@ function GhostlyMinerForeman:new(resource, name, ...)
 end
 
 function GhostlyMinerForeman:onPillarMined(e)
-	self:poke('hit', AttackPoke({
-		damage = 9,
-		aggressor = e.pillar
-	}))
+	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints > 0 then
+		self:poke('hit', AttackPoke({
+			damage = 9,
+			aggressor = e.pillar
+		}))
+	end
 end
 
 function GhostlyMinerForeman:onDie(e)

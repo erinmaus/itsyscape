@@ -52,13 +52,70 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey"
 }
 
-ItsyScape.Resource.Peep "GhostlyMinerForeman" {
-	ItsyScape.Action.Attack()
+ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre" {
+	-- Nothing.
 }
 
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.GhostlyMinerForeman.GhostlyMinerForeman",
-	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+ItsyScape.Meta.Item {
+	Value = 1,
+	Weight = 0,
+	Unnoteable = 1,
+	Untradeable = 1,	
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Crawling copper ore",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "The copper makes your skin crawl when you touch it...",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre"
+}
+
+ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.Item {
+	Value = 1,
+	Weight = 0,
+	Unnoteable = 1,
+	Untradeable = 1,	
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Tense tin ore",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "Just the touch of the ore on your skin makes you tense up...",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre"
+}
+
+ItsyScape.Resource.Peep "GhostlyMinerForeman" {
+	ItsyScape.Action.Attack(),
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "GhostlyMinerForeman_TenseTin",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "GhostlyMinerForeman_CrawlingCopper",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceName {
@@ -71,6 +128,25 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "Obviously his pension wasn't very good.",
 	Resource = ItsyScape.Resource.Item "GhostlyMinerForeman"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.GhostlyMinerForeman.GhostlyMinerForeman",
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "GhostlyMinerForeman_TenseTin"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "GhostlyMinerForeman_CrawlingCopper"	
 }
 
 ItsyScape.Meta.PeepStat {
@@ -114,6 +190,11 @@ do
 		Output {
 			Resource = ItsyScape.Resource.Skill "Mining",
 			Count = ItsyScape.Utility.xpForResource(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "UnfocusedRune",
+			Count = 30
 		}
 	}
 
