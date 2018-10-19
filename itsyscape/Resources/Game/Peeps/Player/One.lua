@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
 local BankInventoryProvider = require "ItsyScape.Game.BankInventoryProvider"
+local KeyItemStateProvider = require "ItsyScape.Game.KeyItemStateProvider"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
@@ -54,6 +55,9 @@ function One:new(...)
 	self:addBehavior(StatsBehavior)
 	self:addBehavior(CombatStatusBehavior)
 
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(1.5, 2, 1.5)
+
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 16
 	movement.maxAcceleration = 16
@@ -73,10 +77,13 @@ function One:new(...)
 	Utility.Peep.makeAttackable(self, false)
 
 	self:addPoke('actionFailed')
+	self:addPoke('initiateAttack')
+	self:addPoke('receiveAttack')
+	self:addPoke('resourceHit')
 end
 
 function One:assign(director, key, ...)
-	Peep.assign(self, director, key)
+	Peep.assign(self, director, key, ...)
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)
@@ -145,14 +152,6 @@ function One:assign(director, key, ...)
 		t:spawn(inventory.bank, "Needle", 10, true)
 		t:commit()
 	end
-
-	self:addPoke('initiateAttack')
-	self:addPoke('receiveAttack')
-	self:addPoke('resourceHit')
-
-	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
-	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
-	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 
 One.HEADS = {
@@ -223,6 +222,11 @@ function One:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		roll(One.SHOES))
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+
+	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
+	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
+	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
+	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 end
 
 function One:onDropItem(e)

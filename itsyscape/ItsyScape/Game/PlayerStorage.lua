@@ -81,7 +81,8 @@ function PlayerStorage.Section:set(key, value)
 	elseif type(value) == 'string' or
 		type(value) == 'number' or
 		type(value) == 'nil' or
-		type(value) == 'string'
+		type(value) == 'string' or
+		type(value) == 'boolean'
 	then
 		if self.sections[key] then
 			if value == nil then

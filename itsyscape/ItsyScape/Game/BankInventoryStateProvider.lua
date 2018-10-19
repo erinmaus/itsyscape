@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/PlayerInventoryStateProvider.lua
+-- ItsyScape/Game/BankInventoryStateProvider.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,9 +12,9 @@ local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
-local PlayerInventoryStateProvider = Class(StateProvider)
+local BankInventoryStateProvider = Class(StateProvider)
 
-function PlayerInventoryStateProvider:new(peep)
+function BankInventoryStateProvider:new(peep)
 	local inventory = peep:getBehavior(InventoryBehavior)
 	if inventory and inventory.bank then
 		self.inventory = inventory.bank
@@ -25,18 +25,18 @@ function PlayerInventoryStateProvider:new(peep)
 	self.peep = peep
 end
 
-function PlayerInventoryStateProvider:getPriority()
+function BankInventoryStateProvider:getPriority()
 	return State.PRIORITY_DISTANT
 end
 
 -- Flags:
 --  * item-noted: only search for noted items; otherwise, search for unnoted
 --                items.
-function PlayerInventoryStateProvider:has(name, count, flags)
+function BankInventoryStateProvider:has(name, count, flags)
 	return count <= self:count(name, flags)
 end
 
-function PlayerInventoryStateProvider:take(name, count, flags)
+function BankInventoryStateProvider:take(name, count, flags)
 	if not self.inventory then
 		return false
 	end
@@ -71,7 +71,7 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 	return transaction:commit()
 end
 
-function PlayerInventoryStateProvider:give(name, count, flags)
+function BankInventoryStateProvider:give(name, count, flags)
 	if not self.inventory then
 		return false
 	end
@@ -80,12 +80,12 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 	local transaction = broker:createTransaction()
 	do
 		transaction:addParty(self.inventory)
-		transaction:spawn(self.inventory, name, count, false, true)
+		transaction:spawn(self.inventory, name, count, true, true)
 	end
 	return transaction:commit()
 end
 
-function PlayerInventoryStateProvider:count(name, flags)
+function BankInventoryStateProvider:count(name, flags)
 	if not self.inventory then
 		return 0
 	end
@@ -105,4 +105,4 @@ function PlayerInventoryStateProvider:count(name, flags)
 	return c
 end
 
-return PlayerInventoryStateProvider
+return BankInventoryStateProvider

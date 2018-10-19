@@ -27,6 +27,11 @@ function Dialog:new(filename)
 	end
 end
 
+function Dialog:getSpeaker(name)
+	local speakers = self.executor:getG()._SPEAKERS or {}
+	return speakers[name]
+end
+
 function Dialog:setSpeaker(name, peep)
 	local speakers = self.executor:getG()._SPEAKERS or {}
 	speakers[name] = peep
@@ -36,6 +41,7 @@ end
 
 function Dialog:setTarget(target)
 	self.executor:getG()._TARGET = target
+	self:setSpeaker("_TARGET", target)
 end
 
 function Dialog:getTarget(target)

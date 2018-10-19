@@ -24,6 +24,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_WroughtBronzeKey"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "This key grants you access to the Abandoned Mine.",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_WroughtBronzeKey"
+}
+
 ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey" {
 	-- Nothing.
 }
@@ -40,6 +46,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "This key grants you access to the scary door in the Abandoned Mine.",
+	Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey"
+}
+
 ItsyScape.Resource.Peep "GhostlyMinerForeman" {
 	ItsyScape.Action.Attack()
 }
@@ -53,6 +65,12 @@ ItsyScape.Meta.ResourceName {
 	Value = "Ghostly Miner Foreman",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "Obviously his pension wasn't very good.",
+	Resource = ItsyScape.Resource.Item "GhostlyMinerForeman"
 }
 
 ItsyScape.Meta.PeepStat {
@@ -123,5 +141,11 @@ do
 		Value = string.format("Runic pillar", name),
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "A necromanic energy flows from the pillar.",
+		Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_Pillar"
 	}
 end

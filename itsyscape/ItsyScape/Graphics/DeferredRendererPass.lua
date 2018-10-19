@@ -13,7 +13,10 @@ local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
 local LBuffer = require "ItsyScape.Graphics.LBuffer"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 
 -- Deferred renderer pass.
 --
@@ -78,6 +81,9 @@ function DeferredRendererPass:new(renderer)
 	self.defaultShader = ShaderResource(
 		DeferredRendererPass.DEFAULT_PIXEL_SHADER,
 		DeferredRendererPass.DEFAULT_VERTEX_SHADER)
+
+	self.fullLit = AmbientLightSceneNode()
+	self.fullLit:setAmbience(1)
 end
 
 function DeferredRendererPass:getGBuffer()
@@ -130,7 +136,7 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	local camera = self:getRenderer():getCamera()
 	if self.gBuffer then
 		self.gBuffer:use()
-		love.graphics.clear(0, 0.39, 0.58, 0.93)
+		love.graphics.clear(self:getRenderer():getClearColor():get())
 
 		camera:apply()
 	else
@@ -246,10 +252,6 @@ function DeferredRendererPass:drawPointLight(node, delta)
 	love.graphics.draw(self.gBuffer:getColor())
 end
 
-local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
-local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
-
 function DeferredRendererPass:drawLights(scene, delta)
 	love.graphics.setBlendMode('add', 'premultiplied')
 
@@ -260,14 +262,18 @@ function DeferredRendererPass:drawLights(scene, delta)
 	self.lBuffer:use()
 	love.graphics.clear(0, 0, 0, 1, false, false)
 
-	for i = 1, #self.lights do
-		local node = self.lights[i].node
-		if node:isCompatibleType(DirectionalLightSceneNode) then
-			self:drawDirectionalLight(node, delta)
-		elseif node:isCompatibleType(AmbientLightSceneNode) then
-			self:drawAmbientLight(node, delta)
-		elseif node:isCompatibleType(PointLightSceneNode) then
-			self:drawPointLight(node, delta)
+	if #self.lights == 0 then
+		self:drawAmbientLight(self.fullLit, delta)
+	else
+		for i = 1, #self.lights do
+			local node = self.lights[i].node
+			if node:isCompatibleType(DirectionalLightSceneNode) then
+				self:drawDirectionalLight(node, delta)
+			elseif node:isCompatibleType(AmbientLightSceneNode) then
+				self:drawAmbientLight(node, delta)
+			elseif node:isCompatibleType(PointLightSceneNode) then
+				self:drawPointLight(node, delta)
+			end
 		end
 	end
 

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Skelemental/BaseCow.lua
+-- Resources/Peeps/Cow/BaseCow.lua
 --
 -- This file is a part of ItsyScape.
 --

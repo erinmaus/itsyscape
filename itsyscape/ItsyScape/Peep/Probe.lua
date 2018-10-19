@@ -46,11 +46,15 @@ function Probe.resource(resourceType, resourceName)
 	return function(peep)
 		local resource = Utility.Peep.getResource(peep)
 		if resource then
-			local gameDB = peep:getDirector():getGameDB()
-			
-			local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
-			return t.name:lower() == resourceType:lower() and
-			       resourceName:lower() == resource.name:lower()
+			if type(resourceType) == 'string' then
+				local gameDB = peep:getDirector():getGameDB()
+				
+				local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
+				return t.name:lower() == resourceType:lower() and
+				       resourceName:lower() == resource.name:lower()
+			else
+				return resource.id == resourceType.id
+			end
 		end
 
 		return false

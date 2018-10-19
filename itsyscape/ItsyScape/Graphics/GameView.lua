@@ -229,6 +229,10 @@ function GameView:addActor(actorID, actor)
 	self.actors[actor] = view
 end
 
+function GameView:getActor(actor)
+	return self.actors[actor]
+end
+
 function GameView:removeActor(actor)
 	if self.actors[actor] then
 		self.actors[actor]:poof()

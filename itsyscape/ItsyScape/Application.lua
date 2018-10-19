@@ -58,7 +58,7 @@ function Application:new()
 	self.gameDB = createGameDB()
 	self.game = LocalGame(self.gameDB)
 	self.gameView = GameView(self.game)
-	self.uiView = UIView(self.game)
+	self.uiView = UIView(self.gameView)
 
 	self.times = {}
 

@@ -36,10 +36,11 @@ local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 
 local UIView = Class()
 
-function UIView:new(game)
-	self.game = game
+function UIView:new(gameView)
+	self.game = gameView:getGame()
+	self.gameView = gameView
 
-	local ui = game:getUI()
+	local ui = self.game:getUI()
 	ui.onOpen:register(self.open, self)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
@@ -76,6 +77,10 @@ end
 
 function UIView:getGame()
 	return self.game
+end
+
+function UIView:getGameView()
+	return self.gameView
 end
 
 function UIView:getUI()

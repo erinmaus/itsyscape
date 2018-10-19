@@ -50,6 +50,8 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 		end
 
 		return storage
+	else
+		print(player, player.id)
 	end
 
 	return nil

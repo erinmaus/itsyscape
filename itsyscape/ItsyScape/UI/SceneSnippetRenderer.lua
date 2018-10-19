@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 
@@ -23,6 +24,7 @@ function SceneSnippetRenderer:add(widget)
 	WidgetRenderer.add(self, widget)
 
 	self.renderers[widget] = Renderer()
+	self.renderers[widget]:setClearColor(Color(0, 0, 0, 0))
 end
 
 function SceneSnippetRenderer:drop(widget)
