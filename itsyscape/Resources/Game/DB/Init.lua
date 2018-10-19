@@ -201,6 +201,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ResourceDescription" {
+		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ActionDifficulty" {
 		Value = Meta.TYPE_INTEGER,
 		Action = Meta.TYPE_ACTION
@@ -229,6 +235,12 @@ Game "ItsyScape"
 		HitPoints = Meta.TYPE_INTEGER,
 		Action = Meta.TYPE_ACTION
 	}
+
+	ResourceType "Quest"
+		ActionType "QuestStep"
+		ActionType "QuestComplete"
+
+	ResourceType "KeyItem"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
@@ -292,6 +304,28 @@ function ItsyScape.Utility.categorize(resource, key, value)
 	}
 end
 
+function ItsyScape.Utility.questStep(from, to)
+	ItsyScape.Resource.KeyItem(from) {
+		isSingleton = true
+	}
+
+	ItsyScape.Resource.KeyItem(to) {
+		isSingleton = true,
+
+		ItsyScape.Action.QuestStep {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem(from),
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.KeyItem(to),
+				Count = 1
+			}
+		}
+	}
+end
+
 -- Skills
 include "Resources/Game/DB/Skills.lua"
 
@@ -326,6 +360,9 @@ include "Resources/Game/DB/Props/Ladder.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
+
+-- Quests
+include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 
 do
 	ActionType "Debug_Ascend"

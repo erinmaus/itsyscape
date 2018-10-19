@@ -113,6 +113,10 @@ end
 
 M["Door_Office"] {
 	ItsyScape.Action.Open() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
+			Count = 1
+		}
 	},
 
 	ItsyScape.Action.Close() {

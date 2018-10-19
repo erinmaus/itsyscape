@@ -24,7 +24,7 @@ UseCraftWindow.SCOPES = { ['hidden'] = true }
 
 function UseCraftWindow:perform(state, player, prop, action, count)
 	local i, j, k = Utility.Peep.getTile(prop)
-	local walk = Utility.Peep.getWalk(player, i, j, k)
+	local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
 	if walk then
 		local perform = CallbackCommand(UseCraftWindow.delegatedPerform, self, state, player, prop, action, count)
