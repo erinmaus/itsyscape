@@ -48,6 +48,19 @@ function Executor.speaker(g)
 	end
 end
 
+function Executor.defer(g)
+	return function(t)
+		local s, r = love.filesystem.load(t)
+		if not s then
+			error(r)
+		end
+
+		setfenv(s, g)
+
+		return s()
+	end
+end
+
 function Executor:new(chunk)
 	self.g, self.sandbox = MirrorSandbox()
 	self.chunk = setfenv(chunk, self.g)
@@ -60,6 +73,7 @@ function Executor:new(chunk)
 	self.sandbox.option = Executor.option(self.g)
 	self.sandbox.select = Executor.select(self.g)
 	self.sandbox.speaker = Executor.speaker(self.g)
+	self.sandbox.defer = Executor.defer(self.g)
 end
 
 function Executor:getG()

@@ -48,7 +48,7 @@ function Player:new(resource, ...)
 	self:addBehavior(SizeBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1, 1, 1)
+	size.size = Vector(1.5, 2, 1.5)
 
 	Utility.Peep.makeAttackable(self)
 	Utility.Peep.makeMashina(self)

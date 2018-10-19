@@ -13,13 +13,20 @@ ItsyScape.Resource.Item "UnfocusedRune" {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Unfocused Rune",
+	Value = "Unfocused rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "UnfocusedRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This rune can become any basic rune, the possibilities!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "UnfocusedRune"
 }
 
 ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(1),
+	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "UnfocusedRune"
 }
 
@@ -29,6 +36,12 @@ ItsyScape.Resource.Item "AirRune" {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Air Rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AirRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Just wants to be free.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "AirRune"
 }
@@ -45,6 +58,12 @@ ItsyScape.Resource.Item "EarthRune" {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Earth Rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "EarthRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smells a bit like dirt.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "EarthRune"
 }
@@ -71,6 +90,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "WaterRune"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slimy!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WaterRune"
+}
+
 ItsyScape.Resource.Item "FireRune" {
 	-- Nothing
 }
@@ -83,6 +108,12 @@ ItsyScape.Meta.Item {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Fire Rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FireRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Grind it up and use as it as a spice if you're brave enough!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "FireRune"
 }

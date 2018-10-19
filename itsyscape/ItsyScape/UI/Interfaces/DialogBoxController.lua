@@ -15,6 +15,7 @@ local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
 local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
 local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
 local Probe = require "ItsyScape.Peep.Probe"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DialogBoxController = Class(Controller)
@@ -40,10 +41,25 @@ function DialogBoxController:new(peep, director, action)
 				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
 				for i = 1, #speakers do
 					local speaker = speakers[i]
-					local peeps = director:probe(Probe.mapObject(speaker:get("Resource")))
-					for _, peep in ipairs(peeps) do
-						self.dialog:setSpeaker(speaker:get("Name"), peep)
+					local peeps = director:probe(peep:getLayerName(), Probe.mapObject(speaker:get("Resource")))
+
+					local s
+					for _, p in ipairs(peeps) do
+						s = p
 						break
+					end
+
+					if not s then
+						local r = speaker:get("Resource")
+						peeps = director:probe(peep:getLayerName(), Probe.resource(r))
+						for _, p in ipairs(peeps) do
+							s = p
+							break
+						end
+					end
+
+					if s then
+						self.dialog:setSpeaker(speaker:get("Name"), s)
 					end
 				end
 
@@ -98,11 +114,13 @@ function DialogBoxController:pump(e, ...)
 		if self.currentPacket:isType(InputPacket) then
 			self.state = {
 				speaker = self.state.speaker,
+				actor = self.state.actor,
 				input = self.currentPacket:getQuestion():inflate()
 			}
 		elseif self.currentPacket:isType(MessagePacket) then
 			self.state = {
 				speaker = self.state.speaker or "",
+				actor = self.state.actor,
 				content = { self.currentPacket:getMessage()[1]:inflate() }
 			}
 		elseif self.currentPacket:isType(SelectPacket) then
@@ -113,6 +131,7 @@ function DialogBoxController:pump(e, ...)
 
 			self.state = {
 				speaker = self.state.speaker or "",
+				actor = self.state.actor,
 				options = options
 			}
 		elseif self.currentPacket:isType(SpeakerPacket) then
@@ -121,6 +140,17 @@ function DialogBoxController:pump(e, ...)
 			if speaker then
 				local name = Utility.getName(speaker:get("Resource"), gameDB) or ""
 				self.state.speaker = name
+
+			elseif self.currentPacket:getSpeaker():upper() == "_TARGET" then
+				self.state.speaker = self:getPeep():getName()
+			end
+
+			local peep = self.dialog:getSpeaker(self.currentPacket:getSpeaker())
+			if peep then
+				local actor = peep:getBehavior(ActorReferenceBehavior)
+				if actor and actor.actor then
+					self.state.actor = actor.actor:getID()
+				end
 			end
 
 			-- Pump again. We want a Packet that requires us to wait.

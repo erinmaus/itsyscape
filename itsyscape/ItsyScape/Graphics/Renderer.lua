@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 
@@ -22,6 +23,16 @@ function Renderer:new()
 	self.finalForwardPass = ForwardRendererPass(self)
 	self.width = 0
 	self.height = 0
+
+	self.clearColor = Color(0.39, 0.58, 0.93, 1)
+end
+
+function Renderer:getClearColor()
+	return self.clearColor
+end
+
+function Renderer:setClearColor(value)
+	self.clearColor = value or self.clearColor
 end
 
 function Renderer:getCamera()

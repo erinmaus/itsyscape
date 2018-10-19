@@ -32,6 +32,9 @@ function Player:spawn()
 	if success then
 		self.actor = actor
 		actor:getPeep():addBehavior(PlayerBehavior)
+
+		local p = actor:getPeep():getBehavior(PlayerBehavior)
+		p.id = 1
 	else
 		self.actor = false
 	end

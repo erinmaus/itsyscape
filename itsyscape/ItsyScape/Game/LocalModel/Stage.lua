@@ -168,7 +168,7 @@ function LocalStage:placeProp(propID)
 
 		self.onPropPlaced(self, realID, prop)
 
-		self.currentActorID = self.currentPropID + 1
+		self.currentPropID = self.currentPropID + 1
 		self.props[prop] = true
 
 		local peep = prop:getPeep()

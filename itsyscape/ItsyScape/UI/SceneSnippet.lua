@@ -25,6 +25,10 @@ function SceneSnippet:getRoot()
 	return self.root
 end
 
+function SceneSnippet:setRoot(value)
+	self.root = value or self.root
+end
+
 function SceneSnippet:getCamera()
 	return self.camera
 end

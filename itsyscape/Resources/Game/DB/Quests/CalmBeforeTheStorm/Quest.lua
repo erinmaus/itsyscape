@@ -9,16 +9,22 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Quest "CalmBeforeTheStorm" {
-	--ItsyScape.Action.QuestComplete {
-	--	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
-	--  Count = 1
-	--}
+	ItsyScape.Action.QuestComplete {
+		Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
+		Count = 1
+	}
 }
 
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",
 	"CalmBeforeTheStorm_TalkedToIsabelle1"
 )
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "You need to start Calm Before the Storm.",
+	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_Start"
+}
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
