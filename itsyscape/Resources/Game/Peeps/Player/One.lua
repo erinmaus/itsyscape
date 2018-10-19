@@ -196,7 +196,12 @@ function One:ready(director, game)
 	end
 
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, CacheRef("ItsyScape.Game.Skin.ModelSkin", roll(One.EYES)))
+	actor:setSkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		CacheRef(
+			"ItsyScape.Game.Skin.ModelSkin",
+			roll(One.EYES)))
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
@@ -212,7 +217,7 @@ function One:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Bronze/Gloves.lua")
+		"Resources/Game/Skins/PlayerKit1/Hands/GoldGloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",

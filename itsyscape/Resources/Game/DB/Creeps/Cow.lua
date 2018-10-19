@@ -9,7 +9,21 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "Cow_Base" {
-	ItsyScape.Action.Attack()
+	ItsyScape.Action.Attack(),
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Cow_Primary",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Cow_Secondary",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.PeepID {
@@ -27,4 +41,19 @@ ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(10),
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Bones",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "MooishLeatherHide",
+	Weight = 1,
+	Count = 2,
+	Range = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Secondary"	
 }

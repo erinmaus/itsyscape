@@ -174,7 +174,8 @@ function Action:getFailureReason(state, peep)
 		table.insert(requirements, {
 			type = resourceType.name,
 			resource = resource.name,
-			name = Utility.getName(resource, self.gameDB) or resource.name,
+			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
+			description = Utility.getDescription(resource, self.gameDB),
 			count = requirement.count
 		})
 	end
@@ -187,7 +188,8 @@ function Action:getFailureReason(state, peep)
 		table.insert(inputs, {
 			type = resourceType.name,
 			resource = resource.name,
-			name = Utility.getName(resource, self.gameDB) or resource.name,
+			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
+			description = Utility.getDescription(resource, self.gameDB),
 			count = requirement.count
 		})
 	end

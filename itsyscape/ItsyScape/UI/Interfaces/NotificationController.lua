@@ -13,6 +13,7 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local NotificationController = Class(Controller)
 NotificationController.TIMEOUT = 1.0
+NotificationController.STEP = 0.5
 
 function NotificationController:new(peep, director, constraints)
 	Controller.new(self, peep, director)
@@ -21,7 +22,9 @@ function NotificationController:new(peep, director, constraints)
 	self.constraints.inputs = self.constraints.inputs or {}
 	self.constraints.requirements = self.constraints.requirements or {}
 
-	self.time = 0
+	local count = #self.constraints.inputs + #self.constraints.requirements
+
+	self.time = NotificationController.TIMEOUT + count * NotificationController.STEP
 end
 
 function NotificationController:pull()
@@ -31,8 +34,8 @@ end
 function NotificationController:update(delta)
 	Controller.update(self, delta)
 
-	self.time = self.time + delta
-	if self.time > NotificationController.TIMEOUT then
+	self.time = self.time - delta
+	if self.time <= 0 then
 		self:getGame():getUI():closeInstance(self)
 	end
 end

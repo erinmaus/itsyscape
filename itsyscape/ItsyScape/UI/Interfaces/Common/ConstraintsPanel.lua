@@ -110,7 +110,7 @@ function ConstraintsPanel:performLayout(doLogic)
 		right:setStyle(LabelStyle({
 			fontSize = 16,
 			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-			width = math.huge
+			width = rightWidth
 		}, self.view:getResources()))
 		if c.type:lower() == 'skill' then
 			if self:getData('skillAsLevel', false) then
@@ -129,6 +129,8 @@ function ConstraintsPanel:performLayout(doLogic)
 				text = string.format("%dx %s", c.count, c.name)
 			end
 			right:setText(text)
+		elseif c.type:lower() == 'keyitem' then
+			right:setText(c.description or c.name)
 		else
 			local text
 			if c.count <= 1 then
@@ -138,7 +140,10 @@ function ConstraintsPanel:performLayout(doLogic)
 			end
 			right:setText(text)
 		end
-		right:setSize(rightWidth, rowHeight)
+		do
+			local _, lines = right:getStyle().font:getWrap(right:getText(), rightWidth)
+			right:setSize(rightWidth, #lines * right:getStyle().font:getHeight())
+		end
 
 		self.layout:addChild(right)
 	end
