@@ -39,6 +39,7 @@ function Mine:perform(state, player, prop)
 					if progress.currentProgress < progress.maxProgress then
 						local i, j, k = Utility.Peep.getTile(prop)
 						local walk = Utility.Peep.getWalk(player, i, j, k, 1)
+						local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 						if not walk then
 							return false
@@ -48,7 +49,7 @@ function Mine:perform(state, player, prop)
 							local a = GatherResourceCommand(prop, equippedItem, { skill = "mining" })
 							local b = CallbackCommand(self.make, self, state, player, prop)
 							local queue = player:getCommandQueue()
-							queue:interrupt(CompositeCommand(nil, walk, a, b))
+							queue:interrupt(CompositeCommand(nil, walk, face, a, b))
 
 							return true
 						else

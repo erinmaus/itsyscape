@@ -22,6 +22,8 @@ MovementBehavior.FACING_RIGHT =  1
 --
 -- * facing is an enumeration (FACING_*) that corresponds to whether the Peep
 --   is facing left or right. Defaults to FACING_RIGHT.
+-- * targetFacing is an enumeration (FACEING_*) that corresponds to the direction
+--   the peep will face after it stops.
 -- * acceleration is a Vector. Self-explanatory.
 -- * velocity is a Vector. Self-explanatory.
 -- * maxSpeed is the maximum magnitude of velocity.
@@ -51,6 +53,7 @@ function MovementBehavior:new()
 	Behavior.Type.new(self)
 
 	self.facing = MovementBehavior.FACING_RIGHT
+	self.targetFacing = false
 	self.acceleration = Vector(0, 0, 0)
 	self.velocity = Vector(0, 0, 0)
 	self.maxSpeed = 0

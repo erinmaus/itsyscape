@@ -16,8 +16,8 @@ local PlayerEquipmentStateProvider = Class(StateProvider)
 
 function PlayerEquipmentStateProvider:new(peep)
 	local inventory = peep:getBehavior(EquipmentBehavior)
-	if inventory and inventory.inventory then
-		self.inventory = inventory.inventory
+	if equipment and equipment.equipment then
+		self.inventory = equipment.equipment
 	else
 		self.inventory = false
 	end
