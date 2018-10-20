@@ -252,6 +252,15 @@ function LocalStage:instantiateMapObject(resource)
 							position.position = Vector(x, y, z)
 						end
 
+						local direction = object:get("Direction")
+						if direction then
+							if direction < 0 then
+								a:setDirection(Vector(-1, 0, 0))
+							elseif direction > 0 then
+								a:setDirection(Vector(1, 0, 0))
+							end
+						end
+
 						actorInstance = a
 
 						Utility.Peep.setMapObject(peep, resource)

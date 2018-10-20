@@ -55,6 +55,7 @@ end
 
 function State:has(resource, name, count, flags)
 	flags = flags or {}
+	count = count or 1
 
 	local p = self.providers[resource]
 	if not p then

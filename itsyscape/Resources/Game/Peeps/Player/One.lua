@@ -16,7 +16,7 @@ local BankInventoryProvider = require "ItsyScape.Game.BankInventoryProvider"
 local KeyItemStateProvider = require "ItsyScape.Game.KeyItemStateProvider"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
-local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
+local BankInventoryStateProvider = require "ItsyScape.Game.BankInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
@@ -128,7 +128,6 @@ function One:assign(director, key, ...)
 		t:spawn(inventory.inventory, "ErrinTheHeathensGloves", 1)
 		t:spawn(inventory.inventory, "ErrinTheHeathensCoat", 1)
 		t:spawn(inventory.inventory, "ErrinTheHeathensStaff", 1)
-		t:spawn(inventory.inventory, "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey", 1)
 		t:commit()
 	end
 
@@ -217,7 +216,7 @@ function One:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/GoldGloves.lua")
+		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
@@ -228,6 +227,7 @@ function One:ready(director, game)
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
 	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
+	self:getState():addProvider("Item", BankInventoryStateProvider(self))
 end
 
 function One:onDropItem(e)
