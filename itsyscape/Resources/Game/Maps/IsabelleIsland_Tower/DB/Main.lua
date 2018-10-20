@@ -174,7 +174,7 @@ ItsyScape.Meta.MapObjectSize {
 	SizeX = 2,
 	SizeY = 2,
 	SizeZ = 2,
-	MapObject = M["Door_Tower"]
+	MapObject = M["Door_Merchant"]
 }
 
 return M
