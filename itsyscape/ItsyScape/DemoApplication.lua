@@ -15,6 +15,11 @@ local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local DemoApplication = Class(Application)
+DemoApplication.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
+DemoApplication.CAMERA_VERTICAL_ROTATION = -math.pi / 2
+DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
+DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6
+
 function DemoApplication:new()
 	Application.new(self)
 
@@ -30,8 +35,14 @@ function DemoApplication:new()
 		ambient:setParent(self:getGameView():getScene())
 	end
 
+	self.cameraVerticalRotationOffset = 0
+	self.cameraHorizontalRotationOffset = 0
+
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
+
+	self:getCamera():setHorizontalRotation(DemoApplication.CAMERA_HORIZONTAL_ROTATION)
+	self:getCamera():setVerticalRotation(DemoApplication.CAMERA_VERTICAL_ROTATION)
 
 	self.playerDead = false
 end
@@ -132,12 +143,31 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 	Application.mouseMove(self, x, y, dx, dy)
 
 	if self.isCameraDragging then
-		local angle1 = dx / 128
-		local angle2 = -dy / 128
+		local angle1 = self.cameraVerticalRotationOffset + dx / 128
+		local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
+
+		if not _DEBUG then
+			angle1 = math.max(
+				angle1,
+				-DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+			angle1 = math.min(
+				angle1,
+				DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+			angle2 = math.max(
+				angle2,
+				-DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+			angle2 = math.min(
+				angle2,
+				DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+		end
+
 		self:getCamera():setVerticalRotation(
-			self:getCamera():getVerticalRotation() + angle1)
+			DemoApplication.CAMERA_VERTICAL_ROTATION + angle1)
 		self:getCamera():setHorizontalRotation(
-			self:getCamera():getHorizontalRotation() + angle2)
+			DemoApplication.CAMERA_HORIZONTAL_ROTATION + angle2)
+
+		self.cameraVerticalRotationOffset = angle1
+		self.cameraHorizontalRotationOffset = angle2
 	end
 end
 
