@@ -123,7 +123,7 @@ function CombatCortex:update(delta)
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
 						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 1)
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 0)
 							if not walk then
 								Log.info(
 									"Peep %s (%d) couldn't reach target Peep %s (%d); abandoning.",

@@ -33,7 +33,6 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
-local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -349,36 +348,11 @@ end
 -- Makes the peep walk to the tile (i, j, k).
 --
 -- Returns true on success, false on failure.
-function Utility.Peep.walk(peep, i, j, k, distance, ...)
-	local distance = distance or 0
-
-	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
-
-	if not peep:hasBehavior(PositionBehavior) or
-	   not peep:hasBehavior(MovementBehavior)
-	then
-		return false
-	end
-
-	local position = peep:getBehavior(PositionBehavior).position
-	local map = peep:getDirector():getMap(k)
-	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = SmartPathFinder(map, peep)
-	local path = pathFinder:find(
-		{ i = playerI, j = playerJ },
-		{ i = i, j = j },
-		true, ...)
-	if path then
-		local n = path:getNodeAtIndex(-1)
-		if n then
-			local d = math.abs(n.i - i) + math.abs(n.j - j)
-			if d > distance then
-				return nil
-			end
-		end
-
+function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
+	local command = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	if command then
 		local queue = peep:getCommandQueue()
-		return queue:interrupt(ExecutePathCommand(path, distance))
+		return queue:interrupt(command)
 	end
 
 	return false
@@ -398,8 +372,11 @@ function Utility.Peep.getTile(peep)
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	t = t or { asCloseAsPossible = true }
+
 	local distance = distance or 0
 	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
+	local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
@@ -424,9 +401,33 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 			end
 		end
 
-		return ExecutePathCommand(path, distance), path
+		if t.asCloseAsPossible then
+			return ExecutePathCommand(path, 0)
+		else
+			return ExecutePathCommand(path, distance)
+		end
 	else
 		return nil
+	end
+end
+
+function Utility.Peep.face(peep, target)
+	local peepPosition = peep:getBehavior(PositionBehavior)
+	local targetPosition = target:getBehavior(PositionBehavior)
+
+	if not peepPosition or not targetPosition then
+		return
+	end
+
+	local dx = targetPosition.position.x - peepPosition.position.x
+
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		if dx < 0 then
+			movement.targetFacing = MovementBehavior.FACING_LEFT
+		elseif dx > 0 then
+			movement.targetFacing = MovementBehavior.FACING_RIGHT
+		end
 	end
 end
 

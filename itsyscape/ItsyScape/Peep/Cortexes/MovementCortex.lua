@@ -62,9 +62,28 @@ function MovementCortex:update(delta)
 		movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity * delta
 		clampVector(movement.acceleration)
 
+		local wasMoving
+		do
+			local xzVelocity = movement.velocity * Vector(1, 0, 1)
+			if xzVelocity:getLengthSquared() > 0 then
+				wasMoving = true
+			end
+		end
+
 		local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
 		movement.velocity = movement.velocity + acceleration
 		clampVector(movement.velocity)
+
+		do
+			local xzVelocity = movement.velocity * Vector(1, 0, 1)
+			if xzVelocity:getLengthSquared() == 0 and movement.isOnGround then
+				movement.isStopping = false
+				if wasMoving and movement.targetFacing then
+					movement.facing = movement.targetFacing
+					movement.targetFacing = false
+				end
+			end
+		end
 
 		local oldPosition = position.position
 
