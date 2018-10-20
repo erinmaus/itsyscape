@@ -51,6 +51,43 @@ do
 	}
 end
 
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm",
+		Name = "AdvisorGrimm",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/AdvisorGrimm_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.AdvisorGrimm.AdvisorGrimm",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Advisor Grimm",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Gesundheit!",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm"
+	}
+end
+
 ItsyScape.Resource.Peep "IsabelleIsland_Drakkenson" {
 	-- Nothing.
 }

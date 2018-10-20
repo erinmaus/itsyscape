@@ -65,6 +65,7 @@ Game "ItsyScape"
 		ScaleX = Meta.TYPE_REAL,
 		ScaleY = Meta.TYPE_REAL,
 		ScaleZ = Meta.TYPE_REAL,
+		Direction = Meta.TYPE_REAL,
 		Name = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
 		Resource = Meta.TYPE_RESOURCE
@@ -305,24 +306,36 @@ function ItsyScape.Utility.categorize(resource, key, value)
 end
 
 function ItsyScape.Utility.questStep(from, to)
-	ItsyScape.Resource.KeyItem(from) {
-		isSingleton = true
+	if type(from) ~= 'table' then
+		from = { from }
+	end
+
+	for i = 1, #from do
+		ItsyScape.Resource.KeyItem(from[i]) {
+			isSingleton = true
+		}
+	end
+
+	local Step = ItsyScape.Action.QuestStep() {
+		Output {
+			Resource = ItsyScape.Resource.KeyItem(to),
+			Count = 1
+		}
 	}
+
+	for i = 1, #from do
+		Step {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem(from[i]),
+				Count = 1
+			}
+		}
+	end
 
 	ItsyScape.Resource.KeyItem(to) {
 		isSingleton = true,
 
-		ItsyScape.Action.QuestStep {
-			Requirement {
-				Resource = ItsyScape.Resource.KeyItem(from),
-				Count = 1
-			},
-
-			Output {
-				Resource = ItsyScape.Resource.KeyItem(to),
-				Count = 1
-			}
-		}
+		Step
 	}
 end
 

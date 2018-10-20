@@ -208,6 +208,12 @@ function DialogBox:update(...)
 	if self.actor then
 		local min, max = self.actor:getBounds()
 		offset = (max.y - min.y) - 0.75
+
+		-- Flip if facing left.
+		if self.actor:getDirection().x < 0 then
+			self.camera:setVerticalRotation(
+				self.camera:getVerticalRotation() + math.pi)
+		end
 	else
 		offset = 0
 	end
