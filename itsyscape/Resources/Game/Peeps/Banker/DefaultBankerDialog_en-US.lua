@@ -26,8 +26,7 @@ do
 	elseif result == MORE_INFO then
 		message {
 			"The Bank of Vizier's Rock is the largest financial institute in the Realm.",
-			"We wove intricate spells to protect your valuables and transport them",
-			"across the Realm instantly."
+			"We wove intricate spells to protect your valuables and transport them across the Realm instantly."
 		}
 
 		message "Feel free to use our services at any time, ${TARGET_FORMAL_ADDRESS}."
