@@ -44,7 +44,10 @@ function PlayerInventoryProvider:assignKey(item)
 end
 
 function PlayerInventoryProvider:onSpawn(item, count)
-	self:assignKey(item)
+	local index = self:getBroker():getItemKey(item)
+	if index == nil then
+		self:assignKey(item)
+	end
 
 	self:getPeep():poke('spawnItem', {
 		item = item,

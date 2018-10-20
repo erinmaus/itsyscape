@@ -454,6 +454,11 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 				p.count = p.count + 1
 			end
 		end
+
+		if item:getCount() == count then
+			local p = state[source]
+			p.count = p.count - 1
+		end
 	end
 
 	local step = function()
