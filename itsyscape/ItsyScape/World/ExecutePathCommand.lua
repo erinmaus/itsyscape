@@ -8,8 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Command = require "ItsyScape.Peep.Command"
+local TilePathNode = require "ItsyScape.World.TilePathNode"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local ExecutePathCommand = Class(Command)
 
@@ -23,6 +27,7 @@ function ExecutePathCommand:new(path, distance)
 
 	self.path = path
 	self.index = 1
+
 	self.distance = distance or 0
 end
 
@@ -87,8 +92,11 @@ function ExecutePathCommand:onInterrupt(peep)
 end
 
 function ExecutePathCommand:update(delta, peep)
-	if not self:step(peep) then
-
+	if not self:step(peep) or self:getIsFinished() then
+		local movement = peep:getBehavior(MovementBehavior)
+		if movement then
+			movement.isStopping = true
+		end
 	end
 end
 

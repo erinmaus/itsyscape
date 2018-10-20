@@ -115,6 +115,15 @@ function GameDB:getRecord(name, t)
 	return self:getRecords(name, t, 1)[1]
 end
 
+function GameDB:getResources(type)
+	local resourceType = Mapp.ResourceType()
+	if self.brochure:tryGetResourceType(type, resourceType) then
+		return self.brochure:findResourcesByType(resourceType)
+	end
+
+	return function() return nil end
+end
+
 function GameDB:getResource(name, type)
 	local resourceType = Mapp.ResourceType()
 	if self.brochure:tryGetResourceType(type, resourceType) then
