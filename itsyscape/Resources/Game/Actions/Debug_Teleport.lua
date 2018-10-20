@@ -8,25 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Curve = require "ItsyScape.Game.Curve"
-local Mapp = require "ItsyScape.GameDB.Mapp"
+local Utility = require "ItsyScape.Game.Utility"
 local Action = require "ItsyScape.Peep.Action"
-local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
-local DebugAscend = Class(Action)
-DebugAscend.SCOPES = { ['inventory'] = true, ['equipment'] = true }
+local DebugTeleport = Class(Action)
+DebugTeleport.SCOPES = { ['inventory'] = true, ['equipment'] = true }
 
-function DebugAscend:perform(state, peep, item)
-	local stats = peep:getBehavior(StatsBehavior)
-	if stats and stats.stats then
-		stats = stats.stats
-		for skill in stats:iterate() do
-			skill:setXP(Curve.XP_CURVE(99))
-			skill:setLevelBoost(20 + 1)
-		end
-	end
+function DebugTeleport:perform(state, peep, item)
+	Utility.UI.openInterface(peep, "DebugTeleport")
 
 	return true
 end
 
-return DebugAscend
+return DebugTeleport

@@ -379,6 +379,7 @@ include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 
 do
 	ActionType "Debug_Ascend"
+	ActionType "Debug_Teleport"
 
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
@@ -388,6 +389,7 @@ do
 	}
 
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
+	local teleportAction = ItsyScape.Action.Debug_Teleport()
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Ascend",
@@ -395,10 +397,17 @@ do
 		Action = ascendAction
 	}
 
+	ItsyScape.Meta.ActionVerb {
+		Value = "Teleport",
+		Language = "en-US",
+		Action = teleportAction
+	}
+
 	ItsyScape.Resource.Item "AmuletOfYendor" {
 		equipAction,
 		ItsyScape.Action.Dequip(),
-		ascendAction
+		ascendAction,
+		teleportAction
 	}
 
 	ItsyScape.Meta.Equipment {

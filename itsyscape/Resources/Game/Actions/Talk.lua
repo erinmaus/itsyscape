@@ -24,7 +24,7 @@ function Talk:perform(state, player, target)
 	end
 
 	local i, j, k = Utility.Peep.getTile(target)
-	local walk = Utility.Peep.getWalk(player, i, j, k, 1)
+	local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
 	if walk then
 		local face = CallbackCommand(Utility.Peep.face, player, target)
 		local interface = OpenInterfaceCommand("DialogBox", true, self:getAction())

@@ -24,7 +24,7 @@ function Bank:perform(state, player, target)
 
 	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2)
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
 
 		if walk then
 			local open = OpenInterfaceCommand("Bank", true)

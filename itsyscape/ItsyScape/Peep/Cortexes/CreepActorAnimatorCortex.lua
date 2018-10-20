@@ -119,18 +119,22 @@ function CreepActorAnimatorCortex:update(delta)
 				local resource = peep:getResource(
 					"animation-walk",
 					"ItsyScape.Graphics.AnimationResource")
-				actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.walking[peep] = true
-				self.idling[peep] = nil
+				if resource then
+					actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
+					self.walking[peep] = true
+					self.idling[peep] = nil
+				end
 			end
 		else
 			if not self.idling[peep] then
 				local resource = peep:getResource(
 					"animation-idle",
 					"ItsyScape.Graphics.AnimationResource")
-				actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.idling[peep] = true
-				self.walking[peep] = nil
+				if resource then
+					actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
+					self.idling[peep] = true
+					self.walking[peep] = nil
+				end
 			end
 		end
 	end

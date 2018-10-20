@@ -358,7 +358,9 @@ end
 function LocalStage:movePeep(peep, filename, anchor)
 	local playerPeep = self.game:getPlayer():getActor():getPeep()
 	if playerPeep == peep then
-		self:loadStage(filename)
+		if filename ~= self.stageName then
+			self:loadStage(filename)
+		end
 
 		playerPeep = self.game:getPlayer():getActor():getPeep()
 		local position = playerPeep:getBehavior(PositionBehavior)
