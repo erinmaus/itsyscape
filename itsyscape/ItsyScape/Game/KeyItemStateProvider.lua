@@ -34,6 +34,12 @@ function KeyItemStateProvider:take(name, count, flags)
 end
 
 function KeyItemStateProvider:give(name, count, flags)
+	local gameDB = self.peep:getDirector():getGameDB()
+	local resource = gameDB:getResource(name, "KeyItem")
+	if not resource then
+		return false
+	end
+
 	self.storage:set(name, true)
 	return true
 end

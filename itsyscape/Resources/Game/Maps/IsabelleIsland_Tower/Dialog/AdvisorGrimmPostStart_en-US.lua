@@ -45,15 +45,15 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			}
 
 			if not _TARGET:getState():has("Item", "BronzePickaxe", 1, SEARCH_FLAGS) then
-				if _TARGET:getState():give("Item", "BronzePickaxe", 1, SEARCH_FLAGS) then
+				if _TARGET:getState():give("Item", "BronzePickaxe", 1, TAKE_FLAGS) then
 					message "Here's a pick-axe to help you mine."
 				else
-					message "If you had more inventory space, I could give you a pick-axe."
+					message "If you had more inventory space, I could give you a pickaxe."
 				end
 			end
 
 			if not _TARGET:getState():has("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, SEARCH_FLAGS) then
-				if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, SEARCH_FLAGS) then
+				if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, TAKE_FLAGS) then
 					message {
 						"Here's a key to enter the dungeon.",
 						"Please close the door behind yourself--we can't have the creeps surfacing."
@@ -104,6 +104,14 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 		}
 
 		message "Head east, past the cow pen, to enter the forest."
+
+		if not _TARGET:getState():has("Item", "BronzeHatchet", 1, SEARCH_FLAGS) then
+			if _TARGET:getState():give("Item", "BronzeHatchet", 1, TAKE_FLAGS) then
+				message "Here's a hatchet to help you woodcut."
+			else
+				message "If you had more inventory space, I could give you a hatchet."
+			end
+		end
 	elseif option == SQUID_SKULL then
 		message {
 			"A giant, undead squid has started attacking the ships.",

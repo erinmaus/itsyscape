@@ -57,6 +57,7 @@ function Peep:new(name)
 	self:addPoke('assign')
 	self:addPoke('move')
 	self:addPoke('finalize')
+	self:addPoke('poof')
 end
 
 -- Adds a poke 'name'.
@@ -371,6 +372,15 @@ end
 function Peep:ready(director, game)
 	self:poke('ready', director, game)
 	self:poke('finalize', director, game)
+end
+
+-- Called when the Peep is removed.
+function Peep:poof()
+	for _, behavior in pairs(self.behaviors) do
+		behavior:unload()
+	end
+
+	self:poke('poof')
 end
 
 -- Updates the Peep.

@@ -29,3 +29,84 @@ ItsyScape.Resource.Skill "Smithing"
 
 ItsyScape.Resource.Skill "Crafting"
 	ActionType "Craft"
+
+ItsyScape.Resource.Skill "Woodcutting"
+	ActionType "Chop"
+
+ItsyScape.Meta.ResourceName {
+	Value = "Magic",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Magic"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Wisdom",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Wisdom"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Archery",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Archery"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Dexterity",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Dexterity"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Strength",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Strength"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Attack",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Attack"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Defense",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Defense"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Constitution",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Constitution"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Faith",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Faith"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Mining",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Mining"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Smithing",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Smithing"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Crafting",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Crafting"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Woodcutting",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Woodcutting"
+}

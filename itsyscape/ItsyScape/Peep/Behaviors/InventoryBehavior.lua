@@ -25,4 +25,16 @@ function InventoryBehavior:new()
 	self.bank = false
 end
 
+function InventoryBehavior:unload(peep)
+	local broker = peep:getDirector():getItemBroker()
+
+	if self.inventory then
+		broker:removeProvider(self.inventory)
+	end
+
+	if self.bank then
+		broker:removeProvider(self.bank)
+	end
+end
+
 return InventoryBehavior

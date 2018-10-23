@@ -76,6 +76,10 @@ function BankInventoryStateProvider:give(name, count, flags)
 		return false
 	end
 
+	if not flags['item-bank'] then
+		return false
+	end
+
 	local broker = self.inventory:getBroker()
 	local transaction = broker:createTransaction()
 	do
