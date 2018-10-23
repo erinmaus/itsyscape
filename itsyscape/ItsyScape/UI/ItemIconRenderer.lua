@@ -17,6 +17,7 @@ function ItemIconRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.icons = {}
+	self.note = love.graphics.newImage("Resources/Game/Items/Note.png")
 	self.font = love.graphics.newFont("Resources/Renderers/Widget/ItemIcon/Font.ttf", 18)
 end
 
@@ -44,13 +45,6 @@ function ItemIconRenderer:draw(widget, state)
 
 	love.graphics.setColor(1, 1, 1, 1)
 
-	if widget:get("itemIsNoted", state) then
-		-- TODO note icon
-		love.graphics.setColor(0.9, 0.82, 0.5)
-		love.graphics.rectangle('fill', 0, 0, widget:getSize())
-		love.graphics.setColor(1, 1, 1, 1)
-	end
-
 	local itemID = widget:get("itemID", state)
 	if itemID then
 		if not self.icons[itemID] then
@@ -62,13 +56,34 @@ function ItemIconRenderer:draw(widget, state)
 
 		local icon = self.icons[itemID]
 		local scaleX, scaleY
+		local itemScaleX, itemScaleY
+		local x, y
+		local originX, originY
 		do
 			local width, height = widget:getSize()
 			scaleX = width / icon:getWidth()
 			scaleY = height / icon:getHeight()
+			x, y = width / 2 * scaleX, height / 2 * scaleY
+			originX = width / 2
+			originY = height / 2
 		end
 
-		love.graphics.draw(self.icons[itemID], 0, 0, 0, scaleX, scaleY)
+		if widget:get("itemIsNoted", state) then
+			itemScaleX = scaleX * 0.8
+			itemScaleY = scaleY * 0.8
+
+			love.graphics.draw(
+				self.note,
+				originX, originY,
+				0,
+				scaleX, scaleY,
+				originX, originY)
+		else
+			itemScaleX = scaleX
+			itemScaleY = scaleY
+		end
+
+		love.graphics.draw(self.icons[itemID], originX, originY, 0, itemScaleX, itemScaleY, originX, originY)
 	end
 
 	local count = widget:get("itemCount", state)
