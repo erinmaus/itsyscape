@@ -39,6 +39,11 @@ function Behavior.Type:new()
 	self.id = Behaviors.byType[self:getType()]
 end
 
+-- Called when the behavior is removed from the Peep.
+function Behavior.Type:unload(peep)
+	-- Nothing.
+end
+
 -- Constructs a new Behavior type.
 --
 -- The behavior is given the name 'name' and registered in the database.

@@ -81,6 +81,10 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		return false
 	end
 
+	if not flags['item-inventory'] then
+		return false
+	end
+
 	local noted = false
 	if flags['item-noted'] then
 		noted = true

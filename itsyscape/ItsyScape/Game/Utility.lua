@@ -295,7 +295,7 @@ function Utility.Item.getName(id, gameDB, lang)
 end
 
 function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
-	local flags = {}
+	local flags = { ['item-inventory'] = true }
 	if noted then
 		flags['item-noted'] = true
 	end
@@ -929,6 +929,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
 	peep:addResource("animation-skill-mining", skillAnimationMine)
+	local skillAnimationWoodcutting = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
+	peep:addResource("animation-skill-woodcutting", skillAnimationWoodcutting)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
 end

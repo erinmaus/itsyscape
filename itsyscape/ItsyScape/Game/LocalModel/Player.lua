@@ -68,7 +68,7 @@ end
 -- Moves the player to the specified position on the map via walking.
 function Player:walk(i, j, k)
 	local peep = self.actor:getPeep()
-	return Utility.Peep.walk(peep, i, j, k, 0, { asCloseAsPossible = true })
+	return Utility.Peep.walk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
 end
 
 return Player

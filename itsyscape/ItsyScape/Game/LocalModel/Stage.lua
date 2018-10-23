@@ -349,6 +349,15 @@ function LocalStage:unloadAll()
 			end
 		end
 
+		do
+			local broker = self.game:getDirector():getItemBroker()
+			local inventory = self.ground:getBehavior(InventoryBehavior).inventory
+			for item in broker:iterateItems(inventory) do
+				local ref = broker:getItemRef(item)
+				self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+			end
+		end
+
 		for _, actor in ipairs(p) do
 			self:killActor(actor)
 		end
