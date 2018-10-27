@@ -45,7 +45,7 @@ function DecorationList:new(application)
 	self.newButton.onClick:register(function()
 		local namePrompt = PromptWindow(self.application)
 		namePrompt.onSubmit:register(function(_, name)
-			local t = { tileSetID = "RumbridgeCastle" }
+			local t = { tileSetID = application.currentDecorationTileSet }
 			self.application:getGame():getStage():decorate(name, Decoration(t))
 		end)
 		namePrompt:open("Enter name for decoration.", "Name")

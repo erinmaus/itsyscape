@@ -32,11 +32,13 @@ DecorationPalette.PADDING = 8
 function DecorationPalette:new(application)
 	Widget.new(self)
 
+	print(application.currentDecorationTileSet)
+
 	self.application = application
-	self.staticMesh = StaticMesh("Resources/Game/TileSets/RumbridgeCastle/Layout.lstatic")
+	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", application.currentDecorationTileSet))
 	self.texture = TextureResource()
 	do
-		self.texture:loadFromFile("Resources/Game/TileSets/RumbridgeCastle/Texture.png")
+		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", application.currentDecorationTileSet))
 	end
 	self.camera = ThirdPersonCamera()
 	self.camera:setDistance(8)

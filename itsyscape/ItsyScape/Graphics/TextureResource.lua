@@ -57,6 +57,7 @@ end
 function TextureResource:loadFromFile(filename, resourceManager)
 	self:release()
 	self.image = love.graphics.newImage(filename)
+	self.image:setFilter('nearest', 'nearest')
 end
 
 function TextureResource:getIsReady()

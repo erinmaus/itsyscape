@@ -12,6 +12,7 @@ local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local GameDB = require "ItsyScape.GameDB.GameDB"
+local Utility = require "ItsyScape.Game.Utility"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
@@ -44,6 +45,8 @@ MapEditorApplication.TOOL_PROP = 4
 
 function MapEditorApplication:new()
 	EditorApplication.new(self)
+
+	self.currentDecorationTileSet = "Grave"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
