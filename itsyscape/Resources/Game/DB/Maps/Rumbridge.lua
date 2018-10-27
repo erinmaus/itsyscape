@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_AbandonedMine.lua"
+include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_FoggyForest.lua"
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_Tower.lua"
 
 ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
@@ -35,4 +36,11 @@ ItsyScape.Meta.ResourceName {
 	Value = "Door",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Door_RumbridgeStone"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 2,
+	SizeZ = 2,
+	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeStone"
 }

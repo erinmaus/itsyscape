@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- Resources/Game/DB/Init.lua
 --
@@ -360,6 +361,7 @@ include "Resources/Game/DB/Creeps/Cow.lua"
 include "Resources/Game/DB/Creeps/Goblin.lua"
 include "Resources/Game/DB/Creeps/Skelemental.lua"
 include "Resources/Game/DB/Creeps/Skeleton.lua"
+include "Resources/Game/DB/Creeps/Zombi.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -372,6 +374,7 @@ include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
 include "Resources/Game/DB/Props/Chest.lua"
 include "Resources/Game/DB/Props/Ladder.lua"
+include "Resources/Game/DB/Props/Gravestone.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

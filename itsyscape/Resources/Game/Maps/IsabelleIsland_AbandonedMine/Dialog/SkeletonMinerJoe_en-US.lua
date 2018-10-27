@@ -55,8 +55,8 @@ do
 				}
 
 				if result == YES then
-					if _TARGET:getState():take("Item", "BronzeBar", 5) then
-						if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey", 1) then
+					if _TARGET:getState():take("Item", "BronzeBar", 5, { ['item-inventory'] = true }) then
+						if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_ReinforcedBronzeKey", 1, { ['item-inventory'] = true }) then
 							message "There you go..."
 						else
 							message "Whoops, I broke it."
