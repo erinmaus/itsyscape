@@ -313,32 +313,34 @@ function Utility.Peep.getEquippedItem(peep, slot)
 end
 
 function Utility.Peep.getEquipmentBonuses(peep)
-	local equipment = peep:getBehavior(EquipmentBehavior)
-	if equipment and equipment.equipment then
-		equipment = equipment.equipment
-		local result = {}
-		for bonus, value in equipment:getStats() do
-			result[bonus] = value
-		end
+	local result = {}
+	for i = 1, #EquipmentInventoryProvider.STATS do
+		local stat = EquipmentInventoryProvider.STATS[i]
+		result[stat] = 0
+	end
 
-		return result
-	else
-		equipment = peep:getBehavior(EquipmentBonusesBehavior)
-		if equipment then
-			return equipment.bonuses
-		else
-			local result = {}
-			for i = 1, #EquipmentInventoryProvider.STATS do
-				local stat = EquipmentInventoryProvider.STATS[i]
-				result[stat] = 0
+	do
+		local equipment = peep:getBehavior(EquipmentBehavior)
+		if equipment and equipment.equipment then
+			equipment = equipment.equipment
+			for bonus, value in equipment:getStats() do
+				result[bonus] = result[bonus] + value
 			end
-
-			return result
 		end
 	end
 
-	assert(false, "Equipment bonuses conditions failed! This cannot be!")
-	return {}
+	do
+		local equipment = peep:getBehavior(EquipmentBonusesBehavior)
+		if equipment then
+			equipment = equipment.bonuses
+			for i = 1, #EquipmentInventoryProvider.STATS do
+				local stat = EquipmentInventoryProvider.STATS[i]
+				result[stat] = result[stat] + equipment[stat]
+			end
+		end
+	end
+
+	return result
 end
 
 function Utility.Peep.canAttack(peep)
@@ -840,6 +842,41 @@ function Utility.Peep.Attackable:onDie(p)
 	movement.acceleration = Vector.ZERO
 end
 
+function Utility.Peep.Attackable:onReady(director)
+	local function setEquipmentBonuses(record)
+		if not record then
+			return false
+		else
+			self:addBehavior(EquipmentBonusesBehavior)
+		end
+
+		local bonuses = self:getBehavior(EquipmentBonusesBehavior).bonuses
+		for i = 1, #EquipmentInventoryProvider.STATS do
+			local stat = EquipmentInventoryProvider.STATS[i]
+			bonuses[stat] = record:get(stat) or 0
+		end
+
+		return true
+	end
+	
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	local success = false
+	if mapObject then
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = mapObject }))
+	end
+
+	if not success and resource then
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = resource }))
+	end
+
+	if success then
+		Log.info("Peep '%s' has bonuses.", self:getName())
+	end
+end
+
 function Utility.Peep.makeAttackable(peep, retaliate)
 	if retaliate == nil then
 		retaliate = true
@@ -850,6 +887,8 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('initiateAttack')
 	peep:listen('initiateAttack', Utility.Peep.Attackable.onInitiateAttack)
 	peep:addPoke('receiveAttack')
+
+	peep:listen('ready', Utility.Peep.Attackable.onReady)
 
 	if retaliate then
 		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)

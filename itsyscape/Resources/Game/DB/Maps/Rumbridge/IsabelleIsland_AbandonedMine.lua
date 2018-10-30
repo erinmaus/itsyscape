@@ -151,7 +151,7 @@ ItsyScape.Meta.DropTableEntry {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(10),
+	Value = ItsyScape.Utility.xpForLevel(20),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
@@ -182,6 +182,14 @@ ItsyScape.Meta.PeepMashinaState {
 	State = "idle",
 	Tree = "Resources/Game/Peeps/GhostlyMinerForeman/GhostlyMinerForeman_IdleLogic.lua",
 	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyCrush = 50,
+	DefenseMagic = -30,
+	StrengthMelee = 20,
+	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 

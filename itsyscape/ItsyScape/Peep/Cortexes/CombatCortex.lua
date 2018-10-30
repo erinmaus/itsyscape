@@ -161,12 +161,32 @@ function CombatCortex:update(delta)
 											self.strafing[peep] = true
 											i = selfI + 1
 											j = selfJ
+										elseif map:canMove(selfI, selfJ, -1, 0) then
+											self.strafing[peep] = true
+											i = selfI - 1
+											j = selfJ
 										end
 									else
 										if map:canMove(selfI, selfJ, -1, 0) then
 											self.strafing[peep] = true
 											i = selfI - 1
 											j = selfJ
+										elseif map:canMove(selfI, selfJ, 1, 0) then
+											self.strafing[peep] = true
+											i = selfI + 1
+											j = selfJ
+										end
+									end
+
+									if not i and not j then
+										if map:canMove(selfI, selfJ, 0, 1) then
+											self.strafing[peep] = true
+											i = selfI
+											j = selfJ + 1
+										elseif map:canMove(selfI, selfJ, 0, -1) then
+											self.strafing[peep] = true
+											i = selfI
+											j = selfJ - 1
 										end
 									end
 
