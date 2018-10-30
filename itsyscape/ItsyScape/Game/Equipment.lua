@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Item = require "ItsyScape.Game.Item"
 
 local Equipment = Class(Item)
+Equipment.PLAYER_SLOT_SELF   = 0
 Equipment.PLAYER_SLOT_HEAD   = 1
 Equipment.PLAYER_SLOT_NECK   = 2
 Equipment.PLAYER_SLOT_BODY   = 3

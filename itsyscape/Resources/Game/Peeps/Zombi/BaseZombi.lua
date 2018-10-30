@@ -10,19 +10,11 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
-local Curve = require "ItsyScape.Game.Curve"
-local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
-local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
-local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
-local Stats = require "ItsyScape.Game.Stats"
 local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
-local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
-local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local BaseZombi = Class(Player)
 
@@ -35,6 +27,11 @@ function BaseZombi:ready(director, game)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.stoppingForce = 0.5
+	movement.maxSpeed = 8
+	movement.maxAcceleration = 6
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",
