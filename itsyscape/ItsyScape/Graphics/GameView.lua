@@ -37,7 +37,7 @@ function GameView:new(game)
 	stage.onLoadMap:register(self._onLoadMap)
 
 	self._onUnloadMap = function(_, map, layer)
-		self:removeMap(map, layer)
+		self:removeMap(layer)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
@@ -164,7 +164,7 @@ function GameView:addMap(map, layer, tileSetID)
 	self.mapMeshes[layer] = m
 end
 
-function GameView:removeMap(map, layer)
+function GameView:removeMap(layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		m.node:setParent(nil)
@@ -186,29 +186,29 @@ function GameView:updateMap(map, layer)
 
 		for i = 1, #m.parts do
 			m.parts[i]:setParent(nil)
-			m.parts[i]:setMapMesh(false)
+			m.parts[i]:setMapMesh(nil)
 		end
 		m.parts = {}
 
-		local w = math.max(map:getWidth() / GameView.MAP_MESH_DIVISIONS, 1)
-		local h = math.max(map:getHeight() / GameView.MAP_MESH_DIVISIONS, 1)
+		local w = math.max(math.floor(map:getWidth() / GameView.MAP_MESH_DIVISIONS + 0.5), 1)
+		local h = math.max(math.floor(map:getHeight() / GameView.MAP_MESH_DIVISIONS + 0.5), 1)
 
 		for j = 1, h do
 			for i = 1, w do
 				local x = (i - 1) * GameView.MAP_MESH_DIVISIONS + 1
 				local y = (j - 1) * GameView.MAP_MESH_DIVISIONS + 1
 
+				local node = MapMeshSceneNode()
+				node:setParent(m.node)
+				table.insert(m.parts, node)
 				self.resourceManager:queueEvent(function()
-					local node = MapMeshSceneNode()
 					node:fromMap(
 						m.map,
 						m.tileSet,
 						x, y,
 						GameView.MAP_MESH_DIVISIONS,
 						GameView.MAP_MESH_DIVISIONS)
-					node:setParent(m.node)
 					node:getMaterial():setTextures(m.texture)
-					table.insert(m.parts, node)
 				end)
 			end
 		end
