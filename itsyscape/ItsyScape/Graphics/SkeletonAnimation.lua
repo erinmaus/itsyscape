@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local NSkeletonKeyFrame = require "nbunny.skeletonkeyframe"
 
 local SkeletonAnimation = Class()
 SkeletonAnimation.KeyFrame = Class()
@@ -26,28 +27,19 @@ function SkeletonAnimation.KeyFrame:new(time, s, r, t)
 	self.scale = s or Vector(1)
 	self.rotation = r or Quaternion()
 	self.translation = t or Vector(0)
+
+	self._handle = NSkeletonKeyFrame()
+	self._handle:setTime(time)
+	self._handle:setScale(self.scale.x, self.scale.y, self.scale.z)
+	self._handle:setRotation(self.rotation.x, self.rotation.y, self.rotation.z, self.rotation.w)
+	self._handle:setTranslation(self.translation.x, self.translation.y, self.translation.z)
+	self._transform = love.math.newTransform()
 end
 
 -- Interpolates this key frame with another, storing the result in 'transform'.
 function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
-	assert(self.time <= other.time, "cannot interpolate into the past")
-	local timeDifference = math.max(time - self.time, 0)
-	local frameDifference = other.time - self.time
-
-	local delta
-	if frameDifference == 0 then
-		delta = 1.0
-	else
-		delta = timeDifference / (other.time - self.time)
-	end
-
-	local rotation = self.rotation:slerp(other.rotation, delta):getNormal()
-	local scale = self.scale:lerp(other.scale, delta)
-	local translation = self.translation:lerp(other.translation, delta)
-
-	transform:translate(translation.x, translation.y, translation.z)
-	transform:applyQuaternion(rotation.x, rotation.y, rotation.z, rotation.w)
-	transform:scale(scale.x, scale.y, scale.z)
+	self._transform:setMatrix(self._handle:interpolate(other._handle, time))
+	transform:apply(self._transform)
 
 	return transform
 end
