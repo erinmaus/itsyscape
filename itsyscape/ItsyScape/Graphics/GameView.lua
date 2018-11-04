@@ -20,6 +20,7 @@ local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local GameView = Class()
@@ -183,6 +184,16 @@ function GameView:updateMap(map, layer)
 		if map then
 			m.map = map
 		end
+
+		if map.water then
+			map.water:setParent(nil)
+			map.water:degenerate()
+		end
+
+		map.water = WaterMeshSceneNode()
+		map.water:generate(map, 30, 1, 19, 23, 4)
+		map.water:setParent(m.node)
+		map.water:getMaterial():setTextures(self.resourceManager:load(TextureResource, "Resources/Game/Water/LightFoamyWater1/Texture.png"))
 
 		for i = 1, #m.parts do
 			m.parts[i]:setParent(nil)
