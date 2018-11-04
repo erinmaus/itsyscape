@@ -94,7 +94,7 @@ end
 
 -- Gets the length (i.e., magnitude) of the quaternion, squared.
 function Quaternion:getLengthSquared()
-	return self.x * self.x + self.y * self.y + self.z * self.z
+	return self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
 end
 
 -- Gets the length (i.e., magnitude) of the quaternion.
