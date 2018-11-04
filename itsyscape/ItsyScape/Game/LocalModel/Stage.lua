@@ -36,6 +36,7 @@ function LocalStage:new(game)
 	self.currentActorID = 1
 	self.currentPropID = 1
 	self.map = {}
+	self.water = {}
 	self.gravity = Vector(0, -9.8, 0)
 	self.stageName = "::orphan"
 
@@ -324,6 +325,10 @@ function LocalStage:unloadAll()
 		self:unloadMap(layers[i])
 	end
 
+	for key in pairs(self.water) do
+		self.onWaterDrain(self, key)
+	end
+
 	for group, decoration in pairs(self.decorations) do
 		self:decorate(group, nil)
 	end
@@ -433,6 +438,18 @@ function LocalStage:loadStage(filename)
 			local layerMeta = meta[layer] or {}
 
 			self:loadMapFromFile(directoryPath .. "/" .. item, layer, layerMeta.tileSetID)
+		end
+	end
+
+	do
+		local waterDirectoryPath = directoryPath .. "/Water"
+		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
+			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
+			local chunk = assert(loadstring(data))
+			water = setfenv(chunk, {})() or {}
+
+			self.onWaterFlood(self, item, water)
+			self.water[item] = water
 		end
 	end
 

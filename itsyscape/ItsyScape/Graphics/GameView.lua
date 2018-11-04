@@ -82,8 +82,20 @@ function GameView:new(game)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
+	self._onWaterFlood = function(_, key, water)
+		self:flood(key, water)
+	end
+	stage.onWaterFlood:register(self._onWaterFlood)
+
+	self._onWaterDrain = function(_, key, water)
+		self:drain(key, water)
+	end
+	stage.onWaterDrain:register(self._onWaterDrain)
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+
+	self.water = {}
 
 	self.decorations = {}
 
@@ -140,6 +152,8 @@ function GameView:release()
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
 	stage.onDecorate:unregister(self._onDecorate)
+	stage.onWaterFlood:unregister(self._onWaterFlood)
+	stage.onWaterDrain:unregister(self._onWaterDrain)
 end
 
 function GameView:addMap(map, layer, tileSetID)
@@ -192,7 +206,7 @@ function GameView:updateMap(map, layer)
 
 		map.water = WaterMeshSceneNode()
 		map.water:generate(map, 30, 1, 19, 23, 4)
-		map.water:setParent(m.node)
+		--map.water:setParent(m.node)
 		map.water:getMaterial():setTextures(self.resourceManager:load(TextureResource, "Resources/Game/Water/LightFoamyWater1/Texture.png"))
 
 		for i = 1, #m.parts do
@@ -345,6 +359,43 @@ function GameView:decorate(group, decoration)
 		sceneNode:setParent(self.scene)
 
 		self.decorations[group] = { node = sceneNode, decoration = decoration }
+	end
+end
+
+function GameView:flood(key, water)
+	self:drain(key)
+
+	local node = WaterMeshSceneNode()
+	local map = self.game:getStage():getMap(water.layer or 1)
+	node:generate(
+		map,
+		water.i or 1,
+		water.j or 1,
+		water.width or (map:getWidth() - ((water.i or 1) - 1) + 1),
+		water.height or (map:getHeight() - ((water.j or 1) - 1) + 1),
+		water.y,
+		water.finesse)
+	if water.isTranslucent then
+		node:getMaterial():setIsTranslucent(true)
+	end
+
+	self.resourceManager:queue(
+		TextureResource,
+		string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
+		function(resource)
+			node:getMaterial():setTextures(resource)
+			node:setParent(self.scene)
+		end)
+
+
+	self.water[key] = node
+end
+
+function GameView:drain(key)
+	if self.water[key] then
+		self.water[key]:setParent(nil)
+		self.water[key]:degenerate()
+		self.water[key] = nil
 	end
 end
 

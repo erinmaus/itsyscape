@@ -5762,21 +5762,32 @@
 			edge = 2, flat = 3, decals = {  },
 			data =
 			{
-			}
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
 			edge = 2, flat = 3, decals = {  },
 			data =
 			{
-			}
+			},
+			flags =
+			{
+			},
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
 			edge = 2, flat = 3, decals = {  },
 			data =
 			{
-			}
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
@@ -7681,7 +7692,10 @@
 			edge = 2, flat = 1, decals = { 6 },
 			data =
 			{
-			}
+			},
+			flags =
+			{
+			},
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,

@@ -79,8 +79,7 @@ function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine)
 	local x, z = (i - 1) * cellSize, (j - 1) * cellSize
 
 	local transform = self:getTransform()
-	--transform:setLocalScale(Vector(1 / fine * cellSize, 1, 1 / fine * cellSize))
-	--local scale = transform:getLocalScale()
+	transform:setLocalScale(Vector(1 / fine * cellSize, 1, 1 / fine * cellSize))
 	transform:setLocalTranslation(Vector(x, y, z))
 	transform:tick()
 

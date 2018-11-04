@@ -28,6 +28,8 @@ function Stage:new()
 	self.onTakeItem = Callback()
 	self.onPropPlaced = Callback()
 	self.onPropRemoved = Callback()
+	self.onWaterFlood = Callback()
+	self.onWaterDrain = Callback()
 
 	-- (group, value [nil/Decoration])
 	self.onDecorate = Callback()

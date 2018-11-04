@@ -18,7 +18,7 @@ local DemoApplication = Class(Application)
 DemoApplication.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DemoApplication.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
-DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6
+DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 
 function DemoApplication:new()
 	Application.new(self)
