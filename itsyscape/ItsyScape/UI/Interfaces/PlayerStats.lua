@@ -37,7 +37,8 @@ PlayerStats.SORT_ORDER = {
 	["Mining"] = 10,
 	["Smithing"] = 11,
 	["Crafting"] = 12,
-	["Woodcutting"] = 13
+	["Woodcutting"] = 13,
+	["Firemaking"] = 14,
 }
 
 function PlayerStats:new(id, index, ui)

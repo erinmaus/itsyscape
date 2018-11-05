@@ -214,6 +214,16 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	Meta "ActionSpawnProp" {
+		Prop = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionSpawnPeep" {
+		Peep = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Equip"
 	ActionType "Dequip"
 

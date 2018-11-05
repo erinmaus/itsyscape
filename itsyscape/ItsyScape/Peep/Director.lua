@@ -208,6 +208,8 @@ function Director:update(delta)
 			end
 		end
 
+		peep:poof()
+
 		self.peeps[peep] = nil
 	end
 	self.oldPeeps = {}

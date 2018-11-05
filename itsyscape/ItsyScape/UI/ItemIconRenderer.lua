@@ -83,7 +83,7 @@ function ItemIconRenderer:draw(widget, state)
 			itemScaleY = scaleY
 		end
 
-		love.graphics.draw(self.icons[itemID], originX, originY, 0, itemScaleX, itemScaleY, originX, originY)
+		love.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
 	end
 
 	local count = widget:get("itemCount", state)

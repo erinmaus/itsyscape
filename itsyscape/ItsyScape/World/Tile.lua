@@ -39,6 +39,7 @@ function Tile:new()
 	self.links = {}
 
 	self.impassableDepth = 0
+	self.blockingDepth = 0
 end
 
 function Tile:addLink(link)
@@ -68,6 +69,23 @@ function Tile:popImpassable()
 		self:unsetFlag('impassable')
 	end
 end
+
+function Tile:pushBlocking()
+	self.blockingDepth = self.blockingDepth + 1
+
+	if self.blockingDepth > 0 then
+		self:setFlag('blocking')
+	end
+end
+
+function Tile:popBlocking()
+	self.blockingDepth = math.max(self.blockingDepth - 1, 0)
+
+	if self.blockingDepth == 0 then
+		self:unsetFlag('blocking')
+	end
+end
+
 
 function Tile:setFlag(f)
 	self.flags[tostring(f)] = true

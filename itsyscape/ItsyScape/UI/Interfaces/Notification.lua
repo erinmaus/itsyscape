@@ -48,11 +48,13 @@ function Notification:new(id, index, ui)
 	local requirements = ConstraintsPanel(self:getView())
 	requirements:setText("Requirements")
 	requirements:setData("skillAsLevel", true)
-	requirements:setSize(Notification.WIDTH - Notification.PADDING * 2)
+	requirements:setSize(Notification.WIDTH + Notification.PADDING * 2)
 	requirements:setConstraints(state.requirements)
 
 	local inputs = ConstraintsPanel(self:getView())
 	inputs:setText("Inputs")
+	inputs:setConstraints(state.inputs)
+	inputs:setSize(Notification.WIDTH + Notification.PADDING * 2)
 	inputs:setConstraints(state.inputs)
 
 	local innerPannel = ScrollablePanel(GridLayout)
@@ -70,13 +72,15 @@ function Notification:new(id, index, ui)
 		if #state.requirements > 0 then
 			innerPannel:addChild(requirements)
 			requirements:setPosition(Notification.PADDING, Notification.PADDING)
+			requirements:setSize(w1, h1 + Notification.PADDING)
 			height = h1 + Notification.PADDING
 		end
 
 		if #state.inputs > 0 then
 			innerPannel:addChild(inputs)
 			inputs:setPosition(Notification.PADDING, h1 + Notification.PADDING * 2)
-			height = h2 + Notification.PADDING
+			inputs:setSize(w1, h1 + Notification.PADDING)
+			height = height + h2 + Notification.PADDING
 		end
 
 		width = Notification.WIDTH

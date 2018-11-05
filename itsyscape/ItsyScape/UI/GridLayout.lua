@@ -123,7 +123,7 @@ function GridLayout:layoutChild(child)
 	child:setPosition(x, y)
 
 	if self.wrapContents then
-		self.height = y + childHeight
+		self.height = math.max(y + childHeight + self.paddingY, self.height)
 		self.scrollHeight = self.height
 	end
 end
@@ -135,6 +135,11 @@ function GridLayout:performLayout()
 
 	for _, child in self:iterate() do
 		self:layoutChild(child)
+	end
+
+	if self.wrapContents then
+		self.height = self.height + self.paddingY
+		self.scrollHeight = self.height
 	end
 end
 
