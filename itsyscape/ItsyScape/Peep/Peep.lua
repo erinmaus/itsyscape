@@ -377,7 +377,7 @@ end
 -- Called when the Peep is removed.
 function Peep:poof()
 	for _, behavior in pairs(self.behaviors) do
-		behavior:unload()
+		behavior:unload(self)
 	end
 
 	self:poke('poof')

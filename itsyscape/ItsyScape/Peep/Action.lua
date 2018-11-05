@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local Action = Class()
 
@@ -146,7 +147,8 @@ end
 -- Transfers inputs/outputs.
 function Action:transfer(state, player, flags)
 	if self:canTransfer(state, flags) then
-		local brochure = self:getGameDB():getBrochure()
+		local gameDB = self:getGameDB()
+		local brochure = gameDB:getBrochure()
 		for input in brochure:getInputs(self.action) do
 			local resource = brochure:getConstraintResource(input)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
@@ -159,6 +161,32 @@ function Action:transfer(state, player, flags)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
 			state:give(resourceType.name, resource.name, output.count, flags)
+		end
+
+		local stage = player:getDirector():getGameInstance():getStage(player)
+		do
+			local props = gameDB:getRecords("ActionSpawnProp", {
+				Action = self.action
+			})
+
+			for i = 1, #props do
+				local resource = props[i]:get("Prop")
+				if resource then
+					local s, p = stage:placeProp("resource://" .. resource.name)
+					if s then
+						local propPeep = p:getPeep()
+						local i, j, k = Utility.Peep.getTile(player)
+						local map = propPeep:getDirector():getMap(k)
+
+						local position = propPeep:getBehavior(PositionBehavior)
+						if position then
+							position.position = map:getTileCenter(i, j)
+						end
+
+						propPeep:poke('spawnedByAction', player)
+					end
+				end
+			end
 		end
 	end
 end

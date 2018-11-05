@@ -33,6 +33,9 @@ ItsyScape.Resource.Skill "Crafting"
 ItsyScape.Resource.Skill "Woodcutting"
 	ActionType "Chop"
 
+ItsyScape.Resource.Skill "Firemaking"
+	ActionType "Light"
+
 ItsyScape.Meta.ResourceName {
 	Value = "Magic",
 	Language = "en-US",
@@ -109,4 +112,10 @@ ItsyScape.Meta.ResourceName {
 	Value = "Woodcutting",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Woodcutting"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Firemaking",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Firemaking"
 }

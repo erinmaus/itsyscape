@@ -83,4 +83,45 @@ for name, log in pairs(LOGS) do
 		Language = "en-US",
 		Resource = Tree
 	}
+
+	local FireName = string.format("%sFire", name)
+	local Fire = ItsyScape.Resource.Prop(FireName)
+
+	local LightAction = ItsyScape.Action.Light()
+
+	LightAction {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1)) * 4
+		},
+
+		Input {
+			Resource = Log,
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.ActionSpawnProp {
+		Prop = Fire,
+		Action = LightAction
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		SpawnTime = 15,
+		Resource = Fire
+	}
+
+	Log {
+		LightAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFire",
+		Resource = Fire
+	}
 end

@@ -28,6 +28,8 @@ function Prop:new(resource, ...)
 	size.size = Vector(1, 1, 1)
 
 	Utility.Peep.setResource(self, resource)
+
+	self:addPoke('spawnedByAction')
 end
 
 function Prop:spawnOrPoof(mode)
@@ -82,6 +84,12 @@ function Prop:ready(director, game)
 
 	Utility.Peep.setNameMagically(self)
 	self:spawnOrPoof('spawn')
+end
+
+function Prop:poof()
+	self:spawnOrPoof('poof')
+
+	Peep.poof(self)
 end
 
 function Prop:getPropState()

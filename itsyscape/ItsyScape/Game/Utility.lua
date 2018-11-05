@@ -30,6 +30,7 @@ local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
@@ -505,6 +506,20 @@ function Utility.Peep.setNameMagically(peep)
 		peep:setName(name)
 	elseif resource then
 		peep:setName("*" .. resource.name)
+	end
+end
+
+function Utility.Peep.poof(peep)
+	local stage = peep:getDirector():getGameInstance():getStage()
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		stage:killActor(actor.actor)
+	end
+
+	local prop = peep:getBehavior(PropReferenceBehavior)
+	if prop and prop.prop then
+		stage:removeProp(prop.prop)
 	end
 end
 
