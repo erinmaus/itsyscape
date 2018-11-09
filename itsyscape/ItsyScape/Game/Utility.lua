@@ -974,7 +974,15 @@ function Utility.Peep.makeHuman(peep)
 	local attackAnimationStaffMagic = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
-	peep:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
+	peep:addResource("animation-attack-magic-wand", attackAnimationStaffMagic)
+	local attackAnimationWandStab = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackWandStab_1/Script.lua")
+	peep:addResource("animation-attack-stab-wand", attackAnimationWandStab)
+	local attackAnimationWandMagic = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackWandMagic_1/Script.lua")
+	peep:addResource("animation-attack-magic-staff", attackAnimationWandMagic)
 	local attackAnimationPickaxeStab = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")

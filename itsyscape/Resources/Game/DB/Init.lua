@@ -354,16 +354,22 @@ end
 include "Resources/Game/DB/Skills.lua"
 
 -- Items
+-- Materials
 include "Resources/Game/DB/Items/Ores.lua"
 include "Resources/Game/DB/Items/Logs.lua"
 include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
+include "Resources/Game/DB/Items/Bones.lua"
+
+-- Equipment
 include "Resources/Game/DB/Items/Leathers.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/Hatchets.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"
 include "Resources/Game/DB/Items/LeatherArmor.lua"
-include "Resources/Game/DB/Items/Bones.lua"
+include "Resources/Game/DB/Items/MagicWeapons.lua"
+
+-- Misc
 include "Resources/Game/DB/Items/MiscFood.lua"
 
 -- Creeps

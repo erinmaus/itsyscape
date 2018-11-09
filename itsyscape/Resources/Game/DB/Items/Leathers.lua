@@ -51,6 +51,7 @@ ItsyScape.Meta.ActionVerb {
 
 ItsyScape.Meta.DelegatedActionTarget {
 	CategoryKey = "Leather",
+	CategoryValue = "MooishLeather",
 	ActionType = "Craft",
 	Action = CraftAction
 }

@@ -38,6 +38,21 @@ for name, log in pairs(LOGS) do
 		Resource = Log
 	}
 
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Wood",
+		CategoryValue = name,
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
 	local TreeName = string.format("%sTree_Default", name)
 	local Tree = ItsyScape.Resource.Prop(TreeName)
 
@@ -117,7 +132,8 @@ for name, log in pairs(LOGS) do
 	}
 
 	Log {
-		LightAction
+		LightAction,
+		CraftAction
 	}
 
 	ItsyScape.Meta.PeepID {
