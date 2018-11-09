@@ -19,7 +19,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local AdvisorGrimm = Class(Player)
 
 function AdvisorGrimm:new(resource, name, ...)
-	Player.new(self, resource, name or 'Isabelle', ...)
+	Player.new(self, resource, name or 'AdvisorGrimm', ...)
 end
 
 function AdvisorGrimm:ready(director, game)
@@ -57,7 +57,7 @@ function AdvisorGrimm:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/DinkyStaff/DinkyStaff.lua")
+		"Resources/Game/Skins/Dinky/Staff.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_ACCENT, hands)
 end
 
