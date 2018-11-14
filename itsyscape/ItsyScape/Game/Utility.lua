@@ -60,9 +60,9 @@ function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 			local position = actorPeep:getBehavior(PositionBehavior)
 			if position then
 				position.position = Vector(
-					x + (math.random() - 1) / 2 * radius,
+					x + (math.random() * 2) - 1 * radius,
 					y, 
-					z + (math.random() - 1) / 2 * radius)
+					z + (math.random() * 2) - 1 * radius)
 			end
 
 			actorPeep:poke('spawnedByPeep', { peep = peep })
@@ -197,6 +197,14 @@ function Utility.guessTier(action, gameDB)
 	end
 
 	return tier
+end
+
+Utility.Magic = {}
+function Utility.Magic.newSpell(id, game)
+	local TypeName = string.format("Resources.Game.Spells.%s.Spell", id)
+	local Type = require(TypeName)
+
+	return Type(id, game)
 end
 
 -- Contains utility methods that deal with combat.
