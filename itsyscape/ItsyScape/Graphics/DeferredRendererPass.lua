@@ -49,9 +49,9 @@ local PendingNode, PendingNodeMetatable = Class()
 function PendingNode:new(node, delta)
 	self.node = node
 
-	local transform = node:getTransform():getGlobalDeltaTransform(delta)
-	local wx, wy, wz = transform:transformPoint(0, 0, 0)
-	self.worldPosition = Vector(wx, wy, wz)
+	self.transform = node:getTransform():getGlobalDeltaTransform(delta)
+	local wx, wy, wz = self.transform:transformPoint(0, 0, 0)
+	self.worldPosition = Vector(wx, wy, wz) 
 
 	local sx, sy, sz = love.graphics.project(wx, wy, wz)
 	self.screenPosition = Vector(sx, sy, sz)
@@ -152,6 +152,7 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	local currentShaderProgram
 	for i = 1, #self.nodes do
 		local node = self.nodes[i].node
+		local transform = self.nodes[i].transform
 
 		local material = node:getMaterial()
 		local shader = material:getShader() or self.defaultShader
@@ -161,13 +162,12 @@ function DeferredRendererPass:drawNodes(scene, delta)
 				previousShader = shader
 			end
 
-			local d = node:getTransform():getGlobalDeltaTransform(delta)
 			do
 				if currentShaderProgram:hasUniform("scape_WorldMatrix") then
-					currentShaderProgram:send("scape_WorldMatrix", d)
+					currentShaderProgram:send("scape_WorldMatrix", transform)
 
 					if currentShaderProgram:hasUniform("scape_NormalMatrix") then
-						currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+						currentShaderProgram:send("scape_NormalMatrix", transform:inverseTranspose())
 					end
 				end
 

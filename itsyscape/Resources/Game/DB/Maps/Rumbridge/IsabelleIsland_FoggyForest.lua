@@ -42,7 +42,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicTree",
+		Value = "Resources.Game.Peeps.Props.IsabelleIsland.FoggyForest.AncientDriftwoodTree",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_FoggyForest_AncientDriftwoodTree"
 	}
 

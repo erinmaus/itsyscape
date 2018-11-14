@@ -55,10 +55,6 @@ function BasicRock:onResourceHit(e)
 			health.maxProgress,
 			health.currentProgress)
 
-		local e = {}
-		self:poke('mined', e)
-		self:poke('resourceObtained', e)
-
 		local resource = Utility.Peep.getResource(self)
 		if resource then
 			local gameDB = self:getDirector():getGameDB()
@@ -68,6 +64,10 @@ function BasicRock:onResourceHit(e)
 
 			self.spawnCooldown = p:get("SpawnTime") or 60
 		end
+
+		local e = { peep = e.peep }
+		self:poke('mined', e)
+		self:poke('resourceObtained', e)
 	end
 end
 

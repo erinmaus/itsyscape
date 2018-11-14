@@ -18,6 +18,7 @@ local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local Map = require "ItsyScape.World.Map"
@@ -36,6 +37,7 @@ function LocalStage:new(game)
 	self.currentActorID = 1
 	self.currentPropID = 1
 	self.map = {}
+	self.mapScripts = {}
 	self.water = {}
 	self.gravity = Vector(0, -9.8, 0)
 	self.stageName = "::orphan"
@@ -76,6 +78,10 @@ function LocalStage:notifyDropItem(item, key, source)
 		position)
 end
 
+function LocalStage:getMapScript(key)
+	return self.mapScripts[key]
+end
+
 function LocalStage:lookupResource(resourceID, resourceType)
 	local Type
 	local realResourceID, resource
@@ -101,7 +107,7 @@ function LocalStage:lookupResource(resourceID, resourceType)
 							resource = r
 						end
 					else
-						Log.error("no peep ID for resource '%s'", value)
+						Log.warn("no peep ID for resource '%s'", value)
 						return false, nil
 					end
 				else
@@ -231,6 +237,11 @@ function LocalStage:instantiateMapObject(resource)
 						propInstance = p
 
 						Utility.Peep.setMapObject(peep, resource)
+
+						local s, b = peep:addBehavior(MapResourceReferenceBehavior)
+						if s then
+							b.map = object:get("Map")
+						end
 					end
 				end
 			end
@@ -265,6 +276,11 @@ function LocalStage:instantiateMapObject(resource)
 						actorInstance = a
 
 						Utility.Peep.setMapObject(peep, resource)
+
+						local s, b = peep:addBehavior(MapResourceReferenceBehavior)
+						if s then
+							b.map = object:get("Map")
+						end
 					end
 				end
 			end
@@ -318,8 +334,6 @@ function LocalStage:unloadMap(layer)
 end
 
 function LocalStage:unloadAll()
-	self.game:getDirector():removeLayer(self.stageName)
-
 	local layers = self:getLayers()
 	for i = 1, #layers do
 		self:unloadMap(layers[i])
@@ -367,6 +381,9 @@ function LocalStage:unloadAll()
 			self:killActor(actor)
 		end
 	end
+
+	self.game:getDirector():removeLayer(self.stageName)
+	self.mapScripts = {}
 end
 
 function LocalStage:movePeep(peep, filename, anchor)
@@ -412,7 +429,6 @@ function LocalStage:loadStage(filename)
 	end
 
 	self:unloadAll()
-
 	self.stageName = filename
 
 	local directoryPath = "Resources/Game/Maps/" .. filename
@@ -466,6 +482,13 @@ function LocalStage:loadStage(filename)
 	local gameDB = self.game:getGameDB()
 	local resource = gameDB:getResource(filename, "Map")
 	if resource then
+		do
+			local Peep, resource, realID = self:lookupResource("resource://" .. resource.name, "Map")
+			if Peep then
+				self.mapScripts[filename] = self.game:getDirector():addPeep(self.stageName, Peep, resource)
+			end
+		end
+
 		local objects = gameDB:getRecords("MapObjectLocation", {
 			Map = resource
 		})
