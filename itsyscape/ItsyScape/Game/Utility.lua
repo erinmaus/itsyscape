@@ -28,6 +28,7 @@ local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
+local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -40,6 +41,53 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- These methods can be used on both the client and server. They should not load
 -- any resources.
 local Utility = {}
+
+function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
+	radius = radius or 1
+
+	if type(resource) == 'string' then
+		local gameDB = peep:getDirector():getGameDB()
+		resource = gameDB:getResource(resource, "Peep")
+	end
+
+	if resource then
+		local name = "resource://" .. resource.name
+		local stage = peep:getDirector():getGameInstance():getStage(peep)
+		local s, a = stage:spawnActor(name)
+		if s then
+			local actorPeep = a:getPeep()
+
+			local position = actorPeep:getBehavior(PositionBehavior)
+			if position then
+				position.position = Vector(
+					x + (math.random() - 1) / 2 * radius,
+					y, 
+					z + (math.random() - 1) / 2 * radius)
+			end
+
+			actorPeep:poke('spawnedByPeep', { peep = peep })
+
+			return a
+		end
+	end
+
+	return nil
+end
+
+function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
+	local map = Utility.Peep.getMap(peep)
+	local x, y, z = Utility.Map.getAnchorPosition(
+		peep:getDirector():getGameInstance(),
+		map,
+		anchor)
+
+	if x and y and z then
+		return Utility.spawnActorAtPosition(peep, resource, x, y, z)
+	else
+		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
+		return nil
+	end
+end
 
 function Utility.performAction(game, resource, id, scope, ...)
 	local gameDB = game:getGameDB()
@@ -304,6 +352,27 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 	return peep:getState():give("Item", item, quantity, flags)
 end
 
+Utility.Map = {}
+function Utility.Map.getAnchorPosition(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	if mapObject then
+		local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
+		return x or 0, y or 0, z or 0
+	end
+
+	return nil, nil, nil
+end
+
 Utility.Peep = {}
 function Utility.Peep.getEquippedItem(peep, slot)
 	local equipment = peep:getBehavior(EquipmentBehavior)
@@ -434,6 +503,39 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
+function Utility.Peep.attack(peep, other, distance)
+	local target = peep:getBehavior(CombatTargetBehavior)
+	if not target then
+		local actor = other:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			if peep:getCommandQueue():interrupt(AttackCommand()) then
+				local _, target = peep:addBehavior(CombatTargetBehavior)
+				target.actor = actor.actor
+
+				local mashina = peep:getBehavior(MashinaBehavior)
+				if mashina then
+					if mashina.currentState ~= 'begin-attack' and
+					   mashina.currentState ~= 'attack'
+					then
+						if mashina.states['begin-attack'] then
+							mashina.currentState = 'begin-attack'
+						elseif mashina.states['attack'] then
+							mashina.currentState = 'attack'
+						else
+							mashina.currentState = false
+						end
+					end
+				end
+			end
+
+			if distance then
+				local status = peep:getBehavior(CombatStatusBehavior)
+				status.maxChaseDistance = distance
+			end
+		end
+	end
+end
+
 function Utility.Peep.getResource(peep)
 	local resource = peep:getBehavior(MappResourceBehavior)
 	if resource then
@@ -485,6 +587,20 @@ function Utility.Peep.setMapObject(peep, mapObject)
 
 		assert(behavior, "couldn't add MapObjectBehavior")
 		behavior.mapObject = mapObject
+	end
+end
+
+function Utility.Peep.getMap(peep)
+	local map = peep:getBehavior(MapResourceReferenceBehavior)
+	if map and map.map then
+		return map.map
+	else
+		local name = peep:getLayerName()
+		local stage = peep:getDirector():getGameInstance():getStage()
+		local mapPeep = stage:getMapScript(name)
+		if mapPeep then
+			return Utility.Peep.getResource(mapPeep)
+		end
 	end
 end
 

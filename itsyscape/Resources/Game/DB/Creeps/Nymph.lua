@@ -63,65 +63,65 @@ ItsyScape.Meta.PeepEquipmentItem {
 	Resource = ItsyScape.Resource.Peep "Nymph_Base"
 }
 
-ItsyScape.Resource.Peep "Nymph_Attackable_Wand" {
+ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand" {
 	ItsyScape.Action.Attack(),
 }
 
 ItsyScape.Meta.ResourceTag {
 	Value = "Undead",
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Nymph.BaseNymph",
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Nymph",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Revenging felled trees since the dawn of humanity.",
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
 	Value = ItsyScape.Utility.xpForLevel(5),
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
 	Value = ItsyScape.Utility.xpForLevel(5),
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(10),
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(10),
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepEquipmentItem {
 	Item = ItsyScape.Resource.Item "DinkyWand",
 	Count = 1,
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Meta.PeepEquipmentItem {
 	Item = ItsyScape.Resource.Item "WoodlandRobe",
 	Count = 1,
-	Resource = ItsyScape.Resource.Peep "Nymph_Attackable_Wand"
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
 ItsyScape.Resource.Item "WoodlandRobe" {

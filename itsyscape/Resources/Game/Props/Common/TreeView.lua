@@ -183,8 +183,10 @@ function TreeView:update(delta)
 			self.currentAnimation = TreeView.ANIMATION_IDLE
 		end
 
-		animation:computeTransforms(self.time, self.transforms)
-		self.node:setTransforms(self.transforms)
+		if self.currentAnimation ~= TreeView.ANIMATION_IDLE or self.time <= animation:getDuration() then
+			animation:computeTransforms(self.time, self.transforms)
+			self.node:setTransforms(self.transforms)
+		end
 	end
 end
 

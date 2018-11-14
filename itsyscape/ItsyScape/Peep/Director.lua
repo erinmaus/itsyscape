@@ -182,6 +182,18 @@ function Director:probe(...)
 	return result
 end
 
+function Director:broadcast(t, event, ...)
+	if type(t) == 'string' then
+		t = self.peepsByLayer[t] or {}
+	else
+		t = t or self.peeps
+	end
+
+	for i = 1, #t do
+		t[i]:poke(event, ...)
+	end
+end
+
 -- Updates the Director.
 --
 -- First updates Peeps.

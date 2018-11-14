@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_FoggyForest/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_FoggyForest.Peep",
+	Resource = M._MAP
+}
+
 M["Zombi1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -181,5 +186,41 @@ do
 		Value = "Gideon",
 		Language = "en-US",
 		Resource = M["Zombi6"]
+	}
+end
+
+M["Anchor_SpawnNorthWest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 5,
+		PositionZ = 39,
+		Name = "Anchor_SpawnNorthWest",
+		Map = M._MAP,
+		Resource = M["Anchor_SpawnNorthWest"]
+	}
+end
+
+M["Anchor_SpawnSouthEast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 5,
+		PositionZ = 77,
+		Name = "Anchor_SpawnSouthEast",
+		Map = M._MAP,
+		Resource = M["Anchor_SpawnSouthEast"]
+	}
+end
+
+M["Anchor_SpawnClearing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 5,
+		PositionZ = 59,
+		Name = "Anchor_SpawnClearing",
+		Map = M._MAP,
+		Resource = M["Anchor_SpawnClearing"]
 	}
 end

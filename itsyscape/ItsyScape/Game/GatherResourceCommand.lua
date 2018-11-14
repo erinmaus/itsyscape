@@ -52,7 +52,8 @@ function GatherResourceCommand:onBegin(peep)
 	peep:poke('resourceHit', {
 		tool = self.tool,
 		damage = 0,
-		skill = self.skill
+		skill = self.skill,
+		prop = self.prop
 	})
 end
 
@@ -82,13 +83,15 @@ function GatherResourceCommand:attack(peep)
 		local damage = logic:rollDamage(peep, self.multiplier, self.bonusStrength)
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
-			damage = damage
+			damage = damage,
+			peep = peep
 		})
 
 		peep:poke('resourceHit', {
 			tool = self.tool,
 			damage = damage,
-			skill = self.skill
+			skill = self.skill,
+			prop = self.prop
 		})
 	end
 end

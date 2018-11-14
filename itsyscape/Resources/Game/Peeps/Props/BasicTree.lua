@@ -55,10 +55,6 @@ function BasicTree:onResourceHit(e)
 			health.maxProgress,
 			health.currentProgress)
 
-		local e = {}
-		self:poke('chopped', e)
-		self:poke('resourceObtained', e)
-
 		local resource = Utility.Peep.getResource(self)
 		if resource then
 			local gameDB = self:getDirector():getGameDB()
@@ -72,6 +68,10 @@ function BasicTree:onResourceHit(e)
 				self.spawnCooldown = 60
 			end
 		end
+
+		local e = { peep = e.peep }
+		self:poke('chopped', e)
+		self:poke('resourceObtained', e)
 	end
 end
 
