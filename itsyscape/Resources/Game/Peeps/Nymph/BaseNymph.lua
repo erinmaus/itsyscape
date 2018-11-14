@@ -9,17 +9,23 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local BaseNymph = Class(Player)
 
 function BaseNymph:new(resource, name, ...)
 	Player.new(self, resource, name or 'Nymph', ...)
+
+	self:addBehavior(ActiveSpellBehavior)
+	self:addBehavior(StanceBehavior)
 end
 
 function BaseNymph:ready(director, game)
@@ -59,6 +65,14 @@ function BaseNymph:ready(director, game)
 	local runes = InfiniteInventoryStateProvider(self)
 	runes:add("AirRune")
 	runes:add("EarthRune")
+
+	local stance = self:getBehavior(StanceBehavior)
+	stance.stance = Weapon.STANCE_AGGRESSIVE
+	stance.useSpell = true
+
+
+	local spell = self:getBehavior(ActiveSpellBehavior)
+	spell.spell = Utility.Magic.newSpell("EarthStrike", game)
 
 	self:getState():addProvider("Item", runes)
 end

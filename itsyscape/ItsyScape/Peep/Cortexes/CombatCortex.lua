@@ -115,7 +115,7 @@ function CombatCortex:update(delta)
 
 					local differenceI = math.abs(selfI - targetI)
 					local differenceJ = math.abs(selfJ - targetJ)
-					local distanceToTarget = differenceI + differenceJ
+					local distanceToTarget = math.floor(math.sqrt(differenceI ^ 2 + differenceJ ^ 2))
 
 					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
 						peep:getCommandQueue():clear()
@@ -123,7 +123,7 @@ function CombatCortex:update(delta)
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
 						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 0)
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange - 1, 0), { asCloseAsPossible = false })
 							if not walk then
 								Log.info(
 									"Peep %s (%d) couldn't reach target Peep %s (%d); abandoning.",
