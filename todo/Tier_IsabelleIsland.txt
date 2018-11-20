@@ -96,3 +96,14 @@
    on occasion, 1-3.
 4) Can make incense. Get ingredients from cutting trees and shrubs. Provides
    buffs when burnt. Making incense requires firemaking. Ranges from lvl 1-10.
+5) Need decorations for buildings.
+6) Yendorian priest in Foggy Forest sells tertiary ingredients to incense
+   and bonfires. He accepts bones as a currency.
+
+## Odd'n'ends
+* HUD for health, prayer points
+* Prayers, prayer alter
+* Ranged weapons, ammunition
+* Misc melee weapons (sword, longsword, scimitar, zweihander)
+* Shields
+* Cook on fires
