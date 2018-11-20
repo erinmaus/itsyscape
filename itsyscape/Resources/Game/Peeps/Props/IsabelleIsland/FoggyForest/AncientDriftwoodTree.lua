@@ -37,7 +37,7 @@ function AncientDriftwoodTree:onResourceObtained(e)
 	local director = self:getDirector()
 	local t = director:probe(self:getLayerName(), Probe.resource(map))
 
-	if self.ticks < AncientDriftwoodTree.MAX_TICKS then
+	if self.ticks <= AncientDriftwoodTree.MAX_TICKS then
 		self.spawnCooldown = 10
 
 		director:broadcast(t, 'ancientDriftwoodTreeHit', { ticks = self.ticks, peep = e.peep })

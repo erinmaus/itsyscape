@@ -27,6 +27,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local LootDropperBehavior = require "ItsyScape.Peep.Behaviors.LootDropperBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
@@ -46,6 +47,7 @@ function Player:new(resource, ...)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(LootDropperBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1.5, 2, 1.5)

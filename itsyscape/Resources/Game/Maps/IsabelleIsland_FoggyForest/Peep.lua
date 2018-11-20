@@ -26,6 +26,9 @@ FoggyForest.ANCHORS = {
 	"Anchor_SpawnClearing"
 }
 
+FoggyForest.BOSS = "IsabelleIsland_FoggyForest_BossyNymph"
+FoggyForest.BOSS_ANCHOR = "Anchor_SpawnClearing"
+
 function FoggyForest:new(name, ...)
 	Map.new(self, name or 'FoggyForest', ...)
 
@@ -61,6 +64,11 @@ end
 
 function FoggyForest:onAncientDriftwoodTreeFelled(e)
 	Log.info('Ancient driftwood tree felled after %d ticks.', e.ticks)
+
+	local actor = Utility.spawnActorAtAnchor(self, FoggyForest.BOSS, FoggyForest.BOSS_ANCHOR)
+	if actor then
+		actor:getPeep():listen('finalize', Utility.Peep.attack, actor:getPeep(), e.peep, math.huge)
+	end
 end
 
 return FoggyForest

@@ -65,6 +65,20 @@ ItsyScape.Meta.PeepEquipmentItem {
 
 ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand" {
 	ItsyScape.Action.Attack(),
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Nymph_Base_Secondary",
+			Count = 1
+		}
+	},
 }
 
 ItsyScape.Meta.ResourceTag {
@@ -122,6 +136,29 @@ ItsyScape.Meta.PeepEquipmentItem {
 	Item = ItsyScape.Resource.Item "WoodlandRobe",
 	Count = 1,
 	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "CommonLogs",
+	Weight = 200,
+	Count = 2,
+	Range = 1,
+	Noted = 1,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "WoodlandRobe",
+	Weight = 20,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Bones",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Secondary"	
 }
 
 ItsyScape.Resource.Item "WoodlandRobe" {
