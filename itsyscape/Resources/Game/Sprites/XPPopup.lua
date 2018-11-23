@@ -62,7 +62,7 @@ function XPPopup:draw(position, time)
 	local icon = self.skillIcon:getResource()
 
 	love.graphics.setFont(font)
-	local text = "+" .. tostring(self.xp)
+	local text = "+" .. tostring(math.floor(self.xp + 0.5))
 	local width = font:getWidth(text)
 
 	local alpha = 1 - (math.max(time - 0.5, 0) / XPPopup.DURATION)

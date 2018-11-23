@@ -16,6 +16,8 @@ function SpriteManager:new(resourceManager)
 	self.resourceManager = resourceManager
 	self.sprites = {}
 	self.times = {}
+
+	self.nodes = {}
 end
 
 function SpriteManager:getResources()
@@ -26,8 +28,17 @@ function SpriteManager:add(spriteID, node, offset, ...)
 	local TypeName = string.format("Resources.Game.Sprites.%s", spriteID)
 	local Type = require(TypeName)
 
-	local sprite = Type(self, node, offset)
+	local nodes = self.nodes[node]
+	if not nodes then
+		nodes = {}
+		self.nodes[node] = nodes
+	end
+
+	local sprite = Type(self, node, offset + #nodes * Vector(0, 0.5, 0))
 	sprite:spawn(...)
+
+	table.insert(nodes, sprite)
+	self.nodes[sprite] = node
 
 	table.insert(self.sprites, sprite)
 	self.times[sprite] = 0
@@ -38,8 +49,23 @@ end
 function SpriteManager:poof(sprite)
 	for i = 1, #self.sprites do
 		if self.sprites[i] == sprite then
+			local node = self.nodes[sprite]
+			local nodes = self.nodes[node]
+			for i = 1, #nodes do
+				if nodes[i] == sprite then
+					table.remove(nodes, i)
+					break
+				end
+			end
+
+			if #nodes == 0 then
+				self.nodes[node] = nil
+			end
+			self.nodes[sprite] = nil
+
 			table.remove(self.sprites, i)
 			self.times[sprite] = nil
+			break
 		end
 	end
 end
@@ -57,8 +83,7 @@ function SpriteManager:update(delta)
 		local time = self.times[sprite]
 
 		if sprite:isDone(time) then
-			table.remove(self.sprites, index)
-			self.times[sprite] = nil
+			self:poof(sprite)
 			sprite:poof()
 		else
 			index = index + 1

@@ -198,3 +198,68 @@ do
 		Resource = ItsyScape.Resource.DropTable "IsabelleIsland_FoggyForest_BossyNymph_Mask"	
 	}
 end
+
+
+do
+	ItsyScape.Resource.Shop "IsabelleIsland_FoggyForest_YendorianIncenseShop" {
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 5,
+				Resource = ItsyScape.Resource.Item "BoneShards"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "WeakGum"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 30,
+				Resource = ItsyScape.Resource.Item "BoneShards"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CommonLogs"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 30,
+				Resource = ItsyScape.Resource.Item "BoneShards"
+			},
+
+			Output {
+				Count = 10,
+				Resource = ItsyScape.Resource.Item "FalteringFrankincense"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 90,
+				Resource = ItsyScape.Resource.Item "BoneShards"
+			},
+
+			Output {
+				Count = 10,
+				Resource = ItsyScape.Resource.Item "FaintEasternBalsam"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 1000,
+				Resource = ItsyScape.Resource.Item "BoneShards"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "EldritchMyrrh"
+			}
+		}
+	}
+end
