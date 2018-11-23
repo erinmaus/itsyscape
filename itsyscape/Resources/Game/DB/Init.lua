@@ -50,6 +50,10 @@ Game "ItsyScape"
 
 	ActionType "Bank"
 
+	ResourceType "Shop"
+	ActionType "Buy"
+	ActionType "Sell"
+
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
 	ResourceType "Map"
@@ -473,4 +477,20 @@ do
 	ItsyScape.Utility.tag(ItsyScape.Resource.Item "AmuletOfYendor", "x_debug")
 
 	include "Resources/Game/DB/Items/ErrinTheHeathen.lua"
+end
+
+do
+	ItsyScape.Resource.Shop "Test" {
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CommonLogs"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "Bones"
+			}
+		}
+	}
 end
