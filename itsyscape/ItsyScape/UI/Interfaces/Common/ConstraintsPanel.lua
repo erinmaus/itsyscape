@@ -19,6 +19,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ConstraintsPanel = Class(Widget)
+ConstraintsPanel.DEFAULT_WIDTH = 120
 ConstraintsPanel.DEFAULT_PADDING = 4
 ConstraintsPanel.TITLE_SIZE = 16
 
@@ -32,6 +33,7 @@ function ConstraintsPanel:new(view)
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({ image = false }, view:getResources()))
+	self.panel:setSize(ConstraintsPanel.DEFAULT_WIDTH, ConstraintsPanel.TITLE_SIZE + ConstraintsPanel.DEFAULT_PADDING)
 
 	self.titleLabel = Label()
 	self.titleLabel:setStyle(LabelStyle({
