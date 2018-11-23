@@ -118,12 +118,13 @@ function ShopWindow:update(...)
 		for i = 1, #state.inventory do
 			local action = gameDB:getAction(state.inventory[i].id)
 			if action then
-				local item
+				local item, quantity
 				for output in brochure:getOutputs(action) do
 					local outputResource = brochure:getConstraintResource(output)
 					local outputType = brochure:getResourceTypeFromResource(outputResource)
 					if outputType.name == "Item" then
 						item = outputResource
+						quantity = output.count
 						break
 					end
 				end
@@ -134,7 +135,11 @@ function ShopWindow:update(...)
 
 					local itemIcon = ItemIcon()
 					itemIcon:setItemID(item.name)
+					if quantity > 1 then
+						itemIcon:setItemCount(quantity)
+					end
 					itemIcon:setPosition(2, 2)
+
 					button:addChild(itemIcon)
 
 					self.grid:addChild(button)

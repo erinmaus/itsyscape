@@ -364,6 +364,8 @@ include "Resources/Game/DB/Items/Logs.lua"
 include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
 include "Resources/Game/DB/Items/Bones.lua"
+include "Resources/Game/DB/Items/Incense.lua"
+include "Resources/Game/DB/Items/IncenseIngredients.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Leathers.lua"
@@ -477,20 +479,4 @@ do
 	ItsyScape.Utility.tag(ItsyScape.Resource.Item "AmuletOfYendor", "x_debug")
 
 	include "Resources/Game/DB/Items/ErrinTheHeathen.lua"
-end
-
-do
-	ItsyScape.Resource.Shop "Test" {
-		ItsyScape.Action.Buy() {
-			Input {
-				Count = 1,
-				Resource = ItsyScape.Resource.Item "CommonLogs"
-			},
-
-			Output {
-				Count = 1,
-				Resource = ItsyScape.Resource.Item "Bones"
-			}
-		}
-	}
 end

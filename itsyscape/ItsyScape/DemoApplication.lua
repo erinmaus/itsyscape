@@ -63,7 +63,7 @@ function DemoApplication:initialize()
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	--self:getGame():getUI():open("CraftWindow", "Metal", nil, "Smelt")
-	self:getGame():getUI():openBlockingInterface(playerPeep, "ShopWindow", self:getGame():getGameDB():getResource("Test", "Shop"))
+	self:getGame():getUI():openBlockingInterface(playerPeep, "ShopWindow", self:getGame():getGameDB():getResource("IsabelleIsland_FoggyForest_YendorianIncenseShop", "Shop"))
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = position

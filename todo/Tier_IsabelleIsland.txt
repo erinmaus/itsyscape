@@ -104,6 +104,15 @@
 * HUD for health, prayer points
 * Prayers, prayer alter
 * Ranged weapons, ammunition
+* Fletching skill
 * Misc melee weapons (sword, longsword, scimitar, zweihander)
 * Shields
 * Cook on fires
+* Chickens & feathers
+* Shops
+* Craft shirts from cowhide
+
+## Incense
+* Faltering holy incense (faltering frankincense)
+* Faint melodic incense (faint eastern balsam)
+* Dreadful incense (eldritch myrrh)
