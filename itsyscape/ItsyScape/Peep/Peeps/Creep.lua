@@ -63,8 +63,8 @@ function Creep:new(resource, ...)
 	Utility.Peep.setResource(self, resource)
 end
 
-function Creep:assign(director, key)
-	Peep.assign(self, director, key)
+function Creep:ready(director, game)
+	Peep.ready(self, director, game)
 
 	Utility.Peep.setNameMagically(self)
 end
