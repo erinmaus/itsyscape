@@ -199,7 +199,6 @@ do
 	}
 end
 
-
 do
 	ItsyScape.Resource.Shop "IsabelleIsland_FoggyForest_YendorianIncenseShop" {
 		ItsyScape.Action.Buy() {

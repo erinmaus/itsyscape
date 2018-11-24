@@ -5,6 +5,41 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+M["YendorianPriest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 5,
+		PositionZ = 19,
+		Name = "YendorianPriest",
+		Map = M._MAP,
+		Resource = M["YendorianPriest"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Base",
+		MapObject = M["YendorianPriest"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian priest Uuly'lth",
+		Language = "en-US",
+		Resource = M["YendorianPriest"]
+	}
+
+	local ShopAction = ItsyScape.Action.Shop()
+
+	ItsyScape.Meta.ShopTarget {
+		Resource = ItsyScape.Resource.Shop "IsabelleIsland_FoggyForest_YendorianIncenseShop",
+		Action = ShopAction
+	}
+
+	M["YendorianPriest"] {
+		ShopAction,
+		ItsyScape.Action.Attack()
+	}
+end
+
 M["Zombi1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
