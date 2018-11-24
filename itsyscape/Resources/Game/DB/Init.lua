@@ -51,8 +51,14 @@ Game "ItsyScape"
 	ActionType "Bank"
 
 	ResourceType "Shop"
+	ActionType "Shop"
 	ActionType "Buy"
 	ActionType "Sell"
+
+	Meta "ShopTarget" {
+		Resource = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
 
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
@@ -376,6 +382,7 @@ include "Resources/Game/DB/Items/LeatherArmor.lua"
 include "Resources/Game/DB/Items/MagicWeapons.lua"
 
 -- Misc
+include "Resources/Game/DB/Items/Currency.lua"
 include "Resources/Game/DB/Items/MiscFood.lua"
 
 -- Creeps
@@ -388,6 +395,7 @@ include "Resources/Game/DB/Creeps/Zombi.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
+include "Resources/Game/DB/Peeps/Yendorian.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernCombat.lua"

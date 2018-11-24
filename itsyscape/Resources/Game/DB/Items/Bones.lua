@@ -8,6 +8,20 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+BoneCraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+ItsyScape.Meta.ActionVerb {
+	Value = "Craft",
+	Language = "en-US",
+	Action = BoneCraftAction
+}
+
+ItsyScape.Meta.DelegatedActionTarget {
+	CategoryKey = "Bones",
+	ActionType = "Craft",
+	Action = BoneCraftAction
+}
+
 ItsyScape.Resource.Item "Bones" {
 	ItsyScape.Action.Bury() {
 		Input {
@@ -21,37 +35,13 @@ ItsyScape.Resource.Item "Bones" {
 		}
 	},
 
-	ItsyScape.Action.Craft() {
-		Requirement {
-			Resource = ItsyScape.Resource.Item "Crafting",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
+	BoneCraftAction
+}
 
-		Requirement {
-			Resource = ItsyScape.Resource.Item "Faith",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "Bones",
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "BoneShards",
-			Count = 15
-		}
-	}
+ItsyScape.Meta.ResourceCategory {
+	Key = "Bones",
+	Value = "Bones", -- Well what else am I going to call it?
+	Resource = ItsyScape.Resource.Item "Bones"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -67,12 +57,48 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "BoneShards" {
-	-- Nothing.
+	ItsyScape.Action.Craft() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Bones",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForResource(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BoneShards",
+			Count = 15
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Bone shards",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BoneShards"
+}
+
+ItsyScape.Meta.ResourceCategory {
+	Key = "Bones",
+	Value = "Bones", -- Well what else am I going to call it?
 	Resource = ItsyScape.Resource.Item "BoneShards"
 }
 
