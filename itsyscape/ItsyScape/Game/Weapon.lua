@@ -98,7 +98,7 @@ function Weapon:rollAttack(peep, target, bonus)
 
 	local defenceLevel
 	do
-		local stats = peep:getBehavior(StatsBehavior)
+		local stats = target:getBehavior(StatsBehavior)
 		if stats and stats.stats then
 			stats = stats.stats
 			if stats:hasSkill("Defense") then
@@ -106,7 +106,7 @@ function Weapon:rollAttack(peep, target, bonus)
 			end
 		end
 
-		local stance = peep:getBehavior(StanceBehavior)
+		local stance = target:getBehavior(StanceBehavior)
 		if stance then
 			if stance.stance == Weapon.STANCE_DEFENSIVE then
 				defenseLevel = (defenseLevel or 1) + 8
