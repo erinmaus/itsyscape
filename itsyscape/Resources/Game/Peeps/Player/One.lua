@@ -134,6 +134,7 @@ function One:assign(director, key, ...)
 		t:spawn(inventory.inventory, "Bones", 1)
 		t:spawn(inventory.inventory, "AncientDriftwoodMask", 1)
 		t:spawn(inventory.inventory, "Coins", 100)
+		t:spawn(inventory.inventory, "DreadfulIncense", 100)
 		t:commit()
 	end
 

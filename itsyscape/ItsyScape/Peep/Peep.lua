@@ -51,6 +51,8 @@ function Peep:new(name)
 
 	self.resources = {}
 
+	self.effects = {}
+
 	self.state = State()
 
 	self:addPoke('ready')
@@ -58,6 +60,8 @@ function Peep:new(name)
 	self:addPoke('move')
 	self:addPoke('finalize')
 	self:addPoke('poof')
+	self:addPoke('effectAdded')
+	self:addPoke('effectRemoved')
 end
 
 -- Adds a poke 'name'.
@@ -366,6 +370,46 @@ function Peep:match(...)
 	return true
 end
 
+-- Adds an Effect to the Peep.
+function Peep:addEffect(effect)
+	if not self.effects[effect] and not effect:isApplied() then
+		self.effects[effect] = true
+		effect:enchant(self)
+
+		self:poke('effectAdded', effect)
+	end
+end
+
+-- Removes an Effect from the peep.
+function Peep:removeEffect(effect)
+	if self.effects[effect] then
+		effect:sizzle()
+
+		self:poke('effectRemoved', effect)
+	end
+end
+
+-- Iterates over effects applied to the peep, optionally of type 'EffectType'.
+function Peep:getEffects(EffectType)
+	local effect
+	return function()
+		effect = next(self.effects, effect)
+		while effect ~= nil
+		      and EffectType ~= nil and
+		      not Class.isCompatibleType(effect, EffectType)
+		do
+			effect = next(self.effects, effect)
+		end
+
+		return effect
+	end
+end
+
+-- Returns the first effect of 'EffectType'.
+function Peep:getEffect(EffectType)
+	return self:getEffects(EffectType)()
+end
+
 -- Called when the Peep is ready.
 --
 -- This should never be called externally.
@@ -394,6 +438,23 @@ function Peep:update(director, game)
 
 	for _, queue in pairs(self.commandQueues) do
 		queue:update(game:getDelta())
+	end
+
+	do
+		-- If an Effect sizzles while updating, bad things happen since you
+		-- can't modify a table you're iterating.
+		--
+		-- So create a lazy clone of the effects table. Aside: might be performance
+		-- bottleneck if there's a lot of effects on a lot of Peeps.
+
+		local effects = self.effects
+		self.effects = {}
+
+		for effect in pairs(effects) do
+			self.effects[effect] = true
+
+			effect:update()
+		end
 	end
 end
 

@@ -43,18 +43,13 @@ Weapon.BONUSES       = {
 	["None"]   = true
 }
 
--- Rolls an attack.
---
--- Returns true if the attack succeeded, false otherwise. Also returns two integers:
--- the attack roll and the defense roll. Thus, this method returns (success, attacck, defense).
-function Weapon:rollAttack(peep, target, bonus)
+Weapon.AttackRoll = Class()
+
+function Weapon.AttackRoll:new(weapon, peep, target, bonus)
+	self.weapon = weapon
+
 	-- There's a cyclic dependency here. Ugly.
 	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
-
-	-- TODO: Use tiny RNG
-	if not Weapon.BONUSES[bonus] then
-		return false, 0, 0
-	end
 
 	local accuracyBonus
 	if bonus == Weapon.BONUS_NONE then
@@ -65,6 +60,8 @@ function Weapon:rollAttack(peep, target, bonus)
 		accuracyBonus = bonuses[k] or 0
 	end
 
+	self.accuracyBonus = accuracyBonus
+
 	local defenseBonus
 	if bonus == Weapon.BONUS_NONE then
 		defenseBonus = 0
@@ -74,13 +71,15 @@ function Weapon:rollAttack(peep, target, bonus)
 		defenseBonus = bonuses[k] or 0
 	end
 
+	self.defenseBonus = defenseBonus
+
 	-- TODO: Handle prayers
 	local attackLevel
 	do
 		local stats = peep:getBehavior(StatsBehavior)
 		if stats and stats.stats then
 			stats = stats.stats
-			local _, _, accuracyStat = self:getSkill(Weapon.PURPOSE_KILL)
+			local _, _, accuracyStat = weapon:getSkill(Weapon.PURPOSE_KILL)
 			if stats:hasSkill(accuracyStat) then
 				attackLevel = stats:getSkill(accuracyStat):getWorkingLevel()
 			end
@@ -95,6 +94,8 @@ function Weapon:rollAttack(peep, target, bonus)
 
 		attackLevel = attackLevel or 1
 	end
+
+	self.attackLevel = attackLevel
 
 	local defenceLevel
 	do
@@ -116,13 +117,77 @@ function Weapon:rollAttack(peep, target, bonus)
 		defenseLevel = defenseLevel or 1
 	end
 
-	local maxAttackRoll = Utility.Combat.calcAccuracyRoll(attackLevel, accuracyBonus)
-	local maxDefenseRoll = Utility.Combat.calcAccuracyRoll(defenseLevel, defenseBonus)
+	self.defenseLevel = defenseLevel
+end
+
+function Weapon.AttackRoll:getWeapon()
+	return self.weapon
+end
+
+function Weapon.AttackRoll:getDefenseLevel()
+	return self.defenseLevel
+end
+
+function Weapon.AttackRoll:setDefenseLevel(value)
+	self.defenseLevel = self.defenseLevel or value
+end
+
+function Weapon.AttackRoll:getAttackLevel()
+	return self.attackLevel
+end
+
+function Weapon.AttackRoll:setAttackLevel(value)
+	self.attackLevel = self.attackLevel or value
+end
+
+function Weapon.AttackRoll:getDefenseBonus()
+	return self.defenseBonus
+end
+
+function Weapon.AttackRoll:setDefenseBonus(value)
+	self.defenseBonus = self.defenseBonus or value
+end
+
+function Weapon.AttackRoll:getAccuracyBonus()
+	return self.accuracyBonus
+end
+
+function Weapon.AttackRoll:setAccuracyBonus(value)
+	self.accuracyBonus = self.accuracyBonus or value
+end
+
+function Weapon.AttackRoll:getMaxAttackRoll()
+	return self.maxAttackRoll or Utility.Combat.calcAccuracyRoll(self.attackLevel, self.accuracyBonus)
+end
+
+function Weapon.AttackRoll:setMaxAttackRoll(value)
+	self.maxAttackRoll = value or false
+end
+
+function Weapon.AttackRoll:getMaxDefenseRoll()
+	return self.maxDefenseRoll or Utility.Combat.calcAccuracyRoll(self.defenseLevel, self.defenseBonus)
+end
+
+function Weapon.AttackRoll:setMaxDefenseRoll(value)
+	self.maxDefenseRoll = value or false
+end
+
+function Weapon.AttackRoll:roll()
+	local maxAttackRoll = self:getMaxAttackRoll()
+	local maxDefenseRoll = self:getMaxDefenseRoll()
 
 	local attackRoll = math.floor(math.random(0, maxAttackRoll))
 	local defenseRoll = math.floor(math.random(0, maxDefenseRoll))
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
+end
+
+-- Rolls an attack.
+--
+-- Returns true if the attack succeeded, false otherwise. Also returns two integers:
+-- the attack roll and the defense roll. Thus, this method returns (success, attacck, defense).
+function Weapon:rollAttack(peep, target, bonus)
+	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
 function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
@@ -223,7 +288,19 @@ function Weapon:applyCooldown(peep)
 end
 
 function Weapon:perform(peep, target)
-	local s, a, d = self:rollAttack(peep, target, self:getBonusForStance(peep))
+	local roll = self:rollAttack(peep, target, self:getBonusForStance())
+	do
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.AccuracyEffect") do
+			effect:applySelf(roll)
+		end
+	end
+	do
+		for effect in target:getEffects(require "ItsyScape.Peep.Effects.AccuracyEffect") do
+			effect:applyTarget(roll)
+		end
+	end
+
+	local s, a, d = roll:roll()
 	if s then
 		self:onAttackHit(peep, target, a, d)
 	else
@@ -247,7 +324,6 @@ function Weapon:getSkill(purpose)
 
 	return false
 end
-
 
 function Weapon:getWeaponType()
 	return 'none'

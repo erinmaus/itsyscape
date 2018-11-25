@@ -36,7 +36,7 @@ function DialogBoxController:new(peep, director, action)
 				self.dialog = Dialog(filename)
 
 				self.dialog:setTarget(peep)
-				self.dialog:getDirector(director)
+				self.dialog:setDirector(director)
 
 				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
 				for i = 1, #speakers do

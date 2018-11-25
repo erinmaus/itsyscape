@@ -35,6 +35,7 @@ ItsyScape.Resource.Skill "Woodcutting"
 
 ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
+	ActionType "Burn"
 
 ItsyScape.Meta.ResourceName {
 	Value = "Magic",
