@@ -8,16 +8,21 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseYendorian = Class(Creep)
 
 function BaseYendorian:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Yendorian', ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(1.5, 3.75, 1.5)
 end
 
 function BaseYendorian:ready(director, game)

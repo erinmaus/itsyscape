@@ -34,7 +34,22 @@ do
 		Action = ShopAction
 	}
 
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["YendorianPriest"],
+		Name = "Priest",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Dialog/YendorianPriest_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
 	M["YendorianPriest"] {
+		TalkAction,
 		ShopAction,
 		ItsyScape.Action.Attack()
 	}

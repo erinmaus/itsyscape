@@ -13,6 +13,9 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local Action = Class()
+Action.DEFAULT_FLAGS = {
+	['item-inventory'] = true
+}
 
 function Action:new(game, action)
 	self.game = game
@@ -86,7 +89,7 @@ end
 --
 -- The default implementation only evaluates requirements, not inputs.
 function Action:canPerform(state, flags)
-	flags = flags or self.FLAGS or { ['item-inventory'] = true }
+	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
 	local brochure = self.gameDB:getBrochure()
 	for requirement in brochure:getRequirements(self.action) do
@@ -105,7 +108,7 @@ end
 --
 -- The default implementation only evaluates inputs, not requirements.
 function Action:canTransfer(state, flags)
-	flags = flags or self.FLAGS or { ['item-inventory'] = true }
+	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
 	local brochure = self:getGameDB():getBrochure()
 	for input in brochure:getInputs(self.action) do
@@ -146,6 +149,8 @@ end
 
 -- Transfers inputs/outputs.
 function Action:transfer(state, player, flags)
+	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
+
 	if self:canTransfer(state, flags) then
 		local gameDB = self:getGameDB()
 		local brochure = gameDB:getBrochure()

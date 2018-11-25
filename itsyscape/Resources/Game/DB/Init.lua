@@ -264,6 +264,12 @@ Game "ItsyScape"
 
 	ResourceType "KeyItem"
 
+	ResourceType "Effect"
+	Meta "Enchantment" {
+		Effect = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
