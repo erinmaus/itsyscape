@@ -18,7 +18,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
-Ribbon = Class(Interface)
+local Ribbon = Class(Interface)
 Ribbon.BUTTON_SIZE = 64
 Ribbon.PADDING = 8
 

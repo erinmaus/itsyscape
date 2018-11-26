@@ -13,6 +13,15 @@ local Effect = Class()
 
 function Effect:new()
 	self.peep = false
+	self.resource = false
+end
+
+function Effect:setResource(value)
+	self.resource = value or self.resource
+end
+
+function Effect:getResource()
+	return self.resource
 end
 
 function Effect:isApplied()

@@ -13,7 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
 -- Map mesh. Builds a mesh from a map.
-MapMesh = Class()
+local MapMesh = Class()
 
 -- Vertex format.
 --

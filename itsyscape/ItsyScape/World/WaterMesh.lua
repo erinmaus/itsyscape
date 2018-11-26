@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
-WaterMesh = Class()
+local WaterMesh = Class()
 
 -- Vertex format.
 WaterMesh.FORMAT = {

@@ -12,7 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 
 -- Light class.
-Light = Class()
+local Light = Class()
 
 -- Constructs the light.
 --

@@ -11,7 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 
-AmbientLightSceneNode = Class(LightSceneNode)
+local AmbientLightSceneNode = Class(LightSceneNode)
 
 function AmbientLightSceneNode:new()
 	LightSceneNode.new(self)
