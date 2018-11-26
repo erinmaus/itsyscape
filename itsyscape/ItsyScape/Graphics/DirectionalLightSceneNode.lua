@@ -11,7 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 
-DirectionalLightSceneNode = Class(LightSceneNode)
+local DirectionalLightSceneNode = Class(LightSceneNode)
 
 function DirectionalLightSceneNode:new()
 	LightSceneNode.new(self)

@@ -288,7 +288,7 @@ function Weapon:applyCooldown(peep)
 end
 
 function Weapon:perform(peep, target)
-	local roll = self:rollAttack(peep, target, self:getBonusForStance())
+	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
 	do
 		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.AccuracyEffect") do
 			effect:applySelf(roll)

@@ -42,7 +42,7 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 		self.mesh:release()
 	end
 
-	min, max = Vector(math.huge), Vector(-math.huge)
+	local min, max = Vector(math.huge), Vector(-math.huge)
 
 	local vertices = {}
 	local transform = love.math.newTransform()
