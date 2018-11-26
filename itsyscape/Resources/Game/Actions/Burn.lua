@@ -36,25 +36,9 @@ function Burn:perform(state, peep, item)
 		return false
 	end
 
-	local EffectType
-	do
-		local EffectTypeName = string.format("Resources.Game.Effects.%s", effect.name)
-		local s, r = pcall(require, EffectTypeName)
-		if not s then
-			Log.error("Effect type '%s' not found: %s", EffectTypeName, r)
-			return false
-		end
-
-		EffectType = r
-	end
-
-	if peep:getEffect(EffectType) then
-		Log.info("Effect '%s' already applied.", Utility.getName(effect, gameDB))
+	if not Utility.Peep.applyEffect(peep, effect, true) then
 		return false
 	end
-
-	local effectInstance = EffectType()
-	peep:addEffect(effectInstance)
 
 	self:transfer(state, peep)
 
