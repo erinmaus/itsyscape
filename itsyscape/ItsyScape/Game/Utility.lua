@@ -421,6 +421,38 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
+function Utility.Peep.getEffectType(resource)
+	local EffectTypeName = string.format("Resources.Game.Effects.%s.Effect", resource.name)
+	local s, r = pcall(require, EffectTypeName)
+	if s then
+		return r
+	end
+
+	return nil
+end
+
+function Utility.Peep.applyEffect(peep, resource, singular, ...)
+	local gameDB = peep:getDirector():getGameDB()
+
+	local EffectType = Utility.Peep.getEffectType(resource)
+
+	if not EffectType then
+		Log.warn("Effect '%s' does not exist.", Utility.getName(resource, gameDB))
+		return false
+	end
+
+	if singular and peep:getEffect(EffectType) then
+		Log.info("Effect '%s' already applied.", Utility.getName(resource, gameDB))
+		return false
+	end
+
+	local effectInstance = EffectType(...)
+	effectInstance:setResource(resource)
+	peep:addEffect(effectInstance)
+
+	return true
+end
+
 function Utility.Peep.canAttack(peep)
 	return peep:hasBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
 end
