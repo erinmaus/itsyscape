@@ -109,7 +109,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Restores 1% of prayer points every second.",
+		Value = "Restores 1% of prayer points every second. Can restore prayer points up to 10% over maximum.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Effect "WeakPrayerRestorationEffect"
 	}

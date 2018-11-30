@@ -120,6 +120,7 @@ function One:assign(director, key, ...)
 	do
 		local t = director:getItemBroker():createTransaction()
 		t:addParty(inventory.inventory)
+		t:spawn(inventory.inventory, "FalteringHolyIncense", 5)
 		t:commit()
 	end
 
