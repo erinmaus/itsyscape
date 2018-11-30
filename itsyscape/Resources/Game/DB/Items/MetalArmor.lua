@@ -11,7 +11,8 @@
 local METALS = {
 	["Bronze"] = {
 		tier = 1,
-		weight = 12.5
+		weight = 12.5,
+		hammer = "Hammer"
 	}
 }
 
@@ -60,6 +61,11 @@ for name, metal in pairs(METALS) do
 			Input {
 				Resource = ItsyScape.Resource.Item(string.format("%sBar", name)),
 				Count = itemProps.bars
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item(metal.hammer),
+				Count = 1
 			},
 
 			Requirement {

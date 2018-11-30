@@ -8,22 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Item "Needle" {
-	-- Nothing.
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Needle",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "Needle"
-}
-
-ItsyScape.Meta.Item {
-	Value = 1,
-	Weight = 0,
-	Resource = ItsyScape.Resource.Item "Needle"
-}
-
 ItsyScape.Resource.Item "PlainThread" {
 	-- Nothing.
 }

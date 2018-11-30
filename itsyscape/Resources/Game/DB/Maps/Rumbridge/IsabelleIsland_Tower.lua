@@ -49,6 +49,22 @@ do
 		Value = "Her old neighbors were noisy, or was it nosey?",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice"
 	}
+
+	local Pickpocket = ItsyScape.Action.Pickpocket()
+	ItsyScape.Meta.DebugAction {
+		Action = Pickpocket
+	}
+
+	Pickpocket {
+		Output {
+			Resource = ItsyScape.Resource.Item "AmuletOfYendor",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice" {
+		Pickpocket
+	}
 end
 
 do
