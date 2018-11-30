@@ -421,11 +421,13 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
-function Utility.Peep.getEffectType(resource)
+function Utility.Peep.getEffectType(resource, gameDB)
 	local EffectTypeName = string.format("Resources.Game.Effects.%s.Effect", resource.name)
 	local s, r = pcall(require, EffectTypeName)
 	if s then
 		return r
+	else
+		Log.error("Couldn't load effect '%s': %s", Utility.getName(resource, gameDB), r)
 	end
 
 	return nil
@@ -434,7 +436,7 @@ end
 function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	local gameDB = peep:getDirector():getGameDB()
 
-	local EffectType = Utility.Peep.getEffectType(resource)
+	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
 
 	if not EffectType then
 		Log.warn("Effect '%s' does not exist.", Utility.getName(resource, gameDB))
