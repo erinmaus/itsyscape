@@ -101,6 +101,11 @@ function Action:canPerform(state, flags)
 		end
 	end
 
+	local debug = self.gameDB:getRecord("DebugAction", { Action = self.action })
+	if debug and not _DEBUG then
+		return false
+	end
+
 	return true
 end
 
@@ -226,6 +231,17 @@ function Action:getFailureReason(state, peep)
 			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
 			description = Utility.getDescription(resource, self.gameDB),
 			count = requirement.count
+		})
+	end
+
+	local debug = self.gameDB:getRecord("DebugAction", { Action = self.action })
+	if debug and not _DEBUG then
+		table.insert(requirements, {
+			type = "KeyItem",
+			resource = "_DEBUG",
+			name = "Mysterious divine force",
+			description = "A mysterious divine force stops you.",
+			count = 1
 		})
 	end
 
