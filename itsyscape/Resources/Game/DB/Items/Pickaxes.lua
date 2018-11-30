@@ -12,12 +12,14 @@ local METALS = {
 	["Bronze"] = {
 		tier = 1,
 		weight = 12.5,
-		health = 8
+		health = 8,
+		hammer = "Hammer"
 	},
 
 	["Iron"] = {
 		tier = 10,
-		weight = 14.5
+		weight = 14.5,
+		hammer = "Hammer"
 	}
 }
 
@@ -49,6 +51,11 @@ for name, metal in pairs(METALS) do
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForLevel(math.max(metal.tier, 1))
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item(metal.hammer),
+			Count = 1
 		},
 
 		Output {

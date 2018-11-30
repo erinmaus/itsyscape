@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Items/Log.lua
+-- Resources/Game/DB/Items/Logs.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,7 +12,8 @@ local LOGS = {
 	["Common"] = {
 		tier = 0,
 		weight = 8,
-		health = 6
+		health = 6,
+		tinderbox = "Tinderbox"
 	}
 }
 
@@ -108,6 +109,11 @@ for name, log in pairs(LOGS) do
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Firemaking",
 			Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item(log.tinderbox),
+			Count = 1
 		},
 
 		Output {

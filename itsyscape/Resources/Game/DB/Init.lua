@@ -270,6 +270,10 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	Meta "DebugAction" {
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -371,6 +375,7 @@ include "Resources/Game/DB/Skills.lua"
 
 -- Items
 -- Materials
+include "Resources/Game/DB/Items/Tools.lua"
 include "Resources/Game/DB/Items/Ores.lua"
 include "Resources/Game/DB/Items/Logs.lua"
 include "Resources/Game/DB/Items/Bars.lua"
