@@ -43,8 +43,6 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 					table.insert(self.state.actions, a)
 
 					self.actionsByID[a.id] = actionInstance
-				else
-					print 'failed'
 				end
 			end
 		end
