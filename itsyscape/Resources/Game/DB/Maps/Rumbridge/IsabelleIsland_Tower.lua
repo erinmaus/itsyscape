@@ -50,6 +50,12 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice"
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AmuletOfYendor",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice"
+	}
+
 	local Pickpocket = ItsyScape.Action.Pickpocket()
 	ItsyScape.Meta.DebugAction {
 		Action = Pickpocket
