@@ -695,6 +695,15 @@ function Utility.Peep.Stats:onAssign(director)
 				combat.currentHitpoints = combat.currentHitpoints + difference
 			end
 		end)
+		stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
+			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+			local combat = self:getBehavior(CombatStatusBehavior)
+			if combat then
+				combat.maximumPrayer = combat.maximumPrayer + difference
+				combat.currentPrayer = combat.currentPrayer + difference
+			end
+		end)
 	end
 end
 

@@ -102,6 +102,13 @@ function One:assign(director, key, ...)
 		combat.maximumHitpoints = combat.maximumHitpoints + difference
 		combat.currentHitpoints = combat.currentHitpoints + difference
 	end)
+	stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
+		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumPrayer = combat.maximumPrayer + difference
+		combat.currentPrayer = combat.currentPrayer + difference
+	end)
 
 	stats.stats.onXPGain:register(function(_, skill, xp)
 		local actor = self:getBehavior(ActorReferenceBehavior)
