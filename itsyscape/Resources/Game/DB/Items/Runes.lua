@@ -34,6 +34,48 @@ ItsyScape.Resource.Item "AirRune" {
 	-- Nothing
 }
 
+ItsyScape.Resource.Prop "AirObelisk" {
+	ItsyScape.Action.Runecraft() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "UnfocusedRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(1) / 4
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Air obelisk",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AirObelisk"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The wind swirls around it.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AirObelisk"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "AirObelisk"
+}
+
+
 ItsyScape.Meta.ResourceName {
 	Value = "Air Rune",
 	Language = "en-US",

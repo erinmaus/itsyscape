@@ -14284,7 +14284,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{

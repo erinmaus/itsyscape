@@ -14,6 +14,7 @@ local Effect = Class()
 function Effect:new()
 	self.peep = false
 	self.resource = false
+	self.duration = self.DURATION or math.huge
 end
 
 function Effect:setResource(value)
@@ -24,8 +25,20 @@ function Effect:getResource()
 	return self.resource
 end
 
+function Effect:setDuration()
+	return self.duration
+end
+
+function Effect:getDuration()
+	return self.duration
+end
+
 function Effect:isApplied()
 	return self.peep ~= false
+end
+
+function Effect:getPeep()
+	return self.peep
 end
 
 function Effect:enchant(peep)
@@ -36,8 +49,11 @@ function Effect:sizzle()
 	self.peep = false
 end
 
-function Effect:update()
-	return true
+function Effect:update(delta)
+	self.duration = self.duration - delta
+	if self.duration <= 0 then
+		self:getPeep():removeEffect(self)
+	end
 end
 
 return Effect

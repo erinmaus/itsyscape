@@ -139,8 +139,16 @@ ItsyScape.Meta.PeepEquipmentItem {
 }
 
 ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BlueCotton",
+	Weight = 150,
+	Count = 2,
+	Range = 1,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "CommonLogs",
-	Weight = 200,
+	Weight = 100,
 	Count = 2,
 	Range = 1,
 	Noted = 1,
