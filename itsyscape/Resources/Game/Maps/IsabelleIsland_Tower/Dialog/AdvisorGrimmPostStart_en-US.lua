@@ -52,10 +52,18 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				end
 			end
 
+			if not _TARGET:getState():has("Item", "Hammer", 1, SEARCH_FLAGS) then
+				if _TARGET:getState():give("Item", "Hammer", 1, TAKE_FLAGS) then
+					message "And here's a hammer to help you smith."
+				else
+					message "If you had more inventory space, I could give you a hammer."
+				end
+			end
+
 			if not _TARGET:getState():has("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, SEARCH_FLAGS) then
 				if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, TAKE_FLAGS) then
 					message {
-						"Here's a key to enter the dungeon.",
+						"Lastly, here's a key to enter the dungeon.",
 						"Please close the door behind yourself--we can't have the creeps surfacing."
 					}
 				else
@@ -90,11 +98,15 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				"You managed to find the crawling copper and tense tin.",
 				"Thank you for that.",
 			}
+
+			message {
+				"If you--by any chance--obtain more, you might be able to make something of it."
+			}
 		end
 	elseif option == ANCIENT_DRIFTWOOD then
 		message {
 			"There's an ancient, living driftwood tree.",
-			"While it stands, it curses the forest, allowing specters and nymphs to roam freely."
+			"While it stands, it curses the forest, allowing zombies and nymphs to roam freely."
 		}
 
 		message {
@@ -105,12 +117,45 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 
 		message "Head east, past the cow pen, to enter the forest."
 
+		local gaveItem = false
+
 		if not _TARGET:getState():has("Item", "BronzeHatchet", 1, SEARCH_FLAGS) then
 			if _TARGET:getState():give("Item", "BronzeHatchet", 1, TAKE_FLAGS) then
 				message "Here's a hatchet to help you woodcut."
 			else
 				message "If you had more inventory space, I could give you a hatchet."
 			end
+
+			gaveItem = true
+		end
+
+		if not _TARGET:getState():has("Item", "Tinderbox", 1, SEARCH_FLAGS) then
+			if _TARGET:getState():give("Item", "Tinderbox", 1, TAKE_FLAGS) then
+				message "And here's a tinderbox to help you make fires."
+			else
+				message "If you had more inventory space, I could give you a hatchet."
+			end
+
+			gaveItem = true
+		end
+
+		if gaveItem then
+			message {
+				"I'm afraid I can't give you other materials you may find useful.",
+				"But the general store owner near the bank--Bob--can sell you the tools and supplies needed."
+			}
+
+			message "You might find a knife for fletching useful, or needle and thread for crafting."
+
+			speaker "_TARGET"
+			message "That's useful!"
+
+			speaker "AdvisorGrimm"
+			message {
+				"Definitely.",
+				"Isabelle wired you a small allowance to help you out.",
+				"You'll find it in your bank."
+			}
 		end
 	elseif option == SQUID_SKULL then
 		message {
