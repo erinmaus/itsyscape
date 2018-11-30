@@ -38,6 +38,9 @@ ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
 	ActionType "Burn"
 
+--ItsyScape.Resource.Skill "Thieving"
+	ActionType "Pickpocket"
+
 ItsyScape.Meta.ResourceName {
 	Value = "Magic",
 	Language = "en-US",
