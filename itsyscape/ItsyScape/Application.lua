@@ -63,6 +63,8 @@ function Application:new()
 	self.times = {}
 
 	self.gameView:getRenderer():setCamera(self.camera)
+
+	self.showDebug = true
 end
 
 function Application:measure(name, func, ...)
@@ -246,7 +248,7 @@ function Application:draw()
 		error(r, 0)
 	end
 
-	if _DEBUG then
+	if _DEBUG and self.showDebug then
 		love.graphics.setFont(FONT)
 
 		local width = love.window.getMode()

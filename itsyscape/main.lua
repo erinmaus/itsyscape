@@ -131,7 +131,9 @@ function love.keypressed(...)
 	end
 
 	if _DEBUG then
-		if (select(1, ...) == 'f12') then
+		if (select(1, ...) == 'f1') then
+			_APP.showDebug = not _APP.showDebug
+		elseif (select(1, ...) == 'f12') then
 			local p = require "ProFi"
 			jit.off()
 			p:setGetTimeMethod(love.timer.getTime)
