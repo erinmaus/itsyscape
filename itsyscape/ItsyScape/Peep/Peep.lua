@@ -383,6 +383,7 @@ end
 -- Removes an Effect from the peep.
 function Peep:removeEffect(effect)
 	if self.effects[effect] then
+		self.effects[effect] = nil
 		effect:sizzle()
 
 		self:poke('effectRemoved', effect)
@@ -453,7 +454,7 @@ function Peep:update(director, game)
 		for effect in pairs(effects) do
 			self.effects[effect] = true
 
-			effect:update()
+			effect:update(game:getDelta())
 		end
 	end
 end

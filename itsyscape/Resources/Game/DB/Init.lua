@@ -378,13 +378,15 @@ include "Resources/Game/DB/Items/Runes.lua"
 include "Resources/Game/DB/Items/Bones.lua"
 include "Resources/Game/DB/Items/Incense.lua"
 include "Resources/Game/DB/Items/IncenseIngredients.lua"
+include "Resources/Game/DB/Items/Leathers.lua"
+include "Resources/Game/DB/Items/Fabrics.lua"
 
 -- Equipment
-include "Resources/Game/DB/Items/Leathers.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/Hatchets.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"
 include "Resources/Game/DB/Items/LeatherArmor.lua"
+include "Resources/Game/DB/Items/MagicArmor.lua"
 include "Resources/Game/DB/Items/MagicWeapons.lua"
 
 -- Misc

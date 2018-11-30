@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Skill "Magic"
+	ActionType "Runecraft"
 ItsyScape.Resource.Skill "Wisdom"
 ItsyScape.Resource.Skill "Archery"
 ItsyScape.Resource.Skill "Dexterity"

@@ -151,6 +151,8 @@ end
 function Action:transfer(state, player, flags)
 	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
+	local multiplier = flags['action-count'] or 1
+
 	if self:canTransfer(state, flags) then
 		local gameDB = self:getGameDB()
 		local brochure = gameDB:getBrochure()
@@ -158,14 +160,14 @@ function Action:transfer(state, player, flags)
 			local resource = brochure:getConstraintResource(input)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			state:take(resourceType.name, resource.name, input.count, flags)
+			state:take(resourceType.name, resource.name, input.count * multiplier, flags)
 		end
 
 		for output in brochure:getOutputs(self.action) do
 			local resource = brochure:getConstraintResource(output)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			state:give(resourceType.name, resource.name, output.count, flags)
+			state:give(resourceType.name, resource.name, output.count * multiplier, flags)
 		end
 
 		local stage = player:getDirector():getGameInstance():getStage(player)

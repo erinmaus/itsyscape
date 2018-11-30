@@ -11,6 +11,7 @@ local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 
 local EditorApplication = Class(Application)

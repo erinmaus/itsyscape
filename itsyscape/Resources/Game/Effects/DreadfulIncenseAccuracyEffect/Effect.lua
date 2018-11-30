@@ -16,6 +16,7 @@ local AccuracyEffect = require "ItsyScape.Peep.Effects.AccuracyEffect"
 -- In actuality, it increases the accuracy roll by half of the defense roll for
 -- both parties.
 local DreadfulIncenseAccuracyEffect = Class(AccuracyEffect)
+DreadfulIncenseAccuracyEffect.DURATION = 90
 
 function DreadfulIncenseAccuracyEffect:applySelf(roll)
 	local accuracyRoll = roll:getMaxAttackRoll()

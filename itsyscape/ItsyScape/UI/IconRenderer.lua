@@ -46,7 +46,6 @@ function IconRenderer:draw(widget, state)
 	local icon = widget:get("icon", state)
 	if icon then
 		if not self.icons[icon] then
-			-- TODO async load
 			self.icons[icon] = love.graphics.newImage(icon)
 		end
 		self.unvisitedIcons[icon] = nil
