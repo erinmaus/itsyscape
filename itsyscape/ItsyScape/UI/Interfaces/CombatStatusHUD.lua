@@ -184,7 +184,7 @@ function CombatStatusHUD:updatePeepIcon()
 	if actor then
 		local min, max = actor:getBounds()
 		offset = (max.y - min.y) / 2
-		zoom = max.z - min.z + (max.y - min.y)
+		zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 1
 
 		-- Flip if facing left.
 		if actor:getDirection().x < 0 then

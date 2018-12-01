@@ -8,10 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
-local Vector = require "ItsyScape.Common.Math.Vector"
 local Class = require "ItsyScape.Common.Class"
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local DemoApplication = Class(Application)
@@ -28,11 +30,18 @@ function DemoApplication:new()
 	do
 		self.light:setIsGlobal(true)
 		self.light:setDirection(-self:getCamera():getForward())
-		self.light:setParent(self:getGameView():getScene())
+		--self.light:setParent(self:getGameView():getScene())
 		
 		local ambient = AmbientLightSceneNode()
 		ambient:setAmbience(0.4)
-		ambient:setParent(self:getGameView():getScene())
+		--ambient:setParent(self:getGameView():getScene())
+	end
+	do
+		local fog = FogSceneNode()
+		fog:setColor(Color(162 / 2 / 255, 33 / 255, 234 / 2 / 255, 1))
+		fog:setNearDistance(20)
+		fog:setFarDistance(60)
+		--fog:setParent(self:getGameView():getScene())
 	end
 
 	self.cameraVerticalRotationOffset = 0
@@ -91,6 +100,7 @@ function DemoApplication:populateMap()
 	--self:moveActorToTile(player, 32, 37)
 end
 
+local time = 0
 function DemoApplication:tick()
 	Application.tick(self)
 
@@ -98,7 +108,9 @@ function DemoApplication:tick()
 	self.previousPlayerPosition = self.currentPlayerPosition or position
 	self.currentPlayerPosition = position
 
-	self.light:setDirection(-self:getCamera():getForward())
+	--self.light:setDirection(-self:getCamera():getForward())
+	self.light:setDirection(Vector(4, 3, 4):getNormal())
+	self.light:setColor(Color( 234 / 255,  162 / 255,  33 / 255, 1))
 
 	if self.playerDead then
 		local player = self:getGame():getPlayer():getActor()
