@@ -419,6 +419,7 @@ include "Resources/Game/DB/Props/Furnace.lua"
 include "Resources/Game/DB/Props/Chest.lua"
 include "Resources/Game/DB/Props/Ladder.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
+include "Resources/Game/DB/Props/Lights.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

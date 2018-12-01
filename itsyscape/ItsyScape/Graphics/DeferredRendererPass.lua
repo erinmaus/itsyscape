@@ -17,6 +17,7 @@ local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
 
 -- Deferred renderer pass.
 --
@@ -100,7 +101,11 @@ end
 
 function DeferredRendererPass:walk(node, delta)
 	if node:isCompatibleType(LightSceneNode) then
-		table.insert(self.lights, PendingNode(node, delta))
+		if node:isCompatibleType(FogSceneNode) then
+			table.insert(self.fog, PendingNode(node, delta))
+		else
+			table.insert(self.lights, PendingNode(node, delta))
+		end
 	else
 		local material = node:getMaterial()
 		if not material:getIsTranslucent() and not material:getIsFullLit() then
@@ -120,6 +125,7 @@ end
 function DeferredRendererPass:beginDraw(scene, delta)
 	self.nodes = {}
 	self.lights = {}
+	self.fog = {}
 
 	self:walk(scene, delta, viewProjection, worldViewProjection)
 	self:sortPendingNodes()
@@ -252,6 +258,27 @@ function DeferredRendererPass:drawPointLight(node, delta)
 	love.graphics.draw(self.gBuffer:getColor())
 end
 
+function DeferredRendererPass:drawFogNode(node, delta)
+	local fogShader = self:getLightShader('Fog')
+	local light = node:toLight(delta)
+	local fogStart = light:getPosition():getLength()
+	local fogEnd = light:getAttenuation()
+	local color = light:getColor()
+	local eye = self:getRenderer():getCamera():getEye()
+
+	fogShader:send('scape_PositionTexture', self.gBuffer:getPosition())
+	fogShader:send('scape_FogParameters', { fogStart, fogEnd })
+	fogShader:send('scape_FogColor', { color.r, color.g, color.b })
+	fogShader:send('scape_CameraEye', { eye.x, eye.y, eye.z })
+
+	do
+		love.graphics.setDepthMode('always', false)
+		love.graphics.origin()
+		love.graphics.ortho(self.gBuffer:getWidth(), self.gBuffer:getHeight())
+		love.graphics.draw(self.gBuffer:getColor())
+	end
+end
+
 function DeferredRendererPass:drawLights(scene, delta)
 	love.graphics.setBlendMode('add', 'premultiplied')
 
@@ -293,6 +320,33 @@ function DeferredRendererPass:drawLights(scene, delta)
 	end
 end
 
+function DeferredRendererPass:drawFog(scene, delta)
+	love.graphics.setBlendMode('alpha', 'premultiplied')
+
+	if #self.fog == 0 then
+		return
+	end
+
+	if not self.lBuffer then
+		error("no LBuffer")
+	end
+
+	self.lBuffer:use()
+	love.graphics.clear(0, 0, 0, 0, false, false)
+
+	for i = 1, #self.fog do
+		self:drawFogNode(self.fog[i].node, delta)
+	end
+
+	self.cBuffer:use()
+	do
+		love.graphics.setShader()
+		love.graphics.origin()
+		love.graphics.ortho(self.cBuffer:getWidth(), self.cBuffer:getHeight())
+		love.graphics.draw(self.lBuffer:getColor())
+	end
+end
+
 function DeferredRendererPass:resize(width, height)
 	if not self.gBuffer then
 		self.gBuffer = GBuffer(width, height)
@@ -316,6 +370,7 @@ end
 function DeferredRendererPass:draw(scene, delta)
 	self:drawNodes(scene, delta)
 	self:drawLights(scene, delta)
+	self:drawFog(scene, delta)
 end
 
 return DeferredRendererPass
