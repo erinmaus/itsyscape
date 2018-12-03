@@ -30,6 +30,8 @@ function SmartPathFinder:new(map, peep, t)
 	if t.canUseObjects ~= false and peep:getBehavior(HumanoidBehavior) then
 		self.canUseObjects = peep:getBehavior(HumanoidBehavior)
 	end
+
+	self.maxDistanceFromGoal = t.maxDistanceFromGoal or math.huge
 end
 
 function SmartPathFinder:getMap()
@@ -131,6 +133,14 @@ function SmartPathFinder:getNeighbors(edge, goal)
 	local i = edge.i
 	local j = edge.j
 	local tile = self.map:getTile(i, j)
+
+	do
+		local di = math.abs(i - goal.i)
+		local dj = math.abs(j - goal.j)
+		if di + dj > self.maxDistanceFromGoal then
+			return {}
+		end
+	end
 
 	local neighbors = {}
 	local isLeftPassable, isRightPassable

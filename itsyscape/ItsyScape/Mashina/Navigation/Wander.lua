@@ -26,19 +26,17 @@ function Wander:update(mashina, state, executor)
 		end
 	end
 
-	local i, j
+	local tile, i, j
 	do
 		local mapObject = Utility.Peep.getMapObject(mashina)
 		if mapObject then
 			local gameDB = mashina:getDirector():getGameDB()
 			local record = gameDB:getRecord("MapObjectLocation", { Resource = mapObject })
 			if record then
-
 				local map = mashina:getDirector():getGameInstance():getStage():getMap(k)
 				local x = record:get("PositionX") or 0
 				local y = record:get("PositionY") or 0
 				local z = record:get("PositionZ") or 0
-				local tile
 				tile, i, j = map:getTileAt(x, z)
 			end
 		end
@@ -46,6 +44,10 @@ function Wander:update(mashina, state, executor)
 
 	if not i or not j then
 		i, j = Utility.Peep.getTile(mashina)
+	end
+
+	if tile:hasFlag('impassable') then
+		return B.Status.Working
 	end
 
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
@@ -60,7 +62,9 @@ function Wander:update(mashina, state, executor)
 		mashina,
 		targetI,
 		targetJ,
-		k)
+		k,
+		0,
+		{ asCloseAsPossible = true, maxDistanceFromGoal = radialDistance })
 	if command then
 		if mashina:getCommandQueue():interrupt(command) then
 			return B.Status.Success

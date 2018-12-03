@@ -109,22 +109,26 @@ function Application:getUIView()
 	return self.uiView
 end
 
-function Application:probe(x, y, performDefault)
+function Application:probe(x, y, performDefault, callback)
 	local ray = self:shoot(x, y)
 	local probe = Probe(self.game, self.gameDB, ray)
-	probe:all()
-
-	if performDefault then
-		for action in probe:iterate() do
-			local s, r = pcall(action.callback)
-			if not s then
-				Log.warn("couldn't perform action: %s", r)
+	probe:all(function()
+		if performDefault then
+			for action in probe:iterate() do
+				local s, r = pcall(action.callback)
+				if not s then
+					Log.warn("couldn't perform action: %s", r)
+				end
+				break
 			end
-			break
+		else
+			self.uiView:probe(probe:toArray())
 		end
-	else
-		self.uiView:probe(probe:toArray())
-	end
+
+		if callback then
+			callback()
+		end
+	end)
 end
 
 function Application:shoot(x, y)
@@ -156,6 +160,7 @@ function Application:update(delta)
 		self.previousTickTime = love.timer.getTime()
 	end
 
+	self:measure('game:update()', function() self.game:update(delta) end)
 	self:measure('gameView:update()', function() self.gameView:update(delta) end)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
 	--self.gameView:update(delta)

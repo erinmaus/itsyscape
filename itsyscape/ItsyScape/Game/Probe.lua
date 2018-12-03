@@ -81,34 +81,31 @@ function Probe:getCount()
 end
 
 -- Probes all actions that can be performed.
-function Probe:all()
-	self:walk()
-	self:loot()
-	self:actors()
-	self:props()
+function Probe:all(callback)
+	local layer
+	do
+		local i, j, k = self.game:getPlayer():getActor():getTile()
+		layer = k
+	end
+
+	local stage = self.game:getStage():testMap(layer, self.ray, function(result)
+		self:getTile(result, layer)
+		self:walk()
+		self:loot()
+		self:actors()
+		self:props()
+
+		if callback then
+			callback()
+		end
+	end)
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
 --
 -- If no tile was hit, returns (nil, nil, nil).
-function Probe:getTile()
-	if not self.tile then
-		local layer
-		do
-			local i, j, k = self.game:getPlayer():getActor():getTile()
-			layer = k
-		end
-
-		local tiles = {}
-		local map = self.game:getStage():getMap(layer)
-
-		local tiles
-		if map then
-			tiles = map:testRay(self.ray)
-		else
-			tiles = {}
-		end
-
+function Probe:getTile(tiles, layer)
+	if tiles then
 		local function sortFunc(a, b)
 			local i = a[Map.RAY_TEST_RESULT_POSITION]
 			local j = b[Map.RAY_TEST_RESULT_POSITION]
@@ -120,7 +117,7 @@ function Probe:getTile()
 
 		table.sort(tiles, sortFunc)
 		self.tile = tiles[1]
-		self.layer = layer
+		self.layer = layer or 1
 	end
 
 	-- Gotta check again. No tile may have been found.
