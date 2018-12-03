@@ -167,3 +167,7 @@ function love.quit()
 		p:writeReport("itsyscape.log")
 	end
 end
+
+function love.threaderror(m, e)
+	error(e, 0)
+end

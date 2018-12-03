@@ -263,9 +263,8 @@ function Map:canMove(i, j, di, dj)
 	return isLeftPassable or isRightPassable or isTopPassable or isBottomPassable
 end
 
--- Deserializes the Map.
-function Map.loadFromFile(filename)
-	local data = "return " .. (love.filesystem.read(filename) or "")
+function Map.loadFromString(value)
+	local data = "return " .. value or ""
 	local chunk = assert(loadstring(data))
 	local t = setfenv(chunk, {})() or { width = 1, height = 1, cellSize = 2, tiles = { {} } }
 
@@ -300,6 +299,11 @@ function Map.loadFromFile(filename)
 	end
 
 	return result
+end
+
+-- Deserializes the Map.
+function Map.loadFromFile(filename)
+	return Map.loadFromString(love.filesystem.read(filename))
 end
 
 -- Serializes the Map.
