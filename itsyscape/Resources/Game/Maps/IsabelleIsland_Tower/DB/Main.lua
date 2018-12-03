@@ -187,6 +187,41 @@ do
 	}
 end
 
+M["Cow2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 1,
+		PositionZ = 37,
+		Direction = -1,
+		Name = "Cow2",
+		Map = M._MAP,
+		Resource = M["Cow2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		MapObject = M["Cow2"]
+	}
+end
+
+M["Cow3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "Cow3",
+		Map = M._MAP,
+		Resource = M["Cow3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		MapObject = M["Cow3"]
+	}
+end
+
 do
 	local TravelAction = ItsyScape.Action.Travel()
 
