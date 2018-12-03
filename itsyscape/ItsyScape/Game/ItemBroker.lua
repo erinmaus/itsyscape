@@ -286,7 +286,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 			items.count = items.count + item:getCount()
 		end
 
-		assert(#items >= count, "not enough items in inventory")
+		assert(count >= #items, "not enough items in inventory")
 
 		local p = state[destination]
 		local destinationItem = inventory:findFirst(id, true, true)
@@ -309,7 +309,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 			end
 		end
 
-		assert(#items >= count, "not enough items in inventory")
+		assert(count >= #items, "not enough items in inventory")
 
 		local destinationItem = inventory:findFirst(id, true, true)
 		for _, item in pairs(items) do
@@ -337,7 +337,7 @@ function ItemBroker.Transaction:unnote(item, count)
 		local destination = self.broker:getItemProvider(item)
 		assert(self.parties[destination], "destination inventory provider not party to transaction")
 		assert(item:isNoted(), "item isn't noted")
-		assert(item:getCount() >= count, "item stack too small")
+		assert(count <= item:getCount(), "item stack too small")
 
 		if self.broker.manager:isStackable(item:getID()) then
 			local destinationItem = inventory:findFirst(id, true, false)

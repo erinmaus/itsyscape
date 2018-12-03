@@ -203,8 +203,10 @@ function BankController:insert(e)
 				break
 			end
 
-			broker:setItemKey(item1, -1)
-			broker:setItemZ(item1, -1)
+			if item1 then
+				broker:setItemKey(item1, -1)
+				broker:setItemZ(item1, -1)
+			end
 
 			do
 				local items = {}
@@ -238,8 +240,10 @@ function BankController:insert(e)
 				end
 			end
 
-			broker:setItemKey(item1, e.b)
-			broker:setItemZ(item1, e.b)
+			if item1 then
+				broker:setItemKey(item1, e.b)
+				broker:setItemZ(item1, e.b)
+			end
 		end
 	end
 end

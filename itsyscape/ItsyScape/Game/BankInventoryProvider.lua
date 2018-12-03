@@ -163,10 +163,11 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 				return false, 0
 			end
 
-			count = freeSpace
+			count = math.min(freeSpace, count)
 		end
 	end
 
+	local withdrawnCount = 0
 	local remainingCount = count
 	for item in broker:iterateItems(self) do
 		if item:getID() == id then
@@ -174,6 +175,7 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 			transaction:transfer(destination, item, transferCount, 'bank-withdraw')
 
 			remainingCount = remainingCount - transferCount
+			withdrawnCount = withdrawnCount + transferCount
 		end
 	end
 
@@ -193,7 +195,7 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 				if item:getID() == id and item:isNoted() then
 					local unnoteTransaction = broker:createTransaction()
 					unnoteTransaction:addParty(destination)
-					unnoteTransaction:unnote(item, count)
+					unnoteTransaction:unnote(item, withdrawnCount)
 					if not unnoteTransaction:commit() then
 						Log.warn("Couldn't unnote items.")
 					end
@@ -216,6 +218,7 @@ function BankInventoryProvider:assignKey(item)
 
 		previousIndex = currentIndex
 	end
+
 
 	index = index or previousIndex + 1
 	self:getBroker():setItemKey(item, index)
@@ -251,6 +254,13 @@ function BankInventoryProvider:onTransferFrom(destination, item, count, purpose)
 				break
 			end
 		end
+	end
+end
+
+function BankInventoryProvider:onNote(item)
+	local index = self:getBroker():getItemKey(item)
+	if index == nil then
+		self:assignKey(item)
 	end
 end
 
