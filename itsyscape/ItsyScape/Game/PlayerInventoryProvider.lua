@@ -70,11 +70,6 @@ function PlayerInventoryProvider:onTransferTo(item, source, count, purpose)
 end
 
 function PlayerInventoryProvider:onTransferFrom(destination, item, count, purpose)
-	local index = self:getBroker():getItemKey(item)
-	if index == nil then
-		self:assignKey(item)
-	end
-
 	self:getPeep():poke('transferItemFrom', {
 		destination = destination:getPeep(),
 		item = item,
