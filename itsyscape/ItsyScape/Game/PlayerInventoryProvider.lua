@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 
 local PlayerInventoryProvider = Class(InventoryProvider)
@@ -86,6 +87,35 @@ end
 
 function PlayerInventoryProvider:onNote(item)
 	self:assignKey(item)
+end
+
+function PlayerInventoryProvider:load(...)
+	InventoryProvider.load(self, ...)
+
+	local broker = self:getBroker()
+
+	local storage = Utility.Item.getStorage(self.peep, "Player")
+	if storage then
+		for key, section in storage:iterateSections() do
+			local item = broker:itemFromStorage(self, section)
+			broker:setItemKey(item, key)
+			broker:setItemZ(item, key)
+		end
+	end
+end
+
+function PlayerInventoryProvider:unload(...)
+	local broker = self:getBroker()
+
+	local storage = Utility.Item.getStorage(self.peep, "Player", true)
+	if storage then
+		for item in broker:iterateItems(self) do
+			local key = broker:getItemKey(item)
+			broker:itemToStorage(item, storage, key)
+		end
+	end
+
+	InventoryProvider.unload(self, ...)
 end
 
 return PlayerInventoryProvider

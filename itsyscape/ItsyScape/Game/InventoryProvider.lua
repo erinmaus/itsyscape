@@ -147,9 +147,12 @@ end
 -- Called when the InventoryProvider is unloaded.
 --
 -- Normally ths Inventory should be serialized.
-function InventoryProvider:unload(broker)
+function InventoryProvider:unload(broker, removed)
 	assert(self.broker, "not assigned to broker")
-	self.broker = false
+
+	if removed then
+		self.broker = false
+	end
 end
 
 return InventoryProvider

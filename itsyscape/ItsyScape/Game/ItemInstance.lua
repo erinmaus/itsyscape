@@ -45,6 +45,12 @@ function ItemInstance:getUserdata()
 	end
 end
 
+function ItemInstance:setUserdata(userdata)
+	if self.manager:hasUserdata(self.id) and type(userdata) == 'table' then
+		self.userdata = userdata
+	end
+end
+
 function ItemInstance:getCount()
 	if self.manager:isStackable(self.id) or self:isNoted() then
 		return self.count

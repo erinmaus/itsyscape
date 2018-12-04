@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
@@ -148,6 +149,34 @@ function EquipmentInventoryProvider:getStats()
 			return nil, nil
 		end
 	end
+end
+
+function EquipmentInventoryProvider:load(...)
+	InventoryProvider.load(self, ...)
+
+	local broker = self:getBroker()
+
+	local storage = Utility.Item.getStorage(self.peep, "Equipment")
+	if storage then
+		for key, section in storage:iterateSections() do
+			local item = broker:itemFromStorage(self, section)
+			self:assignKey(item)
+		end
+	end
+end
+
+function EquipmentInventoryProvider:unload(...)
+	local broker = self:getBroker()
+
+	local storage = Utility.Item.getStorage(self.peep, "Equipment", true)
+	if storage then
+		for item in broker:iterateItems(self) do
+			local key = broker:getItemKey(item)
+			broker:itemToStorage(item, storage, key)
+		end
+	end
+
+	InventoryProvider.unload(self, ...)
 end
 
 return EquipmentInventoryProvider

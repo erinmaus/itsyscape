@@ -41,17 +41,22 @@ function ItsyScapeDirector:new(game, gameDB)
 end
 
 function ItsyScapeDirector:getPlayerStorage(peep)
-	local player = peep:getBehavior(PlayerBehavior)
-	if player and player.id then
-		local storage = self.playerStorage[player.id]
-		if not storage then
-			storage = PlayerStorage()
-			self.playerStorage[player.id] = storage
-		end
+	if peep then
+		local player = peep:getBehavior(PlayerBehavior)
+		if player and player.id then
+			local storage = self.playerStorage[player.id]
+			if not storage then
+				storage = PlayerStorage()
+				self.playerStorage[player.id] = storage
+			end
 
-		return storage
+			return storage
+		end
 	else
-		print(player, player.id)
+		local player = self.game:getPlayer():getActor():getPeep()
+		if player then
+			return self:getPlayerStorage(player)
+		end
 	end
 
 	return nil

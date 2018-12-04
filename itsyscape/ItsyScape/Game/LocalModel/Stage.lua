@@ -349,6 +349,10 @@ function LocalStage:unloadMap(layer)
 end
 
 function LocalStage:unloadAll()
+	do
+		self.game:getDirector():getItemBroker():toStorage()
+	end
+
 	local layers = self:getLayers()
 	for i = 1, #layers do
 		self:unloadMap(layers[i])

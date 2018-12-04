@@ -11,7 +11,6 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
-local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
@@ -20,7 +19,6 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
-local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -29,6 +27,7 @@ local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehav
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -266,6 +265,22 @@ end
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
+function Utility.Item.getStorage(peep, tag, clear)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+
+	local storage = Utility.Peep.getStorage(peep)
+	if storage then
+		if clear then
+			storage:getSection("Inventory"):removeSection(tag)
+		end
+
+		return storage:getSection("Inventory"):getSection(tag)
+	end
+
+	return nil
+end
+
 -- Gets the shorthand count and color for 'count' using 'lang'.
 --
 -- 'lang' defaults to "en-US".
@@ -380,6 +395,46 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 end
 
 Utility.Peep = {}
+function Utility.Peep.getStorage(peep)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+
+	local player = peep:getBehavior(PlayerBehavior)
+	if player then
+		local root = director:getPlayerStorage(peep):getRoot()
+		return root:getSection("Peep")
+	else
+		local mapObject = Utility.Peep.getMapObject(peep)
+		if mapObject then
+			local location = gameDB:getRecord("MapObjectLocation", {
+				Resource = mapObject
+			})
+
+			if location then
+				local name = location:get("Name")
+				local map = location:get("Map")
+				if name and name ~= "" and map then
+					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local mapStorage = worldStorage:getSection(map.name)
+					local peepStorage = worldStorage:getSection("Peeps"):getSection(name)
+
+					return peepStorage
+				else
+					Log.warn("Incomplete map object location.")
+				end
+			else
+				Log.warn("No map object location.")
+			end
+		else
+			Log.error("No map object.")
+		end
+	end
+
+	Log.warn("Failed to get storage for Peep '%s' (%d).", peep:getName(), peep:getTally())
+
+	return nil
+end
+
 function Utility.Peep.getEquippedItem(peep, slot)
 	local equipment = peep:getBehavior(EquipmentBehavior)
 	if equipment and equipment.equipment then
@@ -389,6 +444,9 @@ function Utility.Peep.getEquippedItem(peep, slot)
 end
 
 function Utility.Peep.getEquipmentBonuses(peep)
+	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+	local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+
 	local result = {}
 	for i = 1, #EquipmentInventoryProvider.STATS do
 		local stat = EquipmentInventoryProvider.STATS[i]
@@ -805,6 +863,15 @@ function Utility.Peep.Inventory:onAssign(director)
 end
 
 function Utility.Peep.Inventory:onReady(director)
+	local storage = Utility.Peep.getStorage(self)
+	if storage then
+		if storage:get("peep-serialized-inventory") then
+			return
+		end
+
+		storage:set("peep-serialized-inventory", true)
+	end
+
 	local broker = director:getItemBroker()
 	local function spawnItems(records)
 		local inventory = self:getBehavior(InventoryBehavior)
@@ -862,6 +929,15 @@ function Utility.Peep.Equipment:onAssign(director)
 end
 
 function Utility.Peep.Equipment:onReady(director)
+	local storage = Utility.Peep.getStorage(self)
+	if storage then
+		if storage:get("peep-serialized-equipment") then
+			return
+		end
+
+		storage:set("peep-serialized-equipment", true)
+	end
+
 	local broker = director:getItemBroker()
 	local function equipItems(records)
 		local equipment = self:getBehavior(EquipmentBehavior)
@@ -1027,6 +1103,9 @@ function Utility.Peep.Attackable:onDie(p)
 end
 
 function Utility.Peep.Attackable:onReady(director)
+	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+	local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+
 	local function setEquipmentBonuses(record)
 		if not record then
 			return false

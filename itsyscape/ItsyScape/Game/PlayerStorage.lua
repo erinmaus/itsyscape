@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local serpent = require "serpent"
 local Class = require "ItsyScape.Common.Class"
 
 local PlayerStorage = Class()
@@ -122,12 +123,33 @@ function PlayerStorage.Section:iterateSections()
 	return pairs(self.sections)
 end
 
+function PlayerStorage.Section:serialize()
+	local result = { values = {}, sections = {} }
+	for key, value in self:iterateValues() do
+		result.values[key] = value
+	end
+
+	for key, section in self:iterateSections() do
+		result.sections[key] = section:serialize()
+	end
+
+	return result
+end
+
 function PlayerStorage:new()
 	self.root = PlayerStorage.Section("root")
 end
 
 function PlayerStorage:getRoot()
 	return self.root
+end
+
+function PlayerStorage:serialize()
+	return self.root:serialize()
+end
+
+function PlayerStorage:toString()
+	return serpent.block(self:serialize(), { comment = false })
 end
 
 return PlayerStorage
