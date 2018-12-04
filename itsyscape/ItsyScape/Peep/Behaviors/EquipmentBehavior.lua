@@ -23,4 +23,12 @@ function EquipmentBehavior:new()
 	self.equipment = false
 end
 
+function EquipmentBehavior:unload(peep)
+	local broker = peep:getDirector():getItemBroker()
+
+	if self.equipment then
+		broker:removeProvider(self.equipment)
+	end
+end
+
 return EquipmentBehavior

@@ -928,7 +928,7 @@ function ItemBroker:addProvider(provider)
 
 	self.inventories[provider] = ItemBroker.Inventory(provider)
 
-	local s, r = pcall(provider.load, provider, self)
+	local s, r = xpcall(function() provider:load(self) end, debug.traceback)
 	if not s then
 		self.inventories[provider] = nil
 		error(r)
@@ -945,7 +945,7 @@ function ItemBroker:removeProvider(provider)
 	assert(provider ~= nil, "provider cannot be nil")
 	assert(self:hasProvider(provider), "provider does not exist")
 
-	local s, r = pcall(provider.unload, provider, self)
+	local s, r = xpcall(function() provider:unload(self, true) end, debug.traceback)
 
 	local inventory = self.inventories[provider]
 	for item in inventory:iterate() do
@@ -1092,6 +1092,48 @@ function ItemBroker:getItemTag(item, key)
 	local provider = self.items[item]
 	local inventory = self.inventories[provider]
 	return inventory:getTags(item, key)
+end
+
+function ItemBroker:toStorage()
+	for provider in pairs(self.inventories) do
+		local s, r = xpcall(function() provider:unload(self, false) end, debug.traceback)
+
+		if not s then
+			Log.warn("Couldn't serialize provider: %s", r)
+		end
+	end
+end
+
+function ItemBroker:itemFromStorage(provider, storage)
+	local count = storage:get("item-count")
+	local id = storage:get("item-id")
+	local noted = storage:get("item-noted")
+	local userdata = storage:getSection("item-userdata")
+
+	if count ~= nil and id ~= nil and noted ~= nil then
+		local item = self:addItem(provider, id, count, noted)
+		item:setUserdata(userdata)
+
+		return item
+	end
+
+	return nil
+end
+
+function ItemBroker:itemToStorage(item, storage, key)
+	local itemStorage = storage:getSection(key)
+	itemStorage:set({
+		["item-id"] = item:getID(),
+		["item-noted"] = item:isNoted(),
+		["item-count"] = item:getCount()
+	})
+
+	local userdata = item:getUserdata()
+	if userdata then
+		itemStorage:set("item-userdata", userdata)
+	end
+
+	return itemStorage
 end
 
 -- Creates a transaction.

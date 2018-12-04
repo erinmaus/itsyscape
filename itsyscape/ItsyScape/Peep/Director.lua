@@ -30,6 +30,8 @@ function Director:new(gameDB)
 
 	self.maps = {}
 	self.peepsByLayer = {}
+
+	self.pendingAssignment = {}
 end
 
 -- Gets the GameDB.
@@ -101,6 +103,7 @@ function Director:movePeep(peep, key)
 	peep:move(self, key)
 end
 
+
 -- Adds a Peep of the provided type to the Director.
 --
 -- If no type is provided, just adds a plain 'ol Peep.
@@ -122,9 +125,18 @@ function Director:addPeep(key, peepType, ...)
 
 	layer[peep] = true
 
-	peep:assign(self, key)
+	self.pendingAssignment[peep] = key
 
 	return peep
+end
+
+function Director:assignPeep(peep)
+	if not self.pendingAssignment[peep] then
+		Log.error("Peep not pending assignment.")
+	end
+
+	peep:assign(self, self.pendingAssignment[peep])
+	self.pendingAssignment[peep] = nil
 end
 
 -- Removes a Peep instance from the Director.
@@ -201,6 +213,8 @@ end
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
 	for peep, info in pairs(self.newPeeps) do
+		self:assignPeep(peep)
+
 		self.peeps[peep] = info
 	end
 	self.newPeeps = {}
