@@ -113,12 +113,13 @@ function CraftWindow:update(...)
 		for i = 1, #state.actions do
 			local action = gameDB:getAction(state.actions[i].id)
 			if action then
-				local item
+				local item, count
 				for output in brochure:getOutputs(action) do
 					local outputResource = brochure:getConstraintResource(output)
 					local outputType = brochure:getResourceTypeFromResource(outputResource)
 					if outputType.name == "Item" then
 						item = outputResource
+						count = output.count
 						break
 					end
 				end
@@ -129,6 +130,7 @@ function CraftWindow:update(...)
 
 					local itemIcon = ItemIcon()
 					itemIcon:setItemID(item.name)
+					itemIcon:setItemCount(count)
 					itemIcon:setPosition(2, 2)
 					button:addChild(itemIcon)
 

@@ -74,9 +74,17 @@ function CombatCortex:update(delta)
 			peep,
 			Equipment.PLAYER_SLOT_RIGHT_HAND)
 		if not equippedWeapon then
-			weaponRange = 1
-		else
-			local logic = itemManager:getLogic(equippedWeapon:getID())
+			equippedWeapon = Utility.Peep.getEquippedItem(
+				peep,
+				Equipment.PLAYER_SLOT_TWO_HANDED)
+			if not equippedWeapon then
+				weaponRange = 1
+			end
+		end
+		
+		local logic
+		if equippedWeapon then
+			logic = itemManager:getLogic(equippedWeapon:getID())
 			if logic:isCompatibleType(Weapon) then
 				weaponRange = logic:getAttackRange(peep)
 			else
@@ -224,16 +232,9 @@ function CombatCortex:update(delta)
 						end
 
 						if canAttack then
-							local weapon = Utility.Peep.getEquippedItem(
-								peep,
-								Equipment.PLAYER_SLOT_RIGHT_HAND)
-							if weapon then
-								local logic = itemManager:getLogic(weapon:getID())
-								if logic:isCompatibleType(Weapon) then
-									logic:perform(peep, target)
-								end
-							else
-								self.defaultWeapon:perform(peep, target)
+							logic = logic or self.defaultWeapon
+							if logic:isCompatibleType(Weapon) then
+								logic:perform(peep, target)
 							end
 						end
 					end

@@ -23,8 +23,14 @@ Equipment.PLAYER_SLOT_FINGER = 8
 Equipment.PLAYER_SLOT_POCKET = 9
 Equipment.PLAYER_SLOT_QUIVER = 10
 
+Equipment.AMMO_NONE  = 0
+Equipment.AMMO_ARROW = 1
+Equipment.AMMO_BOLT  = 2
+Equipment.AMMO_ANY   = 100
+
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND = 21
+Equipment.PLAYER_SLOT_TWO_HANDED = 22
 
 Equipment.SKIN_PRIORITY_BASE       = 0
 Equipment.SKIN_PRIORITY_ACCENT     = 10

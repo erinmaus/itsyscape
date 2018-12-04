@@ -190,10 +190,9 @@ end
 M["Cow2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 61,
+		PositionX = 53,
 		PositionY = 1,
-		PositionZ = 37,
-		Direction = -1,
+		PositionZ = 43,
 		Name = "Cow2",
 		Map = M._MAP,
 		Resource = M["Cow2"]
@@ -205,20 +204,27 @@ do
 	}
 end
 
-M["Cow3"] = ItsyScape.Resource.MapObject.Unique()
+M["Bessie"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53,
+		PositionX = 61,
 		PositionY = 1,
 		PositionZ = 41,
-		Name = "Cow3",
+		Direction = -1,
+		Name = "Bessie",
 		Map = M._MAP,
-		Resource = M["Cow3"]
+		Resource = M["Bessie"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bessie",
+		Language = "en-US",
+		Resource = M["Bessie"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Cow_Base",
-		MapObject = M["Cow3"]
+		MapObject = M["Bessie"]
 	}
 end
 

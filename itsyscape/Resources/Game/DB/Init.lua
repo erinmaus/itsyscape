@@ -174,6 +174,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "RangedAmmo" {
+		Type = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "EquipmentModel" {
 		Type = Meta.TYPE_TEXT,
 		Filename = Meta.TYPE_TEXT,
@@ -384,9 +389,12 @@ include "Resources/Game/DB/Items/Bones.lua"
 include "Resources/Game/DB/Items/Incense.lua"
 include "Resources/Game/DB/Items/IncenseIngredients.lua"
 include "Resources/Game/DB/Items/Leathers.lua"
+include "Resources/Game/DB/Items/Feathers.lua" -- leathers, feathers, oh my
 include "Resources/Game/DB/Items/Fabrics.lua"
 
 -- Equipment
+include "Resources/Game/DB/Items/Arrows.lua"
+include "Resources/Game/DB/Items/Bows.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
 include "Resources/Game/DB/Items/Hatchets.lua"
 include "Resources/Game/DB/Items/MetalArmor.lua"

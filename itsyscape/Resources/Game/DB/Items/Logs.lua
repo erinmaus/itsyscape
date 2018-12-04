@@ -50,8 +50,34 @@ for name, log in pairs(LOGS) do
 	ItsyScape.Meta.DelegatedActionTarget {
 		CategoryKey = "Wood",
 		CategoryValue = name,
-		ActionType = "Craft",
 		Action = CraftAction
+	}
+
+	local FletchAction = ItsyScape.Action.Fletch() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 1))
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Knife",
+			Count = 1
+		},
+
+		Input {
+			Resource = Log,
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "ArrowShaft",
+			Count = math.max(log.tier, 1) * 15
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(math.max(log.tier + 1, 1)) / 2), 1)
+		}
 	}
 
 	local TreeName = string.format("%sTree_Default", name)
@@ -139,6 +165,7 @@ for name, log in pairs(LOGS) do
 
 	Log {
 		LightAction,
+		FletchAction,
 		CraftAction
 	}
 
