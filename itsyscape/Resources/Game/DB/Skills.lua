@@ -38,6 +38,9 @@ ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
 	ActionType "Burn"
 
+ItsyScape.Resource.Skill "Fletching"
+	ActionType "Fletch"
+
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
 
@@ -123,4 +126,10 @@ ItsyScape.Meta.ResourceName {
 	Value = "Firemaking",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Firemaking"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fletching",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Fletching"
 }

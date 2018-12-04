@@ -14,6 +14,8 @@ local Controller = require "ItsyScape.UI.Controller"
 local CraftWindowController = Class(Controller)
 
 function CraftWindowController:new(peep, director, prop, categoryKey, categoryValue, actionTypeFilter)
+	actionTypeFilter = actionTypeFilter or ""
+
 	Controller.new(self, peep, director)
 
 	local game = director:getGameInstance()
@@ -35,14 +37,16 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 
 		for action in brochure:findActionsByResource(resource) do
 			local actionType = brochure:getActionDefinitionFromAction(action)
-			if actionType.name == actionTypeFilter then
+			if actionType.name == actionTypeFilter or actionTypeFilter == "" then
 				local a, ActionType = Utility.getAction(game, action, 'craft')
-				local actionInstance = ActionType(game, action)
-				if actionInstance:canPerform(peep:getState(), flags) then
-					a.count = actionInstance:count(peep:getState(), flags)
-					table.insert(self.state.actions, a)
+				if ActionType then
+					local actionInstance = ActionType(game, action)
+					if actionInstance:canPerform(peep:getState(), flags) then
+						a.count = actionInstance:count(peep:getState(), flags)
+						table.insert(self.state.actions, a)
 
-					self.actionsByID[a.id] = actionInstance
+						self.actionsByID[a.id] = actionInstance
+					end
 				end
 			end
 		end
