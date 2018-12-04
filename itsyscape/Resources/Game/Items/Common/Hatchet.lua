@@ -9,7 +9,6 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Weapon = require "ItsyScape.Game.Weapon"
 local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 
 local Hatchet = Class(MeleeWeapon)
