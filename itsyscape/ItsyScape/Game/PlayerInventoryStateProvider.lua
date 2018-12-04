@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
+local Utility = require "ItsyScape.Game.Utility"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 

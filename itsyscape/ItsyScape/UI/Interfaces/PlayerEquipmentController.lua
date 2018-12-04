@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -39,6 +40,11 @@ function PlayerEquipmentController:pull()
 			for item in broker:iterateItemsByKey(equipment.equipment, key) do
 				local resultItem = self:pullItem(item)
 				self:pullActions(item, resultItem)
+
+				if key == Equipment.PLAYER_SLOT_TWO_HANDED then
+					key = Equipment.PLAYER_SLOT_RIGHT_HAND
+				end
+				
 				result.items[key] = resultItem
 				break
 			end
@@ -87,6 +93,13 @@ function PlayerEquipmentController:pokeItem(e)
 			for i in broker:iterateItemsByKey(equipment.equipment, e.index) do
 				item = i
 				break
+			end
+
+			if not item and e.index == Equipment.PLAYER_SLOT_RIGHT_HAND then
+				for i in broker:iterateItemsByKey(equipment.equipment, Equipment.PLAYER_SLOT_TWO_HANDED) do
+					item = i
+					break
+				end
 			end
 		end
 	end

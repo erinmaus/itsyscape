@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
+local Utility = require "ItsyScape.Game.Utility"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 
 local PlayerEquipmentStateProvider = Class(StateProvider)
@@ -34,6 +35,29 @@ function PlayerEquipmentStateProvider:has(name, count, flags)
 end
 
 function PlayerEquipmentStateProvider:take(name, count, flags)
+	if not self.inventory then
+		return false
+	end
+
+	if not flags['item-equipment'] then
+		return false
+	end
+
+	if flags['item-equipment-slot'] then
+		local slot = name
+		local item = Utility.Peep.getEquippedItem(self.peep, slot)
+
+		if item then
+			local broker = self.inventory:getBroker()
+			local transaction = broker:createTransaction()
+			transaction:addParty(self.inventory)
+			transaction:consume(item, count)
+			return transaction:commit()
+		end
+
+		return false
+	end
+
 	return false
 end
 
@@ -50,15 +74,25 @@ function PlayerEquipmentStateProvider:count(name, flags)
 		return 0
 	end
 
-	local broker = self.inventory:getBroker()
-	local c = 0
-	for item in broker:iterateItems(self.inventory) do
-		if item:getID() == name and item:isNoted() == false then
-			c = c + item:getCount()
+	if flags['item-equipment-slot'] then
+		local slot = name
+		local item = Utility.Peep.getEquippedItem(slot)
+		if item then
+			return item:getCount()
+		else
+			return 0
 		end
-	end
+	else
+		local broker = self.inventory:getBroker()
+		local c = 0
+		for item in broker:iterateItems(self.inventory) do
+			if item:getID() == name and item:isNoted() == false then
+				c = c + item:getCount()
+			end
+		end
 
-	return c
+		return c
+	end
 end
 
 return PlayerEquipmentStateProvider

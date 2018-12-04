@@ -12,8 +12,6 @@ local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
-local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
-local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
@@ -798,6 +796,8 @@ end
 
 Utility.Peep.Inventory = {}
 function Utility.Peep.Inventory:onAssign(director)
+	local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
+
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)
 
@@ -853,6 +853,8 @@ end
 
 Utility.Peep.Equipment = {}
 function Utility.Peep.Equipment:onAssign(director)
+	local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
+
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
 
@@ -1134,6 +1136,14 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Die_1/Script.lua")
 	peep:addResource("animation-die", dieAnimation)
+	local attackAnimationBowRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-bow", attackAnimationBowRanged)
+	local attackAnimationLongbowRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-longbow", attackAnimationLongbowRanged)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")

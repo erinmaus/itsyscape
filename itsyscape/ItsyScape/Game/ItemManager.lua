@@ -19,6 +19,10 @@ function ItemManager:new(gameDB)
 	self.gameDB = gameDB
 end
 
+function ItemManager:getGameDB()
+	return self.gameDB
+end
+
 function ItemManager:getResource(id)
 	return self.gameDB:getResource(id, "Item")
 end
@@ -77,6 +81,10 @@ function ItemManager:getLogic(id)
 					return r(id, manager)
 				end
 			else
+				if love.filesystem.getInfo(string.format("Resources/Game/Items/%s/Logic.lua", id)) then
+					Log.warn("failed to load '%s': %s", file, r)
+				end
+
 				local resource = self.gameDB:getResource(id, "Item")
 				if resource then
 					Logic = function(manager)
