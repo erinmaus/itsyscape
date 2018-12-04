@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -50,9 +51,36 @@ function Equip:perform(state, peep, item)
 				"Equipment", { Resource = resource }, 1)[1]
 			if equipmentRecord then
 				local slot = equipmentRecord:get("EquipSlot")
-				local equippedItem = equipment:getEquipped(slot)
-				if equippedItem then
-					transaction:transfer(inventory, equippedItem)
+				if slot == Equipment.PLAYER_SLOT_TWO_HANDED then
+					local leftHandItem = equipment:getEquipped(Equipment.PLAYER_SLOT_LEFT_HAND)
+					local rightHandItem = equipment:getEquipped(Equipment.PLAYER_SLOT_RIGHT_HAND)
+					local twoHandedItem = equipment:getEquipped(Equipment.PLAYER_SLOT_TWO_HANDED)
+
+					if leftHandItem then
+						transaction:transfer(inventory, leftHandItem)
+					end
+
+					if rightHandItem then
+						transaction:transfer(inventory, rightHandItem)
+					end
+
+					if twoHandedItem then
+						transaction:transfer(inventory, twoHandedItem)
+					end
+				else
+					if slot == Equipment.PLAYER_SLOT_RIGHT_HAND or
+					   slot == Equipment.PLAYER_SLOT_LEFT_HAND
+					then
+						local twoHandedItem = equipment:getEquipped(Equipment.PLAYER_SLOT_TWO_HANDED)
+						if twoHandedItem then
+							transaction:transfer(inventory, twoHandedItem)
+						end
+					end
+
+					local equippedItem = equipment:getEquipped(slot)
+					if equippedItem then
+						transaction:transfer(inventory, equippedItem)
+					end
 				end
 			end
 		end
