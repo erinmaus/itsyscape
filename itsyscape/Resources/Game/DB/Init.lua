@@ -389,6 +389,7 @@ include "Resources/Game/DB/Items/Bones.lua"
 include "Resources/Game/DB/Items/Incense.lua"
 include "Resources/Game/DB/Items/IncenseIngredients.lua"
 include "Resources/Game/DB/Items/Leathers.lua"
+include "Resources/Game/DB/Items/Feathers.lua" -- leathers, feathers, oh my
 include "Resources/Game/DB/Items/Fabrics.lua"
 
 -- Equipment

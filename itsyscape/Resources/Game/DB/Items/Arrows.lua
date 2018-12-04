@@ -12,14 +12,16 @@ local METALS = {
 	["Bronze"] = {
 		tier = 1,
 		weight = 12.5,
-		wood = "CommonLogs",
-		hammer = "Hammer"
+		wood = "CommonLogs"
 	}
 }
 
 for name, metal in pairs(METALS) do
 	local ItemName = string.format("%sArrow", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
+
+	local ArrowheadName = string.format("%sArrowhead", name)
+	local ArrowheadItem = ItsyScape.Resource.Item(ArrowheadName)
 
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
@@ -30,17 +32,116 @@ for name, metal in pairs(METALS) do
 
 	local DequipAction = ItsyScape.Action.Dequip()
 
+	local FletchAction15 = ItsyScape.Action.Fletch() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Feather",
+			Count = 15
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "ArrowShaft",
+			Count = 15
+		},
+
+		Input {
+			Resource = ArrowheadItem,
+			Count = 15
+		},
+
+		Output {
+			Resource = Item,
+			Count = 15
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = math.max(ItsyScape.Utility.xpForResource(metal.tier + 1), 15)
+		}
+	}
+
+	local FletchAction1 = ItsyScape.Action.Fletch() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Feather",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "ArrowShaft",
+			Count = 1
+		},
+
+		Input {
+			Resource = ArrowheadItem,
+			Count = 1
+		},
+
+		Output {
+			Resource = Item,
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fletching",
+			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(metal.tier + 1) / 15), 1)
+		}
+	}
+
+	local SmithAction = ItsyScape.Action.Smith() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(string.format("%sBar", name)),
+			Count = 1
+		},
+
+		Output {
+			Resource = ArrowheadItem,
+			Count = 15
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(metal.tier + 1)
+		}
+	}
+
 	ItsyScape.Meta.Item {
 		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 2) / 10), 10) * metal.tier,
-		Weight = metal.weight / 10,
+		Weight = 0,
 		Stackable = 1,
 		Resource = Item
+	}
+
+	ItsyScape.Meta.Item {
+		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 1) / 15), 15) * metal.tier,
+		Weight = 0,
+		Stackable = 1,
+		Resource = ArrowheadItem
 	}
 
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Metal",
 		Value = name,
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = name,
+		Resource = ArrowheadItem
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -60,6 +161,12 @@ for name, metal in pairs(METALS) do
 		Resource = Item
 	}
 
+	ItsyScape.Meta.ResourceName {
+		Value = string.format("%s arrowhead", name),
+		Language = "en-US",
+		Resource = ArrowheadItem
+	}
+
 	ItsyScape.Meta.Equipment {
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 3),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_QUIVER,
@@ -68,6 +175,47 @@ for name, metal in pairs(METALS) do
 
 	Item {
 		EquipAction,
-		DequipAction
+		DequipAction,
+		FletchAction15,
+		FletchAction1
+	}
+
+	ArrowheadItem {
+		SmithAction
+	}
+end
+
+do
+	local ArrowShaft = ItsyScape.Resource.Item "ArrowShaft"
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Weight = 0,
+		Stackable = 1,
+		Resource = ArrowShaft
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Arrow shaft",
+		Language = "en-US",
+		Resource = ArrowShaft
+	}
+
+	local FletchAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Fletch",
+		Language = "en-US",
+		Action = FletchAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Arrow",
+		ActionType = "Fletch",
+		Action = FletchAction
+	}
+
+	ArrowShaft {
+		FletchAction
 	}
 end
