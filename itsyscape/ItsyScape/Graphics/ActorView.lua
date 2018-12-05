@@ -184,10 +184,6 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	end
 end
 
-function ActorView:applySkinSlot(body, slot, ignore)
-	coroutine.yield()
-end
-
 function ActorView:applySkin(slotNodes)
 	local ignore = false
 	local i = #slotNodes

@@ -161,7 +161,7 @@ function ScrollBar:performLayout()
 
 		if buttonHeight < height then
 			local p  = self:getParent() --= self:getTarget()
-			if p then
+			if p and self:getParent() then
 				local parentWidth, parentHeight = self:getParent():getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
 
@@ -193,7 +193,7 @@ function ScrollBar:performLayout()
 		self.downButton:setText(">")
 
 		if buttonWidth < width then
-			local p = self:getTarget()
+			local p = self:getParent()
 			if p then
 				local parentWidth, parentHeight = self:getParent():getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()

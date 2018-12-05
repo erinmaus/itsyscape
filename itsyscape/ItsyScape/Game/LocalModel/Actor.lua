@@ -303,12 +303,21 @@ end
 function LocalActor:setSkin(slot, priority, skin)
 	local s = self.skin[slot] or {}
 
-	if skin ~= nil then
-		table.insert(s, { priority = priority, skin = skin })
-		table.sort(s, function(a, b) return a.priority < b.priority end)
-	end
+	if priority then
+		if skin ~= nil then
+			table.insert(s, { priority = priority, skin = skin })
+			table.sort(s, function(a, b) return a.priority < b.priority end)
+		end
 
-	self.skin[slot] = s
+		self.skin[slot] = s
+	else
+		for i = 1, #self.skin[slot] do
+			if self.skin[slot][i].skin == skin then
+				table.remove(self.skin[slot], i)
+				break
+			end
+		end
+	end
 
 	self.onSkinChanged(self, slot, priority, skin)
 end
@@ -331,8 +340,7 @@ function LocalActor:getSkin(index)
 	local result = {}
 
 	for i = 1, #slot do
-		table.insert(result, slot[i].skin)
-		table.insert(result, slot[i].priority)
+		table.insert(result, { skin = slot[i].skin, priority = slot[i].priority })
 	end
 
 	return unpack(result)

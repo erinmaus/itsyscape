@@ -17,6 +17,9 @@ GenderBehavior.PRONOUN_SUBJECT    = 1
 GenderBehavior.PRONOUN_OBJECT     = 2
 GenderBehavior.PRONOUN_POSSESSIVE = 3
 GenderBehavior.FORMAL_ADDRESS     = 4
+GenderBehavior.GENDER_MALE        = 'male'
+GenderBehavior.GENDER_FEMALE      = 'female'
+GenderBehavior.GENDER_OTHER       = 'x'
 
 -- Constructs a GenderBehavior.
 --

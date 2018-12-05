@@ -33,6 +33,8 @@ function ScrollablePanel:new(InnerPanelType)
 	self.isHorizontalScroll = false
 
 	self.floatyScrollBars = false
+	self.alwaysShowVerticalScrollBar = false
+	self.alwaysShowHorizontalScrollBar = false
 
 	Widget.addChild(self, self.panel)
 end
@@ -55,6 +57,22 @@ function ScrollablePanel:setFloatyScrollBars(value)
 	self:performLayout()
 end
 
+function ScrollablePanel:setScrollBarVisible(vertical, horizontal)
+	if vertical ~= nil then
+		self.alwaysShowVerticalScrollBar = vertical
+	end
+
+	if horizontal ~= nil then
+		self.alwaysShowHorizontalScrollBar = horizontal
+	end
+
+	self:performLayout()
+end
+
+function ScrollablePanel:getScrollBarVisible()
+	return self.alwaysShowVerticalScrollBar, self.alwaysShowHorizontalScrollBar
+end
+
 function ScrollablePanel:performLayout()
 	Widget.performLayout(self)
 
@@ -62,7 +80,7 @@ function ScrollablePanel:performLayout()
 	local scrollSizeX, scrollSizeY = self:getScrollSize()
 
 	local panelWidth, panelHeight = scrollSizeX, scrollSizeY
-	if scrollSizeX > width then
+	if scrollSizeX > width or self.alwaysShowHorizontalScrollBar then
 		if scrollSizeY > height then
 			self.horizontalScroll:setSize(
 				width - self.scrollBarSize,
@@ -87,7 +105,7 @@ function ScrollablePanel:performLayout()
 		self.isHorizontalScroll = false
 	end
 
-	if scrollSizeY > height then
+	if scrollSizeY > height or self.alwaysShowVerticalScrollBar then
 		if scrollSizeX > width then
 			self.verticalScroll:setSize(
 				self.scrollBarSize,
