@@ -112,7 +112,9 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	local cornerX, cornerY = love.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
-		love.graphics.intersectScissor(cornerX, cornerY, w, h)
+		if w > 0 and h > 0 then
+			love.graphics.intersectScissor(cornerX, cornerY, w, h)
+		end
 	end
 
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer

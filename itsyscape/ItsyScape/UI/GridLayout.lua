@@ -142,7 +142,7 @@ function GridLayout:performLayout()
 	end
 
 	if self.wrapContents then
-		self.height = self.height + self.paddingY
+		self.height = self.height + self.paddingY + self.paddingY
 		self.scrollHeight = self.height
 	end
 end

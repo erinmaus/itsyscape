@@ -80,6 +80,43 @@ function One:new(...)
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
 	self:addPoke('resourceHit')
+	self:addPoke('changeWardrobe')
+end
+
+function One:onChangeWardrobe(e)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+	else
+		return
+	end
+
+	local skins = { actor:getSkin(e.slot) }
+	for i = 1, #skins do
+		if skins[i].priority == e.priority then
+			actor:setSkin(e.slot, false, skins[i].skin)
+		end
+	end
+
+	do
+		if e.type and e.filename then
+			local ref = CacheRef(e.type, e.filename)
+			actor:setSkin(e.slot, e.priority, ref)
+		end
+
+		local storage = self:getDirector():getPlayerStorage(self)
+		storage = storage:getRoot():getSection("Player"):getSection("Skin")
+
+		storage:getSection(e.slotName):set(e)
+	end
+end
+
+function One:onRename(e)
+	local storage = self:getDirector():getPlayerStorage(self)
+	storage = storage:getRoot():getSection("Player"):getSection("Info")
+	storage:set("name", e.name)
+
+	self:setName(e.name)
 end
 
 function One:assign(director, key, ...)

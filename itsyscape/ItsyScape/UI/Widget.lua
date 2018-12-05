@@ -248,8 +248,8 @@ function Widget:setScrollSize(w, h)
 	local oldScrollWidth = self.scrollWidth
 	local oldScrollHeight = self.scrollHeight
 
-	self.scrollWidth = w or self.scrollWidth
-	self.scrollHeight = h or self.scrollHeight
+	self.scrollWidth = math.max(w or self.scrollWidth, self.width)
+	self.scrollHeight = math.max(h or self.scrollHeight, self.height)
 
 	if oldScrollWidth ~= self.scrollWidth or
 	   oldScrollHeight ~= self.scrollHeight

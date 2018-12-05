@@ -26,6 +26,13 @@ function TextInput:new()
 	self.isPressed = false
 end
 
+function TextInput:focus(...)
+	self.cursorIndex = #self:getText()
+	self.cursorLength = 0
+
+	Widget.focus(self, ...)
+end
+
 function TextInput:getActiveCursor()
 	if self.cursorLength < 0 then
 		return TextInput.CURSOR_LEFT
