@@ -35,16 +35,16 @@ function Loot.getDroppedItem(loot)
 
 	local p = math.random(0, weight)
 	for i = 2, #loot do
+		if currentWeight > p then
+			break
+		end
+
 		local nextItem = loot[i]
 		local nextItemWeight = loot[i]:get("Weight") or 0
 		local nextWeight = currentWeight + nextItemWeight
 
-		if nextWeight <= p then
-			item = nextItem
-			currentWeight = nextWeight
-		else
-			break
-		end
+		item = nextItem
+		currentWeight = nextWeight
 	end
 
 	return item
@@ -98,10 +98,10 @@ function Loot:perform(state, peep)
 				inventory = SimpleInventoryProvider(peep)
 				self:getGame():getDirector():getItemBroker():addProvider(inventory)
 			end
-
-			local loot = gameDB:getRecords("DropTableEntry", { Resource = resource })
-			self:materializeDropTable(peep, inventory, loot)
 		end
+
+		local loot = gameDB:getRecords("DropTableEntry", { Resource = resource })
+		self:materializeDropTable(peep, inventory, loot)
 	end
 
 	if inventory then
