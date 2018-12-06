@@ -176,6 +176,22 @@ function CharacterCustomizationController:changeGender(e)
 		   e.gender == GenderBehavior.GENDER_OTHER
 		then
 			gender.gender = e.gender
+
+			if e.gender == GenderBehavior.GENDER_MALE then
+				gender.pronouns = {
+					'he',
+					'him',
+					'his',
+					'ser'
+				}
+			elseif e.gender == GenderBehavior.GENDER_FEMALE then
+				gender.pronouns = {
+					'she',
+					'her',
+					'hers',
+					'misse'
+				}
+			end
 		end
 	end
 end

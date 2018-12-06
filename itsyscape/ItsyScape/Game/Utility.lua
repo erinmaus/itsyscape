@@ -426,7 +426,7 @@ function Utility.Peep.getStorage(peep)
 				Log.warn("No map object location.")
 			end
 		else
-			Log.error("No map object.")
+			Log.warn("No map object.")
 		end
 	end
 

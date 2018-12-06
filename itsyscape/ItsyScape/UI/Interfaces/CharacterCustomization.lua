@@ -69,7 +69,7 @@ CharacterCustomization.ACTIVE_TAB_STYLE = function(icon)
 		inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 		hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		--icon = { filename = icon, x = 0.5, y = 0.5 }
+		icon = { filename = string.format("Resources/Game/UI/Icons/%s.png", icon), x = 0.5, y = 0.5 }
 	}
 end
 
@@ -78,7 +78,7 @@ CharacterCustomization.INACTIVE_TAB_STYLE = function(icon)
 		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
 		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		--icon = { filename = icon, x = 0.5, y = 0.5 }
+		icon = { filename = string.format("Resources/Game/UI/Icons/%s.png", icon), x = 0.5, y = 0.5 }
 	}
 end
 
@@ -112,18 +112,31 @@ function CharacterCustomization:new(id, index, ui)
 		self:addChild(self.tabsLayout)
 
 		local tabButtons = {}
-		local function addTab(tab, active)
+		local function addTab(tab, active, icon)
 			local button = Button()
+			button:setData('icon', icon)
 			if active then
-				button:setStyle(ButtonStyle(CharacterCustomization.ACTIVE_TAB_STYLE(), self:getView():getResources()))
+				button:setStyle(
+					ButtonStyle(
+						CharacterCustomization.ACTIVE_TAB_STYLE(icon),
+						self:getView():getResources()))
 			else
-				button:setStyle(ButtonStyle(CharacterCustomization.INACTIVE_TAB_STYLE(), self:getView():getResources()))
+				button:setStyle(
+					ButtonStyle(
+						CharacterCustomization.INACTIVE_TAB_STYLE(icon),
+						self:getView():getResources()))
 			end
 			self.tabsLayout:addChild(button)
 
 			button.onClick:register(function()
-				tabButtons[self.currentTab]:setStyle(ButtonStyle(CharacterCustomization.INACTIVE_TAB_STYLE(), self:getView():getResources()))
-				button:setStyle(ButtonStyle(CharacterCustomization.ACTIVE_TAB_STYLE(), self:getView():getResources()))
+				tabButtons[self.currentTab]:setStyle(
+					ButtonStyle(
+						CharacterCustomization.INACTIVE_TAB_STYLE(tabButtons[self.currentTab]:getData('icon')),
+						self:getView():getResources()))
+				button:setStyle(
+					ButtonStyle(
+						CharacterCustomization.ACTIVE_TAB_STYLE(icon),
+						self:getView():getResources()))
 
 				self:removeChild(self.tabs[self.currentTab].panel)
 				self:addChild(self.tabs[tab].panel)
@@ -133,15 +146,14 @@ function CharacterCustomization:new(id, index, ui)
 			tabButtons[tab] = button
 		end
 
-		addTab('info', true)
-		addTab('wardrobe', false)
+		addTab('info', true, "Concepts/Identity")
+		addTab('wardrobe', false, "Concepts/Appearance")
 	end
 
 	self.tabs = {}
 	self.tabs.info = {}
 	do
-		local LABEL_WIDTH = 96
-		local INPUT_WIDTH = contentWidth - LABEL_WIDTH - CharacterCustomization.PADDING * 3
+		local INPUT_WIDTH = contentWidth - CharacterCustomization.PADDING * 2
 		local INPUT_HEIGHT = 32
 
 		local info = self.tabs.info
@@ -153,7 +165,7 @@ function CharacterCustomization:new(id, index, ui)
 		info.panel:setPosition(0, CharacterCustomization.TAB_SIZE + CharacterCustomization.PADDING)
 
 		-- title, name, gender (x3)
-		local BASIC_HEIGHT = INPUT_HEIGHT * 6 + CharacterCustomization.PADDING * 5
+		local BASIC_HEIGHT = INPUT_HEIGHT * 7 + CharacterCustomization.PADDING * 5
 		info.basic = GridLayout()
 		info.basic:setSize(contentWidth, BASIC_HEIGHT)
 		info.basic:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
@@ -161,13 +173,13 @@ function CharacterCustomization:new(id, index, ui)
 		local basicTitleLabel = Label()
 		basicTitleLabel:setText("Basics")
 		basicTitleLabel:setStyle(LabelStyle(CharacterCustomization.DESCRIPTION_STYLE, self:getView():getResources()))
-		basicTitleLabel:setSize(contentWidth, INPUT_HEIGHT)
+		basicTitleLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
 		info.basic:addChild(basicTitleLabel)
 
 		local nameLabel = Label()
 		nameLabel:setText("Name:")
 		nameLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
-		nameLabel:setSize(LABEL_WIDTH, INPUT_HEIGHT)
+		nameLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
 		info.basic:addChild(nameLabel)
 
 		local nameInput = TextInput()
@@ -181,20 +193,20 @@ function CharacterCustomization:new(id, index, ui)
 		local genderLabel = Label()
 		genderLabel:setText("Gender:")
 		genderLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
-		genderLabel:setSize(contentWidth, INPUT_HEIGHT)
+		genderLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
 		info.basic:addChild(genderLabel)
 
 		local genderSelect = ScrollablePanel(GridLayout)
 		genderSelect:setScrollBarVisible(true, false)
 		genderSelect:getInnerPanel():setPadding(0, 0)
 		genderSelect:getInnerPanel():setUniformSize(true,
-			contentWidth,
+			INPUT_WIDTH,
 			INPUT_HEIGHT)
 		genderSelect:getInnerPanel():setSize(
-			contentWidth,
+			INPUT_WIDTH,
 			INPUT_HEIGHT * 3)
 		genderSelect:setSize(
-			contentWidth,
+			INPUT_WIDTH,
 			INPUT_HEIGHT * 3)
 
 		local function addGender(name, value)
@@ -214,9 +226,9 @@ function CharacterCustomization:new(id, index, ui)
 			genderSelect:addChild(button)
 		end
 
-		addGender("Male", 'male')
-		addGender("Female", 'female')
-		addGender("Other", 'x')
+		addGender("- Male", 'male')
+		addGender("- Female", 'female')
+		addGender("- Other", 'x')
 
 		info.basic:addChild(genderSelect)
 
@@ -236,7 +248,9 @@ function CharacterCustomization:new(id, index, ui)
 		wardrobe.panel = Panel()
 		wardrobe.panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
 		wardrobe.panel:setSize(contentWidth, contentHeight)
-		wardrobe.panel:setPosition(0, CharacterCustomization.TAB_SIZE + CharacterCustomization.PADDING)
+		wardrobe.panel:setPosition(
+			CharacterCustomization.PADDING,
+			CharacterCustomization.TAB_SIZE + CharacterCustomization.PADDING)
 
 		local gridLayout = GridLayout()
 		gridLayout:setSize(contentWidth, contentHeight)
@@ -248,7 +262,7 @@ function CharacterCustomization:new(id, index, ui)
 			VALUE_WIDTH,
 			contentHeight - CharacterCustomization.PADDING * 2)
 		wardrobe.peep:setPosition(
-			ARROW_BUTTON_WIDTH + LABEL_WIDTH + CharacterCustomization.PADDING * 3,
+			ARROW_BUTTON_WIDTH + LABEL_WIDTH + CharacterCustomization.PADDING * 2,
 			CharacterCustomization.PADDING)
 		wardrobe.panel:addChild(wardrobe.peep)
 
@@ -303,7 +317,6 @@ function CharacterCustomization:update(...)
 
 	if not self.ready then
 		local state = self:getState()
-		print(state.gender)
 		self.onChangeGender(state.gender)
 		self.ready = true
 	end
@@ -372,6 +385,9 @@ end
 
 function CharacterCustomization:changeGender(value)
 	self.onChangeGender(value)
+	self:sendPoke("changeGender", nil, {
+		gender = value
+	})
 end
 
 function CharacterCustomization:changeName(value)
