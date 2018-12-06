@@ -279,6 +279,8 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ActionType "Pick"
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -424,7 +426,9 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
+include "Resources/Game/DB/Props/Flax.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
+include "Resources/Game/DB/Props/SpinningWheel.lua"
 include "Resources/Game/DB/Props/Chest.lua"
 include "Resources/Game/DB/Props/Ladder.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"

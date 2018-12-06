@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Actions/Pickpocket.lua
+-- Resources/Game/Actions/Pick.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,12 +14,13 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local Action = require "ItsyScape.Peep.Action"
 
-local Pickpocket = Class(Action)
-Pickpocket.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
-Pickpocket.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true }
-Pickpocket.DURATION = 0.5
+local Pick = Class(Action)
+Pick.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+Pick.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true }
+Pick.QUEUE = {}
+Pick.DURATION = 1.0
 
-function Pickpocket:perform(state, player, target)
+function Pick:perform(state, player, target)
 	local FLAGS = {
 		['item-inventory'] = true,
 		['item-equipment'] = true
@@ -31,8 +32,9 @@ function Pickpocket:perform(state, player, target)
 
 		if walk then
 			local perform = CallbackCommand(self.transfer, self, state, player)
-			local wait = WaitCommand(Pickpocket.DURATION, false)
-			local command = CompositeCommand(true, walk, perform, wait)
+			local wait = WaitCommand(Pick.DURATION, false)
+			local poof = CallbackCommand(Utility.Peep.poof, target)
+			local command = CompositeCommand(true, walk, perform, poof, wait)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
@@ -42,4 +44,4 @@ function Pickpocket:perform(state, player, target)
 	return false
 end
 
-return Pickpocket
+return Pick

@@ -164,9 +164,6 @@ function One:assign(director, key, ...)
 	do
 		local t = director:getItemBroker():createTransaction()
 		t:addParty(inventory.inventory)
-		t:spawn(inventory.inventory, "BronzeArrow", 100, false)
-		t:spawn(inventory.inventory, "PunyBow", 1, false)
-		t:spawn(inventory.inventory, "PunyLongbow", 1, false)
 		t:commit()
 	end
 

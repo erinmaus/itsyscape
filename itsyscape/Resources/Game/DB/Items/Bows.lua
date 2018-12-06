@@ -12,7 +12,8 @@ local LOGS = {
 	["Common"] = {
 		tier = 1,
 		weight = 8,
-		style = "Puny"
+		style = "Puny",
+		bowstring = "Bowstring"
 	}
 }
 
@@ -43,6 +44,38 @@ for name, log in pairs(LOGS) do
 
 		local DequipAction = ItsyScape.Action.Dequip()
 
+		local FletchAction = ItsyScape.Action.Fletch() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fletching",
+				Count = ItsyScape.Utility.xpForLevel(math.max(log.tier + itemProps.tier - 1, 1))
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Knife",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item(string.format("%sLogs", name)),
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item(log.bowstring),
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fletching",
+				Count = ItsyScape.Utility.xpForResource(log.tier + itemProps.tier) * 2
+			},
+
+			Output {
+				Resource = Item,
+				Count = 1
+			}
+		}
+
 		ItsyScape.Meta.Item {
 			Value = ItsyScape.Utility.valueForItem(log.tier + itemProps.tier),
 			Weight = log.weight,
@@ -69,9 +102,61 @@ for name, log in pairs(LOGS) do
 
 		Item {
 			EquipAction,
-			DequipAction
+			DequipAction,
+			FletchAction
 		}
 	end
+end
+
+-- Bowstrings
+do
+	ItsyScape.Resource.Item "Bowstring" {
+		ItsyScape.Action.Craft() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Flax",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Bowstring",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForResource(3)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Fiber",
+		Value = "Flax",
+		Resource = ItsyScape.Resource.Item "Bowstring"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(2),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Bowstring"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bowstring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bowstring"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Twang!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bowstring"
+	}
 end
 
 -- Common/bronze
