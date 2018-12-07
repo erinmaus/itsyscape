@@ -32,7 +32,7 @@ function GenderBehavior:new()
 	self.pronouns = {
 		"they",
 		"them",
-		"theirs",
+		"their",
 		"mazer"
 	}
 end

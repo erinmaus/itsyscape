@@ -194,6 +194,13 @@ function CharacterCustomizationController:changeGender(e)
 					'hers',
 					'misse'
 				}
+			elseif e.gender == GenderBehavior.GENDER_OTHER then
+				gender.pronouns = {
+					'they',
+					'them',
+					'their',
+					'mazer'
+				}
 			end
 		end
 
