@@ -185,10 +185,19 @@ function ActorView:playAnimation(slot, animation, priority, time)
 end
 
 function ActorView:applySkin(slotNodes)
+	slotNodes.index = (slotNodes.index or 0) + 1
+	local index = slotNodes.index
+
 	local ignore = false
 	local i = #slotNodes
 	local iterate
 	local function step()
+		-- This ensures we give up if another skin has been applied.
+		-- Only the latest will take affect.
+		if slotNodes.index ~= index then
+			return
+		end
+
 		if i > 1 then
 			self.game:getResourceManager():queueEvent(iterate)
 			i = i - 1

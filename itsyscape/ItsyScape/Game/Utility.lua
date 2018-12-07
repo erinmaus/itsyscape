@@ -256,6 +256,76 @@ end
 -- Contains utility methods that deal with combat.
 Utility.Combat = {}
 
+function Utility.Combat.getCombatLevel(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+		local base = (
+			stats:getSkill("Defense"):getBaseLevel() +
+			stats:getSkill("Constitution"):getBaseLevel() +
+			math.floor(stats:getSkill("Faith"):getBaseLevel() / 2 + 0.5)) / 2
+		local melee = (stats:getSkill("Attack"):getBaseLevel() + stats:getSkill("Strength"):getBaseLevel()) / 2
+		local magic = (stats:getSkill("Magic"):getBaseLevel() + stats:getSkill("Wisdom"):getBaseLevel()) / 2
+		local ranged = (stats:getSkill("Archery"):getBaseLevel() + stats:getSkill("Dexterity"):getBaseLevel()) / 2
+		return math.floor(base + math.max(melee, magic, ranged) + 0.5)
+	end
+
+	return 0
+end
+
+function Utility.Combat.getCombatXP(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+		local combatLevel = Utility.Combat.getCombatLevel(peep)
+		local cFactor = math.max(math.floor((stats:getSkill("Constitution"):getBaseLevel() / 10 + 0.5)), 1)
+		return math.floor(math.sqrt(combatLevel ^ 3 * cFactor) * 4 + 0.5)
+	end
+
+	return 0
+end
+
+function Utility.Combat.giveCombatXP(peep, xp)
+	local Equipment = require "ItsyScape.Game.Equipment"
+	local Weapon = require "ItsyScape.Game.Weapon"
+	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+
+	local stance = peep:getBehavior(StanceBehavior)
+	if not stance then
+		return
+	else
+		stance = stance.stance
+	end
+
+	local weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
+		Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+
+	local strength, accuracy
+	if weapon then
+		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
+		if logic:isCompatibleType(Weapon) then
+			local _, s, a = logic:getSkill(Weapon.PURPOSE_KILL)
+			strength = s
+			accuracy = a
+		end
+	end
+
+	if not strength or not accuracy then
+		strength = "Strength"
+		accuracy = "Attack"
+	end
+
+	if stance == Weapon.STANCE_AGGRESSIVE then
+		peep:getState():give("Skill", strength, math.floor(xp + 0.5))
+	elseif stance == Weapon.STANCE_CONTROLLED then
+		peep:getState():give("Skill", accuracy, math.floor(xp + 0.5))
+	elseif stance == Weapon.STANCE_DEFENSIVE then
+		peep:getState():give("Skill", "Defense", math.floor(xp + 0.5))
+	end
+
+	peep:getState():give("Skill", "Constitution", math.floor(xp / 3 + 0.5))
+end
+
 -- Calculates the maximum hit given the level (including boosts), multiplier,
 -- and equipment strength bonus.
 function Utility.Combat.calcMaxHit(level, multiplier, bonus)
@@ -444,6 +514,7 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 end
 
 Utility.Peep = {}
+
 function Utility.Peep.getStorage(peep)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
@@ -842,6 +913,8 @@ function Utility.Peep.Stats:onReady(director)
 		end
 	end
 
+	Log.info("%s combat level: %d", self:getName(), Utility.Combat.getCombatLevel(self))
+
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 end
 
@@ -1154,6 +1227,22 @@ function Utility.Peep.Attackable:onDie(p)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO
 	movement.acceleration = Vector.ZERO
+
+	local xp = Utility.Combat.getCombatXP(self)
+	do
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			local director = self:getDirector()
+			local p = director:probe(self:getLayerName(), function(p)
+				local target = p:getBehavior(CombatTargetBehavior)
+				return target and target.actor == actor.actor
+			end)
+
+			for i = 1, #p do
+				Utility.Combat.giveCombatXP(p[i], xp)
+			end
+		end
+	end
 end
 
 function Utility.Peep.Attackable:onReady(director)
