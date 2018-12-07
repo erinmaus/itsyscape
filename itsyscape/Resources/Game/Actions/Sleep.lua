@@ -14,7 +14,9 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Action = require "ItsyScape.Peep.Action"
 local Color = require "ItsyScape.Graphics.Color"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -58,6 +60,20 @@ end
 
 function Sleep:save(player)
 	Utility.save(player, true, true, "Zzz...?", Color(1, 1, 1, 1))
+
+	local status = player:getBehavior(CombatStatusBehavior)
+	local stats = player:getBehavior(StatsBehavior)
+
+	if status then
+		if stats and stats.stats then
+			stats = stats.stats
+			status.currentHitpoints = stats:getSkill("Constitution"):getWorkingLevel()
+			status.currentPrayer = stats:getSkill("Faith"):getWorkingLevel()
+		else
+			status.currentHitpoints = status.maximumHitpoints
+			status.currentPrayer = status.maximumPrayer
+		end
+	end
 end
 
 return Sleep

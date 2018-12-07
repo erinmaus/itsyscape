@@ -170,9 +170,10 @@ function EquipmentInventoryProvider:unload(...)
 
 	local storage = Utility.Item.getStorage(self.peep, "Equipment", true)
 	if storage then
+		local index = 1
 		for item in broker:iterateItems(self) do
-			local key = broker:getItemKey(item)
-			broker:itemToStorage(item, storage, key)
+			broker:itemToStorage(item, storage, index)
+			index = index + 1
 		end
 	end
 

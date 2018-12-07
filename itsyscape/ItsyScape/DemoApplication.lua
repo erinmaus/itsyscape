@@ -40,11 +40,21 @@ function DemoApplication:initialize()
 	local storage = love.filesystem.read("Player/Default.dat")
 	if storage then
 		self:getGame():getDirector():getPlayerStorage(1):deserialize(storage)
+		storage = self:getGame():getDirector():getPlayerStorage(1)
 	end
 
 	Application.initialize(self)
 
 	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
+
+	if not storage:getRoot():hasSection("Location") or
+	   not storage:getRoot():getSection("Location"):get("name")
+	then
+		self:getGame():getStage():movePeep(
+			playerPeep,
+		"IsabelleIsland_Tower",
+		"Anchor_StartGame")
+	end
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
