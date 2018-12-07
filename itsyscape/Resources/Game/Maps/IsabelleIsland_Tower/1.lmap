@@ -2772,7 +2772,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{

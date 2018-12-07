@@ -23,7 +23,7 @@ local SKINS = {
 		{ name = "Fade", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Fade.lua" },
 		{ name = "Afro", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Afro.lua" },
 		{ name = "Emo", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Emo.lua" },
-		{ name = "Bald", t = false, filename = false }
+		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
 	},
 
 	eyes = {
@@ -101,13 +101,14 @@ end
 function CharacterCustomizationController:getIndex(slot)
 	local skin = self:getSkinStorage()
 	local slotSection = skin:getSection(slot)
-	if not slotSection:get("name") then
+	if not slotSection:get("filename") then
 		return 0
 	end
 
-	local name = slotSection:get("name")
+	local filename = slotSection:get("filename")
 	for i = 1, #SKINS[slot] do
-		if SKINS[slot][i].name == name then
+		local f = "Resources/Game/Skins/" .. SKINS[slot][i].filename
+		if f == filename then
 			return i
 		end
 	end
@@ -193,6 +194,8 @@ function CharacterCustomizationController:changeGender(e)
 				}
 			end
 		end
+
+		gender:unload(peep)
 	end
 end
 

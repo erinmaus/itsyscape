@@ -37,4 +37,20 @@ function GenderBehavior:new()
 	}
 end
 
+function GenderBehavior:unload(peep)
+	local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+	if peep:hasBehavior(PlayerBehavior) then
+		local director = peep:getDirector()
+		local storage = director:getPlayerStorage(peep):getRoot()
+		local gender = storage:getSection("Player"):getSection("Info"):getSection("Gender")
+		gender:set({
+			gender = self.gender,
+			subject = self.pronouns[GenderBehavior.PRONOUN_SUBJECT],
+			object = self.pronouns[GenderBehavior.PRONOUN_OBJECT],
+			possessive = self.pronouns[GenderBehavior.PRONOUN_POSSESSIVE],
+			formal = self.pronouns[GenderBehavior.FORMAL_ADDRESS],
+		})
+	end
+end
+
 return GenderBehavior

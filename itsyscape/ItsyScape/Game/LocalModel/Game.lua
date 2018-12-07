@@ -17,7 +17,7 @@ local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 local LocalGame = Class(Game)
 LocalGame.TICKS_PER_SECOND = 10
 
-function LocalGame:new(gameDB)
+function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
 
 	self.gameDB = gameDB

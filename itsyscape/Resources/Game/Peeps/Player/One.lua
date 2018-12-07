@@ -22,6 +22,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
+local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -129,79 +130,108 @@ function One:assign(director, key, ...)
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
 
-	local stats = self:getBehavior(StatsBehavior)
-	stats.stats = Stats("Player.One", director:getGameDB())
-	stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
-	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
-		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+	local storage = director:getPlayerStorage(self):getRoot()
+	if storage:get("filename") then
+		local name = storage:getSection("Player"):getSection("Info"):get("name")
+		self:setName(name or self:getName())
 
-		local combat = self:getBehavior(CombatStatusBehavior)
-		combat.maximumHitpoints = combat.maximumHitpoints + difference
-		combat.currentHitpoints = combat.currentHitpoints + difference
-	end)
-	stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
-		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
-
-		local combat = self:getBehavior(CombatStatusBehavior)
-		combat.maximumPrayer = combat.maximumPrayer + difference
-		combat.currentPrayer = combat.currentPrayer + difference
-	end)
-
-	stats.stats.onXPGain:register(function(_, skill, xp)
-		local actor = self:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor = actor.actor
-			actor:flash("XPPopup", 1, skill:getName(), xp)
+		local gender = self:getBehavior(GenderBehavior)
+		if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
+			local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
+			gender.gender = g:get("gender")
+			gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
+			gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
+			gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")
+			gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
 		end
-	end)
 
-	local combat = self:getBehavior(CombatStatusBehavior)
-	combat.currentHitpoints = 10
-	combat.maximumHitpoints = 10
-	combat.maxChaseDistance = math.huge
+		local stats = self:getBehavior(StatsBehavior)
+		stats.stats = Stats("Player.One", director:getGameDB())
+		stats.stats:load(Utility.Peep.getStorage(self))
 
-	-- DEBUG
-	do
-		local t = director:getItemBroker():createTransaction()
-		t:addParty(inventory.inventory)
-		t:commit()
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.currentHitpoints = stats.stats:getSkill("Constitution"):getWorkingLevel()
+		combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
+		combat.currentPrayer = stats.stats:getSkill("Faith"):getWorkingLevel()
+		combat.maximumPrayer = stats.stats:getSkill("Faith"):getBaseLevel()
+	else
+		local stats = self:getBehavior(StatsBehavior)
+		stats.stats = Stats("Player.One", director:getGameDB())
+		stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
+		stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
+			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+			local combat = self:getBehavior(CombatStatusBehavior)
+			combat.maximumHitpoints = combat.maximumHitpoints + difference
+			combat.currentHitpoints = combat.currentHitpoints + difference
+		end)
+		stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
+			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+			local combat = self:getBehavior(CombatStatusBehavior)
+			combat.maximumPrayer = combat.maximumPrayer + difference
+			combat.currentPrayer = combat.currentPrayer + difference
+		end)
+
+		stats.stats.onXPGain:register(function(_, skill, xp)
+			local actor = self:getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				actor = actor.actor
+				actor:flash("XPPopup", 1, skill:getName(), xp)
+			end
+		end)
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.currentHitpoints = 10
+		combat.maximumHitpoints = 10
 	end
 
 	do
-		local t = director:getItemBroker():createTransaction()
-		t:addParty(inventory.bank)
-		t:spawn(inventory.bank, "Coins", 1000, true)
-		t:commit()
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maxChaseDistance = math.huge
 	end
 end
 
-One.HEADS = {
-	"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
-}
-
-One.EYES = {
-	"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua"
-}
-
-One.SHOES = {
-	"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua"
-}
-
-One.SHIRTS = {
-	"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
-	"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
-	"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
-	"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua"
-}
-
-One.HAIR = {
-	"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
+One.SKINS = {
+	head = {
+		slot = Equipment.PLAYER_SLOT_HEAD,
+		priority = Equipment.SKIN_PRIORITY_BASE,
+		"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
+		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
+		"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
+		"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
+	},
+	eyes = {
+		slot = Equipment.PLAYER_SLOT_HEAD,
+		priority = math.huge,
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua"
+	},
+	feet = {
+		slot = Equipment.PLAYER_SLOT_FEET,
+		priority = Equipment.SKIN_PRIORITY_BASE,
+		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua"
+	},
+	body = {
+		slot = Equipment.PLAYER_SLOT_BODY,
+		priority = Equipment.SKIN_PRIORITY_BASE,
+		"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
+		"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
+		"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
+		"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua"
+	},
+	hands = {
+		slot = Equipment.PLAYER_SLOT_HANDS,
+		priority = Equipment.SKIN_PRIORITY_BASE,
+		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua"
+	},
+	hair = {
+		slot = Equipment.PLAYER_SLOT_HEAD,
+		priority = Equipment.SKIN_PRIORITY_ACCENT,
+		"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
+		"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
+		"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
+		"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
+	}
 }
 
 function One:ready(director, game)
@@ -216,39 +246,50 @@ function One:ready(director, game)
 	end
 
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
-	actor:setSkin(
-		Equipment.PLAYER_SLOT_HEAD,
-		math.huge,
-		CacheRef(
-			"ItsyScape.Game.Skin.ModelSkin",
-			roll(One.EYES)))
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		roll(One.HEADS))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local hair = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		roll(One.HAIR))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		roll(One.SHIRTS))
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		roll(One.SHOES))
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+	local SLOTS = {
+		'hair',
+		'eyes',
+		'head',
+		'body',
+		'hands',
+		'feet'
+	}
+
+	local skin = director:getPlayerStorage():getRoot():getSection("Player"):getSection("Skin")
+	for i = 1, #SLOTS do
+		local slot = SLOTS[i]
+		if skin:hasSection(slot) then
+			local s = skin:getSection(slot)
+			self:onChangeWardrobe({
+				slot = s:get('slot'),
+				slotName = s:get('slotName'),
+				priority = s:get('priority'),
+				name = s:get('name'),
+				filename = s:get('filename'),
+				type = s:get('type')
+			})
+		else
+			self:onChangeWardrobe({
+				slot = One.SKINS[slot].slot,
+				slotName = slot,
+				priority = One.SKINS[slot].priority,
+				name = 'Default',
+				filename = roll(One.SKINS[slot]),
+				type = "ItsyScape.Game.Skin.ModelSkin"
+			})
+		end
+	end
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))
 	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
 	self:getState():addProvider("Item", BankInventoryStateProvider(self))
+
+	self.deadTimer = math.huge
+
+	Peep.ready(self, director, game)
 end
 
 function One:onDropItem(e)
@@ -299,10 +340,47 @@ function One:onDie(p)
 
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt()
+
+	Utility.save(self, false, true, "Aaah!")
+
+	self.deadTimer = 1
 end
 
 function One:update(...)
 	Peep.update(self, ...)
+
+	self.deadTimer = self.deadTimer - self:getDirector():getGameInstance():getDelta()
+	if self.deadTimer < 0 then
+		self.deadTimer = math.huge
+
+		local combatStatus = self:getBehavior(CombatStatusBehavior)
+		combatStatus.currentHitpoints = combatStatus.maximumHitpoints
+		combatStatus.currentPrayer = combatStatus.maximumPrayer
+
+		local director = self:getDirector()
+		local stage = director:getGameInstance():getStage()
+		local storage = director:getPlayerStorage(self):getRoot()
+		local location = storage:getSection("Location")
+		if location and location:get("name") then
+			stage:movePeep(
+				self,
+				location:get("name"),
+				Vector(location:get("x"), location:get("y"), location:get("z")),
+				true)
+		else
+			stage:movePeep(
+				self,
+				"IsabelleIsland_Tower",
+				"Anchor_StartGame",
+				true)
+		end
+
+		self:poke('resurrect', {})
+	end
+end
+
+function One:onPoof()
+	Log.error('poofed')
 end
 
 function One:onActionFailed(e)

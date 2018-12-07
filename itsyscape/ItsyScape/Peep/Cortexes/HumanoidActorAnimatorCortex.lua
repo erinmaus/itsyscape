@@ -38,6 +38,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('initiateAttack', self.onInitiateAttack, self)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
+	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
 end
 
@@ -103,6 +104,13 @@ function HumanoidActorAnimatorCortex:onDie(peep, p)
 			peep,
 			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 			resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:onResurrect(peep, p)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	if actor then
+		actor:playAnimation('combat', false)
 	end
 end
 

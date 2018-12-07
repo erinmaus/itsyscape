@@ -26,24 +26,6 @@ function DemoApplication:new()
 	Application.new(self)
 
 	self.isCameraDragging = false
-	self.light = DirectionalLightSceneNode()
-	do
-		self.light:setIsGlobal(true)
-		self.light:setDirection(-self:getCamera():getForward())
-		--self.light:setParent(self:getGameView():getScene())
-		
-		local ambient = AmbientLightSceneNode()
-		ambient:setAmbience(0.4)
-		--ambient:setParent(self:getGameView():getScene())
-	end
-	do
-		local fog = FogSceneNode()
-		fog:setColor(Color(162 / 2 / 255, 33 / 255, 234 / 2 / 255, 1))
-		fog:setNearDistance(20)
-		fog:setFarDistance(60)
-		--fog:setParent(self:getGameView():getScene())
-	end
-
 	self.cameraVerticalRotationOffset = 0
 	self.cameraHorizontalRotationOffset = 0
 
@@ -52,78 +34,32 @@ function DemoApplication:new()
 
 	self:getCamera():setHorizontalRotation(DemoApplication.CAMERA_HORIZONTAL_ROTATION)
 	self:getCamera():setVerticalRotation(DemoApplication.CAMERA_VERTICAL_ROTATION)
-
-	self.playerDead = false
 end
 
 function DemoApplication:initialize()
+	local storage = love.filesystem.read("Player/Default.dat")
+	if storage then
+		self:getGame():getDirector():getPlayerStorage(1):deserialize(storage)
+	end
+
 	Application.initialize(self)
 
 	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
-	--self:populateMap()
-	--self:getGame():getStage():loadStage("IsabelleIsland_AbandonedMine")
-	--self:getGame():getStage():loadStage("IsabelleIsland_Tower")
-	self:getGame():getStage():movePeep(
-		playerPeep,
-		"IsabelleIsland_Tower",
-		"Anchor_StartGame")
-	self:populateMap()
-
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
-	self:getGame():getUI():openBlockingInterface(playerPeep, "CharacterCustomization")
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = position
 	self.currentPlayerPosition = position
 end
 
-function DemoApplication:moveActorToTile(actor, i, j, k)
-	local map = self:getGame():getStage():getMap(k or 1)
-	actor:teleport(map:getTileCenter(i, j))
-end
-
-function DemoApplication:populateMap()
-	local player = self:getGame():getPlayer():getActor()
-
-	local peep = player:getPeep()
-	peep:listen('die', function()
-		self.playerDead = true
-	end)
-	-- Entrance
-	--self:moveActorToTile(player, 40, 4)
-	-- Mine
-	--self:moveActorToTile(player, 16, 21)
-	-- Furnace
-	--self:moveActorToTile(player, 30, 15)
-	-- Boss
-	--self:moveActorToTile(player, 32, 37)
-end
-
-local time = 0
 function DemoApplication:tick()
 	Application.tick(self)
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = self.currentPlayerPosition or position
 	self.currentPlayerPosition = position
-
-	--self.light:setDirection(-self:getCamera():getForward())
-	self.light:setDirection(Vector(4, 3, 4):getNormal())
-	self.light:setColor(Color( 234 / 255,  162 / 255,  33 / 255, 1))
-
-	if self.playerDead then
-		local player = self:getGame():getPlayer():getActor()
-		local peep = player:getPeep()
-		local combat = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
-		combat.currentHitPoints = combat.maximumHitpoints
-
-		player:playAnimation('combat', false)
-
-		self:moveActorToTile(player, 40, 4)
-		self.playerDead = false
-	end
 end
 
 function DemoApplication:mousePress(x, y, button)

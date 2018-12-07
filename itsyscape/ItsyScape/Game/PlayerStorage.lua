@@ -136,12 +136,37 @@ function PlayerStorage.Section:serialize()
 	return result
 end
 
+function PlayerStorage.Section:deserialize(t)
+	t = t or { values = {}, sections = {} }
+	for key, value in pairs(t.values or {}) do
+		self:set(key, value)
+	end
+
+	for key, value in pairs(t.sections or {}) do
+		local section = self:getSection(key)
+		section:deserialize(value)
+	end
+end
+
 function PlayerStorage:new()
 	self.root = PlayerStorage.Section("root")
 end
 
 function PlayerStorage:getRoot()
 	return self.root
+end
+
+function PlayerStorage:deserialize(t)
+	if type(t) == 'string' then
+		local r, e = loadstring('return ' .. t)
+		if e then
+			Log.error("Failed to deserialize player storage: %s", e)
+		end
+
+		t = r()
+	end
+
+	self.root:deserialize(t)
 end
 
 function PlayerStorage:serialize()

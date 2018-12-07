@@ -97,7 +97,7 @@ function CombatCortex:update(delta)
 			target = target.actor
 		end
 
-		if target then
+		if target and target:getPeep() then
 			target = target:getPeep()
 
 			local targetPosition = target:getBehavior(PositionBehavior)

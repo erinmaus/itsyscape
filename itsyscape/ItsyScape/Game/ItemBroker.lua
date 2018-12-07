@@ -1105,6 +1105,7 @@ function ItemBroker:toStorage()
 end
 
 function ItemBroker:itemFromStorage(provider, storage)
+	local key = storage:get("item-key")
 	local count = storage:get("item-count")
 	local id = storage:get("item-id")
 	local noted = storage:get("item-noted")
@@ -1113,6 +1114,10 @@ function ItemBroker:itemFromStorage(provider, storage)
 	if count ~= nil and id ~= nil and noted ~= nil then
 		local item = self:addItem(provider, id, count, noted)
 		item:setUserdata(userdata)
+
+		if key then
+			self:setItemKey(item, key)
+		end
 
 		return item
 	end
@@ -1123,6 +1128,7 @@ end
 function ItemBroker:itemToStorage(item, storage, key)
 	local itemStorage = storage:getSection(key)
 	itemStorage:set({
+		["item-key"] = key,
 		["item-id"] = item:getID(),
 		["item-noted"] = item:isNoted(),
 		["item-count"] = item:getCount()

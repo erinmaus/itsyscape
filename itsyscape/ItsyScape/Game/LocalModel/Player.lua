@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Game.Model.Player"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -35,6 +36,20 @@ function Player:spawn()
 
 		local p = actor:getPeep():getBehavior(PlayerBehavior)
 		p.id = 1
+
+		actor:getPeep():listen('finalize', function()
+			local storage = self.game:getDirector():getPlayerStorage(game):getRoot()
+			if storage:hasSection("Location") then
+				local location = storage:getSection("Location")
+				self.stage:movePeep(
+					actor:getPeep(),
+					location:get("name"),
+					Vector(
+						location:get("x"),
+						location:get("y"),
+						location:get("z")))
+			end
+		end)
 	else
 		self.actor = false
 	end

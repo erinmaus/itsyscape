@@ -44,3 +44,31 @@ ItsyScape.Meta.MapObjectSize {
 	SizeZ = 2,
 	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeStone"
 }
+
+ItsyScape.Resource.Prop "Bed_Rumbridge" {
+	ItsyScape.Action.Sleep()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Bed_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Comfy bed",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bed_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Got you to think 'comfy'!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bed_Rumbridge"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 1.5,
+	SizeZ = 4,
+	MapObject = ItsyScape.Resource.Prop "Bed_Rumbridge"
+}

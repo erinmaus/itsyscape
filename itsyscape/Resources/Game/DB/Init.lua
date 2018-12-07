@@ -280,6 +280,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Pick"
+	ActionType "Sleep"
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
