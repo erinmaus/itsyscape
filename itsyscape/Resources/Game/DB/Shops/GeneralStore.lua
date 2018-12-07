@@ -10,30 +10,94 @@
 
 ItsyScape.Resource.Shop "Standard_GeneralStore" {
 	ItsyScape.Action.Buy() {
-		Input = {
-			Count = 10,
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 10
+		},
+
+		Output { 
 			Resource = ItsyScape.Resource.Item "Needle",
 		}
 	},
 
 	ItsyScape.Action.Buy() {
-		Input = {
-			Count = 1,
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 10
+		},
+
+		Output { 
+			Resource = ItsyScape.Resource.Item "Knife",
+		}
+	},
+
+	ItsyScape.Action.Buy() {
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 10
+		},
+
+		Output { 
+			Resource = ItsyScape.Resource.Item "Hammer",
+		}
+	},
+
+	ItsyScape.Action.Buy() {
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 10
+		},
+
+		Output { 
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+		}
+	},
+
+	ItsyScape.Action.Buy() {
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 1
+		},
+
+		Output {
 			Resource = ItsyScape.Resource.Item "PlainThread",
+			Count = 1,
 		}
 	},
 
 	ItsyScape.Action.Buy() {
-		Input = {
-			Count = 1,
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 30
+		},
+
+		Output {
 			Resource = ItsyScape.Resource.Item "BronzePickaxe",
+			Count = 1
 		}
 	},
 
 	ItsyScape.Action.Buy() {
-		Input = {
-			Count = 1,
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 30
+		},
+
+		Output {
 			Resource = ItsyScape.Resource.Item "BronzeHatchet",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Buy() {
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 100
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BrownApron",
+			Count = 1
 		}
 	}
 }

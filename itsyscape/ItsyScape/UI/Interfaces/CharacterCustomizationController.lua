@@ -86,6 +86,8 @@ function CharacterCustomizationController:poke(actionID, actionIndex, e)
 		self:changeGender(e)
 	elseif actionID == "changeName" then
 		self:changeName(e)
+	elseif actionID == "close" then
+		self:getGame():getUI():closeInstance(self)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end

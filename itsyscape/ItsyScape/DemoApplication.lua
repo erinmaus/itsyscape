@@ -40,8 +40,9 @@ function DemoApplication:initialize()
 	local storage = love.filesystem.read("Player/Default.dat")
 	if storage then
 		self:getGame():getDirector():getPlayerStorage(1):deserialize(storage)
-		storage = self:getGame():getDirector():getPlayerStorage(1)
 	end
+
+	storage = self:getGame():getDirector():getPlayerStorage(1)
 
 	Application.initialize(self)
 

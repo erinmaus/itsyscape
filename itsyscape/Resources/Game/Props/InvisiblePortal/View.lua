@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BronzePickaxe/Logic.lua
+-- Resources/Game/Props/InvisiblePortal/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Pickaxe = require "Resources.Game.Items.Common.Pickaxe"
+local PropView = require "ItsyScape.Graphics.PropView"
 
-local BronzePickaxe = Class(Pickaxe)
+local InvisiblePortal = Class(PropView)
 
-return BronzePickaxe
+return InvisiblePortal

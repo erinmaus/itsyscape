@@ -101,6 +101,66 @@ do
 	}
 end
 
+M["Anchor_FoggyForest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 3,
+		PositionZ = 21,
+		Name = "Anchor_FoggyForest",
+		Map = M._MAP,
+		Resource = M["Anchor_FoggyForest"]
+	}
+end
+
+M["Portal_FoggyForest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 1,
+		PositionZ = 19,
+		Name = "Portal_FoggyForest",
+		Map = M._MAP,
+		Resource = M["Portal_FoggyForest"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_FoggyForest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_FoggyForest"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Foggy Forest",
+		Language = "en-US",
+		Resource = M["Portal_FoggyForest"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Entrance",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_FoggyForest",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_FoggyForest"] {
+		TravelAction
+	}
+end
+
 M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -151,6 +211,29 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "FancyBanker_Default",
 		MapObject = M["Banker"]
+	}
+end
+
+M["Bob"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 23,
+		Name = "Bob",
+		Map = M._MAP,
+		Resource = M["Bob"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bob the Shopkeeper",
+		Language = "en-US",
+		Resource = M["Bob"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard",
+		MapObject = M["Bob"]
 	}
 end
 

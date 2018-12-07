@@ -110,6 +110,10 @@ while result ~= QUIT do
 		if _TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_Start") then
 			message "Excellent!"
 
+			_TARGET:getState():give("Item", "Coins", 1000, {
+				['item-bank'] = true
+			})
+
 			defer "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/IsabellePostStart_en-US.lua"
 
 			break

@@ -309,6 +309,15 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.currentTab = 'info'
 
+	self.closeButton = Button()
+	self.closeButton:setSize(CharacterCustomization.TAB_SIZE, CharacterCustomization.TAB_SIZE)
+	self.closeButton:setPosition(CharacterCustomization.WIDTH - CharacterCustomization.TAB_SIZE, 0)
+	self.closeButton:setText("X")
+	self.closeButton.onClick:register(function()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(self.closeButton)
+
 	self.ready = false
 end
 
