@@ -57,13 +57,13 @@ end
 -- This is generally a bad idea.
 --
 -- 'xp' is clamped to 0.
-function Stats.Skill:setXP(value)
+function Stats.Skill:setXP(value, suppressNotify)
 	local previousLevel = self:getBaseLevel()
 	self.xp = math.floor(math.max(value, 0))
 	self.isDirty = true
 	local currentLevel = self:getBaseLevel()
 
-	if previousLevel ~= currentLevel then
+	if previousLevel ~= currentLevel and not suppressNotify then
 		self.onLevelUp(self, previousLevel)
 		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
 	end
@@ -168,17 +168,32 @@ function Stats:getSkill(skill)
 end
 
 -- Loads the stats from a save file.
---
--- NYI.
-function Stats:load(...)
-	-- Nothing.
+function Stats:load(storage)
+	stats = storage:getSection("Stats")
+	for name, skill in pairs(self.skills) do
+		local stat = stats:getSection(name)
+		if stat then
+			local xp = stat:get("xp")
+			local levelBoost = stat:get("levelBoost")
+			skill:setXP(xp, true)
+			skill:setLevelBoost(levelBoost)
+		else
+			skill:setXP(0)
+			skill:setLevelBoost(0)
+		end
+	end
 end
 
 -- Saves the stats into a save file.
---
--- NYI.
-function Stats:save(...)
-	-- Nothing.
+function Stats:save(storage)
+	stats = storage:getSection("Stats")
+	for name, skill in pairs(self.skills) do
+		local stat = stats:getSection(name)
+		stat:set({
+			xp = skill:getXP(),
+			levelBoost = skill:getLevelBoost()
+		})
+	end
 end
 
 return Stats

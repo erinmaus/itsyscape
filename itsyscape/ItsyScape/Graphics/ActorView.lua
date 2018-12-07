@@ -180,7 +180,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			self.animations[slot] = a
 		end)
 	else
-		a = nil
+		self.animations[slot] = nil
 	end
 end
 

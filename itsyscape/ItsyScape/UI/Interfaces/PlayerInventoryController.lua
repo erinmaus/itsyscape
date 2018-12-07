@@ -39,12 +39,14 @@ function PlayerInventoryController:pull()
 	local result = { items = {} }
 	if inventory then
 		local broker = inventory.inventory:getBroker()
-		for key in broker:keys(inventory.inventory) do
-			for item in broker:iterateItemsByKey(inventory.inventory, key) do
-				local resultItem = self:pullItem(item)
-				self:pullActions(item, resultItem)
-				result.items[key] = resultItem
-				break
+		if broker then
+			for key in broker:keys(inventory.inventory) do
+				for item in broker:iterateItemsByKey(inventory.inventory, key) do
+					local resultItem = self:pullItem(item)
+					self:pullActions(item, resultItem)
+					result.items[key] = resultItem
+					break
+				end
 			end
 		end
 	end

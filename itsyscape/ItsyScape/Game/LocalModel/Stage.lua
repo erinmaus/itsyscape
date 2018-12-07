@@ -390,9 +390,11 @@ function LocalStage:unloadAll()
 		do
 			local broker = self.game:getDirector():getItemBroker()
 			local inventory = self.ground:getBehavior(InventoryBehavior).inventory
-			for item in broker:iterateItems(inventory) do
-				local ref = broker:getItemRef(item)
-				self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+			if broker:hasProvider(inventory) then
+				for item in broker:iterateItems(inventory) do
+					local ref = broker:getItemRef(item)
+					self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+				end
 			end
 		end
 
@@ -405,26 +407,30 @@ function LocalStage:unloadAll()
 	self.mapScripts = {}
 end
 
-function LocalStage:movePeep(peep, filename, anchor)
+function LocalStage:movePeep(peep, filename, anchor, force)
 	local playerPeep = self.game:getPlayer():getActor():getPeep()
 	if playerPeep == peep then
-		if filename ~= self.stageName then
+		if filename ~= self.stageName or force then
 			self:loadStage(filename)
 		end
 
 		playerPeep = self.game:getPlayer():getActor():getPeep()
 		local position = playerPeep:getBehavior(PositionBehavior)
 
-		local gameDB = self.game:getGameDB()
-		local map = gameDB:getResource(filename, "Map")
-		if map then
-			local mapObject = gameDB:getRecord("MapObjectLocation", {
-				Name = anchor,
-				Map = map
-			})
+		if Class.isType(anchor, Vector) then
+			position.position = Vector(anchor.x, anchor.y, anchor.z)
+		else
+			local gameDB = self.game:getGameDB()
+			local map = gameDB:getResource(filename, "Map")
+			if map then
+				local mapObject = gameDB:getRecord("MapObjectLocation", {
+					Name = anchor,
+					Map = map
+				})
 
-			local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-			position.position = Vector(x, y, z)
+				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
+				position.position = Vector(x, y, z)
+			end
 		end
 	else
 		local actor = peep:getBehavior(ActorReferenceBehavior)
@@ -444,7 +450,7 @@ end
 function LocalStage:loadStage(filename)
 	do
 		local director = self.game:getDirector()
-		director:movePeep(self.game:getPlayer():getActor():getPeep(), filename)
+		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
 	end
 
 	self:unloadAll()
@@ -515,6 +521,16 @@ function LocalStage:loadStage(filename)
 		for i = 1, #objects do
 			self:instantiateMapObject(objects[i]:get("Resource"))
 		end
+	end
+
+	do
+		local director = self.game:getDirector()
+		local player = self.game:getPlayer():getActor():getPeep()
+		director:movePeep(player, filename)
+
+		player:addBehavior(MapResourceReferenceBehavior)
+		local m = player:getBehavior(MapResourceReferenceBehavior)
+		m.map = resource or false
 	end
 end
 

@@ -417,6 +417,7 @@ end
 function Peep:ready(director, game)
 	self:poke('ready', director, game)
 	self:poke('finalize', director, game)
+	self.finalized = true
 end
 
 -- Called when the Peep is removed.

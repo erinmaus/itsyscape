@@ -28,13 +28,13 @@ function Pick:perform(state, player, target)
 
 	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 0, { asCloseAsPossible = false })
 
 		if walk then
 			local perform = CallbackCommand(self.transfer, self, state, player)
 			local wait = WaitCommand(Pick.DURATION, false)
 			local poof = CallbackCommand(Utility.Peep.poof, target)
-			local command = CompositeCommand(true, walk, perform, poof, wait)
+			local command = CompositeCommand(true, walk, wait, perform, poof)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

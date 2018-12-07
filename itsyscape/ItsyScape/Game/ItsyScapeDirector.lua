@@ -42,12 +42,21 @@ end
 
 function ItsyScapeDirector:getPlayerStorage(peep)
 	if peep then
-		local player = peep:getBehavior(PlayerBehavior)
-		if player and player.id then
-			local storage = self.playerStorage[player.id]
+		local index
+		if type(peep) == 'number' then
+			index = peep
+		else
+			local player = peep:getBehavior(PlayerBehavior)
+			if player and player.id then
+				index = player.id
+			end
+		end
+
+		if index then
+			local storage = self.playerStorage[index]
 			if not storage then
 				storage = PlayerStorage()
-				self.playerStorage[player.id] = storage
+				self.playerStorage[index] = storage
 			end
 
 			return storage

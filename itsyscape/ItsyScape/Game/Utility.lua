@@ -39,6 +39,55 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
+function Utility.save(player, location, talk, ...)
+	local director = player:getDirector()
+	director:getItemBroker():toStorage()
+
+	local storage = director:getPlayerStorage(player)
+	if storage then
+		local root = storage:getRoot()
+		do
+			local stats = player:getBehavior(StatsBehavior)
+			if stats and stats.stats then
+				stats.stats:save(root:getSection("Peep"))
+			end
+
+			if location then
+				local map = player:getBehavior(MapResourceReferenceBehavior)
+				if map and map.map then
+					map = map.map
+
+					local location = root:getSection("Location")
+					local position = player:getBehavior(PositionBehavior)
+					if position then
+						location:set({
+							name = map.name,
+							x = position.position.x,
+							y = position.position.y,
+							z = position.position.z,
+							layer = position.position.layer or 1
+						})
+					end
+				end
+			end
+		end
+
+		local filename = root:get("filename") or "Player/Default.dat"
+		root:set("filename", filename)
+
+		love.filesystem.createDirectory("Player")
+
+		local result = storage:toString()
+		love.filesystem.write(filename, result)
+
+		local actor = player:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor and talk then
+			local actor = actor.actor
+			actor:flash("Message", 1, ...)
+		end
+	end
+end
+
 function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 	radius = radius or 1
 
@@ -233,7 +282,7 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 		"they",
 		"them",
 		"theirs",
-		"ma'ser"
+		"mazer"
 	}
 }
 
@@ -798,9 +847,14 @@ end
 
 function Utility.Peep.Stats:onFinalize(director)
 	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat and stats then
-		combat.maximumHitpoints = stats:getSkill("Constitution"):getBaseLevel()
-		combat.currentHitpoints = stats:getSkill("Constitution"):getBaseLevel()
+	local stats = self:getBehavior(StatsBehavior)
+	if combat and stats and stats.stats then
+		stats = stats.stats
+
+		combat.maximumHitpoints = stats:getSkill("Constitution"):getWorkingLevel()
+		combat.currentHitpoints = stats:getSkill("Constitution"):getWorkingLevel()
+		combat.maximumPrayer = stats:getSkill("Faith"):getWorkingLevel()
+		combat.currentPrayer = stats:getSkill("Faith"):getWorkingLevel()
 	end
 end
 
@@ -1169,6 +1223,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:listen('die', Utility.Peep.Attackable.onDie)
 	peep:addPoke('heal')
 	peep:listen('heal', Utility.Peep.Attackable.onHeal)
+	peep:addPoke('resurrect')
 end
 
 function Utility.Peep.makeSkiller(peep)

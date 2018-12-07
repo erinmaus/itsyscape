@@ -144,6 +144,8 @@ end
 -- Returns true if the Peep was removed, false otherwise. If the Peep does not
 -- belong to the Director, for example, it cannot be removed.
 function Director:removePeep(peep)
+	assert(peep ~= _PLAYER_PEEP)
+
 	if self.peeps[peep] then
 		peep.onBehaviorAdded:unregister(self._previewPeep)
 		peep.onBehaviorRemoved:unregister(self._previewPeep)
