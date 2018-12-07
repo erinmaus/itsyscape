@@ -14091,7 +14091,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -14101,7 +14101,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -14111,7 +14111,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -14121,7 +14121,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},

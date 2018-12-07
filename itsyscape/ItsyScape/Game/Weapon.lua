@@ -230,6 +230,8 @@ function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
 				level = (level or 1) + 8
 			end
 		end
+	elseif purpose == Weapon.PURPOSE_TOOL then
+		level = (level or 1) + 8
 	end
 
 	local bonuses = Utility.Peep.getEquipmentBonuses(peep)

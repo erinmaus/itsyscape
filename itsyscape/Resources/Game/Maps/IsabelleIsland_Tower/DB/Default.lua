@@ -2,12 +2,12 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "IsabelleIsland_Tower"
 
-M["Bed_Rumbridge1"] = ItsyScape.Resource.MapObject.Unique()
+M["CommonTree_Default22"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 20.000000,
-		PositionY = 4.000000,
-		PositionZ = 42.000000,
+		PositionX = 59.000000,
+		PositionY = 1.000000,
+		PositionZ = 17.000000,
 		RotiationX = 0.000000,
 		RotiationY = 0.000000,
 		RotiationZ = 0.000000,
@@ -15,38 +15,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Bed_Rumbridge1",
+		Name = "CommonTree_Default22",
 		Map = M._MAP,
-		Resource = M["Bed_Rumbridge1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Bed_Rumbridge",
-		MapObject = M["Bed_Rumbridge1"]
-	}
-end
-
-M["CommonTree_Default11"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33.000000,
-		PositionY = 2.000000,
-		PositionZ = 53.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default11",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default11"]
+		Resource = M["CommonTree_Default22"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default11"]
+		MapObject = M["CommonTree_Default22"]
 	}
 end
 
@@ -74,294 +50,6 @@ do
 	}
 end
 
-M["CommonTree_Default14"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63.000000,
-		PositionY = 3.000000,
-		PositionZ = 53.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default14",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default14"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default14"]
-	}
-end
-
-M["CommonTree_Default17"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 55.000000,
-		PositionY = 4.000000,
-		PositionZ = 61.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default17",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default17"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default17"]
-	}
-end
-
-M["CommonTree_Default12"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27.000000,
-		PositionY = 2.000000,
-		PositionZ = 49.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default12",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default12"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default12"]
-	}
-end
-
-M["CommonTree_Default23"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53.000000,
-		PositionY = 1.000000,
-		PositionZ = 21.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default23",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default23"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default23"]
-	}
-end
-
-M["CommonTree_Default5"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 3.000000,
-		PositionY = 3.000000,
-		PositionZ = 31.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default5",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default5"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default5"]
-	}
-end
-
-M["CommonTree_Default18"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53.000000,
-		PositionY = 1.000000,
-		PositionZ = 53.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default18",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default18"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default18"]
-	}
-end
-
-M["CommonTree_Default16"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59.000000,
-		PositionY = 4.000000,
-		PositionZ = 57.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default16",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default16"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default16"]
-	}
-end
-
-M["CommonTree_Default3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 5.000000,
-		PositionY = 3.000000,
-		PositionZ = 11.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default3",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default3"]
-	}
-end
-
-M["CommonTree_Default8"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 11.000000,
-		PositionY = 1.000000,
-		PositionZ = 19.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default8",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default8"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default8"]
-	}
-end
-
-M["Door_Office"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 25.000000,
-		PositionY = 4.000000,
-		PositionZ = 29.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_Office",
-		Map = M._MAP,
-		Resource = M["Door_Office"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
-		MapObject = M["Door_Office"]
-	}
-end
-
-M["CommonTree_Default10"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.000000,
-		PositionY = 4.000000,
-		PositionZ = 13.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default10",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default10"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default10"]
-	}
-end
-
-M["CommonTree_Default15"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63.000000,
-		PositionY = 3.000000,
-		PositionZ = 63.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default15",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default15"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default15"]
-	}
-end
-
 M["CommonTree_Default4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -383,6 +71,78 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
 		MapObject = M["CommonTree_Default4"]
+	}
+end
+
+M["CommonTree_Default31"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61.000000,
+		PositionY = 1.000000,
+		PositionZ = 21.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default31",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default31"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default31"]
+	}
+end
+
+M["CommonTree_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7.000000,
+		PositionY = 3.000000,
+		PositionZ = 47.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default6",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default6"]
+	}
+end
+
+M["CommonTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45.000000,
+		PositionY = 4.000000,
+		PositionZ = 13.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default2",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default2"]
 	}
 end
 
@@ -410,6 +170,102 @@ do
 	}
 end
 
+M["Door_Office"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25.000000,
+		PositionY = 4.000000,
+		PositionZ = 29.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Door_Office",
+		Map = M._MAP,
+		Resource = M["Door_Office"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
+		MapObject = M["Door_Office"]
+	}
+end
+
+M["CommonTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47.000000,
+		PositionY = 3.000000,
+		PositionZ = 49.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default1",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default1"]
+	}
+end
+
+M["CommonTree_Default8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11.000000,
+		PositionY = 1.000000,
+		PositionZ = 19.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default8",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default8"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default8"]
+	}
+end
+
+M["CommonTree_Default12"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.000000,
+		PositionY = 2.000000,
+		PositionZ = 49.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default12",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default12"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default12"]
+	}
+end
+
 M["Door_Tower"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -431,6 +287,318 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
 		MapObject = M["Door_Tower"]
+	}
+end
+
+M["CommonTree_Default13"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31.000000,
+		PositionY = 4.000000,
+		PositionZ = 45.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default13",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default13"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default13"]
+	}
+end
+
+M["CommonTree_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 5.000000,
+		PositionY = 3.000000,
+		PositionZ = 11.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default3",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default3"]
+	}
+end
+
+M["CommonTree_Default21"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55.000000,
+		PositionY = 1.000000,
+		PositionZ = 13.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default21",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default21"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default21"]
+	}
+end
+
+M["CommonTree_Default30"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63.000000,
+		PositionY = 1.000000,
+		PositionZ = 21.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default30",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default30"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default30"]
+	}
+end
+
+M["CommonTree_Default29"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57.000000,
+		PositionY = 1.000000,
+		PositionZ = 19.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default29",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default29"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default29"]
+	}
+end
+
+M["CommonTree_Default28"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57.000000,
+		PositionY = 1.000000,
+		PositionZ = 17.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default28",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default28"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default28"]
+	}
+end
+
+M["Door_Merchant"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41.000000,
+		PositionY = 4.000000,
+		PositionZ = 29.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Door_Merchant",
+		Map = M._MAP,
+		Resource = M["Door_Merchant"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
+		MapObject = M["Door_Merchant"]
+	}
+end
+
+M["CommonTree_Default14"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63.000000,
+		PositionY = 3.000000,
+		PositionZ = 53.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default14",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default14"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default14"]
+	}
+end
+
+M["CommonTree_Default10"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.000000,
+		PositionY = 4.000000,
+		PositionZ = 13.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default10",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default10"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default10"]
+	}
+end
+
+M["SpinningWheel_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39.000000,
+		PositionY = 4.000000,
+		PositionZ = 18.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "SpinningWheel_Default1",
+		Map = M._MAP,
+		Resource = M["SpinningWheel_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "SpinningWheel_Default",
+		MapObject = M["SpinningWheel_Default1"]
+	}
+end
+
+M["CommonTree_Default15"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63.000000,
+		PositionY = 3.000000,
+		PositionZ = 63.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default15",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default15"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default15"]
+	}
+end
+
+M["CommonTree_Default5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3.000000,
+		PositionY = 3.000000,
+		PositionZ = 31.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default5",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default5"]
+	}
+end
+
+M["CommonTree_Default23"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53.000000,
+		PositionY = 1.000000,
+		PositionZ = 21.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default23",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default23"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default23"]
 	}
 end
 
@@ -482,150 +650,6 @@ do
 	}
 end
 
-M["CommonTree_Default25"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63.000000,
-		PositionY = 1.000000,
-		PositionZ = 23.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default25",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default25"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default25"]
-	}
-end
-
-M["CommonTree_Default22"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59.000000,
-		PositionY = 1.000000,
-		PositionZ = 17.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default22",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default22"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default22"]
-	}
-end
-
-M["CommonTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 45.000000,
-		PositionY = 4.000000,
-		PositionZ = 13.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default2",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default2"]
-	}
-end
-
-M["CommonTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 47.000000,
-		PositionY = 3.000000,
-		PositionZ = 49.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default1",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default1"]
-	}
-end
-
-M["Door_Merchant"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 41.000000,
-		PositionY = 4.000000,
-		PositionZ = 29.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_Merchant",
-		Map = M._MAP,
-		Resource = M["Door_Merchant"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_RumbridgeStone",
-		MapObject = M["Door_Merchant"]
-	}
-end
-
-M["CommonTree_Default6"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7.000000,
-		PositionY = 3.000000,
-		PositionZ = 47.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default6",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default6"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default6"]
-	}
-end
-
 M["AbandonedMineLadder"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -674,60 +698,12 @@ do
 	}
 end
 
-M["SpinningWheel_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 39.000000,
-		PositionY = 4.000000,
-		PositionZ = 18.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "SpinningWheel_Default1",
-		Map = M._MAP,
-		Resource = M["SpinningWheel_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "SpinningWheel_Default",
-		MapObject = M["SpinningWheel_Default1"]
-	}
-end
-
-M["CommonTree_Default13"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31.000000,
-		PositionY = 4.000000,
-		PositionZ = 45.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CommonTree_Default13",
-		Map = M._MAP,
-		Resource = M["CommonTree_Default13"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default13"]
-	}
-end
-
-M["CommonTree_Default21"] = ItsyScape.Resource.MapObject.Unique()
+M["CommonTree_Default17"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 55.000000,
-		PositionY = 1.000000,
-		PositionZ = 13.000000,
+		PositionY = 4.000000,
+		PositionZ = 61.000000,
 		RotiationX = 0.000000,
 		RotiationY = 0.000000,
 		RotiationZ = 0.000000,
@@ -735,14 +711,158 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "CommonTree_Default21",
+		Name = "CommonTree_Default17",
 		Map = M._MAP,
-		Resource = M["CommonTree_Default21"]
+		Resource = M["CommonTree_Default17"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
-		MapObject = M["CommonTree_Default21"]
+		MapObject = M["CommonTree_Default17"]
+	}
+end
+
+M["CommonTree_Default11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33.000000,
+		PositionY = 2.000000,
+		PositionZ = 53.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default11",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default11"]
+	}
+end
+
+M["CommonTree_Default27"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63.000000,
+		PositionY = 1.000000,
+		PositionZ = 17.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default27",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default27"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default27"]
+	}
+end
+
+M["CommonTree_Default18"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53.000000,
+		PositionY = 1.000000,
+		PositionZ = 53.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default18",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default18"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default18"]
+	}
+end
+
+M["CommonTree_Default16"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59.000000,
+		PositionY = 4.000000,
+		PositionZ = 57.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default16",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default16"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default16"]
+	}
+end
+
+M["Bed_Rumbridge1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 20.000000,
+		PositionY = 4.000000,
+		PositionZ = 42.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Bed_Rumbridge1",
+		Map = M._MAP,
+		Resource = M["Bed_Rumbridge1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Bed_Rumbridge",
+		MapObject = M["Bed_Rumbridge1"]
+	}
+end
+
+M["CommonTree_Default26"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61.000000,
+		PositionY = 1.000000,
+		PositionZ = 17.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CommonTree_Default26",
+		Map = M._MAP,
+		Resource = M["CommonTree_Default26"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CommonTree_Default",
+		MapObject = M["CommonTree_Default26"]
 	}
 end
 

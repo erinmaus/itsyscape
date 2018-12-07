@@ -187,15 +187,17 @@ function Action:transfer(state, player, flags)
 					local s, p = stage:placeProp("resource://" .. resource.name)
 					if s then
 						local propPeep = p:getPeep()
-						local i, j, k = Utility.Peep.getTile(player)
-						local map = propPeep:getDirector():getMap(k)
+						propPeep:listen('ready', function()
+							local i, j, k = Utility.Peep.getTile(player)
+							local map = player:getDirector():getMap(k)
 
-						local position = propPeep:getBehavior(PositionBehavior)
-						if position then
-							position.position = map:getTileCenter(i, j)
-						end
+							local position = propPeep:getBehavior(PositionBehavior)
+							if position then
+								position.position = map:getTileCenter(i, j)
+							end
 
-						propPeep:poke('spawnedByAction', player)
+							propPeep:poke('spawnedByAction', player)
+						end)
 					end
 				end
 			end

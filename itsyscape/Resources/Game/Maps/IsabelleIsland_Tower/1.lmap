@@ -3191,7 +3191,7 @@
 		},
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -3201,7 +3201,7 @@
 		},
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -3211,7 +3211,7 @@
 		},
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 5 },
 			data =
 			{
 			},
@@ -6573,7 +6573,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -6895,7 +6894,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -6906,7 +6904,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Peeps/Goblin.lua
+-- Resources/Game/DB/Peeps/Banker.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,7 +13,7 @@ ItsyScape.Resource.Peep "FancyBanker" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Goblin.FancyBanker",
+	Value = "Resources.Game.Peeps.Banker.FancyBanker",
 	Resource = ItsyScape.Resource.Peep "FancyBanker"
 }
 

@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- Resources/Game/DB/Init.lua
 --
@@ -404,6 +403,7 @@ include "Resources/Game/DB/Items/MetalArmor.lua"
 include "Resources/Game/DB/Items/LeatherArmor.lua"
 include "Resources/Game/DB/Items/MagicArmor.lua"
 include "Resources/Game/DB/Items/MagicWeapons.lua"
+include "Resources/Game/DB/Items/MiscClothes.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -420,7 +420,11 @@ include "Resources/Game/DB/Creeps/Zombi.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
+include "Resources/Game/DB/Peeps/GeneralStoreOwner.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
+
+-- Shops
+include "Resources/Game/DB/Shops/GeneralStore.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernCombat.lua"
@@ -432,6 +436,7 @@ include "Resources/Game/DB/Props/Furnace.lua"
 include "Resources/Game/DB/Props/SpinningWheel.lua"
 include "Resources/Game/DB/Props/Chest.lua"
 include "Resources/Game/DB/Props/Ladder.lua"
+include "Resources/Game/DB/Props/Portals.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
 include "Resources/Game/DB/Props/Lights.lua"
 

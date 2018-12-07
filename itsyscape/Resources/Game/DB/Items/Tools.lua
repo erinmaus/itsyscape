@@ -69,7 +69,29 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Stabby!",
+	Value = "Pokey!",
 	Langauge = "en-US",
 	Resource = ItsyScape.Resource.Item "Needle"
+}
+
+ItsyScape.Resource.Item "Knife" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Knife",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Knife"
+}
+
+ItsyScape.Meta.Item {
+	Value = 1,
+	Weight = 0,
+	Resource = ItsyScape.Resource.Item "Knife"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Stabby!",
+	Langauge = "en-US",
+	Resource = ItsyScape.Resource.Item "Knife"
 }

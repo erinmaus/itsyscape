@@ -91,6 +91,66 @@ do
 	}
 end
 
+M["Anchor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 5,
+		PositionZ = 59,
+		Name = "Anchor_Entrance",
+		Map = M._MAP,
+		Resource = M["Anchor_Entrance"]
+	}
+end
+
+M["Portal_Tower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 5,
+		PositionZ = 59,
+		Name = "Portal_Tower",
+		Map = M._MAP,
+		Resource = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle Tower",
+		Language = "en-US",
+		Resource = M["Portal_Tower"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FoggyForest",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Return",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_Tower"] {
+		TravelAction
+	}
+end
+
 M["YendorianPriest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

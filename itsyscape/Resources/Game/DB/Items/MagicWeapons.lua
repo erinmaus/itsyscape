@@ -26,8 +26,9 @@ local ITEMS = {
 	["Cane"] = {
 		niceName = "%s cane",
 		logs = 2,
-	}
+	},
 ]]
+
 	["Staff"] = {
 		niceName = "%s staff",
 		logs = 5
@@ -58,6 +59,11 @@ for name, tier in pairs(TIERS) do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Crafting",
 				Count = ItsyScape.Utility.xpForLevel(math.max(tier.tier + itemProps.logs, 1)),
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Knife",
+				Count = 1,
 			},
 
 			Output {

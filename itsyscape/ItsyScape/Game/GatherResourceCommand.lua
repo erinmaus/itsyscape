@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Command = require "ItsyScape.Peep.Command"
+local Weapon = require "ItsyScape.Game.Weapon"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local GatherResourceCommand = Class(Command)
@@ -77,10 +78,10 @@ end
 function GatherResourceCommand:attack(peep)
 	local itemManager = peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(self.tool:getID())
-	if logic:isCompatibleType(require "ItsyScape.Game.Weapon") then
+	if logic:isCompatibleType(Weapon) then
 		self.cooldown = logic:getCooldown(peep)
 
-		local damage = logic:rollDamage(peep, self.multiplier, self.bonusStrength)
+		local damage = logic:rollDamage(peep, self.multiplier, self.bonusStrength, Weapon.PURPOSE_TOOL)
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
 			damage = damage,
