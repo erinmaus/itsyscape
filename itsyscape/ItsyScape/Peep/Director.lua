@@ -150,6 +150,8 @@ function Director:removePeep(peep)
 		peep.onBehaviorAdded:unregister(self._previewPeep)
 		peep.onBehaviorRemoved:unregister(self._previewPeep)
 
+		peep:poke('reaper')
+
 		self.oldPeeps[peep] = true
 	end
 end
