@@ -88,8 +88,10 @@ end
 
 function RibbonController:show(e)
 	self.hidden = false
-	self:openTab({ tab = self.previousTab })
-	self.previousTab = nil
+	if self.previousTab then
+		self:openTab({ tab = self.previousTab })
+		self.previousTab = nil
+	end
 end
 
 return RibbonController
