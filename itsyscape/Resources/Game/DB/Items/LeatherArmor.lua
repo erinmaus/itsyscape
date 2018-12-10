@@ -52,6 +52,11 @@ for name, leather in pairs(LEATHERS) do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Defense",
 				Count = ItsyScape.Utility.xpForLevel(leather.tier)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Dexterity",
+				Count = ItsyScape.Utility.xpForLevel(leather.tier)
 			}
 		}
 

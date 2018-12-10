@@ -62,8 +62,8 @@ do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Defense",
-				Count = ItsyScape.Utility.xpForLevel(5)
+				Resource = ItsyScape.Resource.Skill "Wisdom",
+				Count = ItsyScape.Utility.xpForLevel(10)
 			}
 		},
 

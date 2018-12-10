@@ -10,6 +10,12 @@
 
 ItsyScape.Resource.Skill "Magic"
 	ActionType "Runecraft"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Runecraft",
+		Skill = ItsyScape.Resource.Skill "Magic"
+	}
+
 ItsyScape.Resource.Skill "Wisdom"
 ItsyScape.Resource.Skill "Archery"
 ItsyScape.Resource.Skill "Dexterity"
@@ -18,28 +24,123 @@ ItsyScape.Resource.Skill "Attack"
 ItsyScape.Resource.Skill "Defense"
 ItsyScape.Resource.Skill "Constitution"
 
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Magic"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Wisdom"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Archery"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Dexterity"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Strength"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Attack"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Defense"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Equip",
+	Skill = ItsyScape.Resource.Skill "Constitution"
+}
+
 ItsyScape.Resource.Skill "Faith"
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Bury",
+		Skill = ItsyScape.Resource.Skill "Faith"
+	}
+
 	ActionType "Bury"
 
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Mine",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
 ItsyScape.Resource.Skill "Smithing"
 	ActionType "Smith"
 	ActionType "Smelt"
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Smith",
+		Skill = ItsyScape.Resource.Skill "Smithing"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Smelt",
+		Skill = ItsyScape.Resource.Skill "Smithing"
+	}
+
 ItsyScape.Resource.Skill "Crafting"
 	ActionType "Craft"
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Craft",
+		Skill = ItsyScape.Resource.Skill "Crafting"
+	}
+
 ItsyScape.Resource.Skill "Woodcutting"
 	ActionType "Chop"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Chop",
+		Skill = ItsyScape.Resource.Skill "Woodcutting"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Woodcutting"
+	}
 
 ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
 	ActionType "Burn"
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Light",
+		Skill = ItsyScape.Resource.Skill "Firemaking"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Burn",
+		Skill = ItsyScape.Resource.Skill "Firemaking"
+	}
+
 ItsyScape.Resource.Skill "Fletching"
 	ActionType "Fletch"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Fletch",
+		Skill = ItsyScape.Resource.Skill "Fletching"
+	}
 
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"

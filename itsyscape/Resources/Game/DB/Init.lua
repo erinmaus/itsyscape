@@ -278,6 +278,11 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	Meta "SkillAction" {
+		ActionType = Meta.TYPE_TEXT,
+		Skill = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Pick"
 	ActionType "Sleep"
 
@@ -453,7 +458,7 @@ do
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(100)
 		}
 	}
 
