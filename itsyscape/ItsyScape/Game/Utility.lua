@@ -370,6 +370,18 @@ function Utility.Text.getPronoun(peep, class, lang)
 end
 
 Utility.UI = {}
+function Utility.UI.broadcast(ui, peep, interfaceID, ...)
+	if interfaceID then
+		for interfaceIndex in ui:getInterfacesForPeep(peep, interfaceID) do
+			ui:poke(interfaceID, interfaceIndex, ...)
+		end
+	else
+		for interfaceID, interfaceIndex in ui:getInterfacesForPeep(peep, interfaceID) do
+			ui:poke(interfaceID, interfaceIndex, ...)
+		end
+	end
+end
+
 function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 	local ui = peep:getDirector():getGameInstance():getUI()
 	if blocking then

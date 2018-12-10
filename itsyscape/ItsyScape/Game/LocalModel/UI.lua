@@ -70,6 +70,45 @@ function LocalUI:getGame()
 	return self.game
 end
 
+function LocalUI:getInterfacesForPeep(peep, interfaceID)
+	if interfaceID then
+		local interfaces = self.interfaces[interfaceID]
+		local currentIndex, current
+
+		return function()
+			currentIndex, current = next(interfaces.v, currentIndex)
+			while currentIndex and interfaces.v[currentIndex]:getPeep() ~= peep do
+				currentIndex, current = next(interfaces, currentIndex)
+			end
+
+			return currentIndex, current
+		end
+	else
+		local interfaceID, interfaces
+		local currentIndex, current
+		return function()
+			if not interfaceID then
+				interfaceID, interfaces = next(self.interfaces, nil)
+			end
+
+			while interfaces do
+				currentIndex, current = next(interfaces.v, currentIndex)
+				while currentIndex and interfaces.v[currentIndex]:getPeep() ~= peep do
+					currentIndex, current = next(interfaces.v, currentIndex)
+				end
+
+				if not current then
+					interfaceID, interfaces = next(self.interfaces, interfaceID)
+				else
+					return interfaceID, currentIndex, current
+				end
+			end
+
+			return nil
+		end
+	end
+end
+
 function LocalUI:get(interfaceID, index)
 	local interfaces = self.interfaces[interfaceID]
 	if interfaces then

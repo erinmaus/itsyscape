@@ -69,6 +69,14 @@ function DialogBoxController:new(peep, director, action)
 	end
 
 	self.needsPump = true
+
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"hide",
+		nil,
+		{})
 end
 
 function DialogBoxController:poke(actionID, actionIndex, e)
@@ -175,6 +183,16 @@ end
 
 function DialogBoxController:pull()
 	return self.state
+end
+
+function DialogBoxController:close()
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"show",
+		nil,
+		{})
 end
 
 function DialogBoxController:update(...)
