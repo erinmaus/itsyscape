@@ -11,7 +11,7 @@
 ItsyScape.Resource.Prop "InvisiblePortal"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
 
