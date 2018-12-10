@@ -86,10 +86,8 @@ function Prop:ready(director, game)
 	self:spawnOrPoof('spawn')
 end
 
-function Prop:poof()
+function Prop:onReaper()
 	self:spawnOrPoof('poof')
-
-	Peep.poof(self)
 end
 
 function Prop:getPropState()
