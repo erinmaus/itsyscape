@@ -200,8 +200,6 @@ function CraftWindow:populateRequirements(e)
 		for i = 1, #t do
 			local left
 			if t[i].type:lower() == 'skill' then
-				-- this is terrible
-				-- TODO: Add Icon widget or something
 				left = Icon()
 				left:setSize(leftWidth, rowHeight)
 				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", t[i].resource))

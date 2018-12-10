@@ -21,7 +21,11 @@ function PlayerStatsController:new(peep, director)
 end
 
 function PlayerStatsController:poke(actionID, actionIndex, e)
-	Controller.poke(self, actionID, actionIndex, e)
+	if actionID == "open" then
+		self:openSkillGuide(e)
+	else
+		Controller.poke(self, actionID, actionIndex, e)
+	end
 end
 
 function PlayerStatsController:pull()
@@ -43,6 +47,11 @@ function PlayerStatsController:pull()
 	end
 
 	return result
+end
+
+function PlayerStatsController:openSkillGuide(e)
+	self:getGame():getUI():interrupt(self:getPeep())
+	self:getGame():getUI():openBlockingInterface(self:getPeep(), "SkillGuide", e.skill)
 end
 
 return PlayerStatsController
