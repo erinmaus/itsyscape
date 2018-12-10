@@ -16,11 +16,35 @@ local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 local Ribbon = Class(Interface)
 Ribbon.BUTTON_SIZE = 64
 Ribbon.PADDING = 8
+Ribbon.TOOL_TIPS = {
+	["PlayerStance"] = {
+		ToolTip.Header("Stance"),
+		ToolTip.Text("View or change your combat stance.")
+	},
+	["PlayerInventory"] = {
+		ToolTip.Header("Inventory"),
+		ToolTip.Text("View the items you are currently carrying.")
+	},
+	["PlayerEquipment"] = {
+		ToolTip.Header("Equipment"),
+		ToolTip.Text("View, interact with, and remove your equipment."),
+		ToolTip.Text("You can also see your equipment bonuses.")
+	},
+	["PlayerStats"] = {
+		ToolTip.Header("Stats"),
+		ToolTip.Text("View your stats, and see helpful skill guides.")
+	},
+	["PlayerSpells"] = {
+		ToolTip.Header("Spells"),
+		ToolTip.Text("Cast spells and set your combat spells.")
+	}
+}
 
 function Ribbon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -60,6 +84,10 @@ function Ribbon:addButton(tab, icon)
 			self.activeButton = false
 		end
 	end)
+
+	if self.TOOL_TIPS[tab] then
+		button:setToolTip(unpack(self.TOOL_TIPS[tab]))
+	end
 
 	button:setStyle(ButtonStyle({
 		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",

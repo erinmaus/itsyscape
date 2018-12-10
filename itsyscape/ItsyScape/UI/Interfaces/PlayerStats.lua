@@ -17,6 +17,7 @@ local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
@@ -138,6 +139,12 @@ function PlayerStats:updateStats(skills)
 			textShadow = true,
 			textAlign = 'right'
 		}, self:getView():getResources()))
+
+		button:setToolTip(
+			ToolTip.Header(skills[i].name),
+			ToolTip.Text(string.format("XP: %s", Utility.Text.prettyNumber(math.floor(skills[i].xp)))),
+			ToolTip.Text(string.format("XP to Next Level: %s", Utility.Text.prettyNumber(math.floor(skills[i].xpNextLevel))))
+		)
 	end
 end
 
