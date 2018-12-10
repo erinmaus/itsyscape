@@ -145,7 +145,13 @@ function PlayerStats:updateStats(skills)
 			ToolTip.Text(string.format("XP: %s", Utility.Text.prettyNumber(math.floor(skills[i].xp)))),
 			ToolTip.Text(string.format("XP to Next Level: %s", Utility.Text.prettyNumber(math.floor(skills[i].xpNextLevel))))
 		)
+
+		button.onClick:register(self.openSkillGuide, self, skills[i].name)
 	end
+end
+
+function PlayerStats:openSkillGuide(skill)
+	self:sendPoke("open", nil, { skill = skill })
 end
 
 return PlayerStats

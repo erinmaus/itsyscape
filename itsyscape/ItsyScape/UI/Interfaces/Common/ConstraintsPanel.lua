@@ -116,7 +116,7 @@ function ConstraintsPanel:performLayout(doLogic)
 		}, self.view:getResources()))
 		if c.type:lower() == 'skill' then
 			if self:getData('skillAsLevel', false) then
-				local level = Curve.XP_CURVE:getLevel(c.count)
+				local level = Curve.XP_CURVE:getLevel(c.count, 120)
 				local text = string.format("Lvl %d %s", level, c.name)
 				right:setText(text)
 			else
