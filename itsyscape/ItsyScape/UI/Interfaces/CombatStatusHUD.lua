@@ -19,6 +19,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
@@ -259,6 +260,10 @@ function CombatStatusHUD:update(...)
 		else
 			icon:getData('label'):setText("")
 		end
+
+		icon:setToolTip(
+			ToolTip.Header(state.effects[i].name),
+			ToolTip.Text(state.effects[i].description))
 	end
 
 	local screenWidth, screenHeight = love.window.getMode()

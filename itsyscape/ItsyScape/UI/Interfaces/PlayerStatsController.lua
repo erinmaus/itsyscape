@@ -8,8 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Mapp = require "ItsyScape.GameDB.Mapp"
+local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local Controller = require "ItsyScape.UI.Controller"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
@@ -36,6 +37,7 @@ function PlayerStatsController:pull()
 				xp = skill:getXP(),
 				workingLevel = skill:getWorkingLevel(),
 				baseLevel = skill:getBaseLevel(),
+				xpNextLevel = Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP()
 			})
 		end
 	end

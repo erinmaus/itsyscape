@@ -29,6 +29,8 @@ local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputRenderer = require "ItsyScape.UI.TextInputRenderer"
 local Texture = require "ItsyScape.UI.Texture"
 local TextureRenderer = require "ItsyScape.UI.TextureRenderer"
+local ToolTip = require "ItsyScape.UI.ToolTip"
+local ToolTipRenderer = require "ItsyScape.UI.ToolTipRenderer"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
@@ -50,7 +52,7 @@ function UIView:new(gameView)
 
 	self.resources = WidgetResourceManager()
 
-	self.renderManager = WidgetRenderManager()
+	self.renderManager = WidgetRenderManager(self.inputProvider)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggableButton, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggablePanel, PanelRenderer(self.resources))
@@ -63,6 +65,7 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
+	self.renderManager:addRenderer(ToolTip, ToolTipRenderer(self.resources))
 
 	self.interfaces = {}
 

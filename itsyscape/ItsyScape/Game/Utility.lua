@@ -369,6 +369,22 @@ function Utility.Text.getPronoun(peep, class, lang)
 	end
 end
 
+function Utility.Text.prettyNumber(value)
+	local input = tostring(value)
+	local result = {}
+
+	local remainder = #input % 3
+	for i = remainder + 1, #input, 3 do
+		table.insert(result, input:sub(i, i + 2))
+	end
+
+	if remainder > 0 then
+		table.insert(result, 1, input:sub(1, remainder))
+	end
+
+	return table.concat(result, ",")
+end
+
 Utility.UI = {}
 function Utility.UI.broadcast(ui, peep, interfaceID, ...)
 	if interfaceID then
@@ -548,7 +564,7 @@ function Utility.Peep.getStorage(peep)
 				if name and name ~= "" and map then
 					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection(map.name)
-					local peepStorage = worldStorage:getSection("Peeps"):getSection(name)
+					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 
 					return peepStorage
 				else

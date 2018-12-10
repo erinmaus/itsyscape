@@ -18,7 +18,16 @@ function WidgetInputProvider:new(root)
 	self.root = root
 	self.focusedWidget = false
 	self.clickedWidgets = {}
+	self.hoveredWidgetsTime = {}
 	self.hoveredWidgets = {}
+end
+
+function WidgetInputProvider:getHoveredWidgets()
+	local widget = nil
+	return function()
+		widget = next(self.hoveredWidgets, widget)
+		return widget, self.hoveredWidgetsTime[widget]
+	end
 end
 
 function WidgetInputProvider:setFocusedWidget(widget, reason)
@@ -56,8 +65,9 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 	local wx, wy = widget:getPosition()
 	local ww, wh = widget:getSize()
 
-	if x >= px + wx and x < px + wx + ww and
-	   y >= py + wy and y < py + wy + wh
+	if (x >= px + wx and x < px + wx + ww and
+	   y >= py + wy and y < py + wy + wh)
+	   or widget:getOverflow() 
 	then
 		result[widget] = true
 
@@ -174,6 +184,16 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 	end
 
 	self.hoveredWidgets = widgets
+
+	local oldTimes = self.hoveredWidgetsTime
+	self.hoveredWidgetsTime = {}
+	for widget in pairs(self.hoveredWidgets) do
+		if oldTimes[widget] then
+			self.hoveredWidgetsTime[widget] = oldTimes[widget]
+		else
+			self.hoveredWidgetsTime[widget] = love.timer.getTime()
+		end
+	end
 
 	for widget in pairs(self.hoveredWidgets) do
 		widget:mouseMove(x, y, dx, dy)

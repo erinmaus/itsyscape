@@ -11,13 +11,16 @@ local Class = require "ItsyScape.Common.Class"
 local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local WidgetRenderManager = Class()
+WidgetRenderManager.TOOL_TIP_DURATION = 0.5
 
-function WidgetRenderManager:new()
+function WidgetRenderManager:new(inputProvider)
 	self.renderers = {}
 	self.defaultRenderer = WidgetRenderer()
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
+	self.input = inputProvider
 end
 
 function WidgetRenderManager:getCursor()
@@ -76,6 +79,15 @@ function WidgetRenderManager:start()
 	if self.defaultRenderer then
 		self.defaultRenderer:start()
 	end
+
+	self.hovered = {}
+	local currentTime = love.timer.getTime()
+	for widget, time in self.input:getHoveredWidgets() do
+		local duration = currentTime - time
+		if duration >= WidgetRenderManager.TOOL_TIP_DURATION then
+			self.hovered[widget] = false
+		end
+	end
 end
 
 function WidgetRenderManager:stop()
@@ -85,6 +97,15 @@ function WidgetRenderManager:stop()
 		love.graphics.translate(love.mouse.getPosition())
 		self:draw(self.cursor.widget, self.cursor.state, true)
 		love.graphics.pop()
+	end
+
+	for widget, toolTip in pairs(self.hovered) do
+		if toolTip then
+			love.graphics.push('all')
+			love.graphics.translate(love.mouse.getPosition())
+			self:draw(toolTip.w, toolTip.s, true)
+			love.graphics.pop()
+		end
 	end
 
 	for _, renderer in pairs(self.renderers) do
@@ -100,6 +121,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	if widget == self.cursor.widget and not cursor then
 		self.cursor.state = state
 		return
+	end
+
+	if self.hovered[widget] ~= nil and widget:getToolTip() then
+		self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
 	end
 
 	if Class.isCompatibleType(widget, Interface) then

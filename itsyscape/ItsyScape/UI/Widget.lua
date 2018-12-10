@@ -43,6 +43,7 @@ function Widget:new()
 	self.properties = {}
 	self.childProperties = {}
 	self.data = {}
+	self.toolTip = false
 end
 
 -- Binds 'property' to the path.
@@ -264,6 +265,22 @@ end
 
 function Widget:setZDepth(value)
 	self.zDepth = value or self.zDepth
+end
+
+function Widget:getToolTip()
+	if not self.toolTip then
+		return false
+	else
+		return unpack(self.toolTip, 1, self.toolTip.n)
+	end
+end
+
+function Widget:setToolTip(...)
+	if select('#', ...) == 0 then
+		self.toolTip = false
+	else
+		self.toolTip = { n = select('#', ...), ... }
+	end
 end
 
 function Widget:performLayout()
