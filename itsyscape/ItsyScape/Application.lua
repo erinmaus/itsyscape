@@ -8,11 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local Color = require "ItsyScape.Graphics.Color"
 local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
@@ -39,6 +41,12 @@ end
 local FONT = love.graphics.getFont()
 
 local Application = Class()
+Application.CLICK_NONE = 0
+Application.CLICK_ACTION = 1
+Application.CLICK_WALK = 2
+Application.CLICK_DURATION = 0.25
+Application.CLICK_RADIUS = 32
+
 function Application:new()
 	self.camera = ThirdPersonCamera()
 	do
@@ -65,6 +73,9 @@ function Application:new()
 	self.gameView:getRenderer():setCamera(self.camera)
 
 	self.showDebug = true
+
+	self.clickActionTime = 0
+	self.clickActionType = Application.CLICK_NONE
 end
 
 function Application:measure(name, func, ...)
@@ -115,6 +126,15 @@ function Application:probe(x, y, performDefault, callback)
 	probe:all(function()
 		if performDefault then
 			for action in probe:iterate() do
+				if action.id == "Walk" then
+					self.clickActionType = Application.CLICK_WALK
+				else
+					self.clickActionType = Application.CLICK_ACTION
+				end
+
+				self.clickActionTime = Application.CLICK_DURATION
+				self.clickX, self.clickY = love.mouse.getPosition()
+
 				local s, r = pcall(action.callback)
 				if not s then
 					Log.warn("couldn't perform action: %s", r)
@@ -165,6 +185,8 @@ function Application:update(delta)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
 	--self.gameView:update(delta)
 	--self.uiView:update(delta)
+
+	self.clickActionTime = self.clickActionTime - delta
 end
 
 function Application:tick()
@@ -242,6 +264,26 @@ function Application:draw()
 		love.graphics.ortho(width, height)
 
 		self.uiView:draw()
+
+		if self.clickActionTime > 0 then
+			local color
+			if self.clickActionType == Application.CLICK_WALK then
+				color = Color(1, 1, 0, 0.25)
+			else
+				color = Color(1, 0, 0, 0.25)
+			end
+
+			local mu = Tween.powerEaseInOut(
+				self.clickActionTime / Application.CLICK_DURATION,
+				3)
+			local oldColor = { love.graphics.getColor() }
+			love.graphics.setColor(color:get())
+			love.graphics.circle(
+				'fill',
+				self.clickX, self.clickY,
+				mu * Application.CLICK_RADIUS)
+			love.graphics.setColor(unpack(oldColor))
+		end
 	end
 
 	local s, r = xpcall(function() self:measure('draw', draw) end, debug.traceback)
