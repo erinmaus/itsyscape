@@ -28,6 +28,8 @@ function RibbonController:new(peep, director)
 		["PlayerStats"] = true,
 		["PlayerSpells"] = true
 	}
+
+	self.currentTab = false
 end
 
 function RibbonController:poke(actionID, actionIndex, e)
@@ -35,6 +37,10 @@ function RibbonController:poke(actionID, actionIndex, e)
 		self:openTab(e)
 	elseif actionID == "close" then
 		self:closeTab(e)
+	elseif actionID == "hide" then
+		self:hide(e)
+	elseif actionID == "show" then
+		self:show(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -44,6 +50,10 @@ function RibbonController:openTab(e)
 	assert(type(e.tab) == "string", "tab must be string")
 	assert(self.tabs[e.tab], "tab not permitted")
 
+	if self.hidden then
+		return
+	end
+
 	local ui = self:getDirector():getGameInstance():getUI()
 	if self.currentInterfaceID and self.currentInterfaceIndex then
 		ui:close(self.currentInterfaceID, self.currentInterfaceIndex)
@@ -51,6 +61,8 @@ function RibbonController:openTab(e)
 
 	self.currentInterfaceID, self.currentInterfaceIndex = ui:open(self:getPeep(), e.tab)
 	ui:sendPoke(self, "activate", nil, { self.currentInterfaceID })
+
+	self.currentTab = e.tab
 end
 
 function RibbonController:closeTab(e)
@@ -61,8 +73,23 @@ function RibbonController:closeTab(e)
 
 	self.currentInterfaceID = false
 	self.currentInterfaceIndex = false
+	self.currentTab = false
 
 	ui:sendPoke(self, "activate", nil, { nil })
+end
+
+function RibbonController:hide(e)
+	local currentTab = self.currentTab
+	self:closeTab(e)
+
+	self.previousTab = currentTab
+	self.hidden = true
+end
+
+function RibbonController:show(e)
+	self.hidden = false
+	self:openTab({ tab = self.previousTab })
+	self.previousTab = nil
 end
 
 return RibbonController

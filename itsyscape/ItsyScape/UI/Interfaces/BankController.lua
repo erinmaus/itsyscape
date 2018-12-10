@@ -19,6 +19,14 @@ function BankController:new(peep, director)
 	Controller.new(self, peep, director)
 
 	self:refresh()
+
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"hide",
+		nil,
+		{})
 end
 
 function BankController:refresh()
@@ -92,6 +100,16 @@ end
 
 function BankController:pull()
 	return self.state
+end
+
+function BankController:close()
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"show",
+		nil,
+		{})
 end
 
 function BankController:pullActions(item, serializedItem)
