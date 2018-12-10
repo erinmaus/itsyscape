@@ -34,7 +34,8 @@ end
 function PlayerStanceController:pull()
 	local result = {}
 
-	local equippedItem = Utility.Peep.getEquippedItem(self:getPeep(), Equipment.PLAYER_SLOT_RIGHT_HAND)
+	local equippedItem = Utility.Peep.getEquippedItem(self:getPeep(), Equipment.PLAYER_SLOT_RIGHT_HAND) or
+		Utility.Peep.getEquippedItem(self:getPeep(), Equipment.PLAYER_SLOT_TWO_HANDED)
 	if equippedItem then
 		local logic = self:getDirector():getItemManager():getLogic(equippedItem:getID())
 		if logic:isCompatibleType(Weapon) then
