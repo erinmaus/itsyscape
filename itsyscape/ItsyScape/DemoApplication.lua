@@ -59,7 +59,6 @@ function DemoApplication:initialize()
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
-	self:getGame():getUI():open(playerPeep, "SkillGuide", "Magic")
 
 	local position = self:getGame():getPlayer():getActor():getPosition()
 	self.previousPlayerPosition = position

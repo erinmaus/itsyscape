@@ -29,7 +29,7 @@ Ribbon.TOOL_TIPS = {
 	},
 	["PlayerInventory"] = {
 		ToolTip.Header("Inventory"),
-		ToolTip.Text("View the items you are currently carrying.")
+		ToolTip.Text("See the items you are currently carrying.")
 	},
 	["PlayerEquipment"] = {
 		ToolTip.Header("Equipment"),
@@ -38,7 +38,7 @@ Ribbon.TOOL_TIPS = {
 	},
 	["PlayerStats"] = {
 		ToolTip.Header("Stats"),
-		ToolTip.Text("View your stats, and see helpful skill guides.")
+		ToolTip.Text("View your stats and see helpful skill guides.")
 	},
 	["PlayerSpells"] = {
 		ToolTip.Header("Spells"),

@@ -181,14 +181,6 @@ function One:assign(director, key, ...)
 		combat.currentPrayer = combat.currentPrayer + difference
 	end)
 
-	stats.stats.onXPGain:register(function(_, skill, xp)
-		local actor = self:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor = actor.actor
-			actor:flash("XPPopup", 1, skill:getName(), xp)
-		end
-	end)
-
 	do
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.maxChaseDistance = math.huge
@@ -297,41 +289,41 @@ end
 
 function One:onDropItem(e)
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 end
 
 function One:onTransferItemTo(e)
 	if e.purpose ~= 'bank-withdraw' then
 		local game = self:getDirector():getGameInstance()
-		game:getUI():interrupt()
+		game:getUI():interrupt(self)
 	end
 end
 
 function One:onTransferItemFrom(e)
 	if e.purpose ~= 'bank-deposit' then
 		local game = self:getDirector():getGameInstance()
-		game:getUI():interrupt()
+		game:getUI():interrupt(self)
 	end
 end
 
 function One:onWalk(e)
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 end
 
 function One:onHeal(p)
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 end
 
 function One:onHit(p)
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 end
 
 function One:onMiss(p)
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 end
 
 function One:onDie(p)
@@ -342,7 +334,7 @@ function One:onDie(p)
 	movement.acceleration = Vector.ZERO
 
 	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt()
+	game:getUI():interrupt(self)
 
 	Utility.save(self, false, true, "Aaah!")
 
