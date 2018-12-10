@@ -130,6 +130,9 @@ function One:assign(director, key, ...)
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
 
+	local stats = self:getBehavior(StatsBehavior)
+	stats.stats = Stats("Player.One", director:getGameDB())
+
 	local storage = director:getPlayerStorage(self):getRoot()
 	if storage:get("filename") then
 		local name = storage:getSection("Player"):getSection("Info"):get("name")
@@ -145,8 +148,6 @@ function One:assign(director, key, ...)
 			gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
 		end
 
-		local stats = self:getBehavior(StatsBehavior)
-		stats.stats = Stats("Player.One", director:getGameDB())
 		stats.stats:load(Utility.Peep.getStorage(self))
 
 		local combat = self:getBehavior(CombatStatusBehavior)
@@ -155,36 +156,38 @@ function One:assign(director, key, ...)
 		combat.currentPrayer = stats.stats:getSkill("Faith"):getWorkingLevel()
 		combat.maximumPrayer = stats.stats:getSkill("Faith"):getBaseLevel()
 	else
-		local stats = self:getBehavior(StatsBehavior)
 		stats.stats = Stats("Player.One", director:getGameDB())
 		stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
-		stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
-			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
-
-			local combat = self:getBehavior(CombatStatusBehavior)
-			combat.maximumHitpoints = combat.maximumHitpoints + difference
-			combat.currentHitpoints = combat.currentHitpoints + difference
-		end)
-		stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
-			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
-
-			local combat = self:getBehavior(CombatStatusBehavior)
-			combat.maximumPrayer = combat.maximumPrayer + difference
-			combat.currentPrayer = combat.currentPrayer + difference
-		end)
-
-		stats.stats.onXPGain:register(function(_, skill, xp)
-			local actor = self:getBehavior(ActorReferenceBehavior)
-			if actor and actor.actor then
-				actor = actor.actor
-				actor:flash("XPPopup", 1, skill:getName(), xp)
-			end
-		end)
 
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.currentHitpoints = 10
 		combat.maximumHitpoints = 10
+		combat.currentPrayer = 1
+		combat.maximumPrayer = 1
 	end
+
+	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
+		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumHitpoints = combat.maximumHitpoints + difference
+		combat.currentHitpoints = combat.currentHitpoints + difference
+	end)
+	stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
+		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
+
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumPrayer = combat.maximumPrayer + difference
+		combat.currentPrayer = combat.currentPrayer + difference
+	end)
+
+	stats.stats.onXPGain:register(function(_, skill, xp)
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:flash("XPPopup", 1, skill:getName(), xp)
+		end
+	end)
 
 	do
 		local combat = self:getBehavior(CombatStatusBehavior)
