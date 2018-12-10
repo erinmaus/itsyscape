@@ -53,6 +53,11 @@ for name, fabric in pairs(FABRICS) do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Defense",
 				Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Magic",
+				Count = ItsyScape.Utility.xpForLevel(fabric.tier)
 			}
 		}
 

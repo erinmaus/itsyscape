@@ -102,6 +102,11 @@ for name, metal in pairs(METALS) do
 			Count = ItsyScape.Utility.xpForLevel(metal.tier)
 		},
 
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Hammer",
+			Count = 1
+		},
+
 		Input {
 			Resource = ItsyScape.Resource.Item(string.format("%sBar", name)),
 			Count = 1

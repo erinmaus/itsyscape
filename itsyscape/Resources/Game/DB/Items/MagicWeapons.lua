@@ -44,6 +44,11 @@ for name, tier in pairs(TIERS) do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Magic",
 				Count = ItsyScape.Utility.xpForLevel(tier.tier)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Wisdom",
+				Count = ItsyScape.Utility.xpForLevel(tier.tier)
 			}
 		}
 

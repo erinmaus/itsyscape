@@ -172,12 +172,17 @@ ItsyScape.Meta.DropTableEntry {
 ItsyScape.Resource.Item "WoodlandRobe" {
 	ItsyScape.Action.Equip() {
 		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
 			Count = ItsyScape.Utility.xpForLevel(5)
 		},
 
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Defense",
+			Resource = ItsyScape.Resource.Skill "Wisdom",
 			Count = ItsyScape.Utility.xpForLevel(5)
 		}
 	},

@@ -51,6 +51,11 @@ for name, metal in pairs(METALS) do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Defense",
 				Count = ItsyScape.Utility.xpForLevel(metal.tier)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Strength",
+				Count = ItsyScape.Utility.xpForLevel(metal.tier)
 			}
 		}
 
