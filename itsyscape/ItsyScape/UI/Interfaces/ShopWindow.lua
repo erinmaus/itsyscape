@@ -192,10 +192,12 @@ function ShopWindow:buy(quantity)
 		if s then
 			quantity = r
 		end
-	end
 
-	if quantity then
-		self:sendPoke("buy", nil, { id = self.activeItem.id, count = quantity })
+		if quantity then
+			self:sendPoke("buy", nil, { id = self.activeItem.id, count = quantity })
+		end
+	else
+		self.quantityInput:setText(tostring(quantity))
 	end
 end
 
