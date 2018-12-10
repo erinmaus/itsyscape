@@ -41,7 +41,7 @@ function PlayerStatsController:pull()
 				xp = skill:getXP(),
 				workingLevel = skill:getWorkingLevel(),
 				baseLevel = skill:getBaseLevel(),
-				xpNextLevel = Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP()
+				xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0)
 			})
 		end
 	end
