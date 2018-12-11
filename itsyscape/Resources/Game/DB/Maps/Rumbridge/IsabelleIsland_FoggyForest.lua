@@ -51,6 +51,12 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_FoggyForest_AncientDriftwoodTree"
 	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Once the oldest oak in the Realm, now a cursed abomination.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_FoggyForest_AncientDriftwoodTree"
+	}
 end
 
 do

@@ -133,6 +133,12 @@ do
 		Resource = ItsyScape.Resource.Item "BronzeGloves"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Now you definitely won't get a papercut.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeGloves"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(2, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2, 0.5),
@@ -141,6 +147,12 @@ do
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
 		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(2, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "BronzeBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not very fashionable.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzeBoots"
 	}
 
@@ -154,6 +166,12 @@ do
 		Resource = ItsyScape.Resource.Item "BronzeHelmet"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better than nothing.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeHelmet"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(6, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(6, 0.3),
@@ -161,6 +179,12 @@ do
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(6, 1),
 		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(6, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "BronzePlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Warning: don't stand on a hill during a lightning storm and curse the gods.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzePlatebody"
 	}
 end

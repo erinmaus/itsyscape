@@ -167,10 +167,22 @@ do
 		Resource = ItsyScape.Resource.Item "PunyBow"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A weak bow; quick to fire, but low range.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PunyBow"
+	}
+
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "PunyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A weak longbow; slow to fire, but awesome range.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "PunyLongbow"
 	}
 end

@@ -20,3 +20,9 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Leads you somewhere different.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
+}

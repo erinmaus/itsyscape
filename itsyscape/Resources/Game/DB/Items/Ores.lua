@@ -96,3 +96,39 @@ for name, ore in pairs(ORES) do
 		Resource = Rock
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Needs smelting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CopperOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Needs smelting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "TinOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Needs smelting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains copper ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CopperRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains tin ore",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TinRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains iron ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronRock_Default"
+}

@@ -24,4 +24,10 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "Coins"
 	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shiny!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Coins"
+	}
 end

@@ -23,6 +23,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "GeneralStoreOwner"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sells a general assortment of goods, maybe even buckets!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "GeneralStoreOwner"
+}
+
 ItsyScape.Meta.PeepEquipmentItem {
 	Item = ItsyScape.Resource.Item "BrownApron",
 	Count = 1,
@@ -54,5 +60,11 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.PeepEquipmentItem {
 	Item = ItsyScape.Resource.Item "BrownApron",
 	Count = 1,
+	Resource = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sells a general assortment of goods, maybe even buckets!",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard"
 }

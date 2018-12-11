@@ -23,6 +23,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "FancyBanker"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Can safely store your items in the Bank of Vizier's Rock.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "FancyBanker"
+}
+
 local TalkAction = ItsyScape.Action.Talk()
 
 ItsyScape.Meta.TalkSpeaker {
@@ -49,6 +55,12 @@ ItsyScape.Meta.PeepID {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Banker",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "FancyBanker_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Can safely store your items in the Bank of Vizier's Rock.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "FancyBanker_Default"
 }

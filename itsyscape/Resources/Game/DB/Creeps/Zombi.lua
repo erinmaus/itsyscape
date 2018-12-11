@@ -28,6 +28,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "Zombi_Base"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Brains over brawn.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Zombi_Base"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(5),
@@ -68,6 +74,12 @@ ItsyScape.Meta.PeepID {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Zombi",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Zombi_Base_Attackable"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Not that kind of zombie.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Zombi_Base_Attackable"
 }

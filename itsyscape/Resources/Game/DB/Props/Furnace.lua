@@ -37,3 +37,9 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Furnace_Default"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Hot enough to melt most things.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Furnace_Default"
+}

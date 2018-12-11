@@ -28,6 +28,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "One of the First Children of Yendor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(90),

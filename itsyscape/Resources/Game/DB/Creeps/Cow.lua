@@ -37,6 +37,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "In Soviet Realm, cows don't moo, they big moo.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Cow_Base"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(10),

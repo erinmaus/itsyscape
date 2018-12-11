@@ -20,3 +20,9 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Chest_Default"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Good for storage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Chest_Default"
+}

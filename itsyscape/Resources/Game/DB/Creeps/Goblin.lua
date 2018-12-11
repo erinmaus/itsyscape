@@ -23,6 +23,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "Goblin_Base"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smelly and rude.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Goblin_Base"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(5),

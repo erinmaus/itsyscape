@@ -5,7 +5,7 @@
 --
 -- This Source Code Form is subject to the terms of the Mozilla Public
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
--- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-- file, You can obtain one at http//mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Interface = require "ItsyScape.UI.Interface"
@@ -21,6 +21,7 @@ function WidgetRenderManager:new(inputProvider)
 	self.defaultRenderer = WidgetRenderer()
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
 	self.input = inputProvider
+	self.toolTip = false
 end
 
 function WidgetRenderManager:getCursor()
@@ -46,6 +47,16 @@ function WidgetRenderManager:setCursor(widget)
 		self.cursor.x = x - mouseX
 		self.cursor.y = y - mouseY
 	end
+end
+
+function WidgetRenderManager:setToolTip(duration, ...)
+	self.toolTip = ToolTip(...)
+	self.toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
+	self.toolTip:setPosition(love.mouse.getPosition())
+end
+
+function WidgetRenderManager:getToolTip()
+	return self.toolTip
 end
 
 function WidgetRenderManager:hasRenderer(widgetType)
@@ -97,6 +108,16 @@ function WidgetRenderManager:stop()
 		love.graphics.translate(love.mouse.getPosition())
 		self:draw(self.cursor.widget, self.cursor.state, true)
 		love.graphics.pop()
+	end
+
+	if self.toolTip then
+		if self.toolTip:getDuration() < 0.5 then
+			self.toolTip = false
+		else
+			love.graphics.push('all')
+			self:draw(self.toolTip, {}, true)
+			love.graphics.pop()
+		end
 	end
 
 	for widget, toolTip in pairs(self.hovered) do

@@ -26,7 +26,7 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Won't get you any dates.",
-	Langauge = "en-US",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Tinderbox"
 }
 
@@ -48,7 +48,7 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "If all you have is a hammer, everything looks like a nail.",
-	Langauge = "en-US",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Hammer"
 }
 
@@ -70,7 +70,7 @@ ItsyScape.Meta.Item {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Pokey!",
-	Langauge = "en-US",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Needle"
 }
 
@@ -92,6 +92,6 @@ ItsyScape.Meta.Item {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Stabby!",
-	Langauge = "en-US",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Knife"
 }

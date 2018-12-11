@@ -25,6 +25,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Quaint, yet somehow ominous.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
+}
+
 ItsyScape.Resource.Prop "Door_RumbridgeStone"
 
 ItsyScape.Meta.PeepID {
@@ -43,6 +49,12 @@ ItsyScape.Meta.MapObjectSize {
 	SizeY = 2,
 	SizeZ = 2,
 	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeStone"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Knock, knock.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeStone"
 }
 
 ItsyScape.Resource.Prop "Bed_Rumbridge" {

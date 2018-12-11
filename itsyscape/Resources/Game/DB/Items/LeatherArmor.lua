@@ -140,6 +140,12 @@ do
 		Resource = ItsyScape.Resource.Item "MooishLeatherGloves"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Moo.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherGloves"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(1, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(1, 0.5),
@@ -147,6 +153,12 @@ do
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(1, 1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "MooishLeatherBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Moo?",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MooishLeatherBoots"
 	}
 
@@ -160,6 +172,12 @@ do
 		Resource = ItsyScape.Resource.Item "MooishLeatherCoif"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Moo!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherCoif"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(3, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(3, 0.3),
@@ -167,6 +185,12 @@ do
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(7, 1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(3, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "MooishLeatherBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Big moo.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MooishLeatherBody"
 	}
 end

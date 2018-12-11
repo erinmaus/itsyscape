@@ -37,6 +37,8 @@ end
 function ToolTip:new(...)
 	Widget.new(self)
 	self:setValues(...)
+
+	self.duration = math.huge
 end
 
 function ToolTip:getOverflow()
@@ -49,6 +51,20 @@ end
 
 function ToolTip:setValues(...)
 	self.values = { n = select('#', ...), ... }
+end
+
+function ToolTip:getDuration(value)
+	return self.duration
+end
+
+function ToolTip:setDuration(value)
+	self.duration = value or math.huge
+end
+
+function ToolTip:update(delta, ...)
+	Widget.update(self, delta, ...)
+
+	self.duration = self.duration - delta
 end
 
 return ToolTip

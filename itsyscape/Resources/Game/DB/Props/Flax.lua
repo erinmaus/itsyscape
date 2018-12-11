@@ -50,6 +50,12 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Good in fiber, or was it good for fiber?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Flax"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Good in fiber.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Flax"

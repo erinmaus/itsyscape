@@ -28,6 +28,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "Skeleton_Base"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Someone everyone grows up to be.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Skeleton_Base"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(15),
@@ -93,5 +99,11 @@ ItsyScape.Meta.PeepStat {
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(30),
+	Resource = ItsyScape.Resource.Peep "Skeleton_Base_Attackable"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Not even a bit stringy.",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Skeleton_Base_Attackable"
 }

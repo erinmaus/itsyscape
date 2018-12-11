@@ -73,6 +73,10 @@ function LocalActor:getName()
 	return self.peep:getName()
 end
 
+function LocalActor:getDescription()
+	return Utility.Peep.getDescription(self.peep)
+end
+
 function LocalActor:setName(value)
 	self.peep:setName(value)
 end

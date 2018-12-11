@@ -327,11 +327,11 @@ function DeferredRendererPass:drawFog(scene, delta)
 		return
 	end
 
-	if not self.lBuffer then
+	if not self.fBuffer then
 		error("no LBuffer")
 	end
 
-	self.lBuffer:use()
+	self.fBuffer:use()
 	love.graphics.clear(0, 0, 0, 0, false, false)
 
 	for i = 1, #self.fog do
@@ -343,7 +343,7 @@ function DeferredRendererPass:drawFog(scene, delta)
 		love.graphics.setShader()
 		love.graphics.origin()
 		love.graphics.ortho(self.cBuffer:getWidth(), self.cBuffer:getHeight())
-		love.graphics.draw(self.lBuffer:getColor())
+		love.graphics.draw(self.fBuffer:getColor())
 	end
 end
 
@@ -358,6 +358,12 @@ function DeferredRendererPass:resize(width, height)
 		self.lBuffer = LBuffer(self.gBuffer)
 	else
 		self.lBuffer:resize(self.gBuffer)
+	end
+
+	if not self.fBuffer then
+		self.fBuffer = LBuffer(self.gBuffer)
+	else
+		self.fBuffer:resize(self.gBuffer)
 	end
 
 	if not self.cBuffer then

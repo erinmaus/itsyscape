@@ -24,4 +24,10 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "CavePotato"
 	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Dankest of potatoes.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CavePotato"
+	}
 end

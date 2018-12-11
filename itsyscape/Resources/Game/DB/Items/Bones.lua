@@ -56,6 +56,12 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "Bones"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "There's no telling who or what these came from.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Bones"
+}
+
 ItsyScape.Resource.Item "BoneShards" {
 	ItsyScape.Action.Craft() {
 		Requirement {
@@ -92,6 +98,12 @@ ItsyScape.Resource.Item "BoneShards" {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Bone shards",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BoneShards"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Shards carved from bones; used to barter with priests and demons alike",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "BoneShards"
 }

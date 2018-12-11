@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Button = require "ItsyScape.UI.Button"
 local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
@@ -21,6 +22,7 @@ local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local PokeMenu = require "ItsyScape.UI.PokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local SceneSnippetRenderer = require "ItsyScape.UI.SceneSnippetRenderer"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
@@ -143,6 +145,38 @@ function UIView:poke(interfaceID, index, actionID, actionIndex, e)
 	end
 end
 
+function UIView:examine(a, b)
+	local object, description
+	if a and b then
+		object = a
+		description = b
+	elseif a then
+		do
+			local id = a
+			local gameDB = self.game:getGameDB()
+			object = Utility.Item.getName(id, gameDB, "en-US")
+			if not object then
+				object = "*" .. id
+			end
+
+			local resource = gameDB:getResource(id, "Item")
+			if resource then
+				description = Utility.getDescription(resource, gameDB)
+			else
+				description = string.format("It's a %s.", object)
+			end
+		end
+	end
+
+	self.renderManager:setToolTip(
+		math.max(#description * 1 / 16, 1.5), 
+		ToolTip.Header(object),
+		ToolTip.Text(description))
+	self.renderManager:getToolTip():setStyle(PanelStyle({
+		image = "Resources/Renderers/Widget/Panel/Examine.9.png"
+	}, self.resources))
+end
+
 function UIView:probe(actions)
 	if self.pokeMenu then
 		self.pokeMenu:close()
@@ -178,6 +212,10 @@ end
 
 function UIView:update(delta)
 	self.root:update(delta)
+
+	if self.renderManager:getToolTip() then
+		self.renderManager:getToolTip():update(delta)
+	end
 end
 
 function UIView:draw()
