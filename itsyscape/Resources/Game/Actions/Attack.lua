@@ -15,6 +15,7 @@ local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 
 local Attack = Class(Action)
 Attack.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -27,7 +28,7 @@ function Attack:perform(state, player, target)
 	local targetActor = target:getBehavior(ActorReferenceBehavior)
 	if targetActor and targetActor.actor then
 		local attack = AttackCommand()
-		if player:getCommandQueue():interrupt(attack) then
+		if player:getCommandQueue(CombatCortex.QUEUE):interrupt(attack) then
 			local s, b = player:addBehavior(CombatTargetBehavior)
 			if s then
 				b.actor = targetActor.actor

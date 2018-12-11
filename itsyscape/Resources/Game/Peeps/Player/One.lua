@@ -338,7 +338,7 @@ function One:onDie(p)
 
 	Utility.save(self, false, true, "Aaah!")
 
-	self.deadTimer = 1
+	self.deadTimer = 5
 end
 
 function One:update(...)
@@ -375,7 +375,7 @@ function One:update(...)
 end
 
 function One:onPoof()
-	Log.error('poofed')
+	Log.error('Player poofed.')
 end
 
 function One:onActionFailed(e)

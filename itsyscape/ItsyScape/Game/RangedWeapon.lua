@@ -77,6 +77,18 @@ function RangedWeapon:perform(peep, target)
 	end
 
 	Log.info('No ammo in quiver, or not right type of ammo.')
+
+	peep:onActionFailed({
+		requirements = {
+			{
+				type = "Item",
+				resource = "BronzeArrow",
+				name = "Proper ammunition (in quiver).",
+				count = 1
+			}
+		}
+	})
+
 	self:applyCooldown(peep)
 end
 

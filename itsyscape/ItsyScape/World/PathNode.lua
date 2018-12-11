@@ -24,6 +24,7 @@ function PathNode:new(i, j, layer)
 	self.next = false
 	self.onBegin = Callback()
 	self.onEnd = Callback()
+	self.onInterrupt = Callback()
 end
 
 -- Sets the next node, or unsets it if node is falsey.
@@ -68,7 +69,7 @@ end
 --
 -- Should not invoke onEnd.
 function PathNode:interrupt(peep)
-	-- Nothing.
+	self.onInterrupt(self, peep)
 end
 
 -- Called when the node is done.

@@ -68,6 +68,8 @@ function CommandQueue:push(command, clear)
 	end
 
 	table.insert(self.queue, command)
+	self.peep:poke('command', self, command)
+
 	return true
 end
 
@@ -90,6 +92,8 @@ function CommandQueue:interrupt(command)
 	end
 
 	self.queue = { command }
+	self.peep:poke('command', self, command)
+
 	return true
 end
 
