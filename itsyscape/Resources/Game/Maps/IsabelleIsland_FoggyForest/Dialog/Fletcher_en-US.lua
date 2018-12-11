@@ -1,6 +1,5 @@
 speaker "Fletcher"
 
-TARGET_NAME = _TARGET:getName()
 message "Yo yo yo!"
 
 do
@@ -30,7 +29,7 @@ do
 		elseif result == DO then
 			message {
 				"I'm a self-sufficient archer, so I gotta make my own arrows and bows.",
-				"With a knife, you can make little work logs to make arrow shafts and bows like me."
+				"With a knife, you can make little work of logs to make arrow shafts and bows like me."
 			}
 
 			message {
@@ -42,6 +41,30 @@ do
 				"With some skill, you can make a longbow like mine.",
 				"It goes a lot further than a regular bow!"
 			}
+
+			message {
+				"If you're good, you can run around and stay out of the range of anyone.",
+				"Even those pesky wood nymphs!"
+			}
+
+			local YES = option "Yes!"
+			local NO  = option "No!"
+
+			message {
+				"Wanna see the fletching skill guide?"
+			}
+
+			local openSkillGuide = select {
+				YES,
+				NO
+			}
+
+			if openSkillGuide == YES then
+				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Fletching")
+				result = QUIT
+			else
+				message "Gotcha."
+			end
 		else
 			message "Later, yo."
 		end

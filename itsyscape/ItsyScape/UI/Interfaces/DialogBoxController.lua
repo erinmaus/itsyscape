@@ -146,7 +146,7 @@ function DialogBoxController:pump(e, ...)
 			local gameDB = self:getDirector():getGameDB()
 			local speaker = gameDB:getRecord("TalkSpeaker", { Action = self.action, Name = self.currentPacket:getSpeaker() })
 			if speaker then
-				local name = Utility.getName(speaker:get("Resource"), gameDB) or ""
+				local name = Utility.getName(speaker:get("Resource"), gameDB) or speaker:get("Name")
 				self.state.speaker = name
 
 			elseif self.currentPacket:getSpeaker():upper() == "_TARGET" then

@@ -106,20 +106,12 @@ function PlayerInventoryController:pokeItem(e)
 
 	local itemResource = self:getGame():getGameDB():getResource(item:getID(), "Item")
 	if itemResource then
-		local success = Utility.performAction(
+		Utility.performAction(
 			self:getGame(),
 			itemResource,
 			e.id,
 			'inventory',
 			self:getPeep():getState(), self:getPeep(), item)
-
-		if not success then
-			Log.error(
-				"action #%d not found (on item %s @ %d)",
-				e.id,
-				item:getID(),
-				e.index)
-		end
 	end
 end
 

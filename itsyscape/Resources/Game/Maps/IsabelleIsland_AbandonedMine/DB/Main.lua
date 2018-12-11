@@ -87,6 +87,106 @@ do
 	}
 end
 
+M["SmithingTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 2,
+		PositionZ = 35,
+		Name = "SmithingTutor",
+		Map = M._MAP,
+		Resource = M["SmithingTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SmithingTutor"],
+		Name = "Smith",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Smith_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["SmithingTutor"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Smith",
+		MapObject = M["SmithingTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BrownApron",
+		Count = 1,
+		Resource = M["SmithingTutor"]
+	}
+end
+
+M["MiningTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 2,
+		PositionZ = 5,
+		Name = "MiningTutor",
+		Map = M._MAP,
+		Resource = M["MiningTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["MiningTutor"],
+		Name = "Miner",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Miner_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["MiningTutor"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Miner",
+		MapObject = M["MiningTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzePlatebody",
+		Count = 1,
+		Resource = M["MiningTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeGloves",
+		Count = 1,
+		Resource = M["MiningTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeBoots",
+		Count = 1,
+		Resource = M["MiningTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzePickaxe",
+		Count = 1,
+		Resource = M["MiningTutor"]
+	}
+end
+
 M["SkeletonMinerJoe"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -235,9 +235,9 @@ end
 M["Bob"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 37,
+		PositionX = 33,
 		PositionY = 4,
-		PositionZ = 23,
+		PositionZ = 31,
 		Name = "Bob",
 		Map = M._MAP,
 		Resource = M["Bob"]
@@ -252,6 +252,48 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard",
 		MapObject = M["Bob"]
+	}
+end
+
+M["CraftingTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4,
+		PositionZ = 19,
+		Direction = -1,
+		Name = "Crafter",
+		Map = M._MAP,
+		Resource = M["CraftingTutor"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Crafter Susie",
+		Language = "en-US",
+		Resource = M["CraftingTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["CraftingTutor"],
+		Name = "Crafter",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Crafter_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Crafter",
+		MapObject = M["CraftingTutor"]
+	}
+
+	M["CraftingTutor"] {
+		TalkAction
 	}
 end
 
