@@ -18,6 +18,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "PlainThread"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Not particularly strong, but it's good enough for most things.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PlainThread"
+}
+
 ItsyScape.Meta.Item {
 	Value = 1,
 	Weight = 0,
@@ -46,6 +52,12 @@ ItsyScape.Resource.Item "MooishLeatherHide" {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Mooish leather",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "MooishLeatherHide"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Who doesn't love cow print?",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "MooishLeatherHide"
 }

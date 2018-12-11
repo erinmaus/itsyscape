@@ -42,6 +42,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Could gain to pack on a few pounds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "CopperSkelemental"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(5),
@@ -82,6 +88,12 @@ ItsyScape.Meta.Item {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Copper flake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CopperFlake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Very poor source of vitamins, but rich in nutrients.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "CopperFlake"
 }

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local patchy = require "patchy"
 
@@ -62,7 +63,7 @@ function ToolTipRenderer:layout(widget)
 					love.graphics.printf(value.text, 1, textY + 1, maxWidth)
 				end
 				love.graphics.setColor(value.color:get())
-				love.graphics.printf(value.text, 0, textY, maxWidth, 'justify')
+				love.graphics.printf(value.text, 0, textY, maxWidth, 'left')
 			end)
 
 			height = #lines * self.headerFont:getLineHeight() * self.headerFont:getHeight()
@@ -93,10 +94,21 @@ function ToolTipRenderer:draw(widget, state)
 
 	love.graphics.translate(16, 16)
 
-	self.toolTipBorder:draw(
+	local image
+	do
+		local style = widget:getStyle()
+		if style and Class.isType(style, PanelStyle) then
+			image = style.image
+		else
+			image = self.toolTipBorder
+		end
+	end
+
+	image:draw(
 		-self.padding, -self.padding,
 		width,
 		height)
+
 	for i = 1, #draw do
 		draw[i]()
 	end

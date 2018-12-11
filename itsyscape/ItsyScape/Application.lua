@@ -18,6 +18,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local UIView = require "ItsyScape.UI.UIView"
 
 local function createGameDB()
@@ -36,6 +37,35 @@ local function createGameDB()
 	end
 
 	return GameDB.create(t, ":memory:")
+end
+
+local function inspectGameDB(gameDB)
+	local VISIBLE_RESOURCES = {
+		"Item",
+		"Peep",
+		"Prop"
+	}
+
+	for i = 1, #VISIBLE_RESOURCES do
+		local resourceType = VISIBLE_RESOURCES[i]
+		for resource in gameDB:getResources(resourceType) do
+			local name = gameDB:getRecord("ResourceName", {
+				Resource = resource
+			})
+
+			if not name then
+				Log.warn("Resource '%s' (%s) doesn't have name.", resource.name, resourceType)
+			end
+
+			local description = gameDB:getRecord("ResourceDescription", {
+				Resource = resource
+			})
+
+			if not description then
+				Log.warn("Resource '%s' (%s) doesn't have description.", resource.name, resourceType)
+			end
+		end
+	end
 end
 
 local FONT = love.graphics.getFont()
@@ -76,6 +106,10 @@ function Application:new()
 
 	self.clickActionTime = 0
 	self.clickActionType = Application.CLICK_NONE
+
+	if _DEBUG then
+		inspectGameDB(self.gameDB)
+	end
 end
 
 function Application:measure(name, func, ...)
@@ -123,23 +157,28 @@ end
 function Application:probe(x, y, performDefault, callback)
 	local ray = self:shoot(x, y)
 	local probe = Probe(self.game, self.gameDB, ray)
+	probe.onExamine:register(function(name, description)
+		self.uiView:examine(name, description)
+	end)
 	probe:all(function()
 		if performDefault then
 			for action in probe:iterate() do
-				if action.id == "Walk" then
-					self.clickActionType = Application.CLICK_WALK
-				else
-					self.clickActionType = Application.CLICK_ACTION
-				end
+				if action.id ~= "Examine" then
+					if action.id == "Walk" then
+						self.clickActionType = Application.CLICK_WALK
+					else
+						self.clickActionType = Application.CLICK_ACTION
+					end
 
-				self.clickActionTime = Application.CLICK_DURATION
-				self.clickX, self.clickY = love.mouse.getPosition()
+					self.clickActionTime = Application.CLICK_DURATION
+					self.clickX, self.clickY = love.mouse.getPosition()
 
-				local s, r = pcall(action.callback)
-				if not s then
-					Log.warn("couldn't perform action: %s", r)
+					local s, r = pcall(action.callback)
+					if not s then
+						Log.warn("couldn't perform action: %s", r)
+					end
+					break
 				end
-				break
 			end
 		else
 			self.uiView:probe(probe:toArray())

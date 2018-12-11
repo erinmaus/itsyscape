@@ -397,8 +397,7 @@ function Bank:probe(button)
 			verb = "Examine", -- TODO: [LANG]
 			object = object,
 			callback = function()
-				-- TODO: examine item
-				Log.info("It's a %s.", object)
+				self:getView():examine(item.id)
 			end
 		})
 

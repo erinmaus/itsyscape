@@ -190,6 +190,18 @@ for name, metal in pairs(METALS) do
 	}
 end
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Weak, but it'll still get to the point.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BronzeArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pretty primitive, but not quite stone age.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BronzeArrowhead"
+}
+
 do
 	local ArrowShaft = ItsyScape.Resource.Item "ArrowShaft"
 
@@ -202,6 +214,12 @@ do
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Arrow shaft",
+		Language = "en-US",
+		Resource = ArrowShaft
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Baby arrow, yearning to take flight.",
 		Language = "en-US",
 		Resource = ArrowShaft
 	}

@@ -42,6 +42,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "TinSkelemental"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Put-tin on the ritz.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "TinSkelemental"
+}
+
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Value = ItsyScape.Utility.xpForLevel(5),
@@ -82,6 +88,12 @@ ItsyScape.Meta.Item {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Tin flake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "TinFlake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Metal dandruff from an undead elemental, ew!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "TinFlake"
 }

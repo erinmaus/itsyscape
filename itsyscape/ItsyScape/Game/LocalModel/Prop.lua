@@ -59,6 +59,10 @@ function LocalProp:getName()
 	return self.peep:getName()
 end
 
+function LocalProp:getDescription()
+	return Utility.Peep.getDescription(self.peep)
+end
+
 function LocalProp:getResourceType()
 	error("nyi")
 end

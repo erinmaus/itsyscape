@@ -106,3 +106,15 @@ for name, metal in pairs(METALS) do
 		SmithAction
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Here comes ...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BronzeHatchet"
+}
+
+-- ...Nny! (Iron)
+-- Lizzie Borden had an axe... (Steel)
+-- ...gave her mother forty whacks... (Mithril)
+-- ...when she had seen what she had done... (Adamant)
+-- ...she gave her father forty-one. (Itsy)

@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
@@ -14,6 +15,8 @@ local Map = require "ItsyScape.World.Map"
 
 local Probe = Class()
 function Probe:new(game, gameDB, ray)
+	self.onExamine = Callback()
+
 	self.game = game
 	self.gameDB = gameDB
 	self.ray = ray
@@ -242,6 +245,16 @@ function Probe:actors()
 				self.isDirty = true
 				count = count + 1
 			end
+
+			table.insert(self.actions, {
+				id = "Examine",
+				verb = "Examine",
+				object = actor:getName(),
+				callback = function()
+					self.onExamine(actor:getName(), actor:getDescription())
+				end,
+				depth = -p.z + (((#actions + 1) / #actions) / 100)
+			})
 		end
 	end
 
@@ -276,6 +289,16 @@ function Probe:props()
 				self.isDirty = true
 				count = count + 1
 			end
+
+			table.insert(self.actions, {
+				id = "Examine",
+				verb = "Examine",
+				object = actor:getName(),
+				callback = function()
+					self.onExamine(actor:getName(), actor:getDescription())
+				end,
+				depth = -p.z + (((#actions + 1) / #actions) / 100)
+			})
 		end
 	end
 

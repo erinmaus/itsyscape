@@ -143,6 +143,12 @@ for name, fabric in pairs(FABRICS) do
 	end
 end
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "How nice, it already has a pattern!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlueCotton"
+}
+
 -- Blue cotton
 do
 	ItsyScape.Meta.Equipment {
@@ -156,6 +162,12 @@ do
 		Resource = ItsyScape.Resource.Item "BlueCottonGloves"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not very blue.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlueCottonGloves"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(1, 0.6),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(1, 0.8),
@@ -164,6 +176,12 @@ do
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2, 0.5),
 		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "BlueCottonSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "For when you need to kill a demon then hit the hay.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlueCottonSlippers"
 	}
 
@@ -179,6 +197,12 @@ do
 		Resource = ItsyScape.Resource.Item "BlueCottonHat"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You know what they say about big hats...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlueCottonHat"
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(3, 0.6),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(3, 0.6),
@@ -187,6 +211,12 @@ do
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(3, 0.5),
 		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.4),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "BlueCottonRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "When you need to be that fumbling old grandpa.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlueCottonRobe"
 	}
 end

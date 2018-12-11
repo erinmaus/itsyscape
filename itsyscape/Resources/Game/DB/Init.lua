@@ -522,6 +522,12 @@ do
 		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The most divine artefact of the slain angel, granting godhood to those who possess it",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AmuletOfYendor"
+	}
+
 	ItsyScape.Utility.tag(ItsyScape.Resource.Item "AmuletOfYendor", "x_debug")
 
 	include "Resources/Game/DB/Items/ErrinTheHeathen.lua"

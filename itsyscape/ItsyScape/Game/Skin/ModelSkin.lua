@@ -104,6 +104,14 @@ function ModelSkin:loadFromFile(filename)
 	then
 		self.rotation = Vector(unpack(result.rotation))
 	end
+
+	if result.fullLit ~= nil then
+		if result.fullLit then
+			self.isFullLit = true
+		else
+			self.isFullLit = false
+		end
+	end
 end
 
 -- Gets the model CacheRef.
@@ -138,6 +146,10 @@ end
 
 function ModelSkin:getRotation()
 	return self.rotation
+end
+
+function ModelSkin:getIsFullLit()
+	return self.isFullLit
 end
 
 return ModelSkin

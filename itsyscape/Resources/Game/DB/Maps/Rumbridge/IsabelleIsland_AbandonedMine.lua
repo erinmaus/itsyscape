@@ -127,7 +127,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "Obviously his pension wasn't very good.",
-	Resource = ItsyScape.Resource.Item "GhostlyMinerForeman"
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
 ItsyScape.Meta.PeepID {
@@ -235,6 +235,6 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "A necromanic energy flows from the pillar.",
-		Resource = ItsyScape.Resource.Item "IsabelleIsland_AbandonedMine_Pillar"
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
 	}
 end

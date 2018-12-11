@@ -49,6 +49,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensHat"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Fashion for a godslayer.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensHat"
+}
+
 ItsyScape.Resource.Item "ErrinTheHeathensBoots" {
 	ItsyScape.Action.Equip() {
 		Requirement {
@@ -74,6 +80,12 @@ ItsyScape.Meta.Equipment {
 ItsyScape.Meta.EquipmentModel {
 	Type = "ItsyScape.Game.Skin.ModelSkin",
 	Filename = "Resources/Game/Skins/ErrinTheHeathen/Boots.lua",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensBoots"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Only the finest black cthulhuian leather.",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensBoots"
 }
 
@@ -131,6 +143,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensGloves"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Keeps your hands toasty while you purge the faithful.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensGloves"
+}
+
 ItsyScape.Resource.Item "ErrinTheHeathensCoat" {
 	ItsyScape.Action.Equip() {
 		Requirement {
@@ -172,6 +190,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensCoat"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "By slaying a god, she herself became one.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensCoat"
+}
+
 ItsyScape.Resource.Item "ErrinTheHeathensStaff" {
 	ItsyScape.Action.Equip() {
 		Requirement {
@@ -200,6 +224,12 @@ ItsyScape.Meta.EquipmentModel {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Errin the Heathen's Staff",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains the Eye of Man'tok, the First One.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
 }

@@ -163,6 +163,12 @@ for name, log in pairs(LOGS) do
 		Resource = Fire
 	}
 
+	ItsyScape.Meta.ResourceName {
+		Value = string.format("%s fire", name),
+		Language = "en-US",
+		Resource = Fire
+	}
+
 	Log {
 		LightAction,
 		FletchAction,
@@ -174,3 +180,22 @@ for name, log in pairs(LOGS) do
 		Resource = Fire
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Logs from trees commonly found across the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CommonLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "An evergreen found all over the Realm",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This fire won't last long.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonFire"
+}
+

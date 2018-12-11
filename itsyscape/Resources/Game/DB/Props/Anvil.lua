@@ -35,3 +35,9 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Anvil_Default"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "With a hammer and some bars, you can make weapons and armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default"
+}

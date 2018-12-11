@@ -111,6 +111,12 @@ do
 		Resource = ItsyScape.Resource.Item "TinCan"
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not to scale.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TinCan"
+	}
+
 	ItsyScape.Meta.EquipmentModel {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/TinCan/TinCan.lua",
@@ -154,6 +160,12 @@ do
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Copper badge",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Stop in the name of the law!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "CopperBadge"
 	}

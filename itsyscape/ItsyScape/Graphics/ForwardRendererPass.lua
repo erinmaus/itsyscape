@@ -156,7 +156,7 @@ function ForwardRendererPass:drawNodes(scene, delta)
 				end
 
 				-- TODO: Local lights
-				currentShaderProgram:send("scape_NumLights", numGlobalLights)
+				currentShaderProgram:send("scape_NumLights", numLights)
 			end
 
 			local d = node:getTransform():getGlobalDeltaTransform(delta)

@@ -88,3 +88,27 @@ for name, bar in pairs(BARS) do
 		SmeltAction
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Almost completely useless!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CopperBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Almost completely useless!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "TinBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Useful for making bronze weapons and armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BronzeBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Useful for making iron weapons and armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronBar"
+}

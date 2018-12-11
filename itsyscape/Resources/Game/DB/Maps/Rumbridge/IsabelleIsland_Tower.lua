@@ -120,7 +120,7 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Peep "IsabelleIsland_Drakkenson"
 }
 
-ItsyScape.Meta.ResourceName {
+ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "You want a spoiler? Page 606.",
 	Resource = ItsyScape.Resource.Peep "IsabelleIsland_Drakkenson"

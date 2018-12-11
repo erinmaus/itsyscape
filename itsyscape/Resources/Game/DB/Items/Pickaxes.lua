@@ -112,3 +112,15 @@ for name, metal in pairs(METALS) do
 		SmithAction
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Helps you mine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BronzePickaxe"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Helps you mine a little bit better.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronPickaxe"
+}

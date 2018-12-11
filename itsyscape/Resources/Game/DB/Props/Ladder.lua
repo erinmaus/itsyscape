@@ -20,3 +20,9 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "WoodenLadder_Default"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "I wonder where this leads?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WoodenLadder_Default"
+}
