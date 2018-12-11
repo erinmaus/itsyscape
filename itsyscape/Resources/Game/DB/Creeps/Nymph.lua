@@ -14,6 +14,7 @@ ItsyScape.Resource.Peep "Nymph_Base" {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "The revenge of felled trees.",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Nymph_Base"
 }
 
@@ -99,6 +100,7 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Revenging felled trees since the dawn of humanity.",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
 }
 
