@@ -18,7 +18,7 @@ function Hatchet:getBonusForStance(peep)
 end
 
 function Hatchet:getWeaponType()
-	return 'pickaxe'
+	return 'hatchet'
 end
 
 function Hatchet:getSkill(purpose)

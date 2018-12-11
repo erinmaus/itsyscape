@@ -1446,13 +1446,17 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
 	peep:addResource("animation-attack-stab-pickaxe", attackAnimationPickaxeStab)
+	local attackAnimationHatchetSlash = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackHatchetSlash_1/Script.lua")
+	peep:addResource("animation-attack-slash-hatchet", attackAnimationHatchetSlash)
 	local skillAnimationMine = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
 	peep:addResource("animation-skill-mining", skillAnimationMine)
 	local skillAnimationWoodcutting = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
+		"Resources/Game/Animations/Human_SkillWoodcut_1/Script.lua")
 	peep:addResource("animation-skill-woodcutting", skillAnimationWoodcutting)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
