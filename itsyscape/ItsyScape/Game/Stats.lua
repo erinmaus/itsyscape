@@ -78,7 +78,7 @@ end
 --
 -- This includes the additional amount of XP to equal the working level.
 function Stats.Skill:getWorkingXP()
-	local xpDifference = self.xp - Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
+	local xpDifference = self.xp - Curve.XP_CURVE:compute(self:getBaseLevel())
 	local workingXP = Curve.XP_CURVE:compute(self:getWorkingLevel())
 	return xpDifference + workingXP
 end
