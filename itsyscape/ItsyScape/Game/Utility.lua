@@ -152,9 +152,10 @@ function Utility.performAction(game, resource, id, scope, ...)
 					local a = ActionType(game, action)
 					if not a:perform(...) then
 						a:fail(...)
+						foundAction = false
+					else
+						foundAction = true
 					end
-
-					foundAction = true
 				else
 					Log.error(
 						"action %s cannot be performed from scope %s (on resource '%s' [%d])",

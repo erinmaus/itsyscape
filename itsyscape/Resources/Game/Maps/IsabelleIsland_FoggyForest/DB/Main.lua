@@ -151,6 +151,102 @@ do
 	}
 end
 
+M["LumberjackTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 5,
+		PositionZ = 61,
+		Name = "LumberjackTutor",
+		Map = M._MAP,
+		Resource = M["LumberjackTutor"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Lumberjack",
+		MapObject = M["LumberjackTutor"]
+	}
+
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "Tinderbox",
+		Count = 1,
+		Resource = M["LumberjackTutor"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "chop",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Scripts/Lumberjack_ChopLogic.lua",
+		IsDefault = 1,
+		Resource = M["LumberjackTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["LumberjackTutor"],
+		Name = "Lumberjack",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Dialog/Lumberjack_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["LumberjackTutor"] {
+		TalkAction
+	}
+end
+
+M["FletchingTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 5,
+		PositionZ = 83,
+		Name = "FletchingTutor",
+		Map = M._MAP,
+		Resource = M["FletchingTutor"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Fletcher",
+		MapObject = M["FletchingTutor"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "PunyLongbow",
+		Count = 1,
+		Resource = M["FletchingTutor"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Scripts/Fletcher_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["FletchingTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["FletchingTutor"],
+		Name = "Fletcher",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Dialog/Fletcher_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["FletchingTutor"] {
+		TalkAction
+	}
+end
+
 M["YendorianPriest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
