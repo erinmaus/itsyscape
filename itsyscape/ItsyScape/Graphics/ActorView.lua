@@ -248,9 +248,6 @@ function ActorView:applySkin(slotNodes)
 						transform:setLocalRotation(slot.instance:getRotation())
 
 						slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
-						if slot.instance:getIsFullLit() then
-							print 'yes'
-						end
 
 						slot.sceneNode:setParent(self.sceneNode)
 

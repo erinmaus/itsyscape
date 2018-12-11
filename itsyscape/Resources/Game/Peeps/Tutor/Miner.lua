@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Tutors/Fletcher.lua
+-- Resources/Peeps/Tutors/Miner.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,13 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
-local Fletcher = Class(Player)
+local Miner = Class(Player)
 
-function Fletcher:new(resource, name, ...)
-	Player.new(self, resource, name or 'Fletcher', ...)
+function Miner:new(resource, name, ...)
+	Player.new(self, resource, name or 'Miner', ...)
 end
 
-function Fletcher:ready(director, game)
+function Miner:ready(director, game)
 	Player.ready(self, director, game)
 
 	local actor = self:getBehavior(ActorReferenceBehavior)
@@ -34,19 +34,19 @@ function Fletcher:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Dark.lua")
+		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/Pixie.lua")
+		"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/BrownXUtilityBelt.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
@@ -54,8 +54,8 @@ function Fletcher:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local boots = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1_Black.lua")
+		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, boots)
 end
 
-return Fletcher
+return Miner

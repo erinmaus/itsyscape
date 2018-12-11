@@ -1,6 +1,5 @@
 speaker "Lumberjack"
 
-TARGET_NAME = _TARGET:getName()
 message "'Ello."
 
 do
@@ -45,6 +44,30 @@ do
 				"If you feelin' 'specially fancy, you can make weapons'n'stuff out of 'em logs.",
 				"You'll need a knife. I know there's a feller 'round here who does that sort o' stuff."
 			}
+
+			message {
+				"Would ya like to 'ee one of 'o skill guides?"
+			}
+
+			local WOODCUTTING = option "How about wood choppin'?"
+			local FIREMAKING  = option "Firemakin', please!"
+			local NONE        = option "No thanks!"
+
+			local skillGuideChoice = select {
+				WOODCUTTING,
+				FIREMAKING,
+				NONE
+			}
+
+			if skillGuideChoice == WOODCUTTING then
+				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Woodcutting")
+				result = QUIT
+			elseif skillGuideChoice == FIREMAKING then
+				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Firemaking")
+				result = QUIT
+			else
+				message "Yer choice."
+			end
 		else
 			message "Be seein' ya."
 		end
