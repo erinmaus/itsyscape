@@ -76,6 +76,43 @@ end
 do
 	local TalkAction = ItsyScape.Action.Talk()
 
+	ItsyScape.Resource.Peep "IsabelleIsland_Rosalind" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Rosalind_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.IsabelleIsland_Rosalind.Rosalind",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Idromancer Rosalind",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Helps you find yourself.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
 	ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm" {
 		TalkAction
 	}

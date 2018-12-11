@@ -197,6 +197,24 @@ do
 	}
 end
 
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 39,
+		Direction = -1,
+		Name = "Rosalind",
+		Map = M._MAP,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
+		MapObject = M["Rosalind"]
+	}
+end
+
 M["Banker"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

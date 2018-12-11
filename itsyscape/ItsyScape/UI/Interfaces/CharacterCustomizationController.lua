@@ -23,6 +23,10 @@ local SKINS = {
 		{ name = "Fade", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Fade.lua" },
 		{ name = "Afro", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Afro.lua" },
 		{ name = "Emo", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Emo.lua" },
+		{ name = "Pixie", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Pixie.lua" },
+		{ name = "Long curve", t = MODEL_SKIN, filename = "PlayerKit1/Hair/LongCurve.lua" },
+		{ name = "Red bow", t = MODEL_SKIN, filename = "PlayerKit1/Hair/RedBow.lua" },
+		{ name = "Zombi punk", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ZombiPunk.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
 	},
 
@@ -32,6 +36,7 @@ local SKINS = {
 		{ name = "Runic", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes.lua" },
 		{ name = "Grey", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Grey.lua" },
 		{ name = "Red", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Red.lua" },
+		{ name = "Green", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Green.lua" },
 		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/WhiteEyes_Green.lua" }
 	},
 
@@ -52,7 +57,13 @@ local SKINS = {
 		{ name = "Green", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Green.lua" },
 		{ name = "Blue", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Blue.lua" },
 		{ name = "Yellow", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Yellow.lua" },
+		{ name = "Red dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/RedDress.lua" },
+		{ name = "Green dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/GreenDress.lua" },
+		{ name = "Blue dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BlueDress.lua" },
+		{ name = "Yellow dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/YellowDress.lua" },
 		{ name = "Brown cross stitch", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BrownCrossStitch.lua" },
+		{ name = "Grey suit", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BankerSuit.lua" },
+		{ name = "Pale brown", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PaleBrown.lua" },
 	},
 
 	hands = {
