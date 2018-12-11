@@ -426,6 +426,7 @@ include "Resources/Game/DB/Creeps/Zombi.lua"
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
 include "Resources/Game/DB/Peeps/GeneralStoreOwner.lua"
+include "Resources/Game/DB/Peeps/Tutors.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
 
 -- Shops

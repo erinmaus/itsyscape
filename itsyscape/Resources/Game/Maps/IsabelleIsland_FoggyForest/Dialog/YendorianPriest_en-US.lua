@@ -6,6 +6,7 @@ message "Praise upon Yendor. Welcome, ${TARGET_NAME}."
 do
 	local INFO = option "Can you tell me about this place?"
 	local TREE = option "What is that creepy tree doing?"
+	local SELF = option "Who are you?"
 	local SELL = option "Do you have anything for sale?"
 	local QUIT = option "Good-bye."
 
@@ -14,6 +15,7 @@ do
 		result = select {
 			INFO,
 			TREE,
+			SELF,
 			SELL,
 			QUIT
 		}
@@ -71,6 +73,20 @@ do
 				"A beacon of Yendor's grace, now corrupted to control Yendor's followers.",
 				"Fell the tree, but be warned; Yendor's followers are blind to the corruption",
 				"and will seek your destruction."
+			}
+		elseif result == SELF then
+			message {
+				"I'm a high priest for Yendor. Yendorians are His First Children.",
+				"I prepare incense for my God, as a means of worship."
+			}
+
+			message {
+				"You can make incense yourself, although for more selfish purposes.",
+				"It provides benefits that last for a short time."
+			}
+
+			message {
+				"Be warned, sometimes those blessings come at a cost..."
 			}
 		elseif result == SELL then
 			message {
