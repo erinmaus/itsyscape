@@ -129,7 +129,7 @@ function CombatCortex:update(delta)
 								peep:removeBehavior(CombatTargetBehavior)
 							else
 								walk.onCanceled:register(function()
-									if peep:hasBehavior(CombatTargetBehavior) then
+									if peep:hasBehavior(CombatTargetBehavior) and peep:hasBehavior(PlayerBehavior) then
 										peep:removeBehavior(CombatTargetBehavior)
 										peep:getCommandQueue(CombatCortex.QUEUE):clear()
 									end
