@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Command = require "ItsyScape.Peep.Command"
@@ -17,26 +18,34 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local ExecutePathCommand = Class(Command)
 
-function ExecutePathCommand:new(path, distance)
+function ExecutePathCommand:new(path, distance, canceled)
 	Command.new(self)
 
 	for i = 1, path:getNumNodes() do
 		local node = path:getNodeAtIndex(i)
 		node.onBegin:register(ExecutePathCommand.next, self)
+		node.onInterrupt:register(ExecutePathCommand.cancel, self)
 	end
 
 	self.path = path
 	self.index = 1
+	self.canceled = false
+	self.onCanceled = Callback()
 
 	self.distance = distance or 0
 end
 
 function ExecutePathCommand:getIsFinished()
-	return self.index > self.path:getNumNodes()
+	return self.index > self.path:getNumNodes() or self.canceled
 end
 
 function ExecutePathCommand:next()
 	self.index = self.index + 1
+end
+
+function ExecutePathCommand:cancel()
+	self.canceled = true
+	self.onCanceled()
 end
 
 function ExecutePathCommand:step(peep)

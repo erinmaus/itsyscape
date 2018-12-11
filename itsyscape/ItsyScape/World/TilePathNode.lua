@@ -17,6 +17,13 @@ local TilePathNode = Class(PathNode)
 function TilePathNode:activate(peep)
 	PathNode.activate(self, peep)
 
+	if peep:hasBehavior(TargetTileBehavior) then
+		local target = peep:getBehavior(TargetTileBehavior)
+		target.pathNode:interrupt(peep)
+
+		peep:removeBehavior(TargetTileBehavior)
+	end
+
 	local _, c = peep:addBehavior(TargetTileBehavior)
 	c.pathNode = self
 	c.nextPathNode = self:getNextNode()

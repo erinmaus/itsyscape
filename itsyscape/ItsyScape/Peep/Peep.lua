@@ -63,6 +63,7 @@ function Peep:new(name)
 	self:addPoke('poof')
 	self:addPoke('effectAdded')
 	self:addPoke('effectRemoved')
+	self:addPoke('command')
 end
 
 -- Adds a poke 'name'.

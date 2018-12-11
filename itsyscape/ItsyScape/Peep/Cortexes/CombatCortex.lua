@@ -27,6 +27,7 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 
 local CombatCortex = Class(Cortex)
+CombatCortex.QUEUE = {}
 
 function CombatCortex:new()
 	Cortex.new(self)
@@ -47,19 +48,6 @@ function CombatCortex:removePeep(peep)
 
 	self.walking[peep] = nil
 	self.strafing[peep] = nil
-end
-
-function CombatCortex:resume(peep, target)
-	local actor = target:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-		local s, b = peep:addBehavior(CombatTargetBehavior)
-		if s then
-			b.actor = actor
-		end
-
-		peep:getCommandQueue():push(AttackCommand())
-	end
 end
 
 function CombatCortex:update(delta)
@@ -126,12 +114,13 @@ function CombatCortex:update(delta)
 					local distanceToTarget = math.floor(math.sqrt(differenceI ^ 2 + differenceJ ^ 2))
 
 					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
-						peep:getCommandQueue():clear()
+						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
 						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange - 1, 0), { asCloseAsPossible = false })
+
 							if not walk then
 								Log.info(
 									"Peep %s (%d) couldn't reach target Peep %s (%d); abandoning.",
@@ -139,9 +128,14 @@ function CombatCortex:update(delta)
 									target:getName(), target:getTally())
 								peep:removeBehavior(CombatTargetBehavior)
 							else
-								local callback = CallbackCommand(self.resume, self, peep, target)
-								local c = CompositeCommand(true, walk, callback)
-								peep:getCommandQueue():interrupt(c)
+								walk.onCanceled:register(function()
+									if peep:hasBehavior(CombatTargetBehavior) then
+										peep:removeBehavior(CombatTargetBehavior)
+										peep:getCommandQueue(CombatCortex.QUEUE):clear()
+									end
+								end)
+
+								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(walk)
 							end
 
 							self.walking[peep] = { i = targetI, j = targetJ }
