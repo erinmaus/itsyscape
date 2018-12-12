@@ -236,6 +236,7 @@ function CombatCortex:update(delta)
 							local targetCombat = target:getBehavior(CombatStatusBehavior)
 							if targetCombat and targetCombat.currentHitpoints == 0 then
 								peep:removeBehavior(CombatTargetBehavior)
+								target:getCommandQueue(CombatCortex.QUEUE):clear()
 								canAttack = false
 							end
 						end

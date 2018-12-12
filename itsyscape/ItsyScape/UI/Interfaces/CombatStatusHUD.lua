@@ -32,6 +32,7 @@ CombatStatusHUD.HUD_PEEP_HEIGHT = 78
 CombatStatusHUD.EFFECT_SIZE = 48
 CombatStatusHUD.PADDING = 4
 CombatStatusHUD.MISC_ICON_SIZE = 48
+CombatStatusHUD.FLEE_BUTTON_SIZE = 48
 CombatStatusHUD.WIDTH = (CombatStatusHUD.EFFECT_SIZE + CombatStatusHUD.PADDING * 2) * 4
 CombatStatusHUD.PEEP_HEAD_BUTTON_STYLE = {
 	inactive = 'Resources/Renderers/Widget/Button/CombatPeepBorder-Inactive.9.png',
@@ -124,6 +125,23 @@ function CombatStatusHUD:new(id, index, ui)
 		CombatStatusHUD.HUD_HEIGHT / 2 - CombatStatusHUD.HUD_PEEP_WIDTH / 2,
 		CombatStatusHUD.HUD_HEIGHT / 2 - CombatStatusHUD.HUD_PEEP_HEIGHT / 2)
 	self.hudPanel:addChild(self.peepIcon)
+
+	self.fleeButton = Button()
+	self.fleeButton:setPosition(
+		CombatStatusHUD.HUD_WIDTH - CombatStatusHUD.FLEE_BUTTON_SIZE,
+		CombatStatusHUD.HUD_HEIGHT - CombatStatusHUD.FLEE_BUTTON_SIZE)
+	self.fleeButton:setSize(CombatStatusHUD.FLEE_BUTTON_SIZE, CombatStatusHUD.FLEE_BUTTON_SIZE)
+	self.fleeButton:setStyle(ButtonStyle({
+		hover = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Hover.9.png",
+		pressed = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Pressed.9.png",
+		icon = { filename = "Resources/Game/UI/Icons/Concepts/Flee.png", x = 0.5, y = 0.5 }
+	}, self:getView():getResources()))
+	self.fleeButton.onClick:register(function()
+		local game = self:getView():getGame()
+		local player = game:getPlayer()
+		player:flee()
+	end)
+	self.fleeButton:setToolTip(ToolTip.Text("Flee from combat."))
 
 	self.toggleButton = Button()
 	self.toggleButton:setStyle(ButtonStyle(CombatStatusHUD.PEEP_HEAD_BUTTON_STYLE, resources))
@@ -274,6 +292,17 @@ function CombatStatusHUD:update(...)
 	self:setPosition(
 		CombatStatusHUD.PADDING,
 		screenHeight - CombatStatusHUD.HUD_HEIGHT - CombatStatusHUD.PADDING)
+
+	local game = self:getView():getGame()
+	local player = game:getPlayer()
+	if self.isPlayerEngaged ~= player:getIsEngaged() then
+		self.isPlayerEngaged = player:getIsEngaged()
+		if self.isPlayerEngaged then
+			self:addChild(self.fleeButton)
+		else
+			self:removeChild(self.fleeButton)
+		end
+	end
 
 	self:updatePeepIcon()
 	self:updateStats()
