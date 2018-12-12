@@ -14,6 +14,7 @@ local Player = require "ItsyScape.Game.Model.Player"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
@@ -66,6 +67,17 @@ end
 -- Gets the Actor this Player is represented by.
 function Player:getActor()
 	return self.actor
+end
+
+function Player:flee()
+	local peep = self.actor:getPeep()
+	peep:removeBehavior(CombatTargetBehavior)
+	peep:getCommandQueue(CombatCortex.QUEUE):clear()
+end
+
+function Player:getIsEngaged()
+	local peep = self.actor:getPeep()
+	return peep:getCommandQueue(CombatCortex.QUEUE):getIsPending() or peep:hasBehavior(CombatTargetBehavior)
 end
 
 function Player:findPath(i, j, k)

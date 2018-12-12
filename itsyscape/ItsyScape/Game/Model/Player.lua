@@ -21,6 +21,16 @@ function Player:getActor()
 	return Class.ABSTRACT()
 end
 
+-- Disengages from combat.
+function Player:flee()
+	return Class.ABSTRACT()
+end
+
+-- Returns true if the player is in combat, false otherwise.
+function Player:getIsEngaged()
+	return Class.ABSTRACT()
+end
+
 -- Moves the player to the specified position on the map via walking.
 function Player:walk(i, j, k)
 	return Class.ABSTRACT()
