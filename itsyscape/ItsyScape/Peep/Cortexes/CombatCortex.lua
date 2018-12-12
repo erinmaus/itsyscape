@@ -50,6 +50,19 @@ function CombatCortex:removePeep(peep)
 	self.strafing[peep] = nil
 end
 
+function CombatCortex:resume(peep, target)
+	local actor = target:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+		local s, b = peep:addBehavior(CombatTargetBehavior)
+		if s then
+			b.actor = actor
+		end
+
+		peep:getCommandQueue():push(AttackCommand())
+	end
+end
+
 function CombatCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local itemManager = self:getDirector():getItemManager()
@@ -135,7 +148,9 @@ function CombatCortex:update(delta)
 									end
 								end)
 
-								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(walk)
+								local callback = CallbackCommand(self.resume, self, peep, target)
+								local c = CompositeCommand(true, walk, callback)
+								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
 							end
 
 							self.walking[peep] = { i = targetI, j = targetJ }
