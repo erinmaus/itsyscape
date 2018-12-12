@@ -16,7 +16,7 @@ local Bow = Class(RangedWeapon)
 Bow.AMMO = Equipment.AMMO_ARROW
 
 function Bow:getAttackRange()
-	return 7
+	return 8
 end
 
 function Bow:getWeaponType()
