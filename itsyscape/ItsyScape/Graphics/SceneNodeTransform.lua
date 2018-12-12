@@ -10,24 +10,24 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local NSceneNodeTransform = require "nbunny.scenenodetransform"
 
 -- Represents a hierarchal transform of a SceneNode.
 local SceneNodeTransform = Class()
 
 -- Constructs an identity scene transform.
-function SceneNodeTransform:new()
+function SceneNodeTransform:new(node)
+	self._handle = node._handle:getTransform()
 	self.translation = Vector.ZERO
 	self.scale = Vector.ONE
 	self.rotation = Quaternion.IDENTITY
 	self.previousTranslation = false
 	self.previousScale = false
 	self.previousRotation = false
-	self.isTransformDirty = false
 	self.localTransform = love.math.newTransform()
 	self.localDeltaTransform = love.math.newTransform()
 	self.globalTransform = love.math.newTransform()
 	self.globalDeltaTransform = love.math.newTransform()
-	self.globalDeltaTransformDirty = true
 
 	self.parentTransform = false
 end
@@ -48,6 +48,8 @@ function SceneNodeTransform:setParentTransform(parent)
 	else
 		self.parentTransform = parent
 	end
+
+	self.isTransformDirty = true
 end
 
 -- Sets the local translation.
@@ -55,6 +57,11 @@ end
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalTranslation(value)
 	self.translation = value or self.translation
+	self._handle:setCurrentTranslation(
+		self.translation.x,
+		self.translation.y,
+		self.translation.z)
+
 	self.isTransformDirty = true
 end
 
@@ -68,6 +75,12 @@ end
 -- value is expected to be a Quaternion. If nil, rotation remains unchanged.
 function SceneNodeTransform:setLocalRotation(value)
 	self.rotation = value or self.rotation
+	self._handle:setCurrentRotation(
+		self.rotation.x,
+		self.rotation.y,
+		self.rotation.z,
+		self.rotation.w)
+
 	self.isTransformDirty = true
 end
 
@@ -81,6 +94,11 @@ end
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalScale(value)
 	self.scale = value or self.scale
+	self._handle:setCurrentScale(
+		self.scale.x,
+		self.scale.y,
+		self.scale.z)
+
 	self.isTransformDirty = true
 end
 
@@ -100,12 +118,23 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale)
 	self.previousTranslation = translation or self.previousTranslation or false
 	self.previousRotation = rotation or self.previousRotation or false
 	self.previousScale = scale or self.previousScale or false
+
+	if self.previousTranslation then
+		self._handle:setPreviousTranslation(self.previousTranslation.x, self.previousTranslation.y, self.previousTranslation.z)
+	end
+
+	if self.previousRotation then
+		self._handle:setPreviousRotation(self.previousRotation.x, self.previousRotation.y, self.previousRotation.z, self.previousRotation.w)
+	end
+
+	if self.previousScale then
+		self._handle:setPreviousScale(self.previousScale.x, self.previousScale.y, self.previousScale.z)
+	end
 end
 
 -- Rotates the transform by the axis angle.
 function SceneNodeTransform:rotateByAxisAngle(axis, angle)
-	self.rotation = self.rotation * Quaternion.fromAxisAngle(axis, angle)
-	self.isTransformDirty = true
+	self:setLocalRotation(self.rotation * Quaternion.fromAxisAngle(axis, angle))
 end
 
 -- Translates the transform by direction * scale.
@@ -116,8 +145,7 @@ function SceneNodeTransform:translate(direction, scale)
 	scale = scale or 1
 	local offset = (direction or Vector.ZERO) * scale
 
-	self.translation = self.translation + offset
-	self.isTransformDirty = true
+	self:setLocalTranslation(self.translation + offset)
 end
 
 -- Scales the transform by value.
@@ -126,105 +154,53 @@ end
 function SceneNodeTransform:scale(value)
 	value = value or 1
 
-	self.scale = self.scale * value
-	self.isTransformDirty = true
+	self:setLocalScale(self.scale * value)
+end
+
+function SceneNodeTransform:updateTransform()
+	self.localTransform:setMatrix(self._handle:getLocalDeltaTransform(0.0))
+	self.globalTransform:setMatrix(self._handle:getGlobalDeltaTransform(0.0))
+	self.isTransformDirty = false
 end
 
 -- Gets a Love2D transform representing the local transform.
 function SceneNodeTransform:getLocalTransform()
 	if self.isTransformDirty then
-		self.localTransform:reset()
-		self.localTransform:translate(
-			self.translation.x,
-			self.translation.y,
-			self.translation.z)
-		self.localTransform:applyQuaternion(
-			self.rotation.x,
-			self.rotation.y,
-			self.rotation.z,
-			self.rotation.w)
-		self.localTransform:scale(
-			self.scale.x,
-			self.scale.y,
-			self.scale.z)
-
-		self.isTransformDirty = false
+		self:updateTransform()
 	end
 
 	return self.localTransform
 end
 
 function SceneNodeTransform:getLocalDeltaTransform(delta)
-	local previousScale = self.previousScale or self.scale
-	local previousTranslation = self.previousTranslation or self.translation
-	local previousRotation = self.previousRotation or self.rotation
-
-	local scale = previousScale:lerp(self.scale, delta)
-	local translation = previousTranslation:lerp(self.translation, delta)
-	local rotation = previousRotation:slerp(self.rotation, delta)
-
-	self.localDeltaTransform:reset()
-	do
-		self.localDeltaTransform:translate(
-			translation.x,
-			translation.y,
-			translation.z)
-		self.localDeltaTransform:scale(
-			scale.x,
-			scale.y,
-			scale.z)
-		self.localDeltaTransform:applyQuaternion(
-			rotation.x,
-			rotation.y,
-			rotation.z,
-			rotation.w)
-	end
-
+	self.localDeltaTransform:setMatrix(self._handle:getLocalDeltaTransform(delta))
 	return self.localDeltaTransform
 end
 
 -- Gets a Love2D transform representing the global transform.
 function SceneNodeTransform:getGlobalTransform()
-	local localTransform = self:getLocalTransform()
-
-	self.globalTransform:reset()
-	do
-		if self.parentTransform then
-			local parentGlobalTransform = self.parentTransform:getGlobalTransform()
-			self.globalTransform:apply(parentGlobalTransform)
-		end
-
-		self.globalTransform:apply(localTransform)
+	if self.isTransformDirty then
+		self:updateTransform()
 	end
+
 	return self.globalTransform
 end
 
 function SceneNodeTransform:getGlobalDeltaTransform(delta)
-	if self.globalDeltaTransformDirty then
-		local localDeltaTransform = self:getLocalDeltaTransform(delta)
-
-		self.globalDeltaTransform:reset()
-		do
-			if self.parentTransform then
-				local parentGlobalDeltaTransform = self.parentTransform:getGlobalDeltaTransform(delta)
-				self.globalDeltaTransform:apply(parentGlobalDeltaTransform)
-			end
-		end
-		self.globalDeltaTransform:apply(localDeltaTransform)
-		self.globalDeltaTransformDirty = false
-	end
-
-	return self.globalDeltaTransform 
+	self.globalDeltaTransform:setMatrix(self._handle:getGlobalDeltaTransform(delta))
+	return self.globalDeltaTransform
 end
 
 function SceneNodeTransform:tick()
+	self._handle:tick()
+
 	self.previousRotation = self.rotation
 	self.previousScale = self.scale
 	self.previousTranslation = self.translation
 end
 
 function SceneNodeTransform:frame(delta)
-	self.globalDeltaTransformDirty = true
+	-- Nothing.
 end
 
 return SceneNodeTransform

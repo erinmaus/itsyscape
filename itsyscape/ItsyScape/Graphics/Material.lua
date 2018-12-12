@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local NMaterial = require "nbunny.scenenodematerial"
 
 local Material, Metatable = Class()
 
@@ -16,7 +17,8 @@ local Material, Metatable = Class()
 -- If no shader is provided, the shader is set to a falsey value.
 --
 -- Nil values in textures are ignored.
-function Material:new(shader, ...)
+function Material:new(node, shader, ...)
+	self._handle = node._handle:getMaterial()
 	self.shader = shader or false
 	self:setTextures(...)
 	self.isTranslucent = false
@@ -33,11 +35,15 @@ end
 -- Does nothing if value is nil.
 function Material:setShader(value)
 	self.shader = value or self.shader
+	if self.shader then
+		self._handle:setShader(self.shader:getID())
+	end
 end
 
 -- Unsets the shader.
 function Material:unsetShader()
 	self.shader = false
+	self._handle:setShader(0)
 end
 
 -- Gets a boolean indicating if the Material is translucent.
@@ -78,10 +84,13 @@ end
 function Material:setTextures(...)
 	local t = { n = select('#', ...), ... }
 
-	self.textures = {}
+	self.textures = { n = {} }
 	for i = 1, t.n do
 		table.insert(self.textures, t[i])
+		table.insert(self.textures.n, t[i]:getID())
 	end
+
+	self._handle:setTextures(unpack(self.textures.n))
 end
 
 -- Sets the texture at the specified index.
@@ -97,48 +106,24 @@ function Material:setTexture(index, value)
 	index = math.min(#self.textures, index) + 1
 
 	self.textures[index] = value or self.textures[index]
+	self.textures.n[index] = self.textures[index]:getID()
+
+	self._handle:setTextures(unpack(self.textures.n))
 end
 
 -- Unsets a texture at the specified index.
 function Material:unsetTexture(index)
 	table.remove(self.textures, index or 1)
+	table.remove(self.textures.n, index or 1)
+
+	self._handle:setTextures(unpack(self.textures.n))
 end
 
 -- Compares Materials by resources.
 --
 -- Does not consider translucency.
 function Metatable.__lt(a, b)
-	local aShader = 0
-	local bShader = 0
-	if a.shader then
-		aShader = a.shader:getID()
-	end
-
-	if b.shader then
-		bShader = b.shader:getID()
-	end
-
-	if aShader < bShader then
-		return true
-	elseif aShader == bShader then
-		if #a.textures < #b.textures then
-			return true
-		elseif #a.textures > #b.textures then
-			return false
-		end
-
-		for i = 1, #a.textures do
-			local aTexture = a.textures[i]:getID()
-			local bTexture = b.textures[i]:getID()
-			if aTexture < bTexture then
-				return true
-			elseif aTexture > bTexture then
-				return false
-			end
-		end
-	end
-
-	return false
+	return a._handle < b._handle
 end
 
 return Material
