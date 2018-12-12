@@ -100,26 +100,33 @@ function DeferredRendererPass:getCBuffer()
 end
 
 function DeferredRendererPass:walk(node, delta)
+	local projection, view = self:getRenderer():getCamera():getTransforms()
+	local nodes = node:walkByMaterial(view, projection, delta)
+
+	for i = 1, #nodes do
+		local n = nodes[i]
+		local material = n:getMaterial()
+		if not material:getIsTranslucent() and
+		   not material:getIsFullLit() and
+		   not Class.isCompatibleType(n, LightSceneNode)
+		then
+			table.insert(self.nodes, nodes[i])
+		end
+	end
+end
+
+function DeferredRendererPass:walkLights(node, delta)
 	if node:isCompatibleType(LightSceneNode) then
 		if node:isCompatibleType(FogSceneNode) then
-			table.insert(self.fog, PendingNode(node, delta))
+			table.insert(self.fog, node)
 		else
-			table.insert(self.lights, PendingNode(node, delta))
-		end
-	else
-		local material = node:getMaterial()
-		if not material:getIsTranslucent() and not material:getIsFullLit() then
-			table.insert(self.nodes, PendingNode(node, delta))
+			table.insert(self.lights, node)
 		end
 	end
 
 	for child in node:iterate() do
-		self:walk(child, delta)
+		self:walkLights(child, delta)
 	end
-end
-
-function DeferredRendererPass:sortPendingNodes()
-	table.sort(self.nodes)
 end
 
 function DeferredRendererPass:beginDraw(scene, delta)
@@ -127,8 +134,8 @@ function DeferredRendererPass:beginDraw(scene, delta)
 	self.lights = {}
 	self.fog = {}
 
-	self:walk(scene, delta, viewProjection, worldViewProjection)
-	self:sortPendingNodes()
+	self:walk(scene, delta)
+	self:walkLights(scene, delta)
 end
 
 function DeferredRendererPass:endDraw(scene, delta)
@@ -149,16 +156,11 @@ function DeferredRendererPass:drawNodes(scene, delta)
 		error("no GBuffer")
 	end
 
-	local visible, invisible = 0, 0
-
-	local projection, view = camera:getTransforms()
-	local viewProjection = projection * view
-
 	local previousShader = nil
 	local currentShaderProgram
 	for i = 1, #self.nodes do
-		local node = self.nodes[i].node
-		local transform = self.nodes[i].transform
+		local node = self.nodes[i]
+		local transform = node:getTransform():getGlobalDeltaTransform(delta)
 
 		local material = node:getMaterial()
 		local shader = material:getShader() or self.defaultShader
@@ -293,7 +295,7 @@ function DeferredRendererPass:drawLights(scene, delta)
 		self:drawAmbientLight(self.fullLit, delta)
 	else
 		for i = 1, #self.lights do
-			local node = self.lights[i].node
+			local node = self.lights[i]
 			if node:isCompatibleType(DirectionalLightSceneNode) then
 				self:drawDirectionalLight(node, delta)
 			elseif node:isCompatibleType(AmbientLightSceneNode) then
@@ -335,7 +337,7 @@ function DeferredRendererPass:drawFog(scene, delta)
 	love.graphics.clear(0, 0, 0, 0, false, false)
 
 	for i = 1, #self.fog do
-		self:drawFogNode(self.fog[i].node, delta)
+		self:drawFogNode(self.fog[i], delta)
 	end
 
 	self.cBuffer:use()

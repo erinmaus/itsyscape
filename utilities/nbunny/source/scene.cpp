@@ -184,17 +184,17 @@ static glm::vec3 get_positive_vertex(
 
 	if (normal.x >= 0)
 	{
-		result.x = min.x;
+		result.x = max.x;
 	}
 
 	if (normal.y >= 0)
 	{
-		result.y = min.y;
+		result.y = max.y;
 	}
 
 	if (normal.z >= 0)
 	{
-		result.z = min.z;
+		result.z = max.z;
 	}
 
 	return result;
@@ -259,9 +259,9 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 	for (int i = 0; i < NUM_PLANES; ++i)
 	{
 		auto plane = planes[i];
-		auto normal = glm::vec3(plane.x, plane.y, plane.z);
+		auto normal = glm::vec3(plane);
 
-		auto vertex = get_positive_vertex(min, max, normal);
+		auto vertex = get_negative_vertex(min, max, normal);
 
 		float dot = glm::dot(vertex, normal) + plane.w;
 		if (dot < 0.0f)
@@ -275,8 +275,13 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 
 void nbunny::Camera::compute_planes() const
 {
-	auto viewProjection = view * projection;
-	auto m = glm::value_ptr(viewProjection);
+	if (!is_dirty)
+	{
+		return;
+	}
+
+	auto projectionView = projection * view;
+	auto m = glm::value_ptr(projectionView);
 
 #define M(i, j) m[(j - 1) * 4 + (i - 1)]
 	// left
@@ -327,6 +332,8 @@ void nbunny::Camera::compute_planes() const
 	float farLengthInverse = 1.0f / glm::length(glm::vec3(planes[5]));
 	planes[5] *= farLengthInverse;
 #undef M
+
+	is_dirty = false;
 }
 
 typedef std::shared_ptr<nbunny::SceneNode> SceneNodePointer;
@@ -439,7 +446,42 @@ static int nbunny_scene_node_set_max(lua_State* L)
 
 static int nbunny_scene_node_walk_by_material(lua_State* L)
 {
-	
+	auto& self = sol::stack::get<SceneNodePointer>(L, 1);
+	auto& camera = sol::stack::get<nbunny::Camera>(L, 2);
+	float delta = (float)luaL_checknumber(L, 3);
+
+	std::vector<SceneNodePointer> result;
+	nbunny::SceneNode::walk_by_material(self, camera, delta, result);
+
+	lua_createtable(L, (int)result.size(), 0);
+	for (std::size_t i = 0; i < result.size(); ++i)
+	{
+		lua_pushinteger(L, (int)i);
+		sol::stack::push(L, result[i]->reference);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+static int nbunny_scene_node_walk_by_position(lua_State* L)
+{
+	auto& self = sol::stack::get<SceneNodePointer>(L, 1);
+	auto& camera = sol::stack::get<nbunny::Camera>(L, 2);
+	float delta = (float)luaL_checknumber(L, 3);
+
+	std::vector<SceneNodePointer> result;
+	nbunny::SceneNode::walk_by_position(self, camera, delta, result);
+
+	lua_createtable(L, (int)result.size(), 0);
+	for (std::size_t i = 0; i < result.size(); ++i)
+	{
+		lua_pushinteger(L, (int)i);
+		sol::stack::push(L, result[i]->reference);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
 }
 
 extern "C"
@@ -455,7 +497,9 @@ NBUNNY_EXPORT int luaopen_nbunny_scenenode(lua_State* L)
 		"getMin", &nbunny_scene_node_get_min,
 		"setMin", &nbunny_scene_node_set_min,
 		"getMax", &nbunny_scene_node_get_max,
-		"setMax", &nbunny_scene_node_set_max);
+		"setMax", &nbunny_scene_node_set_max,
+		"walkByMaterial", &nbunny_scene_node_walk_by_material,
+		"walkByPosition", &nbunny_scene_node_walk_by_position);
 
 	sol::stack::push(L, T);
 
@@ -700,6 +744,53 @@ NBUNNY_EXPORT int luaopen_nbunny_scenenodematerial(lua_State* L)
 		"getTextures", &nbunny_scene_node_material_get_textures,
 		"setTextures", &nbunny_scene_node_material_set_textures,
 		"getMaterial", &nbunny_scene_node_material_set_textures);
+
+	sol::stack::push(L, T);
+
+	return 1;
+}
+
+static int nbunny_camera_set_view(lua_State* L)
+{
+	auto& camera = sol::stack::get<nbunny::Camera&>(L, 1);
+
+	auto m = glm::value_ptr(camera.view);
+	for (int i = 0; i < 16; ++i)
+	{
+		m[i] = (float)luaL_checknumber(L, i + 2);
+	}
+
+	camera.view = glm::transpose(camera.view);
+
+	camera.is_dirty = true;
+
+	return 0;
+}
+
+static int nbunny_camera_set_projection(lua_State* L)
+{
+	auto& camera = sol::stack::get<nbunny::Camera&>(L, 1);
+
+	auto m = glm::value_ptr(camera.projection);
+	for (int i = 0; i < 16; ++i)
+	{
+		m[i] = (float)luaL_checknumber(L, i + 2);
+	}
+
+	camera.projection = glm::transpose(camera.projection);
+
+	camera.is_dirty = true;
+
+	return 0;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_camera(lua_State* L)
+{
+	sol::usertype<nbunny::Camera> T(
+		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
+		"setView", &nbunny_camera_set_view,
+		"setProjection", &nbunny_camera_set_projection);
 
 	sol::stack::push(L, T);
 
