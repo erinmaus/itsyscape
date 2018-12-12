@@ -17,12 +17,18 @@ local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local BaseNymph = Class(Player)
 
 function BaseNymph:new(resource, name, ...)
 	Player.new(self, resource, name or 'Nymph', ...)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.stoppingForce = 0.5
+	movement.maxSpeed = 12
+	movement.maxAcceleration = 12
 
 	self:addBehavior(ActiveSpellBehavior)
 	self:addBehavior(StanceBehavior)

@@ -16,7 +16,7 @@ local Longbow = Class(RangedWeapon)
 Longbow.AMMO = Equipment.AMMO_ARROW
 
 function Longbow:getAttackRange()
-	return 11
+	return 12
 end
 
 function Longbow:getWeaponType()

@@ -60,12 +60,12 @@ function One:new(...)
 	size.size = Vector(1.5, 2, 1.5)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 16
-	movement.maxAcceleration = 16
-	movement.decay = 0.6
-	movement.velocityMultiplier = 1
-	movement.accelerationMultiplier = 1
-	movement.stoppingForce = 0.1
+	movement.maxSpeed = 18
+	movement.maxAcceleration = 18
+	movement.decay = 0.7
+	movement.velocityMultiplier = 1.05
+	movement.accelerationMultiplier = 1.05
+	movement.stoppingForce = 0.2
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
