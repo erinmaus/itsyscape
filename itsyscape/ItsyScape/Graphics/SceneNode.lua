@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
+local NSceneNode = require "nbunny.scenenode"
 
 -- Represents the base scene node.
 --
@@ -18,8 +19,9 @@ local Material = require "ItsyScape.Graphics.Material"
 local SceneNode = Class()
 
 function SceneNode:new()
-	self.transform = SceneNodeTransform()
-	self.material = Material()
+	self._handle = NSceneNode(self)
+	self.transform = SceneNodeTransform(self)
+	self.material = Material(self)
 	self.parent = false
 	self.children = {}
 	self.min, self.max = Vector(), Vector()
@@ -32,6 +34,9 @@ end
 function SceneNode:setBounds(min, max)
 	self.min = min or self.min
 	self.max = max or self.max
+
+	self._handle:setMin(self.min.x, self.min.y, self.min.z)
+	self._handle:setMax(self.max.x, self.max.y, self.max.z)
 end
 
 function SceneNode:setParent(parent)
@@ -40,14 +45,14 @@ function SceneNode:setParent(parent)
 	end
 
 	if not parent then
-		self.transform:setParentTransform(false)
-
+		self._handle:setParent(nil)
 		self.parent = false
 	else
+		self._handle:setParent(parent._handle)
 		self.parent = parent
-		self.transform:setParentTransform(parent:getTransform())
 		self.parent.children[self] = true
 	end
+
 end
 
 function SceneNode:getParent()
