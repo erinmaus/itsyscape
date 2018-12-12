@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
 local NSceneNode = require "nbunny.scenenode"
+local NCamera = require "nbunny.camera"
 
 -- Represents the base scene node.
 --
@@ -100,6 +101,22 @@ function SceneNode:draw(renderer, delta)
 	-- Nothing.
 	--
 	-- The Renderer is responsible for drawing children, not us.
+end
+
+function SceneNode:walkByMaterial(view, projection, delta)
+	local camera = NCamera()
+	camera:setView(view:getMatrix())
+	camera:setProjection(projection:getMatrix())
+
+	return self._handle:walkByMaterial(camera, delta)
+end
+
+function SceneNode:walkByPosition(view, projection, delta)
+	local camera = NCamera()
+	camera:setView(view:getMatrix())
+	camera:setProjection(projection:getMatrix())
+
+	return self._handle:walkByPosition(camera, delta)
 end
 
 return SceneNode
