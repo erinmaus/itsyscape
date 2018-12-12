@@ -25,7 +25,7 @@ function PokeMenu:new(view, actions)
 		inactive = Color(0, 0, 0, 0),
 		pressed = Color(29 / 255, 25 / 255, 19 / 255, 1),
 		hover = Color(147 / 255, 124 / 255, 94 / 255, 1),
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Semibold.ttf",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 16,
 		textX = 0.0,
 		textY = 0.5,
