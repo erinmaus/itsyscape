@@ -39,7 +39,7 @@ glm::mat4 nbunny::SceneNodeTransform::get_local(float delta)
 	auto s = glm::scale(glm::mat4(1), scale);
 	auto t = glm::translate(glm::mat4(1), translation);
 
-	auto result = t * r * s;
+	auto result = t * s * r;
 	return result;
 }
 
@@ -51,7 +51,7 @@ glm::mat4 nbunny::SceneNodeTransform::get_global(float delta)
 	{
 		auto parentTransform = parent->get_global(delta);
 
-		return localTransform * parentTransform;
+		return parentTransform * localTransform;
 	}
 
 	return localTransform;
