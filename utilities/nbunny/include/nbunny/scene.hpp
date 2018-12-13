@@ -79,6 +79,8 @@ namespace nbunny
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 
+		bool enable_cull = true;
+
 		static const int NUM_PLANES = 6;
 		mutable glm::vec4 planes[NUM_PLANES];
 

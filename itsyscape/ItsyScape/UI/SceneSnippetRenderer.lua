@@ -25,6 +25,7 @@ function SceneSnippetRenderer:add(widget)
 
 	self.renderers[widget] = Renderer()
 	self.renderers[widget]:setClearColor(Color(0, 0, 0, 0))
+	self.renderers[widget]:setCullEnabled(false)
 end
 
 function SceneSnippetRenderer:drop(widget)

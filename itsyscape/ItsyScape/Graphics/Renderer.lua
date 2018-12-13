@@ -25,6 +25,20 @@ function Renderer:new()
 	self.height = 0
 
 	self.clearColor = Color(0.39, 0.58, 0.93, 1)
+
+	self.cull = true
+end
+
+function Renderer:getCullEnabled()
+	return self.cull
+end
+
+function Renderer:setCullEnabled(value)
+	if value then
+		self.cull = true
+	else
+		self.cull = false
+	end
 end
 
 function Renderer:getClearColor()

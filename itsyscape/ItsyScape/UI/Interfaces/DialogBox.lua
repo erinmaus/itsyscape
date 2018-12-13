@@ -205,17 +205,23 @@ function DialogBox:update(...)
 	local transform = root:getTransform():getGlobalTransform()
 
 	local offset
+	local zoom
 	if self.actor then
 		local min, max = self.actor:getBounds()
 		offset = (max.y - min.y) - 0.75
+		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z)
 
 		-- Flip if facing left.
 		if self.actor:getDirection().x < 0 then
 			self.camera:setVerticalRotation(
 				self.camera:getVerticalRotation() + math.pi)
 		end
+
+		self.camera:setNear(0.01)
+		self.camera:setFar(zoom * 2)
 	else
 		offset = 0
+		zoom = 1
 	end
 
 	local x, y, z = transform:transformPoint(0, offset, 0)
@@ -224,6 +230,7 @@ function DialogBox:update(...)
 	self.camera:setWidth(w)
 	self.camera:setHeight(h)
 	self.camera:setPosition(Vector(x, y, z))
+	self.camera:setDistance(zoom)
 end
 
 return DialogBox

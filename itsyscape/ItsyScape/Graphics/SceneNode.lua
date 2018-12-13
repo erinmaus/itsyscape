@@ -27,6 +27,15 @@ function SceneNode:new()
 	self.children = {}
 	self.min, self.max = Vector(), Vector()
 	self.boundsDirty = true
+	self.willRender = false
+end
+
+function SceneNode:onWillRender(func)
+	if func then
+		self.willRender = func
+	else
+		self.willRender = false
+	end
 end
 
 function SceneNode:getBounds()
@@ -174,6 +183,10 @@ end
 function SceneNode:beforeDraw(renderer, delta)
 	love.graphics.push()
 	love.graphics.applyTransform(self.transform:getGlobalDeltaTransform(delta))
+
+	if self.willRender then
+		self.willRender()
+	end
 end
 
 function SceneNode:afterDraw(renderer, delta)
@@ -186,18 +199,28 @@ function SceneNode:draw(renderer, delta)
 	-- The Renderer is responsible for drawing children, not us.
 end
 
-function SceneNode:walkByMaterial(view, projection, delta)
+function SceneNode:walkByMaterial(view, projection, delta, enableCull)
 	local camera = NCamera()
 	camera:setView(view:getMatrix())
 	camera:setProjection(projection:getMatrix())
+	if enableCull or enableCull == nil then
+		camera:enableCull()
+	else
+		camera:disableCull()
+	end
 
 	return self._handle:walkByMaterial(camera, delta)
 end
 
-function SceneNode:walkByPosition(view, projection, delta)
+function SceneNode:walkByPosition(view, projection, delta, enableCull)
 	local camera = NCamera()
 	camera:setView(view:getMatrix())
 	camera:setProjection(projection:getMatrix())
+	if enableCull or enableCull == nil then
+		camera:enableCull()
+	else
+		camera:disableCull()
+	end
 
 	return self._handle:walkByPosition(camera, delta)
 end
