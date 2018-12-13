@@ -3,4 +3,6 @@ workspace/
 tools/
 design/
 media/
+itsyscape-android/
 *.trace
+*.log
