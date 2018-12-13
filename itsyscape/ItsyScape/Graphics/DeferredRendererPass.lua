@@ -187,6 +187,21 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	end
 end
 
+function DeferredRendererPass:debugDrawNodes(scene, delta)
+	love.graphics.setShader()
+	love.graphics.setColor(1, 0, 0, 1)
+
+	local camera = self:getRenderer():getCamera()
+	camera:apply()
+
+	for i = 1, #self.nodes do
+		local node = self.nodes[i]
+		node:_debugDrawBounds(self.renderer, delta)
+	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
 function DeferredRendererPass:getLightShader(type)
 	local shader = LightShaderResourceCache[type]
 	if not shader then
@@ -379,6 +394,19 @@ function DeferredRendererPass:draw(scene, delta)
 	self:drawNodes(scene, delta)
 	self:drawLights(scene, delta)
 	self:drawFog(scene, delta)
+
+	if _DEBUG and love.keyboard.isDown('f3') then
+		local DebugFrustumSceneNode = require "ItsyScape.Graphics.DebugFrustumSceneNode"
+		self._frustum = DebugFrustumSceneNode()
+		self._frustum:fromCamera(self:getRenderer():getCamera())
+	end
+
+	if _DEBUG and love.keyboard.isDown('f2') then
+		self:debugDrawNodes(scene, delta)
+		if self._frustum then
+			self._frustum:draw(self:getRenderer(), delta)
+		end
+	end
 end
 
 return DeferredRendererPass

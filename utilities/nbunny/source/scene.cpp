@@ -246,7 +246,7 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 	};
 
 	min = glm::vec3(std::numeric_limits<float>::infinity());
-	max = glm::vec3(std::numeric_limits<float>::infinity());
+	max = glm::vec3(-std::numeric_limits<float>::infinity());
 	for (int i = 0; i < NUM_CORNERS; ++i)
 	{
 		auto p = glm::vec3(transform * glm::vec4(corners[i], 1.0f));

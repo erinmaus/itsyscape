@@ -26,10 +26,92 @@ function SceneNode:new()
 	self.parent = false
 	self.children = {}
 	self.min, self.max = Vector(), Vector()
+	self.boundsDirty = true
 end
 
 function SceneNode:getBounds()
 	return self.min, self.max
+end
+
+function SceneNode:_debugDrawBounds(renderer, delta)
+	love.graphics.setMeshCullMode('back')
+	love.graphics.setDepthMode('lequal', true)
+
+	love.graphics.setShader()
+	love.graphics.setLineWidth(2)
+	love.graphics.setWireframe(true)
+
+	if self.boundsDirty then
+		if self._boundsMesh then
+			self._boundsMesh:release()
+		end
+
+		local min, max = self.min, self.max
+		local vertices = {
+			-- Front
+			{ min.x, min.y, max.z },
+			{ max.x, min.y, max.z },
+			{ max.x, max.y, max.z },
+			{ min.x, min.y, max.z },
+			{ max.x, max.y, max.z },
+			{ min.x, max.y, max.z },
+
+			-- Back.
+			{ max.x, min.y, min.z },
+			{ min.x, min.y, min.z },
+			{ max.x, max.y, min.z },
+			{ max.x, max.y, min.z },
+			{ min.x, min.y, min.z },
+			{ min.x, max.y, min.z },
+
+			-- Left.
+			{ min.x, min.y, min.z },
+			{ min.x, min.y, max.z },
+			{ min.x, max.y, max.z },
+			{ min.x, max.y, min.z },
+			{ min.x, min.y, min.z },
+			{ min.x, max.y, max.z },
+
+			-- Right.
+			{ max.x, max.y, max.z },
+			{ max.x, min.y, max.z },
+			{ max.x, min.y, min.z },
+			{ max.x, max.y, max.z },
+			{ max.x, min.y, min.z },
+			{ max.x, max.y, min.z },
+
+			-- Top
+			{ max.x, max.y, min.z },
+			{ min.x, max.y, min.z },
+			{ max.x, max.y, max.z },
+			{ min.x, max.y, min.z },
+			{ min.x, max.y, max.z },
+			{ max.x, max.y, max.z },
+
+			-- Bottom.
+			{ min.x, min.y, min.z },
+			{ max.x, min.y, min.z },
+			{ max.x, min.y, max.z },
+			{ max.x, min.y, max.z },
+			{ min.x, min.y, max.z },
+			{ min.x, min.y, min.z },
+		}
+
+		self._boundsMesh = love.graphics.newMesh({
+				{ "VertexPosition", 'float', 3 }
+			}, vertices, 'triangles', 'static')
+		self._boundsMesh:setAttributeEnabled("VertexPosition", true)
+
+		self.boundsDirty = false
+	end
+
+	love.graphics.push()
+	love.graphics.applyTransform(self:getTransform():getGlobalDeltaTransform(delta))
+	love.graphics.draw(self._boundsMesh)
+	love.graphics.pop()
+
+	love.graphics.setLineWidth(1)
+	love.graphics.setWireframe(false)
 end
 
 function SceneNode:setBounds(min, max)
@@ -38,6 +120,7 @@ function SceneNode:setBounds(min, max)
 
 	self._handle:setMin(self.min.x, self.min.y, self.min.z)
 	self._handle:setMax(self.max.x, self.max.y, self.max.z)
+	self.boundsDirty = true
 end
 
 function SceneNode:setParent(parent)
