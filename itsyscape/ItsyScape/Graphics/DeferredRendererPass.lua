@@ -45,29 +45,6 @@ void performTransform(
 }
 ]]
 
-local PendingNode, PendingNodeMetatable = Class()
-
-function PendingNode:new(node, delta)
-	self.node = node
-
-	self.transform = node:getTransform():getGlobalDeltaTransform(delta)
-	local wx, wy, wz = self.transform:transformPoint(0, 0, 0)
-	self.worldPosition = Vector(wx, wy, wz) 
-
-	local sx, sy, sz = love.graphics.project(wx, wy, wz)
-	self.screenPosition = Vector(sx, sy, sz)
-end
-
-function PendingNodeMetatable.__lt(a, b)
-	if a.node:getMaterial() < b.node:getMaterial() then
-		return true
-	elseif a.node:getMaterial() > b.node:getMaterial() then
-		return false
-	else
-		return a.screenPosition.z < b.screenPosition.z
-	end
-end
-
 function DeferredRendererPass:new(renderer)
 	RendererPass.new(self, renderer)
 
@@ -110,7 +87,7 @@ function DeferredRendererPass:walk(node, delta)
 		   not material:getIsFullLit() and
 		   not Class.isCompatibleType(n, LightSceneNode)
 		then
-			table.insert(self.nodes, nodes[i])
+			table.insert(self.nodes, n)
 		end
 	end
 end

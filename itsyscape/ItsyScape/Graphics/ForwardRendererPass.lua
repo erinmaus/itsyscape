@@ -19,29 +19,6 @@ local ForwardRendererPass = Class(RendererPass)
 -- Maximum number of lights that can be rendered at once.
 ForwardRendererPass.MAX_LIGHTS = 16
 
-local PendingNode, PendingNodeMetatable = Class()
-
-function PendingNode:new(node, delta)
-	self.node = node
-
-	local transform = node:getTransform():getGlobalDeltaTransform(delta)
-	local wx, wy, wz = transform:transformPoint(0, 0, 0)
-	self.worldPosition = Vector(wx, wy, wz)
-
-	local sx, sy, sz = love.graphics.project(wx, wy, wz)
-	self.screenPosition = Vector(sx, sy, sz)
-end
-
-function PendingNodeMetatable.__lt(a, b)
-	if a.screenPosition.z < b.screenPosition.z then
-		return true
-	elseif a.screenPosition.z > b.screenPosition.z then
-		return false
-	else
-		return a.node:getMaterial() < b.node:getMaterial()
-	end
-end
-
 function ForwardRendererPass:new(renderer)
 	RendererPass.new(self, renderer)
 
@@ -64,32 +41,37 @@ function ForwardRendererPass:setLBuffer(value)
 end
 
 function ForwardRendererPass:walk(node, delta)
+	local projection, view = self:getRenderer():getCamera():getTransforms()
+	local nodes = node:walkByPosition(view, projection, delta)
+
+	for i = 1, #nodes do
+		local n = nodes[i]
+		local material = n:getMaterial()
+
+		if (material:getIsTranslucent() or material:getIsFullLit()) and
+		   not Class.isCompatibleType(n, LightSceneNode)
+		then
+			table.insert(self.nodes, n)
+		end
+	end
+end
+
+function ForwardRendererPass:walkLights(node, delta)
 	local nodeType = node:getType()
 	if self.lightTypes[nodeType] or
 	   not self.nodeTypes[nodeType] and node:isCompatibleType(LightSceneNode)
 	then
 		self.lightTypes[nodeType] = true
 		if node:getIsGlobal() then
-			table.insert(self.globalLights, PendingNode(node, delta))
+			table.insert(self.globalLights, node)
 		else
-			table.insert(self.lights, PendingNode(node, delta))
-		end
-	else
-		self.nodeTypes[nodeType] = true
-		local material = node:getMaterial()
-		if material:getIsTranslucent() or material:getIsFullLit() then
-			table.insert(self.nodes, PendingNode(node, delta))
+			table.insert(self.lights, node)
 		end
 	end
 
 	for child in node:iterate() do
-		self:walk(child, delta)
+		self:walkLights(child, delta)
 	end
-end
-
-function ForwardRendererPass:sortPendingNodes()
-	table.sort(self.nodes)
-	table.sort(self.lights)
 end
 
 function ForwardRendererPass:beginDraw(scene, delta)
@@ -98,7 +80,7 @@ function ForwardRendererPass:beginDraw(scene, delta)
 	self.globalLights = {}
 
 	self:walk(scene, delta)
-	self:sortPendingNodes()
+	self:walkLights(scene, delta)
 end
 
 function ForwardRendererPass:endDraw(scene, delta)
@@ -128,7 +110,7 @@ function ForwardRendererPass:drawNodes(scene, delta)
 	local viewProjection = projection * view
 
 	for i = 1, #self.nodes do
-		local node = self.nodes[i].node
+		local node = self.nodes[i]
 
 		local material = node:getMaterial()
 		local shader = material:getShader()
@@ -160,22 +142,12 @@ function ForwardRendererPass:drawNodes(scene, delta)
 			end
 
 			local d = node:getTransform():getGlobalDeltaTransform(delta)
-			local min, max = node:getBounds()
-			min, max = Vector.transformBounds(min, max, d)
+			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
+				currentShaderProgram:send("scape_WorldMatrix", d)
+			end
 
-			--- XXX fix culling
-			if viewProjection:boxInsideFrustum(min.x, min.y, min.z, max.x, max.y, max.z) or true then
-				if currentShaderProgram:hasUniform("scape_WorldMatrix") then
-					currentShaderProgram:send("scape_WorldMatrix", d)
-
-					if currentShaderProgram:hasUniform("scape_NormalMatrix") then
-						currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
-					end
-				end
-
-				if currentShaderProgram:hasUniform("scape_NormalMatrix") then
-					currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
-				end
+			if currentShaderProgram:hasUniform("scape_NormalMatrix") then
+				currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
 			end
 
 			node:beforeDraw(self:getRenderer(), delta)
