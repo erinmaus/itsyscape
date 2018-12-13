@@ -78,7 +78,7 @@ end
 
 function DeferredRendererPass:walk(node, delta)
 	local projection, view = self:getRenderer():getCamera():getTransforms()
-	local nodes = node:walkByMaterial(view, projection, delta)
+	local nodes = node:walkByMaterial(view, projection, delta, self:getRenderer():getCullEnabled())
 
 	for i = 1, #nodes do
 		local n = nodes[i]

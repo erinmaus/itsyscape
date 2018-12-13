@@ -96,7 +96,7 @@ void nbunny::SceneNode::walk_by_material(
 	float delta,
 	std::vector<std::shared_ptr<SceneNode>>& result)
 {
-	if (camera.inside(*node.get(), delta))
+	if (!camera.enable_cull || camera.inside(*node.get(), delta))
 	{
 		result.push_back(node);
 	}
@@ -125,7 +125,7 @@ void nbunny::SceneNode::walk_by_position(
 	float delta,
 	std::vector<std::shared_ptr<SceneNode>>& result)
 {
-	if (camera.inside(*node.get(), delta))
+	if (!camera.enable_cull || camera.inside(*node.get(), delta))
 	{
 		result.push_back(node);
 	}
@@ -784,11 +784,38 @@ static int nbunny_camera_set_projection(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_enable_cull(lua_State* L)
+{
+	auto& camera = sol::stack::get<nbunny::Camera&>(L, 1);
+	camera.enable_cull = true;
+
+	return 0;
+}
+
+static int nbunny_camera_disable_cull(lua_State* L)
+{
+	auto& camera = sol::stack::get<nbunny::Camera&>(L, 1);
+	camera.enable_cull = false;
+
+	return 0;
+}
+
+static int nbunny_camera_get_cull_enabled(lua_State* L)
+{
+	auto& camera = sol::stack::get<nbunny::Camera&>(L, 1);
+	lua_pushboolean(L, camera.enable_cull);
+
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_camera(lua_State* L)
 {
 	sol::usertype<nbunny::Camera> T(
 		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
+		"enableCull", &nbunny_camera_enable_cull,
+		"disableCull", &nbunny_camera_disable_cull,
+		"getCullEnabled", &nbunny_camera_get_cull_enabled,
 		"setView", &nbunny_camera_set_view,
 		"setProjection", &nbunny_camera_set_projection);
 

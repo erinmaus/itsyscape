@@ -93,6 +93,16 @@ function TreeView:load()
 				self.node:getMaterial():setTextures(self.texture)
 				self.node:setParent(root)
 
+				self.node:onWillRender(function()
+					local animation = self:getCurrentAnimation()
+					if self.currentAnimation ~= TreeView.ANIMATION_IDLE or
+					   self.time <= animation:getDuration()
+					then
+						animation:computeTransforms(self.time, self.transforms)
+						self.node:setTransforms(self.transforms)
+					end
+				end)
+
 				self.animations[TreeView.ANIMATION_IDLE]:computeTransforms(0, self.transforms)
 				self.node:setTransforms(self.transforms)
 
@@ -181,11 +191,6 @@ function TreeView:update(delta)
 		if self.currentAnimation == TreeView.ANIMATION_CHOPPED and self.time >= animation:getDuration() then
 			self.time = 0
 			self.currentAnimation = TreeView.ANIMATION_IDLE
-		end
-
-		if self.currentAnimation ~= TreeView.ANIMATION_IDLE or self.time <= animation:getDuration() then
-			animation:computeTransforms(self.time, self.transforms)
-			self.node:setTransforms(self.transforms)
 		end
 	end
 end
