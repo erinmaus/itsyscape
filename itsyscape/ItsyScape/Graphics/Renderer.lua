@@ -11,16 +11,23 @@ local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
+local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
 
-function Renderer:new()
+function Renderer:new(isMobile)
 	self.cachedShaders = {}
 	self.currentShader = false
 
-	self.finalDeferredPass = DeferredRendererPass(self)
-	self.finalForwardPass = ForwardRendererPass(self)
+	self.isMobile = isMobile or false
+	if self.isMobile then
+		self.mobilePass = MobileRendererPass(self)
+	else
+		self.finalDeferredPass = DeferredRendererPass(self)
+		self.finalForwardPass = ForwardRendererPass(self)
+	end
+
 	self.width = 0
 	self.height = 0
 
@@ -62,16 +69,22 @@ function Renderer:clean()
 end
 
 function Renderer:drawFinalStep(scene, delta)
-	self.finalDeferredPass:beginDraw(scene, delta)
-	self.finalDeferredPass:draw(scene, delta)
-	self.finalDeferredPass:endDraw(scene, delta)
+	if self.isMobile then
+		self.mobilePass:beginDraw(scene, delta)
+		self.mobilePass:draw(scene, delta)
+		self.mobilePass:endDraw(scene, delta)
+	else
+		self.finalDeferredPass:beginDraw(scene, delta)
+		self.finalDeferredPass:draw(scene, delta)
+		self.finalDeferredPass:endDraw(scene, delta)
 
-	local cBuffer = self.finalDeferredPass:getCBuffer()
+		local cBuffer = self.finalDeferredPass:getCBuffer()
 
-	cBuffer:use()
-	self.finalForwardPass:beginDraw(scene, delta)
-	self.finalForwardPass:draw(scene, delta)
-	self.finalForwardPass:endDraw(scene, delta)
+		cBuffer:use()
+		self.finalForwardPass:beginDraw(scene, delta)
+		self.finalForwardPass:draw(scene, delta)
+		self.finalForwardPass:endDraw(scene, delta)
+	end
 end
 
 function Renderer:draw(scene, delta, width, height)
@@ -85,8 +98,12 @@ function Renderer:draw(scene, delta, width, height)
 		self.width = width
 		self.height = height
 
-		self.finalDeferredPass:resize(width, height)
-		self.finalForwardPass:resize(width, height)
+		if self.isMobile then
+			self.mobilePass:resize(width, height)
+		else
+			self.finalDeferredPass:resize(width, height)
+			self.finalForwardPass:resize(width, height)
+		end
 	end
 
 	self:drawFinalStep(scene, delta)
@@ -94,25 +111,33 @@ function Renderer:draw(scene, delta, width, height)
 	self:setCurrentShader(false)
 end
 
+function Renderer:getOutputBuffer()
+	if self.isMobile then
+		return self.mobilePass:getMBuffer()
+	else
+		return self.finalDeferredPass:getCBuffer()
+	end
+end
+
 function Renderer:present()
-	local cBuffer = self.finalDeferredPass:getCBuffer()
+	local buffer = self:getOutputBuffer()
 
 	love.graphics.setShader()
 	love.graphics.setCanvas()
 	love.graphics.origin()
 	love.graphics.setBlendMode('replace')
 	love.graphics.setDepthMode('always', false)
-	love.graphics.draw(cBuffer:getColor())
+	love.graphics.draw(buffer:getColor())
 end
 
 function Renderer:presentCurrent()
-	local cBuffer = self.finalDeferredPass:getCBuffer()
+	local buffer = self:getOutputBuffer()
 
 	love.graphics.setShader()
 	love.graphics.setCanvas()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.setDepthMode('always', false)
-	love.graphics.draw(cBuffer:getColor())
+	love.graphics.draw(buffer:getColor())
 end
 
 function Renderer:setCurrentShader(shader)
