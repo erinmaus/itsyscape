@@ -37,6 +37,7 @@ local SKINS = {
 		{ name = "Grey", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Grey.lua" },
 		{ name = "Red", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Red.lua" },
 		{ name = "Green", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Green.lua" },
+		{ name = "Brown", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Brown.lua" },
 		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/WhiteEyes_Green.lua" }
 	},
 
@@ -47,7 +48,7 @@ local SKINS = {
 		{ name = "Medium", t = MODEL_SKIN, filename = "PlayerKit1/Head/Medium.lua" },
 		{ name = "Dark", t = MODEL_SKIN, filename = "PlayerKit1/Head/Dark.lua" },
 		{ name = "Fig", t = MODEL_SKIN, filename = "PlayerKit1/Head/Minifig.lua" },
-		{ name = "Dead", t = MODEL_SKIN, filename = "PlayerKit1/Head/Zombi.lua" }
+		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Head/Zombi.lua" }
 	},
 
 	body = {
@@ -57,22 +58,30 @@ local SKINS = {
 		{ name = "Green", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Green.lua" },
 		{ name = "Blue", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Blue.lua" },
 		{ name = "Yellow", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Yellow.lua" },
+		{ name = "White", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/White.lua" },
+		{ name = "Pale brown", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PaleBrown.lua" },
 		{ name = "Red dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/RedDress.lua" },
 		{ name = "Green dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/GreenDress.lua" },
 		{ name = "Blue dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BlueDress.lua" },
 		{ name = "Yellow dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/YellowDress.lua" },
 		{ name = "Brown cross stitch", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BrownCrossStitch.lua" },
 		{ name = "Grey suit", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BankerSuit.lua" },
-		{ name = "Pale brown", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PaleBrown.lua" },
 	},
 
 	hands = {
 		slot = Equipment.PLAYER_SLOT_HANDS,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		{ name = "Black gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/BlackGloves.lua" },
+		{ name = "Red gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/RedGloves.lua" },
+		{ name = "Green gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/GreenGloves.lua" },
+		{ name = "Blue gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/BlueGloves.lua" },
 		{ name = "Gold gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/GoldGloves.lua" },
+		{ name = "Black gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/BlackGloves.lua" },
 		{ name = "Pink rose gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/PinkRoseGloves.lua" },
-		{ name = "Zombi hands", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Zombi.lua" }
+		{ name = "Light", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Light.lua" },
+		{ name = "Medium", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Medium.lua" },
+		{ name = "Dark", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Dark.lua" },
+		{ name = "Fig", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Minifig.lua" },
+		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Zombi.lua" }
 	},
 
 	feet = {
@@ -80,7 +89,9 @@ local SKINS = {
 		priority = Equipment.SKIN_PRIORITY_BASE,
 		{ name = "Rugged boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots1.lua" },
 		{ name = "Worn boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots2.lua" },
-		{ name = "Fancy shoes", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/FancyShoes1.lua" }
+		{ name = "Fancy shoes", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/FancyShoes1.lua" },
+		{ name = "Sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3.lua" },
+		{ name = "Red sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3_Red.lua" }
 	}
 }
 

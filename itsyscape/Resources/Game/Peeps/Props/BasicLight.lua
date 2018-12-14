@@ -45,7 +45,8 @@ function BasicLight:ready(director, game)
 
 			self.color = Color(red, green, blue)
 
-			self.global = not light:get("Local")
+			local isLocal = light:get("Local")
+			self.global = not isLocal or isLocal == 0
 		end
 	end
 end
