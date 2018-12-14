@@ -8,6 +8,8 @@ do
 			sourceDirectory,
 			sourceDirectory,
 			cpath)
+
+		_DEBUG = true
 	else
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
@@ -64,6 +66,7 @@ end
 
 Log = require "ItsyScape.Common.Log"
 _APP = false
+_ARGS = {}
 
 math.randomseed(os.time())
 
@@ -78,6 +81,13 @@ function love.load(args)
 		if args[i] == "/debug" or args[i] == "--debug" then
 			_DEBUG = true
 		end
+
+		local c = args[i]:match("/f:(%w+)") or args[i]:match("--f:(%w+)")
+		if c then
+			_ARGS[c] = true
+		end
+
+		table.insert(_ARGS, c)
 	end
 
 	if not main then

@@ -99,7 +99,7 @@ function GameView:new(game)
 
 	self.decorations = {}
 
-	self.renderer = Renderer()
+	self.renderer = Renderer(love.system.getOS() == "Android" or _ARGS["mobile"])
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self.resourceManager)
 
