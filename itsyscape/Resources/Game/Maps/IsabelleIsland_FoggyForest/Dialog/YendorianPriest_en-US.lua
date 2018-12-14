@@ -59,7 +59,7 @@ do
 				}
 
 				message {
-					"But He has not been since His most holy island was defiled.",
+					"But He has not been seen since His most holy island was defiled.",
 					"I await His return. Praise upon Yendor!"
 				}
 			end
