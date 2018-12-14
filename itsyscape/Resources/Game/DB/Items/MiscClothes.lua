@@ -20,7 +20,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Keeps your clothes clean when crafting",
+	Value = "Keeps your clothes clean when crafting.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "BrownApron"
 }
@@ -40,4 +40,39 @@ ItsyScape.Meta.EquipmentModel {
 	Type = "ItsyScape.Game.Skin.ModelSkin",
 	Filename = "Resources/Game/Skins/BrownApron/BrownApron.lua",
 	Resource = ItsyScape.Resource.Item "BrownApron"
+}
+
+ItsyScape.Resource.Item "SailorsHat" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sailor's hat",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SailorsHat"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "How do you know if someone's a sailor? They'll tell you.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SailorsHat"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(20),
+	Weight = -1,
+	Resource = ItsyScape.Resource.Item "SailorsHat"
+}
+
+ItsyScape.Meta.Equipment {
+	Prayer = 4,
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "SailorsHat"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/SailorsHat/SailorsHat.lua",
+	Resource = ItsyScape.Resource.Item "SailorsHat"
 }
