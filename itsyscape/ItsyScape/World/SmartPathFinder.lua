@@ -221,7 +221,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
-	if i > 1 and j > 1 and isTopPassable and isRightPassable then
+	if i > 1 and j > 1 and isTopPassable and isLeftPassable then
 		local topLeft = self.map:getTile(i - 1, j - 1)
 		if topLeft.bottomRight <= tile.topLeft and
 		   not topLeft:hasFlag('impassable')
@@ -230,7 +230,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
-	if i > 1 and j < self.map:getHeight() and isBottomPassable and isRightPassable then
+	if i > 1 and j < self.map:getHeight() and isBottomPassable and isLeftPassable then
 		local bottomLeft = self.map:getTile(i - 1, j + 1)
 		if bottomLeft.topRight <= tile.bottomLeft and
 		   not bottomLeft:hasFlag('impassable')
@@ -239,7 +239,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
-	if i < self.map:getWidth() and j > 1 and isTopPassable and isLeftPassable then
+	if i < self.map:getWidth() and j > 1 and isTopPassable and isRightPassable then
 		local topRight = self.map:getTile(i + 1, j - 1)
 		if topRight.bottomLeft <= tile.topRight and
 		   not topRight:hasFlag('impassable')
@@ -248,7 +248,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
-	if i < self.map:getWidth() and j < self.map:getHeight() and isBottomPassable and isLeftPassable then
+	if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isLeftPassable then
 		local bottomRight = self.map:getTile(i + 1, j + 1)
 		if bottomRight.topLeft <= tile.bottomRight and
 		   not bottomRight:hasFlag('impassable')
