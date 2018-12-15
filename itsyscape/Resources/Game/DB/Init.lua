@@ -85,6 +85,9 @@ Game "ItsyScape"
 		SizeX = Meta.TYPE_REAL,
 		SizeY = Meta.TYPE_REAL,
 		SizeZ = Meta.TYPE_REAL,
+		OffsetX = Meta.TYPE_REAL,
+		OffsetY = Meta.TYPE_REAL,
+		OffsetZ = Meta.TYPE_REAL,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
@@ -445,6 +448,7 @@ include "Resources/Game/DB/Props/Ladder.lua"
 include "Resources/Game/DB/Props/Portals.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
 include "Resources/Game/DB/Props/Lights.lua"
+include "Resources/Game/DB/Props/Sails.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

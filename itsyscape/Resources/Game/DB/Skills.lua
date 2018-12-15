@@ -239,3 +239,15 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Fletching"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fletching",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Fletching"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sailing",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Sailing"
+}
