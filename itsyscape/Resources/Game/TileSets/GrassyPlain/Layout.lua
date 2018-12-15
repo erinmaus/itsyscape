@@ -28,7 +28,7 @@
 		y = 768,
 		width = 128,
 		height = 128,
-		name = "stone"
+		name = "wood"
 	},
 
 	{
@@ -142,4 +142,20 @@
 		height = 128,
 		name = "blue.vrug.b"
 	},
+
+	{
+		x = 128,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "stone"
+	},
+
+	{
+		x = 0,
+		y = 512,
+		width = 128,
+		height = 256,
+		name = "stone_wall"
+	}
 }

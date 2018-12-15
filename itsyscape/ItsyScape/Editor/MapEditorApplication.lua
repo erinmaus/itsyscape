@@ -46,7 +46,7 @@ MapEditorApplication.TOOL_PROP = 4
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "Grave"
+	self.currentDecorationTileSet = "RumbridgeCabin"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
