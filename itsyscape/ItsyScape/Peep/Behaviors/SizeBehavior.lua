@@ -20,6 +20,7 @@ local SizeBehavior = Behavior("Size")
 function SizeBehavior:new(width, height, depth)
 	Behavior.Type.new(self)
 	self.size = Vector(width or 2, height or 1, depth or 2)
+	self.offset = Vector(0)
 end
 
 return SizeBehavior
