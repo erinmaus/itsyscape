@@ -225,6 +225,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local topLeft = self.map:getTile(i - 1, j - 1)
 		if topLeft.bottomRight <= tile.topLeft and
 		   not topLeft:hasFlag('impassable')
+		   and not topLeft:hasFlag('wall-top') and not topLeft:hasFlag('wall-bottom') 
+		   and not topLeft:hasFlag('wall-left') and not topLeft:hasFlag('wall-right') 
 		then
 			table.insert(neighbors, self:makeEdge(i - 1, j - 1, edge, goal))
 		end
@@ -234,6 +236,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local bottomLeft = self.map:getTile(i - 1, j + 1)
 		if bottomLeft.topRight <= tile.bottomLeft and
 		   not bottomLeft:hasFlag('impassable')
+		   and not bottomLeft:hasFlag('wall-top') and not bottomLeft:hasFlag('wall-bottom') 
+		   and not bottomLeft:hasFlag('wall-left') and not bottomLeft:hasFlag('wall-right') 
 		then
 			table.insert(neighbors, self:makeEdge(i - 1, j + 1, edge, goal))
 		end
@@ -243,6 +247,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local topRight = self.map:getTile(i + 1, j - 1)
 		if topRight.bottomLeft <= tile.topRight and
 		   not topRight:hasFlag('impassable')
+		   and not topRight:hasFlag('wall-top') and not topRight:hasFlag('wall-bottom') 
+		   and not topRight:hasFlag('wall-left') and not topRight:hasFlag('wall-right') 
 		then
 			table.insert(neighbors, self:makeEdge(i + 1, j - 1, edge, goal))
 		end
@@ -252,6 +258,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local bottomRight = self.map:getTile(i + 1, j + 1)
 		if bottomRight.topLeft <= tile.bottomRight and
 		   not bottomRight:hasFlag('impassable')
+		   and not bottomRight:hasFlag('wall-top') and not bottomRight:hasFlag('wall-bottom') 
+		   and not bottomRight:hasFlag('wall-left') and not bottomRight:hasFlag('wall-right') 
 		then
 			table.insert(neighbors, self:makeEdge(i + 1, j + 1, edge, goal))
 		end
