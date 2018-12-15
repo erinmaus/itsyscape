@@ -59,7 +59,7 @@ end
 -- 'xp' is clamped to 0.
 function Stats.Skill:setXP(value, suppressNotify)
 	local previousLevel = self:getBaseLevel()
-	self.xp = math.floor(math.max(value, 0))
+	self.xp = math.floor(math.max(value or 0, 0))
 	self.isDirty = true
 	local currentLevel = self:getBaseLevel()
 
@@ -92,7 +92,7 @@ end
 --
 -- Values may be below zero for debuffs.
 function Stats.Skill:setLevelBoost(value)
-	self.levelBoost = math.floor(value)
+	self.levelBoost = math.floor(value or 0)
 end
 
 -- Gets the base level. This is the level derived from XP.

@@ -142,6 +142,11 @@ ItsyScape.Resource.Skill "Fletching"
 		Skill = ItsyScape.Resource.Skill "Fletching"
 	}
 
+-- ItsyScape.Resource.Skill "Cooking"
+-- ItsyScape.Resource.Skill "Fishing"
+
+ItsyScape.Resource.Skill "Sailing"
+
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
 
