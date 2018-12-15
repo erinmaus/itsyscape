@@ -151,18 +151,22 @@ function HumanoidActorAnimatorCortex:update(delta)
 				local resource = peep:getResource(
 					"animation-walk",
 					"ItsyScape.Graphics.AnimationResource")
-				actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.walking[actor] = true
-				self.idling[actor] = nil
+				if resource then
+					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
+					self.walking[actor] = true
+					self.idling[actor] = nil
+				end
 			end
 		else
 			if not self.idling[actor] then
 				local resource = peep:getResource(
 					"animation-idle",
 					"ItsyScape.Graphics.AnimationResource")
-				actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-				self.idling[actor] = true
-				self.walking[actor] = false
+				if resource then
+					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
+					self.idling[actor] = true
+					self.walking[actor] = false
+				end
 			end
 		end
 	end
