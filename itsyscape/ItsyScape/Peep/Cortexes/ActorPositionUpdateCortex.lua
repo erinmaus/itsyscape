@@ -26,11 +26,11 @@ function ActorPositionUpdateCortex:update(delta)
 	local finished = {}
 
 	for peep in self:iterate() do
-		local position = peep:getBehavior(PositionBehavior).position
+		local position = peep:getBehavior(PositionBehavior)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		if actor then
-			actor:move(position)
+			actor:move(position.position, position.layer)
 		end
 	end
 end

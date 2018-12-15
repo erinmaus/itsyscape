@@ -133,7 +133,9 @@ function LocalStage:lookupResource(resourceID, resourceType)
 	return Type, resource, realResourceID
 end
 
-function LocalStage:spawnActor(actorID)
+function LocalStage:spawnActor(actorID, layer)
+	layer = layer or 1
+
 	local Peep, resource, realID = self:lookupResource(actorID, "Peep")
 
 	if Peep then
@@ -148,6 +150,13 @@ function LocalStage:spawnActor(actorID)
 		local peep = actor:getPeep()
 		self.peeps[actor] = peep
 		self.peeps[peep] = actor
+
+		peep:listen('ready', function()
+			local p = peep:getBehavior(PositionBehavior)
+			if p then
+				p.layer = layer
+			end
+		end)
 
 		return true, actor
 	end
@@ -170,7 +179,9 @@ function LocalStage:killActor(actor)
 	end
 end
 
-function LocalStage:placeProp(propID)
+function LocalStage:placeProp(propID, layer)
+	layer = layer or 1
+
 	local Peep, resource, realID = self:lookupResource(propID, "Prop")
 
 	if Peep then
@@ -185,6 +196,13 @@ function LocalStage:placeProp(propID)
 		local peep = prop:getPeep()
 		self.peeps[prop] = peep
 		self.peeps[peep] = prop
+
+		peep:listen('ready', function()
+			local p = peep:getBehavior(PositionBehavior)
+			if p then
+				p.layer = layer
+			end
+		end)
 
 		return true, prop
 	end

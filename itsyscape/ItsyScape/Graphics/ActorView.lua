@@ -88,6 +88,8 @@ function ActorView:new(actor, actorID)
 
 	self.sceneNode = SceneNode()
 
+	self.layer = false
+
 	self.animations = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation)
 		self:playAnimation(slot, animation, priority, 0)
@@ -107,13 +109,13 @@ function ActorView:new(actor, actorID)
 	end
 	actor.onTransmogrified:register(self._onTransmogrified)
 
-	self._onTeleport = function(_, position)
-		self:move(position, true)
+	self._onTeleport = function(_, position, layer)
+		self:move(position, layer, true)
 	end
 	actor.onTeleport:register(self._onTeleport)
 
-	self._onMove = function(_, position)
-		self:move(position, false)
+	self._onMove = function(_, position, layer)
+		self:move(position, layer, false)
 	end
 	actor.onMove:register(self._onMove)
 
@@ -138,7 +140,6 @@ end
 
 function ActorView:attach(game)
 	self.game = game
-	self.sceneNode:setParent(game:getScene())
 end
 
 function ActorView:poof()
@@ -160,6 +161,10 @@ end
 
 function ActorView:getSceneNode()
 	return self.sceneNode
+end
+
+function ActorView:getLayer()
+	return self.layer
 end
 
 function ActorView:playAnimation(slot, animation, priority, time)
@@ -322,11 +327,21 @@ function ActorView:changeSkin(slot, priority, skin)
 	self.skins[slot] = slotNodes
 end
 
-function ActorView:move(position, instant)
+function ActorView:move(position, layer, instant)
 	self.sceneNode:getTransform():setLocalTranslation(position)
 
-	if instant then
+	if instant or layer ~= self.layer then
 		self.sceneNode:getTransform():setPreviousTransform(position)
+	end
+
+	if layer ~= self.layer then
+		if layer then
+			self.sceneNode:setParent(self.game:getMapSceneNode(layer))
+		else
+			self.sceneNode:setParent(nil)
+		end
+
+		self.layer = layer
 	end
 end
 

@@ -46,11 +46,21 @@ function PropView:attach()
 end
 
 function PropView:updateTransform()
+	local position, layer = self.prop:getPosition()
 	local transform = self.sceneNode:getTransform()
-	transform:setLocalTranslation(self.prop:getPosition())
+	transform:setLocalTranslation(position)
 	transform:setLocalRotation(self.prop:getRotation())
 	transform:setLocalScale(self.prop:getScale())
 	transform:tick()
+
+	local mapSceneNode = self.gameView:getMapSceneNode(layer)
+	if mapSceneNode ~= self.sceneNode:getParent() then
+		if mapSceneNode then
+			self.sceneNode:setParent(mapSceneNode)
+		else
+			self.sceneNode:setParent(false)
+		end
+	end
 end
 
 function PropView:remove()
