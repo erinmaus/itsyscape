@@ -31,6 +31,8 @@ function EditorApplication:new()
 		ambient:setAmbience(0.4)
 		ambient:setParent(self:getGameView():getScene())
 	end
+
+	self:getGameView():getRenderer():setCullEnabled(false)
 end
 
 function EditorApplication:getOutputDirectoryName(category, resource)
