@@ -46,7 +46,7 @@ MapEditorApplication.TOOL_PROP = 4
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "RumbridgeCabin"
+	self.currentDecorationTileSet = "CommonShip"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
@@ -278,23 +278,25 @@ function MapEditorApplication:mousePress(x, y, button)
 						motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
 						local t, i, j = motion:getTile()
-						local y = t:getInterpolatedHeight(0.5, 0.5)
-						local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
-						local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+						if t then
+							local y = t:getInterpolatedHeight(0.5, 0.5)
+							local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
-						local peep = p:getPeep()
-						local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
-						position.position = Vector(x, y, z)
+							local peep = p:getPeep()
+							local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+							position.position = Vector(x, y, z)
 
-						local index = 1
-						local name
-						repeat
-							name = string.format("%s%d", prop.name, index)
-							index = index + 1
-						until self.propNames[name] == nil
+							local index = 1
+							local name
+							repeat
+								name = string.format("%s%d", prop.name, index)
+								index = index + 1
+							until self.propNames[name] == nil
 
-						self.propNames[name] = p
-						self.propNames[p] = name
+							self.propNames[name] = p
+							self.propNames[p] = name
+						end
 					end
 				end
 			end

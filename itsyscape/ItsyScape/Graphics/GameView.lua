@@ -205,8 +205,23 @@ function GameView:updateMap(map, layer)
 		end
 		m.parts = {}
 
-		local w = math.max(math.floor(map:getWidth() / GameView.MAP_MESH_DIVISIONS + 0.5), 1)
-		local h = math.max(math.floor(map:getHeight() / GameView.MAP_MESH_DIVISIONS + 0.5), 1)
+		local w, h
+		do
+			local E = 1 / GameView.MAP_MESH_DIVISIONS
+			local partialX = map:getWidth() / GameView.MAP_MESH_DIVISIONS
+			local partialY = map:getHeight() / GameView.MAP_MESH_DIVISIONS
+
+			w = math.floor(partialX)
+			h = math.floor(partialY)
+
+			if partialX - math.floor(partialX) >= E then
+				w = w + 1
+			end
+
+			if partialY - math.floor(partialY) >= E then
+				h = h + 1
+			end
+		end
 
 		for j = 1, h do
 			for i = 1, w do
