@@ -23,6 +23,7 @@ function Actor:new()
 	self.onAnimationPlayed = Callback()
 	self.onTransmogrified = Callback()
 	self.onSkinChanged = Callback()
+	self.onMapChanged = Callback()
 
 	-- Called with 'damageType' (string) and 'damage'.
 	self.onDamage = Callback()

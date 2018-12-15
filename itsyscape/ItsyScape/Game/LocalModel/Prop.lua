@@ -86,7 +86,7 @@ function LocalProp:getPosition()
 
 	local position = self.peep:getBehavior(PositionBehavior)
 	if position then
-		return position.position
+		return position.position, position.layer
 	else
 		return Vector.ZERO
 	end

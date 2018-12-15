@@ -121,13 +121,14 @@ function LocalActor:teleport(position)
 	end
 end
 
-function LocalActor:move(position)
+function LocalActor:move(position, layer)
 	if position and self.peep then
 		local positionBehavior = self.peep:getBehavior(PositionBehavior)
 		if positionBehavior then
 			positionBehavior.position = position
+			positionBehavior.layer = layer or positionBehavior.layer
 
-			self.onMove(self, position)
+			self.onMove(self, position, layer)
 		end
 	end
 end

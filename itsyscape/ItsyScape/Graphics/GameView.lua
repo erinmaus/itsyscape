@@ -245,6 +245,13 @@ function GameView:updateMap(map, layer)
 	end
 end
 
+function GameView:getMapSceneNode(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.node
+	end
+end
+
 function GameView:getMapTileSet(layer)
 	local m = self.mapMeshes[layer]
 	if m then
