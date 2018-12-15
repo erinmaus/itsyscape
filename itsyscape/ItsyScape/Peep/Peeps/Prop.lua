@@ -79,6 +79,10 @@ function Prop:ready(director, game)
 				sizeRecord:get("SizeX") or size.size.x,
 				sizeRecord:get("SizeY") or size.size.y,
 				sizeRecord:get("SizeZ") or size.size.z)
+			size.offset = Vector(
+				sizeRecord:get("OffsetX") or size.offset.x,
+				sizeRecord:get("OffsetY") or size.offset.y,
+				sizeRecord:get("OffsetZ") or size.offset.z)
 		end
 	end
 
