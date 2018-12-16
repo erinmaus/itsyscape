@@ -544,16 +544,20 @@ function LocalStage:loadMapResource(filename, args)
 end
 
 function LocalStage:loadStage(path)
-	local filename, args
+	local filename
+	local args = {}
 	do
 		local s, e = path:find("%?")
 		s = s or 1
-		e = e or #path
+		e = e or #path + 1
 		
-		filename = path:sub(s, e)
+		filename = path:sub(1, e - 1)
+
+		Log.info("Loading map %s.", filename)
 
 		local pathArguments = path:sub(e, -1)
 		for key, value in pathArguments:gmatch("(%w+)=(%w+)") do
+			Log.info("Map argument '%s' -> '%s'.", key, value)
 			args[key] = value
 		end
 	end
