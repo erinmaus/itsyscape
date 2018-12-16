@@ -36,6 +36,19 @@ function DemoApplication:new()
 	self:getCamera():setVerticalRotation(DemoApplication.CAMERA_VERTICAL_ROTATION)
 end
 
+function DemoApplication:getPlayerPosition(delta)
+	local position
+	do
+		local gameView = self:getGameView()
+		local actor = gameView:getActor(self:getGame():getPlayer():getActor())
+		local node = actor:getSceneNode()
+		local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
+		position = Vector(transform:transformPoint(0, 0, 0))
+	end
+
+	return position
+end
+
 function DemoApplication:initialize()
 	local storage = love.filesystem.read("Player/Default.dat")
 	if storage then
@@ -59,18 +72,10 @@ function DemoApplication:initialize()
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
-
-	local position = self:getGame():getPlayer():getActor():getPosition()
-	self.previousPlayerPosition = position
-	self.currentPlayerPosition = position
 end
 
 function DemoApplication:tick()
 	Application.tick(self)
-
-	local position = self:getGame():getPlayer():getActor():getPosition()
-	self.previousPlayerPosition = self.currentPlayerPosition or position
-	self.currentPlayerPosition = position
 end
 
 function DemoApplication:mousePress(x, y, button)
@@ -134,7 +139,7 @@ end
 function DemoApplication:draw(delta)
 	local previous = self.previousPlayerPosition
 	local current = self.currentPlayerPosition
-	self:getCamera():setPosition(previous:lerp(current, self:getFrameDelta()))
+	self:getCamera():setPosition(self:getPlayerPosition(self:getFrameDelta()))
 
 	Application.draw(self, delta)
 end

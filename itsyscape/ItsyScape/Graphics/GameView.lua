@@ -47,6 +47,11 @@ function GameView:new(game)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
+	self._onMapMoved = function(_, layer, position, rotation, scale)
+		self:moveMap(layer, position, rotation, scale)
+	end
+	stage.onMapMoved:register(self._onMapMoved)
+
 	self._onActorSpawned = function(_, actorID, actor)
 		self:addActor(actorID, actor)
 	end
@@ -77,13 +82,13 @@ function GameView:new(game)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
-	self._onDecorate = function(_, group, decoration)
-		self:decorate(group, decoration)
+	self._onDecorate = function(_, group, decoration, layer)
+		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
-	self._onWaterFlood = function(_, key, water)
-		self:flood(key, water)
+	self._onWaterFlood = function(_, key, water, layer)
+		self:flood(key, water, layer)
 	end
 	stage.onWaterFlood:register(self._onWaterFlood)
 
@@ -145,6 +150,7 @@ function GameView:release()
 	stage.onLoadMap:unregister(self._onLoadMap)
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 	stage.onMapModified:unregister(self._onMapModified)
+	stage.onMapMoved:unregister(self._onMapMoved)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
 	stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -242,6 +248,16 @@ function GameView:updateMap(map, layer)
 				end)
 			end
 		end
+	end
+end
+
+function GameView:moveMap(layer, position, rotation, scale)
+	local node = self:getMapSceneNode(layer)
+	if node then
+		local transform = node:getTransform()
+		transform:setLocalTranslation(position)
+		transform:setLocalRotation(rotation)
+		transform:setLocalScale(scale)
 	end
 end
 
@@ -343,10 +359,15 @@ function GameView:poofItem(item)
 	end
 end
 
-function GameView:decorate(group, decoration)
+function GameView:decorate(group, decoration, layer)
 	if self.decorations[group] then
 		self.decorations[group].node:setParent(nil)
 		self.decorations[group] = nil
+	end
+
+	local map = self:getMapSceneNode(layer)
+	if not map then
+		map = self.scene
 	end
 
 	if decoration then
@@ -368,7 +389,7 @@ function GameView:decorate(group, decoration)
 		sceneNode:fromDecoration(decoration, staticMesh:getResource())
 		sceneNode:getMaterial():setTextures(texture)
 
-		sceneNode:setParent(self.scene)
+		sceneNode:setParent(map)
 
 		self.decorations[group] = { node = sceneNode, decoration = decoration }
 	end
@@ -376,6 +397,11 @@ end
 
 function GameView:flood(key, water)
 	self:drain(key)
+
+	local parent = self:getMapSceneNode(water.layer or 1)
+	if not parent then
+		parent = self.scene
+	end
 
 	local node = WaterMeshSceneNode()
 	local map = self.game:getStage():getMap(water.layer or 1)
@@ -396,7 +422,7 @@ function GameView:flood(key, water)
 		string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
 		function(resource)
 			node:getMaterial():setTextures(resource)
-			node:setParent(self.scene)
+			node:setParent(parent)
 		end)
 
 
