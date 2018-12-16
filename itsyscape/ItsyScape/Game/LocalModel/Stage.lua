@@ -43,19 +43,19 @@ function LocalStage:new(game)
 	self.stageName = "::orphan"
 	self.tests = { id = 1 }
 
-	self:spawnGround()
+	self.grounds = {}
+	self:spawnGround(self.stageName, 1)
 
 	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
 	self.mapThread:start()
 end
 
-function LocalStage:spawnGround()
-	if self.ground then
-		self.game:getDirector():removePeep(self.ground)
-	end
+function LocalStage:spawnGround(filename, layer)
+	local ground = self.game:getDirector():addPeep(filename, require "Resources.Game.Peeps.Ground")
+	self.grounds[filename] = ground
+	self.grounds[layer] = ground
 
-	self.ground = self.game:getDirector():addPeep(self.stageName, require "Resources.Game.Peeps.Ground")
-	local inventory = self.ground:getBehavior(InventoryBehavior).inventory
+	local inventory = ground:getBehavior(InventoryBehavior).inventory
 	inventory.onTakeItem:register(self.notifyTakeItem, self)
 	inventory.onDropItem:register(self.notifyDropItem, self)
 end 
@@ -225,7 +225,9 @@ function LocalStage:removeProp(prop)
 	end
 end
 
-function LocalStage:instantiateMapObject(resource)
+function LocalStage:instantiateMapObject(resource, layer)
+	layer = layer or 1
+
 	local gameDB = self.game:getGameDB()
 
 	local object = gameDB:getRecord("MapObjectLocation", {
@@ -247,7 +249,7 @@ function LocalStage:instantiateMapObject(resource)
 			if prop then
 				prop = prop:get("Prop")
 				if prop then
-					local s, p = self:placeProp("resource://" .. prop.name)
+					local s, p = self:placeProp("resource://" .. prop.name, layer)
 
 					if s then
 						local peep = p:getPeep()
@@ -277,7 +279,7 @@ function LocalStage:instantiateMapObject(resource)
 			if actor then
 				actor = actor:get("Peep")
 				if actor then
-					local s, a = self:spawnActor("resource://" .. actor.name)
+					local s, a = self:spawnActor("resource://" .. actor.name, layer)
 
 					if s then
 						local peep = a:getPeep()
@@ -407,13 +409,17 @@ function LocalStage:unloadAll()
 
 		do
 			local broker = self.game:getDirector():getItemBroker()
-			local inventory = self.ground:getBehavior(InventoryBehavior).inventory
-			if broker:hasProvider(inventory) then
-				for item in broker:iterateItems(inventory) do
-					local ref = broker:getItemRef(item)
-					self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+			for _, ground in pairs(self.grounds) do
+				inventory = ground:getBehavior(InventoryBehavior).inventory
+				if broker:hasProvider(inventory) then
+					for item in broker:iterateItems(inventory) do
+						local ref = broker:getItemRef(item)
+						self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+					end
 				end
 			end
+
+			self.grounds = {}
 		end
 
 		for _, actor in ipairs(p) do
@@ -465,16 +471,10 @@ function LocalStage:movePeep(peep, filename, anchor, force)
 	end
 end
 
-function LocalStage:loadStage(filename)
-	do
-		local director = self.game:getDirector()
-		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
-	end
-
-	self:unloadAll()
-	self.stageName = filename
-
+function LocalStage:loadMapResource(filename, args)
 	local directoryPath = "Resources/Game/Maps/" .. filename
+
+	local baseLayer = #self.map
 
 	local meta
 	do
@@ -496,7 +496,7 @@ function LocalStage:loadStage(filename)
 
 			local layerMeta = meta[layer] or {}
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, layer, layerMeta.tileSetID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, layer + baseLayer, layerMeta.tileSetID)
 		end
 	end
 
@@ -507,7 +507,7 @@ function LocalStage:loadStage(filename)
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water)
+			self.onWaterFlood(self, item, water, baseLayer + 1)
 			self.water[item] = water
 		end
 	end
@@ -520,7 +520,7 @@ function LocalStage:loadStage(filename)
 		end
 	end
 
-	self:spawnGround()
+	self:spawnGround(filename, baseLayer + 1)
 
 	local gameDB = self.game:getGameDB()
 	local resource = gameDB:getResource(filename, "Map")
@@ -529,6 +529,7 @@ function LocalStage:loadStage(filename)
 			local Peep, resource, realID = self:lookupResource("resource://" .. resource.name, "Map")
 			if Peep then
 				self.mapScripts[filename] = self.game:getDirector():addPeep(self.stageName, Peep, resource)
+				self.mapScripts[filename]:poke('load', filename, args or {})
 			end
 		end
 
@@ -537,9 +538,35 @@ function LocalStage:loadStage(filename)
 		})
 
 		for i = 1, #objects do
-			self:instantiateMapObject(objects[i]:get("Resource"))
+			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer + 1)
 		end
 	end
+end
+
+function LocalStage:loadStage(path)
+	local filename, args
+	do
+		local s, e = path:find("%?")
+		s = s or 1
+		e = e or #path
+		
+		filename = path:sub(s, e)
+
+		local pathArguments = path:sub(e, -1)
+		for key, value in pathArguments:gmatch("(%w+)=(%w+)") do
+			args[key] = value
+		end
+	end
+
+	do
+		local director = self.game:getDirector()
+		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
+	end
+
+	self:unloadAll()
+	self.stageName = filename
+
+	self:loadMapResource(filename, args)
 
 	do
 		local director = self.game:getDirector()
@@ -593,7 +620,12 @@ function LocalStage:setGravity(value)
 end
 
 function LocalStage:getItemsAtTile(i, j, layer)
-	local inventory = self.ground:getBehavior(InventoryBehavior).inventory
+	local ground = self.grounds[layer]
+	if not ground then
+		return {}
+	end
+
+	local inventory = ground:getBehavior(InventoryBehavior).inventory
 	if not inventory then
 		return {}
 	else
@@ -614,10 +646,11 @@ function LocalStage:getItemsAtTile(i, j, layer)
 end
 
 function LocalStage:dropItem(item, count)
-	local destination = self.ground:getBehavior(InventoryBehavior).inventory
 	local broker = self.game:getDirector():getItemBroker()
-	local transaction = broker:createTransaction()
 	local provider = broker:getItemProvider(item)
+	local map = provider:getPeep():getLayerName()
+	local destination = self.grounds[map]:getBehavior(InventoryBehavior).inventory
+	local transaction = broker:createTransaction()
 	provider:getPeep():poke('dropItem', {
 		item = item,
 		count = count
@@ -630,7 +663,7 @@ function LocalStage:dropItem(item, count)
 end
 
 function LocalStage:takeItem(i, j, layer, ref)
-	local inventory = self.ground:getBehavior(InventoryBehavior).inventory
+	local inventory = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
 	if inventory then
 		local key = GroundInventoryProvider.Key(i, j, layer)
 		local broker = self.game:getDirector():getItemBroker()
