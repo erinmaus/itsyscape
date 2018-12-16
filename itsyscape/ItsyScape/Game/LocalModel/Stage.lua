@@ -679,8 +679,8 @@ function LocalStage:takeItem(i, j, layer, ref)
 	end
 end
 
-function LocalStage:decorate(group, decoration)
-	self.onDecorate(self, group, decoration)
+function LocalStage:decorate(group, decoration, layer)
+	self.onDecorate(self, group, decoration, layer or 1)
 	self.decorations[group] = decoration
 end
 

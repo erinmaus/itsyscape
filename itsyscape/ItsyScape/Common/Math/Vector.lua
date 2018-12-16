@@ -25,6 +25,11 @@ function Vector:new(x, y, z)
 	self.z = z or x or 0
 end
 
+-- Returns the x, y, z components as a tuple.
+function Vector:get()
+	return self.x, self.y, self.z
+end
+
 -- Calculates and returns the dot product of two vectors.
 function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z

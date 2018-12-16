@@ -156,7 +156,7 @@ end
 
 function Application:probe(x, y, performDefault, callback)
 	local ray = self:shoot(x, y)
-	local probe = Probe(self.game, self.gameDB, ray)
+	local probe = Probe(self.game, self.gameView, self.gameDB, ray)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)

@@ -10,14 +10,16 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.World.Map"
 
 local Probe = Class()
-function Probe:new(game, gameDB, ray)
+function Probe:new(game, gameView, gameDB, ray)
 	self.onExamine = Callback()
 
 	self.game = game
+	self.gameView = gameView
 	self.gameDB = gameDB
 	self.ray = ray
 
@@ -91,7 +93,19 @@ function Probe:all(callback)
 		layer = k
 	end
 
-	local stage = self.game:getStage():testMap(layer, self.ray, function(result)
+	local ray = self.ray
+	do
+		local node = self.gameView:getMapSceneNode(layer)
+		if node then
+			local transform = node:getTransform():getGlobalDeltaTransform(0)
+			local origin = Vector(transform:inverseTransformPoint(self.ray.origin:get()))
+			local direction = Vector(transform:inverseTransformPoint(self.ray.direction:get()))
+
+			ray = Ray(origin, direction)
+		end
+	end
+
+	local stage = self.game:getStage():testMap(layer, ray, function(result)
 		self:getTile(result, layer)
 		self:walk()
 		self:loot()
@@ -227,6 +241,15 @@ function Probe:actors()
 	local count = 0
 	for actor in self.game:getStage():iterateActors() do
 		local min, max = actor:getBounds()
+		do
+			local _, _, layer = actor:getTile()
+			local node = self.gameView:getMapSceneNode(layer)
+			if node then
+				local transform = node:getTransform():getGlobalDeltaTransform(0)
+				min, max = Vector.transformBounds(min, max, transform)
+			end
+		end
+
 		local s, p = self.ray:hitBounds(min, max)
 		if s then
 			local actions = actor:getActions('world')
@@ -269,18 +292,27 @@ function Probe:props()
 	end
 
 	local count = 0
-	for actor in self.game:getStage():iterateProps() do
-		local min, max = actor:getBounds()
+	for prop in self.game:getStage():iterateProps() do
+		local min, max = prop:getBounds()
+		do
+			local _, layer = prop:getPosition()
+			local node = self.gameView:getMapSceneNode(layer)
+			if node then
+				local transform = node:getTransform():getGlobalDeltaTransform(0)
+				min, max = Vector.transformBounds(min, max, transform)
+			end
+		end
+
 		local s, p = self.ray:hitBounds(min, max)
 		if s then
-			local actions = actor:getActions('world')
+			local actions = prop:getActions('world')
 			for i = 1, #actions do
 				local action = {
 					id = actions[i].id,
 					verb = actions[i].verb,
-					object = actor:getName(),
+					object = prop:getName(),
 					callback = function()
-						actor:poke(actions[i].id, 'world')
+						prop:poke(actions[i].id, 'world')
 					end,
 					depth = -p.z + ((i / #actions) / 100)
 				}
@@ -293,9 +325,9 @@ function Probe:props()
 			table.insert(self.actions, {
 				id = "Examine",
 				verb = "Examine",
-				object = actor:getName(),
+				object = prop:getName(),
 				callback = function()
-					self.onExamine(actor:getName(), actor:getDescription())
+					self.onExamine(prop:getName(), prop:getDescription())
 				end,
 				depth = -p.z + (((#actions + 1) / #actions) / 100)
 			})

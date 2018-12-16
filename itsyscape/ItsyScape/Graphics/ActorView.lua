@@ -334,15 +334,12 @@ function ActorView:move(position, layer, instant)
 		self.sceneNode:getTransform():setPreviousTransform(position)
 	end
 
-	if layer ~= self.layer then
-		if layer then
-			self.sceneNode:setParent(self.game:getMapSceneNode(layer))
-		else
-			self.sceneNode:setParent(nil)
-		end
-
-		self.layer = layer
+	local parent = self.game:getMapSceneNode(layer)
+	if parent ~= self.sceneNode:getParent() then
+		self.sceneNode:setParent(parent)
 	end
+
+	self.layer = layer
 end
 
 function ActorView:face(direction)
