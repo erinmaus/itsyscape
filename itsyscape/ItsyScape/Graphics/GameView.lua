@@ -314,10 +314,10 @@ function GameView:removeProp(prop)
 	end
 end
 
-function GameView:spawnItem(item, tile, position)
+function GameView:spawnItem(item, tile)
 	local map = self.game:getStage():getMap(tile.layer)
 	if map then
-		position.y = map:getInterpolatedHeight(position.x, position.z)
+		position = map:getTileCenter(tile.i, tile.j)
 	end
 
 	local itemNode = SceneNode()
@@ -344,8 +344,13 @@ function GameView:spawnItem(item, tile, position)
 		lootIconNode:setParent(itemNode)
 	end
 
+	local map = self:getMapSceneNode(tile.layer)
+	if not map then
+		map = self.scene
+	end
+
 	itemNode:getTransform():translate(position)
-	itemNode:setParent(self.scene)
+	itemNode:setParent(map)
 
 	self.items[item.ref] = itemNode
 end

@@ -17,6 +17,8 @@ function Map:new(resource, name, ...)
 	Peep.new(self, name or 'Map', ...)
 
 	Utility.Peep.setResource(self, resource)
+
+	self:addPoke('load')
 end
 
 function Map:ready(director, game)
