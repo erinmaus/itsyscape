@@ -59,7 +59,7 @@ function CombatCortex:resume(peep, target)
 			b.actor = actor
 		end
 
-		local status = target;getBehavior(CombatStatusBehavior)
+		local status = target:getBehavior(CombatStatusBehavior)
 		if status.currentHitpoints > 0 then
 			peep:getCommandQueue():push(AttackCommand())
 		end
