@@ -64,6 +64,7 @@ function LocalGame:tick()
 	end
 
 	self.ticks = self.ticks + 1
+	self.stage:tick()
 	self.director:update(self:getDelta())
 	self.ui:update(self:getDelta())
 end

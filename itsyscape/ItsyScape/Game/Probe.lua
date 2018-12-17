@@ -98,10 +98,11 @@ function Probe:all(callback)
 		local node = self.gameView:getMapSceneNode(layer)
 		if node then
 			local transform = node:getTransform():getGlobalDeltaTransform(0)
-			local origin = Vector(transform:inverseTransformPoint(self.ray.origin:get()))
-			local direction = Vector(transform:inverseTransformPoint(self.ray.direction:get()))
+			local origin1 = Vector(transform:inverseTransformPoint(self.ray.origin:get()))
+			local origin2 = Vector(transform:inverseTransformPoint((self.ray.origin + self.ray.direction):get()))
+			local direction = origin2 - origin1
 
-			ray = Ray(origin, direction)
+			ray = Ray(origin1, direction)
 		end
 	end
 

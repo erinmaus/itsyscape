@@ -1,6 +1,6 @@
 local M = {}
 
-M._MAP = ItsyScape.Resource.Map "Ship_Test"
+M._MAP = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins"
 
 M["Sailing_BasicSail_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
