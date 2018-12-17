@@ -403,7 +403,7 @@ end
 function GameView:flood(key, water, layer)
 	self:drain(key)
 
-	local parent = self:getMapSceneNode((water.layer or 0) + (layer or 1))
+	local parent = self:getMapSceneNode((water.layer or 1) - 1 + (layer or 1))
 	if not parent then
 		parent = self.scene
 	end
