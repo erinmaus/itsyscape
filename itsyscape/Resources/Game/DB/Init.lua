@@ -105,6 +105,7 @@ Game "ItsyScape"
 
 	Meta "TravelDestination" {
 		Map = Meta.TYPE_RESOURCE,
+		Arguments = Meta.TYPE_TEXT,
 		Anchor = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION
 	}

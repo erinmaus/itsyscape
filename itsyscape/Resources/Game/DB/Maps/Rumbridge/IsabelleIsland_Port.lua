@@ -10,9 +10,24 @@
 
 do
 	local TalkAction = ItsyScape.Action.Talk()
+	local SailAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Spawn",
+		Map = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins",
+		Arguments = "map=IsabelleIsland_Ocean",
+		Action = SailAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Sail",
+		Language = "en-US",
+		Action = SailAction
+	}
 
 	ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins" {
-		TalkAction
+		TalkAction,
+		SailAction
 	}
 
 	ItsyScape.Meta.PeepID {

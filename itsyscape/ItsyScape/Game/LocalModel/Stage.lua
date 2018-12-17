@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
 local TransferItemCommand = require "ItsyScape.Game.TransferItemCommand"
@@ -21,6 +22,8 @@ local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local Map = require "ItsyScape.World.Map"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
@@ -37,6 +40,7 @@ function LocalStage:new(game)
 	self.currentActorID = 1
 	self.currentPropID = 1
 	self.map = {}
+	self.numMaps = 0
 	self.mapScripts = {}
 	self.water = {}
 	self.gravity = Vector(0, -9.8, 0)
@@ -83,7 +87,7 @@ function LocalStage:notifyDropItem(item, key, source)
 end
 
 function LocalStage:getMapScript(key)
-	return self.mapScripts[key]
+	return self.mapScripts[key].peep
 end
 
 function LocalStage:lookupResource(resourceID, resourceType)
@@ -378,6 +382,8 @@ function LocalStage:unloadAll()
 		self:unloadMap(layers[i])
 	end
 
+	self.numMaps = 0
+
 	for key in pairs(self.water) do
 		self.onWaterDrain(self, key)
 	end
@@ -431,11 +437,22 @@ function LocalStage:unloadAll()
 	self.mapScripts = {}
 end
 
-function LocalStage:movePeep(peep, filename, anchor, force)
+function LocalStage:movePeep(peep, path, anchor, force)
+	local filename
+	do
+		local s, e = path:find("%?")
+		s = s or 1
+		e = e or #path + 1
+		
+		filename = path:sub(1, e - 1)
+	end
+
 	local playerPeep = self.game:getPlayer():getActor():getPeep()
 	if playerPeep == peep then
-		if filename ~= self.stageName or force then
-			self:loadStage(filename)
+		-- We want to reload if this is a new stage, if it's forced, or if it's
+		-- an instance (has a ?).
+		if filename ~= self.stageName or force or filename ~= path then
+			self:loadStage(path)
 		end
 
 		playerPeep = self.game:getPlayer():getActor():getPeep()
@@ -474,7 +491,7 @@ end
 function LocalStage:loadMapResource(filename, args)
 	local directoryPath = "Resources/Game/Maps/" .. filename
 
-	local baseLayer = #self.map
+	local baseLayer = self.numMaps or 0
 
 	local meta
 	do
@@ -484,6 +501,7 @@ function LocalStage:loadMapResource(filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
+	local maxLayer = baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
 		local layer = item:match(".*(-?%d)%.lmap$")
 		if layer then
@@ -497,8 +515,11 @@ function LocalStage:loadMapResource(filename, args)
 			local layerMeta = meta[layer] or {}
 
 			self:loadMapFromFile(directoryPath .. "/" .. item, layer + baseLayer, layerMeta.tileSetID)
+			maxLayer = math.max(layer + baseLayer, maxLayer)
 		end
 	end
+
+	self.numMaps = maxLayer
 
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
@@ -522,14 +543,26 @@ function LocalStage:loadMapResource(filename, args)
 
 	self:spawnGround(filename, baseLayer + 1)
 
+	local mapScript
+
 	local gameDB = self.game:getGameDB()
 	local resource = gameDB:getResource(filename, "Map")
 	if resource then
 		do
 			local Peep, resource, realID = self:lookupResource("resource://" .. resource.name, "Map")
 			if Peep then
-				self.mapScripts[filename] = self.game:getDirector():addPeep(self.stageName, Peep, resource)
-				self.mapScripts[filename]:poke('load', filename, args or {})
+				self.mapScripts[filename] = {
+					peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
+					layer = baseLayer + 1
+				}
+
+				self.mapScripts[filename].peep:listen('ready',
+					function(self)
+						self:poke('load', filename, args or {})
+					end
+				)
+
+				mapScript = self.mapScripts[filename].peep
 			end
 		end
 
@@ -541,6 +574,8 @@ function LocalStage:loadMapResource(filename, args)
 			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer + 1)
 		end
 	end
+
+	return baseLayer + 1, mapScript
 end
 
 function LocalStage:loadStage(path)
@@ -556,7 +591,7 @@ function LocalStage:loadStage(path)
 		Log.info("Loading map %s.", filename)
 
 		local pathArguments = path:sub(e, -1)
-		for key, value in pathArguments:gmatch("(%w+)=(%w+)") do
+		for key, value in pathArguments:gmatch("([%w_]+)=([%w_]+)") do
 			Log.info("Map argument '%s' -> '%s'.", key, value)
 			args[key] = value
 		end
@@ -608,7 +643,9 @@ end
 function LocalStage:getLayers()
 	local layers = {}
 	for index in pairs(self.map) do
-		table.insert(layers, index)
+		if type(index) == 'number' then
+			table.insert(layers, index)
+		end
 	end
 
 	table.sort(layers)
@@ -727,6 +764,35 @@ end
 
 function LocalStage:iterateProps()
 	return pairs(self.props)
+end
+
+function LocalStage:tick()
+	for _, map in pairs(self.mapScripts) do
+		local peep = map.peep
+
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			position = position.position
+		else
+			position = Vector.ZERO
+		end
+
+		local rotation = peep:getBehavior(RotationBehavior)
+		if rotation then
+			rotation = rotation.rotation
+		else
+			rotation = Quaternion.IDENTITY
+		end
+
+		local scale = peep:getBehavior(ScaleBehavior)
+		if scale then
+			scale = scale.scale
+		else
+			scale = Vector.ONE
+		end
+
+		self.onMapMoved(self, map.layer, position, rotation, scale)
+	end
 end
 
 function LocalStage:update(delta)
