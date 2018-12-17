@@ -147,6 +147,10 @@ function Renderer:setCurrentShader(shader)
 		if self.currentShader ~= shader then
 			self.currentShader = shader
 			love.graphics.setShader(shader)
+
+			if shader:hasUniform("scape_Time") then
+				shader:send("scape_Time", love.timer.getTime())
+			end
 		end
 	end
 end

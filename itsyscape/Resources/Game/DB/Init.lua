@@ -450,6 +450,7 @@ include "Resources/Game/DB/Props/Portals.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
 include "Resources/Game/DB/Props/Lights.lua"
 include "Resources/Game/DB/Props/Sails.lua"
+include "Resources/Game/DB/Props/BoatFoam.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

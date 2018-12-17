@@ -550,20 +550,22 @@ function LocalStage:loadMapResource(filename, args)
 	if resource then
 		do
 			local Peep, resource, realID = self:lookupResource("resource://" .. resource.name, "Map")
-			if Peep then
-				self.mapScripts[filename] = {
-					peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
-					layer = baseLayer + 1
-				}
-
-				self.mapScripts[filename].peep:listen('ready',
-					function(self)
-						self:poke('load', filename, args or {})
-					end
-				)
-
-				mapScript = self.mapScripts[filename].peep
+			if not Peep then
+				Peep = require "ItsyScape.Peep.Peeps.Map"
 			end
+
+			self.mapScripts[filename] = {
+				peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
+				layer = baseLayer + 1
+			}
+
+			self.mapScripts[filename].peep:listen('ready',
+				function(self)
+					self:poke('load', filename, args or {})
+				end
+			)
+
+			mapScript = self.mapScripts[filename].peep
 		end
 
 		local objects = gameDB:getRecords("MapObjectLocation", {
