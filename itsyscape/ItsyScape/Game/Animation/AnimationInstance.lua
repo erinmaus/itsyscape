@@ -76,6 +76,8 @@ function AnimationInstance:play(time)
 				if channel.previous == j then
 					command:stop(self.animatable)
 				end
+
+				relativeTime = 0
 			end
 		end
 	end
