@@ -48,8 +48,30 @@ function ShipMapPeep:onLoad(filename, args)
 
 		if script then
 			local baseMap = stage:getMap(1)
-			local x = (baseMap:getWidth() + 0.5) * baseMap:getCellSize() / 2
-			local z = (baseMap:getHeight()+ 0.5) * baseMap:getCellSize() / 2
+
+			local x, z
+			do
+				local i, j = args['i'], args['j']
+				if i and j then
+					i = tonumber(i)
+					j = tonumber(j)
+
+					if i and j then
+						i = i - baseMap:getWidth() / 2
+						j = j - baseMap:getHeight() / 2
+
+						local position = self:getBehavior(PositionBehavior)
+						local map = stage:getMap(layer)
+						position.position = map:getTileCenter(i, j)
+
+						x = position.position.x
+						z = position.position.z
+					end
+				end
+			end
+
+			x = (x or 0) + (baseMap:getWidth() + 0.5) * baseMap:getCellSize() / 2
+			z = (z or 0) + (baseMap:getHeight()+ 0.5) * baseMap:getCellSize() / 2
 
 			local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", self:getPrefix(), self:getSuffix())
 			local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer)
@@ -89,7 +111,10 @@ function ShipMapPeep:update(director, game)
 
 	local position = self:getBehavior(PositionBehavior)
 	if position then
-		position.position = Vector(0, math.sin(self.time * math.pi / 2) * 0.5, 0)
+		position.position = Vector(
+			position.position.x,
+			math.sin(self.time * math.pi / 2) * 0.5,
+			position.position.z)
 	end
 end
 

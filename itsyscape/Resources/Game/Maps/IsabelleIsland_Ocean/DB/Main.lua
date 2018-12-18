@@ -3,9 +3,9 @@ local M = include "Resources/Game/Maps/IsabelleIsland_Ocean/DB/Default.lua"
 M["UndeadSquid"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17,
+		PositionX = 33,
 		PositionY = 0,
-		PositionZ = -5,
+		PositionZ = 21,
 		Name = "UndeadSquid",
 		Map = M._MAP,
 		Resource = M["UndeadSquid"]
