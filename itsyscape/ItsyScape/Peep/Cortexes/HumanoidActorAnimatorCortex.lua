@@ -14,6 +14,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
@@ -146,7 +147,7 @@ function HumanoidActorAnimatorCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if velocity:getLength() > 0.1 then
+		if velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior) then
 			if not self.walking[actor] then
 				local resource = peep:getResource(
 					"animation-walk",
