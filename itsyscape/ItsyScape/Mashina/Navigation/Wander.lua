@@ -13,7 +13,10 @@ local Peep = require "ItsyScape.Peep.Peep"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local Wander = B.Node("Wander")
+Wander.MIN_RADIAL_DISTANCE = B.Reference()
 Wander.RADIAL_DISTANCE = B.Reference()
+Wander.WANDER_I = B.Reference()
+Wander.WANDER_J = B.Reference()
 
 function Wander:update(mashina, state, executor)
 	local k
@@ -23,6 +26,21 @@ function Wander:update(mashina, state, executor)
 			k = position.layer or 1
 		else
 			k = 1
+		end
+	end
+
+	local wanderI, wanderJ
+	do
+		if state[self.WANDER_I] ~= nil then
+			wanderI = state[self.WANDER_I]
+		else
+			wanderI = true
+		end
+
+		if state[self.WANDER_J] ~= nil then
+			wanderJ = state[self.WANDER_J]
+		else
+			wanderJ = true
 		end
 	end
 
@@ -52,8 +70,22 @@ function Wander:update(mashina, state, executor)
 
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
 
-	local s = math.random(-radialDistance, radialDistance)
-	local t = math.random(-radialDistance, radialDistance)
+	local s, t
+	do
+		local min = state[self.MIN_RADIAL_DISTANCE] or 0
+		local max = radialDistance - min
+		if wanderI then
+			s = math.random(-max, max) + min
+		else
+			s = 0
+		end
+
+		if wanderJ  then
+			t = math.random(-max, max) + min
+		else
+			t = 0
+		end
+	end
 
 	local targetI = i + s
 	local targetJ = j + t
