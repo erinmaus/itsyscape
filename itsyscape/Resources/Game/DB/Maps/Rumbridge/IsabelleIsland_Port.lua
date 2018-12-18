@@ -53,3 +53,56 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins"
 	}
 end
+
+do
+	ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.UndeadSquid.UndeadSquid",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Value = ItsyScape.Utility.xpForLevel(99),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Mn'thro, Undead Squid",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "A squid sacrified to Yendor, now corrupted by the Empty King to protect the island.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+end

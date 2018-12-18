@@ -1044,7 +1044,7 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			edge = 3, flat = 3, decals = {  },
 			data =
 			{
@@ -1176,7 +1176,7 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			edge = 3, flat = 3, decals = {  },
 			data =
 			{
