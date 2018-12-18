@@ -15,7 +15,7 @@ do
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_Spawn",
 		Map = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins",
-		Arguments = "map=IsabelleIsland_Ocean",
+		Arguments = "map=IsabelleIsland_Ocean,i=16,j=16",
 		Action = SailAction
 	}
 
@@ -103,6 +103,13 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "A squid sacrified to Yendor, now corrupted by the Empty King to protect the island.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "spawn",
+		Tree = "Resources/Game/Peeps/UndeadSquid/UndeadSquid_SpawnLogic.lua",
+		IsDefault = 1,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 end

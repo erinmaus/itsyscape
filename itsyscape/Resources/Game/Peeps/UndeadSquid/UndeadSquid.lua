@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local UndeadSquid = Class(Creep)
@@ -24,6 +25,10 @@ function UndeadSquid:new(resource, name, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(8, 9, 8)
 	size.offset = Vector(0, 1, 0)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.velocityMultiplier = 1.5
+	movement.accelerationMultiplier = 1.5
 end
 
 function UndeadSquid:ready(director, game)
@@ -46,6 +51,10 @@ function UndeadSquid:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/UndeadSquid_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+	local swimAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/UndeadSquid_Swim/Script.lua")
+	self:addResource("animation-walk", swimAnimation)
 
 	Creep.ready(self, director, game)
 end
