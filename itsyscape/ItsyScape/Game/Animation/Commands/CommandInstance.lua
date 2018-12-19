@@ -27,13 +27,15 @@ end
 -- Returns true if the animation is pending at the specified time, false
 -- otherwise.
 --
+-- If 'windingDown' is true, returns the length without repeat.
+--
 -- The animation need not be playing.
-function CommandInstance:pending(time)
+function CommandInstance:pending(time, windingDown)
 	return false
 end
 
 -- Plays the command at the specific time on the animatable.
-function CommandInstance:play(animatable, time)
+function CommandInstance:play(animatable, time, windingDown)
 	-- Nothing.
 end
 
@@ -44,8 +46,10 @@ end
 
 -- Gets the duration of the command.
 --
+-- If 'windingDown' is true, returns the length without repeat.
+--
 -- Usually should be the same as the underlying Command.getDuration.
-function CommandInstance:getDuration()
+function CommandInstance:getDuration(windingDown)
 	return 0
 end
 

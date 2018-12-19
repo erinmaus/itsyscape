@@ -170,17 +170,29 @@ end
 function ActorView:playAnimation(slot, animation, priority, time)
 	-- TODO blending
 	local a = self.animations[slot] or {}
-	if a.instance then
-		a.instance:stop()
-	end
 
 	-- TODO load queue
 	if priority and animation then
 		self.game:getResourceManager():queueCacheRef(animation, function(definition)
-			a.definition = definition:getResource()
-			a.instance = a.definition:play(self.animatable)
-			a.time = time or 0
-			a.priority = priority or -math.huge
+			if (a.definition and a.definition:getFadesOut()) or
+			   (a.instance and definition:getResource():getFadesIn())
+			then
+				Log.info("Queueing animation.")
+				a.next = {
+					definition = definition:getResource(),
+					priority = priority,
+					time = time
+				}
+			else
+				if a.instance then
+					a.instance:stop()
+				end
+
+				a.definition = definition:getResource()
+				a.instance = a.definition:play(self.animatable)
+				a.time = time or 0
+				a.priority = priority or -math.huge
+			end
 
 			self.animations[slot] = a
 		end)
@@ -405,12 +417,21 @@ function ActorView:updateAnimations()
 			local slot = a.key
 
 			animation.time = animation.time + delta
-			if animation.instance:isDone(animation.time) then
-				self.animations[slot] = nil
-				self.actor:playAnimation(slot, false)
+			if animation.done then
+				if animation.next then
+					animation.definition = animation.next.definition
+					animation.instance = animation.definition:play(self.animatable)
+					animation.time = animation.next.time or 0
+					animation.priority = animation.next.priority or -math.huge
+					animation.next = nil
+				else
+					self.animations[slot] = nil
+					self.actor:playAnimation(slot, false)
+				end
 
+				animation.done = false
 			else
-				animation.instance:play(animation.time)
+				animation.done = animation.instance:play(animation.time, animation.next ~= nil)
 			end
 		end
 

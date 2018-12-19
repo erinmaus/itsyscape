@@ -104,15 +104,14 @@ function PlayAnimation:instantiate()
 	return PlayAnimationInstance(self)
 end
 
-function PlayAnimation:getDuration()
+function PlayAnimation:getDuration(windingDown)
 	if not self.duration then
 		-- The fun never stops.
-		if self.repeatAnimation then
+		if self.repeatAnimation and not windingDown then
 			return math.huge
 		else
-			-- XXX: This is kind of gross.
-			local animation = SkeletonAnimation(self.animationFilename)
-			self.duration = animation:getDuration()
+			self._animation = self._animation or SkeletonAnimation(self.animationFilename)
+			self.duration = self._animation:getDuration()
 		end
 	end
 

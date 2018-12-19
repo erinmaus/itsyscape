@@ -37,6 +37,8 @@ function Animation:new(name)
 	self.id = Animation.CURRENT_ID
 	self.blends = {}
 	self.skeleton = false
+	self.fadesOut = false
+	self.fadesIn = false
 
 	Animation.CURRENT_ID = Animation.CURRENT_ID + 1
 end
@@ -66,6 +68,8 @@ function Animation:loadFromFile(filename)
 		self.id = result.id
 		self.blends = result.blends
 		self.skeleton = result.skeleton
+		self.fadesOut = result.fadesOut or false
+		self.fadesIn = result.fadesIn or false
 		self.duration = false
 	end
 end
@@ -73,6 +77,14 @@ end
 -- Gets the name of the animation.
 function Animation:getName()
 	return self.name
+end
+
+function Animation:getFadesIn()
+	return self.fadesIn
+end
+
+function Animation:getFadesOut()
+	return self.fadesOut
 end
 
 -- Gets the target channel.
@@ -119,19 +131,20 @@ function Animation:play(animatable)
 	return AnimationInstance(self, animatable)
 end
 
-function Animation:getDuration()
-	if not self.duration then
+function Animation:getDuration(windingDown)
+	if not self.duration or self.windingDown ~= windingDown then
 		local maxDuration = 0
 		for _, channel in ipairs(self.channels) do
 			local duration = 0
 			for _, command in channel:iterate() do
-				duration = duration + command:getDuration()
+				duration = duration + command:getDuration(windingDown)
 			end
 
 			maxDuration = math.max(duration, maxDuration)
 		end
 
 		self.duration = maxDuration
+		self.windingDown = windingDown or false
 	end
 
 	return self.duration
@@ -155,6 +168,22 @@ function Metatable:__call(t)
 			self:getTargetChannel():merge(t[i])
 		elseif Class.isCompatibleType(t[i], Channel) then
 			table.insert(self.channels, t[i])
+		end
+	end
+
+	if t.fadesIn ~= nil then
+		if t.fadesIn then
+			self.fadesIn = true
+		else
+			self.fadesIn = false
+		end
+	end
+
+	if t.fadesOut ~= nil then
+		if t.fadesOut then
+			self.fadesOut = true
+		else
+			self.fadesOut = false
 		end
 	end
 

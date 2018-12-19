@@ -25,9 +25,9 @@ function PlayAnimationInstance:bind(animatable)
 	end
 end
 
-function PlayAnimationInstance:pending(time)
+function PlayAnimationInstance:pending(time, windingDown)
 	if self.animation then
-		return self.command:getRepeatAnimation() or
+		return (self.command:getRepeatAnimation() and not windingDown) or
 		       time < self.animation:getDuration()
 	end
 end

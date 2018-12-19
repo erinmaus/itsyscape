@@ -41,11 +41,13 @@ end
 -- Returns true if the animation is done, false otherwise.
 --
 -- This does not take into account animation that repeat...
-function AnimationInstance:isDone(time)
-	return time > self.animation:getDuration()
+function AnimationInstance:isDone(time, windingDown)
+	return time > self.animation:getDuration(windingDown)
 end
 
-function AnimationInstance:play(time)
+function AnimationInstance:play(time, windingDown)
+	local isDone = true
+
 	for i = 1, #self.channels do
 		local channel = self.channels[i]
 		local relativeTime = self.times[channel]
@@ -58,7 +60,15 @@ function AnimationInstance:play(time)
 
 		for j = channel.current, #channel do
 			local command = channel[j]
-			if command:pending(relativeTime) then
+
+			if windingDown then
+				local duration = command:getDuration(true)
+				if duration > 0 and relativeTime > duration then
+					relativeTime = relativeTime % duration
+				end
+			end
+
+			if command:pending(relativeTime, windingDown) then
 				if command.previous ~= j then
 					command:start(animatable)
 					command.previous = j
@@ -66,7 +76,7 @@ function AnimationInstance:play(time)
 					self.times[channel] = time
 				end
 
-				command:play(self.animatable, relativeTime)
+				command:play(self.animatable, relativeTime, windingDown)
 
 				channel.current = j
 				break
@@ -77,10 +87,20 @@ function AnimationInstance:play(time)
 					command:stop(self.animatable)
 				end
 
-				relativeTime = 0
+				if channel.current ~= #channel then
+					relativeTime = 0
+				end
 			end
 		end
+
+		if channel.current < #channel or
+		   channel[channel.current]:pending(relativeTime, windingDown)
+		then
+			isDone = false
+		end
 	end
+
+	return isDone
 end
 
 return AnimationInstance
