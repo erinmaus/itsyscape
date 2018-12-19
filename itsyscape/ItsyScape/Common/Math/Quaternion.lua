@@ -39,6 +39,11 @@ function Quaternion:new(x, y, z, w)
 	self.w = w or 1
 end
 
+-- Returns the x, y, z, w (in that order) components as a tuple.
+function Quaternion:get()
+	return self.x, self.y, self.z, self.w
+end
+
 -- Linearly interpolates this quaternion with other.
 --
 -- delta is clamped to 0 .. 1 inclusive.
