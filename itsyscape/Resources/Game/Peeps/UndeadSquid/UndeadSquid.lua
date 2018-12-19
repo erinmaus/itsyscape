@@ -55,6 +55,18 @@ function UndeadSquid:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/UndeadSquid_Swim/Script.lua")
 	self:addResource("animation-walk", swimAnimation)
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/UndeadSquid_Attack/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+	local defendAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/UndeadSquid_Defend/Script.lua")
+	self:addResource("animation-defend", defendAnimation)
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/UndeadSquid_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 
 	Creep.ready(self, director, game)
 end
