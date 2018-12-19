@@ -13,6 +13,11 @@ local Mashina = require "ItsyScape.Mashina"
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Step {
+			Mashina.Peep.TimeOut {
+				min_duration = 4,
+				max_duration = 6
+			},
+
 			Mashina.Navigation.Wander {
 				min_radial_distance = 8,
 				radial_distance = 32,
@@ -21,13 +26,18 @@ local Tree = BTreeBuilder.Node() {
 
 			Mashina.Peep.Wait,
 
+			Mashina.Peep.TimeOut {
+				min_duration = 0.5,
+				max_duration = 0.5,
+			},
+
 			Mashina.Navigation.Face {
 				direction = 1
 			},
 
 			Mashina.Peep.TimeOut {
-				min_duration = 2,
-				max_duration = 3
+				min_duration = 4,
+				max_duration = 6
 			}
 		}
 	}

@@ -20,7 +20,10 @@ function Command:instantiate()
 end
 
 -- Returns the duration of the command in seconds.
-function Command:getDuration()
+--
+-- If windingDown is true, then the return value should ignore things like
+-- repeat.
+function Command:getDuration(windingDown)
 	return Class.ABSTRACT()
 end
 
