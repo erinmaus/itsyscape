@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -105,15 +106,34 @@ function CombatCortex:update(delta)
 			target = target:getPeep()
 
 			local targetPosition = target:getBehavior(PositionBehavior)
-			if targetPosition and targetPosition.layer == position.layer then
-				local map = game:getDirector():getMap(targetPosition.layer or 1)
+			if targetPosition then
+				local map = game:getDirector():getMap(position.layer or 1)
 				if map then
 					local selfI, selfJ = map:toTile(
 						position.position.x,
 						position.position.z)
-					local targetI, targetJ = map:toTile(
-						targetPosition.position.x,
-						targetPosition.position.z)
+
+					local targetI, targetJ
+					if targetPosition.layer == position.layer then
+						targetI, targetJ = map:toTile(
+							targetPosition.position.x,
+							targetPosition.position.z)
+					else
+						local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(target)
+						local peepParentTransform = Utility.Peep.getParentTransform(peep)
+
+						local targetRelativePosition
+						if peepParentTransform then
+							local tx, ty, tz = peepParentTransform:inverseTransformPoint(targetAbsolutePosition:get())
+							targetRelativePosition = Vector(tx, ty, tz)
+						else
+							targetRelativePosition = targetPosition.position
+						end
+
+						targetI, targetJ = map:toTile(
+							targetRelativePosition.x,
+							targetRelativePosition.z)
+					end
 
 					local selfRadius, targetRadius
 					do
@@ -134,7 +154,7 @@ function CombatCortex:update(delta)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
-						if not tile or tile.i ~= targetI or tile.j ~= targetJ then
+						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange - 1, 0), { asCloseAsPossible = false })
 
 							if not walk then

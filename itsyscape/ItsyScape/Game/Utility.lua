@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
@@ -28,9 +29,11 @@ local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResour
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
-local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
-local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
 -- Contains utility methods for a variety of purposes.
@@ -543,6 +546,74 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 end
 
 Utility.Peep = {}
+
+function Utility.Peep.getTransform(peep)
+	local transform = love.math.newTransform()
+	do
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			position = position.position
+		else
+			position = Vector.ZERO
+		end
+
+		local rotation = peep:getBehavior(RotationBehavior)
+		if rotation then
+			rotation = rotation.rotation
+		else
+			rotation = Quaternion.IDENTITY
+		end
+
+		local scale = peep:getBehavior(ScaleBehavior)
+		if scale then
+			scale = scale.scale
+		else
+			scale = Vector.ONE
+		end
+
+		transform:translate(position:get())
+		transform:scale(scale:get())
+		transform:applyQuaternion(rotation:get())
+	end
+
+	return transform
+end
+
+function Utility.Peep.getParentTransform(peep)
+	local director = peep:getDirector()
+	local stage = director:getGameInstance():getStage()
+	local mapReference = peep:getBehavior(MapResourceReferenceBehavior)
+	if mapReference and mapReference.map then
+		local mapScript = stage:getMapScript(mapReference.map.name)
+		if mapScript then
+			return Utility.Peep.getTransform(mapScript)
+		end
+	end
+
+	return nil
+end
+
+function Utility.Peep.getAbsolutePosition(peep)
+	local transform = Utility.Peep.getParentTransform(peep)
+	if transform then
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			position = position.position
+		else
+			position = Vector.ZERO
+		end
+
+		local tx, ty, tz = transform:transformPoint(position:get())
+		return Vector(tx, ty, tz)
+	else
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			return position.position
+		else
+			return Vector.ZERO
+		end
+	end
+end
 
 function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"

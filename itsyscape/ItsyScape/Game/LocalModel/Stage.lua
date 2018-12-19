@@ -87,7 +87,12 @@ function LocalStage:notifyDropItem(item, key, source)
 end
 
 function LocalStage:getMapScript(key)
-	return self.mapScripts[key].peep
+	local map = self.mapScripts[key]
+	if map then
+		return map.peep
+	else
+		return nil
+	end
 end
 
 function LocalStage:lookupResource(resourceID, resourceType)
