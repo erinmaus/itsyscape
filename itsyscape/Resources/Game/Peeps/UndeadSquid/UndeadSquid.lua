@@ -12,10 +12,13 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local UndeadSquid = Class(Creep)
 
@@ -72,6 +75,50 @@ function UndeadSquid:ready(director, game)
 	self:addResource("animation-die", dieAnimation)
 
 	Creep.ready(self, director, game)
+end
+
+function UndeadSquid:onAttackShip()
+	local map = Utility.Peep.getMap(self)
+	if map then
+		local stage = self:getDirector():getGameInstance():getStage()
+		local mapScript = stage:getMapScript(map.name)
+
+		if mapScript:isCompatibleType(MapScript) then
+			local arguments = mapScript:getArguments()
+			if arguments["ship"] then
+				local shipName = arguments["ship"]
+				local shipMapScript, shipMapLayer = stage:getMapScript(shipName)
+				local shipMap = stage:getMap(shipMapLayer)
+
+				Log.info("Attacking %s.", shipMapScript:getName())
+
+				local tiles = {}
+				for j = 1, shipMap:getHeight() do
+					for i = 1, shipMap:getWidth() do
+						local tile = shipMap:getTile(i, j)
+						if tile:hasFlag("floor") and not tile:hasFlag("impassable") then
+							table.insert(tiles, { i = i, j = j, tile = tile })
+						end
+					end
+				end
+
+				local tile = tiles[math.random(#tiles)]
+				if tile then
+					local center = shipMap:getTileCenter(tile.i, tile.j)
+					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer)
+					if s then
+						local leakPeep = leak:getPeep()
+						local position = leakPeep:getBehavior(PositionBehavior)
+						if position then
+							position.position = center
+						end
+					end
+				end
+			end
+		end
+	end
+
+	self:poke('initiateAttack', AttackPoke())
 end
 
 return UndeadSquid

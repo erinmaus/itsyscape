@@ -173,23 +173,23 @@ function Action:sendEvent(peep, event)
 		})
 
 		for i = 1, #t do
-			targets[t[i]:get("Value").id] = true
+			targets[t[i]:get("Value").id.value] = true
 		end
 	end
 
 	local peeps
-	if #targets == 0 then
+	if next(targets, nil) == nil then
 		peeps = peep:getLayerName()
 	else
-		peeps = peep:getDirector():probe(peep:getLayerName(), function(peep)
-			local mapObject = Utility.Peep.getMapObject(peep)
-			local resource = Utility.Peep.getResource(peep)
+		peeps = peep:getDirector():probe(peep:getLayerName(), function(p)
+			local mapObject = Utility.Peep.getMapObject(p)
+			local resource = Utility.Peep.getResource(p)
 
-			if resource and targets[resource.id] then
+			if resource and targets[resource.id.value] then
 				return true
 			end
 
-			if mapObject and targets[mapObject.id] then
+			if mapObject and targets[mapObject.id.value] then
 				return true
 			end
 
@@ -214,6 +214,7 @@ function Action:perform(state, player, ...)
 	local events = self.gameDB:getRecords("ActionEvent", {
 		Action = self.action
 	})
+
 
 	for i = 1, #events do
 		self:sendEvent(player, events[i])

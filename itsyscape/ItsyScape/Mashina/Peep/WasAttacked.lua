@@ -17,6 +17,7 @@ WasAttacked.MISSED = B.Reference()
 WasAttacked.ATTACK_POKE = B.Reference()
 WasAttacked.INTERNAL_ATTACK_POKE = B.Local()
 WasAttacked.ATTACKED = B.Local()
+WasAttacked.CALLBACK = B.Local()
 
 function WasAttacked:update(mashina, state, executor)
 	local attacked = state[self.ATTACKED]
@@ -56,14 +57,21 @@ function WasAttacked:activated(mashina, state, executor)
 	local tookDamage = state[self.TOOK_DAMAGE]
 	local missed = state[self.MISSED]
 
-	mashina:listen('receiveAttack', self.hit, self, mashina, tookDamage, missed, state)
+	local callback = function(self, ...)
+		self:hit(...)
+	end
+
+	state[self.CALLBACK] = callback
+
+	mashina:listen('receiveAttack', callback, self, mashina, tookDamage, missed, state)
 end
 
 function WasAttacked:deactivated(mashina, state, executor)
-	self.attacked = nil
+	state[self.ATTACKED] = nil
 	state[self.INTERNAL_ATTACK_POKE] = nil
 
-	mashina:silence('receiveAttack', self.hit)
+	mashina:silence('receiveAttack', state[self.CALLBACK])
+	state[self.CALLBACK] = nil
 end
 
 return WasAttacked

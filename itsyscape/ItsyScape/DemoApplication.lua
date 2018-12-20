@@ -101,7 +101,12 @@ end
 function DemoApplication:mouseScroll(x, y)
 	Application.mouseScroll(self, x, y)
 	local distance = self.camera:getDistance() - y * 0.5
-	self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
+
+	if not _DEBUG then
+		self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
+	else
+		self:getCamera():setDistance(distance)
+	end
 end
 
 function DemoApplication:mouseMove(x, y, dx, dy)

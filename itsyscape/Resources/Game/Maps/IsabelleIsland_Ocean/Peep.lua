@@ -13,17 +13,8 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Ocean = Class(Map)
 
-function Ocean:new(name, ...)
-	Map.new(self, name or 'Ocean', ...)
-end
-
-function Ocean:ready(director, game)
-	local player = game:getPlayer():getActor():getPeep()
-	local state = player:getState()
-
-	if not state:has("KeyItem", "CalmBeforeTheStorm_Start") then
-		Utility.UI.openInterface(player, "CharacterCustomization", true)
-	end
+function Ocean:new(resource, name, ...)
+	Map.new(self, resource, name or 'Ocean', ...)
 end
 
 function Ocean:onIsabelleIsland_Ocean_PlugLeak()

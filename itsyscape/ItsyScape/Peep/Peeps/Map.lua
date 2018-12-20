@@ -19,12 +19,28 @@ function Map:new(resource, name, ...)
 	Utility.Peep.setResource(self, resource)
 
 	self:addPoke('load')
+
+	self.filename = ""
+	self.arguments = {}
+end
+
+function Map:getFilename()
+	return self.filename
+end
+
+function Map:getArguments()
+	return self.arguments
 end
 
 function Map:ready(director, game)
 	Peep.ready(self, director, game)
 
 	Utility.Peep.setNameMagically(self)
+end
+
+function Map:onLoad(filename, arguments)
+	self.filename = filename
+	self.arguments = arguments
 end
 
 return Map
