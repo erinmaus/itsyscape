@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
 local Action = require "ItsyScape.Peep.Action"
 
@@ -28,7 +29,8 @@ function Bank:perform(state, player, target)
 
 		if walk then
 			local open = OpenInterfaceCommand("Bank", true)
-			local command = CompositeCommand(true, walk, open)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, open, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

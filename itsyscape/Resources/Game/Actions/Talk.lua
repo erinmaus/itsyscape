@@ -28,7 +28,8 @@ function Talk:perform(state, player, target)
 	if walk then
 		local face = CallbackCommand(Utility.Peep.face, player, target)
 		local interface = OpenInterfaceCommand("DialogBox", true, self:getAction())
-		local command = CompositeCommand(true, walk, face, interface)
+		local perform = CallbackCommand(Action.perform, self, state, *)
+		local command = CompositeCommand(true, walk, face, interface, perform)
 
 		return player:getCommandQueue():interrupt(command)
 	end

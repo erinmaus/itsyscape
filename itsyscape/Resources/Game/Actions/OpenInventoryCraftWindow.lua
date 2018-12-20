@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
 local Action = require "ItsyScape.Peep.Action"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 
 local OpenInventoryCraftWindow = Class(Action)
 OpenInventoryCraftWindow.SCOPES = { ['inventory'] = true }
@@ -30,8 +31,10 @@ function OpenInventoryCraftWindow:perform(state, player, item)
 		end
 
 		local open = OpenInterfaceCommand("CraftWindow", true, prop, key, value, target:get("ActionType"))
+		local perform = CallbackCommand(Action.perform, self, state, player)
+
 		local queue = player:getCommandQueue()
-		return queue:interrupt(open)
+		return queue:interrupt(open) and queue:push(perform)
 	end
 end
 

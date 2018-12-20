@@ -47,8 +47,9 @@ function Sleep:perform(state, player, target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { asCloseAsPossible = true })
 
 		if walk then
-			local perform = CallbackCommand(self.save, self, player)
-			local command = CompositeCommand(true, walk, perform, poof, wait)
+			local save = CallbackCommand(self.save, self, player)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, save, poof, perform, wait)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

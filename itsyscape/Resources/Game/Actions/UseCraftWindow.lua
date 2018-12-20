@@ -27,8 +27,9 @@ function UseCraftWindow:perform(state, player, prop, action, count)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 1)
 
 	if walk then
-		local perform = CallbackCommand(UseCraftWindow.delegatedPerform, self, state, player, prop, action, count)
-		local command = CompositeCommand(true, walk, perform)
+		local craft = CallbackCommand(UseCraftWindow.delegatedPerform, self, state, player, prop, action, count)
+		local perform = CallbackCommand(Action.perform, self, state, *)
+		local command = CompositeCommand(true, walk, craft, perform)
 
 		local queue = player:getCommandQueue()
 		return queue:interrupt(command)

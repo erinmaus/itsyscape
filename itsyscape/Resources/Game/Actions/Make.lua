@@ -43,6 +43,7 @@ function Make:make(state, player, prop)
 	local flags = { ['item-inventory'] = true }
 
 	self:transfer(state, player, flags)
+	Action.perform(self, state, player)
 end
 
 return Make

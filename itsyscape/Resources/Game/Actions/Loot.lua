@@ -108,6 +108,7 @@ function Loot:perform(state, peep)
 		self:getGame():getDirector():getItemBroker():removeProvider(inventory)
 	end
 
+	Action.perform(self, state, peep)
 	return true
 end
 

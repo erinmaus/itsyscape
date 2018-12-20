@@ -26,6 +26,8 @@ function DebugAscend:perform(state, peep, item)
 		end
 	end
 
+	Action.perform(self, state, peep)
+
 	return true
 end
 

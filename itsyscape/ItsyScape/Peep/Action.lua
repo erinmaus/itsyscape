@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local Action = Class()
@@ -138,6 +139,67 @@ function Action:count(state, flags)
 	return 0
 end
 
+function Action:sendEvent(peep, event)
+	local slot = event:get("Slot")
+
+	local poke = { peep = peep }
+	do
+		function getArguments(meta)
+			local args = self.gameDB:getRecords(meta, {
+				Slot = slot or 0,
+				Action = self.action
+			})
+
+			for i = 1, #args do
+				local key = args[i]:get("Key")
+				if key then
+					poke[key] = args[i]:get("Value")
+				end
+			end
+		end
+
+		getArguments("ActionEventTextArgument")
+		getArguments("ActionEventIntegerArgument")
+		getArguments("ActionEventRealArgument")
+		getArguments("ActionEventResourceArgument")
+		getArguments("ActionEventActionArgument")
+	end
+
+	local targets = {}
+	do
+		local t = self.gameDB:getRecords("ActionEventTarget", {
+			Slot = slot,
+			Action = self.action
+		})
+
+		for i = 1, #t do
+			targets[t[i]:get("Value").id] = true
+		end
+	end
+
+	local peeps
+	if #targets == 0 then
+		peeps = peep:getLayerName()
+	else
+		peeps = peep:getDirector():probe(peep:getLayerName(), function(peep)
+			local mapObject = Utility.Peep.getMapObject(peep)
+			local resource = Utility.Peep.getResource(peep)
+
+			if resource and targets[resource.id] then
+				return true
+			end
+
+			if mapObject and targets[mapObject.id] then
+				return true
+			end
+
+			return false
+		end)
+	end
+
+	peep:getDirector():broadcast(peeps, event:get("Event"), poke)
+end
+
 -- Performs the action.
 --
 -- The arguments vary depending on the type of Action; there can be no standard.
@@ -148,8 +210,14 @@ end
 --
 -- Returns true if the action could be performed, or false otherwise. If the
 -- action fails, a message should be returned.
-function Action:perform(poke, ...)
-	return false, "not implemented"
+function Action:perform(state, player, ...)
+	local events = self.gameDB:getRecords("ActionEvent", {
+		Action = self.action
+	})
+
+	for i = 1, #events do
+		self:sendEvent(player, events[i])
+	end
 end
 
 -- Transfers inputs/outputs.

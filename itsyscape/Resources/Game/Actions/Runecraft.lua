@@ -38,7 +38,8 @@ function Runecraft:perform(state, player, target)
 			}
 
 			local make = CallbackCommand(self.transfer, self, state, player, flags)
-			local command = CompositeCommand(true, walk, make)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, make, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

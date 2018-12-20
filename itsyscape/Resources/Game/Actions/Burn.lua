@@ -41,6 +41,7 @@ function Burn:perform(state, peep, item)
 	end
 
 	self:transfer(state, peep)
+	Action.perform(self, state, peep)
 
 	return true
 end

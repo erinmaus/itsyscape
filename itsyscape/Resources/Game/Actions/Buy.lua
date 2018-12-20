@@ -83,6 +83,7 @@ function Buy:perform(state, peep, quantity)
 		end
 	end
 
+	Action.perform(self, state, peep)
 	return true
 end
 

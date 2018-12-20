@@ -92,6 +92,7 @@ function Equip:perform(state, peep, item)
 		return false, "transaction failed"
 	end
 
+	Action.perform(self, state, peep)
 	return true
 end
 
