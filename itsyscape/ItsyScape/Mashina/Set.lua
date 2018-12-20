@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Check.lua
+-- ItsyScape/Mashina/Set.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,21 +9,14 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Check = B.Node("Check")
-Check.CONDITION = B.Reference()
+local Set = B.Node("Set")
+Set.VALUE = B.Reference()
+Set.RESULT = B.Reference()
 
-function Check:update(mashina, state, executor)
-	local a = state[self.CONDITION]
+function Set:update(mashina, state, executor)
+	state[self.RESULT] = state[self.VALUE]
 
-	if type(a) ~= 'boolean' then
-		a = a(mashina, state, executor)
-	end
-
-	if a then
-		return B.Status.Success
-	else
-		return B.Status.Failure
-	end
+	return B.Status.Success
 end
 
-return Check
+return Set

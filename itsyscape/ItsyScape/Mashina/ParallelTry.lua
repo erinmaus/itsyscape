@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Try.lua
+-- ItsyScape/Mashina/ParallelTry.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,16 +9,18 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Try = B.Node("Try")
+local ParallelTry = B.Node("ParallelTry")
 
-function Try:update(mashina, state, executor)
+function ParallelTry:update(mashina, state, executor)
+	local working = false
+
 	local index = 1
 	local children = { self.tree:children(self.node) }
 	for i = 1, #children do
 		if i >= index then
 			local r = executor:update(children[i])
 			if r == B.Status.Working then
-				return B.Status.Working
+				working = true
 			elseif r == B.Status.Success then
 				executor:drop()
 				return B.Status.Success
@@ -30,8 +32,12 @@ function Try:update(mashina, state, executor)
 		end
 	end
 
-	executor:drop()
-	return B.Status.Failure
+	if working then
+		return B.Status.Working
+	else
+		executor:drop()
+		return B.Status.Failure
+	end
 end
 
-return Try
+return ParallelTry

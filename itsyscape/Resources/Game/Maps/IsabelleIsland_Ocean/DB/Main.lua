@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_Ocean/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_Ocean.Peep",
+	Resource = M._MAP
+}
+
 M["UndeadSquid"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

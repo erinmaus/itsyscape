@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Check.lua
+-- ItsyScape/Mashina/Equal.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,21 +9,20 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Check = B.Node("Check")
-Check.CONDITION = B.Reference()
+local Equal = B.Node("Equal")
+Equal.LEFT = B.Reference()
+Equal.RIGHT = B.Reference()
+Equal.RESULT = B.Reference()
 
-function Check:update(mashina, state, executor)
-	local a = state[self.CONDITION]
+function Equal:update(mashina, state, executor)
+	local a = state[self.LEFT] or 0
+	local b = state[self.RIGHT] or 0
 
-	if type(a) ~= 'boolean' then
-		a = a(mashina, state, executor)
-	end
-
-	if a then
+	if a == b then
 		return B.Status.Success
 	else
 		return B.Status.Failure
 	end
 end
 
-return Check
+return Equal

@@ -32,36 +32,6 @@ end
 do
 	local B = require "B"
 	B._ROOT = "ItsyScape.Mashina"
-
-	local Node = B.Node
-	function B.Node(name)
-		local Proxy = Node(name)
-		local Node = setmetatable({}, getmetatable(Proxy))
-
-		Proxy._ACTIVATED = B.Local()
-
-		function Proxy:activate(mashina, state, executor)
-			state[self._ACTIVATED] = true
-
-			Node.activate(self, mashina, state, executor)
-		end
-
-		function Proxy:deactivated(mashina, state, executor)
-			state[self._ACTIVATED] = nil
-			Node.deactivate(self, mashina, state, executor)
-		end
-
-		function Proxy:update(mashina, state, executor)
-			if state[self._ACTIVATED] then
-				state[self._ACTIVATED] = false
-				return B.Status.Working
-			end
-
-			return Node.update(self, mashina, state, executor)
-		end
-
-		return Node
-	end
 end
 
 Log = require "ItsyScape.Common.Log"
