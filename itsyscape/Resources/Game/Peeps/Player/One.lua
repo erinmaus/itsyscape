@@ -82,6 +82,8 @@ function One:new(...)
 	self:addPoke('receiveAttack')
 	self:addPoke('resourceHit')
 	self:addPoke('changeWardrobe')
+	self:addPoke('transferItemTo')
+	self:addPoke('transferItemFrom')
 end
 
 function One:onChangeWardrobe(e)

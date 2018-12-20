@@ -53,8 +53,10 @@ end
 -- Returns the first equipped item in 'slot'.
 function EquipmentInventoryProvider:getEquipped(slot)
 	local broker = self:getBroker()
-	for item in broker:iterateItemsByKey(self, slot) do
-		return item
+	if broker then
+		for item in broker:iterateItemsByKey(self, slot) do
+			return item
+		end
 	end
 
 	return nil

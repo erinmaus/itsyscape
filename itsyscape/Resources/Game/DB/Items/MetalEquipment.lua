@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Items/MetalArmor.lua
+-- Resources/Game/DB/Items/MetalEquipment.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -18,28 +18,44 @@ local METALS = {
 
 local ITEMS = {
 	["Gloves"] = {
+		skills = { "Defense", "Strength" },
 		niceName = "%s gloves",
 		slot = "Gloves",
-		bars = 1
+		bars = 1,
+		tier = 0
 	},
 
 	["Boots"] = {
+		skills = { "Defense", "Strength" },
 		niceName = "%s boots",
 		slot = "Boots",
-		bars = 1
+		bars = 1,
+		tier = 0
 	},
 
 	["Helmet"] = {
+		skills = { "Defense", "Strength" },
 		niceName = "%s full helmet",
 		slot = "Helmet",
-		bars = 2
+		bars = 2,
+		tier = 0
 	},
 
 	["Platebody"] = {
+		skills = { "Defense", "Strength" },
 		niceName = "%s platebody",
 		slot = "Body",
-		bars = 5
+		bars = 5,
+		tier = 0
 	},
+
+	["Zweihander"] = {
+		skills = { "Strength", "Attack" },
+		niceName = "%s zweihander",
+		slot = "Zweihander",
+		bars = 5,
+		tier = 4
+	}
 }
 
 for name, metal in pairs(METALS) do
@@ -47,17 +63,15 @@ for name, metal in pairs(METALS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 
-		local EquipAction = ItsyScape.Action.Equip() {
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Defense",
-				Count = ItsyScape.Utility.xpForLevel(metal.tier)
-			},
-
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Strength",
-				Count = ItsyScape.Utility.xpForLevel(metal.tier)
+		local EquipAction = ItsyScape.Action.Equip()
+		for i = 1, #itemProps.skills do
+			EquipAction {
+				Requirement {
+					Resource = ItsyScape.Resource.Skill(itemProps.skills[i]),
+					Count = ItsyScape.Utility.xpForLevel(metal.tier)
+				}
 			}
-		}
+		end
 
 		local DequipAction = ItsyScape.Action.Dequip()
 
@@ -75,12 +89,12 @@ for name, metal in pairs(METALS) do
 
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForLevel(math.max(metal.tier + itemProps.bars, 1))
+				Count = ItsyScape.Utility.xpForLevel(math.max(metal.tier + itemProps.bars + itemProps.tier, 1))
 			},
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForResource(math.max(metal.tier + itemProps.bars + 2, 1)) * itemProps.bars
+				Count = ItsyScape.Utility.xpForResource(math.max(metal.tier + itemProps.bars + itemProps.tier + 2, 1)) * itemProps.bars
 			},
 
 			Output {
@@ -90,7 +104,7 @@ for name, metal in pairs(METALS) do
 		}
 
 		ItsyScape.Meta.Item {
-			Value = ItsyScape.Utility.valueForItem(metal.tier + itemProps.bars + 2) * itemProps.bars,
+			Value = ItsyScape.Utility.valueForItem(metal.tier + itemProps.bars + itemProps.tier + 2) * itemProps.bars,
 			Weight = metal.weight * itemProps.bars,
 			Resource = Item
 		}
@@ -186,5 +200,21 @@ do
 		Value = "Warning: don't stand on a hill during a lightning storm and curse the gods.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzePlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForItem(10, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseRanged = 1,
+		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(6, 0.1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BronzeZweihander"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Heavy and unwieldy, but with enough skill, can do some serious damage.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeZweihander"
 	}
 end
