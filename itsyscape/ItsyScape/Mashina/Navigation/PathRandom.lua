@@ -33,7 +33,25 @@ function PathRandom:update(mashina, state, executor)
 		if #tiles == 0 then
 			return B.Status.Failure
 		else
-			tile = tiles[math.random(#tiles) + 1]
+			tile = tiles[math.random(#tiles)]
+		end
+
+		if type(tile) == 'string' then
+			Log.info("Chose anchor %s.", tile)
+
+			local mapResource = Utility.Peep.getMap(mashina)
+			local gameDB = mashina:getDirector():getGameDB()
+			local anchor = gameDB:getRecord( "MapObjectLocation",{
+				Name = tile,
+				Map = mapResource
+			})
+			if anchor then
+				local map = mashina:getDirector():getMap(k)
+				if map then
+					local _, i, j = map:getTileAt(anchor:get("PositionX"), anchor:get("PositionZ"))
+					tile = { i = i, j = j, name = tile }
+				end
+			end
 		end
 	end
 
@@ -47,7 +65,12 @@ function PathRandom:update(mashina, state, executor)
 
 	if command then
 		if mashina:getCommandQueue():interrupt(command) then
-			state[self.SELECTED_TILE] = tile
+			if tile.name then
+				state[self.SELECTED_TILE] = tile.name
+			else
+				state[self.SELECTED_TILE] = tile
+			end
+
 			return B.Status.Success
 		else
 			return B.Status.Failure

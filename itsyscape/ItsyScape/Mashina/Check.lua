@@ -15,7 +15,7 @@ Check.CONDITION = B.Reference()
 function Check:update(mashina, state, executor)
 	local a = state[self.CONDITION]
 
-	if type(a) ~= 'boolean' then
+	if type(a) == 'table' or type(b) == 'function' then
 		a = a(mashina, state, executor)
 	end
 

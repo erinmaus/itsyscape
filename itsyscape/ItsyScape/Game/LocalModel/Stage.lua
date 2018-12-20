@@ -89,7 +89,7 @@ end
 function LocalStage:getMapScript(key)
 	local map = self.mapScripts[key]
 	if map then
-		return map.peep
+		return map.peep, map.layer
 	else
 		return nil
 	end
@@ -554,7 +554,7 @@ function LocalStage:loadMapResource(filename, args)
 	local resource = gameDB:getResource(filename, "Map")
 	if resource then
 		do
-			local Peep, resource, realID = self:lookupResource("resource://" .. resource.name, "Map")
+			local Peep = self:lookupResource("resource://" .. resource.name, "Map")
 			if not Peep then
 				Peep = require "ItsyScape.Peep.Peeps.Map"
 			end

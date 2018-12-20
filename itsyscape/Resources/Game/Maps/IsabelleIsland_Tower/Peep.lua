@@ -13,11 +13,13 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Tower = Class(Map)
 
-function Tower:new(name, ...)
-	Map.new(self, name or 'Tower', ...)
+function Tower:new(resource, name, ...)
+	Map.new(self, resource, name or 'Tower', ...)
 end
 
 function Tower:ready(director, game)
+	Map.ready(self, director, game)
+
 	local player = game:getPlayer():getActor():getPeep()
 	local state = player:getState()
 

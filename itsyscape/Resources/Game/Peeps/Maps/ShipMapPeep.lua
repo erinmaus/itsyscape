@@ -16,8 +16,8 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local ShipMapPeep = Class(Map)
 
-function ShipMapPeep:new(name, ...)
-	Map.new(self, name or 'ShipMapPeep', ...)
+function ShipMapPeep:new(resource, name, ...)
+	Map.new(self, resource, name or 'ShipMapPeep', ...)
 
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(RotationBehavior)
@@ -33,6 +33,8 @@ function ShipMapPeep:getSuffix()
 end
 
 function ShipMapPeep:onLoad(filename, args)
+	Map.onLoad(self, filename, args)
+
 	local game = self:getDirector():getGameInstance()
 	local stage = game:getStage()
 
@@ -40,7 +42,8 @@ function ShipMapPeep:onLoad(filename, args)
 	if map then
 		Log.info('Ship map: %s.', map)
 		local layer, script = stage:loadMapResource(map, {
-			ship = filename
+			ship = filename,
+			instance = self
 		})
 
 		-- TODO: get this from the map

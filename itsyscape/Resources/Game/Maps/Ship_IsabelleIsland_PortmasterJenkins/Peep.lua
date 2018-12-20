@@ -13,8 +13,8 @@ local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
 
 local Ship = Class(Map)
 
-function Ship:new(name, ...)
-	Map.new(self, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
+function Ship:new(resource, name, ...)
+	Map.new(self, resource, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
 end
 
 return Ship

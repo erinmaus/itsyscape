@@ -29,8 +29,8 @@ FoggyForest.ANCHORS = {
 FoggyForest.BOSS = "IsabelleIsland_FoggyForest_BossyNymph"
 FoggyForest.BOSS_ANCHOR = "Anchor_SpawnClearing"
 
-function FoggyForest:new(name, ...)
-	Map.new(self, name or 'FoggyForest', ...)
+function FoggyForest:new(resource, name, ...)
+	Map.new(self, resource, name or 'FoggyForest', ...)
 
 	self:addPoke('ancientDriftwoodTreeHit')
 	self:addPoke('ancientDriftwoodTreeFelled')

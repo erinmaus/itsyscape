@@ -14,12 +14,18 @@ local Mashina = require "ItsyScape.Mashina"
 local HITS = B.Reference("UndeadSquid_SpawnLogic", "HITS")
 local ATTACK_POKE = B.Reference("UndeadSquid_SpawnLogic", "ATTACK_POKE")
 local TARGET = B.Reference("UndeadSquid_SpawnLogic", "TARGET")
+local CURRENT_TILE = B.Reference("UndeadSquid_SpawnLogic", "CURRENT_TILE")
+local WAS_HIT_IN_FRONT_OF_CANNON = B.Reference("UndeadSquid_SpawnLogic", "WAS_HIT_IN_FRONT_OF_CANNON")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Set {
 			value = 0,
 			[HITS] = B.Output.result
+		},
+
+		Mashina.Peep.Talk {
+			message = "Raaaaaaaa!"
 		},
 
 		Mashina.Repeat {
@@ -74,15 +80,73 @@ local Tree = BTreeBuilder.Node() {
 				},
 
 				Mashina.Step {
+					Mashina.Peep.WasAttacked {
+						[ATTACK_POKE] = B.Output.attack_poke
+					},
+
+					Mashina.Check {
+						condition = function(mashina, state, executor)
+							local poke = state[ATTACK_POKE]
+							return poke:getWeaponType() == 'cannon'
+						end
+					},
+
+					Mashina.Try {
+						Mashina.Compare.Equal {
+							left = "Anchor_Cannon2",
+							right = CURRENT_TILE
+						},
+
+						Mashina.Compare.Equal {
+							left = "Anchor_Cannon1",
+							right = CURRENT_TILE
+						}
+					},
+
+					Mashina.Set {
+						value = true,
+						[WAS_HIT_IN_FRONT_OF_CANNON] = B.Output.result
+					},
+
+					Mashina.Navigation.PathRandom {
+						tiles = {
+							"Anchor_Left",
+							"Anchor_Right"
+						},
+
+						[CURRENT_TILE] = B.Output.selected_tile
+					},
+
+					Mashina.Peep.Wait,
+
+					Mashina.Set {
+						value = false,
+						[WAS_HIT_IN_FRONT_OF_CANNON] = B.Output.result
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Invert {
+						Mashina.Check {
+							condition = WAS_HIT_IN_FRONT_OF_CANNON
+						}
+					},
+					Mashina.Peep.PokeSelf {
+						event = "attackShip"
+					},
+
 					Mashina.Peep.TimeOut {
 						min_duration = 4,
 						max_duration = 6
 					},
 
-					Mashina.Navigation.Wander {
-						min_radial_distance = 8,
-						radial_distance = 32,
-						wander_j = false
+					Mashina.Navigation.PathRandom {
+						tiles = {
+							"Anchor_Left",
+							"Anchor_Right"
+						},
+
+						[CURRENT_TILE] = B.Output.selected_tile
 					},
 
 					Mashina.Peep.Wait,
@@ -99,6 +163,27 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Peep.TimeOut {
 						min_duration = 4,
 						max_duration = 6
+					},
+
+					Mashina.Navigation.PathRandom {
+						tiles = {
+							"Anchor_Spawn",
+							"Anchor_Cannon1",
+							"Anchor_Cannon2"
+						},
+
+						[CURRENT_TILE] = B.Output.selected_tile
+					},
+
+					Mashina.Peep.Wait,
+
+					Mashina.Peep.TimeOut {
+						min_duration = 0.5,
+						max_duration = 0.5,
+					},
+
+					Mashina.Navigation.Face {
+						direction = 1
 					}
 				}
 			}
