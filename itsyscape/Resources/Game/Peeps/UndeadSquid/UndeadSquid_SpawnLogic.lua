@@ -7,37 +7,100 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
+local HITS = B.Reference("UndeadSquid_SpawnLogic", "HITS")
+local ATTACK_POKE = B.Reference("UndeadSquid_SpawnLogic", "ATTACK_POKE")
+local TARGET = B.Reference("UndeadSquid_SpawnLogic", "TARGET")
+
 local Tree = BTreeBuilder.Node() {
-	Mashina.Repeat {
-		Mashina.Step {
-			Mashina.Peep.TimeOut {
-				min_duration = 4,
-				max_duration = 6
-			},
+	Mashina.Step {
+		Mashina.Set {
+			value = 0,
+			[HITS] = B.Output.result
+		},
 
-			Mashina.Navigation.Wander {
-				min_radial_distance = 8,
-				radial_distance = 32,
-				wander_j = false
-			},
+		Mashina.Repeat {
+			Mashina.ParallelTry {
+				Mashina.Step {
+					Mashina.Peep.WasAttacked {
+						[ATTACK_POKE] = B.Output.attack_poke
+					},
 
-			Mashina.Peep.Wait,
+					Mashina.Check {
+						condition = function(mashina, state, executor)
+							local poke = state[ATTACK_POKE]
+							return poke:getWeaponType() ~= 'cannon'
+						end
+					},
 
-			Mashina.Peep.TimeOut {
-				min_duration = 0.5,
-				max_duration = 0.5,
-			},
+					Mashina.Peep.PokeSelf {
+						event = "enraged"
+					},
 
-			Mashina.Navigation.Face {
-				direction = 1
-			},
+					Mashina.Peep.Talk {
+						message = "Eeeeeeeeeeee'rth!"
+					},
 
-			Mashina.Peep.TimeOut {
-				min_duration = 4,
-				max_duration = 6
+					Mashina.Add {
+						left = HITS,
+						right = 1,
+						[HITS] = B.Output.result
+					},
+
+					Mashina.Compare.GreaterThanEqual {
+						left = HITS,
+						right = 5
+					},
+
+					Mashina.Get {
+						value = function(mashina, state, executor)
+							local poke = state[ATTACK_POKE]
+							return poke:getAggressor()
+						end,
+
+						[TARGET] = B.Output.result
+					},
+
+					Mashina.Peep.EngageCombatTarget {
+						peep = TARGET
+					},
+
+					Mashina.Peep.SetState {
+						state = "enraged"
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Peep.TimeOut {
+						min_duration = 4,
+						max_duration = 6
+					},
+
+					Mashina.Navigation.Wander {
+						min_radial_distance = 8,
+						radial_distance = 32,
+						wander_j = false
+					},
+
+					Mashina.Peep.Wait,
+
+					Mashina.Peep.TimeOut {
+						min_duration = 0.5,
+						max_duration = 0.5,
+					},
+
+					Mashina.Navigation.Face {
+						direction = 1
+					},
+
+					Mashina.Peep.TimeOut {
+						min_duration = 4,
+						max_duration = 6
+					}
+				}
 			}
 		}
 	}

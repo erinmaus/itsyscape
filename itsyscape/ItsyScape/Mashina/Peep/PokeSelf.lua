@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Check.lua
+-- ItsyScape/Mashina/Peep/PokeSelf.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,21 +9,20 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Check = B.Node("Check")
-Check.CONDITION = B.Reference()
+local PokeSelf = B.Node("PokeSelf")
+PokeSelf.EVENT = B.Reference()
+PokeSelf.POKE = B.Reference()
 
-function Check:update(mashina, state, executor)
-	local a = state[self.CONDITION]
+function PokeSelf:update(mashina, state, executor)
+	local event = state[self.EVENT]
+	local poke = state[self.POKE]
 
-	if type(a) ~= 'boolean' then
-		a = a(mashina, state, executor)
-	end
-
-	if a then
+	if event then
+		mashina:poke(event, poke)
 		return B.Status.Success
 	else
 		return B.Status.Failure
 	end
 end
 
-return Check
+return PokeSelf

@@ -96,7 +96,7 @@ do
 
 	ItsyScape.Meta.ResourceName {
 		Language = "en-US",
-		Value = "Mn'thro, Undead Squid",
+		Value = "Mn'thrw, Undead Squid",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 

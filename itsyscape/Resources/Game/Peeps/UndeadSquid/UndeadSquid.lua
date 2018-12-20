@@ -29,6 +29,9 @@ function UndeadSquid:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocityMultiplier = 1.5
 	movement.accelerationMultiplier = 1.5
+
+	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
 end
 
 function UndeadSquid:ready(director, game)

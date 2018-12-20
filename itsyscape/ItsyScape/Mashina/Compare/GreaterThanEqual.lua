@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Check.lua
+-- ItsyScape/Mashina/GreaterThanEqual.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,21 +9,21 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Check = B.Node("Check")
-Check.CONDITION = B.Reference()
+local GreaterThanEqual = B.Node("GreaterThanEqual")
+GreaterThanEqual.LEFT = B.Reference()
+GreaterThanEqual.RIGHT = B.Reference()
+GreaterThanEqual.RESULT = B.Reference()
 
-function Check:update(mashina, state, executor)
-	local a = state[self.CONDITION]
+function GreaterThanEqual:update(mashina, state, executor)
+	local a = state[self.LEFT] or 0
+	local b = state[self.RIGHT] or 0
 
-	if type(a) ~= 'boolean' then
-		a = a(mashina, state, executor)
-	end
-
-	if a then
+	if a >= b then
+		print 'yes'
 		return B.Status.Success
 	else
 		return B.Status.Failure
 	end
 end
 
-return Check
+return GreaterThanEqual

@@ -31,6 +31,7 @@ function Talk:update(mashina, state, executor)
 	end
 
 	actor:flash('Message', 1, message, state[self.COLOR])
+	Log.info("\"%s\", said %s.", message, mashina:getName())
 
 	return B.Status.Success
 end
