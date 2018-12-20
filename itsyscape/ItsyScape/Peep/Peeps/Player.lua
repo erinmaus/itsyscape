@@ -60,6 +60,9 @@ function Player:new(resource, ...)
 	Utility.Peep.addEquipment(self)
 	Utility.Peep.addInventory(self)
 
+	self:addPoke('transferItemTo')
+	self:addPoke('transferItemFrom')
+
 	Utility.Peep.setResource(self, resource)
 end
 

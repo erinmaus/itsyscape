@@ -9,6 +9,9 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
+local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -41,6 +44,8 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
+	peep:listen('transferItemFrom', self.peekEquip, self)
+	peep:listen('transferItemTo', self.peekEquip, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -49,7 +54,10 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
 	peep:silence('die', self.onDie)
+	peep:silence('resurrect', self.onResurrect)
 	peep:silence('resourceHit', self.onResourceHit)
+	peep:silence('transferItemFrom', self.peekEquip)
+	peep:silence('transferItemTo', self.peekEquip)
 end
 
 function HumanoidActorAnimatorCortex:playAnimation(peep, priority, resource)
@@ -115,6 +123,54 @@ function HumanoidActorAnimatorCortex:onResurrect(peep, p)
 	end
 end
 
+function HumanoidActorAnimatorCortex:getPeepWeaponType(peep, weapon)
+	if not weapon then
+		weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
+		         Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+	end
+
+	local x
+	if weapon then
+		weapon = peep:getDirector():getItemManager():getLogic(weapon:getID())
+		if weapon:isCompatibleType(Weapon) then
+			x = weapon:getWeaponType()
+		end
+	end
+
+	return x
+end
+
+function HumanoidActorAnimatorCortex:getIdleAnimation(peep, weapon)
+	local x = self:getPeepWeaponType(peep, weapon)
+	return self:getXAnimation(peep, "idle", x)
+end
+
+function HumanoidActorAnimatorCortex:getWalkAnimation(peep, weapon)
+	local x = self:getPeepWeaponType(peep, weapon)
+	return self:getXAnimation(peep, "walk", x)
+end
+
+function HumanoidActorAnimatorCortex:getXAnimation(peep, prefix, x)
+	local animations = {
+		string.format("animation-%s", prefix)
+	}
+
+	if x then
+		table.insert(animations, 1, string.format("animation-%s-%s", prefix, x))
+	end
+
+	for i = 1, #animations do
+		local resource = peep:getResource(
+			animations[i],
+			"ItsyScape.Graphics.AnimationResource")
+		if resource then
+			return resource
+		end
+	end
+
+	return nil
+end
+
 function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
 	local skill = p.skill or "none"
 	local animations = {
@@ -138,6 +194,19 @@ function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
 	end
 end
 
+function HumanoidActorAnimatorCortex:peekEquip(peep, e)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	local logic = peep:getDirector():getItemManager():getLogic(e.item:getID())
+	if logic:isCompatibleType(Weapon) then
+		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, e.item)) or
+		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, e.item))
+		then
+			self.idling[actor] = nil
+			self.walking[actor] = nil
+		end
+	end
+end
+
 function HumanoidActorAnimatorCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
@@ -149,23 +218,19 @@ function HumanoidActorAnimatorCortex:update(delta)
 		-- TODO this needs to be better
 		if velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior) then
 			if not self.walking[actor] then
-				local resource = peep:getResource(
-					"animation-walk",
-					"ItsyScape.Graphics.AnimationResource")
+				local resource = self:getWalkAnimation(peep)
 				if resource then
 					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-					self.walking[actor] = true
+					self.walking[actor] = resource
 					self.idling[actor] = nil
 				end
 			end
 		else
 			if not self.idling[actor] then
-				local resource = peep:getResource(
-					"animation-idle",
-					"ItsyScape.Graphics.AnimationResource")
+				local resource = self:getIdleAnimation(peep)
 				if resource then
 					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-					self.idling[actor] = true
+					self.idling[actor] = resource
 					self.walking[actor] = false
 				end
 			end

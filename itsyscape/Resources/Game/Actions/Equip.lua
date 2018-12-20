@@ -42,7 +42,7 @@ function Equip:perform(state, peep, item)
 	local transaction = broker:createTransaction()
 	transaction:addParty(inventory)
 	transaction:addParty(equipment)
-	transaction:transfer(equipment, item)
+	transaction:transfer(equipment, item, nil, 'equip')
 	do
 		local gameDB = self:getGameDB()
 		local resource = gameDB:getResource(item:getID(), "Item")
@@ -57,15 +57,15 @@ function Equip:perform(state, peep, item)
 					local twoHandedItem = equipment:getEquipped(Equipment.PLAYER_SLOT_TWO_HANDED)
 
 					if leftHandItem then
-						transaction:transfer(inventory, leftHandItem)
+						transaction:transfer(inventory, leftHandItem, nil, 'equip')
 					end
 
 					if rightHandItem then
-						transaction:transfer(inventory, rightHandItem)
+						transaction:transfer(inventory, rightHandItem, nil, 'equip')
 					end
 
 					if twoHandedItem then
-						transaction:transfer(inventory, twoHandedItem)
+						transaction:transfer(inventory, twoHandedItem, nil, 'equip')
 					end
 				else
 					if slot == Equipment.PLAYER_SLOT_RIGHT_HAND or
