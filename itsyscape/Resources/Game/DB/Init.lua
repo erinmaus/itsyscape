@@ -287,6 +287,53 @@ Game "ItsyScape"
 		Skill = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ActionEvent" {
+		Event = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventTextArgument" {
+		Value = Meta.TYPE_TEXT,
+		Key = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventIntegerArgument" {
+		Value = Meta.TYPE_INTEGER,
+		Key = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventRealArgument" {
+		Value = Meta.TYPE_REAL,
+		Key = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventResourceArgument" {
+		Value = Meta.TYPE_RESOURCE,
+		Key = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventActionArgument" {
+		Value = Meta.TYPE_ACTION,
+		Key = Meta.TYPE_TEXT,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "ActionEventTarget" {
+		Value = Meta.TYPE_RESOURCE,
+		Slot = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Pick"
 	ActionType "Sleep"
 

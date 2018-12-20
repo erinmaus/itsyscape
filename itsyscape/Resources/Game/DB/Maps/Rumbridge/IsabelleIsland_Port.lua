@@ -113,3 +113,54 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 end
+
+do
+	local PlugAction = ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+
+	ItsyScape.Meta.ActionEvent {
+		Event = "IsabelleIsland_Ocean_PlugLeak",
+		Action = PlugAction
+	}
+
+	ItsyScape.Meta.ActionEventTarget {
+		Value = ItsyScape.Resource.Map "IsabelleIsland_Ocean",
+		Action = PlugAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Plug",
+		Language = "en-US",
+		Action = PlugAction
+	}
+
+	ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak" {
+		PlugAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BlockingProp",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Leak",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "If that's not plugged soon, the ship will sink.",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"
+	}
+end
