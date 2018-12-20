@@ -16,6 +16,7 @@ DebugTeleport.SCOPES = { ['inventory'] = true, ['equipment'] = true }
 
 function DebugTeleport:perform(state, peep, item)
 	Utility.UI.openInterface(peep, "DebugTeleport")
+	Action.perform(self, state, peep)
 
 	return true
 end

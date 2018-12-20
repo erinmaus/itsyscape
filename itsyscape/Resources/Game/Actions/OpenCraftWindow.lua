@@ -11,8 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
-local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
 local Action = require "ItsyScape.Peep.Action"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -43,7 +43,8 @@ function OpenCraftWindow:perform(state, player, prop)
 
 		if walk then
 			local open = OpenInterfaceCommand("CraftWindow", true, prop, key, value, target:get("ActionType"))
-			local command = CompositeCommand(true, walk, face, open)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, face, open, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

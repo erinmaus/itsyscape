@@ -24,10 +24,11 @@ function Bury:perform(state, player, item)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state, flags) then
 		local bury = CallbackCommand(self.transfer, self, player:getState(), player, { ['item-inventory'] = true })
+		local perform = CallbackCommand(Action.perform, self, state, player)
 		local wait = WaitCommand(Bury.DURATION)
 
 		local queue = player:getCommandQueue(Bury.QUEUE)
-		return queue:push(bury) and queue:push(wait)
+		return queue:push(bury) and queue:push(wait) and queue:push(perform)
 	end
 
 	return false

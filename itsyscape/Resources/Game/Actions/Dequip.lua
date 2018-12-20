@@ -39,7 +39,8 @@ function Dequip:perform(state, peep, item)
 		io.stderr:write("error: ", r, "\n")
 		return false, "transaction failed"
 	end
-
+	
+	Action.perform(self, state, peep)
 	return true
 end
 

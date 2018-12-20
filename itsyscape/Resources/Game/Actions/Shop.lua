@@ -35,7 +35,8 @@ function OpenShop:perform(state, player, prop)
 
 		if walk then
 			local open = OpenInterfaceCommand("ShopWindow", true, shop)
-			local command = CompositeCommand(true, walk, face, open)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, face, open, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

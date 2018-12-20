@@ -47,6 +47,7 @@ function Open:perform(state, player, prop, channel)
 				prop:poke('open')
 			end)
 			local wait = WaitCommand(1)
+			local perform = CallbackCommand(Action.perform, self, state, player)
 			local command = CompositeCommand(true, walk, open, wait)
 
 			local queue = player:getCommandQueue(channel)

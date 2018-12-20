@@ -31,7 +31,8 @@ function Travel:perform(state, player, target)
 
 		if walk then
 			local travel = CallbackCommand(self.travel, self, state, player, target)
-			local command = CompositeCommand(true, walk, travel)
+			local perform = CallbackCommand(Action.perform, self, state, player)
+			local command = CompositeCommand(true, walk, travel, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

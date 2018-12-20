@@ -30,9 +30,10 @@ function Pickpocket:perform(state, player, target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
 
 		if walk then
-			local perform = CallbackCommand(self.transfer, self, state, player)
+			local transfer = CallbackCommand(self.transfer, self, state, player)
+			local perform = CallbackCommand(Action.perform, self, state, player)
 			local wait = WaitCommand(Pickpocket.DURATION, false)
-			local command = CompositeCommand(true, walk, perform, wait)
+			local command = CompositeCommand(true, walk, transfer, perform, wait)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
