@@ -131,9 +131,6 @@ local Tree = BTreeBuilder.Node() {
 							condition = WAS_HIT_IN_FRONT_OF_CANNON
 						}
 					},
-					Mashina.Peep.PokeSelf {
-						event = "attackShip"
-					},
 
 					Mashina.Peep.TimeOut {
 						min_duration = 4,
@@ -184,6 +181,10 @@ local Tree = BTreeBuilder.Node() {
 
 					Mashina.Navigation.Face {
 						direction = 1
+					},
+
+					Mashina.Peep.PokeSelf {
+						event = "attackShip"
 					}
 				}
 			}

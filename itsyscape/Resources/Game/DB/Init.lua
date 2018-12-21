@@ -499,6 +499,7 @@ include "Resources/Game/DB/Props/Lights.lua"
 
 -- Props (boats)
 include "Resources/Game/DB/Props/Sails.lua"
+include "Resources/Game/DB/Props/Cannons.lua"
 include "Resources/Game/DB/Props/BoatFoam.lua"
 include "Resources/Game/DB/Props/Helms.lua"
 

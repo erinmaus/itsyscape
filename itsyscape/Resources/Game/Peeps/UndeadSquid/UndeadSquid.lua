@@ -96,7 +96,7 @@ function UndeadSquid:onAttackShip()
 				for j = 1, shipMap:getHeight() do
 					for i = 1, shipMap:getWidth() do
 						local tile = shipMap:getTile(i, j)
-						if tile:hasFlag("floor") and not tile:hasFlag("impassable") then
+						if tile:hasFlag("floor") and not tile:hasFlag("impassable") and not tile:hasFlag("blocking") then
 							table.insert(tiles, { i = i, j = j, tile = tile })
 						end
 					end
