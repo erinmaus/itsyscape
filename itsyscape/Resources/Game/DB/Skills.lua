@@ -146,6 +146,17 @@ ItsyScape.Resource.Skill "Fletching"
 -- ItsyScape.Resource.Skill "Fishing"
 
 ItsyScape.Resource.Skill "Sailing"
+	ActionType "Fire"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Fire",
+		Skill = ItsyScape.Resource.Skill "Dexterity"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Fire",
+		Skill = ItsyScape.Resource.Skill "Strength"
+	}
 
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
