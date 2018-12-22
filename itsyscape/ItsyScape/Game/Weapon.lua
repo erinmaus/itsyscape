@@ -276,6 +276,7 @@ function Weapon:onAttackMiss(peep, target, attack, defense)
 		aggressor = peep
 	})
 
+	target:poke('receiveAttack', attack)
 	peep:poke('initiateAttack', attack)
 
 	self:applyCooldown(peep)
