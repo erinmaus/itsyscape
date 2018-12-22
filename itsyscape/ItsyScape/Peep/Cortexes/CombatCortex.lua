@@ -159,7 +159,7 @@ function CombatCortex:update(delta)
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange - 1, 0), { asCloseAsPossible = false })
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange / 2, 0), { asCloseAsPossible = false })
 
 							if not walk then
 								Log.info(
@@ -271,7 +271,15 @@ function CombatCortex:update(delta)
 						if canAttack then
 							logic = logic or self.defaultWeapon
 							if logic:isCompatibleType(Weapon) then
-								logic:perform(peep, target)
+								local success = logic:perform(peep, target)
+
+								if success then
+									local projectile = logic:getProjectile(peep)
+									if projectile then
+										local stage = game:getStage()
+										stage:fireProjectile(projectile, peep, target)
+									end
+								end
 							end
 						end
 					end

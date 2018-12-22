@@ -309,6 +309,8 @@ function Weapon:perform(peep, target)
 	else
 		self:onAttackMiss(peep, target, a, d)
 	end
+
+	return true
 end
 
 function Weapon:getStyle()
@@ -334,6 +336,10 @@ end
 
 function Weapon:getCooldown(peep)
 	return 2.4
+end
+
+function Weapon:getProjectile(peep)
+	return nil
 end
 
 return Weapon

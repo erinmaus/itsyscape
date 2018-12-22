@@ -289,7 +289,7 @@ function GameView:addActor(actorID, actor)
 	view:attach(self)
 
 	self.actors[actor] = view
-	self.views[view] = actor
+	self.views[actor] = view
 end
 
 function GameView:getActor(actor)
@@ -317,7 +317,7 @@ function GameView:addProp(propID, prop)
 	view:load()
 
 	self.props[prop] = view
-	self.views[view] = prop
+	self.views[prop] = prop
 end
 
 function GameView:getProp(prop)
@@ -329,7 +329,7 @@ function GameView:removeProp(prop)
 		local view = self.props[prop]
 		self.props[prop]:remove()
 		self.props[prop] = nil
-		self.views[view] = nil
+		self.views[prop] = nil
 	end
 end
 
