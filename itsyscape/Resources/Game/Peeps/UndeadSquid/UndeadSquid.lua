@@ -19,6 +19,8 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local UndeadSquid = Class(Creep)
 
@@ -32,6 +34,9 @@ function UndeadSquid:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocityMultiplier = 1.5
 	movement.accelerationMultiplier = 1.5
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
@@ -75,6 +80,8 @@ function UndeadSquid:ready(director, game)
 	self:addResource("animation-die", dieAnimation)
 
 	Creep.ready(self, director, game)
+
+	Utility.Peep.equipXWeapon(self, "UndeadSquidRock")
 end
 
 function UndeadSquid:onAttackShip()
@@ -119,6 +126,14 @@ function UndeadSquid:onAttackShip()
 	end
 
 	self:poke('initiateAttack', AttackPoke())
+end
+
+function UndeadSquid:update(...)
+	Creep.update(self, ...)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.facing = MovementBehavior.FACING_RIGHT
+	movement.targetFacing = MovementBehavior.FACING_RIGHT
 end
 
 return UndeadSquid

@@ -122,10 +122,6 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Set {
 						value = false,
 						[WAS_HIT_IN_FRONT_OF_CANNON] = B.Output.result
-					},
-
-					Mashina.Peep.Talk {
-						message = "WAS_HIT_IN_FRONT_OF_CANNON"
 					}
 				},
 

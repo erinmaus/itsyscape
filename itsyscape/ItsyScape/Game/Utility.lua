@@ -728,6 +728,18 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
+function Utility.Peep.equipXWeapon(peep, id)
+	local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+
+	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
+	local XType = require(XName)
+	
+	local s, weapon = peep:addBehavior(WeaponBehavior)
+	if s then
+		weapon.weapon = XType(nil, peep:getDirector():getItemManager())
+	end
+end
+
 function Utility.Peep.getEffectType(resource, gameDB)
 	local EffectTypeName = string.format("Resources.Game.Effects.%s.Effect", resource.name)
 	local s, r = pcall(require, EffectTypeName)

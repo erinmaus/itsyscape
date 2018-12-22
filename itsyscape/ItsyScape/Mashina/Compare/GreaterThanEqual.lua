@@ -19,7 +19,6 @@ function GreaterThanEqual:update(mashina, state, executor)
 	local b = state[self.RIGHT] or 0
 
 	if a >= b then
-		print 'yes'
 		return B.Status.Success
 	else
 		return B.Status.Failure

@@ -37,6 +37,10 @@ function Projectile:load()
 	-- Nothing.
 end
 
+function Projectile:getTime()
+	return self.time
+end
+
 function Projectile:getDelta()
 	return math.min(math.max(self.time / self:getDuration(), 0), 1)
 end
@@ -77,7 +81,7 @@ function Projectile:getTargetPosition(target)
 			local position = Vector(transform:transformPoint(0, 0, 0))
 			local min, max = target:getBounds()
 
-			return position + (max - min) / 2
+			return position + Vector(0, (max.y - min.y) / 2, 0)
 		end
 	elseif target:isCompatibleType(Vector) then
 		return target
@@ -86,8 +90,8 @@ function Projectile:getTargetPosition(target)
 	return Vector.ZERO
 end
 
-function Projectile:update(delta)
-	self.time = self.time + delta
+function Projectile:update(elapsed)
+	self.time = self.time + elapsed
 end
 
 function Projectile:getRoot()

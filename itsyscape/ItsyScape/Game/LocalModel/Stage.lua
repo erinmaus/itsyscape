@@ -624,7 +624,6 @@ function LocalStage:loadStage(path)
 		player:addBehavior(MapResourceReferenceBehavior)
 		local m = player:getBehavior(MapResourceReferenceBehavior)
 		m.map = resource or false
-		if m.map then print('player map', m.map.name) end
 	end
 end
 

@@ -69,7 +69,9 @@ function RangedWeapon:perform(peep, target)
 
 	local ammoType, ammo = self:getAmmo(peep)
 	if ammoType == Equipment.AMMO_ANY or ammoType == self:getAmmoType() then
-		if peep:getState():take("Item", Equipment.PLAYER_SLOT_QUIVER, 1, FLAGS) then
+		if ammoType == Equipment.AMMO_NONE or
+		   peep:getState():take("Item", Equipment.PLAYER_SLOT_QUIVER, 1, FLAGS)
+		then
 			return Weapon.perform(self, peep, target)
 		end
 	end

@@ -112,6 +112,13 @@ do
 		IsDefault = 1,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForItem(65),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(65),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
 end
 
 do
