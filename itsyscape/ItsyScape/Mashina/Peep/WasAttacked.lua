@@ -38,11 +38,11 @@ function WasAttacked:update(mashina, state, executor)
 end
 
 function WasAttacked:hit(peep, tookDamage, missed, state, _, p)
-	if (missed == true or missed == nil) and p:getDamage() > 0 then
+	if (missed == true or missed == nil) and p:getDamage() == 0 then
 		state[self.ATTACKED] = true
 	end
 
-	if (tookDamage == true and missed == true) and p:getDamage() == 0 then
+	if (tookDamage == true or tookDamage == nil) and p:getDamage() > 0 then
 		state[self.ATTACKED] = true
 	end
 
