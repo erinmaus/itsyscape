@@ -19,8 +19,8 @@ IronCannonball.SPEED = 10
 function IronCannonball:attach()
 	Projectile.attach(self)
 
-	self.spawnPosition = Projectile.getTargetPosition(self:getSource())
-	self.fallPosition = Projectile.getTargetPosition(self:getDestination())
+	self.spawnPosition = self:getTargetPosition(self:getSource())
+	self.fallPosition = self:getTargetPosition(self:getDestination())
 	self.duration = (self.spawnPosition - self.fallPosition):getLength() / IronCannonball.SPEED
 end
 

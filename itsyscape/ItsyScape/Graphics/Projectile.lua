@@ -61,13 +61,13 @@ function Projectile:getDestination()
 	return self.destination
 end
 
-function Projectile.getTargetPosition(target)
-	if target:isType(Prop) or target:isType(Actor) then
+function Projectile:getTargetPosition(target)
+	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
 		local positionable
 		do
-			if target:isType(Prop) then
+			if target:isCompatibleType(Prop) then
 				positionable = self.gameView:getView(target):getRoot()
-			elseif target:isType(Actor) then
+			elseif target:isCompatibleType(Actor) then
 				positionable = self.gameView:getView(target):getSceneNode()
 			end
 		end
@@ -75,11 +75,11 @@ function Projectile.getTargetPosition(target)
 		if positionable then
 			local transform = positionable:getTransform():getGlobalDeltaTransform(1)
 			local position = Vector(transform:transformPoint(0, 0, 0))
-			local max, min = target:getBounds()
+			local min, max = target:getBounds()
 
 			return position + (max - min) / 2
 		end
-	elseif target:isType(Vector) then
+	elseif target:isCompatibleType(Vector) then
 		return target
 	end
 

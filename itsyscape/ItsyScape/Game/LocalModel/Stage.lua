@@ -765,13 +765,13 @@ end
 
 function LocalStage:fireProjectile(projectileID, source, destination)
 	function peepToModel(peep)
-		if peep:isType(require "ItsyScape.Peep.Peep") then
-			local prop = source:getBehavior(PropReferenceBehavior)
+		if peep:isCompatibleType(require "ItsyScape.Peep.Peep") then
+			local prop = peep:getBehavior(PropReferenceBehavior)
 			if prop and prop.prop then
 				return prop.prop
 			end
 
-			local actor = source:getBehavior(ActorReferenceBehavior)
+			local actor = peep:getBehavior(ActorReferenceBehavior)
 			if actor and actor.actor then
 				return actor.actor
 			end
