@@ -46,6 +46,10 @@ function MashinaCortex:update(delta)
 					p.executor = B.Executor(peep)
 					p.tree = BTreeBuilder.materialize(peep, s)
 				else
+					if p.executor then
+						p.executor:drop()
+					end
+					
 					p.executor = nil
 					p.tree = false
 				end

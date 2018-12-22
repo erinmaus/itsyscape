@@ -441,6 +441,30 @@ function ItsyScape.Utility.questStep(from, to)
 	}
 end
 
+do
+	ItsyScape.Resource.Item "Null" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Resource = ItsyScape.Resource.Item "Null"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Null",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Null"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better than a dwarf's head.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Null"
+	}
+end
+
 -- Skills
 include "Resources/Game/DB/Skills.lua"
 

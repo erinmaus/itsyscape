@@ -20,6 +20,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -75,20 +76,21 @@ function CombatCortex:update(delta)
 		local position = peep:getBehavior(PositionBehavior)
 
 		local weaponRange
-		local equippedWeapon = Utility.Peep.getEquippedItem(
-			peep,
-			Equipment.PLAYER_SLOT_RIGHT_HAND)
+		local equippedWeapon =
+			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
+			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
 		if not equippedWeapon then
-			equippedWeapon = Utility.Peep.getEquippedItem(
-				peep,
-				Equipment.PLAYER_SLOT_TWO_HANDED)
-			if not equippedWeapon then
-				weaponRange = 1
-			end
+			weaponRange = 1
 		end
 		
 		local logic
-		if equippedWeapon then
+		if not equippedWeapon then
+			local weapon = peep:getBehavior(WeaponBehavior)
+			if weapon and weapon.weapon then
+				logic = weapon.weapon
+				weaponRange = logic:getAttackRange(peep)
+			end
+		else
 			logic = itemManager:getLogic(equippedWeapon:getID())
 			if logic:isCompatibleType(Weapon) then
 				weaponRange = logic:getAttackRange(peep)
@@ -155,8 +157,10 @@ function CombatCortex:update(delta)
 
 					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
+						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
+						print(target:getName(), "too far from", peep:getName())
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange / 2, 0), { asCloseAsPossible = false })
@@ -198,7 +202,7 @@ function CombatCortex:update(delta)
 							local targetIsPlayer = target:hasBehavior(PlayerBehavior)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
 							if targetIsPlayer and not selfIsPlayer then
-								if distanceToTarget <= selfRadius + targetRadius then
+								if distanceToTarget + weaponRange <= selfRadius + targetRadius then
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then
@@ -286,10 +290,12 @@ function CombatCortex:update(delta)
 
 					do
 						local movement = peep:getBehavior(MovementBehavior)
-						if selfI > targetI then
-							movement.facing = MovementBehavior.FACING_LEFT
-						elseif selfI < targetI then
-							movement.facing = MovementBehavior.FACING_RIGHT
+						if not movement.targetFacing then
+							if selfI > targetI then
+								movement.facing = MovementBehavior.FACING_LEFT
+							elseif selfI < targetI then
+								movement.facing = MovementBehavior.FACING_RIGHT
+							end
 						end
 					end
 				end

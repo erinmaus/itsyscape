@@ -12,7 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Item = Class()
 
 function Item:new(id, manager)
-	self.id = id
+	self.id = id or "Null"
 	self.manager = manager
 end
 

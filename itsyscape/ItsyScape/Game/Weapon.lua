@@ -241,7 +241,7 @@ function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
 		level or 1,
 		1.0 * multiplier,
 		strengthBonus)
-	return math.floor(math.random(1, math.max(maxHit, 1)))
+	return math.floor(math.random(1, math.max(maxHit, 1))), maxHit
 end
 
 function Weapon:getBonusForStance(peep)

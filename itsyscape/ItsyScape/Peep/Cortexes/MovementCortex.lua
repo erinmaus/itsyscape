@@ -56,83 +56,84 @@ function MovementCortex:update(delta)
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
 		local map = self:getDirector():getMap(position.layer or 1)
+		if map then
+			movement:clampMovement()
 
-		movement:clampMovement()
+			movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity * delta
+			clampVector(movement.acceleration)
 
-		movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity * delta
-		clampVector(movement.acceleration)
-
-		local wasMoving
-		do
-			local xzVelocity = movement.velocity * Vector(1, 0, 1)
-			if xzVelocity:getLengthSquared() > 0 then
-				wasMoving = true
-			end
-		end
-
-		local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
-		movement.velocity = movement.velocity + acceleration
-		clampVector(movement.velocity)
-
-		do
-			local xzVelocity = movement.velocity * Vector(1, 0, 1)
-			if xzVelocity:getLengthSquared() == 0 and movement.isOnGround then
-				movement.isStopping = false
-				if wasMoving and movement.targetFacing then
-					movement.facing = movement.targetFacing
-					movement.targetFacing = false
+			local wasMoving
+			do
+				local xzVelocity = movement.velocity * Vector(1, 0, 1)
+				if xzVelocity:getLengthSquared() > 0 then
+					wasMoving = true
 				end
 			end
-		end
 
-		local oldPosition = position.position
+			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
+			movement.velocity = movement.velocity + acceleration
+			clampVector(movement.velocity)
 
-		local velocity = movement.velocity * delta * movement.velocityMultiplier
-		position.position = position.position + velocity
-
-		movement.acceleration = movement.acceleration * movement.decay
-		movement.velocity = movement.velocity * movement.decay
-
-		local y = map:getInterpolatedHeight(
-			position.position.x,
-			position.position.z)
-		if math.abs(position.position.y - y) < MovementCortex.GROUND_EPSILON and
-		   math.abs(movement.velocity.y * delta) < MovementCortex.GROUND_EPSILON
-		then
-			movement.isOnGround = true
-		elseif position.position.y < y and not movement.isOnGround then
-			movement.acceleration.y = -movement.acceleration.y * movement.bounce
-			movement.velocity.y = -movement.velocity.y * movement.bounce
-			position.position.y = y
-			movement.isOnGround = false
-		elseif position.position.y > y + MovementCortex.GROUND_EPSILON
-		       and movement.isOnGround
-		then
-			movement.isOnGround = false
-		end
-
-		if movement.isOnGround then
-			position.position.y = y
-			movement.acceleration.y = 0
-			movement.velocity.y = 0
-
-			if movement.isStopping then
-				movement.acceleration = movement.acceleration * movement.decay ^ movement.stoppingForce
-				movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
+			do
+				local xzVelocity = movement.velocity * Vector(1, 0, 1)
+				if xzVelocity:getLengthSquared() == 0 and movement.isOnGround then
+					movement.isStopping = false
+					if wasMoving and movement.targetFacing then
+						movement.facing = movement.targetFacing
+						movement.targetFacing = false
+					end
+				end
 			end
-		else
-			position.position.y = math.max(position.position.y + gravity.y * delta, y)
-		end
 
-		local stepY = position.position.y - oldPosition.y 
-		if stepY > movement.maxStepHeight then
-			position.position = oldPosition
-		end
+			local oldPosition = position.position
 
-		if movement.velocity.x < -0.5 then
-			movement.facing = MovementBehavior.FACING_LEFT
-		elseif movement.velocity.x > 0.5 then
-			movement.facing = MovementBehavior.FACING_RIGHT
+			local velocity = movement.velocity * delta * movement.velocityMultiplier
+			position.position = position.position + velocity
+
+			movement.acceleration = movement.acceleration * movement.decay
+			movement.velocity = movement.velocity * movement.decay
+
+			local y = map:getInterpolatedHeight(
+				position.position.x,
+				position.position.z)
+			if math.abs(position.position.y - y) < MovementCortex.GROUND_EPSILON and
+			   math.abs(movement.velocity.y * delta) < MovementCortex.GROUND_EPSILON
+			then
+				movement.isOnGround = true
+			elseif position.position.y < y and not movement.isOnGround then
+				movement.acceleration.y = -movement.acceleration.y * movement.bounce
+				movement.velocity.y = -movement.velocity.y * movement.bounce
+				position.position.y = y
+				movement.isOnGround = false
+			elseif position.position.y > y + MovementCortex.GROUND_EPSILON
+			       and movement.isOnGround
+			then
+				movement.isOnGround = false
+			end
+
+			if movement.isOnGround then
+				position.position.y = y
+				movement.acceleration.y = 0
+				movement.velocity.y = 0
+
+				if movement.isStopping then
+					movement.acceleration = movement.acceleration * movement.decay ^ movement.stoppingForce
+					movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
+				end
+			else
+				position.position.y = math.max(position.position.y + gravity.y * delta, y)
+			end
+
+			local stepY = position.position.y - oldPosition.y 
+			if stepY > movement.maxStepHeight then
+				position.position = oldPosition
+			end
+
+			if movement.velocity.x < -0.5 then
+				movement.facing = MovementBehavior.FACING_LEFT
+			elseif movement.velocity.x > 0.5 then
+				movement.facing = MovementBehavior.FACING_RIGHT
+			end
 		end
 	end
 end
