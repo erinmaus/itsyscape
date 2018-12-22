@@ -125,66 +125,68 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Step {
+				Mashina.Sequence {
 					Mashina.Invert {
 						Mashina.Check {
 							condition = WAS_HIT_IN_FRONT_OF_CANNON
 						}
 					},
 
-					Mashina.Peep.TimeOut {
-						min_duration = 4,
-						max_duration = 6
-					},
-
-					Mashina.Navigation.PathRandom {
-						tiles = {
-							"Anchor_Left",
-							"Anchor_Right"
+					Mashina.Step {
+						Mashina.Peep.TimeOut {
+							min_duration = 4,
+							max_duration = 6
 						},
 
-						[CURRENT_TILE] = B.Output.selected_tile
-					},
+						Mashina.Navigation.PathRandom {
+							tiles = {
+								"Anchor_Left",
+								"Anchor_Right"
+							},
 
-					Mashina.Peep.Wait,
-
-					Mashina.Peep.TimeOut {
-						min_duration = 0.5,
-						max_duration = 0.5,
-					},
-
-					Mashina.Navigation.Face {
-						direction = 1
-					},
-
-					Mashina.Peep.TimeOut {
-						min_duration = 4,
-						max_duration = 6
-					},
-
-					Mashina.Navigation.PathRandom {
-						tiles = {
-							"Anchor_Spawn",
-							"Anchor_Cannon1",
-							"Anchor_Cannon2"
+							[CURRENT_TILE] = B.Output.selected_tile
 						},
 
-						[CURRENT_TILE] = B.Output.selected_tile
-					},
+						Mashina.Peep.Wait,
 
-					Mashina.Peep.Wait,
+						Mashina.Peep.TimeOut {
+							min_duration = 0.5,
+							max_duration = 0.5,
+						},
 
-					Mashina.Peep.TimeOut {
-						min_duration = 0.5,
-						max_duration = 0.5,
-					},
+						Mashina.Navigation.Face {
+							direction = 1
+						},
 
-					Mashina.Navigation.Face {
-						direction = 1
-					},
+						Mashina.Peep.TimeOut {
+							min_duration = 4,
+							max_duration = 6
+						},
 
-					Mashina.Peep.PokeSelf {
-						event = "attackShip"
+						Mashina.Navigation.PathRandom {
+							tiles = {
+								"Anchor_Spawn",
+								"Anchor_Cannon1",
+								"Anchor_Cannon2"
+							},
+
+							[CURRENT_TILE] = B.Output.selected_tile
+						},
+
+						Mashina.Peep.Wait,
+
+						Mashina.Peep.TimeOut {
+							min_duration = 0.5,
+							max_duration = 0.5,
+						},
+
+						Mashina.Navigation.Face {
+							direction = 1
+						},
+
+						Mashina.Peep.PokeSelf {
+							event = "attackShip"
+						}
 					}
 				}
 			}
