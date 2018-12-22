@@ -127,19 +127,23 @@ function CombatCortex:update(delta)
 							local tx, ty, tz = peepParentTransform:inverseTransformPoint(targetAbsolutePosition:get())
 							targetRelativePosition = Vector(tx, ty, tz)
 						else
-							targetRelativePosition = targetPosition.position
+							targetRelativePosition = targetAbsolutePosition
 						end
 
-						targetI, targetJ = map:toTile(
+						local _
+						_, _, targetI, targetJ = map:toTile(
 							targetRelativePosition.x,
 							targetRelativePosition.z)
 					end
 
 					local selfRadius, targetRadius
 					do
-						local peepSize = peep:getBehavior(SizeBehavior).size.x
+						local peepSize = peep:getBehavior(SizeBehavior).size
+						peepSize = math.min(peepSize.x, peepSize.z)
 						selfRadius = math.max(math.floor(peepSize / map:getCellSize()) - 1, 0)
-						local targetSize = target:getBehavior(SizeBehavior).size.x
+
+						local targetSize = target:getBehavior(SizeBehavior).size
+						targetSize = math.min(targetSize.x, targetSize.z)
 						targetRadius = math.max(math.floor(targetSize / map:getCellSize()) - 1, 0)
 					end
 					

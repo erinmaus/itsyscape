@@ -13,6 +13,7 @@ local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local Action = require "ItsyScape.Peep.Action"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local Fire = Class(Action)
 Fire.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -22,12 +23,21 @@ Fire.DURATION = 0.5
 function Fire:perform(state, player, target)
 	if target and self:canPerform(state) and self:canTransfer(state) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 0, { asCloseAsPossible = false })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
+
+		local health = target:getBehavior(PropResourceHealthBehavior)
+		if not health then
+			return false
+		end
+
+		if health.currentProgress ~= health.maxProgress then
+			return false
+		end
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)
 			local wait = WaitCommand(Fire.DURATION, false)
-			local fire = CallbackCommand(target.poke, target, 'fire')
+			local fire = CallbackCommand(target.poke, target, 'fire', player)
 			local perform = CallbackCommand(Action.perform, self, state, player)
 			local command = CompositeCommand(true, walk, wait, transfer, perform, fire)
 

@@ -57,7 +57,7 @@ function One:new(...)
 	self:addBehavior(CombatStatusBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1.5, 2, 1.5)
+	size.size = Vector(1, 2, 1)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 18

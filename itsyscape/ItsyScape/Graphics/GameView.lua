@@ -30,6 +30,7 @@ function GameView:new(game)
 	self.game = game
 	self.actors = {}
 	self.props = {}
+	self.views = {}
 
 	local stage = game:getStage()
 	self._onLoadMap = function(_, map, layer, tileSetID)
@@ -97,6 +98,11 @@ function GameView:new(game)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
+	self._onProjectile = function(_, projectileID, source, destination, time)
+		self:fireProjectile(projectileID, source, destination, time)
+	end
+	stage.onProjectile:register(self._onProjectile)
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
 
@@ -119,6 +125,8 @@ function GameView:new(game)
 	local imageData = love.image.newImageData(1, 1)
 	imageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.whiteTexture = TextureResource(love.graphics.newImage(imageData))
+
+	self.projectiles = {}
 end
 
 function GameView:getGame()
@@ -160,6 +168,7 @@ function GameView:release()
 	stage.onDecorate:unregister(self._onDecorate)
 	stage.onWaterFlood:unregister(self._onWaterFlood)
 	stage.onWaterDrain:unregister(self._onWaterDrain)
+	stage.onProjectile:unregister(self._onProjectile)
 end
 
 function GameView:addMap(map, layer, tileSetID)
@@ -280,6 +289,7 @@ function GameView:addActor(actorID, actor)
 	view:attach(self)
 
 	self.actors[actor] = view
+	self.views[view] = actor
 end
 
 function GameView:getActor(actor)
@@ -288,8 +298,10 @@ end
 
 function GameView:removeActor(actor)
 	if self.actors[actor] then
+		local view = self.actors[actor]
 		self.actors[actor]:poof()
 		self.actors[actor] = nil
+		self.views[view] = nil
 	end
 end
 
@@ -305,13 +317,24 @@ function GameView:addProp(propID, prop)
 	view:load()
 
 	self.props[prop] = view
+	self.views[view] = prop
+end
+
+function GameView:getProp(prop)
+	return self.props[prop]
 end
 
 function GameView:removeProp(prop)
 	if self.props[prop] then
+		local view = self.props[prop]
 		self.props[prop]:remove()
 		self.props[prop] = nil
+		self.views[view] = nil
 	end
+end
+
+function GameView:getView(instance)
+	return self.views[instance]
 end
 
 function GameView:spawnItem(item, tile)
@@ -442,6 +465,27 @@ function GameView:drain(key)
 	end
 end
 
+function GameView:fireProjectile(projectileID, source, destination, time)
+	local ProjectileType
+	do
+		local ProjectileTypeName = string.format("Resources.Game.Projectiles.%s.Projectile", projectileID)
+		local s, r = pcall(require, ProjectileTypeName)
+		if not s then
+			Log.error("Failed to load projectile '%s': %s.", projectileID, r)
+			return
+		end
+
+		ProjectileType = r
+	end
+
+	if ProjectileType then
+		local projectile = ProjectileType(projectileID, self, source, destination, time)
+		projectile:attach()
+		projectile:load()
+		self.projectiles[projectile] = true
+	end
+end
+
 function GameView:getDecorations()
 	local result = {}
 	local count = 0
@@ -462,6 +506,20 @@ function GameView:update(delta)
 
 	for _, prop in pairs(self.props) do
 		prop:update(delta)
+	end
+
+	local finishedProjectiles = {}
+	for projectile in pairs(self.projectiles) do
+		projectile:update(delta)
+
+		if projectile:isDone() then
+			table.insert(finishedProjectiles, projectile)
+		end
+	end
+
+	for i = 1, #finishedProjectiles do
+		finishedProjectiles[i]:poof()
+		self.projectiles[finishedProjectiles[i]] = nil
 	end
 
 	self.spriteManager:update(delta)
