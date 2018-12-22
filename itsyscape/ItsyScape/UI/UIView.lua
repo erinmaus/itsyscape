@@ -13,6 +13,8 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
+local Drawable = require "ItsyScape.UI.Drawable"
+local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
@@ -58,6 +60,7 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggableButton, ButtonRenderer(self.resources))
 	self.renderManager:addRenderer(DraggablePanel, PanelRenderer(self.resources))
+	self.renderManager:addRenderer(Drawable, DrawableRenderer(self.resources))
 	self.renderManager:addRenderer(Label, LabelRenderer(self.resources))
 	self.renderManager:addRenderer(Icon, IconRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
