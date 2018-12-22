@@ -337,6 +337,14 @@ Game "ItsyScape"
 	ActionType "Pick"
 	ActionType "Sleep"
 
+	Meta "Cannon" {
+		Range = Meta.TYPE_INTEGER,
+		MinDamage = Meta.TYPE_INTEGER,
+		MaxDamage = Meta.TYPE_INTEGER,
+		Cannonball = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 

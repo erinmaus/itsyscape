@@ -32,6 +32,9 @@ function Stage:new()
 	self.onWaterFlood = Callback()
 	self.onWaterDrain = Callback()
 
+	-- (projectileID, source, destination, time)
+	self.onProjectile = Callback()
+
 	-- (group, value [nil/Decoration])
 	self.onDecorate = Callback()
 end

@@ -9,8 +9,11 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
@@ -51,19 +54,70 @@ function BasicCannon:ready(director, game)
 	end
 end
 
-function BasicCannon:onFire(e)
+function BasicCannon:onFire(peep)
 	local health = self:getBehavior(PropResourceHealthBehavior)
 	health.currentProgress = health.maxProgress
 
 	local resource = Utility.Peep.getResource(self)
 	if resource then
 		local gameDB = self:getDirector():getGameDB()
-		local p = gameDB:getRecord("GatherableProp", {
-			Resource = resource
-		})
 
-		self.spawnCooldown = p:get("SpawnTime") or 10
-		self.currentSpawnCooldown = self.spawnCooldown
+		do
+			local p = gameDB:getRecord("GatherableProp", {
+				Resource = resource
+			})
+
+			self.spawnCooldown = p:get("SpawnTime") or 10
+			self.currentSpawnCooldown = self.spawnCooldown
+		end
+
+		do
+			local cannon = gameDB:getRecord("Cannon", {
+				Resource = resource
+			})
+
+			local range
+			if cannon then
+				range = math.min(cannon:get("Range"), 10)
+			else
+				range = 10
+			end
+
+			local director = self:getDirector()
+
+			-- TODO: Take into account 'face' from MapObjectLocation
+			local ray = Ray(
+				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y - Vector.UNIT_Z,
+				-Vector.UNIT_Z)
+
+			local hits = director:probe(self:getLayerName(), function(peep)
+				local position = Utility.Peep.getAbsolutePosition(peep)
+				local size = peep:getBehavior(SizeBehavior)
+				if not size then
+					return false
+				else
+					size = size.size
+				end
+			
+				local min = position - Vector(size.x / 2, 0, size.z / 2)
+				local max = position + Vector(size.x / 2, size.y, size.z / 2)
+
+				local s, p = ray:hitBounds(min, max)
+				return s and (p - ray.origin):getLength() <= range
+			end)
+
+			local damage = math.random(cannon:get("MinDamage"), cannon:get("MaxDamage"))
+			local poke = AttackPoke({
+				weaponType = 'cannon',
+				damage = damage,
+				aggressor = peep
+			})
+
+			director:broadcast(hits, 'receiveAttack', poke)
+
+			local stage = director:getGameInstance():getStage()
+			stage:fireProjectile(cannon:get("Cannonball").name, ray.origin, ray:project(range))
+		end
 	end
 end
 

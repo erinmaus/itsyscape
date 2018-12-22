@@ -89,6 +89,7 @@ ItsyScape.Meta.MapObjectSize {
 	SizeX = 1.5,
 	SizeY = 3,
 	SizeZ = 1.5,
+	OffsetZ = 1,
 	MapObject = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }
 
@@ -107,5 +108,13 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.GatherableProp {
 	Health = 15,
 	SpawnTime = 15,
+	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
+}
+
+ItsyScape.Meta.Cannon {
+	Range = 10,
+	MinDamage = 5,
+	MaxDamage = 10,
+	Cannonball = ItsyScape.Resource.Item "IronCannonball",
 	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }

@@ -85,6 +85,9 @@ function Map:toTile(x, z)
 	local i = math.floor(x / self.cellSize) + 1
 	local j = math.floor(z / self.cellSize) + 1
 
+	local s = i
+	local t = j
+
 	if i < 1 then
 		i = 1
 	elseif i > self.width then
@@ -97,7 +100,7 @@ function Map:toTile(x, z)
 		j = self.height
 	end
 
-	return i, j
+	return i, j, s, t
 end
 
 -- Gets a tile at (x, *, z).

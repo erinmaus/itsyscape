@@ -619,9 +619,12 @@ function LocalStage:loadStage(path)
 		local player = self.game:getPlayer():getActor():getPeep()
 		director:movePeep(player, filename)
 
+		local resource = director:getGameDB():getResource(filename, "Map")
+
 		player:addBehavior(MapResourceReferenceBehavior)
 		local m = player:getBehavior(MapResourceReferenceBehavior)
 		m.map = resource or false
+		if m.map then print('player map', m.map.name) end
 	end
 end
 
@@ -758,6 +761,28 @@ function LocalStage:takeItem(i, j, layer, ref)
 			end
 		end
 	end
+end
+
+function LocalStage:fireProjectile(projectileID, source, destination)
+	function peepToModel(peep)
+		if peep:isType(require "ItsyScape.Peep.Peep") then
+			local prop = source:getBehavior(PropReferenceBehavior)
+			if prop and prop.prop then
+				return prop.prop
+			end
+
+			local actor = source:getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				return actor.actor
+			end
+
+			return Utility.Peep.getAbsolutePosition(peep)
+		end
+
+		return peep
+	end
+
+	self.onProjectile(self, projectileID, peepToModel(source), peepToModel(destination), 0)
 end
 
 function LocalStage:decorate(group, decoration, layer)

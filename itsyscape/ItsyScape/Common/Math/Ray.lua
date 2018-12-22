@@ -97,7 +97,7 @@ function Ray:hitBounds(min, max)
 	tMin = math.max(tMin, math.min(tz1, tz2))
 	tMax = math.min(tMax, math.max(tz1, tz2))
  
-	if tMax >= tMin then
+	if tMax >= tMin and tMin >= 0 then
 		return true, self.origin + self.direction * tMin
 	else
 		return false
