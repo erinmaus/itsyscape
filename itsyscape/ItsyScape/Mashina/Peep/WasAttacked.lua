@@ -57,11 +57,12 @@ function WasAttacked:activated(mashina, state, executor)
 	local tookDamage = state[self.TOOK_DAMAGE]
 	local missed = state[self.MISSED]
 
-	local callback = function(self, ...)
+	local callback = self.callback or function(self, ...)
 		self:hit(...)
 	end
 
-	state[self.CALLBACK] = callback
+	self.callback = callback
+	self.mashina = mashina
 
 	mashina:listen('receiveAttack', callback, self, mashina, tookDamage, missed, state)
 end
@@ -70,8 +71,14 @@ function WasAttacked:deactivated(mashina, state, executor)
 	state[self.ATTACKED] = nil
 	state[self.INTERNAL_ATTACK_POKE] = nil
 
-	mashina:silence('receiveAttack', state[self.CALLBACK])
-	state[self.CALLBACK] = nil
+	mashina:silence('receiveAttack', self.callback)
+	self.callback = nil
+end
+
+function WasAttacked:removed()
+	self.mashina:silence('receiveAttack', self.callback)
+	self.callback = nil
+	self.mashina = nil
 end
 
 return WasAttacked

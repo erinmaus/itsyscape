@@ -610,6 +610,7 @@ function LocalStage:loadStage(path)
 	end
 
 	self:unloadAll()
+	self.oldStageName = self.stageName
 	self.stageName = filename
 
 	self:loadMapResource(filename, args)
@@ -624,6 +625,11 @@ function LocalStage:loadStage(path)
 		player:addBehavior(MapResourceReferenceBehavior)
 		local m = player:getBehavior(MapResourceReferenceBehavior)
 		m.map = resource or false
+
+		player:poke('travel', {
+			from = oldStageName,
+			to = filename
+		})
 	end
 end
 

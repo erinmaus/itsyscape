@@ -23,9 +23,17 @@ function BossHUDController:new(peep, director, ...)
 			local boss = bosses[i]
 			if boss then
 				table.insert(self.bosses, boss)
+
+				boss:listen('poof', function()
+					self:poke("close", nil, {})
+				end)
 			end
 		end
 	end
+
+	peep:listen('travel', function()
+		self:poke("close", nil, {})
+	end)
 
 	self.stats = {
 		{
