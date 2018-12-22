@@ -19,9 +19,7 @@ Cannonball.SPEED = 10
 function Cannonball:attach()
 	Projectile.attach(self)
 
-	self.spawnPosition = self:getTargetPosition(self:getSource())
-	self.fallPosition = self:getTargetPosition(self:getDestination())
-	self.duration = (self.spawnPosition - self.fallPosition):getLength() / self.SPEED
+	self.duration = math.huge
 end
 
 function Cannonball:getTextureFilename()
@@ -50,20 +48,30 @@ function Cannonball:getDuration()
 	return self.duration
 end
 
+function Cannonball:tick()
+	if not self.spawnPosition or not self.fallPosition then
+		self.spawnPosition = self:getTargetPosition(self:getSource())
+		self.fallPosition = self:getTargetPosition(self:getDestination())
+
+		self.duration = (self.spawnPosition - self.fallPosition):getLength() / self.SPEED
+	end
+end
+
 function Cannonball:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	local root = self:getRoot()
+	if self.spawnPosition and self.fallPosition then
+		local root = self:getRoot()
+		local delta = self:getDelta()
+		local mu = Tween.powerEaseOut(delta, 4)
+		local position = self.spawnPosition:lerp(self.fallPosition, mu)
+		if delta > 0.5 then
+			position.y = position.y * Tween.sineEaseOut(delta / 0.5)
+		end
 
-	local delta = self:getDelta()
-	local mu = Tween.powerEaseOut(delta, 4)
-	local position = self.spawnPosition:lerp(self.fallPosition, mu)
-	if delta > 0.5 then
-		position.y = position.y * Tween.sineEaseOut(delta / 0.5)
+		root:getTransform():setLocalTranslation(position)
+		root:getTransform():setPreviousTransform(position)
 	end
-
-	root:getTransform():setLocalTranslation(position)
-	root:getTransform():setPreviousTransform(position)
 end
 
 return Cannonball

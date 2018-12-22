@@ -9,10 +9,13 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 
 local ShipMapPeep = Class(Map)
 
@@ -22,6 +25,14 @@ function ShipMapPeep:new(resource, name, ...)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(RotationBehavior)
 	self.time = 0
+
+	self:addBehavior(BossStatsBehavior)
+
+	self:addPoke('hit')
+	self:addPoke('sink')
+
+	self:addPoke('leak')
+	self.leaks = 0
 end
 
 function ShipMapPeep:getPrefix()
@@ -30,6 +41,32 @@ end
 
 function ShipMapPeep:getSuffix()
 	return "Default"
+end
+
+function ShipMapPeep:getCurrentHealth()
+	if self.healthStat then
+		return self.healthStat.currentValue
+	else
+		return self:getMaxHealth()
+	end
+end
+
+function ShipMapPeep:getMaxHealth()
+	return 100
+end
+
+function ShipMapPeep:onFinalize(...)
+	self.healthStat = BossStat({
+		icon = 'Resources/Game/UI/Icons/Skills/Sailing.png',
+		text = "Ship's health",
+		inColor = { 0.44, 0.78, 0.21, 1.0 },
+		outColor = { 0.78, 0.21, 0.21, 1.0 },
+		current = self:getMaxHealth(),
+		max = self:getMaxHealth()
+	})
+
+	local stats = self:getBehavior(BossStatsBehavior)
+	table.insert(stats.stats, self.healthStat)
 end
 
 function ShipMapPeep:onLoad(filename, args)
@@ -105,18 +142,43 @@ function ShipMapPeep:onLoad(filename, args)
 	end
 end
 
+function ShipMapPeep:onHit(p)
+	local health = math.max(self:getCurrentHealth() - p:getDamage(), 0)
+	if self.healthStat then
+		self.healthStat.currentValue = health
+	end
+
+	if health <= 0 then
+		self:poke('sink')
+	end
+end
+
+function ShipMapPeep:onLeak(p)
+	local leak = p.leak
+	leak:listen('poof', function()
+		self.leaks = self.leaks - 1
+	end)
+
+	self.leaks = self.leaks + 1
+end
+
 function ShipMapPeep:update(director, game)
 	Map.update(self, director, game)
 
 	local delta = game:getDelta()
 
+	local previousTime = self.time
 	self.time = self.time + delta
+
+	if math.floor(previousTime) < math.floor(self.time) then
+		self:poke('hit', AttackPoke({ damage = self.leaks * 2 }))
+	end
 
 	local position = self:getBehavior(PositionBehavior)
 	if position then
 		position.position = Vector(
 			position.position.x,
-			math.sin(self.time * math.pi / 2) * 0.5,
+			math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth()),
 			position.position.z)
 	end
 end

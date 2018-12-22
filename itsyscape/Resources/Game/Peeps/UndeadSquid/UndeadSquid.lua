@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
@@ -40,6 +41,8 @@ function UndeadSquid:new(resource, name, ...)
 
 	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+
+	self:addPoke('enraged')
 end
 
 function UndeadSquid:ready(director, game)
@@ -90,6 +93,13 @@ function UndeadSquid:ready(director, game)
 		self)
 end
 
+function UndeadSquid:onEnraged()
+	local script = Utility.Peep.getMapScript(self)
+	if script then
+		script:poke('squidEnraged', { squid = self })
+	end
+end
+
 function UndeadSquid:onAttackShip()
 	local map = Utility.Peep.getMap(self)
 	if map then
@@ -124,9 +134,25 @@ function UndeadSquid:onAttackShip()
 						local position = leakPeep:getBehavior(PositionBehavior)
 						if position then
 							position.position = center
+
+							leakPeep:listen('finalize', function()
+								stage:fireProjectile('UndeadSquidRock', self, leak)
+							end)
 						end
+
+						shipMapScript:poke('leak', {
+							leak = leakPeep
+						})
 					end
 				end
+
+				local weapon = self:getBehavior(WeaponBehavior)
+				local damage = weapon.weapon:rollDamage(self, 1, 0, Weapon.PURPOSE_KILL)
+
+				shipMapScript:poke('hit', AttackPoke({
+					damage = damage,
+					aggressor = self
+				}))
 			end
 		end
 	end

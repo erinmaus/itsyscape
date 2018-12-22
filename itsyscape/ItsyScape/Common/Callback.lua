@@ -102,12 +102,16 @@ end
 -- to invoke. In essence, take the extra arguments here as the 'prefix' and the
 -- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
 function Callback:register(handler, ...)
-	self.handlers[handler] = { { n = select('#', ...), ... } }
+	if handler then
+		self.handlers[handler] = { { n = select('#', ...), ... } }
+	end
 end
 
 -- Unregisters a handler.
 function Callback:unregister(handler)
-	self.handlers[handler] = nil
+	if handler then
+		self.handlers[handler] = nil
+	end
 end
 
 -- Sets if the callback should yield after invoking a handler.

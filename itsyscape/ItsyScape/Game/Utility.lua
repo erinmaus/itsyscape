@@ -965,6 +965,14 @@ function Utility.Peep.getMap(peep)
 	end
 end
 
+function Utility.Peep.getMapScript(peep)
+	local map = Utility.Peep.getMap(peep)
+	if map then
+		local stage = peep:getDirector():getGameInstance():getStage()
+		return stage:getMapScript(map.name)
+	end
+end
+
 function Utility.Peep.setNameMagically(peep)
 	local gameDB = peep:getDirector():getGameDB()
 	local resource = Utility.Peep.getResource(peep)

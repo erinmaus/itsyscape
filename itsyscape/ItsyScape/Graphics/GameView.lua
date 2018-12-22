@@ -317,7 +317,7 @@ function GameView:addProp(propID, prop)
 	view:load()
 
 	self.props[prop] = view
-	self.views[prop] = prop
+	self.views[prop] = view
 end
 
 function GameView:getProp(prop)
@@ -530,6 +530,10 @@ function GameView:tick()
 
 	for _, prop in pairs(self.props) do
 		prop:tick()
+	end
+
+	for projectile in pairs(self.projectiles) do
+		projectile:tick()
 	end
 end
 
