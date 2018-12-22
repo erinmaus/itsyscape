@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Layout = require "ItsyScape.UI.Layout"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 
 local GridLayout = Class(Layout)
 GridLayout.DEFAULT_PADDING = 8

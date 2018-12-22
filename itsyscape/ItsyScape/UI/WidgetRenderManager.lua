@@ -64,7 +64,15 @@ function WidgetRenderManager:hasRenderer(widgetType)
 end
 
 function WidgetRenderManager:getRenderer(widgetType)
-	return self.renderers[widgetType]
+	while widgetType do
+		if self.renderers[widgetType] then
+			return self.renderers[widgetType]
+		else
+			widgetType = widgetType._PARENT
+		end
+	end
+
+	return nil
 end
 
 function WidgetRenderManager:addRenderer(widgetType, widgetRenderer)

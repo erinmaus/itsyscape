@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
+local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 
 local PanelRenderer = Class(WidgetRenderer)
@@ -28,7 +29,9 @@ function PanelRenderer:draw(widget, state)
 	if style then
 		style:draw(widget)
 	else
-		self.defaultStyle:draw(widget)
+		if widget:isType(Panel) then
+			self.defaultStyle:draw(widget)
+		end
 	end
 end
 
