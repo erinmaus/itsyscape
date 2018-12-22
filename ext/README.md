@@ -6,6 +6,9 @@ The required shared libraries are:
 
 - Mapp
 - BMASHINA
+- nbunny
+
+nbunny can be found in utilities/nbunny.
 
 To use BMASHINA, lmashina/lua/B must also be copied.
 
