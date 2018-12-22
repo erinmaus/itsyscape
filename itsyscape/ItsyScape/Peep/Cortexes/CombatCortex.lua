@@ -160,7 +160,6 @@ function CombatCortex:update(delta)
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
-						print(target:getName(), "too far from", peep:getName())
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange / 2, 0), { asCloseAsPossible = false })

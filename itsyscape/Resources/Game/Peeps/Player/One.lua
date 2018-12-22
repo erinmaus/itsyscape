@@ -375,6 +375,14 @@ function One:update(...)
 
 		self:poke('resurrect', {})
 	end
+
+	if _DEBUG and love.keyboard.isDown('f11') then
+		local i, j, k = Utility.Peep.getTile(self)
+		Log.info("Peep: tile = (%d, %d; %d)", i, j, k)
+
+		local position = Utility.Peep.getAbsolutePosition(self)
+		Log.info("Peep: position = (%0.2f, %0.2f; %0.2f)", position.x, position.y, position.z)
+	end
 end
 
 function One:onPoof()
