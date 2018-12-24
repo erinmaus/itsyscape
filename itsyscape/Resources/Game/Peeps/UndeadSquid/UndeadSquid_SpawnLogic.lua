@@ -8,12 +8,14 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Probe = require "ItsyScape.Peep.Probe"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
 local HITS = B.Reference("UndeadSquid_SpawnLogic", "HITS")
 local ATTACK_POKE = B.Reference("UndeadSquid_SpawnLogic", "ATTACK_POKE")
 local TARGET = B.Reference("UndeadSquid_SpawnLogic", "TARGET")
+local SAILOR = B.Reference("UndeadSquid_SpawnLogic", "SAILOR")
 local CURRENT_TILE = B.Reference("UndeadSquid_SpawnLogic", "CURRENT_TILE")
 local WAS_HIT_IN_FRONT_OF_CANNON = B.Reference("UndeadSquid_SpawnLogic", "WAS_HIT_IN_FRONT_OF_CANNON")
 
@@ -122,6 +124,24 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Set {
 						value = false,
 						[WAS_HIT_IN_FRONT_OF_CANNON] = B.Output.result
+					},
+
+					Mashina.Success {
+						Mashina.Step {
+							Mashina.Peep.FindNearbyCombatTarget {
+								filter = Probe.resource("Peep", "Sailor_Panicked"),
+								[SAILOR] = B.Output.result
+							},
+
+							Mashina.Peep.PokeSelf {
+								event = "ink",
+								poke = function(_, state)
+									return {
+										target = state[SAILOR]
+									}
+								end
+							}
+						}
 					}
 				},
 
@@ -156,6 +176,28 @@ local Tree = BTreeBuilder.Node() {
 
 						Mashina.Navigation.Face {
 							direction = 1
+						},
+
+						Mashina.Success {
+							Mashina.Step {
+								Mashina.RandomCheck {
+									chance = 0.5
+								},
+
+								Mashina.Peep.FindNearbyCombatTarget {
+									filter = Probe.resource("Peep", "Sailor_Panicked"),
+									[SAILOR] = B.Output.result
+								},
+
+								Mashina.Peep.PokeSelf {
+									event = "ink",
+									poke = function(_, state)
+										return {
+											target = state[SAILOR]
+										}
+									end
+								}
+							}
 						},
 
 						Mashina.Peep.TimeOut {

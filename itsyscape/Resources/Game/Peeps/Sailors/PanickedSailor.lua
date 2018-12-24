@@ -11,8 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local Sailor = Class(Player)
 
@@ -91,6 +93,11 @@ function Sailor:ready(director, game)
 	local map = Utility.Peep.getMapScript(self)
 	if map then
 		map:listen('hit', function(_, p)
+			local health = self:getBehavior(CombatStatusBehavior)
+			if health and health.currentHitpoints == 0 then
+				return
+			end
+
 			if p:getDamageType() ~= 'leak' then
 				local message = HIT_MESSAGES[math.random(#HIT_MESSAGES)]
 
@@ -102,6 +109,19 @@ function Sailor:ready(director, game)
 				end
 			end
 		end)
+	end
+end
+
+function Sailor:onDie()
+	local health = self:getBehavior(CombatStatusBehavior)
+	if health then
+		local mapScript = Utility.Peep.getMapScript(self)
+		if mapScript then
+			mapScript:poke('hit', AttackPoke({
+				damage = health.maximumHitpoints * 2,
+				aggressor = self
+			}))
+		end
 	end
 end
 

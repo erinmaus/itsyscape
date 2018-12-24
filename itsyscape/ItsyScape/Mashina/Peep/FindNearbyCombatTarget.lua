@@ -19,7 +19,15 @@ FindNearbyCombatTarget.RESULT = B.Reference()
 function FindNearbyCombatTarget:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
-	local p = director:probe(mashina:getLayerName(), Probe.attackable(), Probe.near(mashina, state[self.DISTANCE] or math.huge), state[self.FILTER], unpack(state[self.FILTERS] or {}))
+	local p = director:probe(
+		mashina:getLayerName(),
+		Probe.attackable(),
+		Probe.near(mashina, state[self.DISTANCE] or math.huge),
+		function(p)
+			return p ~= mashina
+		end,
+		state[self.FILTER],
+		unpack(state[self.FILTERS] or {}))
 	if p and #p > 0 then
 		table.sort(
 			p,

@@ -24,6 +24,8 @@ local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local UndeadSquid = Class(Creep)
+UndeadSquid.INK_MIN = 3
+UndeadSquid.INK_MAX = 4
 
 function UndeadSquid:new(resource, name, ...)
 	Creep.new(self, resource, name or 'UndeadSquid', ...)
@@ -98,6 +100,21 @@ function UndeadSquid:onEnraged()
 	if script then
 		script:poke('squidEnraged', { squid = self })
 	end
+end
+
+function UndeadSquid:onInk(p)
+	local attack = AttackPoke({
+		damage = math.random(UndeadSquid.INK_MIN, UndeadSquid.INK_MAX),
+		aggressor = self,
+		attackType = Weapon.BONUS_ARCHERY,
+		weaponType = 'x-squid'
+	})
+	p.target:poke('hit', attack)
+
+	self:poke('initiateAttack', AttackPoke())
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile('UndeadSquidInk', self, p.target)
 end
 
 function UndeadSquid:onAttackShip()

@@ -227,7 +227,7 @@ function Utility.getDescription(resource, gameDB, lang)
 	lang = lang or "en-US"
 
 	local descriptionRecord = gameDB:getRecords("ResourceDescription", { Resource = resource, Language = lang })
-	if descriptionRecord then
+	if descriptionRecord and #descriptionRecord > 0 then
 		return descriptionRecord[math.random(#descriptionRecord)]:get("Value")
 	else
 		local name = Utility.getName(resource, gameDB) or ("*" .. resource.name)
@@ -775,7 +775,12 @@ function Utility.Peep.applyEffect(peep, resource, singular, ...)
 end
 
 function Utility.Peep.canAttack(peep)
-	return peep:hasBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+	local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+	if not status then
+		return false
+	end
+
+	return status.currentHitpoints > 0
 end
 
 -- Makes the peep walk to the tile (i, j, k).

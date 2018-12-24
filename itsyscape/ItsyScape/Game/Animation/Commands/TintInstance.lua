@@ -44,6 +44,10 @@ function TintInstance:play(animatable, time)
 
 	if self.command then
 		local delta = time / self.command:getDuration()
+		if self.command:getReverse() then
+			delta = 1 - delta
+		end
+
 		local tween = Tween[self.command:getTween()] or Tween.linear
 		local mu = tween(delta, self.command:getTweenArgument())
 		local color = self.fromColor:lerp(self.command:getColor(), mu)
