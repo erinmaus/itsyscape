@@ -95,3 +95,50 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Knife"
 }
+
+ItsyScape.Resource.Item "WimpyFishingRod" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	}
+}
+
+
+ItsyScape.Meta.Equipment {
+	AccuracyCrush  = ItsyScape.Utility.styleBonusForWeapon(2),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/WimpyFishingRod/WimpyFishingRod.lua",
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Wimpy fishing rod",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "It's for fishing, not phishing!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(5),
+	Weight = 5.4,
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
+

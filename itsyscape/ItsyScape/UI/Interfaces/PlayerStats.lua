@@ -41,6 +41,8 @@ PlayerStats.SORT_ORDER = {
 	["Woodcutting"] = 13,
 	["Firemaking"] = 14,
 	["Fletching"] = 15,
+	["Fishing"] = 16,
+	["Cooking"] = 17,
 	["Sailing"] = 18
 }
 
