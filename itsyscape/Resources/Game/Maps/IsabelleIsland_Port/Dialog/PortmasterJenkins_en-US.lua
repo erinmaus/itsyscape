@@ -83,12 +83,29 @@ repeat
 		}
 
 		if choice == YES then
-			local stage = _TARGET:getDirector():getGameInstance():getStage()
-			stage:movePeep(
-				_TARGET,
-				"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_Ocean,i=16,j=16",
-				"Anchor_Spawn")
-			result = NEVERMIND
+			local count = _TARGET:getState():count("Item", "IronCannonball", { ['item-inventory'] = true })
+			local difference = math.max(15 - count, 0)
+			if difference > 0 and not Utility.Item.spawnInPeepInventory(_TARGET, "IronCannonball", difference) then
+				message {
+					"Arr, we ain't be sailin' with yer full inventory.",
+					"Make some room for supplies! Ye need a slot for cannonballs."
+				}
+			else
+				message {
+					"'Ere be some cannonballs to help ye. Fire 'em from the cannons.",
+					"Try'n aim for the squid, or ye might as well just jump overboard.",
+					"And if the ship takes damage, patch 'er up and plug any leaks."
+				}
+
+				message "Anchors away!"
+
+				local stage = _TARGET:getDirector():getGameInstance():getStage()
+				stage:movePeep(
+					_TARGET,
+					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_Ocean,i=16,j=16,shore=IsabelleIsland_Port,shoreAnchor=Anchor_ReturnFromSea",
+					"Anchor_Spawn")
+				result = NEVERMIND
+			end
 		elseif choice == NO then
 			message "Wet feet, aye? Har har har!"
 		end

@@ -17,4 +17,8 @@ function Ship:new(resource, name, ...)
 	Map.new(self, resource, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
 end
 
+function Ship:getMaxHealth()
+	return 150
+end
+
 return Ship
