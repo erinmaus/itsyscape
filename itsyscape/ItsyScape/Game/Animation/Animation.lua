@@ -52,6 +52,7 @@ function Animation:loadFromFile(filename)
 		G.Channel = Channel
 		G.Target = TargetChannel
 		G.PlayAnimation = require "ItsyScape.Game.Animation.Commands.PlayAnimation"
+		G.Tint = require "ItsyScape.Game.Animation.Commands.Tint"
 		G.Blend = Blend
 		G.math = {}
 		for k, v in pairs(math) do

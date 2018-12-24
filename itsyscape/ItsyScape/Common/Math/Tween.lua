@@ -12,6 +12,10 @@ local Class = require "ItsyScape.Common.Class"
 
 local Tween = {}
 
+function Tween.linear(t)
+	return t
+end
+
 function Tween.sineEaseIn(t)
 	return math.sin(t * math.pi / 2 - math.pi / 2) + 1
 end
