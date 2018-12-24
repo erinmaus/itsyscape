@@ -137,6 +137,13 @@ do
 		PlugAction
 	}
 
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"
+	}
+
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BlockingProp",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"

@@ -18,6 +18,8 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 
 local ShipMapPeep = Class(Map)
+ShipMapPeep.SINK_TIME = 2.0
+ShipMapPeep.SINK_DEPTH = 1
 
 function ShipMapPeep:new(resource, name, ...)
 	Map.new(self, resource, name or 'ShipMapPeep', ...)
@@ -33,6 +35,9 @@ function ShipMapPeep:new(resource, name, ...)
 
 	self:addPoke('leak')
 	self.leaks = 0
+
+	self.isSinking = false
+	self.sinkTime = 0
 end
 
 function ShipMapPeep:getPrefix()
@@ -137,6 +142,9 @@ function ShipMapPeep:onLoad(filename, args)
 				end)
 			end
 		end
+
+		self.previousMap = args['shore']
+		self.previousMapAnchor = args['shoreAnchor']
 	else
 		Log.warn("No ship map.")
 	end
@@ -150,6 +158,7 @@ function ShipMapPeep:onHit(p)
 
 	if health <= 0 then
 		self:poke('sink')
+		self.isSinking = true
 	end
 end
 
@@ -182,6 +191,25 @@ function ShipMapPeep:update(director, game)
 			position.position.x,
 			math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth()),
 			position.position.z)
+		if self.isSinking then
+			position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
+		end
+	end
+
+	if self.isSinking then
+		self.sinkTime = math.min(self.sinkTime + game:getDelta(), self.SINK_TIME)
+
+		if self.sinkTime >= self.SINK_TIME then
+			local previousMap = self.previousMap
+			local previousMapAnchor = self.previousMapAnchor
+
+			if previousMap and previousMapAnchor then
+				game:getStage():movePeep(
+					game:getPlayer():getActor():getPeep(),
+					previousMap,
+					previousMapAnchor)
+			end
+		end
 	end
 end
 

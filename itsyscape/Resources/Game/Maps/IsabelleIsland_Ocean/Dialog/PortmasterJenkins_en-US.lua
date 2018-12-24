@@ -29,6 +29,6 @@ else
 	speaker "Jenkins"
 	message "Har har har! Ye did it! Let's return to port."
 
-	local stage = _TARGET:getDirector():getGameInstance()
+	local stage = _TARGET:getDirector():getGameInstance():getStage()
 	stage:movePeep(_TARGET, "IsabelleIsland_Port", "Anchor_ReturnFromSea")
 end
