@@ -98,8 +98,54 @@ do
 		Resource = M["Jenkins"]
 	}
 
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Jenkins"],
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Port/Dialog/PortmasterJenkins_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	local SailAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Spawn",
+		Map = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins",
+		Arguments = "map=IsabelleIsland_Ocean,i=16,j=16",
+		Action = SailAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Sail",
+		Language = "en-US",
+		Action = SailAction
+	}
+
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
 		MapObject = M["Jenkins"]
+	}
+
+	M["Jenkins"] {
+		TalkAction,
+		SailAction
+	}
+end
+
+M["Anchor_ReturnFromSea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 10,
+		PositionZ = 37,
+		Name = "Anchor_ReturnFromSea",
+		Map = M._MAP,
+		Resource = M["Anchor_ReturnFromSea"]
 	}
 end

@@ -226,9 +226,9 @@ end
 function Utility.getDescription(resource, gameDB, lang)
 	lang = lang or "en-US"
 
-	local descriptionRecord = gameDB:getRecords("ResourceDescription", { Resource = resource, Language = lang }, 1)[1]
+	local descriptionRecord = gameDB:getRecords("ResourceDescription", { Resource = resource, Language = lang })
 	if descriptionRecord then
-		return descriptionRecord:get("Value")
+		return descriptionRecord[math.random(#descriptionRecord)]:get("Value")
 	else
 		local name = Utility.getName(resource, gameDB) or ("*" .. resource.name)
 		return string.format("It's %s, as if you didn't know.", name)

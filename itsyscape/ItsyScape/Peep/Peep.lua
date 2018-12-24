@@ -285,7 +285,7 @@ function Peep:getBehavior(b)
 	elseif type(b) == 'table' then
 		return self.behaviors[b.ID]
 	elseif type(b) == 'string' then
-		return self.behaviors[Behavior.getIDByName(b)]
+		return self.behaviors[Behavior.getIDFromName(b)]
 	else
 		return nil
 	end

@@ -24,6 +24,16 @@ function ActorView.Animatable:new(actor)
 	self.sceneNodes = {}
 end
 
+function ActorView.Animatable:setColor(value)
+	for _, slot in pairs(self.actor.skins) do
+		for i = 1, #slot do
+			if slot[i].sceneNode then
+				slot[i].sceneNode:getMaterial():setColor(value)
+			end
+		end
+	end
+end
+
 function ActorView.Animatable:getSkeleton()
 	if self.actor.body then
 		return self.actor.body:getSkeleton()

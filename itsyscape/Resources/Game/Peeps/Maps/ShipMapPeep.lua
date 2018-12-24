@@ -171,7 +171,9 @@ function ShipMapPeep:update(director, game)
 	self.time = self.time + delta
 
 	if math.floor(previousTime) < math.floor(self.time) then
-		self:poke('hit', AttackPoke({ damage = self.leaks * 2 }))
+		if self.leaks > 0 then
+			self:poke('hit', AttackPoke({ damage = self.leaks * 2, damageType = 'leak' }))
+		end
 	end
 
 	local position = self:getBehavior(PositionBehavior)

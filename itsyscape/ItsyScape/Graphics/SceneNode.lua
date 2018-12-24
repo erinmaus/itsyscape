@@ -187,6 +187,8 @@ function SceneNode:beforeDraw(renderer, delta)
 	if self.willRender then
 		self.willRender()
 	end
+
+	love.graphics.setColor(self.material:getColor():get())
 end
 
 function SceneNode:afterDraw(renderer, delta)

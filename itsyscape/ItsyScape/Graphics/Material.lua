@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local NMaterial = require "nbunny.scenenodematerial"
 
 local Material, Metatable = Class()
@@ -23,6 +24,7 @@ function Material:new(node, shader, ...)
 	self:setTextures(...)
 	self.isTranslucent = false
 	self.isFullLit = false
+	self.color = Color(1, 1, 1, 1)
 end
 
 -- Gets the shader this Material uses.
@@ -48,7 +50,7 @@ end
 
 -- Gets a boolean indicating if the Material is translucent.
 function Material:getIsTranslucent()
-	return self.isTranslucent
+	return self.isTranslucent or self.color.a < 1
 end
 
 -- Gets a boolean indicating if the Material is translucent.
@@ -65,6 +67,14 @@ end
 
 function Material:setIsFullLit(value)
 	self.isFullLit = value or false
+end
+
+function Material:getColor()
+	return self.color
+end
+
+function Material:setColor(value)
+	self.color = value or color
 end
 
 -- Gets the number of textures.

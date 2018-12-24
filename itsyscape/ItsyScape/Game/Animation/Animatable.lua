@@ -14,6 +14,11 @@ function Animatable:new()
 	-- Nothing.
 end
 
+-- Sets the color of the animatable.
+function Animatable:setColor(value)
+	return Class.ABSTRACT()
+end
+
 -- Gets the target skeleton of the the animatable.
 function Animatable:getSkeleton()
 	return Class.ABSTRACT()
