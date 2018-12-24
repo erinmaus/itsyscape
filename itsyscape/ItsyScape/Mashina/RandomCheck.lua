@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Peep/PokeSelf.lua
+-- ItsyScape/Mashina/RandomCheck.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,25 +9,17 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local PokeSelf = B.Node("PokeSelf")
-PokeSelf.EVENT = B.Reference()
-PokeSelf.POKE = B.Reference()
+local RandomCheck = B.Node("RandomCheck")
+RandomCheck.CHANCE = B.Reference()
 
-function PokeSelf:update(mashina, state, executor)
-	local event = state[self.EVENT]
-	local poke = state[self.POKE]
+function RandomCheck:update(mashina, state, executor)
+	local a = state[self.CHANCE] or 1.0
 
-	if event then
-		if type(poke) == 'function' then
-			poke = poke(mashina, state, executor)
-		end
-
-		mashina:poke(event, poke)
-
+	if math.random() <= a then
 		return B.Status.Success
 	else
 		return B.Status.Failure
 	end
 end
 
-return PokeSelf
+return RandomCheck

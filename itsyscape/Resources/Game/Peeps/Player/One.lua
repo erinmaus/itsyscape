@@ -238,8 +238,6 @@ function One:ready(director, game)
 		actor = actor.actor
 	end
 
-	actor:playAnimation('squid', 1, CacheRef("ItsyScape.Graphics.AnimationResource", "Resources/Game/Animations/UndeadSquid_Target_Inking/Script.lua"))
-
 	local function roll(t)
 		local index = math.random(1, #t)
 		return t[index]

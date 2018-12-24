@@ -25,6 +25,7 @@ function Tint:new(t)
 	self.keep = t.keep or false
 	self.tween = t.tween or 'linear'
 	self.tweenArgument = t.tweenArgument or nil
+	self.reverse = t.reverse or false
 end
 
 function Tint:getColor()
@@ -65,6 +66,14 @@ end
 
 function Tint:setTweenArgument(value)
 	self.tweenArgument = value or nil
+end
+
+function Tint:getReverse()
+	return self.reverse
+end
+
+function Tint:setReverse(value)
+	self.reverse = self.reverse or false
 end
 
 function Tint:instantiate()

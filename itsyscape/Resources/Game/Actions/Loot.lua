@@ -101,7 +101,9 @@ function Loot:perform(state, peep)
 		end
 
 		local loot = gameDB:getRecords("DropTableEntry", { Resource = resource })
-		self:materializeDropTable(peep, inventory, loot)
+		for i = 1, output.count do
+			self:materializeDropTable(peep, inventory, loot)
+		end
 	end
 
 	if inventory then

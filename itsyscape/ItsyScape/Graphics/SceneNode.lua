@@ -192,6 +192,7 @@ function SceneNode:beforeDraw(renderer, delta)
 end
 
 function SceneNode:afterDraw(renderer, delta)
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.pop()
 end
 

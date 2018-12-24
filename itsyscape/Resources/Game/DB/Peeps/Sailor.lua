@@ -9,7 +9,19 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "Sailor_Panicked" {
-	-- Nothing.
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Primary",
+			Count = 2
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Secondary",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.PeepID {
@@ -39,4 +51,39 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Bottom of the barrel in seamanship.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Sailor_Panicked"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(10),
+	Resource = ItsyScape.Resource.Peep "Sailor_Panicked"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "IronCannonball",
+	Weight = 50,
+	Count = 1,
+	Range = 2,
+	Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Hammer",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "SailorsHat",
+	Weight = 25,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Bones",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Secondary"	
 }

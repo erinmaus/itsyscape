@@ -26,7 +26,7 @@ function Probe.near(peep, distance)
 	else
 		return function(other)
 			local p = other:getBehavior(PositionBehavior)
-			if p and position.layer == p.layer then
+			if p then
 				local s, t = Utility.Peep.getTile(peep)
 				local i, j = Utility.Peep.getTile(other)
 				local u = math.abs(s - i)

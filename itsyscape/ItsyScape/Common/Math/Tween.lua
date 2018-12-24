@@ -16,6 +16,14 @@ function Tween.linear(t)
 	return t
 end
 
+function Tween.constantZero(t)
+	return 0
+end
+
+function Tween.constantOne(t)
+	return 1
+end
+
 function Tween.sineEaseIn(t)
 	return math.sin(t * math.pi / 2 - math.pi / 2) + 1
 end
