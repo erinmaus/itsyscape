@@ -142,8 +142,21 @@ ItsyScape.Resource.Skill "Fletching"
 		Skill = ItsyScape.Resource.Skill "Fletching"
 	}
 
--- ItsyScape.Resource.Skill "Cooking"
--- ItsyScape.Resource.Skill "Fishing"
+ItsyScape.Resource.Skill "Cooking"
+	ActionType "Cook"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Cook",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+ItsyScape.Resource.Skill "Fishing"
+	ActionType "Fishing"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Fishing",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
 
 ItsyScape.Resource.Skill "Sailing"
 	ActionType "Fire"
@@ -255,6 +268,18 @@ ItsyScape.Meta.ResourceName {
 	Value = "Fletching",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Fletching"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fishing",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Fishing"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Cooking",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Cooking"
 }
 
 ItsyScape.Meta.ResourceName {

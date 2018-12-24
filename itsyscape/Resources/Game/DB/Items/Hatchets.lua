@@ -108,7 +108,7 @@ for name, metal in pairs(METALS) do
 end
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Here comes ...",
+	Value = "Here's...",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "BronzeHatchet"
 }

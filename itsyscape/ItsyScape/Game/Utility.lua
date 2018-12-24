@@ -1515,6 +1515,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleZweihander_1/Script.lua")
 	peep:addResource("animation-idle-zweihander", idleZweihanderAnimation)
+	local idleFishingRodAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
+	peep:addResource("animation-idle-fishing-rod", idleFishingRodAnimation)
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Die_1/Script.lua")
@@ -1555,6 +1559,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackZweihanderSlash_1/Script.lua")
 	peep:addResource("animation-attack-slash-zweihander", attackAnimationZweihanderSlash)
+	local attackAnimationFishingRodCrush = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackFishingRodCrush_1/Script.lua")
+	peep:addResource("animation-attack-crush-fishing-rod", attackAnimationFishingRodCrush)
 	local skillAnimationMine = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
