@@ -133,3 +133,63 @@ do
 		Resource = M["Anchor_ReturnFromSea"]
 	}
 end
+
+M["Anchor_FromTower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 10,
+		PositionZ = 59,
+		Name = "Anchor_FromTower",
+		Map = M._MAP,
+		Resource = M["Anchor_FromTower"]
+	}
+end
+
+M["Portal_Tower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 10,
+		PositionZ = 63,
+		Name = "Portal_Tower",
+		Map = M._MAP,
+		Resource = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 1,
+		SizeZ = 4,
+		MapObject = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_Tower"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle Tower",
+		Language = "en-US",
+		Resource = M["Portal_Tower"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Port",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_Tower"] {
+		TravelAction
+	}
+end

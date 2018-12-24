@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 local Panel = require "ItsyScape.UI.Panel"
+local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 
 local PanelRenderer = Class(WidgetRenderer)
@@ -29,7 +30,7 @@ function PanelRenderer:draw(widget, state)
 	if style then
 		style:draw(widget)
 	else
-		if widget:isType(Panel) then
+		if widget:isType(Panel) or widget:isType(DraggablePanel) then
 			self.defaultStyle:draw(widget)
 		end
 	end

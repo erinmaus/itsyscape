@@ -8,11 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Action = require "ItsyScape.Peep.Action"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local Travel = Class(Action)
 Travel.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -78,6 +80,12 @@ function Travel:travel(state, peep, target)
 
 	peep:getCommandQueue():clear()
 	peep:removeBehavior(TargetTileBehavior)
+
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		movement.velocity = Vector.ZERO
+		movement.acceleration = Vector.ZERO
+	end
 end
 
 return Travel
