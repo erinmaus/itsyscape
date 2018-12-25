@@ -35,6 +35,7 @@ function Light:perform(state, peep, item)
 				if map then
 					local tile, i, j = map:getTileAt(position.position.x, position.position.z)
 					if tile:hasFlag('blocking') then
+						Log.info("(%d, %d) is blocking; cannot light fire.", i, j)
 						return false
 					end
 

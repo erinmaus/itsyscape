@@ -422,6 +422,11 @@ function Peep:ready(director, game)
 	self.finalized = true
 end
 
+-- Returns true if the Peep was poofed, false otherwise.
+function Peep:wasPoofed()
+	return self.poofed == true
+end
+
 -- Called when the Peep is removed.
 function Peep:poof()
 	for _, behavior in pairs(self.behaviors) do
@@ -429,6 +434,8 @@ function Peep:poof()
 	end
 
 	self:poke('poof')
+
+	self.poofed = true
 end
 
 -- Updates the Peep.

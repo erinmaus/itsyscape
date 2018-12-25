@@ -36,8 +36,11 @@ function SkillGuideController:new(peep, director, skill)
 				for action in brochure:findActionsByDefinition(actionDefinition) do
 					local a, ActionType = Utility.getAction(game, action)
 					if a then
-						table.insert(self.state.actions, a)
-						self.actionsByID[a.id] = action
+						local action = a.instance:getAction()
+						if not gameDB:getRecord("HiddenFromSkillGuide", { Action = action }) then
+							table.insert(self.state.actions, a)
+							self.actionsByID[a.id] = action
+						end
 					end
 				end
 			end

@@ -956,6 +956,22 @@ function Utility.Peep.setMapObject(peep, mapObject)
 	end
 end
 
+function Utility.Peep.getTier(peep)
+	local resource = Utility.Peep.getResource(peep)
+	if resource then
+		local gameDB = peep:getDirector():getGameDB()
+		local tier = gameDB:getRecord("Tier", {
+			Resource = resource
+		})
+
+		if tier then
+			return tier:get("Tier")
+		end
+	end
+
+	return 0
+end
+
 function Utility.Peep.getMap(peep)
 	local map = peep:getBehavior(MapResourceReferenceBehavior)
 	if map and map.map then

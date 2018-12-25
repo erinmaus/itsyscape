@@ -151,11 +151,16 @@ ItsyScape.Resource.Skill "Cooking"
 	}
 
 ItsyScape.Resource.Skill "Fishing"
-	ActionType "Fishing"
+	ActionType "Fish"
 
 	ItsyScape.Meta.SkillAction {
-		ActionType = "Fishing",
-		Skill = ItsyScape.Resource.Skill "Cooking"
+		ActionType = "Fish",
+		Skill = ItsyScape.Resource.Skill "Fishing"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Fishing"
 	}
 
 ItsyScape.Resource.Skill "Sailing"

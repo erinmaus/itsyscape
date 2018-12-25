@@ -345,6 +345,22 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "CookingFailedAction" {
+		Output = Meta.TYPE_ACTION,
+		Start = Meta.TYPE_INTEGER,
+		Stop = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "Tier" {
+		Tier = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "HiddenFromSkillGuide" {
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -476,6 +492,7 @@ include "Resources/Game/DB/Items/Logs.lua"
 include "Resources/Game/DB/Items/Bars.lua"
 include "Resources/Game/DB/Items/Runes.lua"
 include "Resources/Game/DB/Items/Bones.lua"
+include "Resources/Game/DB/Items/Fish.lua"
 include "Resources/Game/DB/Items/Incense.lua"
 include "Resources/Game/DB/Items/IncenseIngredients.lua"
 include "Resources/Game/DB/Items/Leathers.lua"

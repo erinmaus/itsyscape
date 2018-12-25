@@ -73,10 +73,9 @@ function CraftWindowController:craft(e)
 	assert(type(e.id) == "number", "action ID must be number")
 	assert(self.actionsByID[e.id] ~= nil, "action with ID not found")
 	assert(type(e.count) == "number", "count must be number")
-	assert(e.count > 0, "count must be greater than zero")
 	assert(e.count < math.huge, "count must be less than infinity")
 
-	e.count = math.min(e.count, 60)
+	e.count = math.max(math.min(e.count, 60), 0)
 
 	local action = self.actionsByID[e.id]
 	local player = self:getPeep()
