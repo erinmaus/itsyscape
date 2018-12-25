@@ -8,13 +8,18 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local BlockingProp = require "Resources.Game.Peeps.Props.BlockingProp"
 
 local BasicFire = Class(BlockingProp)
 function BasicFire:new(resource, name, ...)
 	BlockingProp.new(self, resource, 'Fire', ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(1, 0.5, 1)
 
 	self.duration = math.huge
 end

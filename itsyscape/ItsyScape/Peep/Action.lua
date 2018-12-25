@@ -221,8 +221,8 @@ function Action:perform(state, player, ...)
 	end
 end
 
--- Transfers inputs/outputs.
-function Action:transfer(state, player, flags)
+-- Consumes inputs.
+function Action:consume(state, player, flags)
 	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
 	local multiplier = flags['action-count'] or 1
@@ -236,12 +236,59 @@ function Action:transfer(state, player, flags)
 
 			state:take(resourceType.name, resource.name, input.count * multiplier, flags)
 		end
+	end
+end
+
+-- Transfers inputs/outputs.
+function Action:transfer(state, player, flags)
+	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
+
+	local multiplier = flags['action-count'] or 1
+
+	if self:canTransfer(state, flags) then
+		local gameDB = self:getGameDB()
+		local brochure = gameDB:getBrochure()
+		local inputs, outputs = {}, {}
+		local function reverse()
+			for _, output in ipairs(outputs) do
+				state:take(output.type, output.name, output.count, flags)
+			end
+
+			for _, input in ipairs(inputs) do
+				state:give(input.type, input.name, input.count, flags)
+			end
+		end
+
+		for input in brochure:getInputs(self.action) do
+			local resource = brochure:getConstraintResource(input)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			if not state:take(resourceType.name, resource.name, input.count * multiplier, flags) then
+				reverse()
+				return false
+			else
+				table.insert(inputs, {
+					type = resourceType.name,
+					name = resource.name,
+					count = input.count * multiplier
+				})
+			end
+		end
 
 		for output in brochure:getOutputs(self.action) do
 			local resource = brochure:getConstraintResource(output)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			state:give(resourceType.name, resource.name, output.count * multiplier, flags)
+			if not state:give(resourceType.name, resource.name, output.count * multiplier, flags) then
+				reverse()
+				return false
+			else
+				table.insert(outputs, {
+					type = resourceType.name,
+					name = resource.name,
+					count = output.count * multiplier
+				})
+			end
 		end
 
 		local stage = player:getDirector():getGameInstance():getStage(player)
@@ -272,6 +319,8 @@ function Action:transfer(state, player, flags)
 			end
 		end
 	end
+
+	return true
 end
 
 function Action:getFailureReason(state, peep)

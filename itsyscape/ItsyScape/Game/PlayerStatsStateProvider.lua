@@ -63,9 +63,17 @@ function PlayerStatsStateProvider:count(name, flags)
 		local skill = self.stats:getSkill(name)
 		if skill then
 			if flags['skill-unboosted'] then
-				return skill:getXP()
+				if flags['skill-as-level'] then
+					return skill:getBaseLevel()
+				else
+					return skill:getXP()
+				end
 			else
-				return skill:getWorkingXP()
+				if flags['skill-as-level'] then
+					return skill:getWorkingLevel()
+				else
+					return skill:getWorkingXP()
+				end
 			end
 		end
 	end

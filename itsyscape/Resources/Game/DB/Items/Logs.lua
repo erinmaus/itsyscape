@@ -129,6 +129,24 @@ for name, log in pairs(LOGS) do
 	local FireName = string.format("%sFire", name)
 	local Fire = ItsyScape.Resource.Prop(FireName)
 
+	local CookAction = ItsyScape.Action.OpenCraftWindow()
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "CookingMethod",
+		CategoryValue = "Fire",
+		Action = CookAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Cook",
+		Language = "en-US",
+		Action = CookAction
+	}
+
+	ItsyScape.Meta.Tier {
+		Tier = math.max(log.tier, 1),
+		Resource = Fire
+	}
+
 	local LightAction = ItsyScape.Action.Light()
 
 	LightAction {
@@ -178,6 +196,10 @@ for name, log in pairs(LOGS) do
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicFire",
 		Resource = Fire
+	}
+
+	Fire {
+		CookAction
 	}
 end
 
