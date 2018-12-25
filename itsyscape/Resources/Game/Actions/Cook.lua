@@ -44,8 +44,10 @@ function Cook:perform(state, player, target)
 
 		local wait = WaitCommand(self.DURATION)
 
+		local perform = CallbackCommand(Action.perform, self, state, player)
+
 		local queue = player:getCommandQueue()
-		return queue:push(CompositeCommand(nil, wait, cook))
+		return queue:push(CompositeCommand(nil, wait, cook, perform))
 	end
 end
 

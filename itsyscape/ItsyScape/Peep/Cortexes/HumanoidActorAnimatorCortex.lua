@@ -44,23 +44,38 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
+	peep:listen('resourceObtained', self.onResourceObtained, self)
 	peep:listen('transferItemFrom', self.peekEquip, self)
 	peep:listen('transferItemTo', self.peekEquip, self)
+	peep:silence('actionFailed', self.actionFailed, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
+
+	self.walking[peep] = nil
+	self.idling[peep] = nil
 
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
 	peep:silence('die', self.onDie)
 	peep:silence('resurrect', self.onResurrect)
 	peep:silence('resourceHit', self.onResourceHit)
+	peep:silence('resourceObtained', self.onResourceObtained)
 	peep:silence('transferItemFrom', self.peekEquip)
 	peep:silence('transferItemTo', self.peekEquip)
+	peep:silence('actionFailed', self.actionFailed, self, peep)
 end
 
-function HumanoidActorAnimatorCortex:playAnimation(peep, priority, resource)
+function HumanoidActorAnimatorCortex:playSkillAnimation(peep, priority, resource)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor then
+		actor = actor.actor
+		actor:playAnimation('skill', priority, resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:playCombatAnimation(peep, priority, resource)
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
@@ -83,7 +98,7 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 			animations[i],
 			"ItsyScape.Graphics.AnimationResource")
 		if resource then
-			self:playAnimation(
+			self:playCombatAnimation(
 				peep,
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
@@ -97,7 +112,7 @@ function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
 		"animation-defend",
 		"ItsyScape.Graphics.AnimationResource")
 	if resource then
-		self:playAnimation(
+		self:playCombatAnimation(
 			peep,
 			HumanoidActorAnimatorCortex.DEFEND_PRIORITY,
 			resource)
@@ -109,7 +124,7 @@ function HumanoidActorAnimatorCortex:onDie(peep, p)
 		"animation-die",
 		"ItsyScape.Graphics.AnimationResource")
 	if resource then
-		self:playAnimation(
+		self:playCombatAnimation(
 			peep,
 			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 			resource)
@@ -185,12 +200,26 @@ function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
 			animations[i],
 			"ItsyScape.Graphics.AnimationResource")
 		if resource then
-			self:playAnimation(
+			self:playSkillAnimation(
 				peep,
 				HumanoidActorAnimatorCortex.SKILL_PRIORITY,
 				resource)
 			break
 		end
+	end
+end
+
+function HumanoidActorAnimatorCortex:onResourceObtained(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	if actor then
+		actor:playAnimation('skill', false)
+	end
+end
+
+function HumanoidActorAnimatorCortex:actionFailed(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	if actor then
+		actor:playAnimation('skill', false)
 	end
 end
 

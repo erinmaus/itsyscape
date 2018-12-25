@@ -8723,6 +8723,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
