@@ -41,7 +41,7 @@ function FishingRod:getWeaponType()
 end
 
 function FishingRod:getCooldown(peep)
-	return 5.6
+	return 3.6
 end
 
 return FishingRod

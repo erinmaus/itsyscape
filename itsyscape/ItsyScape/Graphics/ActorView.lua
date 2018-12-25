@@ -204,8 +204,12 @@ function ActorView:playAnimation(slot, animation, priority, time)
 				a.priority = priority or -math.huge
 			end
 
-			self.animations[slot] = a
+			if self.animations[slot] then
+				self.animations[slot] = a
+			end
 		end)
+
+		self.animations[slot] = a
 	else
 		self.animations[slot] = nil
 	end

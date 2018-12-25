@@ -28,7 +28,7 @@ end
 function ResourceProgressBar:isDone(time)
 	local state = self.prop:getState()
 
-	if state.resource and state.resource.depleted then
+	if state.resource and (state.resource.depleted or state.resource.ready) then
 		return true
 	end
 

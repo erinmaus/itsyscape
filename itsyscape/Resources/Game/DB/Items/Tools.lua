@@ -110,6 +110,11 @@ ItsyScape.Resource.Item "WimpyFishingRod" {
 	}
 }
 
+ItsyScape.Meta.ResourceCategory {
+	Key = "WeaponType",
+	Value = "fishing-rod",
+	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
+}
 
 ItsyScape.Meta.Equipment {
 	AccuracyCrush  = ItsyScape.Utility.styleBonusForWeapon(2),

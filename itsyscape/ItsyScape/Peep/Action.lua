@@ -236,7 +236,11 @@ function Action:consume(state, player, flags)
 
 			state:take(resourceType.name, resource.name, input.count * multiplier, flags)
 		end
+
+		return true
 	end
+
+	return false
 end
 
 -- Transfers inputs/outputs.

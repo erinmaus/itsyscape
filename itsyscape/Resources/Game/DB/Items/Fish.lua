@@ -8,13 +8,43 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+-- Supplies
+do
+	ItsyScape.Resource.Item "Bait" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Bait"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bait",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bait"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Good for fish, or if you're on a diet.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bait"
+	}
+end
+
 -- Sardines
 do
-	ItsyScape.Resource.Item "Sardine" {
+	ItsyScape.Resource.Prop "Sardine_Default" {
 		ItsyScape.Action.Fish() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Fishing",
 				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
 			},
 
 			Output {
@@ -27,6 +57,33 @@ do
 				Count = ItsyScape.Utility.xpForResource(2)
 			}
 		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Sardine",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Sardine_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a sardine swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Sardine_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 5,
+		SpawnTime = 20,
+		Resource = ItsyScape.Resource.Prop "Sardine_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "Sardine_Default"
+	}
+
+	ItsyScape.Resource.Item "Sardine" {
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -187,11 +244,16 @@ end
 
 -- Sea bass
 do
-	ItsyScape.Resource.Item "SeaBass" {
+	ItsyScape.Resource.Prop "SeaBass_Default" {
 		ItsyScape.Action.Fish() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Fishing",
 				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
 			},
 
 			Output {
@@ -206,6 +268,33 @@ do
 		}
 	}
 
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Sea bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a sea bass swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 10,
+		SpawnTime = 30,
+		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
+	}
+
+	ItsyScape.Resource.Item "SeaBass" {
+		-- Nothing.
+	}
+
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Cooking",
 		Value = "Fish",
@@ -215,13 +304,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "CookingMethod",
 		Value = "Fire",
-		Resource = ItsyScape.Resource.Item "CookedSardine"
+		Resource = ItsyScape.Resource.Item "CookedSeaBass"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
 		Key = "CookingMethod",
 		Value = "Range",
-		Resource = ItsyScape.Resource.Item "CookedSardine"
+		Resource = ItsyScape.Resource.Item "CookedSeaBass"
 	}
 
 	ItsyScape.Meta.ResourceName {

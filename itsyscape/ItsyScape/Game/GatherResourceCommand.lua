@@ -23,6 +23,7 @@ function GatherResourceCommand:new(prop, tool, t)
 	self.skill = t.skill or false
 	self.multiplier = t.multiplier or 1
 	self.bonusStrength = t.bonusStrength or 0
+	self.action = t.action or false
 	self.time = 0
 	self.isFinished = false
 	self._onResourceObtained = function(...)
@@ -80,6 +81,17 @@ function GatherResourceCommand:attack(peep)
 	local logic = itemManager:getLogic(self.tool:getID())
 	if logic:isCompatibleType(Weapon) then
 		self.cooldown = logic:getCooldown(peep)
+
+		if self.action then
+			if not self.action:consume(peep:getState()) then
+				Log.info("Couldn't continue to gather resource.")
+
+				self.action:fail(peep:getState(), peep)
+				self.isFinished = true
+
+				return
+			end
+		end
 
 		local damage = logic:rollDamage(peep, self.multiplier, self.bonusStrength, Weapon.PURPOSE_TOOL)
 		self.prop:poke('resourceHit', {

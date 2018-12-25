@@ -44,6 +44,8 @@ function Make:make(state, player, prop)
 
 	self:transfer(state, player, flags)
 	Action.perform(self, state, player)
+
+	player:poke('resourceObtained', {})
 end
 
 return Make

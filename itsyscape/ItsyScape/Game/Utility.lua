@@ -1489,6 +1489,7 @@ end
 
 function Utility.Peep.makeSkiller(peep)
 	peep:addPoke('resourceHit')
+	peep:addPoke('resourceObtained')
 end
 
 Utility.Peep.Human = {}
@@ -1583,6 +1584,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")
 	peep:addResource("animation-skill-mining", skillAnimationMine)
+	local skillAnimationFish = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_SkillFish_FishingRod_1/Script.lua")
+	peep:addResource("animation-skill-fishing", skillAnimationFish)
 	local skillAnimationWoodcutting = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillWoodcut_1/Script.lua")
