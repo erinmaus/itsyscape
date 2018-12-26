@@ -27,6 +27,8 @@ local SKINS = {
 		{ name = "Long curve", t = MODEL_SKIN, filename = "PlayerKit1/Hair/LongCurve.lua" },
 		{ name = "Red bow", t = MODEL_SKIN, filename = "PlayerKit1/Hair/RedBow.lua" },
 		{ name = "Zombi punk", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ZombiPunk.lua" },
+		{ name = "Forward swirl", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ForwardSwirl.lua" },
+		{ name = "Forward spike", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ForwardSpike.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
 	},
 
@@ -66,6 +68,8 @@ local SKINS = {
 		{ name = "Yellow dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/YellowDress.lua" },
 		{ name = "Brown cross stitch", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BrownCrossStitch.lua" },
 		{ name = "Grey suit", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BankerSuit.lua" },
+		{ name = "Red plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/RedPlaid.lua" },
+		{ name = "Green plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/GreenPlaid.lua" },
 	},
 
 	hands = {
