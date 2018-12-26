@@ -18,13 +18,19 @@ local LOGS = {
 }
 
 local ITEMS = {
-	["Bow"] = {
+	["Boomerang"] = {
 		tier = 1,
+		niceName = "%s boomerang",
+		isBoomerang = true
+	},
+
+	["Bow"] = {
+		tier = 3,
 		niceName = "%s bow"
 	},
 
 	["Longbow"] = {
-		tier = 5, 
+		tier = 6, 
 		niceName = "%s longbow"
 	}
 }
@@ -60,11 +66,6 @@ for name, log in pairs(LOGS) do
 				Count = 1
 			},
 
-			Input {
-				Resource = ItsyScape.Resource.Item(log.bowstring),
-				Count = 1
-			},
-
 			Output {
 				Resource = ItsyScape.Resource.Skill "Fletching",
 				Count = ItsyScape.Utility.xpForResource(log.tier + itemProps.tier) * 2
@@ -75,6 +76,15 @@ for name, log in pairs(LOGS) do
 				Count = 1
 			}
 		}
+
+		if not itemProps.isBoomerang then
+			FletchAction {
+				Input {
+					Resource = ItsyScape.Resource.Item(log.bowstring),
+					Count = 1
+				}
+			}
+		end
 
 		ItsyScape.Meta.Item {
 			Value = ItsyScape.Utility.valueForItem(log.tier + itemProps.tier),
@@ -161,6 +171,19 @@ end
 
 -- Common/bronze
 do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(4, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(3, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "PunyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Bringin' it around town, bringin' it around town...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PunyBoomerang"
+	}
+
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,

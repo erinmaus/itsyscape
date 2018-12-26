@@ -1443,7 +1443,9 @@ function Utility.Peep.Attackable:onMiss(p)
 end
 
 function Utility.Peep.Attackable:onDie(p)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 	self:getCommandQueue():clear()
+	self:getCommandQueue(CombatCortex.QUEUE):clear()
 	self:removeBehavior(CombatTargetBehavior)
 
 	local mashina = self:getBehavior(MashinaBehavior)
@@ -1595,6 +1597,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Die_1/Script.lua")
 	peep:addResource("animation-die", dieAnimation)
+	local attackAnimationBoomerangRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBoomerangRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-boomerang", attackAnimationBoomerangRanged)
 	local attackAnimationBowRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
