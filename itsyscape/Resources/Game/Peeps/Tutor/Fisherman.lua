@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Tutors/Lumberjack.lua
+-- Resources/Peeps/Tutors/Fisherman.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,13 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
-local Lumberjack = Class(Player)
+local Fisherman = Class(Player)
 
-function Lumberjack:new(resource, name, ...)
-	Player.new(self, resource, name or 'Lumberjack', ...)
+function Fisherman:new(resource, name, ...)
+	Player.new(self, resource, name or 'Fisherman', ...)
 end
 
-function Lumberjack:ready(director, game)
+function Fisherman:ready(director, game)
 	Player.ready(self, director, game)
 
 	local actor = self:getBehavior(ActorReferenceBehavior)
@@ -34,19 +34,19 @@ function Lumberjack:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
+		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua")
+		"Resources/Game/Skins/PlayerKit1/Hair/ForwardSwirl.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/RedPlaid.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/GreenPlaid.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
@@ -54,8 +54,8 @@ function Lumberjack:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local boots = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua")
+		"Resources/Game/Skins/PlayerKit1/Shoes/Boots3.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, boots)
 end
 
-return Lumberjack
+return Fisherman

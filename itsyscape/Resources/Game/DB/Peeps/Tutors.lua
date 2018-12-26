@@ -118,3 +118,29 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Smith"
 }
+ItsyScape.Resource.Peep "Fisherman" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Tutor.Fisherman",
+	Resource = ItsyScape.Resource.Peep "Fisherman"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fisherman",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Fisherman"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Once caught sending letters as Vizier-King Yohn's cousin thrice removed.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Fisherman"
+}
+
+ItsyScape.Meta.PeepEquipmentItem {
+	Item = ItsyScape.Resource.Item "WimpyFishingRod",
+	Count = 1,
+	Resource = ItsyScape.Resource.Peep "Fisherman"
+}
