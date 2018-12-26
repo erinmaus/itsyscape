@@ -101,3 +101,9 @@ ItsyScape.Resource.Shop "Standard_GeneralStore" {
 		}
 	}
 }
+
+ItsyScape.Meta.Shop {
+	ExchangeRate = 0.5,
+	Currency = ItsyScape.Resource.Item "Coins",
+	Resource = ItsyScape.Resource.Shop "Standard_GeneralStore"
+}

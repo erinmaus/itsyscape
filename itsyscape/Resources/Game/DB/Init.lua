@@ -57,9 +57,14 @@ Game "ItsyScape"
 	ActionType "Collect"
 
 	ResourceType "Shop"
-	ActionType "Shop"
-	ActionType "Buy"
-	ActionType "Sell"
+		ActionType "Shop"
+		ActionType "Buy"
+		
+		Meta "Shop" {
+			ExchangeRate = Meta.TYPE_REAL,
+			Currency = Meta.TYPE_RESOURCE,
+			Resource = Meta.TYPE_RESOURCE
+		}
 
 	Meta "ShopTarget" {
 		Resource = Meta.TYPE_RESOURCE,

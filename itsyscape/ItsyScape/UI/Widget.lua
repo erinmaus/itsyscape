@@ -148,7 +148,8 @@ function Widget:removeChild(child)
 	for i = 1, #self.children do
 		if self.children[i] == child then
 			table.remove(self.children, i)
-			self.childProperties[child] = {}
+			child.parent = nil
+			self.childProperties[child] = nil
 			return true
 		end
 	end

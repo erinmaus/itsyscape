@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local ShopWindowController = Class(Controller)
 
@@ -38,14 +39,34 @@ function ShopWindowController:new(peep, director, shop)
 				end
 			end
 		end
+
+		local meta = gameDB:getRecord("Shop", {
+			Resource = self.shop
+		})
+
+		if meta then
+			self.currency = meta:get("Currency")
+			self.exchangeRate = meta:get("ExchangeRate")
+		else
+			self.currency = gameDB:getResource("Coins", "Item")
+			self.exchangeRate = 0.1
+		end
 	end
 end
 
 function ShopWindowController:poke(actionID, actionIndex, e)
 	if actionID == "buy" then
 		self:buy(e)
-	elseif actionID == "select" then
-		self:select(e)
+	elseif actionID == "sell" then
+		self:sell(e)
+	elseif actionID == "viewShop" then
+		self:viewShop(e)
+	elseif actionID == "viewInventory" then
+		self:viewInventory(e)
+	elseif actionID == "selectInventory" then
+		self:selectInventory(e)
+	elseif actionID == "selectShop" then
+		self:selectShop(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -54,7 +75,49 @@ function ShopWindowController:poke(actionID, actionIndex, e)
 end
 
 function ShopWindowController:pull()
-	return self.state
+	local state = { inventory = self.state.inventory }
+	state.playerInventory = {}
+
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	if inventory.inventory then
+		local broker = self:getDirector():getItemBroker() 
+		local storage = inventory.inventory
+		for key in broker:keys(storage) do
+			for item in broker:iterateItemsByKey(storage, key) do
+				local serializedItem = self:pullItem(item, true)
+
+				if serializedItem.id ~= self.currency.name then
+					state.playerInventory[key] = serializedItem
+				end
+
+				break
+			end
+		end
+
+		state.playerInventory.max = storage:getMaxInventorySpace()
+	end
+
+	return state
+end
+
+function ShopWindowController:viewShop()
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"show",
+		nil,
+		{})
+end
+
+function ShopWindowController:viewInventory()
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"hide",
+		nil,
+		{})
 end
 
 function ShopWindowController:buy(e)
@@ -69,7 +132,7 @@ function ShopWindowController:buy(e)
 	action:perform(player:getState(), player, e.count)
 end
 
-function ShopWindowController:select(e)
+function ShopWindowController:selectShop(e)
 	assert(type(e.id) == "number", "action ID must be number")
 	assert(self.inventoryByID[e.id] ~= nil, "action with ID not found")
 
@@ -133,6 +196,118 @@ function ShopWindowController:select(e)
 		"populateRequirements",
 		nil,
 		{ result })
+end
+
+function ShopWindowController:pullInventoryItem(index)
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	if inventory and inventory.inventory then
+		inventory = inventory.inventory
+	else
+		return
+	end
+
+	local broker = inventory:getBroker()
+	local item
+	for i in broker:iterateItemsByKey(inventory, index) do
+		item = i
+		break
+	end
+
+	if item then
+		local value
+		do
+			local gameDB = self:getDirector():getGameDB()
+			local meta = gameDB:getRecord("Item", {
+				Resource = gameDB:getResource(item:getID(), "Item")
+			})
+
+			if meta:get("Untradeable") ~= 0 then
+				return
+			end
+
+			value = math.max(meta:get("Value"), 1)
+		end
+
+		return item, value
+	end
+end
+
+function ShopWindowController:selectInventory(e)
+	assert(type(e.index) == "number", "index must be number")
+
+	local item, value = self:pullInventoryItem(e.index)
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local result = { inputs = {}, outputs = {}, requirements = {} }
+	if item then
+		table.insert(result.inputs, {
+			type = "Item",
+			resource = item:getID(),
+			name = Utility.getName(gameDB:getResource(item:getID(), "Item"), gameDB) or item:getID(),
+			count = 1
+		})
+
+		table.insert(result.outputs, {
+			type = "Item",
+			resource = self.currency.name,
+			name = Utility.getName(self.currency, gameDB) or self.currency.name,
+			count = math.floor((value * self.exchangeRate) + 0.5)
+		})
+	end
+
+	director:getGameInstance():getUI():sendPoke(
+		self,
+		"populateRequirements",
+		nil,
+		{ result })
+end
+
+function ShopWindowController:sell(e)
+	assert(type(e.index) == "number", "index must be number")
+	assert(type(e.count) == "number", "count must be number")
+	assert(e.count >= 1, "count must be greater than zero")
+
+	local item, value = self:pullInventoryItem(e.index)
+
+	if item and value then
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			inventory = inventory.inventory
+		else
+			return
+		end
+
+		local broker = inventory:getBroker()
+
+		local transaction = broker:createTransaction()
+		transaction:addParty(inventory)
+		transaction:consume(item, e.count)
+		transaction:spawn(
+			inventory,
+			self.currency.name,
+			math.floor((value * self.exchangeRate * e.count) + 0.5))
+		transaction:commit()
+	end
+end
+
+function ShopWindowController:pullItem(item)
+	local result = {}
+	result.id = item:getID()
+	result.count = item:getCount()
+	result.noted = item:isNoted()
+
+	return result
+end
+
+function ShopWindowController:close()
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"show",
+		nil,
+		{})
 end
 
 return ShopWindowController

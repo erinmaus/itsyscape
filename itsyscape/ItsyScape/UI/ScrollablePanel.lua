@@ -93,6 +93,7 @@ function ScrollablePanel:performLayout()
 			self.horizontalScroll:setPosition(0, height - self.scrollBarSize)
 		end
 
+		Widget.removeChild(self, self.horizontalScroll)
 		Widget.addChild(self, self.horizontalScroll)
 		self.horizontalScroll:performLayout()
 		self.isHorizontalScroll = true
@@ -118,6 +119,7 @@ function ScrollablePanel:performLayout()
 			self.verticalScroll:setPosition(width - self.scrollBarSize - 4, 0)
 		end
 
+		Widget.removeChild(self, self.verticalScroll)
 		Widget.addChild(self, self.verticalScroll)
 		self.verticalScroll:performLayout()
 		self.isVerticalScroll = true
