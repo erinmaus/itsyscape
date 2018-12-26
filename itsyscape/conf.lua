@@ -5,4 +5,5 @@ function love.conf(t)
 	t.window.height = 720
 	t.window.depth = 24
 	t.window.fullscreen = false
+	t.window.vsync = 0
 end
