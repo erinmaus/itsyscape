@@ -433,6 +433,8 @@ function Peep:poof()
 		behavior:unload(self)
 	end
 
+	self.state:poof()
+
 	self:poke('poof')
 
 	self.poofed = true

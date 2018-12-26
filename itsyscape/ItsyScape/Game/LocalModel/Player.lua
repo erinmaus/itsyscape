@@ -42,13 +42,15 @@ function Player:spawn()
 			local storage = self.game:getDirector():getPlayerStorage(game):getRoot()
 			if storage:hasSection("Location") then
 				local location = storage:getSection("Location")
-				self.stage:movePeep(
-					actor:getPeep(),
-					location:get("name"),
-					Vector(
-						location:get("x"),
-						location:get("y"),
-						location:get("z")))
+				if location:get("name") then
+					self.stage:movePeep(
+						actor:getPeep(),
+						location:get("name"),
+						Vector(
+							location:get("x"),
+							location:get("y"),
+							location:get("z")))
+				end
 			end
 		end)
 	else

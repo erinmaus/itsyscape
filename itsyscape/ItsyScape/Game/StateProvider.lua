@@ -15,6 +15,10 @@ function StateProvider:new()
 	-- Nothing.
 end
 
+function StateProvider:poof()
+	-- Nothing.
+end
+
 function StateProvider:getPriority()
 	return Class.ABSTRACT()
 end

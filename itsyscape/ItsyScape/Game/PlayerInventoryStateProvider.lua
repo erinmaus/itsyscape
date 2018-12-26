@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 local State = require "ItsyScape.Game.State"
 local Utility = require "ItsyScape.Game.Utility"
 local StateProvider = require "ItsyScape.Game.StateProvider"
@@ -24,6 +25,13 @@ function PlayerInventoryStateProvider:new(peep)
 	end
 
 	self.peep = peep
+	self.tornPocket = SimpleInventoryProvider(self.peep)
+	self.tornPocket:setIsSerializable(false)
+	self.peep:getDirector():getItemBroker():addProvider(self.tornPocket)
+end
+
+function PlayerInventoryStateProvider:poof()
+	self.peep:getDirector():getItemBroker():removeProvider(self.tornPocket)
 end
 
 function PlayerInventoryStateProvider:getPriority()
@@ -97,7 +105,25 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		transaction:addParty(self.inventory)
 		transaction:spawn(self.inventory, name, count, noted, true)
 	end
-	return transaction:commit()
+	if not transaction:commit() then
+		local pocketTransaction = broker:createTransaction()
+		pocketTransaction:addParty(self.tornPocket)
+		pocketTransaction:spawn(self.tornPocket, name, count, noted, true)
+
+		local success = pocketTransaction:commit()
+		if success then
+			local stage = self.peep:getDirector():getGameInstance():getStage()
+			for item in broker:iterateItems(self.tornPocket) do
+				stage:dropItem(item, item:getCount())
+			end
+
+			return true
+		end
+
+		return false
+	end
+
+	return true
 end
 
 function PlayerInventoryStateProvider:count(name, flags)

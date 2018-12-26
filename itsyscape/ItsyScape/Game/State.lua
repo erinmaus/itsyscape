@@ -121,4 +121,12 @@ function State:give(resource, name, count, flags)
 	return false
 end
 
+function State:poof()
+	for _, p in pairs(self.providers) do
+		for i = 1, #p do
+			p[i]:poof()
+		end
+	end
+end
+
 return State

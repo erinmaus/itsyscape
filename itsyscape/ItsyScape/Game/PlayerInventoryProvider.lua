@@ -15,6 +15,8 @@ local PlayerInventoryProvider = Class(InventoryProvider)
 PlayerInventoryProvider.MAX_INVENTORY_SPACE = 28
 
 function PlayerInventoryProvider:new(peep, slots)
+	InventoryProvider.new(self)
+
 	self.peep = peep
 	self.slots = slots or PlayerInventoryProvider.MAX_INVENTORY_SPACE
 end

@@ -33,6 +33,8 @@ EquipmentInventoryProvider.STATS = {
 }
 
 function EquipmentInventoryProvider:new(peep, slots)
+	InventoryProvider.new(self)
+
 	self.peep = peep
 	self.stats = {}
 
