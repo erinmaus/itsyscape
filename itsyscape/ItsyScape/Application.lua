@@ -251,7 +251,10 @@ function Application:mouseRelease(x, y, button)
 end
 
 function Application:mouseScroll(x, y)
-	self.uiView:getInputProvider():mouseScroll(x, y)
+	if self.uiView:getInputProvider():isBlocking(love.mouse.getPosition()) then
+		self.uiView:getInputProvider():mouseScroll(x, y)
+		return true
+	end
 
 	return false
 end

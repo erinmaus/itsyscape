@@ -43,7 +43,7 @@ function DemoApplication:getPlayerPosition(delta)
 		local actor = gameView:getActor(self:getGame():getPlayer():getActor())
 		local node = actor:getSceneNode()
 		local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
-		position = Vector(transform:transformPoint(0, 0, 0))
+		position = Vector(transform:transformPoint(0, 1, 0))
 	end
 
 	return position
@@ -99,13 +99,14 @@ function DemoApplication:mouseRelease(x, y, button)
 end
 
 function DemoApplication:mouseScroll(x, y)
-	Application.mouseScroll(self, x, y)
-	local distance = self.camera:getDistance() - y * 0.5
+	if not Application.mouseScroll(self, x, y) then
+		local distance = self.camera:getDistance() - y * 0.5
 
-	if not _DEBUG then
-		self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
-	else
-		self:getCamera():setDistance(distance)
+		if not _DEBUG then
+			self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
+		else
+			self:getCamera():setDistance(distance)
+		end
 	end
 end
 
