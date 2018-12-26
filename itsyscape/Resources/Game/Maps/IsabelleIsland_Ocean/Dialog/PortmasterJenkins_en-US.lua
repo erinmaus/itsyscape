@@ -60,6 +60,13 @@ else
 			peep = _TARGET,
 			chest = chest
 		})
+
+		chest:poke('materialize', {
+			count = 1,
+			dropTable = gameDB:getResource("IsabelleIsland_Port_UndeadSquid_Rewards_Skull", "DropTable"),
+			peep = _TARGET,
+			chest = chest
+		})
 	end
 
 	local stage = _TARGET:getDirector():getGameInstance():getStage()
