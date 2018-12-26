@@ -102,11 +102,11 @@ function RewardChestController:collect(e)
 		local broker = reward:getBroker()
 		local items = {}
 		for item in broker:iterateItems(reward) do
-			items[item] = true
+			table.insert(items, item)
 		end
 
-		for item in pairs(items) do
-			inventory:deposit(item, math.huge, true)
+		for i = 1, #items do
+			inventory:deposit(items[i], items[i]:getCount(), true)
 		end
 	end
 

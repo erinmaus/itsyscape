@@ -14,6 +14,8 @@ local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local SimpleInventoryProvider = Class(InventoryProvider)
 
 function SimpleInventoryProvider:new(peep)
+	InventoryProvider.new(self)
+
 	self.peep = peep
 end
 

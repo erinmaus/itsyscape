@@ -931,11 +931,14 @@ function ItemBroker:addProvider(provider)
 	assert(not self:hasProvider(provider), "provider already exists")
 
 	self.inventories[provider] = ItemBroker.Inventory(provider)
+	provider:attach(self)
 
-	local s, r = xpcall(function() provider:load(self) end, debug.traceback)
-	if not s then
-		self.inventories[provider] = nil
-		error(r)
+	if provider:getIsSerializable() then
+		local s, r = xpcall(function() provider:load(self) end, debug.traceback)
+		if not s then
+			self.inventories[provider] = nil
+			error(r)
+		end
 	end
 end
 
@@ -949,7 +952,14 @@ function ItemBroker:removeProvider(provider)
 	assert(provider ~= nil, "provider cannot be nil")
 	assert(self:hasProvider(provider), "provider does not exist")
 
-	local s, r = xpcall(function() provider:unload(self, true) end, debug.traceback)
+	provider:detach(self)
+
+	local s, r
+	if provider:getIsSerializable() then
+		s, r = xpcall(function() provider:unload(self, true) end, debug.traceback)
+	else
+		s = true
+	end
 
 	local inventory = self.inventories[provider]
 	for item in inventory:iterate() do
@@ -1100,10 +1110,12 @@ end
 
 function ItemBroker:toStorage()
 	for provider in pairs(self.inventories) do
-		local s, r = xpcall(function() provider:unload(self, false) end, debug.traceback)
+		if provider:getIsSerializable() then
+			local s, r = xpcall(function() provider:unload(self, false) end, debug.traceback)
 
-		if not s then
-			Log.warn("Couldn't serialize provider: %s", r)
+			if not s then
+				Log.warn("Couldn't serialize provider: %s", r)
+			end
 		end
 	end
 end

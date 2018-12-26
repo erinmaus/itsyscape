@@ -25,6 +25,19 @@ local InventoryProvider = Class()
 
 function InventoryProvider:new()
 	self.broker = false
+	self.isSerializable = true
+end
+
+-- Marks the inventory provider as serializable. Defaults to true.
+--
+-- If not true, then the item broker will not unload the inventory.
+function InventoryProvider:getIsSerializable()
+	return self.isSerializable
+end
+
+-- Sets if the inventory provider is serializable.
+function InventoryProvider:setIsSerializable(value)
+	self.isSerializable = value or false
 end
 
 -- Gets the broekr this provider belongs to.
@@ -136,12 +149,22 @@ function InventoryProvider:onTransferFrom(destination, item, count, purpose)
 	-- Nothing.
 end
 
--- Called when the Inventory is loaded.
---
--- Normally the invetory should be deserialized.
-function InventoryProvider:load(broker)
+-- Called when the provider is attached to the broker.
+function InventoryProvider:attach(broker)
 	assert(not self.broker, "already assigned to broker")
 	self.broker = broker
+end
+
+-- Called when the provider is attached to the broker.
+function InventoryProvider:detach(broker)
+	-- Nothing.
+end
+
+-- Called when the Inventory is loaded.
+--
+-- Normally the inventory should be deserialized.
+function InventoryProvider:load(broker)
+	-- Nothing.
 end
 
 -- Called when the InventoryProvider is unloaded.
