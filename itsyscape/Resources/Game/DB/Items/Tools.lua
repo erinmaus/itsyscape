@@ -107,7 +107,9 @@ ItsyScape.Resource.Item "WimpyFishingRod" {
 			Resource = ItsyScape.Resource.Skill "Dexterity",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		}
-	}
+	},
+
+	ItsyScape.Action.Dequip()
 }
 
 ItsyScape.Meta.ResourceCategory {
