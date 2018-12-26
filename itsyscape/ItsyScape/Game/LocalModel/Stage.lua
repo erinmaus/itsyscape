@@ -682,7 +682,8 @@ function LocalStage:getItemsAtTile(i, j, layer)
 	end
 
 	local inventory = ground:getBehavior(InventoryBehavior).inventory
-	if not inventory then
+
+	if not inventory or not not inventory:getBroker() then
 		return {}
 	else
 		local key = GroundInventoryProvider.Key(i, j, layer)
