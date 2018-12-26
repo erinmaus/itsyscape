@@ -280,14 +280,15 @@ function BankController:deposit(e)
 end
 
 function BankController:withdraw(e)
-	assert(type(e.index == "number"), "index is not a number")
-	assert(type(e.count == "number"), "count is not a number")
+	assert(type(e.index) == "number", "index is not a number")
+	assert(type(e.count) == "number", "count is not a number")
+	assert(type(e.noted) == "boolean", "noted is not a boolean")
 
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank and inventory.inventory then
 		local item = self.items.bank[e.index]
 		if item then
-			inventory.bank:withdraw(inventory.inventory, item:getID(), e.count, false, true)
+			inventory.bank:withdraw(inventory.inventory, item:getID(), e.count, e.noted, true)
 		end
 	end
 end
