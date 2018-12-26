@@ -421,7 +421,9 @@ function ActorView:updateAnimations()
 		local animations = {}
 		do
 			for slot, animation in pairs(self.animations) do
-				table.insert(animations, { value = animation, key = slot })
+				if animation.instance then
+					table.insert(animations, { value = animation, key = slot })
+				end
 			end
 			table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
 		end
