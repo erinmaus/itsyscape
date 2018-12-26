@@ -315,6 +315,7 @@ do
 
 	M["Chest"] {
 		WithdrawAction,
+		ItsyScape.Action.Collect(),
 		ItsyScape.Action.Bank()
 	}
 end

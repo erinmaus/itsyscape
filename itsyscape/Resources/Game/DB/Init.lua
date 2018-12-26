@@ -27,6 +27,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "Peep" {
+		Singleton = Meta.TYPE_INTEGER,
+		SingletonID = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepMashinaState" {
 		State = Meta.TYPE_TEXT,
 		Tree = Meta.TYPE_TEXT,
@@ -48,6 +54,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Bank"
+	ActionType "Collect"
 
 	ResourceType "Shop"
 	ActionType "Shop"
@@ -249,6 +256,7 @@ Game "ItsyScape"
 	ActionType "Close"
 
 	ActionType "Loot"
+	ActionType "Reward"
 	ResourceType "DropTable"
 
 	Meta "DropTableEntry" {
@@ -258,6 +266,11 @@ Game "ItsyScape"
 		Range = Meta.TYPE_INTEGER,
 		Noted = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "RewardEntry" {
+		Action = Meta.TYPE_ACTION,
+		Weight = Meta.TYPE_REAL
 	}
 
 	ActionType "Eat"

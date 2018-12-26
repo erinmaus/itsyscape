@@ -9,33 +9,20 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
-local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
+local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
-local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 
 local BasicChest = Class(Prop)
 
 function BasicChest:new(...)
 	Prop.new(self, ...)
 
-	self:addBehavior(InventoryBehavior)
-
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)
 
-	local inventory = self:getBehavior(InventoryBehavior)
-	inventory.inventory = SimpleInventoryProvider(self)
-end
-
-function BasicChest:assign(director, key)
-	Prop.assign(self, director, key)
-
-	local inventory = self:getBehavior(InventoryBehavior)
-	director:getItemBroker():addProvider(inventory.inventory)
-
-	self:getState():addProvider("Item", PlayerInventoryStateProvider(self))
+	Utility.Peep.addInventory(self, SimpleInventoryProvider)
 end
 
 return BasicChest

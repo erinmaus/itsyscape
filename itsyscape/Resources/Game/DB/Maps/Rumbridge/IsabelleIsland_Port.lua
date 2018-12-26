@@ -38,6 +38,18 @@ do
 end
 
 do
+	ItsyScape.Resource.Peep "IsabelleIsland_Port_RewardChest" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "IsabelleIsland_Port_RewardChest",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_RewardChest"
+	}
+end
+
+do
 	ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid" {
 		ItsyScape.Action.Attack()
 	}
@@ -98,10 +110,118 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForItem(65),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(65),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(60, 0.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(60, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(60, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(75, 1.1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1.0),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(70),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
+
+	do
+		local SeaBassReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "SeaBass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = SeaBassReward,
+			Weight = 200
+		}
+
+		local SardineReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "Sardine",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(1)
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = SardineReward,
+			Weight = 400
+		}
+
+		local SailorsHatReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "SailorsHat",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(10)
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = SailorsHatReward,
+			Weight = 10
+		}
+
+		local FishermansHatReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "FishermansHat",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(15)
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = SailorsHatReward,
+			Weight = 5
+		}
+
+		local BaitReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = BaitReward,
+			Weight = 100
+		}
+
+		local CoinsReward = ItsyScape.Action.Reward() {
+			Output {
+				Resource = ItsyScape.Resource.Item "Coins",
+				Count = 15
+			}
+		}
+
+		ItsyScape.Meta.RewardEntry {
+			Action = CoinsReward,
+			Weight = 100
+		}
+
+		ItsyScape.Resource.DropTable "IsabelleIsland_Port_UndeadSquid_Rewards" {
+			SeaBassReward,
+			SardineReward,
+			SailorsHatReward,
+			FishermansHatReward,
+			BaitReward,
+			CoinsReward
+		}
+	end
 end
 
 do
