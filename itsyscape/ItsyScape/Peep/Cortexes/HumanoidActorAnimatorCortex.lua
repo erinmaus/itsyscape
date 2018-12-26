@@ -226,11 +226,16 @@ function HumanoidActorAnimatorCortex:actionFailed(peep)
 end
 
 function HumanoidActorAnimatorCortex:peekEquip(peep, e)
+	local item = nil
+	if e.purpose == 'equip' then
+		item = e.item
+	end
+
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	local logic = peep:getDirector():getItemManager():getLogic(e.item:getID())
 	if logic:isCompatibleType(Weapon) then
-		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, e.item)) or
-		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, e.item))
+		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, item)) or
+		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, item))
 		then
 			self.idling[actor] = nil
 			self.walking[actor] = nil
