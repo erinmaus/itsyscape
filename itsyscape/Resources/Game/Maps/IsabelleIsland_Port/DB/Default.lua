@@ -26,30 +26,6 @@ do
 	}
 end
 
-M["Chest_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
-		PositionY = 10.000000,
-		PositionZ = 11.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Chest_Default1",
-		Map = M._MAP,
-		Resource = M["Chest_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Chest_Default",
-		MapObject = M["Chest_Default1"]
-	}
-end
-
 M["CommonTree_Default18"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

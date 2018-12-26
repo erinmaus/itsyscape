@@ -146,6 +146,34 @@ do
 	}
 end
 
+M["RewardChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.000000,
+		PositionY = 10.000000,
+		PositionZ = 11.000000,
+		RotiationX = 0.000000,
+		RotiationY = 0.000000,
+		RotiationZ = 0.000000,
+		RotiationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "RewardChest",
+		Map = M._MAP,
+		Resource = M["RewardChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest",
+		MapObject = M["RewardChest"]
+	}
+
+	M["RewardChest"] {
+		ItsyScape.Action.Collect()
+	}
+end
+
 M["FishingStoreOwner"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

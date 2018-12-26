@@ -38,14 +38,31 @@ do
 end
 
 do
-	ItsyScape.Resource.Peep "IsabelleIsland_Port_RewardChest" {
+	ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest" {
 		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Sunken chest",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "I wonder what's inside?",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest"
 	}
 
 	ItsyScape.Meta.Peep {
 		Singleton = 1,
 		SingletonID = "IsabelleIsland_Port_RewardChest",
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_RewardChest"
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest"
 	}
 end
 
@@ -192,7 +209,7 @@ do
 		local BaitReward = ItsyScape.Action.Reward() {
 			Output {
 				Resource = ItsyScape.Resource.Item "Bait",
-				Count = 1
+				Count = 20
 			}
 		}
 
@@ -204,7 +221,7 @@ do
 		local CoinsReward = ItsyScape.Action.Reward() {
 			Output {
 				Resource = ItsyScape.Resource.Item "Coins",
-				Count = 15
+				Count = 100
 			}
 		}
 

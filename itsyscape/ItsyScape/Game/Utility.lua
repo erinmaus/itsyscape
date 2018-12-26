@@ -667,6 +667,24 @@ function Utility.Peep.getStorage(peep)
 		local root = director:getPlayerStorage(peep):getRoot()
 		return root:getSection("Peep")
 	else
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			local singleton = gameDB:getRecord("Peep", {
+				Resource = resource
+			})
+
+			if singleton and singleton:get("Singleton") ~= 0 then
+				local name = singleton:get("SingletonID")
+				if name and name ~= "" then
+					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local mapStorage = worldStorage:getSection("Singleton")
+					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
+
+					return peepStorage
+				end
+			end
+		end
+
 		local mapObject = Utility.Peep.getMapObject(peep)
 		if mapObject then
 			local location = gameDB:getRecord("MapObjectLocation", {
@@ -685,29 +703,9 @@ function Utility.Peep.getStorage(peep)
 				else
 					Log.warn("Incomplete map object location.")
 				end
-			else
-				local resource = Utility.Peep.getResource(peep)
-				if resource then
-					local singleton = gameDB:getRecord("Peep", {
-						Resource = resource
-					})
-
-					if singleton and singleton:get("Singleton") ~= 0 then
-						local name = singleton:get("SingletonID")
-						if name and name ~= "" then
-							local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
-							local mapStorage = worldStorage:getSection("Singleton")
-							local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
-
-							return peepStorage
-						end
-					end
-				end
-
-				Log.warn("No map object location.")
 			end
 		else
-			Log.warn("No map object.")
+			Log.warn("No map object or singleton resource.")
 		end
 	end
 
