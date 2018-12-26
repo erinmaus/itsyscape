@@ -33,7 +33,7 @@ function Dequip:perform(state, peep, item)
 	local transaction = broker:createTransaction()
 	transaction:addParty(inventory)
 	transaction:addParty(equipment)
-	transaction:transfer(inventory, item, nil, 'equip')
+	transaction:transfer(inventory, item, nil, 'dequip')
 	local s, r = transaction:commit()
 	if not s then
 		io.stderr:write("error: ", r, "\n")
