@@ -86,54 +86,6 @@ do
 	}
 end
 
-M["Jenkins"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 10,
-		PositionZ = 35,
-		Direction = -1,
-		Name = "Jenkins",
-		Map = M._MAP,
-		Resource = M["Jenkins"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Jenkins"],
-		Name = "Jenkins",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Port/Dialog/PortmasterJenkins_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
-		MapObject = M["Jenkins"]
-	}
-
-	M["Jenkins"] {
-		TalkAction
-	}
-end
-
-M["Anchor_ReturnFromSea"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 10,
-		PositionZ = 37,
-		Name = "Anchor_ReturnFromSea",
-		Map = M._MAP,
-		Resource = M["Anchor_ReturnFromSea"]
-	}
-end
-
 M["Anchor_FromTower"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -191,5 +143,76 @@ do
 
 	M["Portal_Tower"] {
 		TravelAction
+	}
+end
+
+M["FishingStoreOwner"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 10,
+		PositionZ = 15,
+		Name = "FishingStoreOwner",
+		Map = M._MAP,
+		Resource = M["FishingStoreOwner"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "FishingStoreOwner_Standard",
+		MapObject = M["FishingStoreOwner"]
+	}
+end
+
+do
+	M["Chest_Default2"] {
+		ItsyScape.Action.Bank()
+	}
+end
+
+M["Jenkins"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 10,
+		PositionZ = 35,
+		Direction = -1,
+		Name = "Jenkins",
+		Map = M._MAP,
+		Resource = M["Jenkins"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Jenkins"],
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Port/Dialog/PortmasterJenkins_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
+		MapObject = M["Jenkins"]
+	}
+
+	M["Jenkins"] {
+		TalkAction
+	}
+end
+
+M["Anchor_ReturnFromSea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 10,
+		PositionZ = 37,
+		Name = "Anchor_ReturnFromSea",
+		Map = M._MAP,
+		Resource = M["Anchor_ReturnFromSea"]
 	}
 end

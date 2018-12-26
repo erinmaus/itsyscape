@@ -76,3 +76,37 @@ ItsyScape.Meta.EquipmentModel {
 	Filename = "Resources/Game/Skins/SailorsHat/SailorsHat.lua",
 	Resource = ItsyScape.Resource.Item "SailorsHat"
 }
+
+ItsyScape.Resource.Item "FishermansHat" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fisherman's hat",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FishermansHat"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Also makes you look like a ruin plunderin' adventurer.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FishermansHat"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(30),
+	Weight = -2,
+	Resource = ItsyScape.Resource.Item "FishermansHat"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "FishermansHat"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/FishermansHat/FishermansHat.lua",
+	Resource = ItsyScape.Resource.Item "FishermansHat"
+}

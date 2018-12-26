@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Action = require "ItsyScape.Peep.Action"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
