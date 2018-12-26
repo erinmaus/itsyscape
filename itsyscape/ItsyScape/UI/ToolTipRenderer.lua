@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -52,21 +53,32 @@ function ToolTipRenderer:layout(widget)
 			height = #lines * self.headerFont:getLineHeight() * self.headerFont:getHeight()
 			y = y + height + self.padding
 		elseif Class.isType(value, ToolTip.Text) or type(value) == 'string' then
-			local width, lines = self.textFont:getWrap(value.text, self.maxWidth)
+			local text, shadow, color
+			if type(value) == 'string' then
+				text = value
+				shadow = false
+				color = Color(0, 0, 0, 1)
+			else
+				text = value.text
+				shadow = value.shadow
+				color = value.color
+			end
+
+			local width, lines = self.textFont:getWrap(text, self.maxWidth)
 			maxWidth = math.min(math.max(width, maxWidth), self.maxWidth)
 
 			local textY = y
 			table.insert(result, function()
 				love.graphics.setFont(self.textFont)
-				if value.shadow then
+				if shadow then
 					love.graphics.setColor(0, 0, 0, 1)
-					love.graphics.printf(value.text, 1, textY + 1, maxWidth)
+					love.graphics.printf(text, 1, textY + 1, maxWidth)
 				end
-				love.graphics.setColor(value.color:get())
-				love.graphics.printf(value.text, 0, textY, maxWidth, 'left')
+				love.graphics.setColor(color:get())
+				love.graphics.printf(text, 0, textY, maxWidth, 'left')
 			end)
 
-			height = #lines * self.headerFont:getLineHeight() * self.headerFont:getHeight()
+			height = #lines * self.textFont:getLineHeight() * self.textFont:getHeight()
 			y = y + height + self.padding
 		end
 	end

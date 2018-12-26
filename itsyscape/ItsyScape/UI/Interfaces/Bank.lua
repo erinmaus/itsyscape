@@ -15,6 +15,7 @@ local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
+local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -90,6 +91,18 @@ function Bank:new(id, index, ui)
 	bankButton:setData('tab-icon', "Resources/Game/UI/Icons/Things/Chest.png")
 	self.tabsLayout:addChild(bankButton)
 
+	local noteButton = Button()
+	noteButton.onClick:register(self.toggleNote, self)
+	noteButton:setToolTip(
+		"Withdraw items as notes.",
+		"Noted items are stackable but are only useful for trading.")
+	local noteIcon = Icon()
+	noteIcon:setSize(32, 32)
+	noteIcon:setPosition(8, 8)
+	noteIcon:setIcon("Resources/Game/Items/Note.png")
+	noteButton:addChild(noteIcon)
+	self.tabsLayout:addChild(noteButton)
+
 	self.tabContent = { max = 0}
 	self.tabContentLayout = ScrollablePanel(GridLayout)
 	self.tabContentLayout:getInnerPanel():setWrapContents(true)
@@ -124,6 +137,8 @@ function Bank:new(id, index, ui)
 	self:activateTab(bankButton)
 	self.previousSource = false
 	self.currentSource = 'items'
+
+	self.noted = false
 end
 
 function Bank:activateTab(button)
@@ -148,6 +163,20 @@ end
 function Bank:openBank(button)
 	self.currentSource = 'items'
 	self:activateTab(button)
+end
+
+function Bank:toggleNote(button)
+	self.noted = not self.noted
+
+	if self.noted then
+		button:setStyle(ButtonStyle({
+			pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png"
+		}, self:getView():getResources()))
+	else
+		button:setStyle(false)
+	end
 end
 
 function Bank:update(...)
@@ -350,7 +379,7 @@ function Bank:probe(button)
 				verb = "Withdraw", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { index = index, count = 1 })
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 1 })
 				end
 			})
 
@@ -359,7 +388,7 @@ function Bank:probe(button)
 				verb = "Withdraw-10", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { index = index, count = 10 })
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 10 })
 				end
 			})
 
@@ -368,7 +397,7 @@ function Bank:probe(button)
 				verb = "Withdraw-100", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { index = index, count = 100 })
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 100 })
 				end
 			})
 
@@ -377,7 +406,7 @@ function Bank:probe(button)
 				verb = "Withdraw-All", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { index = index, count = math.huge })
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = math.huge })
 				end
 			})
 		end
@@ -414,7 +443,7 @@ function Bank:activate(button)
 		if self.currentSource == 'inventory' then
 			self:sendPoke("deposit", nil, { index = index, count = 1 })
 		elseif self.currentSource == 'items' then
-			self:sendPoke("withdraw", nil, { index = index, count = 1 })
+			self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 1 })
 		end
 	end
 end

@@ -106,7 +106,7 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 	transaction:addParty(destination)
 
 	if noted and not manager:isNoteable(id) then
-		return false, 0
+		noted = false
 	end
 
 	local hasNotedItem
