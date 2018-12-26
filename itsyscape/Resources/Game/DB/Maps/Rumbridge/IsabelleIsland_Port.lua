@@ -298,3 +298,68 @@ do
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_WaterLeak"
 	}
 end
+
+do
+	ItsyScape.Resource.Item "SquidSkull" {
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Magic",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Wisdom",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			}
+		},
+
+		ItsyScape.Action.Dequip()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Undead squid skull",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An abomination from the reality warping powers of the Old Ones.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseStab = -ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseSlash = -ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseCrush = -ItsyScape.Utility.styleBonusForItem(10, 0.3),
+		DefenseRanged = -ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(10, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15, 1),
+		Prayer = 1,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/SquidSkull/SquidSkull.lua",
+		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
+	local SkullReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "SquidSkull",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = SkullReward,
+		Weight = 1
+	}
+
+	ItsyScape.Resource.DropTable "IsabelleIsland_Port_UndeadSquid_Rewards_Skull" {
+		SkullReward
+	}
+end
