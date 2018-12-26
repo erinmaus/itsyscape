@@ -47,6 +47,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('resourceObtained', self.onResourceObtained, self)
 	peep:listen('transferItemFrom', self.peekEquip, self)
 	peep:listen('transferItemTo', self.peekEquip, self)
+	peep:listen('spawnEquipment', self.peekEquip, self)
 	peep:silence('actionFailed', self.actionFailed, self)
 end
 
@@ -64,6 +65,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('resourceObtained', self.onResourceObtained)
 	peep:silence('transferItemFrom', self.peekEquip)
 	peep:silence('transferItemTo', self.peekEquip)
+	peep:silence('spawnEquipment', self.peekEquip)
 	peep:silence('actionFailed', self.actionFailed, self, peep)
 end
 

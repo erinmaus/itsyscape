@@ -359,18 +359,45 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 		"mazer"
 	}
 }
+Utility.Text.BE = {
+	["x"] = { present = 'are', past = 'were', future = 'will be' },
+	["male"] = { present = 'is', past = 'was', future = 'will be' },
+	["female"] = { present = 'is', past = 'was', future = 'will be' }
+}
 
-function Utility.Text.getPronoun(peep, class, lang)
+function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	lang = lang or "en-US"
 
+	local g, x
 	do
 		local gender = peep:getBehavior(GenderBehavior)
 		if gender then
-			return gender.pronouns[class] or "*None"
+			g = gender.pronouns[class] or "*None"
 		else
-			return Utility.Text.DEFAULT_PRONOUNS[lang][class] or "*Default"
+			g = Utility.Text.DEFAULT_PRONOUNS[lang][class] or "*Default"
+			x = "are"
 		end
 	end
+
+	if upperCase then
+		g = g:sub(1, 1):upper() .. g:sub(2)
+	end
+
+	return g
+end
+
+function Utility.Text.getEnglishBe(peep)
+	local g
+	do
+		local gender = peep:getBehavior(GenderBehavior)
+		if gender then
+			g = Utility.Text.BE[gender.gender]
+		end
+
+		g = g or Utility.Text.BE['x']
+	end
+
+	return g
 end
 
 function Utility.Text.prettyNumber(value)

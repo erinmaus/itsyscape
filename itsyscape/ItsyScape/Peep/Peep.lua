@@ -438,15 +438,18 @@ function Peep:poof()
 	self.poofed = true
 end
 
--- Updates the Peep.
---
--- There is no guarantee to the order Peeps are updated.
-function Peep:update(director, game)
+-- Called before cortexes are updated.
+function Peep:preUpdate(director, game)
 	if not self.isReady then
 		self:ready(director, game)
 		self.isReady = true
 	end
+end
 
+-- Updates the Peep.
+--
+-- There is no guarantee to the order Peeps are updated.
+function Peep:update(director, game)
 	for _, queue in pairs(self.commandQueues) do
 		queue:update(game:getDelta())
 	end
