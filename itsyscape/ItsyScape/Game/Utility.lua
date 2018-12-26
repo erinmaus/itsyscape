@@ -507,7 +507,19 @@ function Utility.Item.getName(id, gameDB, lang)
 	lang = lang or "en-US"
 
 	local itemResource = gameDB:getResource(id, "Item")
-	local nameRecord = gameDB:getRecords("ResourceName", { Resource = itemResource, Language = lang }, 1)[1]
+	local nameRecord = gameDB:getRecord("ResourceName", { Resource = itemResource, Language = lang }, 1)
+	if nameRecord then
+		return nameRecord:get("Value")
+	else
+		return false
+	end
+end
+
+function Utility.Item.getDescription(id, gameDB, lang)
+	lang = lang or "en-US"
+
+	local itemResource = gameDB:getResource(id, "Item")
+	local nameRecord = gameDB:getRecord("ResourceDescription", { Resource = itemResource, Language = lang })
 	if nameRecord then
 		return nameRecord:get("Value")
 	else
@@ -674,6 +686,24 @@ function Utility.Peep.getStorage(peep)
 					Log.warn("Incomplete map object location.")
 				end
 			else
+				local resource = Utility.Peep.getResource(peep)
+				if resource then
+					local singleton = gameDB:getRecord("Peep", {
+						Resource = resource
+					})
+
+					if singleton and singleton:get("Singleton") ~= 0 then
+						local name = singleton:get("SingletonID")
+						if name and name ~= "" then
+							local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+							local mapStorage = worldStorage:getSection("Singleton")
+							local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
+
+							return peepStorage
+						end
+					end
+				end
+
 				Log.warn("No map object location.")
 			end
 		else

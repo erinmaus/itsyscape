@@ -28,7 +28,7 @@ function UseCraftWindow:perform(state, player, prop, action, count)
 
 	if walk then
 		local craft = CallbackCommand(UseCraftWindow.delegatedPerform, self, state, player, prop, action, count)
-		local perform = CallbackCommand(Action.perform, self, state, *)
+		local perform = CallbackCommand(Action.perform, self, state, player)
 		local command = CompositeCommand(true, walk, craft, perform)
 
 		local queue = player:getCommandQueue()

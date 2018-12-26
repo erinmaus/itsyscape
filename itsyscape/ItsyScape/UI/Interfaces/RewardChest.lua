@@ -15,196 +15,141 @@ local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
+local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local TextInput = require "ItsyScape.UI.TextInput"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
-local Bank = Class(Interface)
-Bank.WIDTH = 480
-Bank.HEIGHT = 320
-Bank.TAB_SIZE = 48
-Bank.ITEM_SIZE = 48
-Bank.BUTTON_SIZE = 48
-Bank.PADDING = 12
-Bank.ICON_PADDING = 2
+local RewardChest = Class(Interface)
+RewardChest.WIDTH = 480
+RewardChest.HEIGHT = 320
+RewardChest.TAB_SIZE = 48
+RewardChest.ITEM_SIZE = 48
+RewardChest.BUTTON_SIZE = 48
+RewardChest.ACTION_BUTTON_WIDTH = 128
+RewardChest.PADDING = 12
+RewardChest.ICON_PADDING = 2
+RewardChest.ICON_SIZE = 48
 
-Bank.ACTIVE_TAB_STYLE = function(icon)
-	return {
-		inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		icon = { filename = icon, x = 0.5, y = 0.5 }
-	}
-end
-
-Bank.INACTIVE_TAB_STYLE = function(icon)
-	return {
-		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
-		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		icon = { filename = icon, x = 0.5, y = 0.5 }
-	}
-end
-
-function Bank:new(id, index, ui)
+function RewardChest:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.window.getMode()
-	self:setSize(Bank.WIDTH, Bank.HEIGHT)
+	self:setSize(RewardChest.WIDTH, RewardChest.HEIGHT)
 	self:setPosition(
-		(w - Bank.WIDTH) / 2,
-		(h - Bank.HEIGHT) / 2)
+		(w - RewardChest.WIDTH) / 2,
+		(h - RewardChest.HEIGHT) / 2)
 
 	local panel = Panel()
 	panel:setSize(self:getSize())
 	self:addChild(panel)
 
-	self.tabs = {}
-	self.tabsLayout = ScrollablePanel(GridLayout)
-	self.tabsLayout:getInnerPanel():setUniformSize(
+	local icon = Icon()
+	icon:setIcon("Resources/Game/UI/Icons/Things/Chest.png")
+	icon:setPosition(RewardChest.PADDING, RewardChest.PADDING)
+	self:addChild(icon)
+
+	local titleLabel = Label()
+	titleLabel:setText("Reward Chest")
+	titleLabel:setStyle(LabelStyle({
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		fontSize = 32,
+		color = { 1, 1, 1, 1 },
+		textShadow = true
+	}, self:getView():getResources()))
+	titleLabel:setPosition(RewardChest.PADDING * 2 + RewardChest.ICON_SIZE, RewardChest.PADDING)
+	self:addChild(titleLabel)
+
+	self.contentLayout = ScrollablePanel(GridLayout)
+	self.contentLayout:getInnerPanel():setWrapContents(true)
+	self.contentLayout:getInnerPanel():setUniformSize(
 		true,
-		Bank.TAB_SIZE,
-		Bank.TAB_SIZE)
-	self.tabsLayout:getInnerPanel():setPadding(Bank.PADDING, Bank.PADDING)
-	self.tabsLayout:setSize(
-		Bank.WIDTH - Bank.PADDING * 2,
-		Bank.TAB_SIZE + Bank.PADDING)
-	self:addChild(self.tabsLayout)
+		RewardChest.ITEM_SIZE,
+		RewardChest.ITEM_SIZE)
+	self.contentLayout:getInnerPanel():setPadding(
+		RewardChest.PADDING,
+		RewardChest.PADDING)
+	self.contentLayout:setPosition(
+		RewardChest.PADDING,
+		RewardChest.TAB_SIZE + RewardChest.PADDING * 2)
+	self.contentLayout:setSize(
+		RewardChest.WIDTH - RewardChest.PADDING * 2,
+		RewardChest.HEIGHT - RewardChest.TAB_SIZE - RewardChest.PADDING * 2 - RewardChest.BUTTON_SIZE - RewardChest.PADDING * 2)
+	self.contentLayout:getInnerPanel():setSize(
+		RewardChest.WIDTH - RewardChest.PADDING * 2,
+		RewardChest.HEIGHT - RewardChest.TAB_SIZE - RewardChest.PADDING * 2)
+	self.contentLayout:setFloatyScrollBars(false)
+	self:addChild(self.contentLayout)
 
-	local inventoryButton = Button()
-	inventoryButton:setStyle(ButtonStyle(
-		Bank.INACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Common/Inventory.png"),
-		self:getView():getResources()))
-	inventoryButton.onClick:register(self.openInventory, self)
-	inventoryButton:setData('tab-icon', "Resources/Game/UI/Icons/Common/Inventory.png")
-	self.tabsLayout:addChild(inventoryButton)
-
-	local bankButton = Button()
-	bankButton:setStyle(ButtonStyle(
-		Bank.ACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Things/Chest.png"),
-		self:getView():getResources()))
-	bankButton.onClick:register(self.openBank, self)
-	bankButton:setData('tab-icon', "Resources/Game/UI/Icons/Things/Chest.png")
-	self.tabsLayout:addChild(bankButton)
-
-	self.tabContent = { max = 0}
-	self.tabContentLayout = ScrollablePanel(GridLayout)
-	self.tabContentLayout:getInnerPanel():setWrapContents(true)
-	self.tabContentLayout:getInnerPanel():setUniformSize(
-		true,
-		Bank.ITEM_SIZE,
-		Bank.ITEM_SIZE)
-	self.tabContentLayout:getInnerPanel():setPadding(
-		Bank.PADDING,
-		Bank.PADDING)
-	self.tabContentLayout:setPosition(
-		Bank.PADDING,
-		Bank.TAB_SIZE + Bank.PADDING * 2)
-	self.tabContentLayout:setSize(
-		Bank.WIDTH - Bank.PADDING * 2,
-		Bank.HEIGHT - Bank.TAB_SIZE - Bank.PADDING * 2)
-	self.tabContentLayout:getInnerPanel():setSize(
-		Bank.WIDTH - Bank.PADDING * 2,
-		Bank.HEIGHT - Bank.TAB_SIZE - Bank.PADDING * 2)
-	self.tabContentLayout:setFloatyScrollBars(false)
-	self:addChild(self.tabContentLayout)
+	self.collectButton = Button()
+	self.collectButton:setText("Collect")
+	self.collectButton:setSize(RewardChest.ACTION_BUTTON_WIDTH, RewardChest.BUTTON_SIZE)
+	self.collectButton:setPosition(
+		RewardChest.WIDTH - RewardChest.ACTION_BUTTON_WIDTH - RewardChest.PADDING,
+		RewardChest.HEIGHT - RewardChest.BUTTON_SIZE - RewardChest.PADDING)
+	self.collectButton.onClick:register(function()
+		self:sendPoke("collect", nil, {})
+	end)
+	self:addChild(self.collectButton)
 
 	self.closeButton = Button()
-	self.closeButton:setSize(Bank.BUTTON_SIZE, Bank.BUTTON_SIZE)
-	self.closeButton:setPosition(Bank.WIDTH - Bank.BUTTON_SIZE, 0)
+	self.closeButton:setSize(RewardChest.BUTTON_SIZE, RewardChest.BUTTON_SIZE)
+	self.closeButton:setPosition(RewardChest.WIDTH - RewardChest.BUTTON_SIZE, 0)
 	self.closeButton:setText("X")
 	self.closeButton.onClick:register(function()
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
 
-	self:activateTab(bankButton)
-	self.previousSource = false
-	self.currentSource = 'items'
+	self:populate()
 end
 
-function Bank:activateTab(button)
-	if self.activeButton then
-		local style = Bank.INACTIVE_TAB_STYLE(self.activeButton:getData('tab-icon'))
-		self.activeButton:setStyle(ButtonStyle(style, self:getView():getResources()))
-	end
-
-	local style = Bank.ACTIVE_TAB_STYLE(button:getData('tab-icon'))
-	button:setStyle(ButtonStyle(style, self:getView():getResources()))
-	self.activeButton = button
-
-	self.tabContentLayout:setScroll(0, 0)
-	self.tabContentLayout:getInnerPanel():setScroll(0, 0)
-end
-
-function Bank:openInventory(button)
-	self.currentSource = 'inventory'
-	self:activateTab(button)
-end
-
-function Bank:openBank(button)
-	self.currentSource = 'items'
-	self:activateTab(button)
-end
-
-function Bank:update(...)
-	Interface.update(self, ...)
-
+function RewardChest:populate()
 	local state = self:getState()
-	if self.currentSource ~= self.previousSource or
-	   self.tabContent.max ~= state[self.currentSource].max
-	then
-		local items = state[self.currentSource]
+	local items = state.items
 
-		for _, item in pairs(self.tabContent) do
-			self.tabContentLayout:removeChild(item)
-		end
-		self.tabContent = { max = items.max }
+	for i = 1, #items do
+		local button = Button()
+		local icon = ItemIcon()
+		icon:setData('index', i)
+		icon:setData('source', self.currentSource)
+		icon:bind("itemID", string.format("items[{index}].id"))
+		icon:bind("itemCount", string.format("items[{index}].count"))
+		icon:bind("itemIsNoted", string.format("items[{index}].noted"))
+		icon:setSize(
+			RewardChest.ICON_SIZE,
+			RewardChest.ICON_SIZE)
+		icon:setPosition(
+			RewardChest.ICON_PADDING,
+			RewardChest.ICON_PADDING)
 
-		for i = 1, items.max do
-			local button = DraggableButton()
-			local icon = ItemIcon()
-			icon:setData('index', i)
-			icon:setData('source', self.currentSource)
-			icon:bind("itemID", string.format("%s[{index}].id", self.currentSource))
-			icon:bind("itemCount", string.format("%s[{index}].count", self.currentSource))
-			icon:bind("itemIsNoted", string.format("%s[{index}].noted", self.currentSource))
-			icon:setSize(
-				Bank.ICON_SIZE,
-				Bank.ICON_SIZE)
-			icon:setPosition(
-				Bank.ICON_PADDING,
-				Bank.ICON_PADDING)
+		button:setStyle(ButtonStyle({
+			inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
+		}, self:getView():getResources()))
 
-			button:setStyle(ButtonStyle({
-				inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
-				hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
-				pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
-			}, self:getView():getResources()))
+		button:addChild(icon)
+		button:setData('icon', icon)
 
-			button:addChild(icon)
-			button:setData('icon', icon)
-			button:setData('bank-droppable-target', true)
-			button.onDrop:register(self.swap, self)
-			button.onDrag:register(self.drag, self)
-			button.onLeftClick:register(self.activate, self)
-			button.onRightClick:register(self.probe, self)
+		button:setToolTip(
+			ToolTip.Header(items[i].name),
+			ToolTip.Text(items[i].description))
 
-			self.tabContentLayout:addChild(button)
-			table.insert(self.tabContent, button)
-		end
-
-		self.tabContentLayout:setScrollSize(
-			self.tabContentLayout:getInnerPanel():getSize())
-
-		self.previousSource = self.currentSource
+		self.contentLayout:addChild(button)
 	end
+
+	self.contentLayout:setScrollSize(
+		self.contentLayout:getInnerPanel():getSize())
 end
 
-function Bank:getRightHandItem(x, y)
+function RewardChest:getRightHandItem(x, y)
 	if self.currentSource == 'items' then
 		for i = 1, #self.tabContent do
 			local buttonX, buttonY = self.tabContent[i]:getPosition()
@@ -224,7 +169,7 @@ function Bank:getRightHandItem(x, y)
 	end
 end
 
-function Bank:drag(button, x, y, absoluteX, absoluteY)
+function RewardChest:drag(button, x, y, absoluteX, absoluteY)
 	local icon = button:getData('icon')
 	local rightHandItem = self:getRightHandItem(absoluteX, absoluteY)
 	if rightHandItem then
@@ -242,7 +187,7 @@ function Bank:drag(button, x, y, absoluteX, absoluteY)
 	end
 end
 
-function Bank:swap(button, x, y)
+function RewardChest:swap(button, x, y)
 	local icon = button:getData('icon')
 	local index = icon:getData('index')
 	if index then
@@ -265,7 +210,7 @@ function Bank:swap(button, x, y)
 		if destination then
 			local newIndex = destination:getData('icon'):getData('index')
 			if self.currentSource == 'items' then
-				self:sendPoke("swapBank", nil, { tab = 0, a = index, b = newIndex })
+				self:sendPoke("swapRewardChest", nil, { tab = 0, a = index, b = newIndex })
 			elseif self.currentSource == 'inventory' then
 				self:sendPoke("swapInventory", nil, { a = index, b = newIndex })
 			end
@@ -277,7 +222,7 @@ function Bank:swap(button, x, y)
 						rightHandItem = rightHandItem + 1
 					end
 
-					self:sendPoke("insertBank", nil, { tab = 0, a = index, b = rightHandItem })
+					self:sendPoke("insertRewardChest", nil, { tab = 0, a = index, b = rightHandItem })
 				end
 			end
 		end
@@ -291,7 +236,7 @@ function Bank:swap(button, x, y)
 	icon:setPosition(self.ICON_PADDING, self.ICON_PADDING)
 end
 
-function Bank:probe(button)
+function RewardChest:probe(button)
 	local index = button:getData('icon'):getData('index')
 	local items = self:getState()[self.currentSource] or {}
 	local item = items[index]
@@ -406,7 +351,7 @@ function Bank:probe(button)
 	end
 end
 
-function Bank:activate(button)
+function RewardChest:activate(button)
 	local index = button:getData('icon'):getData('index')
 	local items = self:getState()[self.currentSource] or {}
 	local item = items[index]
@@ -419,4 +364,4 @@ function Bank:activate(button)
 	end
 end
 
-return Bank
+return RewardChest
