@@ -244,10 +244,6 @@ function Director:update(delta)
 	end
 	self.oldPeeps = {}
 
-	for peep in pairs(self.peeps) do
-		peep:update(self, self:getGameInstance())
-	end
-
 	for _, cortex in ipairs(self.cortexes) do
 		for peep in pairs(self.pendingPeeps) do
 			cortex:previewPeep(peep)
@@ -255,8 +251,16 @@ function Director:update(delta)
 	end
 	self.pendingPeeps = {}
 
+	for peep in pairs(self.peeps) do
+		peep:preUpdate(self, self:getGameInstance())
+	end
+
 	for _, cortex in pairs(self.cortexes) do
 		cortex:update(delta)
+	end
+
+	for peep in pairs(self.peeps) do
+		peep:update(self, self:getGameInstance())
 	end
 end
 

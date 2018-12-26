@@ -100,6 +100,11 @@ end
 
 function EquipmentInventoryProvider:onSpawn(item, count)
 	self:assignKey(item)
+
+	self:getPeep():poke('spawnEquipment', {
+		item = item,
+		count = count
+	})
 end
 
 function EquipmentInventoryProvider:onTransferTo(item, source, count, purpose)
