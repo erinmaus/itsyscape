@@ -141,11 +141,11 @@ function CombatCortex:update(delta)
 					local selfRadius, targetRadius
 					do
 						local peepSize = peep:getBehavior(SizeBehavior).size
-						peepSize = math.min(peepSize.x, peepSize.z)
+						peepSize = math.max(peepSize.x, peepSize.z)
 						selfRadius = math.max(math.floor(peepSize / map:getCellSize()) - 1, 0)
 
 						local targetSize = target:getBehavior(SizeBehavior).size
-						targetSize = math.min(targetSize.x, targetSize.z)
+						targetSize = math.max(targetSize.x, targetSize.z)
 						targetRadius = math.max(math.floor(targetSize / map:getCellSize()) - 1, 0)
 					end
 					

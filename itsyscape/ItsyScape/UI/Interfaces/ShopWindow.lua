@@ -84,13 +84,15 @@ function ShopWindow:new(id, index, ui)
 	inventoryButton:setData('tab-icon', "Resources/Game/UI/Icons/Common/Inventory.png")
 	self.tabsLayout:addChild(inventoryButton)
 
-	local bankButton = Button()
-	bankButton:setStyle(ButtonStyle(
+	local shopButton = Button()
+	shopButton:setStyle(ButtonStyle(
 		ShopWindow.ACTIVE_TAB_STYLE("Resources/Game/UI/Icons/Things/Chest.png"),
 		self:getView():getResources()))
-	bankButton.onClick:register(self.openShopWindow, self)
-	bankButton:setData('tab-icon', "Resources/Game/UI/Icons/Things/Chest.png")
-	self.tabsLayout:addChild(bankButton)
+	shopButton.onClick:register(self.openShopWindow, self)
+	shopButton:setData('tab-icon', "Resources/Game/UI/Icons/Things/Chest.png")
+	self.tabsLayout:addChild(shopButton)
+
+	self.activeTabButton = shopButton
 
 	self.sellInventory = {}
 	self.sellGrid = ScrollablePanel(GridLayout)

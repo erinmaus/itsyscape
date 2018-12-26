@@ -316,6 +316,12 @@ do
 		ItsyScape.Action.Dequip()
 	}
 
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(10),
+		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
 	ItsyScape.Meta.ResourceName {
 		Value = "Undead squid skull",
 		Language = "en-US",

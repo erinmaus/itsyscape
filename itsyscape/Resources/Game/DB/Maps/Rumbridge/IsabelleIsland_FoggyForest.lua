@@ -76,6 +76,12 @@ do
 		ItsyScape.Action.Dequip()
 	}
 
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(10),
+		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "AncientDriftwoodMask"
+	}
+
 	ItsyScape.Meta.ResourceName {
 		Value = "Ancient driftwood mask",
 		Language = "en-US",

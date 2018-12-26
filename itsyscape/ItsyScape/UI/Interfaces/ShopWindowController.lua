@@ -221,7 +221,7 @@ function ShopWindowController:pullInventoryItem(index)
 				Resource = gameDB:getResource(item:getID(), "Item")
 			})
 
-			if meta:get("Untradeable") ~= 0 then
+			if not meta or meta:get("Untradeable") ~= 0 then
 				return
 			end
 
