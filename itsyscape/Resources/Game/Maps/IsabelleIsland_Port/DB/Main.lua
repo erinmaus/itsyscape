@@ -191,6 +191,42 @@ do
 	}
 end
 
+M["FishingTutor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 50,
+		PositionY = 10,
+		PositionZ = 27,
+		Direction = -1,
+		Name = "FishingTutor",
+		Map = M._MAP,
+		Resource = M["FishingTutor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["FishingTutor"],
+		Name = "Fisherman",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Port/Dialog/Fisherman_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Fisherman",
+		MapObject = M["FishingTutor"]
+	}
+
+	M["FishingTutor"] {
+		TalkAction
+	}
+end
+
 do
 	M["Chest_Default2"] {
 		ItsyScape.Action.Bank()
