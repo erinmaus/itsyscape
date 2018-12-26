@@ -293,28 +293,7 @@ do
 		MapObject = M["Chest"]
 	}
 
-	local WithdrawAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Withdraw",
-		Language = "en-US",
-		Action = WithdrawAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Chest"],
-		Name = "Chest",
-		Action = WithdrawAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Chest_Withdraw_en-US.lua",
-		Language = "en-US",
-		Action = WithdrawAction
-	}
-
 	M["Chest"] {
-		WithdrawAction,
 		ItsyScape.Action.Collect(),
 		ItsyScape.Action.Bank()
 	}
