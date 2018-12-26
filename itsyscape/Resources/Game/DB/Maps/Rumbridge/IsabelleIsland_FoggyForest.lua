@@ -267,4 +267,10 @@ do
 			}
 		}
 	}
+
+	ItsyScape.Meta.Shop {
+		ExchangeRate = 0.1,
+		Currency = ItsyScape.Resource.Item "BoneShards",
+		Resource = ItsyScape.Resource.Shop "IsabelleIsland_FoggyForest_YendorianIncenseShop"
+	}
 end

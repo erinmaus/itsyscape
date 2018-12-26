@@ -270,6 +270,7 @@ function CraftWindow:populateRequirements(e)
 
 	local _, innerPanelHeight = self.requirementsPanel:getInnerPanel():getSize()
 	self.requirementsPanel:setScrollSize(width, innerPanelHeight)
+	self.requirementsPanel:getInnerPanel():setScroll(0, 0)
 	self.requirementsPanel:performLayout()
 end
 

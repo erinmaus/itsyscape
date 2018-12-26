@@ -249,6 +249,7 @@ function SkillGuide:populateRequirements(e)
 	self.infoPanel:getInnerPanel():performLayout()
 	self.infoPanel:getInnerPanel():setScroll(0, 0)
 	self.infoPanel:setScrollSize(self.infoPanel:getInnerPanel():getSize())
+	self.infoPanel:performLayout()
 end
 
 return SkillGuide

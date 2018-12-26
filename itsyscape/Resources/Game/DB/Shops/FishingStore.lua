@@ -57,3 +57,9 @@ ItsyScape.Resource.Shop "Standard_FishingStore" {
 		}
 	}
 }
+
+ItsyScape.Meta.Shop {
+	ExchangeRate = 0.4,
+	Currency = ItsyScape.Resource.Item "Coins",
+	Resource = ItsyScape.Resource.Shop "Standard_FishingStore"
+}
