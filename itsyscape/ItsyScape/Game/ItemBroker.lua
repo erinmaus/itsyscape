@@ -197,6 +197,10 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 			isStackable = false
 		end
 
+		if not self.broker.manager:isNoteable(id) then
+			noted = false
+		end
+
 		local inventory = self.broker.inventories[provider]
 		if merge and isStackable then
 			local item = inventory:findFirst(id, true, noted)

@@ -100,7 +100,12 @@ function RewardChestController:collect(e)
 		assert(reward:getBroker() == inventory:getBroker())
 
 		local broker = reward:getBroker()
+		local items = {}
 		for item in broker:iterateItems(reward) do
+			items[item] = true
+		end
+
+		for item in pairs(items) do
 			inventory:deposit(item, math.huge, true)
 		end
 	end

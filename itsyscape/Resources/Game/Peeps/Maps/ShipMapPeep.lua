@@ -29,6 +29,7 @@ function ShipMapPeep:new(resource, name, ...)
 	self.time = 0
 
 	self:addBehavior(BossStatsBehavior)
+	self:addBehavior(CombatStatusBehavior)
 
 	self:addPoke('hit')
 	self:addPoke('sink')

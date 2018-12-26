@@ -163,3 +163,32 @@ do
 		MapObject = M["Sailor2"]
 	}
 end
+
+M["SunkenChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39.0,
+		PositionY = -2.0,
+		PositionZ = 19.0,
+		Name = "SunkenChest",
+		Map = M._MAP,
+		Resource = M["SunkenChest"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Sunken chest",
+		Language = "en-US",
+		Resource = M["SunkenChest"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I wonder what's inside?",
+		Language = "en-US",
+		Resource = M["SunkenChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest",
+		MapObject = M["SunkenChest"]
+	}
+end
