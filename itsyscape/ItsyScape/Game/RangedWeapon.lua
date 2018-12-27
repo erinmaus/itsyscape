@@ -106,4 +106,11 @@ function RangedWeapon:getStyle()
 	return Weapon.STYLE_ARCHERY
 end
 
+function RangedWeapon:getProjectile(peep)
+	local quiver = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_QUIVER)
+	if quiver then
+		return quiver:getID()
+	end
+end
+
 return RangedWeapon
