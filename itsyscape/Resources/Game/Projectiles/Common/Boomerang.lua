@@ -70,7 +70,7 @@ function Boomerang:update(elapsed)
 	if self.spawnPosition then
 		local root = self:getRoot()
 		local delta = self:getDelta()
-		local mu = (math.sin(delta * math.pi * 2) + 1) / 2
+		local mu = (math.sin(delta * math.pi * 2 + math.pi) + 1) / 2
 		local position = self.spawnPosition:lerp(self.hitPosition, mu)
 
 		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 4)

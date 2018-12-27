@@ -173,7 +173,7 @@ for name, metal in pairs(METALS) do
 	}
 
 	ItsyScape.Meta.Equipment {
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 6),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_QUIVER,
 		Resource = Item
 	}

@@ -49,6 +49,30 @@ local ITEMS = {
 		tier = 0
 	},
 
+	["Dagger"] = {
+		skills = { "Attack" },
+		niceName = "%s dagger",
+		slot = "Dagger",
+		bars = 1,
+		tier = -1
+	},
+
+	["Mace"] = {
+		skills = { "Strength" },
+		niceName = "%s mace",
+		slot = "Mace",
+		bars = 1,
+		tier = 2
+	},
+
+	["Longsword"] = {
+		skills = { "Strength", "Attack" },
+		niceName = "%s longsword",
+		slot = "Longsword",
+		bars = 3,
+		tier = 2
+	},
+
 	["Zweihander"] = {
 		skills = { "Strength", "Attack" },
 		niceName = "%s zweihander",
@@ -200,6 +224,45 @@ do
 		Value = "Warning: don't stand on a hill during a lightning storm and curse the gods.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzePlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForItem(5, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BronzeDagger"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not very useful for culinary duties.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeDagger"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(7, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(7),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BronzeMace"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Doesn't draw blood, so valued as a weapon by the pious.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeMace"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(8, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(8),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BronzeLongsword"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The epitome of the bronze age.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeLongsword"
 	}
 
 	ItsyScape.Meta.Equipment {
