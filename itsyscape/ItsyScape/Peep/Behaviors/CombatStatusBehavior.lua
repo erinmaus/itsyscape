@@ -29,6 +29,8 @@ function CombatStatusBehavior:new()
 	self.currentPrayer = 1
 	self.maximumPrayer = 1
 	self.maxChaseDistance = 4
+
+	self.damage = {}
 end
 
 return CombatStatusBehavior

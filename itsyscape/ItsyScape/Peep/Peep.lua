@@ -48,6 +48,7 @@ function Peep:new(name)
 	self.layerName = "::orphan"
 
 	self.pokes = {}
+	self.pendingPokes = {}
 
 	self.resources = {}
 
@@ -114,7 +115,7 @@ function Peep:silence(name, c)
 	end
 end
 
--- Pokes the peep.
+-- Immediately pokes the peep.
 --
 -- 'name' is expected to be camel case (e.g., fooBar). It is transformed into the
 -- form "onFooBar". If a method on the Peep exists with the name, then it is
@@ -133,6 +134,14 @@ function Peep:poke(name, ...)
 	if self.pokes[name] then
 		self.pokes[name](self, ...)
 	end
+end
+
+-- Pokes a peep the next update.
+function Peep:pushPoke(name, ...)
+	table.insert(self.pendingPokes, {
+		callback = name,
+		arguments = { n = select('#', ...), ... }
+	})
 end
 
 -- Adds or replaces the CacheRef 'ref' to the resource 'name'.
@@ -454,6 +463,12 @@ end
 function Peep:update(director, game)
 	for _, queue in pairs(self.commandQueues) do
 		queue:update(game:getDelta())
+	end
+
+	while #self.pendingPokes > 0 do
+		local poke = self.pendingPokes[1]
+		table.remove(self.pendingPokes, 1)
+		self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
 	end
 
 	do

@@ -1434,7 +1434,7 @@ function Utility.Peep.Attackable:onHit(p)
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
 
 	if math.floor(combat.currentHitpoints) == 0 then
-		self:poke('die', p)
+		self:pushPoke('die', p)
 	end
 end
 
@@ -1467,8 +1467,15 @@ function Utility.Peep.Attackable:onDie(p)
 				return target and target.actor == actor.actor
 			end)
 
-			for i = 1, #p do
-				Utility.Combat.giveCombatXP(p[i], xp)
+			do
+				local status = self:getBehavior(CombatStatusBehavior)
+				if status then
+					for peep, d in pairs(status.damage) do
+						local damage = d / status.maximumHitpoints
+						Log.info("%s gets %d%% XP for slaying %s (dealt %d damage).", peep:getName(), damage * 100, self:getName(), d)
+						Utility.Combat.giveCombatXP(peep, xp * damage)
+					end
+				end
 			end
 		end
 	end
