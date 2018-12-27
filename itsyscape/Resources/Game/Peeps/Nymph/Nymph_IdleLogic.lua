@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Miner_MineLogic.lua
+-- Resources/Game/Peeps/Nymph/Nymph_IdleLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,36 +13,15 @@ local Mashina = require "ItsyScape.Mashina"
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Step {
-			Mashina.Skills.GatherNearbyResource {
-				action = "Chop",
-				resource = "CommonLogs"
+			Mashina.Navigation.Wander {
+				radial_distance = 3
 			},
 
 			Mashina.Peep.Wait,
 
-			Mashina.Peep.Talk {
-				message = "TIMBER!"
-			},
-
 			Mashina.Peep.TimeOut {
-				min_duration = 1,
-				max_duration = 2
-			},
-
-			Mashina.Repeat {
-				Mashina.Step {
-					Mashina.Peep.PokeInventoryItem {
-						action = "Light",
-						item = "CommonLogs"
-					},
-
-					Mashina.Peep.Wait,
-
-					Mashina.Peep.TimeOut {
-						min_duration = 1,
-						max_duration = 2
-					}
-				}
+				min_duration = 2,
+				max_duration = 3
 			}
 		}
 	}

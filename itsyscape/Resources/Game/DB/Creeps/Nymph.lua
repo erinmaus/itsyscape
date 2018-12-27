@@ -82,6 +82,13 @@ ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand" {
 	},
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Nymph/Nymph_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
+}
+
 ItsyScape.Meta.ResourceTag {
 	Value = "Undead",
 	Resource = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand"
@@ -190,6 +197,11 @@ ItsyScape.Resource.Item "WoodlandRobe" {
 	},
 
 	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(10) * 5,
+	Resource = ItsyScape.Resource.Item "WoodlandRobe"
 }
 
 ItsyScape.Meta.ResourceName {

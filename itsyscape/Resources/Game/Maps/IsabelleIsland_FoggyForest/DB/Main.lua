@@ -297,6 +297,110 @@ do
 	}
 end
 
+M["Nymph1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 5,
+		PositionZ = 45,
+		Name = "Nymph1",
+		Map = M._MAP,
+		Resource = M["Nymph1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand",
+		MapObject = M["Nymph1"]
+	}
+end
+
+M["Nymph3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 5,
+		PositionZ = 49,
+		Name = "Nymph3",
+		Map = M._MAP,
+		Resource = M["Nymph3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand",
+		MapObject = M["Nymph3"]
+	}
+end
+
+M["Nymph4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 6,
+		PositionZ = 93,
+		Name = "Nymph4",
+		Map = M._MAP,
+		Resource = M["Nymph4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Nymph_Base_Attackable_Wand",
+		MapObject = M["Nymph4"]
+	}
+end
+
+M["Clucker1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 4,
+		PositionZ = 55,
+		Name = "Clucker1",
+		Map = M._MAP,
+		Resource = M["Clucker1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Base",
+		MapObject = M["Clucker1"]
+	}
+end
+
+M["Clucker2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 89,
+		PositionY = 4,
+		PositionZ = 59,
+		Direction = -1,
+		Name = "Clucker2",
+		Map = M._MAP,
+		Resource = M["Clucker2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Base",
+		MapObject = M["Clucker2"]
+	}
+end
+
+M["Clucker3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83,
+		PositionY = 5,
+		PositionZ = 67,
+		Direction = -1,
+		Name = "Clucker3",
+		Map = M._MAP,
+		Resource = M["Clucker3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Base",
+		MapObject = M["Clucker3"]
+	}
+end
+
 M["Zombi1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

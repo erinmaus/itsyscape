@@ -49,11 +49,13 @@ function MagicWeapon:rollDamage(peep)
 end
 
 function MagicWeapon:perform(peep, target)
-	Weapon.perform(self, peep, target)
+	local success = Weapon.perform(self, peep, target)
 	local spell = self:getSpell(peep)
 	if spell then
 		spell:cast(peep, target)
 	end
+
+	return success
 end
 
 function MagicWeapon:getAttackRange(peep)
@@ -68,5 +70,16 @@ end
 function MagicWeapon:getStyle()
 	return Weapon.STYLE_MAGIC
 end
+
+function MagicWeapon:getProjectile(peep)
+	local spell = self:getSpell(peep)
+
+	if spell then
+		return spell.id
+	end
+
+	return nil
+end
+
 
 return MagicWeapon

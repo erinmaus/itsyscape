@@ -7,8 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 
 -- Four-dimensional quaternion type.
 local Quaternion, Metatable = Class()
@@ -23,6 +23,22 @@ function Quaternion.fromAxisAngle(axis, angle)
 	local w = halfAngleCosine
 
 	return Quaternion(xyz.x, xyz.y, xyz.z, w)
+end
+
+local E = 0.001
+function Quaternion.lookAt(source, target)
+	local forward = (target - source):getNormal()
+
+	local dot = forward:dot(-Vector.UNIT_Z)
+	if math.abs(dot + 1.0) < E then
+		return Quaternion(0, 1, 0, math.pi)
+	elseif math.abs(dot - 1.0) < E then
+		return Quaternion.IDENTITY
+	end
+
+	local angle = math.acos(dot)
+	local axis = (-Vector.UNIT_Z):cross(forward):getNormal()
+	return Quaternion.fromAxisAngle(axis, angle)
 end
 
 -- Constructs a new three-dimensional quaternion from the provided components.

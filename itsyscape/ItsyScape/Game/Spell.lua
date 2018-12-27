@@ -66,6 +66,26 @@ function Spell:consume(peep)
 	return true
 end
 
+function Spell:transfer(peep)
+	if not self.resource or not self.action then
+		return false
+	end
+
+	local flags = {}
+	local state = peep:getState()
+
+	local gameDB = self.game:getGameDB()
+	local brochure = gameDB:getBrochure()
+	for output in brochure:getOutputs(self.action) do
+		local resource = brochure:getConstraintResource(output)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		state:give(resourceType.name, resource.name, output.count, flags)
+	end
+
+	return true
+end
+
 function Spell:canCast(peep)
 	local result = ActionResult(self.game:getGameDB())
 
