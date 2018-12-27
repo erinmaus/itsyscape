@@ -36,6 +36,11 @@ ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_GotAllItems"
 )
 
+ItsyScape.Utility.questStep(
+	"CalmBeforeTheStorm_GotAllItems",
+	"CalmBeforeTheStorm_TalkedToIsabelle2"
+)
+
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "You need to start Calm Before the Storm.",

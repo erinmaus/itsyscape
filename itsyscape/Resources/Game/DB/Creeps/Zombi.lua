@@ -59,7 +59,21 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Resource.Peep "Zombi_Base_Attackable" {
-	ItsyScape.Action.Attack()
+	ItsyScape.Action.Attack(),
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceTag {
@@ -113,4 +127,106 @@ ItsyScape.Meta.PeepMashinaState {
 	Tree = "Resources/Game/Peeps/Zombi/Zombi_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Zombi_Base_Attackable"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Coins",
+	Weight = 200,
+	Count = 100,
+	Range = 50,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzeHatchet",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzePickaxe",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "TinCan",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "MooishLeatherBoots",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BronzeBoots",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BlueCottonSlippers",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "WeakGum",
+	Weight = 100,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "ZombiBrains",
+	Weight = 20,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "EldritchMyrrh",
+	Weight = 5,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Bones",
+	Weight = 9,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "ZombiBrains",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary"	
+}
+
+ItsyScape.Meta.Item {
+	Value = 132,
+	Resource = ItsyScape.Resource.Item "ZombiBrains"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Zombi brains",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ZombiBrains"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Unlikely the zombi will be needing that anytime soon.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ZombiBrains"
 }
