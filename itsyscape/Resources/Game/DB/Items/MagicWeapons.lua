@@ -22,12 +22,11 @@ local ITEMS = {
 		logs = 1
 	},
 
---[[
+
 	["Cane"] = {
 		niceName = "%s cane",
 		logs = 2,
 	},
-]]
 
 	["Staff"] = {
 		niceName = "%s staff",
@@ -130,22 +129,20 @@ do
 		Resource = ItsyScape.Resource.Item "DinkyWand"
 	}
 
---[[
+
 	ItsyScape.Meta.Equipment {
 		AccuracyStab = ItsyScape.Utility.styleBonusForItem(4, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
 		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "DinkyCane"
 	}
-]]
 
---[[
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Just what Grandpa needed.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "DinkyCane"
 	}
-]]
 
 	ItsyScape.Meta.Equipment {
 		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(5, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),

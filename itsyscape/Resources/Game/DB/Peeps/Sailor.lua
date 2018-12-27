@@ -62,8 +62,8 @@ ItsyScape.Meta.PeepStat {
 ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "IronCannonball",
 	Weight = 50,
-	Count = 1,
-	Range = 2,
+	Count = 2,
+	Range = 1,
 	Resource = ItsyScape.Resource.DropTable "Sailor_Panicked_Primary"	
 }
 
