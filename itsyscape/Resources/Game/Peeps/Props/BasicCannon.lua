@@ -110,7 +110,7 @@ function BasicCannon:onFire(peep)
 			local poke = AttackPoke({
 				weaponType = 'cannon',
 				damage = damage,
-				aggressor = peep
+				aggressor = Utility.Peep.getMapScript(self)
 			})
 
 			director:broadcast(hits, 'receiveAttack', poke)
