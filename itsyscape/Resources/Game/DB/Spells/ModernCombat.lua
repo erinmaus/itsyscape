@@ -23,12 +23,12 @@ ItsyScape.Resource.Spell "FireStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -62,12 +62,12 @@ ItsyScape.Resource.Spell "WaterStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -101,12 +101,12 @@ ItsyScape.Resource.Spell "EarthStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -140,7 +140,7 @@ ItsyScape.Resource.Spell "AirStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {

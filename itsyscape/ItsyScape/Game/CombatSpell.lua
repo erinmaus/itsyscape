@@ -29,6 +29,7 @@ end
 
 function CombatSpell:cast(peep, target)
 	self:consume(peep)
+	self:transfer(peep)
 end
 
 return CombatSpell
