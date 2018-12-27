@@ -1,6 +1,8 @@
 speaker "AdvisorGrimm"
 message "What would you like to know?"
 
+PLAYER_NAME = _TARGET:getName()
+
 local CURSED_ORE = option "Cursed Ore"
 local ANCIENT_DRIFTWOOD = option "Ancient Driftwood"
 local SQUID_SKULL = option "Squid Skull"
@@ -104,69 +106,123 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			}
 		end
 	elseif option == ANCIENT_DRIFTWOOD then
-		message {
-			"There's an ancient, living driftwood tree.",
-			"While it stands, it curses the forest, allowing zombies and nymphs to roam freely."
-		}
-
-		message {
-			"Cut it down and bring me the logs.",
-			"Be warned, the ghouls will stop at nothing to protect it.",
-			"The danger is real, and the tree is massive; it will take time to cut it down."
-		}
-
-		message "Head east, past the cow pen, to enter the forest."
-
-		local gaveItem = false
-
-		if not _TARGET:getState():has("Item", "BronzeHatchet", 1, SEARCH_FLAGS) then
-			if _TARGET:getState():give("Item", "BronzeHatchet", 1, TAKE_FLAGS) then
-				message "Here's a hatchet to help you woodcut."
-			else
-				message "If you had more inventory space, I could give you a hatchet."
-			end
-
-			gaveItem = true
-		end
-
-		if not _TARGET:getState():has("Item", "Tinderbox", 1, SEARCH_FLAGS) then
-			if _TARGET:getState():give("Item", "Tinderbox", 1, TAKE_FLAGS) then
-				message "And here's a tinderbox to help you make fires."
-			else
-				message "If you had more inventory space, I could give you a hatchet."
-			end
-
-			gaveItem = true
-		end
-
-		if gaveItem then
+		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood") then
 			message {
-				"I'm afraid I can't give you other materials you may find useful.",
-				"But the general store owner near the bank--Bob--can sell you the tools and supplies needed."
+				"There's an ancient, living driftwood tree.",
+				"While it stands, it curses the forest, allowing zombies and nymphs to roam freely."
 			}
 
-			message "You might find a knife for fletching useful, or needle and thread for crafting."
-
-			speaker "_TARGET"
-			message "That's useful!"
-
-			speaker "AdvisorGrimm"
 			message {
-				"Definitely.",
-				"Isabelle wired you a small allowance to help you out.",
-				"You'll find it in your bank."
+				"Cut it down and bring me the logs.",
+				"Be warned, the ghouls will stop at nothing to protect it.",
+				"The danger is real, and the tree is massive; it will take time to cut it down."
+			}
+
+			message "Head east, past the cow pen, to enter the forest."
+
+			local gaveItem = false
+
+			if not _TARGET:getState():has("Item", "BronzeHatchet", 1, SEARCH_FLAGS) then
+				if _TARGET:getState():give("Item", "BronzeHatchet", 1, TAKE_FLAGS) then
+					message "Here's a hatchet to help you woodcut."
+				else
+					message "If you had more inventory space, I could give you a hatchet."
+				end
+
+				gaveItem = true
+			end
+
+			if not _TARGET:getState():has("Item", "Tinderbox", 1, SEARCH_FLAGS) then
+				if _TARGET:getState():give("Item", "Tinderbox", 1, TAKE_FLAGS) then
+					message "And here's a tinderbox to help you make fires."
+				else
+					message "If you had more inventory space, I could give you a hatchet."
+				end
+
+				gaveItem = true
+			end
+
+			if gaveItem then
+				message {
+					"I'm afraid I can't give you other materials you may find useful.",
+					"But the general store owner near the bank--Bob--can sell you the tools and supplies needed."
+				}
+
+				message "You might find a knife for fletching useful, or needle and thread for crafting."
+
+				speaker "_TARGET"
+				message "That's useful!"
+
+				speaker "AdvisorGrimm"
+				message {
+					"Definitely.",
+					"Isabelle wired you a small allowance to help you out.",
+					"You'll find it in your bank."
+				}
+			end
+
+			if _TARGET:getState():has("Item", "AncientDriftwoodMask", 1, TAKE_FLAGS) then
+				message {
+					"I see you're in possession of the ancient driftwood mask.",
+					"Isabelle sends her thanks, ${PLAYER_NAME}. That must have been difficult to obtain."
+				}
+
+				if _TARGET:getState():take("Item", "AncientDriftwoodMask", 1, TAKE_FLAGS) then
+					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood")
+				end
+			end
+		else
+			message {
+				"You've already obtained the ancient driftwood mask.",
+				"If you stumble upon another, feel free to keep it."
 			}
 		end
 	elseif option == SQUID_SKULL then
+		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull") then
+			message {
+				"A giant, undead squid has started attacking the ships.",
+				"I'm afraid it must be stopped before you can leave."
+			}
+
+			message {
+				"See Portmaster Jenkins; he knows more of the specifics.",
+				"Remember, the port is to the north."
+			}
+
+			if _TARGET:getState():has("Item", "SquidSkull", 1, TAKE_FLAGS) then
+				message {
+					"You've slain Mn'thrw? Impressive!",
+					"Guessing you don't believe in superstitions, eh?"
+				}
+
+				message "I'll take that off your hands."
+
+				if _TARGET:getState():take("Item", "SquidSkull", 1, TAKE_FLAGS) then
+					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
+				end
+			end
+		else
+			message {
+				"The squid skull remains in Isabelle's possession.",
+				"But the undead don't often stay dead, so if you happen to come across Mn'thrw again...",
+				"...feel free to slay the beast and take his skull for your own purposes."
+			}
+		end
+	end
+
+	if  _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper") and
+	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin") and
+	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood") and
+	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
+	then
 		message {
-			"A giant, undead squid has started attacking the ships.",
-			"I'm afraid it must be stopped before you can leave."
+			"Well done! You've obtained all the artefacts requested.",
+			"Please see Isabelle to claim your reward."
 		}
 
-		message {
-			"See Portmaster Jenkins; he knows more of the specifics.",
-			"Remember, the port is to the north."
-		}
+		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAllItems") then
+			_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAllItems")
+		end
 	end
 
 	option = select {
