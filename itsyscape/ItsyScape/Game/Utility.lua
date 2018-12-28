@@ -249,6 +249,35 @@ function Utility.guessTier(action, gameDB)
 	return tier
 end
 
+-- These are taken from the GameDB init script.
+-- See Resources/Game/DB/Init.lua
+local RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+function Utility.xpForResource(a)
+	return RESOURCE_CURVE(a + 1)
+end
+
+function Utility.styleBonusForItem(tier, weight)
+	weight = weight or 1
+
+	local A = 1 / 40
+	local B = 2
+	local C = 10
+
+	return math.floor(math.floor(A * tier ^ 2 + B * tier + C) * weight)
+end
+
+function Utility.styleBonusForWeapon(tier, weight)
+	return math.floor(Utility.styleBonusForItem(tier + 10) / 3, weight)
+end
+
+function Utility.strengthBonusForWeapon(tier, weight)
+	local A = 1 / 100
+	local B = 1.5
+	local C = 5
+
+	return math.floor(A * tier ^ 2 + B * tier + C)
+end
+
 Utility.Magic = {}
 function Utility.Magic.newSpell(id, game)
 	local TypeName = string.format("Resources.Game.Spells.%s.Spell", id)

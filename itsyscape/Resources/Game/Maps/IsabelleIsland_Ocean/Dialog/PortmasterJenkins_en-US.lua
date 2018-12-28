@@ -29,11 +29,12 @@ else
 	speaker "Jenkins"
 	message "Har har har! Ye did it!"
 
-	local count
+	local count, ratio
 	do
 		local ship = Utility.Peep.getMapScript(_TARGET)
 		if ship:isCompatibleType(require "Resources.Game.Peeps.Maps.ShipMapPeep") then
-			count = math.max(math.floor(ship:getCurrentHealth() / ship:getMaxHealth() * 50), 10)
+			ratio = ship:getCurrentHealth() / ship:getMaxHealth()
+			count = math.max(math.floor(ratio * 50), 10)
 		else
 			count = 10
 		end
@@ -67,6 +68,8 @@ else
 			peep = _TARGET,
 			chest = chest
 		})
+
+		_TARGET:getState():give("Skill", "Sailing", Utility.xpForResource(20) * ratio)
 	end
 
 	local stage = _TARGET:getDirector():getGameInstance():getStage()
