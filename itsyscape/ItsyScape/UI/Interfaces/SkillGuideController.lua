@@ -82,6 +82,16 @@ function SkillGuideController:findActionOutputXP(action)
 	return 0
 end
 
+function SkillGuideController:findActionResource(action)
+	local gameDB = self:getDirector():getGameDB()
+	local brochure = gameDB:getBrochure()
+	for resource in brochure:findResourcesByAction(action) do
+		return resource
+	end
+
+	return nil
+end
+
 function SkillGuideController:sort()
 	local index = 1
 	while index <= #self.state.actions do
@@ -100,20 +110,23 @@ function SkillGuideController:sort()
 
 		local aReqXP, bReqXP = self:findActionXPRequirement(a), self:findActionXPRequirement(b)
 		local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)
+		local aResource, bResource = self:findActionResource(a), self:findActionResource(b)
 
 		if aReqXP < bReqXP then
 			return true
-		elseif aReqXP > bReqXP then
-			return false
-		else
-			if aOutXP < bOutXP then
+		elseif aReqXP == bReqXP then
+			if aOutXP > bOutXP then
 				return true
-			elseif aOutXP > bOutXP then
-				return false
-			else
-				return a.id < b.id
+			elseif aOutXP == bOutXP then
+				if aResource and bResource then
+					return aResource.name < bResource.name
+				else
+					return a.id < b.id
+				end
 			end
 		end
+
+		return false
 	end)
 end
 
