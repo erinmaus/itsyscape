@@ -115,7 +115,7 @@ function SkillGuideController:sort()
 		if aReqXP < bReqXP then
 			return true
 		elseif aReqXP == bReqXP then
-			if aOutXP > bOutXP then
+			if aOutXP < bOutXP then
 				return true
 			elseif aOutXP == bOutXP then
 				if aResource and bResource then
