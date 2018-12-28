@@ -16,6 +16,11 @@ ItsyScape.Resource.Skill "Magic"
 		Skill = ItsyScape.Resource.Skill "Magic"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Cast",
+		Skill = ItsyScape.Resource.Skill "Magic"
+	}
+
 ItsyScape.Resource.Skill "Wisdom"
 ItsyScape.Resource.Skill "Archery"
 ItsyScape.Resource.Skill "Dexterity"

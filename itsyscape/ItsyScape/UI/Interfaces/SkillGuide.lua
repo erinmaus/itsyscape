@@ -20,6 +20,7 @@ local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local TextInput = require "ItsyScape.UI.TextInput"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Widget = require "ItsyScape.UI.Widget"
@@ -128,7 +129,7 @@ function SkillGuide:update(...)
 			local action = gameDB:getAction(state.actions[i].id)
 			if action then
 				local item, quantity
-				local prop, peep
+				local prop, peep, spell
 				for output in brochure:getOutputs(action) do
 					local outputResource = brochure:getConstraintResource(output)
 					local outputType = brochure:getResourceTypeFromResource(outputResource)
@@ -146,6 +147,9 @@ function SkillGuide:update(...)
 						break
 					elseif resourceType.name == "Peep" then
 						peep = resource
+						break
+					elseif resourceType.name == "Spell" then
+						spell = resource
 						break
 					end
 				end
@@ -177,7 +181,14 @@ function SkillGuide:update(...)
 					local button = Button()
 					button.onClick:register(self.selectItem, self, state.actions[i])
 
-					if item then
+					if spell then
+						local spellIcon = SpellIcon()
+						spellIcon:setSpellID(spell.name)
+						spellIcon:setSpellEnabled(true)
+						spellIcon:setPosition(4, 4)
+
+						button:addChild(spellIcon)
+					elseif item then
 						local itemIcon = ItemIcon()
 						itemIcon:setItemID(item.name)
 						if quantity > 1 then
@@ -192,6 +203,8 @@ function SkillGuide:update(...)
 						button:setText(Utility.getName(peep, gameDB))
 					elseif prop then
 						button:setText(Utility.getName(prop, gameDB))
+					elseif spell then
+						button:setText(Utility.getName(spell, gameDB))
 					else
 						button:setText(Utility.getName(item, gameDB))
 					end
