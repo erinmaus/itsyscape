@@ -179,7 +179,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Fishing",
+				Resource = ItsyScape.Resource.Skill "Sailing",
 				Count = ItsyScape.Utility.xpForResource(10)
 			}
 		}
