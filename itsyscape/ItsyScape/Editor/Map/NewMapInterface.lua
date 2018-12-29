@@ -84,7 +84,7 @@ function NewMapInterface:new(application)
 	inputsGridLayout:addChild(tileSetLabel)
 
 	self.tileSetIDInput = TextInput()
-	self.tileSetIDInput:setText("GrassyPlain")
+	self.tileSetIDInput:setText("Draft")
 	inputsGridLayout:addChild(self.tileSetIDInput)
 
 	local buttonsGridLayout = GridLayout()

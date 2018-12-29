@@ -43,6 +43,12 @@ MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
 
+-- ew
+do
+	local GameView = require "ItsyScape.Graphics.GameView"
+	GameView.MAP_MESH_DIVISIONS = 1024
+end
+
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
@@ -86,6 +92,8 @@ function MapEditorApplication:new()
 	self.filename = false
 
 	self.propNames = {}
+
+	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
 end
 
 function MapEditorApplication:setTool(tool)
