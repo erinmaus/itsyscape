@@ -172,4 +172,16 @@ end
 -- Some useful quaternion constants.
 Quaternion.IDENTITY = Quaternion(0, 0, 0, 1)
 
+Quaternion.X_90 = Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 2)
+Quaternion.X_180 = Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi)
+Quaternion.X_270 = Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi + math.pi / 2)
+
+Quaternion.Y_90 = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
+Quaternion.Y_180 = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
+Quaternion.Y_270 = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi + math.pi / 2)
+
+Quaternion.Z_90 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 2)
+Quaternion.Z_180 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi)
+Quaternion.Z_270 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi + math.pi / 2)
+
 return Quaternion

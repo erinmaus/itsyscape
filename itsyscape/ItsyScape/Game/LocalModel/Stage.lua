@@ -267,6 +267,25 @@ function LocalStage:instantiateMapObject(resource, layer)
 							position.position = Vector(x, y, z)
 						end
 
+						local scale = peep:getBehavior(ScaleBehavior)
+						if scale then
+							local sx = math.max(object:get("ScaleX") or 0, 1)
+							local sy = math.max(object:get("ScaleY") or 0, 1)
+							local sz = math.max(object:get("ScaleZ") or 0, 1)
+
+							scale.scale = Vector(sx, sy, sz)
+						end
+
+						local rotation = peep:getBehavior(RotationBehavior)
+						if rotation then
+							local rx = object:get("RotationX") or 0
+							local ry = object:get("RotationY") or 0
+							local rz = object:get("RotationZ") or 0
+							local rw = object:get("RotationW") or 1
+
+							rotation.rotation = Quaternion(rx, ry, rz, rw)
+						end
+
 						propInstance = p
 
 						Utility.Peep.setMapObject(peep, resource)

@@ -15,6 +15,8 @@ local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local LocalProp = Class(Prop)
@@ -93,11 +95,29 @@ function LocalProp:getPosition()
 end
 
 function LocalProp:getRotation()
-	return Quaternion.IDENTITY
+	if not self.peep then
+		return Quaternion.IDENTITY
+	end
+
+	local rotation = self.peep:getBehavior(RotationBehavior)
+	if rotation then
+		return rotation.rotation
+	else
+		return Quaternion.IDENTITY
+	end
 end
 
 function LocalProp:getScale()
-	return Vector.ONE
+	if not self.peep then
+		return Vector.ONE
+	end
+
+	local scale = self.peep:getBehavior(ScaleBehavior)
+	if scale then
+		return scale.scale
+	else
+		return Vector.ONE
+	end
 end
 
 function LocalProp:getTile()
