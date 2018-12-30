@@ -36,6 +36,14 @@ function Prop:new(resource, ...)
 	self:addPoke('spawnedByAction')
 end
 
+function Prop:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushImpassable()
+	elseif mode == 'poof' then
+		tile:popImpassable()
+	end
+end
+
 function Prop:spawnOrPoof(mode)
 	local game = self:getDirector():getGameInstance()
 	local position = self:getBehavior(PositionBehavior)
@@ -44,17 +52,18 @@ function Prop:spawnOrPoof(mode)
 		local map = self:getDirector():getMap(position.layer or 1)
 		if map then
 			local p = position.position
-			local halfSize = size.size / 2
+			local halfSize
+			do
+				local transform = Utility.Peep.getTransform(self)
+				local min, max = Vector.transformBounds(Vector.ZERO, size.size, transform)
+				halfSize = (max - min) / 2
+			end
 
 			for x = p.x - halfSize.x, p.x + halfSize.x do
 				for z = p.z - halfSize.z, p.z + halfSize.z do
 					local tile, i, j = map:getTileAt(x, z)
 
-					if mode == 'spawn' then
-						tile:pushImpassable()
-					elseif mode == 'poof' then
-						tile:popImpassable()
-					end
+					self:spawnOrPoofTile(tile, i, j, mode)
 				end
 			end
 		end

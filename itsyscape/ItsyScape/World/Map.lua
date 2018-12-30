@@ -186,7 +186,7 @@ function Map:canMove(i, j, di, dj)
 		if (left.topRight <= tile.topLeft or
 		    left.bottomRight <= tile.bottomLeft) and
 		   not left:hasFlag('impassable') and
-		   not left:hasFlag('wall-right')
+		   not left:hasFlag('door')
 		then
 			isLeftPassable = true
 		end
@@ -197,7 +197,7 @@ function Map:canMove(i, j, di, dj)
 		if (right.topLeft <= tile.topRight or
 		    right.bottomLeft <= tile.bottomRight) and
 		   not right:hasFlag('impassable') and
-		   not right:hasFlag('wall-left')
+		   not right:hasFlag('door')
 		then
 			isRightPassable = true
 		end
@@ -208,7 +208,7 @@ function Map:canMove(i, j, di, dj)
 		if (top.bottomLeft <= tile.topLeft or
 		    top.bottomRight <= tile.topLeft) and
 		   not top:hasFlag('impassable') and
-		   not top:hasFlag('wall-bottom')
+		   not top:hasFlag('door')
 		then
 			isTopPassable = true
 		end
@@ -219,7 +219,7 @@ function Map:canMove(i, j, di, dj)
 		if (bottom.topLeft <= tile.bottomLeft or
 		    bottom.topRight <= tile.bottomRight) and
 		   not bottom:hasFlag('impassable') and
-		   not bottom:hasFlag('wall-top')
+		   not bottom:hasFlag('door')
 		then
 			isBottomPassable = true
 		end
