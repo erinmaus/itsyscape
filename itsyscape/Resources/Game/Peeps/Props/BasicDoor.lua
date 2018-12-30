@@ -19,7 +19,7 @@ function BasicDoor:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4, 3, 2)
+	size.size = Vector(3.5, 3, 1)
 
 	self:addPoke('open')
 	self:addPoke('close')
@@ -43,44 +43,13 @@ function BasicDoor:onClose(...)
 	self:spawnOrPoof('spawn')
 end
 
-function BasicDoor:spawnOrPoof(mode)
-	local game = self:getDirector():getGameInstance()
-	local position = self:getBehavior(PositionBehavior)
-	local size = self:getBehavior(SizeBehavior)
-	if position then
-		local map = game:getStage():getMap(position.layer or 1)
-		if map then
-			local p = position.position
-			local halfSize = size.size / 2
-
-			for x = p.x - halfSize.x, p.x + halfSize.x - 1 do
-				if mode == 'spawn' then
-					do
-						local tile, i, j = map:getTileAt(x, p.z)
-						tile:setFlag('wall-top')
-						tile:addLink(self)
-					end
-
-					do
-						local tile, i, j = map:getTileAt(x, p.z)
-						tile:setFlag('wall-bottom')
-						tile:addLink(self)
-					end
-				elseif mode == 'poof' then
-					do
-						local tile, i, j = map:getTileAt(x, p.z)
-						tile:unsetFlag('wall-top')
-						tile:removeLink(self)
-					end
-
-					do
-						local tile, i, j = map:getTileAt(x, p.z)
-						tile:unsetFlag('wall-bottom')
-						tile:removeLink(self)
-					end
-				end
-			end
-		end
+function BasicDoor:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:setFlag('door')
+		tile:addLink(self)
+	else
+		tile:unsetFlag('door')
+		tile:removeLink(self)
 	end
 end
 

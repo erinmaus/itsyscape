@@ -22,7 +22,7 @@ function PassableProp:new(...)
 	size.size = Vector(1, 2, 1)
 end
 
-function PassableProp:spawnOrPoof(mode)
+function PassableProp:spawnOrPoofTile(tile, i, j, mode)
 	-- Nothing.
 end
 

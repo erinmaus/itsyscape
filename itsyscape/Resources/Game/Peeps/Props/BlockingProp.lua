@@ -22,28 +22,11 @@ function BlockingProp:new(...)
 	size.size = Vector(1, 2, 1)
 end
 
-function BlockingProp:spawnOrPoof(mode)
-	local game = self:getDirector():getGameInstance()
-	local position = self:getBehavior(PositionBehavior)
-	local size = self:getBehavior(SizeBehavior)
-	if position then
-		local map = self:getDirector():getMap(position.layer or 1)
-		if map then
-			local p = position.position
-			local halfSize = size.size / 2
-
-			for x = p.x - halfSize.x, p.x + halfSize.x do
-				for z = p.z - halfSize.z, p.z + halfSize.z do
-					local tile, i, j = map:getTileAt(x, z)
-
-					if mode == 'spawn' then
-						tile:pushBlocking()
-					elseif mode == 'poof' then
-						tile:popBlocking()
-					end
-				end
-			end
-		end
+function BlockingProp:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushBlocking()
+	elseif mode == 'poof' then
+		tile:popBlocking()
 	end
 end
 

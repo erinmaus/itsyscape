@@ -255,7 +255,7 @@ M["Door_MinibossEntrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 45,
-		PositionY = 1,
+		PositionY = 3,
 		PositionZ = 46,
 		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
