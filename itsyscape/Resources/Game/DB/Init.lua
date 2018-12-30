@@ -113,6 +113,11 @@ Game "ItsyScape"
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MapObjectGroup" {
+		MapObjectGroup = Meta.TYPE_TEXT,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Travel"
 
 	Meta "TravelDestination" {
@@ -425,6 +430,9 @@ ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
 ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
 
 ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
+
+ItsyScape.Utility.Vector = require "ItsyScape.Common.Math.Vector"
+ItsyScape.Utility.Quaternion = require "ItsyScape.Common.Math.Quaternion"
 
 function ItsyScape.Utility.tag(resource, value)
 	ItsyScape.Meta.ResourceTag {
