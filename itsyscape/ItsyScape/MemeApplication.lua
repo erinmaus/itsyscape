@@ -13,7 +13,7 @@ local Class = require "ItsyScape.Common.Class"
 local MemeApplication = Class(Application)
 
 function MemeApplication:new()
-	love.window.setMode(512, 512)
+	--love.window.setMode(512, 512)
 
 	Application.new(self)
 
@@ -31,20 +31,22 @@ function MemeApplication:update(delta)
 end
 
 function MemeApplication:draw()
+	local w, h = love.window.getMode()
+
 	love.graphics.clear(1 / 255, 101 / 255, 49 / 255, 1)
 
 	do
 		local rotation = math.pi / 2 * self.elapsedTime
-		love.graphics.draw(self.background, 256, 256, rotation, 0.5, 0.5, self.background:getWidth() / 2, self.background:getHeight() / 2)
+		love.graphics.draw(self.background, w / 2, h / 2, rotation, 0.5, 0.5, self.background:getWidth() / 2, self.background:getHeight() / 2)
 	end
 
 	do
 		local rotation = math.sin(self.elapsedTime * (math.pi)) * math.pi / 4
 		local offsetY = math.cos(self.elapsedTime * (math.pi)) * 16
-		love.graphics.draw(self.center, 256, 256 + offsetY, rotation, 0.5, 0.5, 512, 512 + 64)
+		love.graphics.draw(self.center, w / 2, h / 2 + offsetY, rotation, 0.5, 0.5, 512, 512 + 64)
 	end
 
-	love.graphics.draw(self.text, 0, 0, 0, 0.5, 0.5)
+	love.graphics.draw(self.text, w / 2, h / 2, 0, 0.7, 0.7, self.text:getWidth() / 2, self.text:getHeight() / 2)
 end
 
 return MemeApplication

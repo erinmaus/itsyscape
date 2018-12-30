@@ -311,7 +311,13 @@ end
 
 function GameView:addProp(propID, prop)
 	local PropViewTypeName = string.format("Resources.Game.Props.%s.View", propID, propID)
-	local PropView = require(PropViewTypeName)
+	local s, r = xpcall(function() return require(PropViewTypeName) end, debug.traceback)
+	if not s then
+		Log.warn("Failed to load prop view '%s': %s", PropViewTypeName, r)
+		r = require "Resources.Game.Props.Null.View"
+	end
+
+	local PropView = r
 	local view = PropView(prop, self)
 	view:attach()
 	view:load()

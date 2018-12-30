@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 
 local DebugCubeSceneNode = Class(SceneNode)
@@ -71,6 +72,8 @@ DebugCubeSceneNode.MESH_DATA = {
 
 function DebugCubeSceneNode:new()
 	SceneNode.new(self)
+
+	self:setBounds(-Vector.ONE, Vector.ONE)
 
 	self.mesh = love.graphics.newMesh(
 		DebugCubeSceneNode.MESH_FORMAT,

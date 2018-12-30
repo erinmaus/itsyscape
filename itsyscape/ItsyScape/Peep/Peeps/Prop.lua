@@ -13,6 +13,8 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Prop = Class(Peep)
@@ -22,6 +24,8 @@ function Prop:new(resource, ...)
 
 	self:addBehavior(PropReferenceBehavior)
 	self:addBehavior(PositionBehavior)
+	self:addBehavior(RotationBehavior)
+	self:addBehavior(ScaleBehavior)
 	self:addBehavior(SizeBehavior)
 	
 	local size = self:getBehavior(SizeBehavior)
