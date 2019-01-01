@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Makes/Mine.lua
+-- Resources/Game/Makes/Chop.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -17,10 +17,14 @@ local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local Make = require "Resources.Game.Actions.Make"
 
-local Mine = Class(Make)
-Mine.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+local Chop = Class(Make)
+Chop.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+Chop.FLAGS = {
+	['item-inventory'] = true,
+	['item-drop-excess'] = true
+}
 
-function Mine:perform(state, player, prop)
+function Chop:perform(state, player, prop)
 	local flags = { ['item-equipment'] = true }
 
 	local gameDB = self:getGame():getGameDB()
@@ -72,7 +76,7 @@ function Mine:perform(state, player, prop)
 	return false
 end
 
-function Mine:getFailureReason(state, player)
+function Chop:getFailureReason(state, player)
 	local reason = Make.getFailureReason(self, state, player)
 
 	local equippedItem = Utility.Peep.getEquippedItem(player, Equipment.PLAYER_SLOT_RIGHT_HAND)
@@ -101,4 +105,4 @@ function Mine:getFailureReason(state, player)
 	return reason
 end
 
-return Mine
+return Chop
