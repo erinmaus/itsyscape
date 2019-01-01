@@ -20,7 +20,11 @@ local Make = require "Resources.Game.Actions.Make"
 local Fish = Class(Make)
 Fish.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 Fish.MAX_DISTANCE = 4
-Fish.FLAGS = { ['item-equipment'] = true, ['item-inventory'] = true }
+Fish.FLAGS = {
+	['item-equipment'] = true,
+	['item-inventory'] = true,
+	['item-drop-excess'] = true
+}
 
 function Fish:perform(state, player, prop)
 	local gameDB = self:getGame():getGameDB()

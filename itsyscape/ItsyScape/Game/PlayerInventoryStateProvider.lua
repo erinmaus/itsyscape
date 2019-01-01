@@ -106,18 +106,20 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		transaction:spawn(self.inventory, name, count, noted, true)
 	end
 	if not transaction:commit() then
-		local pocketTransaction = broker:createTransaction()
-		pocketTransaction:addParty(self.tornPocket)
-		pocketTransaction:spawn(self.tornPocket, name, count, noted, true)
+		if flags['item-drop-excess'] then
+			local pocketTransaction = broker:createTransaction()
+			pocketTransaction:addParty(self.tornPocket)
+			pocketTransaction:spawn(self.tornPocket, name, count, noted, true)
 
-		local success = pocketTransaction:commit()
-		if success then
-			local stage = self.peep:getDirector():getGameInstance():getStage()
-			for item in broker:iterateItems(self.tornPocket) do
-				stage:dropItem(item, item:getCount())
+			local success = pocketTransaction:commit()
+			if success then
+				local stage = self.peep:getDirector():getGameInstance():getStage()
+				for item in broker:iterateItems(self.tornPocket) do
+					stage:dropItem(item, item:getCount())
+				end
+
+				return true
 			end
-
-			return true
 		end
 
 		return false

@@ -19,6 +19,10 @@ local Make = require "Resources.Game.Actions.Make"
 
 local Mine = Class(Make)
 Mine.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+Mine.FLAGS = {
+	['item-inventory'] = true,
+	['item-drop-excess'] = true
+}
 
 function Mine:perform(state, player, prop)
 	local flags = { ['item-equipment'] = true }
