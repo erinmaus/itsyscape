@@ -39,7 +39,7 @@ function Eat:perform(state, peep, item)
 	transaction:consume(item)
 	do
 		local gameDB = self:getGameDB()
-		local healingPower = gameDB:getRecord("HealingPower", { Resource = resource })
+		local healingPower = gameDB:getRecord("HealingPower", { Action = self:getAction() })
 		if healingPower then
 			local hitPoints = healingPower:get("HitPoints")
 			peep:poke('heal', { item = item, hitPoints = hitPoints or 1 })
