@@ -19,7 +19,7 @@ function BasicDoor:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(3.5, 3, 1)
+	size.size = Vector(3.5, 3, 1.5)
 
 	self:addPoke('open')
 	self:addPoke('close')
@@ -51,6 +51,7 @@ end
 
 function BasicDoor:spawnOrPoofTile(tile, i, j, mode)
 	if mode == 'spawn' then
+		print(i, j, 'door')
 		tile:setRuntimeFlag('door')
 		tile:addLink(self)
 	else
