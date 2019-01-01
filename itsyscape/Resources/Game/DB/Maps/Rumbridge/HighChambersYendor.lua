@@ -77,28 +77,6 @@ do
 		Value = "Resources.Game.Peeps.Props.BasicGuardianDoor",
 		Resource = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian"
 	}
-
-	ItsyScape.Resource.Prop "HighChambersYendor_BigDoor" {
-		ItsyScape.Action.Open(),
-		ItsyScape.Action.Close()
-	}
-
-	ItsyScape.Meta.ResourceName {
-		Language = "en-US",
-		Value = "Dungeon door",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian"
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Language = "en-US",
-		Value = "The doors have eyes. And the eyes are Yendor's.",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian"
-	}
-
-	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicDoor",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian"
-	}
 end
 
 do
