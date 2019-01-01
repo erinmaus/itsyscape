@@ -511,6 +511,9 @@ end
 -- Skills
 include "Resources/Game/DB/Skills.lua"
 
+-- Important key items
+include "Resources/Game/DB/KeyItems.lua"
+
 -- Items
 -- Materials
 include "Resources/Game/DB/Items/Tools.lua"

@@ -105,13 +105,102 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian",
 		MapObject = M["Door_GuardianPrison"]
 	}
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_GuardianPrison",
 		MapObject = M["Door_GuardianPrison"]
+	}
+end
+
+M["PrisonGuard_Archer_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 2,
+		PositionZ = 83,
+		Name = "PrisonGuard_Archer_1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["PrisonGuard_Archer_1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["PrisonGuard_Archer_1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianPrison",
+		MapObject = M["PrisonGuard_Archer_1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/PrisonGuard_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PrisonGuard_Archer_1"]
+	}
+end
+
+M["PrisonGuard_Archer_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 1,
+		PositionZ = 85,
+		Direction = -1,
+		Name = "PrisonGuard_Archer_2",
+		Map = M._MAP,
+		Resource = M["PrisonGuard_Archer_2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["PrisonGuard_Archer_2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianPrison",
+		MapObject = M["PrisonGuard_Archer_2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/PrisonGuard_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PrisonGuard_Archer_2"]
+	}
+end
+
+M["PrisonGuard_Archer_3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 1,
+		PositionZ = 77,
+		Name = "PrisonGuard_Archer_3",
+		Map = M._MAP,
+		Resource = M["PrisonGuard_Archer_3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["PrisonGuard_Archer_3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianPrison",
+		MapObject = M["PrisonGuard_Archer_3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/PrisonGuard_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PrisonGuard_Archer_3"]
 	}
 end
 

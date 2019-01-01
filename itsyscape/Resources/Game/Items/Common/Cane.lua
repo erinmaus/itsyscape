@@ -38,7 +38,7 @@ function Cane:getStyle()
 end
 
 function Cane:getCooldown()
-	return 3.6
+	return 3.0
 end
 
 return Cane

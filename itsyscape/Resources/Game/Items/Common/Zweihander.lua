@@ -27,7 +27,7 @@ function Zweihander:getWeaponType()
 end
 
 function Zweihander:getCooldown(peep)
-	return 5.0
+	return 3.6
 end
 
 return Zweihander

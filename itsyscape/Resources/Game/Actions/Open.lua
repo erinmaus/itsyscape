@@ -32,9 +32,13 @@ end
 function Open:perform(state, player, prop, channel)
 	local flags = { ['item-inventory'] = true }
 	if self:canPerform(state, flags, prop) then
-		if prop:isType(require "Resources.Game.Peeps.Props.BasicDoor") then
+		if prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicDoor") then
 			if prop:getIsOpen() then
 				return true
+			end
+
+			if not prop:canOpen() then
+				return false
 			end
 		end
 
@@ -52,12 +56,31 @@ function Open:perform(state, player, prop, channel)
 
 			local queue = player:getCommandQueue(channel)
 			return queue:push(command)
-		else
-			print 'no walk'
 		end
 	end
 
 	return false
+end
+
+function Open:getFailureReason(state, peep, prop, channel)
+	local reason = Action.getFailureReason(self, state, peep)
+
+	local s, r = prop:canOpen()
+	if not s then
+		local gameDB = self:getGameDB()
+		r = gameDB:getResource(r, "KeyItem")
+		if r then
+			table.insert(reason.requirements, {
+				type = "KeyItem",
+				resource = r.name,
+				name = Utility.getName(r, gameDB) or ("*" .. r.name),
+				description = Utility.getDescription(r, gameDB) or ("*" .. r.name),
+				count = 1
+			})
+		end
+	end
+
+	return reason
 end
 
 return Open

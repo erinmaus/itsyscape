@@ -31,10 +31,16 @@ function BasicDoor:getIsOpen()
 	return self.isOpen
 end
 
-function BasicDoor:onOpen(...)
-	self.isOpen = true
+function BasicDoor:canOpen()
+	return true
+end
 
-	self:spawnOrPoof('poof')
+function BasicDoor:onOpen(...)
+	if self:canOpen() then
+		self.isOpen = true
+
+		self:spawnOrPoof('poof')
+	end
 end
 
 function BasicDoor:onClose(...)
