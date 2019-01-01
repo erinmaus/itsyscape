@@ -100,6 +100,7 @@ Game "ItsyScape"
 		OffsetX = Meta.TYPE_REAL,
 		OffsetY = Meta.TYPE_REAL,
 		OffsetZ = Meta.TYPE_REAL,
+		SingleTile = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 

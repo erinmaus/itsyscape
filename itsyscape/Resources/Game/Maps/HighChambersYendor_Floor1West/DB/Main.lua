@@ -86,7 +86,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 5,
 		PositionY = 1,
-		PositionZ = 49,
+		PositionZ = 99,
 		Name = "Anchor_FromAbandonedMine",
 		Map = M._MAP,
 		Resource = M["Anchor_FromAbandonedMine"]
@@ -96,9 +96,9 @@ end
 M["Door_GuardianPrison"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 8,
+		PositionX = 10,
 		PositionY = 1,
-		PositionZ = 31,
+		PositionZ = 72,
 		Name = "Door_GuardianPrison",
 		Map = M._MAP,
 		Resource = M["Door_GuardianPrison"]
@@ -118,16 +118,16 @@ end
 M["Door_MimicRoomNorth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7,
+		PositionX = 8,
 		PositionY = 1,
-		PositionZ = 23,
+		PositionZ = 56,
 		Name = "Door_MimicRoomNorth",
 		Map = M._MAP,
 		Resource = M["Door_MimicRoomNorth"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_SmallDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
 		MapObject = M["Door_MimicRoomNorth"]
 	}
 end
@@ -135,9 +135,9 @@ end
 M["Door_MimicRoomEast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13,
+		PositionX = 20,
 		PositionY = 1,
-		PositionZ = 27,
+		PositionZ = 64,
 		RotationX = ItsyScape.Utility.Quaternion.Y_270.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_270.y,
 		RotationZ = ItsyScape.Utility.Quaternion.Y_270.z,
@@ -148,7 +148,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_SmallDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
 		MapObject = M["Door_MimicRoomEast"]
 	}
 end
@@ -156,9 +156,9 @@ end
 M["Door_DoubleLockNorth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 22,
+		PositionX = 36,
 		PositionY = 1,
-		PositionZ = 21,
+		PositionZ = 52,
 		Name = "Door_DoubleLockNorth",
 		Map = M._MAP,
 		Resource = M["Door_DoubleLockNorth"]
@@ -173,9 +173,9 @@ end
 M["Door_DoubleLockWest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 15,
+		PositionX = 20,
 		PositionY = 1,
-		PositionZ = 16,
+		PositionZ = 42,
 		RotationX = ItsyScape.Utility.Quaternion.Y_270.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_270.y,
 		RotationZ = ItsyScape.Utility.Quaternion.Y_270.z,
@@ -194,9 +194,9 @@ end
 M["Door_DoubleLockEast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 25,
+		PositionX = 40,
 		PositionY = 1,
-		PositionZ = 14,
+		PositionZ = 36,
 		RotationX = ItsyScape.Utility.Quaternion.Y_270.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_270.y,
 		RotationZ = ItsyScape.Utility.Quaternion.Y_270.z,
@@ -220,9 +220,9 @@ end
 M["Door_WaterfallNorth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30,
-		PositionY = 1,
-		PositionZ = 25,
+		PositionX = 46,
+		PositionY = -1,
+		PositionZ = 50,
 		Name = "Door_WaterfallNorth",
 		Map = M._MAP,
 		Resource = M["Door_WaterfallNorth"]
@@ -237,9 +237,9 @@ end
 M["Door_BeforeMinibossEntrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 48,
+		PositionX = 102,
 		PositionY = 1,
-		PositionZ = 39,
+		PositionZ = 70,
 		Name = "Door_BeforeMinibossEntrance",
 		Map = M._MAP,
 		Resource = M["Door_BeforeMinibossEntrance"]
@@ -254,9 +254,9 @@ end
 M["Door_MinibossEntrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 45,
+		PositionX = 88,
 		PositionY = 3,
-		PositionZ = 46,
+		PositionZ = 82,
 		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
 		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
@@ -275,16 +275,16 @@ end
 M["Door_To2ndFloor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 55,
-		PositionY = 0,
-		PositionZ = 41,
+		PositionX = 110,
+		PositionY = 1,
+		PositionZ = 70,
 		Name = "Door_To2ndFloor",
 		Map = M._MAP,
 		Resource = M["Door_To2ndFloor"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_SmallDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
 		MapObject = M["Door_To2ndFloor"]
 	}
 end

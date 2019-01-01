@@ -47,9 +47,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 2,
+	SizeX = 1.5,
 	SizeY = 2,
-	SizeZ = 2,
+	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeStone"
 }
 
