@@ -24,6 +24,17 @@ function Log.error(format, ...)
 	Log.print("traceback", traceback)
 end
 
+local WARNINGS = {}
+function Log.warnOnce(format, ...)
+	local s, r = pcall(string.format, format, ...)
+	if s then
+		if not WARNINGS[r] then
+			WARNINGS[r] = true
+			Log.print("warning", r)
+		end
+	end
+end
+
 function Log.warn(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
