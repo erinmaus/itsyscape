@@ -5192,8 +5192,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -5204,8 +5202,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -5216,8 +5212,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -10378,8 +10372,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -10390,8 +10382,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -10402,8 +10392,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -10414,8 +10402,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -12306,8 +12292,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -12318,8 +12302,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -12330,8 +12312,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{
@@ -12342,8 +12322,6 @@
 			},
 			flags =
 			{
-				["wall-bottom"] = true,
-				["wall-top"] = true,
 			},
 		},
 		{

@@ -38,9 +38,9 @@ end
 
 function Prop:spawnOrPoofTile(tile, i, j, mode)
 	if mode == 'spawn' then
-		tile:pushImpassable()
+		tile:pushFlag('impassable')
 	elseif mode == 'poof' then
-		tile:popImpassable()
+		tile:popFlag('impassable')
 	end
 end
 
@@ -59,8 +59,8 @@ function Prop:spawnOrPoof(mode)
 				halfSize = (max - min) / 2
 			end
 
-			for x = p.x - halfSize.x, p.x + halfSize.x do
-				for z = p.z - halfSize.z, p.z + halfSize.z do
+			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
+				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
 					local tile, i, j = map:getTileAt(x, z)
 
 					self:spawnOrPoofTile(tile, i, j, mode)
