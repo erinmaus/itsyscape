@@ -221,43 +221,45 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
-	if i > 1 and j > 1 and isTopPassable and isLeftPassable then
-		local topLeft = self.map:getTile(i - 1, j - 1)
-		if topLeft.bottomRight <= tile.topLeft and
-		   not topLeft:hasFlag('impassable')
-		   and not topLeft:hasFlag('door')
-		then
-			table.insert(neighbors, self:makeEdge(i - 1, j - 1, edge, goal))
+	if isTopPassable and isLeftPassable and isRightPassable and isTopPassable then
+		if i > 1 and j > 1 then
+			local topLeft = self.map:getTile(i - 1, j - 1)
+			if topLeft.bottomRight <= tile.topLeft and
+			   not topLeft:hasFlag('impassable') and
+			   not topLeft:hasFlag('door')
+			then
+				table.insert(neighbors, self:makeEdge(i - 1, j - 1, edge, goal))
+			end
 		end
-	end
 
-	if i > 1 and j < self.map:getHeight() and isBottomPassable and isLeftPassable then
-		local bottomLeft = self.map:getTile(i - 1, j + 1)
-		if bottomLeft.topRight <= tile.bottomLeft and
-		   not bottomLeft:hasFlag('impassable')
-		   and not bottomLeft:hasFlag('door')
-		then
-			table.insert(neighbors, self:makeEdge(i - 1, j + 1, edge, goal))
+		if i > 1 and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
+			local bottomLeft = self.map:getTile(i - 1, j + 1)
+			if bottomLeft.topRight <= tile.bottomLeft and
+			   not bottomLeft:hasFlag('impassable') and
+			   not bottomLeft:hasFlag('door')
+			then
+				table.insert(neighbors, self:makeEdge(i - 1, j + 1, edge, goal))
+			end
 		end
-	end
 
-	if i < self.map:getWidth() and j > 1 and isTopPassable and isRightPassable then
-		local topRight = self.map:getTile(i + 1, j - 1)
-		if topRight.bottomLeft <= tile.topRight and
-		   not topRight:hasFlag('impassable')
-		   and not topRight:hasFlag('door')
-		then
-			table.insert(neighbors, self:makeEdge(i + 1, j - 1, edge, goal))
+		if i < self.map:getWidth() and j > 1 then
+			local topRight = self.map:getTile(i + 1, j - 1)
+			if topRight.bottomLeft <= tile.topRight and
+			   not topRight:hasFlag('impassable') and
+			   not topRight:hasFlag('door')
+			then
+				table.insert(neighbors, self:makeEdge(i + 1, j - 1, edge, goal))
+			end
 		end
-	end
 
-	if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isLeftPassable then
-		local bottomRight = self.map:getTile(i + 1, j + 1)
-		if bottomRight.topLeft <= tile.bottomRight and
-		   not bottomRight:hasFlag('impassable')
-		   and not bottomRight:hasFlag('door')
-		then
-			table.insert(neighbors, self:makeEdge(i + 1, j + 1, edge, goal))
+		if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
+			local bottomRight = self.map:getTile(i + 1, j + 1)
+			if bottomRight.topLeft <= tile.bottomRight and
+			   not bottomRight:hasFlag('impassable') and
+			   not bottomRight:hasFlag('door')
+			then
+				table.insert(neighbors, self:makeEdge(i + 1, j + 1, edge, goal))
+			end
 		end
 	end
 
