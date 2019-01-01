@@ -201,8 +201,8 @@ function CombatCortex:update(delta)
 						elseif not self.strafing[peep] then
 							local targetIsPlayer = target:hasBehavior(PlayerBehavior)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
-							if targetIsPlayer and not selfIsPlayer then
-								if distanceToTarget + weaponRange <= selfRadius + targetRadius then
+							if not selfIsPlayer then
+								if distanceToTarget + weaponRange <= selfRadius + targetRadius + 1 and not self.strafing[target] then
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then

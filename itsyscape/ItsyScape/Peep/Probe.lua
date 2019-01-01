@@ -65,10 +65,7 @@ function Probe.mapObject(obj)
 	return function(peep)
 		local mapObject = Utility.Peep.getMapObject(peep)
 		if mapObject then
-			local resource = mapObject
-			if resource then
-				return resource.id == obj.id
-			end
+			return mapObject.id.value == obj.id.value
 		end
 
 		return false

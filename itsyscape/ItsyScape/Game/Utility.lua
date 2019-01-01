@@ -138,6 +138,70 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 	end
 end
 
+function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
+	radius = radius or 1
+
+	if type(mapObject) == 'string' then
+		local map = Utility.Peep.getMap(peep)
+		local gameDB = peep:getDirector():getGameDB()
+		local reference = gameDB:getRecord("MapObjectReference", {
+			Name = mapObject,
+			Map = map
+		})
+
+		mapObject = reference:get("Resource")
+		if not mapObject then
+			return nil, nil
+		end
+	end
+
+	local stage = peep:getDirector():getGameInstance():getStage(peep)
+	local actor, prop = stage:instantiateMapObject(mapObject)
+	
+	if actor then
+		local actorPeep = actor:getPeep()
+		local position = actorPeep:getBehavior(PositionBehavior)
+		if position then
+			position.position = Vector(
+				x + (math.random() * 2) - 1 * radius,
+				y, 
+				z + (math.random() * 2) - 1 * radius)
+		end
+
+		actorPeep:poke('spawnedByPeep', { peep = peep })
+	end
+
+	if prop then
+		local propPeep = prop:getPeep()
+		local position = propPeep:getBehavior(PositionBehavior)
+		if position then
+			position.position = Vector(
+				x + (math.random() * 2) - 1 * radius,
+				y, 
+				z + (math.random() * 2) - 1 * radius)
+		end
+
+		propPeep:poke('spawnedByPeep', { peep = peep })
+	end
+
+	return actor, prop
+end
+
+function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
+	local map = Utility.Peep.getMap(peep)
+	local x, y, z = Utility.Map.getAnchorPosition(
+		peep:getDirector():getGameInstance(),
+		map,
+		anchor)
+
+	if x and y and z then
+		return Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z)
+	else
+		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
+		return nil
+	end
+end
+
 function Utility.performAction(game, resource, id, scope, ...)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -889,10 +953,11 @@ function Utility.Peep.getTile(peep)
 
 	local position = peep:getBehavior(PositionBehavior).position
 	local k = position.layer or 1
-	local map = peep:getDirector():getMap(k)
-	local _, i, j = map:getTileAt(position.x, position.z)
 
-	return i, j, k
+	local map = peep:getDirector():getMap(k)
+	local tile, i, j = map:getTileAt(position.x, position.z)
+
+	return i, j, k, tile
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)

@@ -64,3 +64,69 @@ ItsyScape.Meta.Equipment {
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "ChestMimic_Weak_Base"
 }
+
+
+
+-- Memes.
+do
+	local Alice = ItsyScape.Resource.Peep "ChestMimic_Alice"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bones",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "ChestMimic_Alice_Secondary"	
+	}
+
+	Alice {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "ChestMimic_Alice_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ChestMimic.SkeletonAlice",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Alice",
+		Language = "en-US",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I wonder how she died.",
+		Language = "en-US",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeDagger",
+		Count = 1,
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/ChestMimic/SkeletonAlice_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Alice
+	}
+end

@@ -241,6 +241,8 @@ function LocalStage:instantiateMapObject(resource, layer)
 
 	local object = gameDB:getRecord("MapObjectLocation", {
 		Resource = resource
+	}) or gameDB:getRecord("MapObjectReference", {
+		Resource = resource
 	})
 
 	local actorInstance, propInstance

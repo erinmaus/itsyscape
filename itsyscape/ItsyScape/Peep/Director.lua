@@ -181,17 +181,19 @@ function Director:probe(...)
 
 	local result = {}
 	for peep in pairs(peeps) do
-		local match = true
-		for i = 1, args.n do
-			local func = args[i]
-			if func and type(func) ~= 'string' and not func(peep) then
-				match = false
-				break
+		if self.peeps[peep] then
+			local match = true
+			for i = 1, args.n do
+				local func = args[i]
+				if func and type(func) ~= 'string' and not func(peep) then
+					match = false
+					break
+				end
 			end
-		end
 
-		if match then
-			table.insert(result, peep)
+			if match then
+				table.insert(result, peep)
+			end
 		end
 	end
 
