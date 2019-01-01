@@ -16,6 +16,7 @@ local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerStance = Class(PlayerTab)
@@ -39,6 +40,12 @@ PlayerStance.STYLE = {
 		[Weapon.STANCE_CONTROLLED] = "Attack",
 		[Weapon.STANCE_DEFENSIVE] = "Defense"
 	},
+}
+
+PlayerStance.DESCRIPTION = {
+	[Weapon.STANCE_AGGRESSIVE] = "deal stronger blows",
+	[Weapon.STANCE_CONTROLLED] = "hit more accurately",
+	[Weapon.STANCE_DEFENSIVE] = "cautious, increasing defense"
 }
 
 PlayerStance.ACTIVE_STYLE = function(skill)
@@ -122,6 +129,9 @@ function PlayerStance:new(id, index, ui)
 		button:setData('active', false)
 
 		button:setText("Use Spell")
+		button:setToolTip(
+			ToolTip.Header("Use Spell"),
+			ToolTip.Text("If using a magic weapon, and with a spell active, you will cast the spell instead of using your weapon."))
 
 		self:addChild(button)
 		self.buttons.toggleSpell = button
@@ -181,6 +191,7 @@ function PlayerStance:update(...)
 		local stance = button:getData('stance')
 		local selected = button:getData('selected')
 		local skill = PlayerStance.STYLE[style][stance]
+		local flavor = PlayerStance.DESCRIPTION[stance]
 		if stance == state.stance or self.style ~= style then
 			if not selected then
 				button:setData('selected', true)
@@ -191,6 +202,10 @@ function PlayerStance:update(...)
 
 			button:setData('selected', false)
 		end
+
+		button:setToolTip(
+			ToolTip.Header(button:getText()),
+			ToolTip.Text(string.format("Awards %s XP when fighting, and makes you %s.", skill, flavor)))
 	end
 
 	self.style = style
