@@ -14,7 +14,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local BaseSkeleton = require "Resources.Game.Peeps.Skeleton.BaseSkeleton"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
-local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local SkeletonArcher = Class(BaseSkeleton)
 
@@ -22,6 +22,9 @@ function SkeletonArcher:new(resource, name, ...)
 	BaseSkeleton.new(self, resource, name or 'SkeletonArcher', ...)
 
 	self:addBehavior(StanceBehavior)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 8
 end
 
 function SkeletonArcher:ready(director, game)

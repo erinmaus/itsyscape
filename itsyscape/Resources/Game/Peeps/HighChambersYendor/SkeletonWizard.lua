@@ -13,8 +13,9 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local BaseSkeleton = require "Resources.Game.Peeps.Skeleton.BaseSkeleton"
-local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local WizardSkeleton = Class(BaseSkeleton)
 
@@ -22,6 +23,9 @@ function WizardSkeleton:new(resource, name, ...)
 	BaseSkeleton.new(self, resource, name or 'SkeletonMage', ...)
 
 	self:addBehavior(StanceBehavior)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 12
 end
 
 function WizardSkeleton:ready(director, game)

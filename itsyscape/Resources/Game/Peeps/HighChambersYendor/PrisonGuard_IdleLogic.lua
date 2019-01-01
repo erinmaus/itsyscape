@@ -18,7 +18,7 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
 				filter = ChambersCommon.targetPlayer,
-				distance = 4,
+				distance = 3,
 				[TARGET] = B.Output.RESULT
 			},
 
