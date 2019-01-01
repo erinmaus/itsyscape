@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -92,7 +93,12 @@ function LocalActor:setDirection(direction)
 				movement.facing = MovementBehavior.FACING_RIGHT
 			end
 
-			self.onDirectionChanged(self, direction)
+			local rotation = self.peep:getBehavior(RotationBehavior)
+			if rotation then
+				self.onDirectionChanged(self, direction, rotation.rotation)
+			else
+				self.onDirectionChanged(self, direction)
+			end
 		end
 	end
 end

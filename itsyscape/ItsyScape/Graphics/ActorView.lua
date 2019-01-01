@@ -129,8 +129,8 @@ function ActorView:new(actor, actorID)
 	end
 	actor.onMove:register(self._onMove)
 
-	self._onDirectionChanged = function(_, direction)
-		self:face(direction)
+	self._onDirectionChanged = function(_, direction, rotation)
+		self:face(direction, rotation)
 	end
 	actor.onDirectionChanged:register(self._onDirectionChanged)
 
@@ -368,12 +368,16 @@ function ActorView:move(position, layer, instant)
 	self.layer = layer
 end
 
-function ActorView:face(direction)
-	-- Assumes models face right.
-	if direction.x < -0.5 then
-		self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
-	elseif direction.x > 0.5 then
-		self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
+function ActorView:face(direction, rotation)
+	if rotation then
+		self.sceneNode:getTransform():setLocalRotation(rotation)
+	else
+		-- Assumes models face right.
+		if direction.x < -0.5 then
+			self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
+		elseif direction.x > 0.5 then
+			self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
+		end
 	end
 end
 
