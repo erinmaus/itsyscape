@@ -39,7 +39,9 @@ function BaseChestMimic:new(resource, name, ...)
 	self:addBehavior(RotationBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2, 2, 2)
+	size.size = Vector(2, 1, 2)
+	size.zoom = 2.5
+	size.yPan = 0.5
 end
 
 function BaseChestMimic:ready(director, game)
