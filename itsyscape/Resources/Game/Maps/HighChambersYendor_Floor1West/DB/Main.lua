@@ -366,6 +366,23 @@ do
 	}
 end
 
+M["Alice"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 1,
+		PositionZ = 65,
+		Name = "Alice",
+		Map = M._MAP,
+		Resource = M["Alice"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonAlice",
+		MapObject = M["Alice"]
+	}
+end
+
 M["Door_DoubleLockNorth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
