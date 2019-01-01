@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/HighChambersYendor/SkeletonAlice.lua
+-- Resources/Peeps/ChestMimic/SkeletonAlice.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -33,12 +33,6 @@ function SkeletonAlice:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Shirts/PinkDress.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-
-	local status = self:getBehavior(CombatStatusBehavior)
-	self:poke('hit', AttackPoke({
-		damage = status.currentHitpoints,
-		aggressor = self
-	}))
 end
 
 return SkeletonAlice

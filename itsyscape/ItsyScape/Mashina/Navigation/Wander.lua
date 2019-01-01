@@ -61,7 +61,7 @@ function Wander:update(mashina, state, executor)
 	end
 
 	if not i or not j then
-		i, j = Utility.Peep.getTile(mashina)
+		i, j, k, tile = Utility.Peep.getTile(mashina)
 	end
 
 	if tile:hasFlag('impassable') then

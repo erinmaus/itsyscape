@@ -107,11 +107,15 @@ function BaseChestMimic:update(...)
 			local selfPosition = Utility.Peep.getAbsolutePosition(self)
 			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
 
-			rotation.rotation = Quaternion.lookAt(peepPosition, selfPosition):getNormal()
+			rotation.rotation = Quaternion.lookAt(tilePosition, selfPosition):getNormal()
 		else
 			rotation.rotation = Quaternion.IDENTITY
 		end
 	end
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.facing = MovementBehavior.FACING_RIGHT
+	movement.targetFacing = MovementBehavior.FACING_LEFT
 end
 
 

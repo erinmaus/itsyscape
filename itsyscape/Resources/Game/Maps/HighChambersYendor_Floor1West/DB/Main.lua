@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/HighChambersYendor_Floor1West/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.HighChambersYendor_Floor1West.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -256,10 +261,7 @@ end
 
 M["Mimic_Angry"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 15,
-		PositionY = 1,
-		PositionZ = 61,
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Mimic_Angry",
 		Map = M._MAP,
 		Resource = M["Mimic_Angry"]
@@ -366,20 +368,15 @@ do
 	}
 end
 
-M["Alice"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_AliceSpawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 9,
 		PositionY = 1,
 		PositionZ = 65,
-		Name = "Alice",
+		Name = "Anchor_AliceSpawn",
 		Map = M._MAP,
-		Resource = M["Alice"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonAlice",
-		MapObject = M["Alice"]
+		Resource = M["Anchor_AliceSpawn"]
 	}
 end
 
