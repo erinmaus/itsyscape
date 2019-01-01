@@ -35,6 +35,11 @@ function StateProvider:give(name, count, flags)
 	return Class.ABSTRACT()
 end
 
+-- Completely optional.
+function StateProvider:get(name, flags)
+	return nil
+end
+
 function StateProvider:count(name, flags)
 	return Class.ABSTRACT()
 end

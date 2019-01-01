@@ -170,6 +170,7 @@ function CombatCortex:update(delta)
 									peep:getName(), peep:getTally(),
 									target:getName(), target:getTally())
 								peep:removeBehavior(CombatTargetBehavior)
+								peep:poke('targetFled', { target = target, distance = distanceToTarget })
 							else
 								walk.onCanceled:register(function()
 									--if peep:hasBehavior(CombatTargetBehavior) and peep:hasBehavior(PlayerBehavior) then

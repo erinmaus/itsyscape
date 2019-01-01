@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Goblin/BaseSkeleton.lua
+-- Resources/Peeps/Skeleton/BaseSkeleton.lua
 --
 -- This file is a part of ItsyScape.
 --

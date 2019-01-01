@@ -88,7 +88,7 @@ function ConstraintsPanel:performLayout(doLogic)
 	self.panel:addChild(self.layout)
 
 	local leftWidth = 32
-	local rightWidth = width - leftWidth - self.padding * 3
+	local rightWidth = width - leftWidth - self.padding * 7
 	local rowHeight = 32
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]

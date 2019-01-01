@@ -80,7 +80,6 @@ function BaseNymph:ready(director, game)
 	stance.stance = Weapon.STANCE_AGGRESSIVE
 	stance.useSpell = true
 
-
 	local spell = self:getBehavior(ActiveSpellBehavior)
 	spell.spell = Utility.Magic.newSpell("EarthStrike", game)
 

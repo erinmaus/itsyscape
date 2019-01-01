@@ -373,8 +373,8 @@ function Action:getFailureReason(state, peep)
 end
 
 -- Called when the action fails
-function Action:fail(state, peep)
-	local reason = self:getFailureReason(state, peep)
+function Action:fail(state, peep, ...)
+	local reason = self:getFailureReason(state, peep, ...)
 
 	peep:poke('actionFailed', reason)
 end
