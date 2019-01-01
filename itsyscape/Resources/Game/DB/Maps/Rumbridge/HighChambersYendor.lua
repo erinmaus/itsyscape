@@ -499,3 +499,45 @@ do
 		Resource = Archer
 	}
 end
+
+-- Memes.
+do
+	local Alice = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonAlice"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_SkeletonAlice" {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.SkeletonAlice",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Alice",
+		Language = "en-US",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I wonder how she died.",
+		Language = "en-US",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Alice
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Alice
+	}
+end
