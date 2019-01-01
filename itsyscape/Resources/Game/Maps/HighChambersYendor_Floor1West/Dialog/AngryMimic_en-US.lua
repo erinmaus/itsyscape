@@ -22,6 +22,7 @@ do
 		local mapObject = Utility.Peep.getMapObject(mimic)
 		Utility.performAction(
 			_DIRECTOR:getGameInstance(),
+			mapObject,
 			"Shop",
 			'world',
 			_TARGET:getState(),
