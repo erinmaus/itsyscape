@@ -224,7 +224,7 @@ end
 
 function LocalActor:getBounds()
 	if not self.peep then
-		return Vector.ZERO, Vector.ZERO
+		return Vector.ZERO, Vector.ZERO, 1, 0
 	end
 
 	local position = self:getPosition()
@@ -236,9 +236,9 @@ function LocalActor:getBounds()
 		local min = position - xzSize
 		local max = position + xzSize + ySize
 
-		return min + size.offset, max + size.offset
+		return min + size.offset, max + size.offset, size.zoom, size.yPan
 	else
-		return position, position
+		return position, position, 1, 0
 	end
 end
 

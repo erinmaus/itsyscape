@@ -207,9 +207,9 @@ function DialogBox:update(...)
 	local offset
 	local zoom
 	if self.actor then
-		local min, max = self.actor:getBounds()
-		offset = (max.y - min.y) - 0.75
-		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z)
+		local min, max, z, y = self.actor:getBounds()
+		offset = (max.y - min.y) - (y or 0.75)
+		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
 
 		-- Flip if facing left.
 		if self.actor:getDirection().x < 0 then
