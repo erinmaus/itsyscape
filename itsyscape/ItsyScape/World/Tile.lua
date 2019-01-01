@@ -35,11 +35,9 @@ function Tile:new()
 	self.bottomRight = 0
 
 	self.flags = {}
+	self.runtimeFlags = {}
 	self.data = {}
 	self.links = {}
-
-	self.impassableDepth = 0
-	self.blockingDepth = 0
 end
 
 function Tile:addLink(link)
@@ -54,49 +52,39 @@ function Tile:iterateLinks()
 	return pairs(self.links)
 end
 
-function Tile:pushImpassable()
-	self.impassableDepth = self.impassableDepth + 1
-
-	if self.impassableDepth > 0 then
-		self:setFlag('impassable')
-	end
+function Tile:pushFlag(flag)
+	local depth = self.runtimeFlags[flag] or 0
+	self.runtimeFlags[flag] = depth + 1
 end
 
-function Tile:popImpassable()
-	self.impassableDepth = math.max(self.impassableDepth - 1, 0)
-
-	if self.impassableDepth == 0 then
-		self:unsetFlag('impassable')
+function Tile:popFlag(flag)
+	local depth = self.runtimeFlags[flag] or 0
+	if depth <= 1 then
+		self.runtimeFlags[flag] = nil
+	else
+		self.runtimeFlags[flag] = depth - 1
 	end
 end
-
-function Tile:pushBlocking()
-	self.blockingDepth = self.blockingDepth + 1
-
-	if self.blockingDepth > 0 then
-		self:setFlag('blocking')
-	end
-end
-
-function Tile:popBlocking()
-	self.blockingDepth = math.max(self.blockingDepth - 1, 0)
-
-	if self.blockingDepth == 0 then
-		self:unsetFlag('blocking')
-	end
-end
-
 
 function Tile:setFlag(f)
 	self.flags[tostring(f)] = true
+end
+
+function Tile:setRuntimeFlag(f)
+	self.runtimeFlags[tostring(f)] = true
 end
 
 function Tile:unsetFlag(f)
 	self.flags[tostring(f)] = nil
 end
 
+function Tile:unsetRuntimeFlag(f)
+	self.runtimeFlags[tostring(f)] = nil
+end
+
 function Tile:hasFlag(f)
-	return self.flags[tostring(f)] == true
+	f = tostring(f)
+	return self.flags[f] == true or self.runtimeFlags[f]
 end
 
 function Tile:iterateFlags()

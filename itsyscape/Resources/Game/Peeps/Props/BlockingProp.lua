@@ -24,9 +24,9 @@ end
 
 function BlockingProp:spawnOrPoofTile(tile, i, j, mode)
 	if mode == 'spawn' then
-		tile:pushBlocking()
+		tile:pushFlag('blocking')
 	elseif mode == 'poof' then
-		tile:popBlocking()
+		tile:popFlag('blocking')
 	end
 end
 

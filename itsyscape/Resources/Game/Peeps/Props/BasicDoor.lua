@@ -45,10 +45,10 @@ end
 
 function BasicDoor:spawnOrPoofTile(tile, i, j, mode)
 	if mode == 'spawn' then
-		tile:setFlag('door')
+		tile:setRuntimeFlag('door')
 		tile:addLink(self)
 	else
-		tile:unsetFlag('door')
+		tile:unsetRuntimeFlag('door')
 		tile:removeLink(self)
 	end
 end
