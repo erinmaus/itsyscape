@@ -143,7 +143,9 @@ function Utility.performAction(game, resource, id, scope, ...)
 	local brochure = gameDB:getBrochure()
 	local foundAction = false
 	for action in brochure:findActionsByResource(resource) do
-		if action.id.value == id then
+		if (type(id) == 'number' and action.id.value == id) or
+		   (type(id) == 'string' and action.instance:is(id))
+		then
 			local definition = brochure:getActionDefinitionFromAction(action)
 			local typeName = string.format("Resources.Game.Actions.%s", definition.name)
 			local s, r = pcall(require, typeName)
