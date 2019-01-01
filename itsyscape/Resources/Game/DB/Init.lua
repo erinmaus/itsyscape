@@ -546,6 +546,7 @@ include "Resources/Game/DB/Items/MiscFood.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Cow.lua"
+include "Resources/Game/DB/Creeps/ChestMimic.lua"
 include "Resources/Game/DB/Creeps/Chicken.lua"
 include "Resources/Game/DB/Creeps/Goblin.lua"
 include "Resources/Game/DB/Creeps/Nymph.lua"

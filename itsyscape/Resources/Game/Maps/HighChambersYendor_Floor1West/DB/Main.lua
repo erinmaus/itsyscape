@@ -242,6 +242,130 @@ do
 	}
 end
 
+M["Anchor_MimicSpawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 1,
+		PositionZ = 61,
+		Name = "Anchor_MimicSpawn",
+		Map = M._MAP,
+		Resource = M["Anchor_MimicSpawn"]
+	}
+end
+
+M["Mimic_Angry"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 1,
+		PositionZ = 61,
+		Name = "Mimic_Angry",
+		Map = M._MAP,
+		Resource = M["Mimic_Angry"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Prop "ChestMimic_Weak_Base",
+		MapObject = M["Mimic_Angry"]
+	}
+
+	local AngryMimicShop = ItsyScape.Resource.Shop.Unique()	{
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 100,
+				Resource = ItsyScape.Resource.Item "Coins"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CavePotato"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 100,
+				Resource = ItsyScape.Resource.Item "Coins"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CookedSardine"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 200,
+				Resource = ItsyScape.Resource.Item "Coins"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CookedSeaBass"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 150,
+				Resource = ItsyScape.Resource.Item "Coins"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "CommonLogs"
+			}
+		},
+
+		ItsyScape.Action.Buy() {
+			Input {
+				Count = 10000,
+				Resource = ItsyScape.Resource.Item "Coins"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "IronPickaxe"
+			}
+		}
+	}
+
+	ItsyScape.Meta.Shop {
+		ExchangeRate = 0.2,
+		Currency = ItsyScape.Resource.Item "Coins",
+		Resource = AngryMimicShop
+	}
+
+	local ShopAction = ItsyScape.Action.Shop()
+
+	ItsyScape.Meta.ShopTarget {
+		Resource = AngryMimicShop,
+		Action = ShopAction
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Mimic_Angry"],
+		Name = "Mimic",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/HighChambersYendor_Floor1West/Dialog/AngryMimic_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Mimic_Angry"] {
+		TalkAction,
+		ShopAction,
+		ItsyScape.Action.Attack()
+	}
+end
+
 M["Door_DoubleLockNorth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
