@@ -122,6 +122,7 @@ Game "ItsyScape"
 
 	Meta "MapObjectGroup" {
 		MapObjectGroup = Meta.TYPE_TEXT,
+		Map = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 

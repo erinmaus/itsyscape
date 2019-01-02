@@ -149,6 +149,123 @@ do
 	}
 end
 
+M["PuzzleTorch_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "PuzzleTorch_1",
+		Map = M._MAP,
+		Resource = M["PuzzleTorch_1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["PuzzleTorch_1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Puzzle_Torch",
+		Map = M._MAP,
+		MapObject = M["PuzzleTorch_1"]
+	}
+end
+
+M["PuzzleTorch_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "PuzzleTorch_2",
+		Map = M._MAP,
+		Resource = M["PuzzleTorch_2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["PuzzleTorch_2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Puzzle_Torch",
+		Map = M._MAP,
+		MapObject = M["PuzzleTorch_2"]
+	}
+end
+
+M["PuzzleTorch_3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 71,
+		Name = "PuzzleTorch_3",
+		Map = M._MAP,
+		Resource = M["PuzzleTorch_3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["PuzzleTorch_3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Puzzle_Torch",
+		Map = M._MAP,
+		MapObject = M["PuzzleTorch_3"]
+	}
+end
+
+M["PuzzleTorch_4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 1,
+		PositionZ = 71,
+		Name = "PuzzleTorch_4",
+		Map = M._MAP,
+		Resource = M["PuzzleTorch_4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["PuzzleTorch_4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Puzzle_Torch",
+		Map = M._MAP,
+		MapObject = M["PuzzleTorch_4"]
+	}
+end
+
+do
+	local LightAction = ItsyScape.Action.Light_Prop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		}
+	}
+
+	M["PuzzleTorch_1"] {
+		LightAction
+	}
+
+	M["PuzzleTorch_2"] {
+		LightAction
+	}
+
+	M["PuzzleTorch_3"] {
+		LightAction
+	}
+
+	M["PuzzleTorch_4"] {
+		LightAction
+	}
+end
+
 M["Door_GuardianPrison"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -167,6 +284,7 @@ do
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_GuardianPrison",
+		Map = M._MAP,
 		MapObject = M["Door_GuardianPrison"]
 	}
 end
@@ -190,6 +308,7 @@ do
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_GuardianPrison",
+		Map = M._MAP,
 		MapObject = M["PrisonGuard_Archer_1"]
 	}
 
@@ -220,6 +339,7 @@ do
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_GuardianPrison",
+		Map = M._MAP,
 		MapObject = M["PrisonGuard_Archer_2"]
 	}
 
@@ -249,6 +369,7 @@ do
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_GuardianPrison",
+		Map = M._MAP,
 		MapObject = M["PrisonGuard_Archer_3"]
 	}
 
@@ -491,6 +612,7 @@ do
 
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "Door_DoubleLockEast",
+		Map = M._MAP,
 		MapObject = M["Door_DoubleLockEast"]
 	}
 end
