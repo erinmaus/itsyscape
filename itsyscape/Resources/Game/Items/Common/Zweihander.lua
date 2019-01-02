@@ -18,6 +18,10 @@ function Zweihander:getAttackRange()
 	return 2
 end
 
+function Zweihander:rollDamage(peep, multiplier, bonusStrength, purpose)
+	return MeleeWeapon.rollDamage(self, peep, multiplier, bonusStrength, purpose) + 1
+end
+
 function Zweihander:getBonusForStance(peep)
 	return Weapon.BONUS_SLASH
 end
