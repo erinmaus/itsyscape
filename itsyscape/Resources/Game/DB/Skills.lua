@@ -127,6 +127,12 @@ ItsyScape.Resource.Skill "Woodcutting"
 
 ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
+	ActionType "Light_Prop"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Light",
+			Language = "en-US",
+			Type = "Light_Prop"
+		}
 	ActionType "Burn"
 
 	ItsyScape.Meta.SkillAction {

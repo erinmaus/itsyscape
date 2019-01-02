@@ -233,6 +233,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ActionTypeVerb" {
+		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Type = Meta.TYPE_TEXT,
+	}
+
 	Meta "ActionVerb" {
 		Value = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
@@ -585,6 +591,7 @@ include "Resources/Game/DB/Props/Ladder.lua"
 include "Resources/Game/DB/Props/Portals.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
 include "Resources/Game/DB/Props/Lights.lua"
+include "Resources/Game/DB/Props/Torch.lua"
 
 -- Props (boats)
 include "Resources/Game/DB/Props/Sails.lua"
