@@ -139,6 +139,36 @@ do
 end
 
 do
+	ItsyScape.Resource.Prop "HighChambersYendor_Bed" {
+		ItsyScape.Action.Sleep()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Sack of hay",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Bed"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Not very comfortable, but better than nothing.",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Bed"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Bed"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 1.5,
+		SizeZ = 4,
+		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_Bed"
+	}
+end
+
+do
 	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Primary"
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Secondary"
 
