@@ -78,12 +78,18 @@ end
 function Action:getVerb(lang)
 	lang = lang or "en-US"
 
-	local nameRecord = self.gameDB:getRecords("ActionVerb", { Action = self.action, Language = lang }, 1)[1]
+	local nameRecord = self.gameDB:getRecord("ActionVerb", { Action = self.action, Language = lang })
 	if nameRecord then
-		return nameRecord:get("Value")
+		return nameRecord:get("Value") or false
 	else
-		return false
+		local typeRecord = self.gameDB:getRecord("ActionTypeVerb", { Type = self.definitionName, Language = lang })
+		if typeRecord then
+			return typeRecord:get("Value") or false
+		end
+
 	end
+
+	return false
 end
 
 -- Returns true if the Action can be performed. Otherwise, returns false.
@@ -139,7 +145,7 @@ function Action:count(state, flags)
 	return 0
 end
 
-function Action:sendEvent(peep, event)
+function Action:sendEvent(peep, event, eventArgs)
 	local slot = event:get("Slot")
 
 	local poke = { peep = peep }
@@ -163,6 +169,10 @@ function Action:sendEvent(peep, event)
 		getArguments("ActionEventRealArgument")
 		getArguments("ActionEventResourceArgument")
 		getArguments("ActionEventActionArgument")
+
+		for key, value in pairs(eventArgs) do
+			poke[key] = value
+		end
 	end
 
 	local targets = {}
@@ -210,14 +220,13 @@ end
 --
 -- Returns true if the action could be performed, or false otherwise. If the
 -- action fails, a message should be returned.
-function Action:perform(state, player, ...)
+function Action:perform(state, player, eventArgs, ...)
 	local events = self.gameDB:getRecords("ActionEvent", {
 		Action = self.action
 	})
 
-
 	for i = 1, #events do
-		self:sendEvent(player, events[i])
+		self:sendEvent(player, events[i], eventArgs)
 	end
 end
 
