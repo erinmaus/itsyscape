@@ -92,8 +92,10 @@ function TorchView:flicker()
 		local state = self:getProp():getState()
 		if not state.lit then
 			self.flames:getMaterial():setColor(Color(1, 1, 1, 0))
+			self.light:setParent(nil)
 		else
 			self.flames:getMaterial():setColor(Color(1, 1, 1, 1))
+			self.light:setParent(self:getRoot())
 		end
 	end
 end

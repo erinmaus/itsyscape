@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local Probe = require "ItsyScape.Peep.Probe"
 local ChestMimicCommon = require "Resources.Game.Peeps.ChestMimic.Common"
 
 local HighChambersYendor = Class(Map)
@@ -24,19 +25,52 @@ function HighChambersYendor:new(resource, name, ...)
 	Map.new(self, resource, name or 'HighChambersYendor_Floor1West', ...)
 end
 
-function HighChambersYendor:onFinalize(...)
+function HighChambersYendor:onFinalize(director, game)
 	ChestMimicCommon.spawn(
 		self,
 		"Anchor_MimicSpawn",
 		"Anchor_AliceSpawn",
 		self.MIMICS,
 		self.MIMIC_CHANCE)
+
+	self:initTorchPuzzle()
 end
 
-function HighChambersYendor:onSquidEnraged()
-	self.squidRageStat.currentValue = math.min(
-		self.squidRageStat.currentValue + 1,
-		self.squidRageStat.maxValue)
+function HighChambersYendor:initTorchPuzzle()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local torches = gameDB:getRecords("MapObjectGroup", {
+		MapObjectGroup = "Puzzle_Torch",
+		Map = Utility.Peep.getMap(self)
+	})
+
+	for i = 1, #torches do
+		local torch = director:probe(
+			self:getLayerName(),
+			Probe.mapObject(torches[i]:get("MapObject")))[1]
+
+		if torch then
+			torch:poke('snuff')
+			torch:listen('light', self.onTorchPuzzleLight, self, torch)
+			torch:listen('snuff', self.onTorchPuzzleSnuff, self, torch)
+		end
+	end
+
+	self.numTorches = #torches
+	self.torchPuzzleTorchesLit = 0
+end
+
+function HighChambersYendor:onTorchPuzzleLight(torch)
+	self.torchPuzzleTorchesLit = self.torchPuzzleTorchesLit + 1
+
+	if self.torchPuzzleTorchesLit >= self.numTorches then
+		Log.info("All torches lit!")
+	end
+end
+
+function HighChambersYendor:onTorchPuzzleSnuff(torch)
+	self.torchPuzzleTorchesLit = self.torchPuzzleTorchesLit - 1
 end
 
 return HighChambersYendor

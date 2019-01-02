@@ -12,20 +12,25 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Action = require "ItsyScape.Peep.Action"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local LightProp = Class(Action)
 LightProp.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+LightProp.FLAGS = {
+	['item-inventory'] = true,
+	['item-equipment'] = true
+}
 
 function LightProp:perform(state, peep, prop)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state) then
-		if not prop:isCompatibleType("Resources.Game.Peeps.Props.BasicTorch") then
+		if not prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicTorch") then
 			return false
 		end
 
-		if prop:isLit() then
+		if prop:getIsLit() then
 			return true
 		end
 
@@ -45,16 +50,16 @@ function LightProp:perform(state, peep, prop)
 
 		if walk then
 			local light = CallbackCommand(function()
-				if self:transfer(state, player, flags) then
-					prop:poke('open')
+				if self:transfer(state, peep, flags) then
+					prop:poke('light')
 				end
 			end)
 			local wait = WaitCommand(1)
-			local perform = CallbackCommand(Action.perform, self, state, player, { prop = prop })
+			local perform = CallbackCommand(Action.perform, self, state, peep, { prop = prop })
 			local command = CompositeCommand(true, walk, light, perform, wait)
 
-			local queue = player:getCommandQueue()
-			return queue:interrupt()
+			local queue = peep:getCommandQueue()
+			return queue:interrupt(command)
 		end
 	end
 
