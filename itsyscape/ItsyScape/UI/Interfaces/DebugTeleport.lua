@@ -113,6 +113,10 @@ function DebugTeleport:populateAnchors(map)
 		Map = map
 	})
 
+	table.sort(anchors, function (a, b)
+		return a:get("Name") < b:get("Name")
+	end)
+
 	for i = 1, #self.anchors do
 		self.anchorsPanel:removeChild(self.anchors[i])
 	end
