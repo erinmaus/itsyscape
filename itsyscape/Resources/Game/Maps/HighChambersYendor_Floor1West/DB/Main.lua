@@ -98,6 +98,57 @@ do
 	}
 end
 
+M["SackOfHay_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 1,
+		PositionZ = 109,
+		Name = "SackOfHay_1",
+		Map = M._MAP,
+		Resource = M["SackOfHay_1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
+		MapObject = M["SackOfHay_1"]
+	}
+end
+
+M["SackOfHay_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 1,
+		PositionZ = 109,
+		Name = "SackOfHay_2",
+		Map = M._MAP,
+		Resource = M["SackOfHay_2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
+		MapObject = M["SackOfHay_2"]
+	}
+end
+
+M["SackOfHay_3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 1,
+		PositionZ = 109,
+		Name = "SackOfHay_3",
+		Map = M._MAP,
+		Resource = M["SackOfHay_3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
+		MapObject = M["SackOfHay_3"]
+	}
+end
+
 M["Door_GuardianPrison"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
