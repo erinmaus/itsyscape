@@ -118,7 +118,7 @@ end
 M["SackOfHay_2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17,
+		PositionX = 13,
 		PositionY = 1,
 		PositionZ = 109,
 		Name = "SackOfHay_2",
@@ -135,7 +135,7 @@ end
 M["SackOfHay_3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 15,
+		PositionX = 17,
 		PositionY = 1,
 		PositionZ = 109,
 		Name = "SackOfHay_3",
