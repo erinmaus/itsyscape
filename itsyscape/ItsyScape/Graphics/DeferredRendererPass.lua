@@ -156,6 +156,12 @@ function DeferredRendererPass:drawNodes(scene, delta)
 					end
 				end
 
+				for key, value in material:getUniforms() do
+					if currentShaderProgram:hasUniform(key) then
+						currentShaderProgram:send(key, value)
+					end
+				end
+
 				node:beforeDraw(self:getRenderer(), delta)
 				node:draw(self:getRenderer(), delta)
 				node:afterDraw(self:getRenderer(), delta)
@@ -327,6 +333,10 @@ function DeferredRendererPass:drawFog(scene, delta)
 
 	self.fBuffer:use()
 	love.graphics.clear(0, 0, 0, 0, false, false)
+
+	table.sort(self.fog, function(a, b)
+		return a:getFarDistance() < b:getFarDistance()
+	end)
 
 	for i = 1, #self.fog do
 		self:drawFogNode(self.fog[i], delta)
