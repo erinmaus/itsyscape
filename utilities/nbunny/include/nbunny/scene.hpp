@@ -84,6 +84,9 @@ namespace nbunny
 		static const int NUM_PLANES = 6;
 		mutable glm::vec4 planes[NUM_PLANES];
 
+		static const int NUM_POINTS = 8;
+		mutable glm::vec3 minFrustum, maxFrustum;
+
 		void compute_planes() const;
 		bool inside(const SceneNode& node, float delta) const;
 
