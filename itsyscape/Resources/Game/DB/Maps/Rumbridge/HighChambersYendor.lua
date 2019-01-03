@@ -169,6 +169,32 @@ do
 end
 
 do
+	local Ghost = ItsyScape.Resource.Peep "HighChambersYendor_TorchPuzzleGhost"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.TorchPuzzleGhost",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Angry ghost",
+		Language = "en-US",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "He wants a revelation, some kind of resolution.",
+		Language = "en-US",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Ghost
+	}
+end
+
+do
 	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Primary"
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Secondary"
 

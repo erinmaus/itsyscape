@@ -241,28 +241,20 @@ do
 	}
 end
 
+M["PuzzleTorch_Ghost"] = ItsyScape.Resource.MapObject.Unique()
 do
-	local LightAction = ItsyScape.Action.Light_Prop() {
-		Requirement {
-			Resource = ItsyScape.Resource.Item "Tinderbox",
-			Count = 1
-		}
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 63,
+		Name = "PuzzleTorch_Ghost",
+		Map = M._MAP,
+		Resource = M["PuzzleTorch_Ghost"]
 	}
 
-	M["PuzzleTorch_1"] {
-		LightAction
-	}
-
-	M["PuzzleTorch_2"] {
-		LightAction
-	}
-
-	M["PuzzleTorch_3"] {
-		LightAction
-	}
-
-	M["PuzzleTorch_4"] {
-		LightAction
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_TorchPuzzleGhost",
+		MapObject = M["PuzzleTorch_Ghost"]
 	}
 end
 

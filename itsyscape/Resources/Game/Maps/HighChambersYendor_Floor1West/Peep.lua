@@ -62,10 +62,26 @@ function HighChambersYendor:initTorchPuzzle()
 end
 
 function HighChambersYendor:onTorchPuzzleLight(torch)
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local ghost = gameDB:getRecord("MapObjectLocation", {
+		Name = "PuzzleTorch_Ghost",
+		Map = Utility.Peep.getMap(self)
+	})
+
+	local ghost = director:probe(
+		self:getLayerName(),
+		Probe.mapObject(ghost:get("Resource")))[1]
+	if ghost then
+		ghost:poke('torchLit', { torch = torch })
+	end
+
 	self.torchPuzzleTorchesLit = self.torchPuzzleTorchesLit + 1
 
 	if self.torchPuzzleTorchesLit >= self.numTorches then
 		Log.info("All torches lit!")
+		ghost:poke('die')
 	end
 end
 

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Actions/LightProp.lua
+-- Resources/Game/Actions/Snuff.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,30 +14,26 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 
-local LightProp = Class(Action)
-LightProp.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
-LightProp.FLAGS = {
+local Snuff = Class(Action)
+Snuff.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+Snuff.FLAGS = {
 	['item-inventory'] = true,
 	['item-equipment'] = true
 }
 
-function LightProp:perform(state, peep, prop)
+function Snuff:perform(state, peep, prop)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state) then
 		if not prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicTorch") then
 			return false
 		end
 
-		if prop:getIsLit() then
+		if not prop:getIsLit() then
 			return true
 		end
 
-		if not prop:canLight() then
-			return false
-		end
-
 		local transfer = CallbackCommand(self.transfer, self, peep:getState(), peep, { ['item-inventory'] = true })
-		local wait = WaitCommand(LightProp.DURATION, false)
+		local wait = WaitCommand(Snuff.DURATION, false)
 
 		local walk
 		do
@@ -47,14 +43,14 @@ function LightProp:perform(state, peep, prop)
 		end
 
 		if walk then
-			local light = CallbackCommand(function()
+			local snuff = CallbackCommand(function()
 				if self:transfer(state, peep, flags) then
-					prop:poke('light')
+					prop:poke('snuff')
 				end
 			end)
 			local wait = WaitCommand(1)
 			local perform = CallbackCommand(Action.perform, self, state, peep, { prop = prop })
-			local command = CompositeCommand(true, walk, transfer, light, perform, wait)
+			local command = CompositeCommand(true, walk, transfer, snuff, perform, wait)
 
 			local queue = peep:getCommandQueue()
 			return queue:interrupt(command)
@@ -64,25 +60,4 @@ function LightProp:perform(state, peep, prop)
 	return false
 end
 
-function LightProp:getFailureReason(state, peep, prop)
-	local reason = Action.getFailureReason(self, state, peep)
-
-	local s, r = prop:canLight()
-	if not s then
-		local gameDB = self:getGameDB()
-		r = gameDB:getResource(r, "KeyItem")
-		if r then
-			table.insert(reason.requirements, {
-				type = "KeyItem",
-				resource = r.name,
-				name = Utility.getName(r, gameDB) or ("*" .. r.name),
-				description = Utility.getDescription(r, gameDB) or ("*" .. r.name),
-				count = 1
-			})
-		end
-	end
-
-	return reason
-end
-
-return LightProp
+return Snuff
