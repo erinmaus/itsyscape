@@ -53,6 +53,8 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "None"
+
 	ActionType "Bank"
 	ActionType "Collect"
 

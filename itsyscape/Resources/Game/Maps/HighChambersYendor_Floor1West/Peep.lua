@@ -34,6 +34,7 @@ function HighChambersYendor:onFinalize(director, game)
 		self.MIMIC_CHANCE)
 
 	self:initTorchPuzzle()
+	self:initDoubleLock()
 end
 
 function HighChambersYendor:initTorchPuzzle()
@@ -61,18 +62,56 @@ function HighChambersYendor:initTorchPuzzle()
 	self.torchPuzzleTorchesLit = 0
 end
 
+function HighChambersYendor:initDoubleLock()
+	self.doubleLockPuzzle = {}
+
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local function snuffTorch(name)
+		local torchMeta = gameDB:getRecord("MapObjectLocation", {
+			Name = name,
+			Map = Utility.Peep.getMap(self)
+		})
+
+		local torch = director:probe(
+			self:getLayerName(),
+			Probe.mapObject(torchMeta:get("Resource")))[1]
+
+		if torch then
+			torch:poke('snuff')
+		end
+	end
+
+	snuffTorch("DoubleLockDoor_PuzzleTorch")
+	snuffTorch("DoubleLockDoor_CreepRoomTorch")
+
+	do
+		local doorMeta = gameDB:getRecord("MapObjectLocation", {
+			Name = "Door_DoubleLockWest",
+			Map = Utility.Peep.getMap(self)
+		})
+
+		local door = director:probe(
+			self:getLayerName(),
+			Probe.mapObject(doorMeta:get("Resource")))[1]
+
+		door:listen('open', self.activateDoubleLock, self, "DoubleLockDoor_CreepRoomTorch")
+	end
+end
+
 function HighChambersYendor:onTorchPuzzleLight(torch)
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 
-	local ghost = gameDB:getRecord("MapObjectLocation", {
+	local ghostMeta = gameDB:getRecord("MapObjectLocation", {
 		Name = "PuzzleTorch_Ghost",
 		Map = Utility.Peep.getMap(self)
 	})
 
 	local ghost = director:probe(
 		self:getLayerName(),
-		Probe.mapObject(ghost:get("Resource")))[1]
+		Probe.mapObject(ghostMeta:get("Resource")))[1]
 	if ghost then
 		ghost:poke('torchLit', { torch = torch })
 	end
@@ -80,8 +119,47 @@ function HighChambersYendor:onTorchPuzzleLight(torch)
 	self.torchPuzzleTorchesLit = self.torchPuzzleTorchesLit + 1
 
 	if self.torchPuzzleTorchesLit >= self.numTorches then
-		Log.info("All torches lit!")
 		ghost:poke('die')
+
+		self:activateDoubleLock("DoubleLockDoor_PuzzleTorch")
+	end
+end
+
+function HighChambersYendor:activateDoubleLock(torchName)
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local torchMeta = gameDB:getRecord("MapObjectLocation", {
+		Name = torchName,
+		Map = Utility.Peep.getMap(self)
+	})
+
+	local torch = director:probe(
+		self:getLayerName(),
+		Probe.mapObject(torchMeta:get("Resource")))[1]
+	if torch then
+		torch:poke('light')
+
+		if not self.doubleLockPuzzle[torch] then
+			Log.info("Double-lock puzzle torch '%s' lit.", torchName)
+
+			self.doubleLockPuzzle[torch] = true
+			table.insert(self.doubleLockPuzzle, torch)
+
+			if #self.doubleLockPuzzle >= 2 then
+				local doorMeta = gameDB:getRecord("MapObjectLocation", {
+					Name = "Door_DoubleLockEast",
+					Map = Utility.Peep.getMap(self)
+				})
+
+				local door = director:probe(
+					self:getLayerName(),
+					Probe.mapObject(doorMeta:get("Resource")))[1]
+				if door then
+					door:poke('open')
+				end
+			end
+		end
 	end
 end
 
