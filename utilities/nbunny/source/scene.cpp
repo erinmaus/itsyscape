@@ -256,21 +256,14 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 
 	compute_planes();
 
-	for (int i = 0; i < NUM_PLANES; ++i)
+	if ((min.x <= maxFrustum.x && max.x >= minFrustum.x) &&
+		(min.y <= maxFrustum.y && max.y >= minFrustum.y) &&
+		(min.z <= maxFrustum.z && max.z >= minFrustum.z))
 	{
-		auto plane = planes[i];
-		auto normal = glm::vec3(plane);
-
-		auto vertex = get_negative_vertex(min, max, normal);
-
-		float dot = glm::dot(vertex, normal) + plane.w;
-		if (dot < 0.0f)
-		{
-			return false;
-		}
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void nbunny::Camera::compute_planes() const
@@ -332,6 +325,32 @@ void nbunny::Camera::compute_planes() const
 	float farLengthInverse = 1.0f / glm::length(glm::vec3(planes[5]));
 	planes[5] *= farLengthInverse;
 #undef M
+
+	auto inverseViewProjection = glm::inverse(projectionView);
+
+	glm::vec4 corners[NUM_POINTS] =
+	{
+		inverseViewProjection * glm::vec4(-1, -1, -1, 1),
+		inverseViewProjection * glm::vec4( 1, -1, -1, 1),
+		inverseViewProjection * glm::vec4(-1,  1, -1, 1),
+		inverseViewProjection * glm::vec4(-1, -1,  1, 1),
+		inverseViewProjection * glm::vec4( 1,  1, -1, 1),
+		inverseViewProjection * glm::vec4( 1, -1,  1, 1),
+		inverseViewProjection * glm::vec4(-1,  1,  1, 1),
+		inverseViewProjection * glm::vec4( 1,  1,  1, 1)
+	};
+
+	auto min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
+	for (int i = 0; i < NUM_POINTS; ++i)
+	{
+		auto p = glm::vec3(corners[i]) / corners[i].w;
+		min = glm::min(min, p);
+		max = glm::max(max, p);
+	}
+
+	minFrustum = min;
+	maxFrustum = max;
 
 	is_dirty = false;
 }
