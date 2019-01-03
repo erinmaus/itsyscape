@@ -25,6 +25,7 @@ function Material:new(node, shader, ...)
 	self.isTranslucent = false
 	self.isFullLit = false
 	self.color = Color(1, 1, 1, 1)
+	self.uniforms = {}
 end
 
 -- Gets the shader this Material uses.
@@ -40,6 +41,22 @@ function Material:setShader(value)
 	if self.shader then
 		self._handle:setShader(self.shader:getID())
 	end
+end
+
+-- Sets a uniform to pass on to the shader.
+--
+-- If 'value' is nil, the uniform is unset.
+--
+-- 'key' must be a string.
+function Material:setUniform(key, value)
+	if type(key) == 'string' then
+		self.uniforms[key] = value
+	end
+end
+
+-- Gets an iterator over the uniforms.
+function Material:getUniforms()
+	return pairs(self.uniforms)
 end
 
 -- Unsets the shader.
