@@ -250,7 +250,7 @@ function Utility.getAction(game, action, scope)
 		Log.error("failed to load action %s: %s", typeName, r)
 	else
 		local ActionType = r
-		if ActionType.SCOPES and ActionType.SCOPES[scope] or not scope then
+		if (ActionType.SCOPES and ActionType.SCOPES[scope]) or not scope then
 			local a = ActionType(game, action)
 			local t = {
 				id = action.id.value,
@@ -1728,6 +1728,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
 	peep:addResource("animation-attack-crush-staff", attackAnimationStaffCrush)
+	local attackAnimationStaffMagic = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
+	peep:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
 	local attackAnimationStaffMagic = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")

@@ -158,23 +158,24 @@ function LocalProp:getBounds()
 end
 
 function LocalProp:getActions(scope)
-	if self.resource then
-		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
-		if self.peep then
-			local mapObject = Utility.Peep.getMapObject(self.peep)
-			if mapObject then
-				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
-
-				for i = 1, #proxyActions do
-					table.insert(actions, proxyActions[i])
-				end
-			end
+	local mapObject = Utility.Peep.getMapObject(self.peep)
+	if mapObject then
+		-- First we see if there's any actions whatsoever for the map object.
+		-- If so, we don't use the default actions.
+		--
+		-- However, we only want to return 'scope' actions, so we have to look-up
+		-- the actions *again*.
+		local actions = Utility.getActions(self.game, mapObject)
+		if #actions > 0 then
+			return Utility.getActions(self.game, mapObject, scope or 'world')
 		end
-
-		return actions
-	else
-		return {}
 	end
+
+	if self.resource then
+		return Utility.getActions(self.game, self.resource, scope)
+	end
+
+	return {}
 end
 
 function LocalProp:poke(action, scope)
