@@ -566,6 +566,7 @@ include "Resources/Game/DB/Creeps/Nymph.lua"
 include "Resources/Game/DB/Creeps/Skelemental.lua"
 include "Resources/Game/DB/Creeps/Skeleton.lua"
 include "Resources/Game/DB/Creeps/Zombi.lua"
+include "Resources/Game/DB/Creeps/Ghost.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"

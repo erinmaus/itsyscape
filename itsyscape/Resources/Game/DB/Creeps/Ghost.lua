@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Props/Torch.lua
+-- Resources/Game/DB/Creeps/Ghost.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,30 +8,28 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Prop "Torch_Default" {
-	ItsyScape.Action.Light_Prop() {
-		Requirement {
-			Resource = ItsyScape.Resource.Item "Tinderbox",
-			Count = 1
-		}
-	},
+ItsyScape.Resource.Peep "Ghost_Base" {
+	-- Nothing.
+}
 
-	ItsyScape.Action.Snuff()
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ItsyScape.Resource.Peep "Ghost_Base"
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicTorch",
-	Resource = ItsyScape.Resource.Prop "Torch_Default"
+	Value = "Resources.Game.Peeps.Ghost.BaseGhost",
+	Resource = ItsyScape.Resource.Peep "Ghost_Base"
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Torch",
+	Value = "Ghost",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "Torch_Default"
+	Resource = ItsyScape.Resource.Peep "Ghost_Base"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lights the way.",
+	Value = "The worst audience member at an opera.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "Torch_Default"
+	Resource = ItsyScape.Resource.Peep "Ghost_Base"
 }

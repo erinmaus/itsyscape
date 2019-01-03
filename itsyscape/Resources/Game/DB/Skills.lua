@@ -133,6 +133,7 @@ ItsyScape.Resource.Skill "Firemaking"
 			Language = "en-US",
 			Type = "Light_Prop"
 		}
+	ActionType "Snuff"
 	ActionType "Burn"
 
 	ItsyScape.Meta.SkillAction {
