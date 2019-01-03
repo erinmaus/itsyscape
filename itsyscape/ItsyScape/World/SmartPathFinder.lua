@@ -100,7 +100,9 @@ function SmartPathFinder:getDoor(tile)
 				for i = 1, #actions do
 					local a = actions[i].instance
 					if a:is("Open") and
-					   a:canPerform(self.peep:getState(), flags, link)
+					   a:canPerform(self.peep:getState(), flags, link) and
+					   (not link:isCompatibleType(require "Resources.Game.Peeps.Props.BasicDoor") or
+					   link:canOpen())
 					then
 						return true, a, link
 					end
