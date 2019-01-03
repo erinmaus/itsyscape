@@ -19,7 +19,6 @@ local BasicGuardianDoor = Class(BasicDoor)
 function BasicGuardianDoor:canOpen()
 	local mapObject = Utility.Peep.getMapObject(self)
 	if not mapObject then
-		print 'doesn\'t have map object'
 		return true
 	end
 

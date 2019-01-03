@@ -43,7 +43,7 @@ function Open:perform(state, player, prop, channel)
 		end
 
 		local i, j, k = Utility.Peep.getTile(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { canUseObjects = false })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { canUseObjects = false, asCloseAsPossible = true })
 
 		if walk then
 			local open = CallbackCommand(function()

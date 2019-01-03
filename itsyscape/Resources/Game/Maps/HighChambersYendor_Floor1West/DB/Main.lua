@@ -258,6 +258,60 @@ do
 	}
 end
 
+M["DoubleLockDoor_PuzzleTorch"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 1,
+		PositionZ = 39,
+		Name = "DoubleLockDoor_PuzzleTorch",
+		Map = M._MAP,
+		Resource = M["DoubleLockDoor_PuzzleTorch"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["DoubleLockDoor_PuzzleTorch"]
+	}
+
+	M["DoubleLockDoor_PuzzleTorch"] {
+		ItsyScape.Action.None()
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks like there's no way to light this torch.",
+		Language = "en-US",
+		Resource = M["DoubleLockDoor_PuzzleTorch"]
+	}
+end
+
+M["DoubleLockDoor_CreepRoomTorch"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 1,
+		PositionZ = 33,
+		Name = "DoubleLockDoor_CreepRoomTorch",
+		Map = M._MAP,
+		Resource = M["DoubleLockDoor_CreepRoomTorch"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["DoubleLockDoor_CreepRoomTorch"]
+	}
+
+	M["DoubleLockDoor_CreepRoomTorch"] {
+		ItsyScape.Action.None()
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks like there's no way to light this torch.",
+		Language = "en-US",
+		Resource = M["DoubleLockDoor_CreepRoomTorch"]
+	}
+end
+
 M["Door_GuardianPrison"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -577,8 +631,106 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian",
 		MapObject = M["Door_DoubleLockWest"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianDoubleLock",
+		Map = M._MAP,
+		MapObject = M["Door_DoubleLockWest"]
+	}
+end
+
+M["DoubleLock_Wizard_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 2,
+		PositionZ = 45,
+		Name = "DoubleLock_Wizard_1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DoubleLock_Wizard_1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DoubleLock_Wizard_1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianDoubleLock",
+		Map = M._MAP,
+		MapObject = M["DoubleLock_Wizard_1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DoubleLock_Wizard_1"]
+	}
+end
+
+M["DoubleLock_Wizard_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 1,
+		PositionZ = 45,
+		Direction = -1,
+		Name = "DoubleLock_Wizard_2",
+		Map = M._MAP,
+		Resource = M["DoubleLock_Wizard_2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DoubleLock_Wizard_2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianDoubleLock",
+		Map = M._MAP,
+		MapObject = M["DoubleLock_Wizard_2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DoubleLock_Wizard_2"]
+	}
+end
+
+M["DoubleLock_Wizard_3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 1,
+		PositionZ = 49,
+		Name = "DoubleLock_Wizard_3",
+		Map = M._MAP,
+		Resource = M["DoubleLock_Wizard_3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DoubleLock_Wizard_3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_GuardianDoubleLock",
+		Map = M._MAP,
+		MapObject = M["DoubleLock_Wizard_3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DoubleLock_Wizard_3"]
 	}
 end
 

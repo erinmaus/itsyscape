@@ -23,6 +23,7 @@ function WizardSkeleton:new(resource, name, ...)
 	BaseSkeleton.new(self, resource, name or 'SkeletonMage', ...)
 
 	self:addBehavior(StanceBehavior)
+	self:addBehavior(ActiveSpellBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 12
@@ -42,7 +43,7 @@ function WizardSkeleton:ready(director, game)
 	stance.useSpell = true
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
-	spell.spell = Utility.Magic.newSpell("FireStrike", game)
+	spell.spell = Utility.Magic.newSpell("AirStrike", game)
 
 	BaseSkeleton.ready(self, director, game)
 end
