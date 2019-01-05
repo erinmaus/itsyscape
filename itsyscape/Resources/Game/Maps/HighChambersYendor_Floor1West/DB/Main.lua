@@ -832,3 +832,303 @@ do
 		MapObject = M["Door_To2ndFloor"]
 	}
 end
+
+M["DiningHall_Warrior1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 1,
+		PositionZ = 37,
+		Name = "DiningHall_Warrior1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Warrior1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["DiningHall_Warrior1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Warrior1"]
+	}
+end
+
+M["DiningHall_Warrior2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "DiningHall_Warrior2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Warrior2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["DiningHall_Warrior2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Warrior2"]
+	}
+end
+
+M["DiningHall_Warrior3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "DiningHall_Warrior3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Warrior3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["DiningHall_Warrior3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Warrior3"]
+	}
+end
+
+M["DiningHall_Warrior4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83,
+		PositionY = 1,
+		PositionZ = 27,
+		Name = "DiningHall_Warrior4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Warrior4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["DiningHall_Warrior4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Warrior4"]
+	}
+end
+
+M["DiningHall_Wizard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 1,
+		PositionZ = 51,
+		Name = "DiningHall_Wizard1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Wizard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DiningHall_Wizard1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Wizard1"]
+	}
+end
+
+M["DiningHall_Wizard2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "DiningHall_Wizard2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Wizard2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DiningHall_Wizard2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Wizard2"]
+	}
+end
+
+M["DiningHall_Wizard3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 1,
+		PositionZ = 27,
+		Name = "DiningHall_Wizard3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Wizard3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DiningHall_Wizard3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Wizard3"]
+	}
+end
+
+M["DiningHall_Wizard4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 1,
+		PositionZ = 31,
+		Name = "DiningHall_Wizard4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Wizard4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["DiningHall_Wizard4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Wizard4"]
+	}
+end
+
+M["DiningHall_Archer1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 3,
+		PositionZ = 25,
+		Name = "DiningHall_Archer1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Archer1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["DiningHall_Archer1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Archer1"]
+	}
+end
+
+M["DiningHall_Archer2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 1,
+		PositionZ = 45,
+		Name = "DiningHall_Archer2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Archer2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["DiningHall_Archer2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Archer2"]
+	}
+end
+
+M["DiningHall_Archer3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 87,
+		PositionY = 1,
+		PositionZ = 45,
+		Name = "DiningHall_Archer3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Archer3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["DiningHall_Archer3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Archer3"]
+	}
+end
+
+M["DiningHall_Archer4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83,
+		PositionY = 1,
+		PositionZ = 59,
+		Name = "DiningHall_Archer4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["DiningHall_Archer4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["DiningHall_Archer4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["DiningHall_Archer4"]
+	}
+end
