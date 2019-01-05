@@ -555,3 +555,171 @@ do
 		Resource = Archer
 	}
 end
+
+do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Primary"
+	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeBar",
+		Weight = 400,
+		Count = 2,
+		Range = 1,
+		Noted = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzePlatebody",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeGloves",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeBoots",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeHelmet",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeMace",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeDagger",
+		Weight = 25,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinBar",
+		Weight = 100,
+		Count = 3,
+		Range = 2,
+		Noted = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CopperBar",
+		Weight = 100,
+		Count = 3,
+		Range = 2,
+		Noted = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bones",
+		Weight = 1,
+		Count = 1,
+		Resource = SecondaryDropTable
+	}
+end
+
+do
+	local Warrior = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.SkeletonWarrior",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Skeleton warrior",
+		Language = "en-US",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A warrior faithful to Yendor, even in death.",
+		Language = "en-US",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzePlatebody",
+		Count = 1,
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeMace",
+		Count = 1,
+		Resource = Warrior
+	}
+end

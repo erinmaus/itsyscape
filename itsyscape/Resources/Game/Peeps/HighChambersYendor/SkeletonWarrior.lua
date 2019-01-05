@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/HighChambersYendor/SkeletonArcher.lua
+-- Resources/Peeps/HighChambersYendor/SkeletonWarrior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,22 +16,22 @@ local BaseSkeleton = require "Resources.Game.Peeps.Skeleton.BaseSkeleton"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
-local SkeletonArcher = Class(BaseSkeleton)
+local SkeletonWarrior = Class(BaseSkeleton)
 
-function SkeletonArcher:new(resource, name, ...)
-	BaseSkeleton.new(self, resource, name or 'SkeletonArcher', ...)
+function SkeletonWarrior:new(resource, name, ...)
+	BaseSkeleton.new(self, resource, name or 'SkeletonWarrior', ...)
 
 	self:addBehavior(StanceBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = 12
+	status.maxChaseDistance = 8
 end
 
-function SkeletonArcher:ready(director, game)
+function SkeletonWarrior:ready(director, game)
 	local stance = self:getBehavior(StanceBehavior)
 	stance.stance = Weapon.STANCE_AGGRESSIVE
 
 	BaseSkeleton.ready(self, director, game)
 end
 
-return SkeletonArcher
+return SkeletonWarrior

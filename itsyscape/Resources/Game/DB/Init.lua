@@ -596,6 +596,7 @@ include "Resources/Game/DB/Props/Portals.lua"
 include "Resources/Game/DB/Props/Gravestone.lua"
 include "Resources/Game/DB/Props/Lights.lua"
 include "Resources/Game/DB/Props/Torch.lua"
+include "Resources/Game/DB/Props/Furniture.lua"
 
 -- Props (boats)
 include "Resources/Game/DB/Props/Sails.lua"
