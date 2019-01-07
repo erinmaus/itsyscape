@@ -11,6 +11,9 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local ChestMimicCommon = require "Resources.Game.Peeps.ChestMimic.Common"
 
 local HighChambersYendor = Class(Map)
@@ -165,6 +168,72 @@ end
 
 function HighChambersYendor:onTorchPuzzleSnuff(torch)
 	self.torchPuzzleTorchesLit = self.torchPuzzleTorchesLit - 1
+end
+
+function HighChambersYendor:onDiningTableFoodEaten(e)
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local chefs = gameDB:getRecords("MapObjectGroup", {
+		MapObjectGroup = "Kitchen_Staff",
+		Map = Utility.Peep.getMap(self)
+	})
+
+	local chefPeeps = {}
+	for i = 1, #chefs do
+		local chef = director:probe(
+			self:getLayerName(),
+			Probe.mapObject(chefs[i]:get("MapObject")))[1]
+		if chef then
+			local status = chef:getBehavior("CombatStatus")
+			if status and status.currentHitpoints > 0 then
+				table.insert(chefPeeps, chef)
+			end
+		end
+	end
+
+	local chef = chefPeeps[math.random(#chefPeeps)]
+	if chef then
+		local mashina = chef:getBehavior("MashinaBehavior")
+		if mashina then
+			mashina.currentState = false
+		end
+
+
+		local i, j, k = Utility.Peep.getTile(e.prop)
+
+		local walk = Utility.Peep.getWalk(chef, i, j, k, 2, { asCloseAsPossible = true })
+		if walk then
+			local poke = CallbackCommand(e.prop.poke, e.prop, 'serve', { peep = chef })
+			local idle = CallbackCommand(function()
+				if mashina then
+					mashina.currentState = 'idle'
+				end
+			end)
+			local s, t, r = Utility.Peep.getTile(chef)
+			local walkBack = CallbackCommand(function()
+				local walk = Utility.Peep.getWalk(chef, s, t, r, 0, { asCloseAsPossible = false })
+				chef:getCommandQueue():push(walk)
+				chef:getCommandQueue():push(idle)
+			end)
+			local command = CompositeCommand(true, walk, poke, walkBack)
+
+			if chef:getCommandQueue():interrupt(command) then
+				chef:listen('die', self.tryServeTableAgain, self, chef, e)
+				return
+			end
+		end
+	end
+
+	-- We return early if we're able to send off a chef, otherwise we try again
+	-- next tick.
+	self:pushPoke('diningTableFoodEaten', e)
+end
+
+function HighChambersYendor:tryServeTableAgain(chef, e)
+	chef:silence('die', self.tryServeTableAgain)
+
+	self:onDiningTableFoodEaten(e)
 end
 
 return HighChambersYendor

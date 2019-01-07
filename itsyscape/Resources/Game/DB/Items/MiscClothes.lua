@@ -42,6 +42,74 @@ ItsyScape.Meta.EquipmentModel {
 	Resource = ItsyScape.Resource.Item "BrownApron"
 }
 
+ItsyScape.Resource.Item "WhiteApron" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "White apron",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Can't tell if there's flour on it or not...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(2) / 2,
+	Weight = 2,
+	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/WhiteApron/WhiteApron.lua",
+	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Resource.Item "ChefsHat" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chefs hat",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ChefsHat"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Gives you the air of confidence, even if you're not really good at cooking.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ChefsHat"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(2) / 2,
+	Weight = 2,
+	Resource = ItsyScape.Resource.Item "ChefsHat"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "ChefsHat"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/ChefsHat/ChefsHat.lua",
+	Resource = ItsyScape.Resource.Item "ChefsHat"
+}
+
 ItsyScape.Resource.Item "SailorsHat" {
 	ItsyScape.Action.Equip(),
 	ItsyScape.Action.Dequip()

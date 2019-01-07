@@ -465,10 +465,15 @@ function Peep:update(director, game)
 		queue:update(game:getDelta())
 	end
 
-	while #self.pendingPokes > 0 do
-		local poke = self.pendingPokes[1]
-		table.remove(self.pendingPokes, 1)
+	local count = #self.pendingPokes
+
+	for i = 1, count do
+		local poke = self.pendingPokes[i]
 		self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+	end
+
+	for i = 1, count do
+		table.remove(self.pendingPokes, 1)
 	end
 
 	do

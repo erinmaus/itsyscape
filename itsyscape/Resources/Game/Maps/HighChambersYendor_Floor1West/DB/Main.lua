@@ -1132,3 +1132,161 @@ do
 		Resource = M["DiningHall_Archer4"]
 	}
 end
+
+do
+	local HealAction = ItsyScape.Action.DiningTable_Heal()
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 10,
+		Action = HealAction
+	}
+
+	ItsyScape.Meta.ActionEvent {
+		Event = "diningTableFoodEaten",
+		Action = HealAction
+	}
+
+	ItsyScape.Meta.ActionEventTarget {
+		Value = M._MAP,
+		Action = HealAction
+	}
+
+	M["DiningRoom_Table1"] {
+		HealAction
+	}
+
+	M["DiningRoom_Table2"] {
+		HealAction
+	}
+
+	M["DiningRoom_Table3"] {
+		HealAction
+	}
+
+	M["DiningRoom_Table4"] {
+		HealAction
+	}
+end
+
+M["Kitchen_Chef1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 97,
+		PositionY = 1,
+		PositionZ = 27,
+		Name = "Kitchen_Chef1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Kitchen_Chef1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Kitchen_Staff",
+		Map = M._MAP,
+		MapObject = M["Kitchen_Chef1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef",
+		MapObject = M["Kitchen_Chef1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Kitchen_Chef1"]
+	}
+end
+
+M["Kitchen_Chef2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 107,
+		PositionY = 1,
+		PositionZ = 27,
+		Name = "Kitchen_Chef2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Kitchen_Chef2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Kitchen_Staff",
+		Map = M._MAP,
+		MapObject = M["Kitchen_Chef2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef",
+		MapObject = M["Kitchen_Chef2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Kitchen_Chef2"]
+	}
+end
+
+M["Kitchen_Chef3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 107,
+		PositionY = 1,
+		PositionZ = 33,
+		Name = "Kitchen_Chef3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Kitchen_Chef3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Kitchen_Staff",
+		Map = M._MAP,
+		MapObject = M["Kitchen_Chef3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef",
+		MapObject = M["Kitchen_Chef3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Kitchen_Chef3"]
+	}
+end
+
+M["Kitchen_Chef4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 97,
+		PositionY = 1,
+		PositionZ = 33,
+		Name = "Kitchen_Chef4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Kitchen_Chef4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Kitchen_Staff",
+		Map = M._MAP,
+		MapObject = M["Kitchen_Chef4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef",
+		MapObject = M["Kitchen_Chef4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Kitchen_Chef4"]
+	}
+end

@@ -723,3 +723,153 @@ do
 		Resource = Warrior
 	}
 end
+
+do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Primary"
+	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CommonLogs",
+		Weight = 200,
+		Count = 2,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Weight = 50,
+		Count = 3,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Weight = 25,
+		Count = 2,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "ChefsHat",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "WhiteApron",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeHelmet",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeDagger",
+		Weight = 50,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bones",
+		Weight = 1,
+		Count = 1,
+		Resource = SecondaryDropTable
+	}
+end
+
+do
+	local Chef = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_SkeletonChef" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.SkeletonChef",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Skeleton chef",
+		Language = "en-US",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Don't have to worry about them spitting in your food.",
+		Language = "en-US",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "WhiteApron",
+		Count = 1,
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ChefsHat",
+		Count = 1,
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeDagger",
+		Count = 1,
+		Resource = Chef
+	}
+end
