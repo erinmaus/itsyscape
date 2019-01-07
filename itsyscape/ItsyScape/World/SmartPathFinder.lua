@@ -21,7 +21,11 @@ local SmartPathFinder = Class(PathFinder)
 function SmartPathFinder:new(map, peep, t)
 	t = t or {}
 
-	PathFinder.new(self, PathFinder.AStar(self))
+	if t.useDijkstra then
+		PathFinder.new(self, PathFinder.Dijkstra(self))
+	else
+		PathFinder.new(self, PathFinder.AStar(self))
+	end
 
 	self.map = map
 	self.peep = peep

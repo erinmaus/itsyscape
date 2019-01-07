@@ -980,7 +980,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	local path = pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
-		true, ...)
+		distance, ...)
 	if path then
 		local n = path:getNodeAtIndex(-1)
 		if n then
