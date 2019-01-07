@@ -146,6 +146,8 @@ function Action:count(state, flags)
 end
 
 function Action:sendEvent(peep, event, eventArgs)
+	eventArgs = eventArgs or {}
+
 	local slot = event:get("Slot")
 
 	local poke = { peep = peep }

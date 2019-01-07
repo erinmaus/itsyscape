@@ -13,7 +13,7 @@ ItsyScape.Resource.Prop "DiningTable_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BasicTableProp",
 	Resource = ItsyScape.Resource.Prop "DiningTable_Default"
 }
 
@@ -38,6 +38,14 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Resource.Prop "DiningTableChair_Default" {
 	-- Nothing.
+}
+
+ActionType "DiningTable_Heal"
+
+ItsyScape.Meta.ActionTypeVerb {
+	Value = "Eat-from",
+	Language = "en-US",
+	Type = "DiningTable_Heal"
 }
 
 ItsyScape.Meta.PeepID {
