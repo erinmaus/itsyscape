@@ -99,6 +99,136 @@ function PathFinder.Algorithm:find(start, stop)
 	return Class.ABSTRACT()
 end
 
+PathFinder.Dijkstra = Class(PathFinder.Algorithm)
+function PathFinder.Dijkstra:new(pathFinder)
+	PathFinder.Algorithm.new(self, pathFinder)
+end
+
+function PathFinder.Dijkstra:materialize(edge)
+	local path = Path()
+
+	local parent = edge
+	while parent ~= nil do
+		local nextParent = self:getPrevious(parent)
+		if nextParent ~= nil then
+			path:prependNode(self:getPathFinder():materialize(parent))
+		end
+
+		parent = nextParent
+	end
+
+	return path
+end
+
+function PathFinder.Dijkstra:find(start, stop, nearest)
+	start = self:getPathFinder():getEdge(start)
+	stop = self:getPathFinder():getEdge(stop)
+
+	self.set = { [self:getPathFinder():getID(start)] = start }
+	self.distance = {}
+	self.previous = {}
+
+	if self:getPathFinder():sameLocation(start, stop) then
+		local path = Path()
+		path:prependNode(self:getPathFinder():materialize(start))
+		return path
+	end
+
+	local pending = { self:getPathFinder():getNeighbors(start, stop) }
+	repeat
+		local p = pending[1]
+		for i = 1, #p do
+			if not self.set[self:getPathFinder():getID(p[i])] then
+				table.insert(pending, self:getPathFinder():getNeighbors(p[i], stop))
+				self.set[self:getPathFinder():getID(p[i])] = p[i]
+			end
+		end
+
+		table.remove(pending, 1)
+	until #pending == 0
+
+	self:setDistance(start, 0)
+
+	while next(self.set, nil) do
+		local edge, distance = self:getLowestDistanceEdge()
+		self.set[self:getPathFinder():getID(edge)] = nil
+
+		local neighbors = self:getPathFinder():getNeighbors(edge, stop)
+		for i = 1, #neighbors do
+			local neighborDistance = distance + self:getPathFinder():getDistance(edge, neighbors[i])
+			if neighborDistance < self:getDistance(neighbors[i]) then
+				self:setDistance(neighbors[i], neighborDistance)
+				self:setPrevious(neighbors[i], edge)
+			end
+		end
+	end
+
+	local goal = self:getPrevious(stop)
+	if goal then
+		return self:materialize(goal)
+	end
+
+	if nearest then
+		local min = math.huge
+		local minI = nearest
+		local minEdge = nil
+		for id, edge in pairs(self.distance) do
+			local distanceI = self:getPathFinder():getDistance(stop, edge.edge)
+			if distanceI < minI then
+				if edge.distance < min then
+					minI = distanceI
+					min = edge.distance
+					minEdge = edge.edge
+				end
+			end
+		end
+
+		if minEdge then
+			print('i', minEdge.i, 'j', minEdge.j, min)
+			return self:materialize(minEdge)
+		end
+	end
+
+	return nil
+end
+
+function PathFinder.Dijkstra:getLowestDistanceEdge()
+	local min = math.huge
+	local minEdge = nil
+	for id, edge in pairs(self.distance) do
+		if edge.distance < min and self.set[id] then
+			min = edge.distance
+			minEdge = edge.edge
+		end
+	end
+
+	return minEdge, min
+end
+
+function PathFinder.Dijkstra:getDistance(edge)
+	local e = self.distance[self:getPathFinder():getID(edge)] 
+	if not e then
+		return math.huge
+	end
+
+	return e.distance
+end
+
+function PathFinder.Dijkstra:setDistance(edge, value)
+	self.distance[self:getPathFinder():getID(edge)] = {
+		edge = edge,
+		distance = value
+	}
+end
+
+function PathFinder.Dijkstra:getPrevious(edge)
+	return self.previous[self:getPathFinder():getID(edge)] or nil
+end
+
+function PathFinder.Dijkstra:setPrevious(edge, value)
+	self.previous[self:getPathFinder():getID(edge)] = value
+end
+
 PathFinder.AStar = Class(PathFinder.Algorithm)
 function PathFinder.AStar:new(pathFinder)
 	PathFinder.Algorithm.new(self, pathFinder)
@@ -148,16 +278,13 @@ function PathFinder.AStar:find(start, stop, nearest)
 
 	if nearest then
 		local bestEdge = nil
-		local bestDistanceI = math.huge
+		local bestDistanceI = nearest
 		local bestDistanceJ = math.huge
 		for _, closed in pairs(self.closed) do
 			local distanceI = self:getPathFinder():getDistance(stop, closed)
 			local distanceJ = self:getPathFinder():getDistance(start, closed)
-			if distanceI < bestDistanceI or
-			   (distanceI == bestDistanceI and distanceJ < bestDistanceJ)
-			then
+			if distanceI < nearest and distanceJ < bestDistanceJ then
 				bestEdge = closed
-				bestDistanceI = distanceI
 				bestDistanceJ = distanceJ
 			end
 		end
