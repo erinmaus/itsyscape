@@ -995,8 +995,6 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		else
 			return ExecutePathCommand(path, distance)
 		end
-	else
-		return nil
 	end
 end
 
@@ -1780,6 +1778,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackFishingRodCrush_1/Script.lua")
 	peep:addResource("animation-attack-crush-fishing-rod", attackAnimationFishingRodCrush)
+	local attackAnimationCrushUnarmed = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackUnarmedCrush_1/Script.lua")
+	peep:addResource("animation-attack-crush-none", attackAnimationCrushUnarmed)
 	local skillAnimationMine = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillMine_1/Script.lua")

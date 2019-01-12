@@ -161,9 +161,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectSize {
-		SizeX = 2,
+		SizeX = 1.5,
 		SizeY = 1.5,
-		SizeZ = 4,
+		SizeZ = 3.5,
 		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_Bed"
 	}
 end
@@ -871,5 +871,70 @@ do
 		Item = ItsyScape.Resource.Item "BronzeDagger",
 		Count = 1,
 		Resource = Chef
+	}
+end
+
+do
+	local Parasite = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.CthulhuianParasite",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "New-born Cthulhuian parasite",
+		Language = "en-US",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A human recently turned by Cthulhu, Yendor's ancient avatar and the First High Priest of His faith.",
+		Language = "en-US",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Eldritch",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "DinkyStaff",
+		Count = 1,
+		Resource = Parasite
 	}
 end

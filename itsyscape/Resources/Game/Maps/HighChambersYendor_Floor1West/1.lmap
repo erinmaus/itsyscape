@@ -6325,7 +6325,7 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 5, topRight = 6, bottomLeft = 5, bottomRight = 6,
 			edge = 2, flat = 6, decals = {  },
 			data =
 			{
@@ -6335,7 +6335,7 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 7, topRight = 8, bottomLeft = 7, bottomRight = 8,
 			edge = 2, flat = 6, decals = {  },
 			data =
 			{
@@ -6345,7 +6345,77 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 9, topRight = 10, bottomLeft = 9, bottomRight = 10,
+			edge = 5, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 10, topRight = 10, bottomLeft = 10, bottomRight = 10,
+			edge = 3, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 10, topRight = 11, bottomLeft = 10, bottomRight = 11,
+			edge = 3, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 11, topRight = 11, bottomLeft = 11, bottomRight = 11,
+			edge = 3, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 11, topRight = 10, bottomLeft = 11, bottomRight = 10,
+			edge = 3, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 10, topRight = 10, bottomLeft = 10, bottomRight = 10,
+			edge = 3, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 10, topRight = 9, bottomLeft = 10, bottomRight = 9,
+			edge = 4, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 7, bottomLeft = 8, bottomRight = 7,
 			edge = 2, flat = 6, decals = {  },
 			data =
 			{
@@ -6355,77 +6425,7 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			topLeft = 6, topRight = 5, bottomLeft = 6, bottomRight = 5,
 			edge = 2, flat = 6, decals = {  },
 			data =
 			{
@@ -21985,6 +21985,16 @@
 			},
 		},
 		{
+			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
+			edge = 2, flat = 7, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
 			topLeft = 7, topRight = 6, bottomLeft = 7, bottomRight = 6,
 			edge = 2, flat = 7, decals = {  },
 			data =
@@ -22095,16 +22105,6 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			edge = 2, flat = 1, decals = {  },
 			data =
@@ -22595,7 +22595,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 5, bottomRight = 5,
+			topLeft = 5, topRight = 5, bottomLeft = 4, bottomRight = 4,
 			edge = 2, flat = 7, decals = {  },
 			data =
 			{
@@ -22605,8 +22605,8 @@
 			},
 		},
 		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 5, flat = 6, decals = {  },
+			topLeft = 6, topRight = 6, bottomLeft = 5, bottomRight = 5,
+			edge = 5, flat = 7, decals = {  },
 			data =
 			{
 			},

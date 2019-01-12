@@ -105,6 +105,8 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 			break
+		else
+			print("not", animations[i])
 		end
 	end
 end

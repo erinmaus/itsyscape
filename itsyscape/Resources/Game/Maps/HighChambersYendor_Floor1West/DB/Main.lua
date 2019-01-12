@@ -1172,7 +1172,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 97,
 		PositionY = 1,
-		PositionZ = 27,
+		PositionZ = 25,
 		Name = "Kitchen_Chef1",
 		Direction = -1,
 		Map = M._MAP,
@@ -1203,7 +1203,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 107,
 		PositionY = 1,
-		PositionZ = 27,
+		PositionZ = 25,
 		Name = "Kitchen_Chef2",
 		Direction = -1,
 		Map = M._MAP,
@@ -1288,5 +1288,77 @@ do
 		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = M["Kitchen_Chef4"]
+	}
+end
+
+M["CthulhuianMiniboss1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 4.5,
+		PositionZ = 75,
+		Name = "CthulhuianMiniboss1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["CthulhuianMiniboss1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "CthulhuianMiniboss",
+		Map = M._MAP,
+		MapObject = M["CthulhuianMiniboss1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
+		MapObject = M["CthulhuianMiniboss1"]
+	}
+end
+
+M["CthulhuianMiniboss2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 4.5,
+		PositionZ = 75,
+		Name = "CthulhuianMiniboss2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["CthulhuianMiniboss2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "CthulhuianMiniboss",
+		Map = M._MAP,
+		MapObject = M["CthulhuianMiniboss2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
+		MapObject = M["CthulhuianMiniboss2"]
+	}
+end
+
+M["CthulhuianMiniboss3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 4.5,
+		PositionZ = 75,
+		Name = "CthulhuianMiniboss3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["CthulhuianMiniboss3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "CthulhuianMiniboss",
+		Map = M._MAP,
+		MapObject = M["CthulhuianMiniboss3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
+		MapObject = M["CthulhuianMiniboss3"]
 	}
 end

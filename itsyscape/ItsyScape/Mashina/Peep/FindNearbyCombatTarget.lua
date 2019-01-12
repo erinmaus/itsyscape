@@ -10,21 +10,26 @@
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local FindNearbyCombatTarget = B.Node("FindNearbyCombatTarget")
 FindNearbyCombatTarget.FILTER = B.Reference()
 FindNearbyCombatTarget.FILTERS = B.Reference()
 FindNearbyCombatTarget.DISTANCE = B.Reference()
+FindNearbyCombatTarget.INCLUDE_NPCS = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
+
 function FindNearbyCombatTarget:update(mashina, state, executor)
 	local director = mashina:getDirector()
+
+	local includeNPCs = state[self.INCLUDE_NPCS]
 
 	local p = director:probe(
 		mashina:getLayerName(),
 		Probe.attackable(),
 		Probe.near(mashina, state[self.DISTANCE] or math.huge),
 		function(p)
-			return p ~= mashina
+			return p ~= mashina and (not includeNPCs or p:hasBehavior(PlayerBehavior))
 		end,
 		state[self.FILTER],
 		unpack(state[self.FILTERS] or {}))

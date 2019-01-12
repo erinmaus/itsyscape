@@ -38,7 +38,7 @@ function OpenCraftWindow:perform(state, player, prop)
 		end
 
 		local i, j, k = Utility.Peep.getTile(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1)
+		local walk = Utility.Peep.getWalk(player, i, j, k, 2)
 		local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 		if walk then
