@@ -937,13 +937,13 @@ end
 --
 -- Returns true on success, false on failure.
 function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
-	local command = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
 		local queue = peep:getCommandQueue()
 		return queue:interrupt(command)
 	end
 
-	return false
+	return false, reason
 end
 
 function Utility.Peep.getTile(peep)
@@ -970,7 +970,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
-		return nil
+		return nil, "missing walking behaviors"
 	end
 
 	local position = peep:getBehavior(PositionBehavior).position
@@ -986,7 +986,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		if n then
 			local d = math.abs(n.i - i) + math.abs(n.j - j)
 			if d > distance then
-				return nil
+				return nil, "distance to goal exceeds maximum distance to goal"
 			end
 		end
 
@@ -996,6 +996,8 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 			return ExecutePathCommand(path, distance)
 		end
 	end
+
+	return nil, "path not found"
 end
 
 function Utility.Peep.face(peep, target)

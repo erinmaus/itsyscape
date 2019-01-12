@@ -98,6 +98,76 @@ do
 	}
 end
 
+M["Anchor_SoulSiphon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 1,
+		PositionZ = 89,
+		Name = "Anchor_SoulSiphon",
+		Map = M._MAP,
+		Resource = M["Anchor_SoulSiphon"]
+	}
+end
+
+M["Light_SoulSiphon1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 4,
+		PositionZ = 89,
+		Name = "Light_SoulSiphon1",
+		Map = M._MAP,
+		Resource = M["Light_SoulSiphon1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_SoulSiphon1"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 44,
+		ColorBlue = 90,
+		Resource = M["Light_SoulSiphon1"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 10,
+		Resource = M["Light_SoulSiphon1"]
+	}
+end
+
+M["Light_SoulSiphon2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 8,
+		PositionZ = 89,
+		Name = "Light_SoulSiphon2",
+		Map = M._MAP,
+		Resource = M["Light_SoulSiphon2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_SoulSiphon2"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 76,
+		ColorGreen = 255,
+		ColorBlue = 76,
+		Resource = M["Light_SoulSiphon2"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 30,
+		Resource = M["Light_SoulSiphon2"]
+	}
+end
+
 M["SackOfHay_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
