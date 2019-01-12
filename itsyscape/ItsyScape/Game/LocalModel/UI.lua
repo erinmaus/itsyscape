@@ -138,7 +138,7 @@ function LocalUI:open(peep, interfaceID, ...)
 
 	self.onOpen(interfaceID, i.n)
 
-	return interfaceID, i.n
+	return interfaceID, i.n, controller
 end
 
 function LocalUI:openBlockingInterface(peep, interfaceID, ...)
@@ -146,11 +146,13 @@ function LocalUI:openBlockingInterface(peep, interfaceID, ...)
 		self:interrupt()
 	end
 
-	local id, n = self:open(peep, interfaceID, ...)
+	local id, n, controller = self:open(peep, interfaceID, ...)
 	self.blockingInterface = {
 		id = id,
 		index = n
 	}
+
+	return id, n, controller
 end
 
 function LocalUI:interrupt()

@@ -243,6 +243,11 @@ function LocalActor:getBounds()
 end
 
 function LocalActor:getActions(scope)
+	local status = self.peep:getBehavior(CombatStatusBehavior)
+	if status and status.dead then
+		return {}
+	end
+
 	if self.resource and self:getCurrentHealth() > 0 then
 		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
 		if self.peep then

@@ -35,6 +35,10 @@ function ExecutePathCommand:new(path, distance, canceled)
 	self.distance = distance or 0
 end
 
+function ExecutePathCommand:getPath()
+	return self.path
+end
+
 function ExecutePathCommand:getIsFinished()
 	return self.index > self.path:getNumNodes() or self.canceled
 end

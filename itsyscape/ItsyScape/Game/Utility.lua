@@ -527,11 +527,11 @@ end
 function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 	local ui = peep:getDirector():getGameInstance():getUI()
 	if blocking then
-		local _, n = ui:openBlockingInterface(peep, interfaceID, ...)
-		return n ~= nil, n
+		local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
+		return n ~= nil, n, controller
 	else
-		local _, n = ui:open(peep, interfaceID, ...)
-		return n ~= nil, n
+		local _, n, controller= ui:open(peep, interfaceID, ...)
+		return n ~= nil, n, controller
 	end
 end
 
@@ -1571,9 +1571,19 @@ function Utility.Peep.Attackable:onDie(p)
 						Log.info("%s gets %d%% XP for slaying %s (dealt %d damage).", peep:getName(), damage * 100, self:getName(), d)
 						Utility.Combat.giveCombatXP(peep, xp * damage)
 					end
+
+					status.damage = {}
+					status.dead = true
 				end
 			end
 		end
+	end
+end
+
+function Utility.Peep.Attackable:onResurrect()
+	local status = self:getBehavior(CombatStatusBehavior)
+	if status then
+		status.dead = false
 	end
 end
 
@@ -1645,6 +1655,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('heal')
 	peep:listen('heal', Utility.Peep.Attackable.onHeal)
 	peep:addPoke('resurrect')
+	peep:listen('resurrect', Utility.Peep.Attackable.onResurrect)
 end
 
 function Utility.Peep.makeSkiller(peep)
