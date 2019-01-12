@@ -1712,6 +1712,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Die_1/Script.lua")
 	peep:addResource("animation-die", dieAnimation)
+	local resurrectAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Resurrect_1/Script.lua")
+	peep:addResource("animation-resurrect", resurrectAnimation)
 	local attackAnimationBoomerangRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBoomerangRanged_1/Script.lua")

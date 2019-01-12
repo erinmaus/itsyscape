@@ -37,6 +37,14 @@ function PlayAnimationInstance:play(animatable, time)
 		time = math.min(time, self.animation:getDuration())
 	end
 
+	if self.command:getReverse() then
+		if time > self.animation:getDuration() then
+			time = time % self.animation:getDuration()
+		end
+
+		time = self.animation:getDuration() - time
+	end
+
 	if self.animation then
 		self.animation:computeTransforms(time, self.transforms)
 

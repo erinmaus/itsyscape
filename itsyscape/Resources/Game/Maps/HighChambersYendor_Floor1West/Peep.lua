@@ -34,6 +34,8 @@ HighChambersYendor.MIMIC_CHANCE = 0.5
 HighChambersYendor.MINIBOSS_CHANT_PERIOD = 10
 HighChambersYendor.MINIBOSS_SOUL_SIPHON_STEP_DURATION = 2
 
+HighChambersYendor.MINIBOSS_HEAL_PERIOD = 2
+
 function HighChambersYendor:new(resource, name, ...)
 	Map.new(self, resource, name or 'HighChambersYendor_Floor1West', ...)
 
@@ -274,6 +276,7 @@ function HighChambersYendor:initMiniboss()
 	local cthulhuians = self:getMiniboss()
 	for i = 1, #cthulhuians do
 		cthulhuians[i]:listen('initiateAttack', self.startMiniboss, self)
+		cthulhuians[i]:listen('die', self.minibossKilled, self)
 	end
 
 	self.minibossSoulChantStat = BossStat({
@@ -289,6 +292,7 @@ function HighChambersYendor:initMiniboss()
 	table.insert(stats.stats, self.minibossSoulChantStat)
 
 	self.minibossEngaged = false
+	self.deadCthulhians = {}
 end
 
 function HighChambersYendor:startMiniboss(cthulhuian)
@@ -387,7 +391,7 @@ function HighChambersYendor:minibossBeginChanting()
 				local doneWalking = CallbackCommand(function()
 					self.currentWalking = self.currentWalking - 1
 
-					cthulhuians[index]:listen('initiateAttack', self.minibossStopChanting, self)
+					cthulhuians[index]:listen('initiateAttack', self.minibossStopChanting, self, false)
 				end)
 
 				cthulhuians[index]:getCommandQueue():push(doneWalking)
@@ -404,7 +408,7 @@ function HighChambersYendor:minibossBeginChanting()
 	self.minibossSoulSiphonTick = HighChambersYendor.MINIBOSS_SOUL_SIPHON_STEP_DURATION
 end
 
-function HighChambersYendor:minibossStopChanting(cthulhuian)
+function HighChambersYendor:minibossStopChanting(force, cthulhuian)
 	self.currentPulledAway = self.currentPulledAway + 1
 
 	cthulhuian:silence('initiateAttack', self.minibossStopChanting, self)
@@ -493,6 +497,58 @@ function HighChambersYendor:minibossContinueChanting()
 	self.minibossSoulSiphonTick = HighChambersYendor.MINIBOSS_SOUL_SIPHON_STEP_DURATION
 end
 
+function HighChambersYendor:minibossKilled(cthulhuian)
+	-- Prevent the siphon
+	self.minibossSoulSiphonTick = nil
+
+	self.minibossRezzTick = math.min(
+		self.minibossRezzTick or math.huge,
+		HighChambersYendor.MINIBOSS_HEAL_PERIOD)
+	self.deadCthulhians[cthulhuian] = true
+end
+
+function HighChambersYendor:performMinibossRezz()
+	local cthulhuians = self:getMiniboss()
+
+	local dead = { n = 0 }
+	do
+		for cthulhuian in pairs(self.deadCthulhians) do
+			local status = cthulhuian:getBehavior(CombatStatusBehavior)
+			if status.currentHitpoints >= status.maximumHitpoints then
+				status.currentHitpoints = status.maximumHitpoints
+				cthulhuian:poke('resurrect')
+
+				Log.info("Cthulhuian parasite resurrected.")
+			else
+				dead[cthulhuian] = true
+				dead.n = dead.n + 1
+			end
+		end
+	end
+
+	if dead.n == #cthulhuians then
+		Log.info("All Cthulhuian parasites slain. Victory!")
+	else
+		local hitPoints = (#cthulhuians - dead.n) * 2
+		for i = 1, #cthulhuians do
+			if dead[cthulhuians[i]] then
+				cthulhuians[i]:poke('heal', {
+					hitPoints = hitPoints
+				})
+			end
+		end
+	end
+
+	if dead.n > 0 then
+		self.minibossRezzTick = HighChambersYendor.MINIBOSS_HEAL_PERIOD
+	else
+		self.minibossRezzTick = nil
+	end
+
+	dead.n = nil
+	self.deadCthulhians = dead
+end
+
 function HighChambersYendor:update(director, game)
 	Map.update(self, director, game)
 
@@ -506,6 +562,13 @@ function HighChambersYendor:update(director, game)
 			self.minibossSoulSiphonTick = self.minibossSoulSiphonTick - game:getDelta()
 			if self.minibossSoulSiphonTick <= 0 then
 				self:minibossContinueChanting()
+			end
+		end
+
+		if self.minibossRezzTick then
+			self.minibossRezzTick = self.minibossRezzTick - game:getDelta()
+			if self.minibossRezzTick < 0 then
+				self:performMinibossRezz()
 			end
 		end
 	end

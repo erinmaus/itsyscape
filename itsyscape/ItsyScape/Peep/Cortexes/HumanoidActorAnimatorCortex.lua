@@ -43,6 +43,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurrect, self)
+	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
 	peep:listen('resourceObtained', self.onResourceObtained, self)
 	peep:listen('transferItemFrom', self.peekEquip, self)
@@ -105,8 +106,6 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 			break
-		else
-			print("not", animations[i])
 		end
 	end
 end
@@ -138,7 +137,17 @@ end
 function HumanoidActorAnimatorCortex:onResurrect(peep, p)
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	if actor then
-		actor:playAnimation('combat', false)
+		local resource = peep:getResource(
+			"animation-resurrect",
+			"ItsyScape.Graphics.AnimationResource")
+		if resource then
+			self:playCombatAnimation(
+				peep,
+				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
+				resource)
+		else
+			actor:playAnimation('combat', false)
+		end
 	end
 end
 
