@@ -19,6 +19,7 @@ function PlayerInventoryController:new(peep, director)
 	Controller.new(self, peep, director)
 
 	self.numItems = 0
+	self:updateState()
 end
 
 function PlayerInventoryController:poke(actionID, actionIndex, e)
@@ -33,7 +34,7 @@ function PlayerInventoryController:poke(actionID, actionIndex, e)
 	end
 end
 
-function PlayerInventoryController:pull()
+function PlayerInventoryController:updateState()
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 
 	local result = { items = {} }
@@ -51,7 +52,11 @@ function PlayerInventoryController:pull()
 		end
 	end
 
-	return result
+	self.state = result
+end
+
+function PlayerInventoryController:pull()
+	return self.state
 end
 
 function PlayerInventoryController:pullItem(item)
@@ -183,6 +188,8 @@ function PlayerInventoryController:update(delta)
 			end
 		end
 	end
+
+	self:updateState()
 end
 
 return PlayerInventoryController
