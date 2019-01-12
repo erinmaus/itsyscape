@@ -71,3 +71,49 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Default"
 }
+
+ItsyScape.Resource.Prop "Crate_Default1" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTableProp",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Crate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Good for storage!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A less fancy chest.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Are there crate mimics?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "They're rarely placed straight...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Crate_Default1"
+}

@@ -70,9 +70,7 @@ function Prop:spawnOrPoof(mode)
 	end
 end
 
-function Prop:ready(director, game)
-	Peep.ready(self, director, game)
-
+function Prop:onFinalize(director, game)
 	local resource = Utility.Peep.getResource(self)
 	local mapObject = Utility.Peep.getMapObject(self)
 	if mapObject or resource then

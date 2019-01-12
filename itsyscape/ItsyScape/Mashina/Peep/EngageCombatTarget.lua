@@ -16,6 +16,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 
 local EngageCombatTarget = B.Node("EngageCombatTarget")
 EngageCombatTarget.PEEP = B.Reference()
+EngageCombatTarget.INCLUDE_NPCS = B.Reference()
 
 function EngageCombatTarget:update(mashina, state, executor)
 	local peep = state[self.PEEP]

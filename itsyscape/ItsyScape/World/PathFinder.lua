@@ -184,7 +184,6 @@ function PathFinder.Dijkstra:find(start, stop, nearest)
 		end
 
 		if minEdge then
-			print('i', minEdge.i, 'j', minEdge.j, min)
 			return self:materialize(minEdge)
 		end
 	end
@@ -278,14 +277,27 @@ function PathFinder.AStar:find(start, stop, nearest)
 
 	if nearest then
 		local bestEdge = nil
-		local bestDistanceI = nearest
+		local bestDistanceI = math.huge
 		local bestDistanceJ = math.huge
 		for _, closed in pairs(self.closed) do
 			local distanceI = self:getPathFinder():getDistance(stop, closed)
 			local distanceJ = self:getPathFinder():getDistance(start, closed)
-			if distanceI < nearest and distanceJ < bestDistanceJ then
+
+			local function choosePath()
 				bestEdge = closed
 				bestDistanceJ = distanceJ
+				bestDistanceI = distanceI
+			end
+			if nearest == math.huge then
+				if distanceI < bestDistanceI or
+				   distanceI == bestDistanceI and distanceJ < bestDistanceJ
+				then
+					choosePath()
+				end
+			else
+				if distanceI < nearest and distanceJ < bestDistanceJ then
+					choosePath()
+				end
 			end
 		end
 
