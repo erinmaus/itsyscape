@@ -256,6 +256,7 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 
 	compute_planes();
 
+#if 0
 	if ((min.x <= maxFrustum.x && max.x >= minFrustum.x) &&
 		(min.y <= maxFrustum.y && max.y >= minFrustum.y) &&
 		(min.z <= maxFrustum.z && max.z >= minFrustum.z))
@@ -264,6 +265,23 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 	}
 
 	return false;
+#else
+	for (int i = 0; i < NUM_PLANES; ++i)
+	{
+		auto plane = planes[i];
+		auto normal = glm::vec3(plane);
+
+		auto vertex = get_negative_vertex(min, max, normal);
+
+		float dot = glm::dot(vertex, normal) + plane.w;
+		if (dot < 0.0f)
+		{
+			return false;
+		}
+	}
+
+	return true;
+#endif
 }
 
 void nbunny::Camera::compute_planes() const
