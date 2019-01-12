@@ -33,6 +33,7 @@ function PlayAnimation:new(filename)
 	self.bones = {}
 	self.duration = false
 	self.keep = false
+	self.reverse = false
 end
 
 -- Sets some properties. See type description above. 
@@ -42,6 +43,7 @@ function Metatable:__call(t)
 	self:setKeep(t.keep)
 	self:setRepeatAnimation(t.repeatAnimation)
 	self:setBones(t.bones)
+	self:setReverse(t.reverse)
 
 	return self
 end
@@ -61,6 +63,18 @@ end
 -- Sets a boolean indicating if the animation should repeat.
 function PlayAnimation:setRepeatAnimation(value)
 	self.repeatAnimation = value or false
+end
+
+-- Returns true if the animation should be reversed, false otherwise.
+--
+-- The default value is false.
+function PlayAnimation:getReverse()
+	return self.reverse
+end
+
+-- Sets a boolean indicating if the animation is played in reverse.
+function PlayAnimation:setReverse(value)
+	self.reverse = value or false
 end
 
 -- Returns true if the animation should keep the last frame, false otherwise.
