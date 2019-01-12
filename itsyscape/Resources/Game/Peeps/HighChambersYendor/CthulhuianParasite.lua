@@ -25,7 +25,7 @@ function CthulhuianParasite:new(resource, name, ...)
 	self:addBehavior(ActiveSpellBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = 12
+	status.maxChaseDistance = math.huge
 end
 
 function CthulhuianParasite:ready(director, game)

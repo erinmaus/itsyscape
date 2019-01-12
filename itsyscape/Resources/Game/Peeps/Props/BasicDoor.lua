@@ -51,11 +51,9 @@ end
 
 function BasicDoor:spawnOrPoofTile(tile, i, j, mode)
 	if mode == 'spawn' then
-		print('spawn', i, j)
 		tile:setRuntimeFlag('door')
 		tile:addLink(self)
 	else
-		print('poof', i, j)
 		tile:unsetRuntimeFlag('door')
 		tile:removeLink(self)
 	end
