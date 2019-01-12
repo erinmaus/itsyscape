@@ -24,6 +24,7 @@ local CombatStatusBehavior = Behavior("CombatStatus")
 function CombatStatusBehavior:new()
 	Behavior.Type.new(self)
 	
+	self.dead = false
 	self.currentHitpoints = 1
 	self.maximumHitpoints = 1
 	self.currentPrayer = 1

@@ -317,11 +317,12 @@ function HighChambersYendor:startMiniboss(cthulhuian)
 	local director = self:getDirector()
 	local game = director:getGameInstance()
 
-	Utility.UI.openInterface(
+	local _, _, interface = Utility.UI.openInterface(
 		game:getPlayer():getActor():getPeep(),
 		"BossHUD",
 		false,
 		unpack(cthulhuians))
+	self.bossHUD = interface
 
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -383,18 +384,26 @@ function HighChambersYendor:minibossBeginChanting()
 
 				cthulhuians[index]:removeBehavior(CombatTargetBehavior)
 
-				local success, m = Utility.Peep.walk(cthulhuians[index], i + s, t + j, k, 1)
-				if not success then
-					Log.warn('Cthulhuian pathing failed: %s', m)
+				local doneWalking = function()
+					self.currentWalking = self.currentWalking - 1
 				end
 
-				local doneWalking = CallbackCommand(function()
-					self.currentWalking = self.currentWalking - 1
+				local walk, m = Utility.Peep.getWalk(cthulhuians[index], i + s, t + j, k, 1)
+				if not walk then
+					Log.warn('Cthulhuian pathing failed: %s', m)
+				else
+					local path = walk:getPath()
+					for i = 1, path:getNumNodes() do
+						local node = path:getNodeAtIndex(i)
+						node.onInterrupt:register(doneWalking)
+					end
 
-					cthulhuians[index]:listen('initiateAttack', self.minibossStopChanting, self, false)
-				end)
+					cthulhuians[index]:getCommandQueue():push(walk)
+				end
 
-				cthulhuians[index]:getCommandQueue():push(doneWalking)
+				cthulhuians[index]:listen('initiateAttack', self.minibossStopChanting, self, false)
+
+				cthulhuians[index]:getCommandQueue():push(CallbackCommand(doneWalking))
 
 				Log.info("Moving Cthulhuian %d to %d, %d.", index, i + s, t + j)
 			end
@@ -528,6 +537,11 @@ function HighChambersYendor:performMinibossRezz()
 
 	if dead.n == #cthulhuians then
 		Log.info("All Cthulhuian parasites slain. Victory!")
+
+		self.minibossRezzTick = nil
+		self.minibossChantTimer = math.huge
+
+		self:getDirector():getGameInstance():getUI():closeInstance(self.bossHUD)
 	else
 		local hitPoints = (#cthulhuians - dead.n) * 2
 		for i = 1, #cthulhuians do
@@ -537,12 +551,24 @@ function HighChambersYendor:performMinibossRezz()
 				})
 			end
 		end
-	end
 
-	if dead.n > 0 then
-		self.minibossRezzTick = HighChambersYendor.MINIBOSS_HEAL_PERIOD
-	else
-		self.minibossRezzTick = nil
+		for i = 1, #cthulhuians do
+			if not dead[cthulhuians[i]] then
+				local actor = cthulhuians[i]:getBehavior(ActorReferenceBehavior)
+				if actor and actor.actor then
+					actor = actor.actor
+					actor:flash("Message", 1, "Cthulhu h'th mgul'ln...")
+				end
+			end
+		end
+
+		if dead.n ~= 0 then
+			self.minibossRezzTick = HighChambersYendor.MINIBOSS_HEAL_PERIOD
+		else
+			self.minibossRezzTick = false
+		end
+
+		self.minibossChantTimer = HighChambersYendor.MINIBOSS_CHANT_PERIOD / 2
 	end
 
 	dead.n = nil
