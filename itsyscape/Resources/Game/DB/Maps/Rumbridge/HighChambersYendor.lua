@@ -938,3 +938,160 @@ do
 		Resource = Parasite
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon" {
+		ItsyScape.Action.Collect()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Soul siphon",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "A divine scrying tool constructed to steal souls at any distance by Prisium, the Great Intelligence.",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+	}
+
+	local CavePotatoReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "CavePotato",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = CavePotatoReward,
+		Weight = 200
+	}
+
+	local SailorsHatReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "SailorsHat",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Sailing",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = SailorsHatReward,
+		Weight = 10
+	}
+
+	local BoneShardsReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "BoneShards",
+			Count = 30
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BoneShardsReward,
+		Weight = 100
+	}
+
+	local BonesReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Bones",
+			Count = 2
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BonesReward,
+		Weight = 100
+	}
+
+	local WeakGumReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "WeakGum",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = WeakGumReward,
+		Weight = 50
+	}
+
+	local EldritchMyrrhReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "EldritchMyrrh",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = EldritchMyrrhReward,
+		Weight = 5
+	}
+
+	ItsyScape.Resource.DropTable "HighChambersYendor_SoulSiphon_Rewards" {
+		CavePotatoReward,
+		SailorsHatReward,
+		BoneShardsReward,
+		BonesReward,
+		EldritchMyrrhReward
+	}
+end
+
+ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.Item {
+	Value = 1,
+	Weight = 0,
+	Resource = ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Bloody iron key",
+	Resource = ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "This key unlocks access to the innermost room in the High Chambers of Yendor, Floor 1 West.",
+	Resource = ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey"
+}

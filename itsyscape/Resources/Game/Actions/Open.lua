@@ -45,7 +45,7 @@ function Open:perform(state, player, prop, channel)
 		local i, j, k = Utility.Peep.getTile(prop)
 		local s, t, r = Utility.Peep.getTile(player)
 		local distance = math.sqrt((s - i) ^ 2 + (j - t) ^ 2)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { canUseObjects = false, asCloseAsPossible = true })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 3, { canUseObjects = false, asCloseAsPossible = true })
 
 		if walk or distance < 3 then
 			local open = CallbackCommand(function()

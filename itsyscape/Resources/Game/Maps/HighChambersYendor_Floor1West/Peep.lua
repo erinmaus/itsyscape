@@ -53,6 +53,8 @@ function HighChambersYendor:onFinalize(director, game)
 	self:initTorchPuzzle()
 	self:initDoubleLock()
 	self:initMiniboss()
+
+	self:giveMinibossLoot()
 end
 
 function HighChambersYendor:initTorchPuzzle()
@@ -385,7 +387,9 @@ function HighChambersYendor:minibossBeginChanting()
 				cthulhuians[index]:removeBehavior(CombatTargetBehavior)
 
 				local doneWalking = function()
-					self.currentWalking = self.currentWalking - 1
+					if self.currentWalking then
+						self.currentWalking = self.currentWalking - 1
+					end
 				end
 
 				local walk, m = Utility.Peep.getWalk(cthulhuians[index], i + s, t + j, k, 1)
@@ -542,6 +546,8 @@ function HighChambersYendor:performMinibossRezz()
 		self.minibossChantTimer = math.huge
 
 		self:getDirector():getGameInstance():getUI():closeInstance(self.bossHUD)
+
+		self:giveMinibossLoot()
 	else
 		local hitPoints = (#cthulhuians - dead.n) * 2
 		for i = 1, #cthulhuians do
@@ -573,6 +579,38 @@ function HighChambersYendor:performMinibossRezz()
 
 	dead.n = nil
 	self.deadCthulhians = dead
+end
+
+function HighChambersYendor:giveMinibossLoot()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local siphon = gameDB:getRecord("MapObjectLocation", {
+		Name = "SoulSiphon",
+		Map = Utility.Peep.getMap(self)
+	})
+
+	if siphon then
+		siphon = director:probe(
+			self:getLayerName(),
+			Probe.mapObject(siphon:get("Resource")))[1]
+
+		if siphon then
+			siphon:poke('materialize', {
+				count = math.random(20, 30),
+				dropTable = gameDB:getResource("HighChambersYendor_SoulSiphon_Rewards", "DropTable"),
+				peep = director:getGameInstance():getPlayer():getActor():getPeep(),
+				chest = siphon
+			})
+		end
+	end
+
+	local player = director:getGameInstance():getPlayer():getActor():getPeep()
+	local s = player:getState():give(
+		"Item",
+		"HighChambersYendor_BloodyIronKey",
+		1,
+		{ ['item-inventory'] = true, ['item-drop-excess'] = true })
 end
 
 function HighChambersYendor:update(director, game)

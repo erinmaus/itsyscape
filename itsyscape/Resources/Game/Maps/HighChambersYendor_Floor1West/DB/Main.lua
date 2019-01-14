@@ -846,6 +846,17 @@ do
 		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
 		MapObject = M["Door_WaterfallNorth"]
 	}
+
+	M["Door_WaterfallNorth"] {
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Close()
+	}
 end
 
 M["Door_BeforeMinibossEntrance"] = ItsyScape.Resource.MapObject.Unique()
@@ -869,7 +880,7 @@ M["Door_MinibossEntrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 88,
-		PositionY = 3,
+		PositionY = 2,
 		PositionZ = 82,
 		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
@@ -1361,6 +1372,55 @@ do
 	}
 end
 
+M["SouthKitchen_Archer1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103,
+		PositionY = 4.5,
+		PositionZ = 59,
+		Name = "SouthKitchen_Archer1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["SouthKitchen_Archer1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["SouthKitchen_Archer1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["SouthKitchen_Archer1"]
+	}
+end
+
+M["SouthKitchen_Wizard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 109,
+		PositionY = 4.5,
+		PositionZ = 59,
+		Name = "SouthKitchen_Wizard1",
+		Map = M._MAP,
+		Resource = M["SouthKitchen_Wizard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["SouthKitchen_Wizard1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["SouthKitchen_Wizard1"]
+	}
+end
+
 M["CthulhuianMiniboss1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1382,6 +1442,13 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
 		MapObject = M["CthulhuianMiniboss1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/CthulhuianParasite_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["CthulhuianMiniboss1"]
 	}
 end
 
@@ -1407,6 +1474,13 @@ do
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
 		MapObject = M["CthulhuianMiniboss2"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/CthulhuianParasite_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["CthulhuianMiniboss2"]
+	}
 end
 
 M["CthulhuianMiniboss3"] = ItsyScape.Resource.MapObject.Unique()
@@ -1430,5 +1504,29 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
 		MapObject = M["CthulhuianMiniboss3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/CthulhuianParasite_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["CthulhuianMiniboss3"]
+	}
+end
+
+M["SoulSiphon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 2,
+		PositionZ = 89,
+		Name = "SoulSiphon",
+		Map = M._MAP,
+		Resource = M["SoulSiphon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon",
+		MapObject = M["SoulSiphon"]
 	}
 end

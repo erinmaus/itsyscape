@@ -25,20 +25,20 @@ function Quaternion.fromAxisAngle(axis, angle)
 	return Quaternion(xyz.x, xyz.y, xyz.z, w)
 end
 
-local E = 0.001
+local E = 0.01
 function Quaternion.lookAt(source, target)
 	local forward = (target - source):getNormal()
 
 	local dot = forward:dot(-Vector.UNIT_Z)
 	if math.abs(dot + 1.0) < E then
-		return Quaternion(0, 1, 0, math.pi)
+		return Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
 	elseif math.abs(dot - 1.0) < E then
 		return Quaternion.IDENTITY
 	end
 
 	local angle = math.acos(dot)
 	local axis = (-Vector.UNIT_Z):cross(forward):getNormal()
-	return Quaternion.fromAxisAngle(axis, angle)
+	return Quaternion.fromAxisAngle(axis, angle):getNormal()
 end
 
 -- Constructs a new three-dimensional quaternion from the provided components.
