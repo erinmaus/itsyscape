@@ -91,7 +91,7 @@ function Player:findPath(i, j, k)
 	return pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
-		true)
+		0)
 end
 
 -- Moves the player to the specified position on the map via walking.
