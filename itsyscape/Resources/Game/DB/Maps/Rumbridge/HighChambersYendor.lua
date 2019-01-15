@@ -932,6 +932,12 @@ do
 		Resource = Parasite
 	}
 
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Parasite
+	}
+
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "DinkyStaff",
 		Count = 1,
