@@ -53,8 +53,6 @@ function HighChambersYendor:onFinalize(director, game)
 	self:initTorchPuzzle()
 	self:initDoubleLock()
 	self:initMiniboss()
-
-	self:giveMinibossLoot()
 end
 
 function HighChambersYendor:initTorchPuzzle()
@@ -606,7 +604,7 @@ function HighChambersYendor:giveMinibossLoot()
 	end
 
 	local player = director:getGameInstance():getPlayer():getActor():getPeep()
-	local s = player:getState():give(
+	player:getState():give(
 		"Item",
 		"HighChambersYendor_BloodyIronKey",
 		1,
