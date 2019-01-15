@@ -182,7 +182,7 @@ function LocalUI:close(interfaceID, index)
 	end
 
 	controller:close()
-	self.interfaces[interfaceID][index] = nil
+	self.interfaces[interfaceID].v[index] = nil
 	self.controllers[controller] = nil
 
 	self.onClose(interfaceID, index)
@@ -196,8 +196,8 @@ function LocalUI:closeInstance(instance)
 end
 
 function LocalUI:update(delta)
-	for _, interfaces in pairs(self.interfaces) do
-		for _, interface in pairs(interfaces.v) do
+	for id, interfaces in pairs(self.interfaces) do
+		for n, interface in pairs(interfaces.v) do
 			interface:update(delta)
 		end
 	end
