@@ -843,7 +843,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Base",
 		MapObject = M["Door_WaterfallNorth"]
 	}
 
