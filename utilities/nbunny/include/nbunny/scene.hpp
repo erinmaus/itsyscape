@@ -29,7 +29,7 @@ namespace nbunny
 
 	struct SceneNodeTransform
 	{
-		std::shared_ptr<SceneNodeTransform> parent;
+		std::weak_ptr<SceneNodeTransform> parent;
 
 		glm::vec3 currentScale = glm::vec3(1.0f);
 		glm::quat currentRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -59,8 +59,8 @@ namespace nbunny
 
 	struct SceneNode
 	{
-		std::shared_ptr<SceneNode> parent;
-		std::vector<std::shared_ptr<SceneNode>> children;
+		std::weak_ptr<SceneNode> parent;
+		std::vector<std::weak_ptr<SceneNode>> children;
 
 		glm::vec3 min = glm::vec3(0.0f);
 		glm::vec3 max = glm::vec3(0.0f);
@@ -68,7 +68,7 @@ namespace nbunny
 		std::shared_ptr<SceneNodeTransform> transform = std::make_shared<SceneNodeTransform>();
 		SceneNodeMaterial material;
 
-		sol::object reference;
+		int reference;
 
 		static void walk_by_material(const std::shared_ptr<SceneNode>& node, const Camera& camera, float delta, std::vector<std::shared_ptr<SceneNode>>& result);
 		static void walk_by_position(const std::shared_ptr<SceneNode>& node, const Camera& camera, float delta, std::vector<std::shared_ptr<SceneNode>>& result);

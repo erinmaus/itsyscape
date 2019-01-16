@@ -47,9 +47,10 @@ glm::mat4 nbunny::SceneNodeTransform::get_global(float delta)
 {
 	auto localTransform = get_local(delta);
 
-	if (parent)
+	auto p = parent.lock();
+	if (p)
 	{
-		auto parentTransform = parent->get_global(delta);
+		auto parentTransform = p->get_global(delta);
 
 		return parentTransform * localTransform;
 	}
@@ -103,10 +104,12 @@ void nbunny::SceneNode::walk_by_material(
 
 	for (auto& child: node->children)
 	{
-		child->walk_by_material(child, camera, delta, result);
+		auto c = child.lock();
+		c->walk_by_material(c, camera, delta, result);
 	}
 
-	if (!node->parent)
+	auto parent = node->parent.lock();
+	if (!parent)
 	{
 		std::sort(
 			result.begin(),
@@ -132,10 +135,12 @@ void nbunny::SceneNode::walk_by_position(
 
 	for (auto& child : node->children)
 	{
-		child->walk_by_position(child, camera, delta, result);
+		auto c = child.lock();
+		c->walk_by_position(c, camera, delta, result);
 	}
 
-	if (!node->parent)
+	auto parent = node->parent.lock();
+	if (!parent)
 	{
 		std::unordered_map<SceneNode*, glm::vec3> screen_positions;
 		std::sort(
@@ -375,10 +380,55 @@ void nbunny::Camera::compute_planes() const
 
 typedef std::shared_ptr<nbunny::SceneNode> SceneNodePointer;
 
-static SceneNodePointer nbunny_scene_node_create(sol::object reference)
+const static int SCENE_NODE_REFERENCE_KEY = 0;
+static void get_scene_node_reference_table(lua_State* L)
+{
+	lua_pushlightuserdata(L, const_cast<int*>(&SCENE_NODE_REFERENCE_KEY));
+	lua_rawget(L, LUA_REGISTRYINDEX);
+
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		lua_pushlightuserdata(L, const_cast<int*>(&SCENE_NODE_REFERENCE_KEY));
+		lua_newtable(L);
+
+		// Create metatable with 'weak values'.
+		lua_newtable(L);
+		lua_pushstring(L, "__mode");
+		lua_pushstring(L, "v");
+		lua_rawset(L, -3);
+
+		// Assign metatable.
+		lua_setmetatable(L, -2);
+
+		// Assign table to registory.
+		lua_rawset(L, LUA_REGISTRYINDEX);
+
+		// Retrieve table again.
+		lua_pushlightuserdata(L, const_cast<int*>(&SCENE_NODE_REFERENCE_KEY));
+		lua_rawget(L, LUA_REGISTRYINDEX);
+	}
+}
+
+static void get_scene_node_reference(lua_State* L, int key)
+{
+	get_scene_node_reference_table(L);
+	lua_rawgeti(L, -1, key);
+	lua_remove(L, -2);
+}
+
+static int set_scene_node_reference(lua_State* L)
+{
+	get_scene_node_reference_table(L);
+	lua_pushvalue(L, -2);
+	return luaL_ref(L, -2);
+}
+
+static SceneNodePointer nbunny_scene_node_create(sol::object reference, sol::this_state S)
 {
 	auto result = std::make_shared<nbunny::SceneNode>();
-	result->reference = reference;
+
+	lua_State* L = S;
+	result->reference = set_scene_node_reference(L);
 
 	return result;
 }
@@ -386,28 +436,32 @@ static SceneNodePointer nbunny_scene_node_create(sol::object reference)
 static int nbunny_scene_node_set_parent(lua_State* L)
 {
 	auto& node = sol::stack::get<SceneNodePointer>(L, 1);
-	if (node->parent)
+	auto oldParent = node->parent.lock();
+	if (oldParent)
 	{
-		node->parent->children.erase(
-			std::remove(
-				node->parent->children.begin(),
-				node->parent->children.end(),
-				node
+		oldParent->children.erase(
+			std::remove_if(
+				oldParent->children.begin(),
+				oldParent->children.end(),
+				[&node](auto& a)
+				{
+					return !(node.owner_before(a) || a.owner_before(node));
+				}
 			),
-			node->parent->children.end()
+			oldParent->children.end()
 		);
 
 		node->parent.reset();
-
 		node->transform->parent.reset();
 	}
 
 	if (!lua_isnil(L, 2) && (lua_isboolean(L, 2) || lua_toboolean(L, 2)))
 	{
-		node->parent = sol::stack::get<SceneNodePointer>(L, 2);
-		node->parent->children.push_back(node);
+		auto parent = sol::stack::get<SceneNodePointer>(L, 2);
+		node->parent = parent;
+		parent->children.push_back(node);
 
-		node->transform->parent = node->parent->transform;
+		node->transform->parent = parent->transform;
 	}
 
 	return 0;
@@ -416,13 +470,14 @@ static int nbunny_scene_node_set_parent(lua_State* L)
 static int nbunny_scene_node_get_parent(lua_State* L)
 {
 	auto& self = sol::stack::get<SceneNodePointer>(L, 1);
-	if (!self->parent)
+	auto parent = self->parent.lock();
+	if (!parent)
 	{
 		lua_pushnil(L);
 	}
 	else
 	{
-		sol::stack::push(L, self->parent);
+		sol::stack::push(L, parent);
 	}
 
 	return 1;
@@ -438,9 +493,11 @@ nbunny::SceneNodeMaterial& nbunny_scene_node_get_material(nbunny::SceneNode& sel
 	return self.material;
 }
 
-static sol::object nbunny_scene_node_get_reference(nbunny::SceneNode& self)
+static sol::object nbunny_scene_node_get_reference(nbunny::SceneNode& self, sol::this_state S)
 {
-	return self.reference;
+	lua_State* L = S;
+	get_scene_node_reference(L, self.reference);
+	return sol::stack::pop<sol::object>(L);
 }
 
 static int nbunny_scene_node_get_min(lua_State* L)
@@ -491,10 +548,18 @@ static int nbunny_scene_node_walk_by_material(lua_State* L)
 	nbunny::SceneNode::walk_by_material(self, camera, delta, result);
 
 	lua_createtable(L, (int)result.size(), 0);
+
+	int index = 1;
 	for (std::size_t i = 0; i < result.size(); ++i)
 	{
-		lua_pushinteger(L, (int)i + 1);
-		sol::stack::push(L, result[i]->reference);
+		lua_pushinteger(L, index);
+
+		get_scene_node_reference(L, result[i]->reference);
+		if (!lua_isnil(L, -1))
+		{
+			++index;
+		}
+
 		lua_rawset(L, -3);
 	}
 
@@ -511,10 +576,18 @@ static int nbunny_scene_node_walk_by_position(lua_State* L)
 	nbunny::SceneNode::walk_by_position(self, camera, delta, result);
 
 	lua_createtable(L, (int)result.size(), 0);
+
+	int index = 1;
 	for (std::size_t i = 0; i < result.size(); ++i)
 	{
-		lua_pushinteger(L, (int)i + 1);
-		sol::stack::push(L, result[i]->reference);
+		lua_pushinteger(L, index);
+
+		get_scene_node_reference(L, result[i]->reference);
+		if (!lua_isnil(L, -1))
+		{
+			++index;
+		}
+
 		lua_rawset(L, -3);
 	}
 
