@@ -493,7 +493,7 @@ static int nbunny_scene_node_walk_by_material(lua_State* L)
 	lua_createtable(L, (int)result.size(), 0);
 	for (std::size_t i = 0; i < result.size(); ++i)
 	{
-		lua_pushinteger(L, (int)i);
+		lua_pushinteger(L, (int)i + 1);
 		sol::stack::push(L, result[i]->reference);
 		lua_rawset(L, -3);
 	}
@@ -513,7 +513,7 @@ static int nbunny_scene_node_walk_by_position(lua_State* L)
 	lua_createtable(L, (int)result.size(), 0);
 	for (std::size_t i = 0; i < result.size(); ++i)
 	{
-		lua_pushinteger(L, (int)i);
+		lua_pushinteger(L, (int)i + 1);
 		sol::stack::push(L, result[i]->reference);
 		lua_rawset(L, -3);
 	}
