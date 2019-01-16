@@ -517,7 +517,7 @@ end
 M["Door_MimicRoomEast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 20,
+		PositionX = 21,
 		PositionY = 1,
 		PositionZ = 64,
 		RotationX = ItsyScape.Utility.Quaternion.Y_270.x,
@@ -688,7 +688,7 @@ end
 M["Door_DoubleLockWest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 20,
+		PositionX = 21,
 		PositionY = 1,
 		PositionZ = 42,
 		RotationX = ItsyScape.Utility.Quaternion.Y_270.x,
