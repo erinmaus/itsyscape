@@ -194,30 +194,6 @@ do
 	}
 end
 
-M["Torch_Default6"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27.000000,
-		PositionY = 2.000000,
-		PositionZ = 33.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default6",
-		Map = M._MAP,
-		Resource = M["Torch_Default6"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default6"]
-	}
-end
-
 M["CopperRock_Default4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -359,30 +335,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
 		MapObject = M["EntranceLadder"]
-	}
-end
-
-M["Torch_Default5"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23.000000,
-		PositionY = 2.000000,
-		PositionZ = 33.000000,
-		RotiationX = 0.000000,
-		RotiationY = 0.000000,
-		RotiationZ = 0.000000,
-		RotiationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default5",
-		Map = M._MAP,
-		Resource = M["Torch_Default5"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default5"]
 	}
 end
 

@@ -88,3 +88,10 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "You need to obtain all items requested by Isabelle.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAllItems",
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "You need to talk to Isabelle after obtaining all items she requested.",
+	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle2",
+}
+

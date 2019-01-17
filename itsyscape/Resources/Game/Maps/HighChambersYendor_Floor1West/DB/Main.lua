@@ -89,12 +89,53 @@ end
 M["Anchor_FromAbandonedMine"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 5,
+		PositionX = 7,
 		PositionY = 1,
 		PositionZ = 99,
 		Name = "Anchor_FromAbandonedMine",
 		Map = M._MAP,
 		Resource = M["Anchor_FromAbandonedMine"]
+	}
+end
+
+M["HighChambersYendor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 1,
+		PositionZ = 98,
+		Name = "HighChambersYendor_Entrance",
+		Map = M._MAP,
+		Resource = M["HighChambersYendor_Entrance"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Leave before the madness takes you!",
+		Resource = M["HighChambersYendor_Entrance"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["HighChambersYendor_Entrance"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_HighChambersYendor",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_AbandonedMine",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Leave",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["HighChambersYendor_Entrance"] {
+		TravelAction
 	}
 end
 

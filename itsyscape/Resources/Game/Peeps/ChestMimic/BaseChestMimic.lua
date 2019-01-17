@@ -94,10 +94,12 @@ function BaseChestMimic:update(...)
 		local actor = combatTarget.actor
 		local peep = actor:getPeep()
 
-		local selfPosition = Utility.Peep.getAbsolutePosition(self)
-		local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+		if peep then
+			local selfPosition = Utility.Peep.getAbsolutePosition(self)
+			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
 
-		rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
+			rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
+		end
 	else
 		local targetTile = self:getBehavior(TargetTileBehavior)
 		if targetTile and targetTile.pathNode then

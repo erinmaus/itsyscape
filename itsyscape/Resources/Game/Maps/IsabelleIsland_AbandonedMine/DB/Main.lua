@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_AbandonedMine/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_AbandonedMine.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -66,6 +71,102 @@ do
 		Resource = M["Anchor_Entrance"]
 	}
 end
+
+M["Anchor_HighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 2,
+		PositionZ = 32,
+		Name = "Anchor_HighChambersYendor",
+		Map = M._MAP,
+		Resource = M["Anchor_HighChambersYendor"]
+	}
+end
+
+M["HighChambersYendor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "HighChambersYendor_Entrance",
+		Map = M._MAP,
+		Resource = M["HighChambersYendor_Entrance"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["HighChambersYendor_Entrance"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle2",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromAbandonedMine",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["HighChambersYendor_Entrance"] {
+		TravelAction
+	}
+end
+
+M["HighChambersYendor_Torch1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 33,
+		Name = "HighChambersYendor_Torch1",
+		Map = M._MAP,
+		Resource = M["HighChambersYendor_Torch1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "HighChambersYendor_Torch",
+		Map = M._MAP,
+		MapObject = M["HighChambersYendor_Torch1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["HighChambersYendor_Torch1"]
+	}
+end
+
+M["HighChambersYendor_Torch2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 2,
+		PositionZ = 33,
+		Name = "HighChambersYendor_Torch2",
+		Map = M._MAP,
+		Resource = M["HighChambersYendor_Torch2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "HighChambersYendor_Torch",
+		Map = M._MAP,
+		MapObject = M["HighChambersYendor_Torch2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["HighChambersYendor_Torch2"]
+	}
+end
+
 
 do
 	local TravelAction = ItsyScape.Action.Travel()

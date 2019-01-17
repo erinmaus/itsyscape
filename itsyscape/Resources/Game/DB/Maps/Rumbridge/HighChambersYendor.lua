@@ -9,6 +9,36 @@
 --------------------------------------------------------------------------------
 
 do
+	ItsyScape.Resource.Prop "HighChambersYendor_Entrance" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "High Chambers Yendor",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Entrance"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "The deeper you delve, the more you risk madness.",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Entrance"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Entrance"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 4,
+		SizeZ = 2,
+		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_Entrance"
+	}
+end
+
+do
 	ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Base" {
 		-- Nothing.
 	}
