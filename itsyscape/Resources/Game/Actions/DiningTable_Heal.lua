@@ -23,7 +23,7 @@ DiningTable_Heal.DURATION = 1.0
 function DiningTable_Heal:perform(state, player, target)
 	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 3, { asCloseAsPossible = true })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 3.5, { asCloseAsPossible = true })
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)

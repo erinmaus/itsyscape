@@ -44,7 +44,7 @@ function Sleep:perform(state, player, target)
 
 	if target and self:canPerform(state) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { asCloseAsPossible = true })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
 
 		if walk then
 			local save = CallbackCommand(self.save, self, player)

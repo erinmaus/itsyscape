@@ -42,7 +42,7 @@ function Chop:perform(state, player, prop)
 				if progress then
 					if progress.currentProgress < progress.maxProgress then
 						local i, j, k = Utility.Peep.getTile(prop)
-						local walk = Utility.Peep.getWalk(player, i, j, k, 1)
+						local walk = Utility.Peep.getWalk(player, i, j, k, 1.5)
 						local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 						if not walk then
