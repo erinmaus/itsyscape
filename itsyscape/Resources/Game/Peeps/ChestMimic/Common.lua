@@ -19,7 +19,7 @@ function Common.spawn(mapScript, mimicAnchor, aliceAnchor, mimics, chance)
 
 	local alice = Utility.spawnActorAtAnchor(mapScript, "ChestMimic_Alice", aliceAnchor, 0)
 	if alice then
-		Log.info("Spawned alice.")
+		Log.info("Spawned Alice.")
 		if math.random() <= chance then
 			local index
 			do

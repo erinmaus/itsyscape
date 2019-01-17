@@ -109,9 +109,9 @@ function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 			local position = actorPeep:getBehavior(PositionBehavior)
 			if position then
 				position.position = Vector(
-					x + (math.random() * 2) - 1 * radius,
+					x + ((math.random() * 2) - 1) * radius,
 					y, 
-					z + (math.random() * 2) - 1 * radius)
+					z + ((math.random() * 2) - 1) * radius)
 			end
 
 			actorPeep:poke('spawnedByPeep', { peep = peep })
@@ -131,7 +131,7 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 		anchor)
 
 	if x and y and z then
-		return Utility.spawnActorAtPosition(peep, resource, x, y, z)
+		return Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil
@@ -142,6 +142,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 	radius = radius or 1
 
 	if type(mapObject) == 'string' then
+		local m = mapObject
 		local map = Utility.Peep.getMap(peep)
 		local gameDB = peep:getDirector():getGameDB()
 		local reference = gameDB:getRecord("MapObjectReference", {
@@ -151,6 +152,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 
 		mapObject = reference:get("Resource")
 		if not mapObject then
+			Log.info("Map object '%s' not found.", m)
 			return nil, nil
 		end
 	end
@@ -163,9 +165,9 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 		local position = actorPeep:getBehavior(PositionBehavior)
 		if position then
 			position.position = Vector(
-				x + (math.random() * 2) - 1 * radius,
+				x + ((math.random() * 2) - 1) * radius,
 				y, 
-				z + (math.random() * 2) - 1 * radius)
+				z + ((math.random() * 2) - 1) * radius)
 		end
 
 		actorPeep:poke('spawnedByPeep', { peep = peep })
@@ -176,9 +178,9 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 		local position = propPeep:getBehavior(PositionBehavior)
 		if position then
 			position.position = Vector(
-				x + (math.random() * 2) - 1 * radius,
+				x + ((math.random() * 2) - 1) * radius,
 				y, 
-				z + (math.random() * 2) - 1 * radius)
+				z + ((math.random() * 2) - 1) * radius)
 		end
 
 		propPeep:poke('spawnedByPeep', { peep = peep })
@@ -195,7 +197,7 @@ function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
 		anchor)
 
 	if x and y and z then
-		return Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z)
+		return Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil
