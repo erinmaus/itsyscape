@@ -38,6 +38,10 @@ function PlayerInventoryStateProvider:getPriority()
 	return State.PRIORITY_LOCAL
 end
 
+function PlayerInventoryStateProvider:isReady()
+	return self.inventory and self.inventory:getBroker()
+end
+
 -- Flags:
 --  * item-noted: only search for noted items; otherwise, search for unnoted
 --                items.
@@ -46,7 +50,7 @@ function PlayerInventoryStateProvider:has(name, count, flags)
 end
 
 function PlayerInventoryStateProvider:take(name, count, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return false
 	end
 
@@ -86,7 +90,7 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 end
 
 function PlayerInventoryStateProvider:give(name, count, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return false
 	end
 
@@ -129,7 +133,7 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 end
 
 function PlayerInventoryStateProvider:count(name, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return 0
 	end
 

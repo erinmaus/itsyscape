@@ -30,12 +30,17 @@ function PlayerEquipmentStateProvider:getPriority()
 	return State.PRIORITY_IMMEDIATE
 end
 
+function PlayerEquipmentStateProvider:isReady()
+	return self.inventory and self.inventory:getBroker()
+end
+
+
 function PlayerEquipmentStateProvider:has(name, count, flags)
 	return count <= self:count(name, flags)
 end
 
 function PlayerEquipmentStateProvider:take(name, count, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return false
 	end
 
@@ -66,7 +71,7 @@ function PlayerEquipmentStateProvider:give(name, count, flags)
 end
 
 function PlayerEquipmentStateProvider:count(name, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return 0
 	end
 
