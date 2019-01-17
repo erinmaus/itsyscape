@@ -30,7 +30,7 @@ function OpenShop:perform(state, player, prop)
 		local shop = target:get("Resource")
 
 		local i, j, k = Utility.Peep.getTile(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = false })
 		local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 		if walk then
