@@ -29,6 +29,10 @@ function BankInventoryStateProvider:getPriority()
 	return State.PRIORITY_DISTANT
 end
 
+function BankInventoryStateProvider:isReady()
+	return self.inventory and self.inventory:getBroker()
+end
+
 -- Flags:
 --  * item-noted: only search for noted items; otherwise, search for unnoted
 --                items.
@@ -37,7 +41,7 @@ function BankInventoryStateProvider:has(name, count, flags)
 end
 
 function BankInventoryStateProvider:take(name, count, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return false
 	end
 
@@ -72,7 +76,7 @@ function BankInventoryStateProvider:take(name, count, flags)
 end
 
 function BankInventoryStateProvider:give(name, count, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return false
 	end
 
@@ -90,7 +94,7 @@ function BankInventoryStateProvider:give(name, count, flags)
 end
 
 function BankInventoryStateProvider:count(name, flags)
-	if not self.inventory then
+	if not self:isReady() then
 		return 0
 	end
 
