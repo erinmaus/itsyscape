@@ -376,10 +376,8 @@ function Map:toString()
 				r:pushIndent(3)
 				r:pushLine("{")
 				for flag in tile:iterateFlags() do
-					if flag ~= 'impassable' or tile.impassableDepth == 0 then
-						r:pushIndent(4)
-						r:pushFormatLine("[%q] = true,", flag)
-					end
+					r:pushIndent(4)
+					r:pushFormatLine("[%q] = true,", flag)
 				end
 				r:pushIndent(3)
 				r:pushLine("},")
