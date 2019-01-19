@@ -77,6 +77,12 @@ function CompositeCommand:onInterrupt(peep)
 end
 
 function CompositeCommand:update(delta)
+	if self.condition ~= true then
+		if not self.condition() then
+			self.queue:clear()
+		end
+	end
+
 	self.queue:update(delta)
 end
 
