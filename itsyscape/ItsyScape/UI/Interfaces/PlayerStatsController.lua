@@ -31,13 +31,18 @@ end
 function PlayerStatsController:pull()
 	local stats = self:getPeep():getBehavior(StatsBehavior)
 
+	local gameDB = self:getDirector():getGameDB()
+
 	local result = { skills = {} }
 	if stats and stats.stats then
 		stats = stats.stats
 
 		for skill in stats:iterate() do
+			local s = gameDB:getResource(skill:getName(), "Skill")
+
 			table.insert(result.skills, {
-				name = skill:getName(),
+				name = Utility.getName(s, gameDB),
+				description = Utility.getDescription(s, gameDB),
 				xp = skill:getXP(),
 				workingLevel = skill:getWorkingLevel(),
 				baseLevel = skill:getBaseLevel(),

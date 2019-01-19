@@ -304,3 +304,111 @@ ItsyScape.Meta.ResourceName {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Sailing"
 }
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your accuracy, lets you use spells, and enables you to use magic items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Magic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your magical damage and enables you to use magic items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Wisdom"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your ranged accuracy and lets you use ranged weapons and other items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Archery"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your ranged damage and lets you use ranged ammo and other items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Dexterity"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your melee damage and lets you use melee items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Strength"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your melee accuracy and lets you use melee weapons and items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Attack"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to dodge to attacks and lets you equip armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Defense"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases your hit points, allowing you to endure longer.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Constitution"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to call upon the gods and makes you more resistant to reality warping attacks.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Faith"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to gather ores, minerals, and other earthy resources.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Mining"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to smelt and smith metal items.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Smithing"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to make armor, weapons, and other items from wood, cloth, and hides, among other things.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Crafting"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Allows you to fell trees, shrubs, vines, and other plants.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Woodcutting"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you light fires, incense, bonfires, among other pyromaniacal activities.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Firemaking"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you make ranged weapons and ammunition.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Fletching"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you catch fish.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Fishing"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you cook, bake, and other such things on fires and ranges.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Cooking"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Helps you navigate and manage a crew in order to sail the five seas.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Sailing"
+}

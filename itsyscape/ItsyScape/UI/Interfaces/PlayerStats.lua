@@ -145,6 +145,7 @@ function PlayerStats:updateStats(skills)
 
 		button:setToolTip(
 			ToolTip.Header(skills[i].name),
+			ToolTip.Text(skills[i].description),
 			ToolTip.Text(string.format("XP: %s", Utility.Text.prettyNumber(math.floor(skills[i].xp)))),
 			ToolTip.Text(string.format("XP to Next Level: %s", Utility.Text.prettyNumber(math.floor(skills[i].xpNextLevel))))
 		)
