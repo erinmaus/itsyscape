@@ -18242,6 +18242,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18252,6 +18253,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18262,6 +18264,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18272,6 +18275,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18282,6 +18286,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18842,6 +18847,18 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = -5, topRight = -5, bottomLeft = -5, bottomRight = -5,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18862,6 +18879,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -18872,16 +18890,7 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = -5, topRight = -5, bottomLeft = -5, bottomRight = -5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -19442,6 +19451,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -19452,6 +19462,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -19472,6 +19483,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -19482,6 +19494,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -20042,6 +20055,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -20052,6 +20066,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -20062,6 +20077,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -20072,6 +20088,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -20082,6 +20099,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -34966,96 +34984,6 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
 			edge = 2, flat = 6, decals = {  },
 			data =
 			{
@@ -35566,7 +35494,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35576,7 +35504,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35586,7 +35514,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35596,7 +35524,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35606,7 +35534,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35616,7 +35544,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35626,7 +35554,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35636,7 +35564,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -35646,7 +35574,97 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			edge = 2, flat = 6, decals = {  },
 			data =
 			{
 			},
