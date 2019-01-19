@@ -42,6 +42,7 @@ function CombatCortex:new()
 
 	self.walking = {}
 	self.strafing = {}
+	self.pendingResume = {}
 	self.defaultWeapon = Weapon()
 end
 
@@ -50,6 +51,7 @@ function CombatCortex:removePeep(peep)
 
 	self.walking[peep] = nil
 	self.strafing[peep] = nil
+	self.pendingResume[peep] = nil
 end
 
 function CombatCortex:resume(peep, target)
@@ -71,6 +73,10 @@ end
 function CombatCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local itemManager = self:getDirector():getItemManager()
+
+	for peep, target in pairs(self.pendingResume) do
+		self:resume(peep, target)
+	end
 
 	for peep in self:iterate() do
 		local position = peep:getBehavior(PositionBehavior)
@@ -173,14 +179,17 @@ function CombatCortex:update(delta)
 								peep:poke('targetFled', { target = target, distance = distanceToTarget })
 							else
 								walk.onCanceled:register(function()
-									--if peep:hasBehavior(CombatTargetBehavior) and peep:hasBehavior(PlayerBehavior) then
-									--	peep:removeBehavior(CombatTargetBehavior)
-									--	peep:getCommandQueue(CombatCortex.QUEUE):clear()
-									--end
+									local s, t = Utility.Peep.getTile(target)
+									if s ~= targetI or t ~= targetJ then
+										print('resuming')
+										self.pendingResume[peep] = target
+									end
 								end)
-
 								local callback = CallbackCommand(self.resume, self, peep, target)
-								local c = CompositeCommand(true, walk, callback)
+								local c = CompositeCommand(function()
+									local s, t = Utility.Peep.getTile(target)
+									return s == targetI and t == targetJ
+								end, walk, callback)
 								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
 							end
 
@@ -202,7 +211,7 @@ function CombatCortex:update(delta)
 							local targetIsPlayer = target:hasBehavior(PlayerBehavior)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
 							if not selfIsPlayer then
-								if distanceToTarget + weaponRange <= selfRadius + targetRadius + 1 and not self.strafing[target] then
+								if distanceToTarget <= selfRadius + targetRadius and not self.strafing[target] then
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then
