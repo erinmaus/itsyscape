@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mapp = require "ItsyScape.GameDB.Mapp"
@@ -64,6 +65,7 @@ function PlayerSpellsController:getSpellState()
 			end
 
 			local action = spell:getAction()
+			local items = {}
 			local z = 0
 			if action then
 				for requirement in brochure:getRequirements(action) do
@@ -73,13 +75,31 @@ function PlayerSpellsController:getSpellState()
 						z = requirement.count
 					end
 				end
+
+				for input in brochure:getInputs(action) do
+					local resource = brochure:getConstraintResource(input)
+					local resourceType = brochure:getResourceTypeFromResource(resource)
+
+					if resourceType.name == "Item" then
+						local item = {
+							count = input.count,
+							name = Utility.getName(resource, gameDB)
+						}
+
+						table.insert(items, item)
+					end
+				end
 			end
 
 			zValues[resource.name] = z
 			table.insert(result.spells, {
 				enabled = spell:canCast(self:getPeep()):good(),
 				active = activeSpellID == spell:getID(),
-				id = resource.name
+				id = resource.name,
+				name = Utility.getName(resource, gameDB),
+				description = Utility.getDescription(resource, gameDB),
+				level = Curve.XP_CURVE:getLevel(z),
+				items = items
 			})
 		end
 
