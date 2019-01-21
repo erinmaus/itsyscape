@@ -43,6 +43,109 @@ Weapon.BONUSES       = {
 	["None"]   = true
 }
 
+Weapon.DamageRoll = Class()
+
+function Weapon.DamageRoll:new(weapon, peep, purpose)
+	purpose = purpose or Weapon.PURPOSE_KILL
+
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+	else
+		stats = false
+	end
+
+	-- TODO: combat multipliers
+	local style = weapon:getStyle()
+	local bonus, level
+	do
+		if style == Weapon.STYLE_MAGIC then
+			bonus = 'StrengthMagic'
+		elseif style == Weapon.STYLE_ARCHERY then
+			bonus = 'StrengthRanged'
+		elseif style == Weapon.STYLE_MELEE then
+			bonus = 'StrengthMelee'
+		end
+
+		local success, skill = weapon:getSkill(purpose)
+		if success and stats and stats:hasSkill(skill) then
+			level = stats:getSkill(skill):getWorkingLevel()
+		end
+	end
+
+	if purpose == Weapon.PURPOSE_KILL then
+		local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+
+		local stance = peep:getBehavior(StanceBehavior)
+		if stance then
+			if stance.stance == Weapon.STANCE_AGGRESSIVE then
+				level = (level or 1) + 8
+			end
+		end
+	elseif purpose == Weapon.PURPOSE_TOOL then
+		level = (level or 1) + 8
+	end
+
+	self.level = level
+
+	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
+	self.bonus = (bonuses[bonus] or 0)
+end
+
+function Weapon.DamageRoll:getWeapon()
+	return self.weapon
+end
+
+function Weapon.DamageRoll:getLevel()
+	return self.level
+end
+
+function Weapon.DamageRoll:setLevel(value)
+	self.level = self.level or value
+end
+
+function Weapon.DamageRoll:getBonus()
+	return self.bonus
+end
+
+function Weapon.DamageRoll:setBonus(value)
+	self.bonus = self.bonus or value
+end
+
+function Weapon.DamageRoll:getMaxHit()
+	return self.maxHit or Utility.Combat.calcMaxHit(self.level, 1, self.bonus)
+end
+
+function Weapon.DamageRoll:setMaxHit(value)
+	if not value then
+		self.maxHit = nil
+	else
+		self.maxHit = value
+	end
+end
+
+function Weapon.DamageRoll:getMinHit()
+	return self.minHit or 1
+end
+
+function Weapon.DamageRoll:setMinHit(value)
+	if not value then
+		self.minHit = nil
+	else
+		self.minHit = value
+	end
+end
+
+function Weapon.DamageRoll:roll()
+	local minHit = self:getMinHit()
+	local maxHit = self:getMaxHit()
+
+	minHit = math.min(minHit, maxHit)
+	maxHit = math.max(minHit, maxHit)
+
+	return math.random(minHit, maxHit)
+end
+
 Weapon.AttackRoll = Class()
 
 function Weapon.AttackRoll:new(weapon, peep, target, bonus)
@@ -183,65 +286,23 @@ function Weapon.AttackRoll:roll()
 end
 
 -- Rolls an attack.
---
--- Returns true if the attack succeeded, false otherwise. Also returns two integers:
--- the attack roll and the defense roll. Thus, this method returns (success, attacck, defense).
 function Weapon:rollAttack(peep, target, bonus)
 	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
-function Weapon:rollDamage(peep, multiplier, bonusStrength, purpose)
-	purpose = purpose or Weapon.PURPOSE_KILL
-
-	multiplier = 1
-	bonusStrength = bonusStrength or 0
-
-	local stats = peep:getBehavior(StatsBehavior)
-	if stats and stats.stats then
-		stats = stats.stats
-	else
-		stats = false
+function Weapon:rollDamage(peep, purpose, target)
+	local roll = Weapon.DamageRoll(self, peep, purpose)
+	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.DamageEffect") do
+		effect:applySelf(roll, purpose)
 	end
 
-	-- TODO: combat multipliers
-	local style = self:getStyle()
-	local bonus, level
-	do
-		if style == Weapon.STYLE_MAGIC then
-			bonus = 'StrengthMagic'
-		elseif style == Weapon.STYLE_ARCHERY then
-			bonus = 'StrengthRanged'
-		elseif style == Weapon.STYLE_MELEE then
-			bonus = 'StrengthMelee'
-		end
-
-		local success, skill = self:getSkill(purpose)
-		if success and stats and stats:hasSkill(skill) then
-			level = stats:getSkill(skill):getWorkingLevel()
+	if target then
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.DamageEffect") do
+			effect:applyTarget(roll, purpose)
 		end
 	end
 
-	if purpose == Weapon.PURPOSE_KILL then
-		local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
-
-		local stance = peep:getBehavior(StanceBehavior)
-		if stance then
-			if stance.stance == Weapon.STANCE_AGGRESSIVE then
-				level = (level or 1) + 8
-			end
-		end
-	elseif purpose == Weapon.PURPOSE_TOOL then
-		level = (level or 1) + 8
-	end
-
-	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-	local strengthBonus = (bonuses[bonus] or 0) + bonusStrength
-
-	local maxHit = Utility.Combat.calcMaxHit(
-		level or 1,
-		1.0 * multiplier,
-		strengthBonus)
-	return math.floor(math.random(1, math.max(maxHit, 1))), maxHit
+	return roll
 end
 
 function Weapon:getBonusForStance(peep)
@@ -252,8 +313,8 @@ function Weapon:getAttackRange(peep)
 	return 1
 end
 
-function Weapon:onAttackHit(peep, target, attack, defense)
-	local damage = self:rollDamage(peep)
+function Weapon:onAttackHit(peep, target)
+	local damage = self:rollDamage(peep, Weapon.PURPOSE_KILL, target):roll()
 
 	local attack = AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
@@ -268,7 +329,7 @@ function Weapon:onAttackHit(peep, target, attack, defense)
 	self:applyCooldown(peep)
 end
 
-function Weapon:onAttackMiss(peep, target, attack, defense)
+function Weapon:onAttackMiss(peep, target)
 	local attack = AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),

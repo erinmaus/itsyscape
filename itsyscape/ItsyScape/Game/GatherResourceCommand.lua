@@ -21,8 +21,6 @@ function GatherResourceCommand:new(prop, tool, t)
 	self.prop = prop
 	self.tool = tool
 	self.skill = t.skill or false
-	self.multiplier = t.multiplier or 1
-	self.bonusStrength = t.bonusStrength or 0
 	self.action = t.action or false
 	self.time = 0
 	self.isFinished = false
@@ -93,7 +91,7 @@ function GatherResourceCommand:attack(peep)
 			end
 		end
 
-		local damage = logic:rollDamage(peep, self.multiplier, self.bonusStrength, Weapon.PURPOSE_TOOL)
+		local damage = logic:rollDamage(peep, Weapon.PURPOSE_TOOL, self.prop):roll()
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
 			damage = damage,

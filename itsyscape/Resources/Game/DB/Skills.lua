@@ -75,7 +75,13 @@ ItsyScape.Resource.Skill "Faith"
 		Skill = ItsyScape.Resource.Skill "Faith"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Pray",
+		Skill = ItsyScape.Resource.Skill "Faith"
+	}
+
 	ActionType "Bury"
+	ActionType "Pray"
 
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"

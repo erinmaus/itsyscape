@@ -39,13 +39,15 @@ function MagicWeapon:getSpell(peep)
 	return nil
 end
 
-function MagicWeapon:rollDamage(peep)
+function MagicWeapon:rollDamage(peep, purpose, target)
 	local spell = self:getSpell(peep)
-	if spell then
-		return Weapon.rollDamage(self, peep, 1, spell:getStrengthBonus())
-	else
-		return Weapon.rollDamage(self, peep)
+
+	local roll = Weapon.rollDamage(self, peep, purpose, target)
+	if target == Weapon.PURPOSE_KILL then
+		roll:setBonus(roll:getBonus() + spell:getStrengthBonus())
 	end
+
+	return roll
 end
 
 function MagicWeapon:perform(peep, target)
