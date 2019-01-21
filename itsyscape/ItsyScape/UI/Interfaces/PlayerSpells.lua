@@ -16,6 +16,7 @@ local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerSpells = Class(PlayerTab)
@@ -99,6 +100,24 @@ function PlayerSpells:setNumSpells(value)
 		end
 
 		self.onSpellsResized(self, #self.buttons)
+	end
+
+	local state = self:getState()
+	for i = 1, #self.buttons do
+		local spell = state.spells[i]
+		local button = self.buttons[i]
+
+		local runes = {}
+		for j = 1, #spell.items do
+			local s = string.format("- %dx %s", spell.items[j].count, spell.items[j].name)
+			table.insert(runes, ToolTip.Text(s))
+		end
+
+		button:setToolTip(
+			ToolTip.Header(spell.name),
+			ToolTip.Text(spell.description),
+			ToolTip.Text(string.format("Requires level %d Magic and:", spell.level)),
+			unpack(runes))
 	end
 
 	self:performLayout()
