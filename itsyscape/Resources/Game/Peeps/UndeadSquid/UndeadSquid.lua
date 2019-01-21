@@ -164,10 +164,10 @@ function UndeadSquid:onAttackShip()
 				end
 
 				local weapon = self:getBehavior(WeaponBehavior)
-				local damage = weapon.weapon:rollDamage(self, 1, 0, Weapon.PURPOSE_KILL)
+				local damage = weapon.weapon:rollDamage(self, Weapon.PURPOSE_KILL, shipMapScript)
 
 				shipMapScript:poke('hit', AttackPoke({
-					damage = damage,
+					damage = damage:roll(),
 					aggressor = self
 				}))
 			end
