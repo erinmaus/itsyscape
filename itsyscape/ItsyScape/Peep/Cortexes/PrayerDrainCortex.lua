@@ -41,11 +41,16 @@ function PrayerDrainCortex:update()
 			end
 		end
 
+		local faithLevel = peep:getState():count(
+			"Skill",
+			"Faith",
+			{ ['skill-as-level'] = true })
+
 		drain = drain + (self.ticks[peep] or 0)
 		local resistance
 		do
 			local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-			resistance = 30 + (bonuses['Prayer'] * game:getTicks())
+			resistance = 60 + (bonuses['Prayer'] * game:getTicks() * (faithLevel / 10))
 		end
 
 		local status = peep:getBehavior(CombatStatusBehavior)

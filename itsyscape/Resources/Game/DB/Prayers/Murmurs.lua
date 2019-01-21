@@ -12,7 +12,7 @@ ItsyScape.Resource.Effect "MetalSkin" {
 	ItsyScape.Action.Pray() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Level = ItsyScape.Utility.xpForLevel(1)
+			Count = ItsyScape.Utility.xpForLevel(1)
 		}
 	}
 }
@@ -36,8 +36,10 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Resource.Effect "IronWill" {
 	ItsyScape.Action.Pray() {
-		Resource = ItsyScape.Resource.Skill "Faith",
-		Level = ItsyScape.Utility.xpForLevel(1)
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
 	}
 }
 
@@ -60,8 +62,10 @@ ItsyScape.Meta.Prayer {
 
 ItsyScape.Resource.Effect "TimeErosion" {
 	ItsyScape.Action.Pray() {
-		Resource = ItsyScape.Resource.Skill "Faith",
-		Level = ItsyScape.Utility.xpForLevel(1)
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
 	}
 }
 
@@ -80,4 +84,82 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.Prayer {
 	Drain = 4,
 	Resource = ItsyScape.Resource.Effect "TimeErosion"
+}
+
+ItsyScape.Resource.Effect "WayOfTheWarrior" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 6,
+	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Way of the Warrior",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts melee offense by 10%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
+}
+
+ItsyScape.Resource.Effect "PathOfLight" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Path of Light",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts magic offense by 10%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 6,
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+ItsyScape.Resource.Effect "HawksEye" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hawk's Eye",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "HawksEye"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts ranged offense by 10%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "HawksEye"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 6,
+	Resource = ItsyScape.Resource.Effect "HawksEye"
 }
