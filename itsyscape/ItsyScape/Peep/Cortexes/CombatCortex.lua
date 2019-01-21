@@ -181,7 +181,6 @@ function CombatCortex:update(delta)
 								walk.onCanceled:register(function()
 									local s, t = Utility.Peep.getTile(target)
 									if s ~= targetI or t ~= targetJ then
-										print('resuming')
 										self.pendingResume[peep] = target
 									end
 								end)

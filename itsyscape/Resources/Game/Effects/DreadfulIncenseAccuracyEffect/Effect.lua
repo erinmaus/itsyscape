@@ -9,36 +9,34 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Effect = require "ItsyScape.Peep.Effect"
-local AccuracyEffect = require "ItsyScape.Peep.Effects.AccuracyEffect"
+local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
 -- Increases the accuracy by roughly 50%, additive, for both the attacker vs
 -- opponent and opponent vs attacker.
 --
 -- In actuality, it increases the accuracy roll by half of the defense roll for
 -- both parties.
-local DreadfulIncenseAccuracyEffect = Class(AccuracyEffect)
-DreadfulIncenseAccuracyEffect.DURATION = 90
+local DreadfulIncenseCombatEffect = Class(CombatEffect)
+DreadfulIncenseCombatEffect.DURATION = 90
 
-function DreadfulIncenseAccuracyEffect:getBuffType()
+function DreadfulIncenseCombatEffect:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
-function DreadfulIncenseAccuracyEffect:applySelf(roll)
+function DreadfulIncenseCombatEffect:applySelfToAttack(roll)
 	local accuracyRoll = roll:getMaxAttackRoll()
 	local defenseRoll = roll:getMaxDefenseRoll()
+	local newAccuracyRoll = accuracyRoll + defenseRoll / 2
 
-	accuracyRoll = accuracyRoll + defenseRoll / 2
-
-	roll:setMaxAttackRoll(accuracyRoll)
+	roll:setMaxAttackRoll(newAccuracyRoll)
 end
 
-function DreadfulIncenseAccuracyEffect:applyTarget(roll)
+function DreadfulIncenseCombatEffect:applyTargetToAttack(roll)
 	local accuracyRoll = roll:getMaxAttackRoll()
 	local defenseRoll = roll:getMaxDefenseRoll()
+	local newAccuracyRoll = accuracyRoll + defenseRoll / 2
 
-	accuracyRoll = accuracyRoll + defenseRoll / 2
-
-	roll:setMaxAttackRoll(accuracyRoll)
+	roll:setMaxAttackRoll(newAccuracyRoll)
 end
 
-return DreadfulIncenseAccuracyEffect
+return DreadfulIncenseCombatEffect

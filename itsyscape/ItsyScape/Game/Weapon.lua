@@ -292,13 +292,13 @@ end
 
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose)
-	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.DamageEffect") do
-		effect:applySelf(roll, purpose)
+	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+		effect:applySelfToDamage(roll, purpose)
 	end
 
 	if target then
-		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.DamageEffect") do
-			effect:applyTarget(roll, purpose)
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToDamage(roll, purpose)
 		end
 	end
 
@@ -354,13 +354,13 @@ end
 function Weapon:perform(peep, target)
 	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
 	do
-		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.AccuracyEffect") do
-			effect:applySelf(roll)
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToAttack(roll)
 		end
 	end
 	do
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.AccuracyEffect") do
-			effect:applyTarget(roll)
+		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToAttack(roll)
 		end
 	end
 
