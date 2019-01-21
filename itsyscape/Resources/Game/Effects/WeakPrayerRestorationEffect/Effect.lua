@@ -24,6 +24,10 @@ function WeakPrayerRestorationEffect:new(...)
 	self.tick = 0
 end
 
+function WeakPrayerRestorationEffect:getBuffType()
+	return Effect.BUFF_TYPE_POSITIVE
+end
+
 function WeakPrayerRestorationEffect:update(delta)
 	Effect.update(self, delta)
 

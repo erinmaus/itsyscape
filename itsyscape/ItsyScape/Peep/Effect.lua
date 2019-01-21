@@ -10,6 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 
 local Effect = Class()
+Effect.BUFF_TYPE_NONE     = 0
+Effect.BUFF_TYPE_POSITIVE = 1
+Effect.BUFF_TYPE_NEGATIVE = 2
 
 function Effect:new()
 	self.peep = false
@@ -47,6 +50,10 @@ end
 
 function Effect:sizzle()
 	self.peep = false
+end
+
+function Effect:getBuffType()
+	return Effect.BUFF_TYPE_NONE
 end
 
 function Effect:update(delta)

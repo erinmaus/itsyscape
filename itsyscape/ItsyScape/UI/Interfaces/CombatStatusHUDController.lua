@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local Effect = require "ItsyScape.Peep.Effect"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -84,7 +85,9 @@ function CombatStatusHUDController:updateState()
 				id = resource.name,
 				name = Utility.getName(resource, gameDB),
 				description = Utility.getDescription(resource, gameDB),
-				duration = effect:getDuration()
+				duration = effect:getDuration(),
+				debuff = effect:getBuffType() == Effect.BUFF_TYPE_NEGATIVE,
+				buff = effect:getBuffType() == Effect.BUFF_TYPE_POSITIVE
 			}
 
 			table.insert(result.effects, e)
