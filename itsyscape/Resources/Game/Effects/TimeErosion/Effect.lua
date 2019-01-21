@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
-local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
+local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
 -- Increases the defense bonuses and defense level by 10%-50%, scaled on
 -- Faith level (topping out at 50% at level 50). The boosted Faith level is
@@ -18,7 +18,7 @@ local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 -- the effect is better).
 --
 -- Only applies to attacks targeting ranged defenses.
-local TimeErosion = Class(CombatEffect)
+local TimeErosion = Class(PrayerCombatEffect)
 
 function TimeErosion:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
@@ -29,7 +29,7 @@ function TimeErosion:applyTargetToAttack(roll)
 	local defenseBonusType = roll:getDefenseBonusType()
 	if defenseBonusType == 'DefenseRanged' then
 		local state = roll:getTarget():getState()
-		local faithLevel = roll:count("Skill", "Faith". { ['skill-as-level'] = true })
+		local faithLevel = roll:count("Skill", "Faith", { ['skill-as-level'] = true })
 		local scale = math.min(faithLevel, 50) / 50 * 0.4 + 0.1
 
 		roll:setDefenseBonus(defenseBonus * scale)

@@ -43,6 +43,10 @@ Ribbon.TOOL_TIPS = {
 	["PlayerSpells"] = {
 		ToolTip.Header("Spells"),
 		ToolTip.Text("Cast spells and set your combat spells.")
+	},
+	["PlayerPrayers"] = {
+		ToolTip.Header("Prayers"),
+		ToolTip.Text("View available prayers and toggle them.")
 	}
 }
 
@@ -64,6 +68,7 @@ function Ribbon:new(id, index, ui)
 	self:addButton("PlayerEquipment", "Resources/Game/UI/Icons/Common/Equipment.png")
 	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
 	self:addButton("PlayerSpells", "Resources/Game/UI/Icons/Skills/Magic.png")
+	self:addButton("PlayerPrayers", "Resources/Game/UI/Icons/Skills/Faith.png")
 end
 
 function Ribbon:addButton(tab, icon)

@@ -83,6 +83,7 @@ function CombatStatusHUDController:updateState()
 			local resource = effect:getResource()
 			local e = {
 				id = resource.name,
+				z = resource.id.value,
 				name = Utility.getName(resource, gameDB),
 				description = Utility.getDescription(resource, gameDB),
 				duration = effect:getDuration(),
@@ -92,6 +93,8 @@ function CombatStatusHUDController:updateState()
 
 			table.insert(result.effects, e)
 		end
+
+		table.sort(result.effects, function(a, b) return a.z < b.z end)
 	end
 
 	-- Stats

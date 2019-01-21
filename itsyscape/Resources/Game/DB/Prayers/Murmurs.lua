@@ -10,9 +10,16 @@
 
 ItsyScape.Resource.Effect "MetalSkin" {
 	ItsyScape.Action.Pray() {
-		Resource = ItsyScape.Resource.Skill "Faith",
-		Level = ItsyScape.Resource.xpForLevel(1)
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Level = ItsyScape.Utility.xpForLevel(1)
+		}
 	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 4,
+	Resource = ItsyScape.Resource.Effect "MetalSkin"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -30,7 +37,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Effect "IronWill" {
 	ItsyScape.Action.Pray() {
 		Resource = ItsyScape.Resource.Skill "Faith",
-		Level = ItsyScape.Resource.xpForLevel(1)
+		Level = ItsyScape.Utility.xpForLevel(1)
 	}
 }
 
@@ -46,10 +53,15 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Effect "IronWill"
 }
 
+ItsyScape.Meta.Prayer {
+	Drain = 4,
+	Resource = ItsyScape.Resource.Effect "IronWill"
+}
+
 ItsyScape.Resource.Effect "TimeErosion" {
 	ItsyScape.Action.Pray() {
 		Resource = ItsyScape.Resource.Skill "Faith",
-		Level = ItsyScape.Resource.xpForLevel(1)
+		Level = ItsyScape.Utility.xpForLevel(1)
 	}
 }
 
@@ -62,5 +74,10 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Boosts ranged defenses by 10%-50%, based on Faith level.",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "TimeErosion"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 4,
 	Resource = ItsyScape.Resource.Effect "TimeErosion"
 }

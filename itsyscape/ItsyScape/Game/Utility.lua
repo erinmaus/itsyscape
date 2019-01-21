@@ -926,6 +926,26 @@ function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	return true
 end
 
+function Utility.Peep.toggleEffect(peep, resource, ...)
+	local gameDB = peep:getDirector():getGameDB()
+
+	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
+
+	if not EffectType then
+		Log.warn("Effect '%s' does not exist.", Utility.getName(resource, gameDB))
+		return false
+	end
+
+	local e = peep:getEffect(EffectType)
+	if e then
+		peep:removeEffect(e)
+	else
+		local effectInstance = EffectType(...)
+		effectInstance:setResource(resource)
+		peep:addEffect(effectInstance)
+	end
+end
+
 function Utility.Peep.canAttack(peep)
 	local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
 	if not status then
