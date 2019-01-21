@@ -225,6 +225,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "Prayer" {
+		Drain = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ResourceTag" {
 		Value = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
@@ -584,6 +589,9 @@ include "Resources/Game/DB/Shops/FishingStore.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernCombat.lua"
+
+-- Prayers
+include "Resources/Game/DB/Prayers/Murmurs.lua"
 
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"

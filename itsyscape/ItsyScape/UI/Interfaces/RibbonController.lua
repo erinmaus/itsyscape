@@ -26,7 +26,8 @@ function RibbonController:new(peep, director)
 		["PlayerInventory"] = true,
 		["PlayerEquipment"] = true,
 		["PlayerStats"] = true,
-		["PlayerSpells"] = true
+		["PlayerSpells"] = true,
+		["PlayerPrayers"] = true
 	}
 
 	self.currentTab = false
