@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Effect = require "ItsyScape.Peep.Effect"
 local AccuracyEffect = require "ItsyScape.Peep.Effects.AccuracyEffect"
 
 -- Increases the accuracy by roughly 50%, additive, for both the attacker vs
@@ -17,6 +18,10 @@ local AccuracyEffect = require "ItsyScape.Peep.Effects.AccuracyEffect"
 -- both parties.
 local DreadfulIncenseAccuracyEffect = Class(AccuracyEffect)
 DreadfulIncenseAccuracyEffect.DURATION = 90
+
+function DreadfulIncenseAccuracyEffect:getBuffType()
+	return Effect.BUFF_TYPE_POSITIVE
+end
 
 function DreadfulIncenseAccuracyEffect:applySelf(roll)
 	local accuracyRoll = roll:getMaxAttackRoll()

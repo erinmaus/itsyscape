@@ -10,8 +10,10 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
 local Icon = require "ItsyScape.UI.Icon"
@@ -50,6 +52,36 @@ CombatStatusHUD.PEEP_STAT_LABEL_STYLE = {
 	fontSize = 28,
 	textShadow = true
 }
+
+CombatStatusHUD.EffectBorder = Class(Drawable)
+CombatStatusHUD.EffectBorder.BORDER_THICKNESS = 1
+function CombatStatusHUD.EffectBorder:new()
+	Drawable.new(self)
+
+	self.current = 0
+	self.max = 1
+	self.color = Color(1, 1, 1, 0)
+end
+
+function CombatStatusHUD.EffectBorder:getColor()
+	return self.color
+end
+
+function CombatStatusHUD.EffectBorder:setColor(value)
+	self.color = value or self.color
+end
+
+function CombatStatusHUD.EffectBorder:draw(resources, state)
+	local w, h = self:getSize()
+
+	love.graphics.setColor(self.color:get())
+	love.graphics.setLineWidth(2)
+	love.graphics.rectangle('line', 0, 0, w, h)
+
+	love.graphics.setLineWidth(1)
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
 
 function CombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -243,6 +275,11 @@ function CombatStatusHUD:update(...)
 			label:setPosition(CombatStatusHUD.PADDING, CombatStatusHUD.EFFECT_SIZE - 22 - CombatStatusHUD.PADDING)
 			icon:setData('label', label)
 			icon:addChild(icon:getData('label'))
+
+			border = CombatStatusHUD.EffectBorder()
+			border:setSize(CombatStatusHUD.EFFECT_SIZE, CombatStatusHUD.EFFECT_SIZE)
+			icon:setData('border', border)
+			icon:addChild(border)
 		end
 
 		icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", state.effects[i].id))
@@ -277,6 +314,16 @@ function CombatStatusHUD:update(...)
 			}, self:getView():getResources()))
 		else
 			icon:getData('label'):setText("")
+		end
+
+		do
+			if state.effects[i].buff then
+				icon:getData('border'):setColor(Color(0, 1, 0, 1))
+			elseif state.effects[i].debuff then
+				icon:getData('border'):setColor(Color(1, 0, 0, 1))
+			else
+				icon:getData('border'):setColor(Color(1, 1, 1, 0))
+			end
 		end
 
 		icon:setToolTip(
