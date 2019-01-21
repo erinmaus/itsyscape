@@ -45,8 +45,12 @@ Weapon.BONUSES       = {
 
 Weapon.DamageRoll = Class()
 
-function Weapon.DamageRoll:new(weapon, peep, purpose)
+function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	purpose = purpose or Weapon.PURPOSE_KILL
+
+	self.weapon = weapon
+	self.peep = peep
+	self.target = target
 
 	local stats = peep:getBehavior(StatsBehavior)
 	if stats and stats.stats then
@@ -86,6 +90,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose)
 		level = (level or 1) + 8
 	end
 
+	self.bonusType = bonus
 	self.level = level
 
 	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
@@ -94,6 +99,14 @@ end
 
 function Weapon.DamageRoll:getWeapon()
 	return self.weapon
+end
+
+function Weapon.DamageRoll:getSelf()
+	return self.peep
+end
+
+function Weapon.DamageRoll:getTarget()
+	return self.target
 end
 
 function Weapon.DamageRoll:getLevel()
@@ -106,6 +119,10 @@ end
 
 function Weapon.DamageRoll:getBonus()
 	return self.bonus
+end
+
+function Weapon.DamageRoll:getBonusType()
+	return self.bonusType
 end
 
 function Weapon.DamageRoll:setBonus(value)
@@ -151,6 +168,9 @@ Weapon.AttackRoll = Class()
 function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 	self.weapon = weapon
 
+	self.peep = peep
+	self.target = target
+
 	-- There's a cyclic dependency here. Ugly.
 	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
@@ -161,6 +181,8 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 		local bonuses = Utility.Peep.getEquipmentBonuses(peep)
 		local k = "Accuracy" .. bonus
 		accuracyBonus = bonuses[k] or 0
+
+		self.accuracyBonusType = k
 	end
 
 	self.accuracyBonus = accuracyBonus
@@ -172,6 +194,8 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 		local bonuses = Utility.Peep.getEquipmentBonuses(target)
 		local k = "Defense" .. bonus
 		defenseBonus = bonuses[k] or 0
+
+		self.defenseBonusType = k
 	end
 
 	self.defenseBonus = defenseBonus
@@ -227,6 +251,14 @@ function Weapon.AttackRoll:getWeapon()
 	return self.weapon
 end
 
+function Weapon.AttackRoll:getSelf()
+	return self.peep
+end
+
+function Weapon.AttackRoll:getTarget()
+	return self.target
+end
+
 function Weapon.AttackRoll:getDefenseLevel()
 	return self.defenseLevel
 end
@@ -251,12 +283,20 @@ function Weapon.AttackRoll:setDefenseBonus(value)
 	self.defenseBonus = self.defenseBonus or value
 end
 
+function Weapon.AttackRoll:getDefenseBonusType()
+	return self.defenseBonusType
+end
+
 function Weapon.AttackRoll:getAccuracyBonus()
 	return self.accuracyBonus
 end
 
 function Weapon.AttackRoll:setAccuracyBonus(value)
 	self.accuracyBonus = self.accuracyBonus or value
+end
+
+function Weapon.AttackRoll:getAccuracyBonusType()
+	return self.accuracyBonusType
 end
 
 function Weapon.AttackRoll:getMaxAttackRoll()
@@ -291,7 +331,7 @@ function Weapon:rollAttack(peep, target, bonus)
 end
 
 function Weapon:rollDamage(peep, purpose, target)
-	local roll = Weapon.DamageRoll(self, peep, purpose)
+	local roll = Weapon.DamageRoll(self, peep, purpose, target)
 	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 		effect:applySelfToDamage(roll, purpose)
 	end
