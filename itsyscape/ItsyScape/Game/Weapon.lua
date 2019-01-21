@@ -75,6 +75,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
+
+		self.stat = skill
 	end
 
 	if purpose == Weapon.PURPOSE_KILL then
@@ -111,6 +113,14 @@ end
 
 function Weapon.DamageRoll:getLevel()
 	return self.level
+end
+
+function Weapon.DamageRoll:setLevel(value)
+	self.level = value or self.level
+end
+
+function Weapon.DamageRoll:getDamageStat()
+	return self.stat
 end
 
 function Weapon.DamageRoll:setLevel(value)
@@ -210,6 +220,8 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 			if stats:hasSkill(accuracyStat) then
 				attackLevel = stats:getSkill(accuracyStat):getWorkingLevel()
 			end
+
+			self.stat = accuracyStat
 		end
 
 		local stance = peep:getBehavior(StanceBehavior)
@@ -265,6 +277,10 @@ end
 
 function Weapon.AttackRoll:setDefenseLevel(value)
 	self.defenseLevel = self.defenseLevel or value
+end
+
+function Weapon.AttackRoll:getAccuracyStat()
+	return self.stat
 end
 
 function Weapon.AttackRoll:getAttackLevel()
