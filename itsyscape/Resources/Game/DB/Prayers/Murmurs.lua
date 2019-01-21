@@ -163,3 +163,81 @@ ItsyScape.Meta.Prayer {
 	Drain = 6,
 	Resource = ItsyScape.Resource.Effect "HawksEye"
 }
+
+ItsyScape.Resource.Effect "GammonsReckoning" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 12,
+	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gammon's Reckoning",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boost your minimum melee damage by 10% of your Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
+}
+
+ItsyScape.Resource.Effect "PrisiumsWisdom" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Prisium's Wisdom",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts your minimum magic damage by 10% of your Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 12,
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Resource.Effect "BastielsGaze" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's Gaze",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts your minimum ranged damage by 10% of your faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 12,
+	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}

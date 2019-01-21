@@ -29,7 +29,7 @@ function TimeErosion:applyTargetToAttack(roll)
 	local defenseBonusType = roll:getDefenseBonusType()
 	if defenseBonusType == 'DefenseRanged' then
 		local state = roll:getTarget():getState()
-		local faithLevel = roll:count("Skill", "Faith", { ['skill-as-level'] = true })
+		local faithLevel = state:count("Skill", "Faith", { ['skill-as-level'] = true })
 		local scale = math.min(faithLevel, 50) / 50 * 0.4 + 0.1
 
 		roll:setDefenseBonus(defenseBonus * scale)
