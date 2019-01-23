@@ -15,6 +15,24 @@ ItsyScape.Resource.Quest "CalmBeforeTheStorm" {
 	}
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Calm Before the Storm",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Can you help Isabelle rid her island of the undead?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This quest is started when you begin the game.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm"
+}
+
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",
 	"CalmBeforeTheStorm_TalkedToIsabelle1"
@@ -40,6 +58,10 @@ ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_GotAllItems",
 	"CalmBeforeTheStorm_TalkedToIsabelle2"
 )
+
+ItsyScape.Utility.questStep(
+	"CalmBeforeTheStorm_TalkedToIsabelle2",
+	"CalmBeforeTheStorm_IsabelleDefeated")
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
