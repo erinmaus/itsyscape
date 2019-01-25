@@ -10,13 +10,23 @@ if Utility.Item.spawnInPeepInventory(_TARGET, "CavePotato", 1) then
 end
 
 do
-	local INFO = option "Can you tell me about this place?"
-	local BOSS = option "Can you tell me what's behind the scary door?"
+	local INFO       = option "Can you tell me about this place?"
+	local BOSS       = option "Can you tell me what's behind the scary door?"
+	local EARTHQUAKE = option "Did you feel an earthquake?"
 
-	local result = select {
-		INFO,
-		BOSS
-	}
+	local result
+	if _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_TalkedToJenkins") then
+		result = select {
+			INFO,
+			BOSS,
+			EARTHQUAKE
+		}
+	else
+		result = select {
+			INFO,
+			BOSS
+		}
+	end
 
 	if result == INFO then
 		message "An evil necromancer sought something secret in this mine."
@@ -71,6 +81,27 @@ do
 		end
 
 		message "Just run away... You'll never defeat him."
+	elseif result == EARTHQUAKE then
+		message "I did. Happened when someone lit those torches."
+		message {
+			"She went through, then I heard fighting.",
+			"Never seen her before, or I must be going blind."
+		}
+
+		speaker "_TARGET"
+		message "But you don't even have eyes!"
+
+		speaker "Joe"
+		message "Since when did skeletons need eyes to see?"
+
+		speaker "_TARGET"
+		message "Nevermind. What did she look like?"
+
+		speaker "Joe"
+		message {
+			"She was wearing some tough looking armor and carrying a bunch of weapons.",
+			"Looked mighty tough. Best be careful."
+		}
 	end
 
 	message "Be safe... Leave this place."

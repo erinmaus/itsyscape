@@ -7,14 +7,24 @@ message "Ye be timing yer visit badly."
 
 local INFO      = option "Can you tell me about the squid?"
 local SAIL      = option "Let's set sail!"
+local RUMBRIDGE = option "Let's head to Rumbridge!"
 local NEVERMIND = option "I've gotta run."
 local result
 repeat
-	result = select {
-		INFO,
-		SAIL,
-		NEVERMIND
-	}
+	if _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_TalkedToIsabelle2") then
+		result = select {
+			INFO,
+			SAIL,
+			RUMBRIDGE,
+			NEVERMIND
+		}
+	else
+		result = select {
+			INFO,
+			SAIL,
+			NEVERMIND
+		}
+	end
 
 	if result == INFO then
 		message {
@@ -109,6 +119,31 @@ repeat
 		elseif choice == NO then
 			message "Wet feet, aye? Har har har!"
 		end
+	elseif result == RUMBRIDGE then
+		message {
+			"AAAAAH! Earthquake!" 
+		}
+
+		message "..."
+
+		message {
+			"No way in 'ell we'll be sailin' now. The waters will be angry, mate.",
+			"Might be wanting to see what caused that earthquake, ain't natural.",
+		}
+
+		speaker "_TARGET"
+
+		message {
+			"It felt like it came from direction of the Abandoned Mine."
+		}
+
+		speaker "Jenkins"
+
+		message {
+			"Best be investigatin', then."
+		}
+
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_TalkedToJenkins")
 	elseif result == NEVERMIND then
 		message {
 			"Ye best plan yer route.",

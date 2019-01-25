@@ -99,7 +99,12 @@ do
 
 	local TravelAction = ItsyScape.Action.Travel() {
 		Requirement {
-			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle2",
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToJenkins",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_OpenedHighChambersYendor",
 			Count = 1
 		}
 	}

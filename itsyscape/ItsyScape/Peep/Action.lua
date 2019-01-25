@@ -350,7 +350,7 @@ function Action:getFailureReason(state, peep)
 			type = resourceType.name,
 			resource = resource.name,
 			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
-			description = Utility.getDescription(resource, self.gameDB),
+			description = Utility.getDescription(resource, self.gameDB, nil, 1),
 			count = requirement.count
 		})
 	end
@@ -364,7 +364,7 @@ function Action:getFailureReason(state, peep)
 			type = resourceType.name,
 			resource = resource.name,
 			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
-			description = Utility.getDescription(resource, self.gameDB),
+			description = Utility.getDescription(resource, self.gameDB, nil, 1),
 			count = requirement.count
 		})
 	end
