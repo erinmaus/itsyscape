@@ -45,24 +45,25 @@ function PrayerDrainCortex:update()
 			"Skill",
 			"Faith",
 			{ ['skill-as-level'] = true })
-
-		drain = drain + (self.ticks[peep] or 0)
-		local resistance
-		do
-			local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-			resistance = 60 + (bonuses['Prayer'] * game:getTicks() * (faithLevel / 10))
-		end
-
-		local status = peep:getBehavior(CombatStatusBehavior)
-		if status then
-			while drain > resistance do
-				drain = drain - resistance
-
-				status.currentPrayer = math.max(status.currentPrayer - 1, 0)
+		if faithLevel then
+			drain = drain + (self.ticks[peep] or 0)
+			local resistance
+			do
+				local bonuses = Utility.Peep.getEquipmentBonuses(peep)
+				resistance = 60 + (bonuses['Prayer'] * game:getTicks() * (faithLevel / 10))
 			end
-		end
 
-		self.ticks[peep] = drain
+			local status = peep:getBehavior(CombatStatusBehavior)
+			if status then
+				while drain > resistance do
+					drain = drain - resistance
+
+					status.currentPrayer = math.max(status.currentPrayer - 1, 0)
+				end
+			end
+
+			self.ticks[peep] = drain
+		end
 	end
 end
 

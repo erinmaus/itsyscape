@@ -27,7 +27,12 @@ function RibbonController:new(peep, director)
 		["PlayerEquipment"] = true,
 		["PlayerStats"] = true,
 		["PlayerSpells"] = true,
-		["PlayerPrayers"] = true
+		["PlayerPrayers"] = true,
+		["Nominomicon"] = true
+	}
+
+	self.buttons = {
+		["Nominomicon"] = true
 	}
 
 	self.currentTab = false
@@ -60,10 +65,18 @@ function RibbonController:openTab(e)
 		ui:close(self.currentInterfaceID, self.currentInterfaceIndex)
 	end
 
-	self.currentInterfaceID, self.currentInterfaceIndex = ui:open(self:getPeep(), e.tab)
-	ui:sendPoke(self, "activate", nil, { self.currentInterfaceID })
+	local isButton = self.buttons[e.tab] or false
+	if not isButton then
+		self.currentInterfaceID, self.currentInterfaceIndex = ui:open(self:getPeep(), e.tab)
+		self.currentTab = e.tab
+	else
+		ui:openBlockingInterface(self:getPeep(), e.tab)
+		self.currentInterfaceID, self.currentInterfaceIndex = nil, nil
+		self.currentTab = nil
+	end
 
-	self.currentTab = e.tab
+	ui:sendPoke(self, "activate", nil, { self.currentInterfaceID, isButton })
+
 end
 
 function RibbonController:closeTab(e)

@@ -47,6 +47,10 @@ Ribbon.TOOL_TIPS = {
 	["PlayerPrayers"] = {
 		ToolTip.Header("Prayers"),
 		ToolTip.Text("View available prayers and toggle them.")
+	},
+	["Nominomicon"] = {
+		ToolTip.Header("Nominomicon"),
+		ToolTip.Text("View your quest progress.")
 	}
 }
 
@@ -69,6 +73,7 @@ function Ribbon:new(id, index, ui)
 	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
 	self:addButton("PlayerSpells", "Resources/Game/UI/Icons/Skills/Magic.png")
 	self:addButton("PlayerPrayers", "Resources/Game/UI/Icons/Skills/Faith.png")
+	self:addButton("Nominomicon", "Resources/Game/UI/Icons/Common/Nominomicon.png")
 end
 
 function Ribbon:addButton(tab, icon)
@@ -83,7 +88,6 @@ function Ribbon:addButton(tab, icon)
 	button.onClick:register(function()
 		if self.activeButton ~= button then
 			self:sendPoke("open", nil, { tab = tab })
-			self.activeButton = button
 		else
 			self:sendPoke("close", nil, {})
 			self.activeButton = false
@@ -115,7 +119,7 @@ function Ribbon:addButton(tab, icon)
 	self.buttons[tab] = button
 end
 
-function Ribbon:activate(tab)
+function Ribbon:activate(tab, isTabButton)
 	if self.activeButton then
 		self.activeButton:setStyle(ButtonStyle({
 			inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
@@ -123,12 +127,12 @@ function Ribbon:activate(tab)
 			pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 			icon = { filename = self.icons[self.activeButton], x = 0.5, y = 0.5 }
 		}, self:getView():getResources()))
-
-		self.activeButton = false
 	end
 
+	self.activeButton = false
+
 	local button = self.buttons[tab]
-	if button then
+	if button and not isTabButton then
 		button:setStyle(ButtonStyle({
 			inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
 			hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",

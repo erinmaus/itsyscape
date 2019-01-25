@@ -291,12 +291,12 @@ function Utility.getName(resource, gameDB, lang)
 	end
 end
 
-function Utility.getDescription(resource, gameDB, lang)
+function Utility.getDescription(resource, gameDB, lang, index)
 	lang = lang or "en-US"
 
 	local descriptionRecord = gameDB:getRecords("ResourceDescription", { Resource = resource, Language = lang })
 	if descriptionRecord and #descriptionRecord > 0 then
-		return descriptionRecord[math.random(#descriptionRecord)]:get("Value")
+		return descriptionRecord[index or math.random(#descriptionRecord)]:get("Value")
 	else
 		local name = Utility.getName(resource, gameDB) or ("*" .. resource.name)
 		return string.format("It's %s, as if you didn't know.", name)
@@ -1835,6 +1835,62 @@ function Utility.Peep.makeHuman(peep)
 	peep:addResource("animation-skill-woodcutting", skillAnimationWoodcutting)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
+end
+
+Utility.Quest = {}
+
+function Utility.Quest.build(quest, gameDB)
+	local brochure = gameDB:getBrochure()
+
+	local finalStep
+	for action in brochure:findActionsByResource(quest) do
+		local definition = brochure:getActionDefinitionFromAction(action)
+		if definition.name:lower() == 'questcomplete' then
+			for requirement in brochure:getRequirements(action) do
+				local resource = brochure:getConstraintResource(requirement)
+				local resourceType = brochure:getResourceTypeFromResource(resource)
+				if resourceType.name:lower() == 'keyitem' then
+					finalStep = resource
+					break
+				end
+			end
+		end
+	end
+
+	local e = {}
+	local result = {}
+	if finalStep then
+		table.insert(result, 1, { finalStep })
+
+		local currentSteps = { finalStep }
+		local nextSteps
+		repeat
+			nextSteps = {}
+			for i = 1, #currentSteps do
+				for action in brochure:findActionsByResource(currentSteps[i]) do
+					local definition = brochure:getActionDefinitionFromAction(action)
+					if definition.name:lower() == 'queststep' then
+						for requirement in brochure:getRequirements(action) do
+							local resource = brochure:getConstraintResource(requirement)
+							local resourceType = brochure:getResourceTypeFromResource(resource)
+							if resourceType.name:lower() == 'keyitem' and not e[resource.id.value] then
+								e[resource.id.value] = true
+								table.insert(nextSteps, resource)
+							end
+						end
+					end
+				end
+			end
+
+			if #nextSteps > 0 then
+				table.insert(result, 1, nextSteps)
+			end
+
+			currentSteps = nextSteps
+		until #nextSteps == 0
+	end
+
+	return result
 end
 
 return Utility
