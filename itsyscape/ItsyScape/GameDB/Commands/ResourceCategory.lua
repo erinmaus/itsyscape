@@ -95,7 +95,6 @@ function ResourceCategory:iterate()
 			end
 
 			i = i + 1
-			print(name, resource)
 			return name, resource
 		end
 	end
