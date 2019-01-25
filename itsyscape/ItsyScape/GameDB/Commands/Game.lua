@@ -67,18 +67,18 @@ end
 
 -- Instantiates the GameDB.
 function Game:instantiate(brochure)
+	for _, resources in self.Resource:iterate() do
+		for _, resource in ipairs(resources) do
+			resource:instantiate(brochure)
+		end
+	end
+
 	for _, metas in self.Meta:iterate() do
 		metas.definition:instantiate(brochure)
 
 		for _, meta in ipairs(metas) do
 			meta:instantiate(brochure)
 		end 
-	end
-
-	for _, resources in self.Resource:iterate() do
-		for _, resource in pairs(resources) do
-			resource:instantiate(brochure)
-		end
 	end
 
 	for _, meta in self.Meta:iterate() do

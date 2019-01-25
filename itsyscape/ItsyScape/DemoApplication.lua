@@ -72,6 +72,7 @@ function DemoApplication:initialize()
 
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
+	self:getGame():getUI():open(playerPeep, "Nominomicon")
 end
 
 function DemoApplication:tick()

@@ -33,7 +33,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 		self.height = 0
 	end
 
-	local lineHeight = font:getLineHeight() * font:getHeight()
+	local lineHeight = font:getHeight()
 	self.height = math.max(self.height, lineHeight)
 
 	if text.color then
@@ -54,26 +54,34 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 				local word = words[j]
 				local width = font:getWidth(word)
 
+				local needsSpace = j < #words
 				if width + self.x > self.width then
 					self.y = self.y + lineHeight
 					self.x = self.left
 
 					self.height = lineHeight
+					needsSpace = false
 				end
 
 				love.graphics.print(word, self.x, self.y)
 				self.x = self.x + width
 
-				local space = love.graphics.getWidth(" ")
-				if space + self.x > self.width then
-					self.y = self.y + lineHeight
-					self.x = self.left
+				if needsSpace then
+					local space = font:getWidth(" ")
+					if space + self.x > self.width then
+						self.y = self.y + lineHeight
+						self.x = self.left
 
-					self.height = lineHeight
+						self.height = lineHeight
+					else
+						self.x = self.x + space
+					end
 				end
-
-				self.x = self.x + space
 			end
+
+			self.x = self.left
+			self.y = self.y + self.height
+			self.height = lineHeight
 		else
 			self:drawBlock(snippet, text)
 		end
@@ -88,13 +96,16 @@ function RichTextLabelRenderer.Draw:drawText(text, parent)
 		}
 	end
 
-	local font = renderer.fonts.text
+	local font = self.renderer.fonts.text
 	love.graphics.setFont(font)
 
 	self:doDrawText(text, parent, font)
+
+	self.y = self.y + self.height
+	self.height = 0
 end
 
-function RichTextLabelRenderer:drawHeader(block, parent)
+function RichTextLabelRenderer.Draw:drawHeader(text, parent)
 	if type(text) == 'string' then
 		text = {
 			t = 'text',
@@ -102,13 +113,13 @@ function RichTextLabelRenderer:drawHeader(block, parent)
 		}
 	end
 
-	local font = renderer.fonts.text
+	local font = self.renderer.fonts.header
 	love.graphics.setFont(font)
 
 	self:doDrawText(text, parent, font)
 end
 
-function RichTextLabelRenderer:drawLink(block, parent)
+function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	local font = love.graphics.getFont()
 	local width = font:getWidth(block.text)
 	local height = self.height
@@ -119,13 +130,13 @@ function RichTextLabelRenderer:drawLink(block, parent)
 	end
 
 	local screenX, screenY = love.graphics.transformPoint(0, 0)
-	screenX = x + self.x
-	screenY = y + self.y
+	screenX = screenX + self.x
+	screenY = screenY + self.y
 
 	local mouseX, mouseY = love.mouse.getPosition()
 
 	local hover
-	if mouseX > screenX and mouseX < screen + width and
+	if mouseX > screenX and mouseX < screenX + width and
 	   mouseY > screenY and mouseY < screenY + height
 	then
 		hover = true
@@ -148,23 +159,29 @@ function RichTextLabelRenderer:drawLink(block, parent)
 	if hover and self.renderer.wasMouseDown and not self.renderer.isMouseDown then
 		love.system.openURL(block.destination)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
-function RichTextLabelRenderer:drawList(block, parent)
+function RichTextLabelRenderer.Draw:drawList(block, parent)
 	love.graphics.setColor(1, 1, 1, 1)
 
 	local font = self.renderer.fonts.text
 
+	local bulletX = self.x
+
 	local oldLeft = self.left
-	self.left = self.left + font:getHeight() / 2
+	self.left = self.left + font:getHeight()
+	self.x = self.x + font:getHeight()
 
 	for i = 1, #block do
 		local line = block[i]
 
 		love.graphics.circle(
 			'fill',
-			self.x + font:getHeight() / 2,
-			self.y + font:getHeight() / 2)
+			bulletX + font:getHeight() / 2,
+			self.y + font:getHeight() / 2,
+			font:getHeight() / 4)
 
 		if type(line) == 'text' then
 			self:drawText(line, self)
@@ -176,7 +193,7 @@ function RichTextLabelRenderer:drawList(block, parent)
 	self.left = oldLeft
 end
 
-function RichTextLabelRenderer:drawImage(block, parent)
+function RichTextLabelRenderer.Draw:drawImage(block, parent)
 	local resource = block.resource
 	local key = "image://" .. resource
 
@@ -189,7 +206,7 @@ function RichTextLabelRenderer:drawImage(block, parent)
 	self.x = self.left
 	self.y = self.y + self.height
 
-	love.graphics.drawImage(image, self.x, self.y)
+	love.graphics.draw(image, self.x, self.y)
 
 	self.height = image:getHeight()
 end
@@ -212,6 +229,7 @@ function RichTextLabelRenderer.Draw:draw()
 	for i = 1, #self.blocks do
 		local block = self.blocks[i]
 		self:drawBlock(block)
+		self.x = self.left
 	end
 
 	self.y = self.y + self.height
@@ -221,7 +239,7 @@ function RichTextLabelRenderer:new(t, resources)
 	WidgetRenderer.new(self, resources)
 
 	self.fonts = {
-		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 12),
+		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 16),
 		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", 18)
 	}
 	self.texts = {}

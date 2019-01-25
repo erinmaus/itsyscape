@@ -54,7 +54,10 @@ function ResourceCategory:add(name)
 		if not resources[resourceName] then
 			local resourceType = self._game:getResourceType(name)
 
-			resources[resourceName] = Resource(resourceType, resourceName)
+			local resource = Resource(resourceType, resourceName)
+
+			table.insert(resources, resource)
+			resources[resourceName] = resource
 		end
 
 		return resources[resourceName]
@@ -71,6 +74,7 @@ function ResourceCategory:add(name)
 	end
 
 	self[name] = setmetatable(C, _C)
+	table.insert(self._resources, resources)
 	self._resources[name] = resources
 end
 
@@ -78,7 +82,23 @@ end
 
 -- 'resources' is a map of a resource name to a Resource.
 function ResourceCategory:iterate()
-	return pairs(self._resources)
+	local i = 1
+	return function()
+		local resource = self._resources[i]
+		if resource then
+			local name
+			for key, value in pairs(self._resources) do
+				if type(key) == 'string' and value == resource then
+					name = key
+					break
+				end
+			end
+
+			i = i + 1
+			print(name, resource)
+			return name, resource
+		end
+	end
 end
 
 return ResourceCategory

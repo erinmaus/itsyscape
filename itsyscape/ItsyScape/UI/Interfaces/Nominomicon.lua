@@ -17,6 +17,8 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local Nominomicon = Class(Interface)
@@ -78,6 +80,12 @@ function Nominomicon:new(id, index, ui)
 	self.infoPanel:setSize(WIDTH * (1 / 2), HEIGHT)
 	self:addChild(self.infoPanel)
 
+	self.guideLabel = RichTextLabel()
+	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE, 0)
+	self.guideLabel:setWrapContents(true)
+	self.guideLabel:setWrapParentContents(true)
+	self.infoPanel:addChild(self.guideLabel)
+
 	self.closeButton = Button()
 	self.closeButton:setSize(Nominomicon.BUTTON_SIZE, Nominomicon.BUTTON_SIZE)
 	self.closeButton:setPosition(WIDTH - Nominomicon.BUTTON_SIZE, 0)
@@ -92,7 +100,7 @@ function Nominomicon:new(id, index, ui)
 	self.previousSelection = false
 end
 
-function SkillGuide:update(...)
+function Nominomicon:update(...)
 	Interface.update(self, ...)
 
 	if not self.ready then
@@ -106,6 +114,7 @@ function SkillGuide:update(...)
 			button:setToolTip(
 				ToolTip.Header(quest.name),
 				ToolTip.Text(quest.description))
+			button.onClick:register(self.selectItem, self, i)
 
 			button:setStyle(
 				ButtonStyle(
@@ -114,6 +123,8 @@ function SkillGuide:update(...)
 
 			self.grid:addChild(button)
 		end
+
+		self.ready = true
 	end
 end
 
@@ -138,12 +149,16 @@ function Nominomicon:selectItem(index, button)
 	else
 		self.activeItem = false
 		self.previousSelection = false
-		self:populateRequirements({
-			requirements = {},
-			inputs = {},
-			outputs = {}
-		})
+		self.guideLabel:setText("")
 	end
+end
+
+function Nominomicon:updateGuide()
+	local state = self:getState()
+	local currentQuest = state.currentQuest
+
+	self.guideLabel:setText(currentQuest)
+	self.infoPanel:getInnerPanel():setScroll(0, 0)
 end
 
 return Nominomicon
