@@ -129,7 +129,7 @@ function SkillGuide:update(...)
 			local action = gameDB:getAction(state.actions[i].id)
 			if action then
 				local item, quantity
-				local prop, peep, spell
+				local prop, peep, spell, prayer
 				for output in brochure:getOutputs(action) do
 					local outputResource = brochure:getConstraintResource(output)
 					local outputType = brochure:getResourceTypeFromResource(outputResource)
@@ -150,6 +150,9 @@ function SkillGuide:update(...)
 						break
 					elseif resourceType.name == "Spell" then
 						spell = resource
+						break
+					elseif resourceType.name == "Effect" then
+						prayer = resource
 						break
 					end
 				end
@@ -177,7 +180,7 @@ function SkillGuide:update(...)
 					end
 				end
 
-				if item or peep or prop then
+				if item or peep or prop or prayer then
 					local button = Button()
 					button.onClick:register(self.selectItem, self, state.actions[i])
 
@@ -188,6 +191,12 @@ function SkillGuide:update(...)
 						spellIcon:setPosition(4, 4)
 
 						button:addChild(spellIcon)
+					elseif prayer then
+						local icon = Icon()
+						icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.name))
+						icon:setPosition(4, 4)
+
+						button:addChild(icon)
 					elseif item then
 						local itemIcon = ItemIcon()
 						itemIcon:setItemID(item.name)
@@ -205,6 +214,8 @@ function SkillGuide:update(...)
 						button:setText(Utility.getName(prop, gameDB))
 					elseif spell then
 						button:setText(Utility.getName(spell, gameDB))
+					elseif prayer then
+						button:setText(Utility.getName(prayer, gameDB))
 					else
 						button:setText(Utility.getName(item, gameDB))
 					end
