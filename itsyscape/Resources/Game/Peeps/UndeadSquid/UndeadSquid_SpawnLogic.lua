@@ -130,6 +130,7 @@ local Tree = BTreeBuilder.Node() {
 						Mashina.Step {
 							Mashina.Peep.FindNearbyCombatTarget {
 								filter = Probe.resource("Peep", "Sailor_Panicked"),
+								include_npcs = true,
 								[SAILOR] = B.Output.result
 							},
 
