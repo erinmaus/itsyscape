@@ -20,6 +20,26 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Peep.Wait,
 
+		Mashina.Success {
+			Mashina.Skills.CraftViaNearbyProp {
+				prop = "Furnace_Default",
+				action = "Smelt",
+				resource = "CopperBar"
+			},
+		},
+
+		Mashina.Peep.Wait,
+
+		Mashina.Success {
+			Mashina.Skills.CraftViaNearbyProp {
+				prop = "Furnace_Default",
+				action = "Smelt",
+				resource = "TinBar"
+			},
+		},
+
+		Mashina.Peep.Wait,
+
 		Mashina.Peep.SetState {
 			state = "deposit"
 		}
