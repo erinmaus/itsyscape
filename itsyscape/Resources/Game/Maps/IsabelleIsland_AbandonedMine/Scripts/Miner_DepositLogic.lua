@@ -21,13 +21,25 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Navigation.WalkToPeep {
 			peep = PEEP,
-			distance = 1
+			distance = 1.5
 		},
 
 		Mashina.Peep.Wait,
 
 		Mashina.Peep.Trade {
 			item = "BronzeBar",
+			quantity = math.huge,
+			target = PEEP,
+		},
+
+		Mashina.Peep.Trade {
+			item = "CopperBar",
+			quantity = math.huge,
+			target = PEEP,
+		},
+
+		Mashina.Peep.Trade {
+			item = "TinBar",
 			quantity = math.huge,
 			target = PEEP,
 		},
