@@ -24,6 +24,14 @@ MovementCortex.GROUND_EPSILON = 0.1
 -- +/- CLAMP_EPSILON, then the component is clamped to zero.
 MovementCortex.CLAMP_EPSILON = 0.05
 
+-- Baseline for tick.
+--
+-- The MovementCortex was built under the assumption of 10 ticks/second. If this
+-- number changes in the future, the acceleration and velocity need to be smudged
+-- to feel the same. The 'multiplier' calculation in update keeps the movement
+-- roughly consistent no matter the ticks/second.
+MovementCortex.BASE_LINE_TICKS = 10
+
 function MovementCortex:new()
 	Cortex.new(self)
 
@@ -52,6 +60,8 @@ function MovementCortex:update(delta)
 	local gravity = game:getStage():getGravity()
 	local map = game:getStage():getMap()
 
+	local multiplier = 1 + (game:getTicks() - 10) / 200
+
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
@@ -71,7 +81,7 @@ function MovementCortex:update(delta)
 			end
 
 			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
-			movement.velocity = movement.velocity + acceleration
+			movement.velocity = movement.velocity + acceleration * multiplier
 			clampVector(movement.velocity)
 
 			do
@@ -88,10 +98,10 @@ function MovementCortex:update(delta)
 			local oldPosition = position.position
 
 			local velocity = movement.velocity * delta * movement.velocityMultiplier
-			position.position = position.position + velocity
+			position.position = position.position + velocity * multiplier
 
-			movement.acceleration = movement.acceleration * movement.decay
-			movement.velocity = movement.velocity * movement.decay
+			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
+			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)
 
 			local y = map:getInterpolatedHeight(
 				position.position.x,
