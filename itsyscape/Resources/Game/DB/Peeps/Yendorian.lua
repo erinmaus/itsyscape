@@ -78,7 +78,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(99),
+	Value = ItsyScape.Utility.xpForLevel(200),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 

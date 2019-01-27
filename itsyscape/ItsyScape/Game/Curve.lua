@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 
 local Curve, CurveMetatable = Class()
-Curve.MAX = 200
+Curve.MAX = 1000
 
 -- Constructs a new Curve, for things like XP.
 --

@@ -21,7 +21,7 @@ local Stats = Class()
 Stats.Skill = Class()
 Stats.Skill.MAX = 99
 
-function Stats.Skill:new(name)
+function Stats.Skill:new(name, max)
 	self.name = name
 	self.xp = 0
 	self.nextLevelXP = Curve.XP_CURVE:compute(2)
@@ -30,6 +30,7 @@ function Stats.Skill:new(name)
 	self.isDirty = false
 	self.onLevelUp = Callback()
 	self.onXPGain = Callback()
+	self.max = max or Stats.Skill.MAX
 end
 
 -- Gets the name of the skill.
@@ -98,7 +99,7 @@ end
 -- Gets the base level. This is the level derived from XP.
 function Stats.Skill:getBaseLevel()
 	if self.isDirty then
-		self.level = Curve.XP_CURVE:getLevel(self.xp, Stats.Skill.MAX)
+		self.level = Curve.XP_CURVE:getLevel(self.xp, self.max)
 		self.isDirty = false
 	end
 
@@ -113,7 +114,7 @@ function Stats.Skill:getWorkingLevel()
 end
 
 -- Creates a new Stats using skills in 'gameDB'.
-function Stats:new(id, gameDB)
+function Stats:new(id, gameDB, max)
 	self.id = id
 	self.skills = {}
 	self.skillsByIndex = {}
@@ -124,7 +125,7 @@ function Stats:new(id, gameDB)
 	local resourceType = Mapp.ResourceType()
 	if brochure:tryGetResourceType("Skill", resourceType) then
 		for resource in brochure:findResourcesByType(resourceType) do
-			local skill = Stats.Skill(resource.name)
+			local skill = Stats.Skill(resource.name, max)
 			skill.onLevelUp:register(self.onLevelUp, self)
 			skill.onXPGain:register(self.onXPGain, self)
 
