@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Curve = require "ItsyScape.Game.Curve"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
@@ -56,7 +57,7 @@ function Player:new(resource, ...)
 	Utility.Peep.makeMashina(self)
 	Utility.Peep.makeHuman(self)
 	Utility.Peep.makeSkiller(self)
-	Utility.Peep.addStats(self)
+	Utility.Peep.addStats(self, Curve.MAX)
 	Utility.Peep.addEquipment(self)
 	Utility.Peep.addInventory(self)
 

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Curve = require "ItsyScape.Game.Curve"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
@@ -51,7 +52,7 @@ function Creep:new(resource, ...)
 
 	Utility.Peep.makeAttackable(self)
 	Utility.Peep.makeMashina(self)
-	Utility.Peep.addStats(self)
+	Utility.Peep.addStats(self, Curve.MAX)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 12

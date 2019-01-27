@@ -18,6 +18,7 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 -- Represents an Actor that is simulated locally.
 local LocalActor = Class(Actor)
@@ -83,7 +84,7 @@ function LocalActor:getName()
 		end
 	end
 
-	if isAttackable then
+	if isAttackable or self.peep:hasBehavior(PlayerBehavior) then
 		local combatLevel = Utility.Combat.getCombatLevel(self.peep)
 		name = string.format("%s (Lvl %d)", name, combatLevel)
 	end

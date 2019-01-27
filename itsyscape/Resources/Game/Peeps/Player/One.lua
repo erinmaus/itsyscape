@@ -135,7 +135,7 @@ function One:assign(director, key, ...)
 	director:getItemBroker():addProvider(equipment.equipment)
 
 	local stats = self:getBehavior(StatsBehavior)
-	stats.stats = Stats("Player.One", director:getGameDB())
+	stats.stats = Stats("Player.One", director:getGameDB(), 99)
 
 	local storage = director:getPlayerStorage(self):getRoot()
 	if storage:get("filename") then

@@ -360,11 +360,22 @@ Utility.Combat = {}
 function Utility.Combat.getCombatLevel(peep)
 	local stats = peep:getBehavior(StatsBehavior)
 	if stats and stats.stats then
+		local constitution, faith
+		do
+			local status = peep:getBehavior(CombatStatusBehavior)
+			if status then
+				constitution = status.maximumHitpoints
+				faith = status.maximumPrayer
+			else
+				constitution = 1
+			end
+		end
+
 		stats = stats.stats
 		local base = (
 			stats:getSkill("Defense"):getBaseLevel() +
-			stats:getSkill("Constitution"):getBaseLevel() +
-			math.floor(stats:getSkill("Faith"):getBaseLevel() / 2 + 0.5)) / 2
+			math.max(stats:getSkill("Constitution"):getBaseLevel(), constitution) +
+			math.floor(math.max(stats:getSkill("Faith"):getBaseLevel(), faith) / 2 + 0.5)) / 2
 		local melee = (stats:getSkill("Attack"):getBaseLevel() + stats:getSkill("Strength"):getBaseLevel()) / 2
 		local magic = (stats:getSkill("Magic"):getBaseLevel() + stats:getSkill("Wisdom"):getBaseLevel()) / 2
 		local ranged = (stats:getSkill("Archery"):getBaseLevel() + stats:getSkill("Dexterity"):getBaseLevel()) / 2
@@ -1203,7 +1214,7 @@ function Utility.Peep.poof(peep)
 end
 
 Utility.Peep.Stats = {}
-function Utility.Peep.Stats:onAssign(director)
+function Utility.Peep.Stats.onAssign(max, self, director)
 	local stats = self:getBehavior(StatsBehavior)
 	if stats then
 		stats.stats = Stats(self:getName(), director:getGameDB())
@@ -1276,10 +1287,10 @@ function Utility.Peep.Stats:onFinalize(director)
 	end
 end
 
-function Utility.Peep.addStats(peep)
+function Utility.Peep.addStats(peep, max)
 	peep:addBehavior(StatsBehavior)
 
-	peep:listen('assign', Utility.Peep.Stats.onAssign)
+	peep:listen('assign', Utility.Peep.Stats.onAssign, max)
 	peep:listen('ready', Utility.Peep.Stats.onReady)
 	peep:listen('finalize', Utility.Peep.Stats.onFinalize)
 end
