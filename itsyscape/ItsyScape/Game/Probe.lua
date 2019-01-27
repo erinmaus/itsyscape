@@ -15,7 +15,14 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.World.Map"
 
 local Probe = Class()
-function Probe:new(game, gameView, gameDB, ray)
+Probe.TESTS = {
+	['walk'] = true,
+	['loot'] = true,
+	['actors'] = true,
+	['props'] = true
+}
+
+function Probe:new(game, gameView, gameDB, ray, tests)
 	self.onExamine = Callback()
 
 	self.game = game
@@ -27,6 +34,7 @@ function Probe:new(game, gameView, gameDB, ray)
 	self.isDirty = false
 
 	self.probes = {}
+	self.tests = tests
 
 	self.tile = false
 	self.layer = false
@@ -106,17 +114,31 @@ function Probe:all(callback)
 		end
 	end
 
-	local stage = self.game:getStage():testMap(layer, ray, function(result)
-		self:getTile(result, layer)
-		self:walk()
-		self:loot()
-		self:actors()
-		self:props()
+	local tests = self.tests or Probe.TESTS
+
+	if tests['loot'] or tests['walk'] then
+		self.game:getStage():testMap(layer, ray, function(result)
+			self:getTile(result, layer)
+			self:walk()
+			self:loot()
+			self:actors()
+			self:props()
+
+			if callback then
+				callback()
+			end
+		end)
+	else
+		for test in pairs(tests) do
+			if Probe.TESTS[test] then
+				self[test](self)
+			end
+		end
 
 		if callback then
 			callback()
 		end
-	end)
+	end
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
@@ -161,6 +183,7 @@ function Probe:walk()
 			id = "Walk",
 			verb = "Walk",
 			object = "here", -- lol
+			description = "Walk to this location.",
 			callback = function()
 				self.game:getPlayer():walk(i, j, k)
 			end,
@@ -217,6 +240,7 @@ function Probe:loot()
 				id = "Take",
 				verb = "Take",
 				object = object,
+				description = "Pick up item from the ground.",
 				callback = function()
 					self.game:getStage():takeItem(i, j, k, item.ref)
 				end,
@@ -259,6 +283,7 @@ function Probe:actors()
 					id = actions[i].id,
 					verb = actions[i].verb,
 					object = actor:getName(),
+					description = actor:getDescription(),
 					callback = function()
 						actor:poke(actions[i].id, 'world')
 					end,
@@ -272,6 +297,7 @@ function Probe:actors()
 
 			table.insert(self.actions, {
 				id = "Examine",
+				type = 'examine',
 				verb = "Examine",
 				object = actor:getName(),
 				callback = function()
@@ -312,6 +338,7 @@ function Probe:props()
 					id = actions[i].id,
 					verb = actions[i].verb,
 					object = prop:getName(),
+					description = prop:getDescription(),
 					callback = function()
 						prop:poke(actions[i].id, 'world')
 					end,
@@ -325,6 +352,7 @@ function Probe:props()
 
 			table.insert(self.actions, {
 				id = "Examine",
+				type = 'examine',
 				verb = "Examine",
 				object = prop:getName(),
 				callback = function()
