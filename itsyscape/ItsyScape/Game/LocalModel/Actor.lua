@@ -71,7 +71,24 @@ function LocalActor:getID()
 end
 
 function LocalActor:getName()
-	return self.peep:getName()
+	local name = self.peep:getName()
+	local isAttackable
+	do
+		local actions = self:getActions('world')
+		for i = 1, #actions do
+			if actions[i].type == 'Attack' then
+				isAttackable = true
+				break
+			end
+		end
+	end
+
+	if isAttackable then
+		local combatLevel = Utility.Combat.getCombatLevel(self.peep)
+		name = string.format("%s (Lvl %d)", name, combatLevel)
+	end
+
+	return name
 end
 
 function LocalActor:getDescription()

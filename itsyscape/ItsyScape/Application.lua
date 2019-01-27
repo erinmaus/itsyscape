@@ -154,9 +154,9 @@ function Application:getUIView()
 	return self.uiView
 end
 
-function Application:probe(x, y, performDefault, callback)
+function Application:probe(x, y, performDefault, callback, tests)
 	local ray = self:shoot(x, y)
-	local probe = Probe(self.game, self.gameView, self.gameDB, ray)
+	local probe = Probe(self.game, self.gameView, self.gameDB, ray, tests)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)
@@ -180,12 +180,10 @@ function Application:probe(x, y, performDefault, callback)
 					break
 				end
 			end
-		else
-			self.uiView:probe(probe:toArray())
 		end
 
 		if callback then
-			callback()
+			callback(probe)
 		end
 	end)
 end
