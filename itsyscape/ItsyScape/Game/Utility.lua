@@ -766,28 +766,30 @@ function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"
 
 	local director = peep:getDirector()
-	local gameDB = director:getGameDB()
+	if director then
+		local gameDB = director:getGameDB()
 
-	local mapObject = Utility.Peep.getMapObject(peep)
-	if mapObject then
-		local description = gameDB:getRecord("ResourceDescription", {
-			Language = lang,
-			Resource = mapObject
-		})
+		local mapObject = Utility.Peep.getMapObject(peep)
+		if mapObject then
+			local description = gameDB:getRecord("ResourceDescription", {
+				Language = lang,
+				Resource = mapObject
+			})
 
-		if description and description:get("Value") then
-			return description:get("Value")
+			if description and description:get("Value") then
+				return description:get("Value")
+			end
 		end
-	end
 
-	local resource = Utility.Peep.getResource(peep)
-	if resource then
-		return Utility.getDescription(resource, gameDB, lang)
-	end
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			return Utility.getDescription(resource, gameDB, lang)
+		end
 
-	local player = peep:getBehavior(PlayerBehavior)
-	if player then
-		return "Hey, you!"
+		local player = peep:getBehavior(PlayerBehavior)
+		if player then
+			return "Hey, you!"
+		end
 	end
 
 	return string.format("It's a %s.", peep:getName())
