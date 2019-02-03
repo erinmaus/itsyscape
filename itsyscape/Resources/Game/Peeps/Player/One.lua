@@ -170,6 +170,12 @@ function One:assign(director, key, ...)
 		combat.maximumPrayer = 1
 	end
 
+	stats.stats.onLevelUp:register(function(_, skill)
+		local value = string.format("%s, %d",
+			skill:getName(),
+			skill:getBaseLevel())
+		Log.analytic("PLAYER_GOT_LEVEL_UP", value)
+	end)
 	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 
@@ -343,6 +349,12 @@ function One:onDie(p)
 	Utility.save(self, false, true, "Aaah!")
 
 	self.deadTimer = 5
+
+	Log.analytic("PLAYER_DIED", Utility.Peep.getMap(self).name)
+end
+
+function One:onResurrect()
+	Log.analytic("PLAYER_REZZED", Utility.Peep.getMap(self).name)
 end
 
 function One:update(...)
