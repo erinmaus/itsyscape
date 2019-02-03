@@ -38,6 +38,9 @@ Log = require "ItsyScape.Common.Log"
 _APP = false
 _ARGS = {}
 
+_ANALYTICS = false
+_ANALYTICS_KEY = false
+
 math.randomseed(os.time())
 
 function love.load(args)
@@ -52,12 +55,47 @@ function love.load(args)
 			_DEBUG = true
 		end
 
+		if args[i] == "/phantom" then
+			_ANALYTICS_KEY = args[i + 1]
+		end
+
 		local c = args[i]:match("/f:(%w+)") or args[i]:match("--f:(%w+)")
 		if c then
 			_ARGS[c] = true
 		end
 
 		table.insert(_ARGS, c)
+	end
+
+	do
+		local AnalyticsClient = require "ItsyScape.Analytics.Client"
+		_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
+
+		local function printAnalytic(key, value)
+			key = _ANALYTICS.EVENTS[key]
+			if key and type(key) == 'string' then
+				if not value then
+					Log.print("analytic", string.format("%s: <event>", key))
+				else
+					if type(value) == 'string' then
+						Log.print("analytic", string.format("%s: '%s'", key, value))
+					elseif type(value) == 'number' then
+						Log.print("analytic", string.format("%s: %.02f", key, value))
+					end
+				end
+			end
+		end
+
+		if _ANALYTICS:getIsEnabled() then
+			Log.analytic = function(key, value)
+				printAnalytic(key, value)
+				_ANALYTICS:push(key, value)
+			end
+		else
+			Log.analytic = function(key, value)
+				printAnalytic(key, value)
+			end
+		end
 	end
 
 	if not main then
@@ -71,6 +109,8 @@ function love.load(args)
 		_APP = r(args)
 		_APP:initialize()
 	end
+
+	Log.analytic("START_GAME")
 
 	love.keyboard.setKeyRepeat(true)
 end
@@ -146,6 +186,8 @@ function love.quit()
 		p:stop()
 		p:writeReport("itsyscape.log")
 	end
+
+	Log.analytic("END_GAME")
 end
 
 function love.threaderror(m, e)
