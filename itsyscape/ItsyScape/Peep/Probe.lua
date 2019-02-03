@@ -78,7 +78,7 @@ function Probe.namedMapObject(name)
 		local resource = Utility.Peep.getMapObject(peep)
 		if resource then
 			local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
-			if location:get("Name") == name then
+			if location and location:get("Name") == name then
 				return true
 			end
 		end

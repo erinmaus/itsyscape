@@ -11,9 +11,8 @@ local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
-local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
-local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
+local Renderer = require "ItsyScape.Graphics.Renderer"
+local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
@@ -161,6 +160,114 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 		self.cameraVerticalRotationOffset = angle1
 		self.cameraHorizontalRotationOffset = angle2
 	end
+end
+
+function DemoApplication:keyDown(key, ...)
+	Application.keyDown(self, key, ...)
+
+	local isShiftDown = love.keyboard.isDown('lshift') or
+	                    love.keyboard.isDown('rshift')
+
+	local isCtrlDown = love.keyboard.isDown('lctrl') or
+	                    love.keyboard.isDown('rctrl')
+
+	if key == 'printscreen' and isCtrlDown then
+		self:snapshotPlayerPeep()
+	elseif key == 'printscreen' and isShiftDown then
+		self:snapshotGame()
+	end
+end
+
+function DemoApplication:getScreenshotName(prefix, index)
+	local suffix = os.date("%Y-%m-%d %H%M%S")
+
+	local filename
+	if index then
+		filename = string.format("%s %s %03d.png", prefix, suffix, index)
+	else
+		filename = string.format("%s %s.png", prefix, suffix)
+	end
+
+	return filename
+end
+
+function DemoApplication:snapshotPlayerPeep()
+	local actors
+	if _DEBUG then
+		actors = {}
+		for actor in self:getGame():getStage():iterateActors() do
+			table.insert(actors, actor)
+		end
+	else
+		actors = { self:getGame():getPlayer():getActor() }
+	end
+
+	local renderer = Renderer()
+	love.graphics.push('all')
+	do
+		local camera = ThirdPersonCamera()
+		local gameCamera = self:getCamera()
+		camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
+		camera:setVerticalRotation(gameCamera:getVerticalRotation())
+		camera:setWidth(1024)
+		camera:setHeight(1024)
+
+		local renderer = Renderer()
+		love.graphics.setScissor()
+		renderer:setClearColor(Color(0, 0, 0, 0))
+		renderer:setCullEnabled(false)
+		renderer:setCamera(camera)
+
+		for index, actor in ipairs(actors) do
+			local view = self:getGameView():getActor(actor)
+			local zoom, position
+			do
+				local min, max = actor:getBounds()
+				local offset = (max.y - min.y) / 2
+				zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 4
+
+				local transform = view:getSceneNode():getTransform():getGlobalTransform()
+				position = Vector(transform:transformPoint(0, offset, 0))
+			end
+
+			camera:setPosition(position)
+			camera:setDistance(zoom)
+
+			renderer:draw(view:getSceneNode(), self:getFrameDelta(), 1024, 1024)
+			love.graphics.setCanvas()
+
+			local imageData = renderer:getOutputBuffer():getColor():newImageData()
+			imageData:encode('png', self:getScreenshotName("Peep", index))
+		end
+	end
+	love.graphics.pop()
+end
+
+function DemoApplication:snapshotGame()
+	love.graphics.push('all')
+	do
+		local camera = self:getCamera()
+		local w, h = camera:getWidth(), camera:getHeight()
+
+		camera:setWidth(1920)
+		camera:setHeight(1080)
+
+		local renderer = Renderer()
+
+		love.graphics.setScissor()
+		renderer:setClearColor(Color(0, 0, 0, 0))
+		renderer:setCullEnabled(false)
+		renderer:setCamera(camera)
+		renderer:draw(self:getGameView():getScene(), self:getFrameDelta(), 1920, 1080)
+		love.graphics.setCanvas()
+
+		local imageData = renderer:getOutputBuffer():getColor():newImageData()
+		imageData:encode('png', self:getScreenshotName("Screenshot"))
+
+		camera:setWidth(w)
+		camera:setHeight(h)
+	end
+	love.graphics.pop()
 end
 
 function DemoApplication:update(delta)
