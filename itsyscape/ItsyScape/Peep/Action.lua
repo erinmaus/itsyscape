@@ -230,6 +230,8 @@ function Action:perform(state, player, eventArgs, ...)
 	for i = 1, #events do
 		self:sendEvent(player, events[i], eventArgs)
 	end
+
+	player:poke('actionPerformed', { action = self })
 end
 
 -- Consumes inputs.
