@@ -89,6 +89,17 @@ function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine)
 	self:setBounds(Vector.ZERO, Vector(self.width, self.height, self.depth))
 end
 
+function WaterMeshSceneNode:setMesh(mesh)
+	if self.isOwner and self.waterMesh then
+		self.waterMesh:release()
+	end
+
+	self.waterMesh = mesh
+	self.isOwner = false
+
+	self:setBounds(self.waterMesh:getBounds())
+end
+
 -- Hahahahaha.
 function WaterMeshSceneNode:degenerate()
 	if self.waterMesh then
