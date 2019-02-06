@@ -32,12 +32,19 @@ function WaterMesh:release()
 	self.mesh:release()
 end
 
+function WaterMesh:getBounds()
+	return self.min, self.max
+end
+
 function WaterMesh:draw(texture, ...)
 	self.mesh:setTexture(texture)
 	love.graphics.draw(self.mesh, ...)
 end
 
 function WaterMesh:_buildMesh()
+	self.min = Vector(math.huge)
+	self.max = Vector(-math.huge)
+
 	for j = 1, self.height do
 		for i = 1, self.width do
 			self:_addFlat(i - 0.5, j - 0.5)
@@ -56,6 +63,9 @@ function WaterMesh:_addVertex(position, normal, texture)
 		normal.x, normal.y, normal.z,
 		position.x * 1 / self.scale, position.z * 1 / self.scale
 	}
+
+	self.min = self.min:min(position)
+	self.max = self.max:max(position)
 
 	table.insert(self.vertices, vertex)
 end
