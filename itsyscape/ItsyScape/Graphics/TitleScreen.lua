@@ -10,22 +10,100 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local XYZQuadSceneNode = require "ItsyScape.Graphics.XYZQuadSceneNode"
+local Color = require "ItsyScape.Graphics.Color"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local FontResource = require "ItsyScape.Graphics.FontResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
-local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
 local WaterMesh = require "ItsyScape.World.WaterMesh"
+local XYZQuadSceneNode = require "ItsyScape.Graphics.XYZQuadSceneNode"
 
 local TitleScreen = Class()
+function TitleScreen.performRotate(position, angle)
+	local tx = position.x
+	local tz = position.z - 1
+
+	local x = tx * math.cos(-angle) - tz * math.sin(-angle)
+	local y = position.y - 0.5
+	local z = tz * math.cos(-angle) + tx * math.sin(-angle)
+
+	return Vector(x, y, z)
+end
+
 TitleScreen.SPEED = math.pi / 16
 
-function TitleScreen:new(resources, id)
+TitleScreen.Model = Class()
+function TitleScreen.Model:new(node, quad, position)
+	self.node = node
+	self.quad = quad
+	self.position = position
+end
+
+function TitleScreen.Model:getNode()
+	return self.node
+end
+
+function TitleScreen.Model:getQuad()
+	return self.quad
+end
+
+function TitleScreen.Model:getPosition()
+	return self.position
+end
+
+function TitleScreen.Model:rotate(angle)
+	local position = TitleScreen.performRotate(self.position, angle)
+
+	self.quad:getTransform():setLocalTranslation(position)
+	self.quad:getTransform():setPreviousTransform(position, nil, nil)
+end
+
+TitleScreen.Ground = Class()
+function TitleScreen.Ground:new(node, quad)
+	self.node = node
+	self.quad = quad
+end
+
+function TitleScreen.Ground:getNode()
+	return self.node
+end
+
+function TitleScreen.Ground:getQuad()
+	return self.quad
+end
+
+function TitleScreen.Ground:rotate(angle)
+	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
+	self.node:getTransform():setLocalRotation(rotation)
+	self.node:getTransform():setPreviousTransform(nil, rotation, nil)
+end
+
+TitleScreen.Water = Class()
+function TitleScreen.Water:new(node, water)
+	self.node = node
+	self.water = water
+end
+
+function TitleScreen.Water:getNode()
+	return self.node
+end
+
+function TitleScreen.Water:getQuad()
+	return self.water
+end
+
+function TitleScreen.Water:rotate(angle)
+	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
+	self.node:getTransform():setLocalRotation(rotation)
+	self.node:getTransform():setPreviousTransform(nil, rotation, nil)
+end
+
+function TitleScreen:new(gameView, id)
+	self.gameView = gameView
 	self.id = id
-	self.resources = resources
+	self.resources = gameView:getResourceManager()
 	self.time = 0
 
 	local filename = string.format("Resources/Game/TitleScreens/%s/", id)
@@ -36,12 +114,17 @@ function TitleScreen:new(resources, id)
 	self:load(filename, t)
 
 	self.renderer = Renderer()
+	self.renderer:setClearColor(Color(0, 0, 0, 0))
 	self.camera = ThirdPersonCamera()
 	self.camera:setUp(Vector(0, -1, 0))
-	self.camera:setHorizontalRotation(-math.pi / 6)
+	self.camera:setHorizontalRotation(-math.pi / 12)
 	self.camera:setVerticalRotation(-math.pi / 2)
 	self.camera:setDistance(15)
-	self.camera:setPosition(Vector(0, 1, 16))
+	self.camera:setPosition(Vector(0, -1, 16))
+end
+
+function TitleScreen:getGameView()
+	return self.gameView
 end
 
 function TitleScreen:getScene()
@@ -58,6 +141,14 @@ end
 
 function TitleScreen:getCamera()
 	return self.camera
+end
+
+function TitleScreen:getTime()
+	return self.time
+end
+
+function TitleScreen:getAngle()
+	return self.time * self.SPEED
 end
 
 function TitleScreen:load(filename, t)
@@ -97,10 +188,7 @@ function TitleScreen:load(filename, t)
 				self.groundWidth = math.max(texture:getWidth(), self.groundWidth)
 				self.groundHeight = math.max(texture:getHeight(), self.groundHeight)
 
-				table.insert(self.ground, {
-					node = root,
-					quad = quad
-				})
+				table.insert(self.ground, TitleScreen.Ground(root, quad))
 			end)
 	end
 
@@ -120,22 +208,17 @@ function TitleScreen:load(filename, t)
 					local positionX = model.x / self.groundWidth - 0.5
 					local positionZ = (1 - model.z / self.groundHeight) + 0.5
 
+					local position = Vector(positionX, scaleY, positionZ)
+
 					local root = SceneNode()
 					root:setParent(self.scene)
 					root:getTransform():setLocalTranslation(Vector(0, 0, 1))
+
 					local quad = XYZQuadSceneNode(scaleX, scaleY, 1)
 					quad:getMaterial():setTextures(texture)
-
 					quad:setParent(root)
-					quad:getTransform():setLocalTranslation(Vector(positionX, scaleY - 0.5, positionZ))
 
-					table.insert(self.models, {
-						node = root,
-						quad = quad,
-						x = positionX,
-						y = scaleY,
-						z = positionZ
-					})
+					table.insert(self.models, TitleScreen.Model(root, quad, position))
 				end)
 		end
 	end
@@ -151,6 +234,7 @@ function TitleScreen:load(filename, t)
 				local node = SceneNode()
 				node:setParent(self.scene)
 				node:getTransform():setLocalScale(Vector(1 / 8, 1, 1 / 8))
+
 				local waterMesh = WaterMesh(64, 64)
 				local water = WaterMeshSceneNode()
 				water:setYOffset(1 / 64)
@@ -159,10 +243,7 @@ function TitleScreen:load(filename, t)
 				water:setParent(node)
 				water:getMaterial():setTextures(texture)
 
-				table.insert(self.water, {
-					node = node,
-					water = water
-				})
+				table.insert(self.water, TitleScreen.Water(node, water))
 			end)
 	end
 
@@ -172,42 +253,42 @@ function TitleScreen:load(filename, t)
 	end)
 end
 
+function TitleScreen:getGround()
+	return self.ground
+end
+
+function TitleScreen:getWater()
+	return self.water
+end
+
+function TitleScreen:getModels()
+	return self.models
+end
+
 function TitleScreen:update(delta)
 	self.time = self.time + delta
 
-	local angle = self.time * self.SPEED
-	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
+	local angle = self:getAngle()
 
 	for i = 1, #self.ground do
-		local ground = self.ground[i].node
-		ground:getTransform():setLocalRotation(rotation)
+		self.ground[i]:rotate(angle)
 	end
 
 	for i = 1, #self.water do
-		local water = self.water[i].node
-		water:getTransform():setLocalRotation(rotation)
+		self.water[i]:rotate(angle)
 	end
-	--self.scene:getTransform():setLocalRotation(rotation)
-	--self.scene:getTransform():setPreviousTransform(nil, rotation, nil)
 
-	local antiRotation = Quaternion.fromAxisAngle(-Vector.UNIT_Y, angle)
 	for i = 1, #self.models do
-		local t = self.models[i]
-		local position
-		do
-			local tx = t.x
-			local tz = t.z - 1
-			local x = tx * math.cos(-angle) - tz * math.sin(-angle)
-			local y = t.y - 0.5
-			local z = tz * math.cos(-angle) + tx * math.sin(-angle)
-			position = Vector(x, y, z)
-		end
-
-		t.quad:getTransform():setLocalTranslation(position)
-		--t.node:getTransform():setLocalRotation(antiRotation)
-		t.quad:getTransform():setPreviousTransform(position, nil, nil)
-		--t.node:getTransform():setPreviousTransform(nil, antiRotation, nil)
+		self.models[i]:rotate(angle)
 	end
+end
+
+function TitleScreen:drawSkybox()
+	local width, height = love.window.getMode()
+	love.graphics.setColor(0, 0, 1, 1)
+	love.graphics.rectangle('fill', 0, 0, width, height)
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 function TitleScreen:draw()
@@ -216,11 +297,21 @@ function TitleScreen:draw()
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)
 
+	self:drawSkybox()
+
 	love.graphics.push('all')
 	self.renderer:setCamera(self.camera)
 	self.renderer:draw(self.scene, 0)
-	self.renderer:present()
 	love.graphics.pop()
+
+	love.graphics.ortho(width, height)
+	self.renderer:presentCurrent()
+
+	self:drawTitle()
+end
+
+function TitleScreen:drawTitle()
+	local width, height = love.window.getMode()
 
 	if self.logo and self.font then
 		love.graphics.draw(
@@ -249,6 +340,5 @@ function TitleScreen:draw()
 		love.graphics.setFont(previousFont)
 	end
 end
-
 
 return TitleScreen
