@@ -399,7 +399,7 @@ function One:update(...)
 end
 
 function One:onPoof()
-	Log.error('Player poofed.')
+	Log.info('Player poofed.')
 end
 
 function One:onActionFailed(e)

@@ -284,6 +284,7 @@ function ActorView:applySkin(slotNodes)
 						slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
 
 						slot.sceneNode:setParent(self.sceneNode)
+						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
 
 						self.models[slot.sceneNode] = true
 

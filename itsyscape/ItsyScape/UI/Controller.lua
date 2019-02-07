@@ -15,6 +15,10 @@ local Controller = Class()
 function Controller:new(peep, director)
 	self.peep = peep
 	self.director = director
+
+	self.peep:listen('poof', function()
+		self:getGame():getUI():closeInstance(self)
+	end)
 end
 
 -- Gets the peep this controller belongs to.

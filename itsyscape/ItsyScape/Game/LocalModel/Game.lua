@@ -57,6 +57,10 @@ function LocalGame:getCurrentTick()
 	return self.ticks
 end
 
+function LocalGame:poofPlayer()
+	self.playerSpawned = false
+end
+
 function LocalGame:tick()
 	if not self.playerSpawned then
 		self.player:spawn()

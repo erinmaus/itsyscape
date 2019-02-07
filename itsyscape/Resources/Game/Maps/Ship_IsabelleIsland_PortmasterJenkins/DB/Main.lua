@@ -5,6 +5,18 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Portmaster Jenkins' Ship",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A ship in very bad shape, manned by the terrified.",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -99,8 +99,9 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
 	local wx, wy = widget:getPosition()
 	local ww, wh = widget:getSize()
 
-	if x >= px + wx and x < px + wx + ww and
-	   y >= py + wy and y < py + wy + wh
+	if (x >= px + wx and x < px + wx + ww and
+	   y >= py + wy and y < py + wy + wh)
+	   or widget:getOverflow() 
 	then
 		local sx, sy = widget:getScroll()
 

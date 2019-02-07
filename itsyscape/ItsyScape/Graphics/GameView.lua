@@ -123,7 +123,7 @@ function GameView:new(game)
 	self.items = {}
 
 	local imageData = love.image.newImageData(1, 1)
-	imageData:setPixel(0, 0, 1, 1, 1, 1)
+	imageData:setPixel(0, 0, 1, 1, 1, 0)
 	self.whiteTexture = TextureResource(love.graphics.newImage(imageData))
 
 	self.projectiles = {}
