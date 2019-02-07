@@ -238,8 +238,10 @@ function CharacterCustomizationController:pull()
 	local peep = self:getPeep()
 	local gender = peep:getBehavior(GenderBehavior)
 
+	local storage = self:getDirector():getPlayerStorage(peep)
+
 	return {
-		name = peep:getName(),
+		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name"),
 		gender = gender.gender,
 		pronouns = {
 			subject = gender.pronouns[GenderBehavior.PRONOUN_SUBJECT],
