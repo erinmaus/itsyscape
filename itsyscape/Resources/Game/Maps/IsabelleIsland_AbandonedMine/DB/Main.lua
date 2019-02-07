@@ -5,6 +5,18 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Isabelle Island, Abandoned Mine",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "An ancient cavern full of tin and copper... and the restless undead.",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

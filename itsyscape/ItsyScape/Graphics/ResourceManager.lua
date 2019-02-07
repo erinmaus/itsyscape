@@ -30,7 +30,7 @@ end
 
 -- Returns true if pending resources are in the queue, false otherwise.
 function ResourceManager:getIsPending()
-	return #self.pending > 0
+	return #self.pending > 0, #self.pending
 end
 
 -- Loads async resources.

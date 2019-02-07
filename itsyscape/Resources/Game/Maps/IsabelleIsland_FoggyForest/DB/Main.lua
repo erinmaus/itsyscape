@@ -5,6 +5,18 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Isabelle Island, Foggy Forest",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The resting place of Yendor's faithful human servants.",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -42,6 +42,12 @@ function ItsyScapeDirector:new(game, gameDB)
 	self.playerStorage = {}
 end
 
+function ItsyScapeDirector:setPlayerStorage(index, value)
+	if value and (not value or Class.isType(value, PlayerStorage)) then
+		self.playerStorage[index] = value or PlayerStorage()
+	end
+end
+
 function ItsyScapeDirector:getPlayerStorage(peep)
 	if peep then
 		local index

@@ -5,6 +5,18 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Port Isabelle, Ocean",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Aah, angry squid!",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

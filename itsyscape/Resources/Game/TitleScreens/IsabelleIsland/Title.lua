@@ -72,10 +72,9 @@ function IsabelleIsland:load(filename, t)
 	self.squid = SceneNode()
 	self.squid:getTransform():setLocalScale(Vector(1 / 64))
 	self.squidActorView:getSceneNode():setParent(self.squid)
-	self.squid:setParent(self:getScene())
 	self:getResources():queueEvent(
 		function()
-			--self.scene = self.squid
+			self.squid:setParent(self:getScene())
 		end)
 end
 

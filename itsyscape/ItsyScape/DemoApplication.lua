@@ -15,6 +15,8 @@ local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local Widget = require "ItsyScape.UI.Widget"
+local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 
 local DemoApplication = Class(Application)
 DemoApplication.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
@@ -56,42 +58,52 @@ function DemoApplication:getPlayerPosition(delta)
 end
 
 function DemoApplication:initialize()
-	local storage = love.filesystem.read("Player/Default.dat")
-	if storage then
-		self:getGame():getDirector():getPlayerStorage(1):deserialize(storage)
-	end
-
-	storage = self:getGame():getDirector():getPlayerStorage(1)
-
 	Application.initialize(self)
 
-	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
+	self:openTitleScreen()
+end
 
-	if not storage:getRoot():hasSection("Location") or
-	   not storage:getRoot():getSection("Location"):get("name")
-	then
-		self:getGame():getStage():movePeep(
-			playerPeep,
-		"IsabelleIsland_Tower",
-		"Anchor_StartGame")
+function DemoApplication:closeTitleScreen()
+	self:setIsPaused(false)
+
+	if self.mainMenu then
+		self.mainMenu:getParent():removeChild(self.mainMenu)
+		self.mainMenu = nil
 	end
 
+	if self.titleScreen then
+		self.titleScreen = nil
+	end
+
+	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
 end
 
-function DemoApplication:tick()
-	Application.tick(self)
+function DemoApplication:openTitleScreen()
+	self:setIsPaused(true)
+	local TitleScreen = require "Resources.Game.TitleScreens.IsabelleIsland.Title"
+	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
 end
 
 function DemoApplication:mousePress(x, y, button)
-	if not Application.mousePress(self, x, y, button) then
-		if button == 1 then
-			self:probe(x, y, true)
-		elseif button == 2 then
-			self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
-		elseif button == 3 then
-			self.isCameraDragging = true
+	if self.titleScreen and not self.mainMenu then
+		local mainMenu = Widget()
+		mainMenu:setSize(love.window.getMode())
+
+		self.mainMenu = mainMenu
+		self.mainMenu:addChild(PlayerSelect(self))
+
+		self:getUIView():getRoot():addChild(self.mainMenu)
+	else
+		if not Application.mousePress(self, x, y, button) then
+			if button == 1 then
+				self:probe(x, y, true)
+			elseif button == 2 then
+				self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
+			elseif button == 3 then
+				self.isCameraDragging = true
+			end
 		end
 	end
 end
@@ -302,6 +314,10 @@ function DemoApplication:update(delta)
 			math.huge,
 			unpack(self.toolTip))
 	end
+
+	if self.titleScreen then
+		self.titleScreen:update(delta)
+	end
 end
 
 function DemoApplication:draw(delta)
@@ -309,7 +325,13 @@ function DemoApplication:draw(delta)
 	local current = self.currentPlayerPosition
 	self:getCamera():setPosition(self:getPlayerPosition(self:getFrameDelta()))
 
-	Application.draw(self, delta)
+	if self.titleScreen then
+		self.titleScreen:draw()
+
+		self:getUIView():draw()
+	else
+		Application.draw(self, delta)
+	end
 end
 
 return DemoApplication

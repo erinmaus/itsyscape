@@ -43,7 +43,8 @@ local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
 		"Item",
 		"Peep",
-		"Prop"
+		"Prop",
+		"Map"
 	}
 
 	for i = 1, #VISIBLE_RESOURCES do
@@ -110,6 +111,8 @@ function Application:new()
 	if _DEBUG then
 		inspectGameDB(self.gameDB)
 	end
+
+	self.paused = false
 end
 
 function Application:measure(name, func, ...)
@@ -152,6 +155,14 @@ end
 
 function Application:getUIView()
 	return self.uiView
+end
+
+function Application:getIsPaused()
+	return self.paused
+end
+
+function Application:setIsPaused(value)
+	self.paused = value or false
 end
 
 function Application:probe(x, y, performDefault, callback, tests)
@@ -220,17 +231,15 @@ function Application:update(delta)
 	self:measure('game:update()', function() self.game:update(delta) end)
 	self:measure('gameView:update()', function() self.gameView:update(delta) end)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
-	--self.gameView:update(delta)
-	--self.uiView:update(delta)
 
 	self.clickActionTime = self.clickActionTime - delta
 end
 
 function Application:tick()
-	self:measure('gameView:tick()', function() self.gameView:tick() end)
-	self:measure('game:tick()', function() self.game:tick() end)
-	--self.gameView:tick()
-	--self.game:tick()
+	if not self.paused then
+		self:measure('gameView:tick()', function() self.gameView:tick() end)
+		self:measure('game:tick()', function() self.game:tick() end)
+	end
 end
 
 function Application:mousePress(x, y, button)

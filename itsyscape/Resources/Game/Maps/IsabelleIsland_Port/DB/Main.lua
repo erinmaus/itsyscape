@@ -1,5 +1,17 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_Port/DB/Default.lua"
 
+ItsyScape.Meta.ResourceName {
+	Value = "Port Isabelle",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A peaceful seaside abode named after a sweet egomaniac.",
+	Language = "en-US",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
