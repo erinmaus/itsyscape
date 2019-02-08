@@ -52,6 +52,10 @@ function Wander:update(mashina, state, executor)
 			local record = gameDB:getRecord("MapObjectLocation", { Resource = mapObject })
 			if record then
 				local map = mashina:getDirector():getGameInstance():getStage():getMap(k)
+				if not map then
+					return B.Status.Failure
+				end
+
 				local x = record:get("PositionX") or 0
 				local y = record:get("PositionY") or 0
 				local z = record:get("PositionZ") or 0
