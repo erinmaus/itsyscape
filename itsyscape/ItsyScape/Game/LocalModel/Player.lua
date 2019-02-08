@@ -53,13 +53,13 @@ function Player:spawn()
 						true)
 					return
 				end
+			elseif storage:hasSection("filename") then
+				self.stage:movePeep(
+					actor:getPeep(),
+					"IsabelleIsland_Tower",
+					"Anchor_StartGame",
+					true)
 			end
-
-			self.stage:movePeep(
-				actor:getPeep(),
-				"IsabelleIsland_Tower",
-				"Anchor_StartGame",
-				true)
 		end)
 	else
 		self.actor = false
