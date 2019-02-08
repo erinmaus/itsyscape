@@ -99,6 +99,8 @@ function Application:new()
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.gameView)
 
+	self.game.onQuit:register(self.quitGame, self)
+
 	self.times = {}
 
 	self.gameView:getRenderer():setCamera(self.camera)
@@ -166,6 +168,10 @@ function Application:setIsPaused(value)
 end
 
 function Application:probe(x, y, performDefault, callback, tests)
+	if self.paused then
+		return
+	end
+
 	local ray = self:shoot(x, y)
 	local probe = Probe(self.game, self.gameView, self.gameDB, ray, tests)
 	probe.onExamine:register(function(name, description)
@@ -240,6 +246,10 @@ function Application:tick()
 		self:measure('gameView:tick()', function() self.gameView:tick() end)
 		self:measure('game:tick()', function() self.game:tick() end)
 	end
+end
+
+function Application:quitGame(game)
+	-- Nothing.
 end
 
 function Application:mousePress(x, y, button)

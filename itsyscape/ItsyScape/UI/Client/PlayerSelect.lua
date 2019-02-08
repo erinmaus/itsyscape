@@ -18,6 +18,7 @@ local Button = require "ItsyScape.UI.Button"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local Panel = require "ItsyScape.UI.Panel"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -80,12 +81,17 @@ function PlayerSelect:new(application)
 
 	self.application = application
 
+	self.panel = Panel()
+	self.panel:setSize(PlayerSelect.WIDTH, height)
+	self:addChild(self.panel)
+
 	self.layout = ScrollablePanel(GridLayout)
 	self.layout:setSize(PlayerSelect.WIDTH, height)
+	self.layout:getInnerPanel():setWrapContents(true)
 	self.layout:getInnerPanel():setPadding(PlayerSelect.PADDING, PlayerSelect.PADDING)
 	self.layout:getInnerPanel():setUniformSize(
 		true,
-		PlayerSelect.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+		PlayerSelect.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE * 1.25,
 		PlayerSelect.BUTTON_HEIGHT)
 	self:addChild(self.layout)
 
@@ -98,12 +104,14 @@ function PlayerSelect:new(application)
 	self.camera:setDistance(5)
 	self.camera:setPosition(Vector.UNIT_Y)
 
-	self.buttons = {}
 	self.players = {}
 	local players = self:getPlayers()
 	for i = 1, #players do
 		self:addPlayer(players[i])
 	end
+	Log.info("%d players found.", #self.players)
+
+	self.layout:setScrollSize(self.layout:getInnerPanel():getSize())
 end
 
 function PlayerSelect:getOverflow()

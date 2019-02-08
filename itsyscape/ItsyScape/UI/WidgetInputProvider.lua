@@ -67,7 +67,7 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 
 	if (x >= px + wx and x < px + wx + ww and
 	   y >= py + wy and y < py + wy + wh)
-	   or widget:getOverflow() 
+	   or widget:getOverflow()
 	then
 		result[widget] = true
 
@@ -86,11 +86,11 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 	return result
 end
 
-function WidgetInputProvider:isBlocking(x, y)
-	return self:getWidgetUnderPoint(x, y) ~= self.root
+function WidgetInputProvider:isBlocking(x, y, overflow)
+	return self:getWidgetUnderPoint(x, y, overflow) ~= self.root
 end
 
-function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
+function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)
 	px = px or 0
 	py = py or 0
 	widget = widget or self.root
@@ -101,7 +101,7 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
 
 	if (x >= px + wx and x < px + wx + ww and
 	   y >= py + wy and y < py + wy + wh)
-	   or widget:getOverflow() 
+	   or (widget:getOverflow() and overflow)
 	then
 		local sx, sy = widget:getScroll()
 
@@ -112,7 +112,8 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter)
 				px + wx - sx,
 				py + wy - sy,
 				w,
-				filter)
+				filter,
+				overflow)
 			if f then
 				return f
 			end
@@ -133,7 +134,7 @@ function WidgetInputProvider:mousePress(x, y, button)
 		return w:getIsFocusable()
 	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
 	if widget then
 		self.clickedWidgets[button] = widget
 		widget:mousePress(x, y, button)

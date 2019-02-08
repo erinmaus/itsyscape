@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Game = require "ItsyScape.Game.Model.Game"
 local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
@@ -19,6 +20,8 @@ LocalGame.TICKS_PER_SECOND = 10
 
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
+
+	self.onQuit = Callback()
 
 	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
@@ -75,6 +78,15 @@ end
 
 function LocalGame:update(delta)
 	self.stage:update(delta)
+end
+
+function LocalGame:quit()
+	self.stage:unloadAll()
+	self:tick()
+	self.player:poof()
+	self:tick()
+
+	self.onQuit(self)
 end
 
 return LocalGame

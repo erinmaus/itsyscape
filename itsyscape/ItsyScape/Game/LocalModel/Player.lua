@@ -39,7 +39,7 @@ function Player:spawn()
 		p.id = 1
 
 		actor:getPeep():listen('finalize', function()
-			local storage = self.game:getDirector():getPlayerStorage(game):getRoot()
+			local storage = self.game:getDirector():getPlayerStorage(1):getRoot()
 			if storage:hasSection("Location") then
 				local location = storage:getSection("Location")
 				if location:get("name") then
@@ -49,12 +49,14 @@ function Player:spawn()
 						Vector(
 							location:get("x"),
 							location:get("y"),
-							location:get("z")))
+							location:get("z")),
+						true)
 				else
 					self.stage:movePeep(
 						actor:getPeep(),
 						"IsabelleIsland_Tower",
-						"Anchor_StartGame")
+						"Anchor_StartGame",
+						true)
 				end
 			end
 		end)

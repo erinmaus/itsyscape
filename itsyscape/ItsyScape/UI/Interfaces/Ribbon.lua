@@ -51,6 +51,10 @@ Ribbon.TOOL_TIPS = {
 	["Nominomicon"] = {
 		ToolTip.Header("Nominomicon"),
 		ToolTip.Text("View your quest progress.")
+	},
+	["QuitGameWindow"] = {
+		ToolTip.Header("Quit Game"),
+		ToolTip.Text("Quit the game. Any progress since you last saved or died will be lost.")
 	}
 }
 
@@ -74,6 +78,7 @@ function Ribbon:new(id, index, ui)
 	self:addButton("PlayerSpells", "Resources/Game/UI/Icons/Skills/Magic.png")
 	self:addButton("PlayerPrayers", "Resources/Game/UI/Icons/Skills/Faith.png")
 	self:addButton("Nominomicon", "Resources/Game/UI/Icons/Common/Nominomicon.png")
+	self:addButton("QuitGameWindow", "Resources/Game/UI/Icons/Concepts/Settings.png")
 end
 
 function Ribbon:addButton(tab, icon)

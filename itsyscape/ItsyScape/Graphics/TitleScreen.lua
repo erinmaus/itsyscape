@@ -121,6 +121,8 @@ function TitleScreen:new(gameView, id)
 	self.camera:setVerticalRotation(-math.pi / 2)
 	self.camera:setDistance(15)
 	self.camera:setPosition(Vector(0, -1, 16))
+
+	self.titleSupressed = false
 end
 
 function TitleScreen:getGameView()
@@ -310,6 +312,14 @@ function TitleScreen:draw()
 	self:drawTitle()
 end
 
+function TitleScreen:suppressTitle()
+	self.titleSupressed = true
+end
+
+function TitleScreen:unsupressTitle()
+	self.titleSupressed = false
+end
+
 function TitleScreen:drawTitle()
 	local width, height = love.window.getMode()
 
@@ -319,25 +329,27 @@ function TitleScreen:drawTitle()
 			width / 2 - self.logo:getWidth() / 2,
 			self.logo:getHeight() / 4)
 
-		local alpha = math.abs(math.sin(self.time)) * 0.5 + 0.5
-		local previousFont = love.graphics.getFont()
-		love.graphics.setFont(self.font:getResource())
-		love.graphics.setColor(0, 0, 0, alpha)
-		love.graphics.printf(
-			"Click to Play",
-			4,
-			height - self.font:getResource():getHeight() * 2 + 4,
-			width,
-			'center')
-		love.graphics.setColor(1, 1, 1, alpha)
-		love.graphics.printf(
-			"Click to Play",
-			0,
-			height - self.font:getResource():getHeight() * 2,
-			width,
-			'center')
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.setFont(previousFont)
+		if not self.titleSupressed then
+			local alpha = math.abs(math.sin(self.time)) * 0.5 + 0.5
+			local previousFont = love.graphics.getFont()
+			love.graphics.setFont(self.font:getResource())
+			love.graphics.setColor(0, 0, 0, alpha)
+			love.graphics.printf(
+				"Click to Play",
+				4,
+				height - self.font:getResource():getHeight() * 2 + 4,
+				width,
+				'center')
+			love.graphics.setColor(1, 1, 1, alpha)
+			love.graphics.printf(
+				"Click to Play",
+				0,
+				height - self.font:getResource():getHeight() * 2,
+				width,
+				'center')
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setFont(previousFont)
+		end
 	end
 end
 
