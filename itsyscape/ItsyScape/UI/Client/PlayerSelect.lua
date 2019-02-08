@@ -15,6 +15,7 @@ local NullActor = require "ItsyScape.Game.Null.Actor"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -43,6 +44,15 @@ PlayerSelect.LOCATION_STYLE = {
 	color = { 1, 1, 1, 1 },
 	textShadow = true,
 	width = PlayerSelect.WIDTH - PlayerSelect.BUTTON_HEIGHT - PlayerSelect.PADDING * 2
+}
+
+PlayerSelect.NEW_GAME_BUTTON_STYLE = {
+	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
+	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	fontSize = 48,
+	textShadow = true
 }
 
 function PlayerSelect.getPlayers()
@@ -110,6 +120,14 @@ function PlayerSelect:new(application)
 		self:addPlayer(players[i])
 	end
 	Log.info("%d players found.", #self.players)
+
+	local newGameButton = Button()
+	newGameButton:setText("NEW GAME")
+	newGameButton:setStyle(ButtonStyle(
+		PlayerSelect.NEW_GAME_BUTTON_STYLE,
+		self.application:getUIView():getResources()))
+	newGameButton.onClick:register(self.newPlayer, self)
+	self.layout:addChild(newGameButton)
 
 	self.layout:setScrollSize(self.layout:getInnerPanel():getSize())
 end
@@ -211,14 +229,21 @@ function PlayerSelect:loadPlayer(player)
 	local storage = love.filesystem.read(player.storage:getRoot():get("filename"))
 	if storage then
 		local game = self.application:getGame()
-		game:getPlayer():poof()
-		game:tick()
 		game:getDirector():getPlayerStorage(1):deserialize(storage)
 		game:getPlayer():spawn()
 		game:tick()
 
 		self.application:closeTitleScreen()
 	end
+end
+
+function PlayerSelect:newPlayer(player)
+	local game = self.application:getGame()
+	game:getDirector():getPlayerStorage(1):deserialize("{}")
+	game:getPlayer():spawn()
+	game:tick()
+
+	self.application:closeTitleScreen()
 end
 
 function PlayerSelect:update(delta)

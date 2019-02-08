@@ -166,6 +166,7 @@ function PlayerStorage:deserialize(t)
 		t = r()
 	end
 
+	self.root = PlayerStorage.Section("root")
 	self.root:deserialize(t)
 end
 
