@@ -41,7 +41,7 @@ function KeyItemStateProvider:give(name, count, flags)
 	end
 
 	if not self.storage:get(name) then
-		Log.analyic("PLAYER_GOT_KEY_ITEM", name)
+		Log.analytic("PLAYER_GOT_KEY_ITEM", name)
 	end
 
 	self.storage:set(name, true)

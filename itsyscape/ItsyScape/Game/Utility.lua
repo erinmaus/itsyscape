@@ -75,7 +75,19 @@ function Utility.save(player, location, talk, ...)
 			end
 		end
 
-		local filename = root:get("filename") or "Player/Default.dat"
+		local filename = root:get("filename")
+		if not filename then
+			local index = 1
+			while true do
+				filename = string.format("Player/Default%d.dat", index)
+				if not love.filesystem.getInfo(filename) then
+					break
+				end
+
+				index = index + 1
+			end
+		end
+
 		root:set("filename", filename)
 
 		love.filesystem.createDirectory("Player")

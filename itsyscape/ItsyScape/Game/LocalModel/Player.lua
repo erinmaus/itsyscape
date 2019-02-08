@@ -51,14 +51,15 @@ function Player:spawn()
 							location:get("y"),
 							location:get("z")),
 						true)
-				else
-					self.stage:movePeep(
-						actor:getPeep(),
-						"IsabelleIsland_Tower",
-						"Anchor_StartGame",
-						true)
+					return
 				end
 			end
+
+			self.stage:movePeep(
+				actor:getPeep(),
+				"IsabelleIsland_Tower",
+				"Anchor_StartGame",
+				true)
 		end)
 	else
 		self.actor = false
