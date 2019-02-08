@@ -77,18 +77,8 @@ function Utility.save(player, location, talk, ...)
 
 		local filename = root:get("filename")
 		if not filename then
-			local index = 1
-			while true do
-				filename = string.format("Player/Default%d.dat", index)
-				if not love.filesystem.getInfo(filename) then
-					break
-				end
-
-				index = index + 1
-			end
+			return false
 		end
-
-		root:set("filename", filename)
 
 		love.filesystem.createDirectory("Player")
 
@@ -100,7 +90,11 @@ function Utility.save(player, location, talk, ...)
 			local actor = actor.actor
 			actor:flash("Message", 1, ...)
 		end
+
+		return true
 	end
+
+	return false
 end
 
 function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
