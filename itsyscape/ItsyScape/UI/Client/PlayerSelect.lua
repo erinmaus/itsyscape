@@ -80,7 +80,9 @@ function PlayerSelect.loadPlayerView(actor, storage)
 		local skinType = section:get('type')
 		local skinFilename = section:get('filename')
 
-		actor:setSkin(slot, priority, CacheRef(skinType, skinFilename))
+		if skinType and skinFilename then
+			actor:setSkin(slot, priority, CacheRef(skinType, skinFilename))
+		end
 	end
 end
 
@@ -239,7 +241,24 @@ end
 
 function PlayerSelect:newPlayer(player)
 	local game = self.application:getGame()
-	game:getDirector():getPlayerStorage(1):deserialize("{}")
+	local filename
+	do
+		local index = 1
+		while true do
+			filename = string.format("Player/Default%d.dat", index)
+			if not love.filesystem.getInfo(filename) then
+				break
+			end
+
+			index = index + 1
+		end
+	end
+
+	local storage = game:getDirector():getPlayerStorage(1)
+	storage:deserialize("{}")
+	storage:getRoot():set("filename", filename)
+	print(filename)
+
 	game:getPlayer():spawn()
 	game:tick()
 
