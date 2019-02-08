@@ -122,9 +122,13 @@ function GameView:new(game)
 		"Resources/Game/Items/ItemBagIcon.lmesh")
 	self.items = {}
 
-	local imageData = love.image.newImageData(1, 1)
-	imageData:setPixel(0, 0, 1, 1, 1, 0)
-	self.whiteTexture = TextureResource(love.graphics.newImage(imageData))
+	local whiteTextureImageData = love.image.newImageData(1, 1)
+	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
+	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
+
+	local itemTextureImageData = love.image.newImageData(1, 1)
+	itemTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
+	self.itemTexture = TextureResource(love.graphics.newImage(itemTextureImageData))
 
 	self.projectiles = {}
 end
@@ -354,7 +358,7 @@ function GameView:spawnItem(item, tile)
 		local lootBagNode = ModelSceneNode()
 		lootBagNode:setModel(self.itemBagModel)
 		lootBagNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
-		lootBagNode:getMaterial():setTextures(self.whiteTexture)
+		lootBagNode:getMaterial():setTextures(self.itemTexture)
 		lootBagNode:setParent(itemNode)
 	end
 	do
