@@ -49,9 +49,11 @@ function DemoApplication:getPlayerPosition(delta)
 	do
 		local gameView = self:getGameView()
 		local actor = gameView:getActor(self:getGame():getPlayer():getActor())
-		local node = actor:getSceneNode()
-		local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
-		position = Vector(transform:transformPoint(0, 1, 0))
+		if actor then
+			local node = actor:getSceneNode()
+			local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
+			position = Vector(transform:transformPoint(0, 1, 0))
+		end
 	end
 
 	return position
@@ -86,6 +88,10 @@ function DemoApplication:openTitleScreen()
 	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
 end
 
+function DemoApplication:quitGame()
+	self:openTitleScreen()
+end
+
 function DemoApplication:mousePress(x, y, button)
 	if self.titleScreen and not self.mainMenu then
 		local mainMenu = Widget()
@@ -93,6 +99,8 @@ function DemoApplication:mousePress(x, y, button)
 
 		self.mainMenu = mainMenu
 		self.mainMenu:addChild(PlayerSelect(self))
+
+		self.titleScreen:suppressTitle()
 
 		self:getUIView():getRoot():addChild(self.mainMenu)
 	else

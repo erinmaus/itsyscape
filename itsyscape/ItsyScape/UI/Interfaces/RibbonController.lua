@@ -28,11 +28,13 @@ function RibbonController:new(peep, director)
 		["PlayerStats"] = true,
 		["PlayerSpells"] = true,
 		["PlayerPrayers"] = true,
-		["Nominomicon"] = true
+		["Nominomicon"] = true,
+		["QuitGameWindow"] = true
 	}
 
 	self.buttons = {
-		["Nominomicon"] = true
+		["Nominomicon"] = true,
+		["QuitGameWindow"] = true
 	}
 
 	self.currentTab = false
