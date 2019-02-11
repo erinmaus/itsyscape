@@ -1,13 +1,10 @@
 # ItsyRealm, a tiny RPG game
 
-ItsyRealm is a small RPG built on a slightly modified version of [Love2d](http://love2d.org). It's very much a work in progress.
+ItsyRealm is a small RPG built on a slightly modified version of [LÖVE](http://love2d.org), an \*awesome\* framework to make games in Lua. The game is very much a work in progress.
 
-The general idea is you're a would-be hero trying to save the world from mad gods who wish to conquer it. You start out as a weak nobody and can choose how to proceed based on your own desires. Throughout the game, you use combat and skills (like a game it's concindentally similar to) to advance and hopefully save the world.
+In ItsyRealm, you're on an awesome quest to discover the secrets of a necromancer god only known as the Empty King. Along your way, you'll employ dozens of unique strategies using staff, sword, and bow to fight mythical monsters and eldritch abominations. Utilize skills to gather resources while raiding dungeons, forests, ruins, seas, and more to craft powerful equipment and items. And help a bunch of like-minded adventurers achieve their own victories. Should you fail, the four Old Ones will succeed to tear the very fabric of reality apart...
 
-Currently, none of that is implemented :). How lame! But there should be a dungeon you can explore soon enough...
-
-Any similarities to [RuneScape](http://runescape.com) now or in the future are
-only a coincidence ;).
+Build instructions Coming Soon(tm).
 
 # License & Copyright
 
