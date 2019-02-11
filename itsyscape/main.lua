@@ -61,7 +61,7 @@ function love.load(args)
 
 		local c = args[i]:match("/f:(%w+)") or args[i]:match("--f:(%w+)")
 		if c then
-			_ARGS[c] = true
+			_ARGS[c:lower()] = true
 		end
 
 		table.insert(_ARGS, c)
