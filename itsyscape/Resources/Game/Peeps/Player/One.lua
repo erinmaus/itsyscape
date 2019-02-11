@@ -171,7 +171,7 @@ function One:assign(director, key, ...)
 	end
 
 	stats.stats.onLevelUp:register(function(_, skill)
-		local value = string.format("%s, %d",
+		local value = string.format("%s=%d",
 			skill:getName(),
 			skill:getBaseLevel())
 		Log.analytic("PLAYER_GOT_LEVEL_UP", value)
