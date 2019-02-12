@@ -236,6 +236,8 @@ function PlayerSelect:loadPlayer(player)
 		game:tick()
 
 		self.application:closeTitleScreen()
+
+		Log.analytic("START_GAME")
 	end
 end
 
@@ -257,12 +259,13 @@ function PlayerSelect:newPlayer(player)
 	local storage = game:getDirector():getPlayerStorage(1)
 	storage:deserialize("{}")
 	storage:getRoot():set("filename", filename)
-	print(filename)
 
 	game:getPlayer():spawn()
 	game:tick()
 
 	self.application:closeTitleScreen()
+
+	Log.analytic("START_GAME")
 end
 
 function PlayerSelect:update(delta)

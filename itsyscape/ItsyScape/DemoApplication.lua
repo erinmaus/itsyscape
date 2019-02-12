@@ -88,6 +88,15 @@ function DemoApplication:openTitleScreen()
 	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
 end
 
+function DemoApplication:quit()
+	if not self.titleScreen then
+		self:getGame():quit()
+		return true
+	else
+		return false
+	end
+end
+
 function DemoApplication:quitGame()
 	self:openTitleScreen()
 end

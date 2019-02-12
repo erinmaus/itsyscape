@@ -996,6 +996,10 @@ function Utility.Peep.getTile(peep)
 	local k = position.layer or 1
 
 	local map = peep:getDirector():getMap(k)
+	if not map then
+		return 0, 0, 0
+	end
+
 	local tile, i, j = map:getTileAt(position.x, position.z)
 
 	return i, j, k, tile
