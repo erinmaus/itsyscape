@@ -308,6 +308,9 @@ function CombatCortex:update(delta)
 					end
 				end
 			end
+		else
+			peep:removeBehavior(CombatTargetBehavior)
+			peep:getCommandQueue(CombatCortex.QUEUE):clear()
 		end
 	end
 end -- oh my god
