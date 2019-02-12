@@ -87,7 +87,7 @@ end
 
 function Player:getIsEngaged()
 	local peep = self.actor:getPeep()
-	return peep:getCommandQueue(CombatCortex.QUEUE):getIsPending() or peep:hasBehavior(CombatTargetBehavior)
+	return peep:getCommandQueue(CombatCortex.QUEUE):getIsPending() and peep:hasBehavior(CombatTargetBehavior)
 end
 
 function Player:findPath(i, j, k)
