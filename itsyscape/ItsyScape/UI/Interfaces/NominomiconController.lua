@@ -51,7 +51,7 @@ NominomiconController.TUTORIAL = {
 			{
 				t = 'text',
 				"When fighting a creep, you have the option to quit fighting. " ..
-				"Click the 'flee' button on the combat status HUD (in the lower left hand corner of the screen.",
+				"Click the 'flee' button on the combat status HUD (in the lower left hand corner of the screen).",
 				"",
 				"It looks like this:",
 				{ t = 'image', resource ="Resources/Game/UI/Icons/Concepts/Flee.png" }
@@ -62,7 +62,7 @@ NominomiconController.TUTORIAL = {
 			"Failing that, they give up.",
 			"The downside is you need ammunition or runes to fight from a distance. " ..
 			"For archery, you'll either need a boomerang (a weaker weapon with infinite ammo) or arrows, bolts, etc (depending on the weapon). " ..
-			"For magic, you'll need runes (dropped by monsters and make by using unfocused runes on obelisks scattered around the world) and an active combat spell. ",
+			"For magic, you'll need runes (dropped by monsters and made by using unfocused runes on obelisks scattered around the world) and an active combat spell. ",
 			"Spells can be set in the spells tab. From there, you can hover over a spell to see the requirements and a description. " ..
 			"To stop using a spell, go to the stance tab and deselect 'Use Spell.' " ..
 			"You must be using a magic weapon (such as a wand, cane, or staff) to use combat spells.",

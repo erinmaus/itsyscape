@@ -248,6 +248,10 @@ function Application:tick()
 	end
 end
 
+function Application:quit()
+	return true
+end
+
 function Application:quitGame(game)
 	-- Nothing.
 end

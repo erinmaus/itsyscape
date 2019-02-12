@@ -110,8 +110,6 @@ function love.load(args)
 		_APP:initialize()
 	end
 
-	Log.analytic("START_GAME")
-
 	love.keyboard.setKeyRepeat(true)
 end
 
@@ -187,7 +185,7 @@ function love.quit()
 		p:writeReport("itsyscape.log")
 	end
 
-	Log.analytic("END_GAME")
+	return _APP:quit()
 end
 
 function love.threaderror(m, e)

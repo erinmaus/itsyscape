@@ -87,6 +87,8 @@ function LocalGame:quit()
 	self:tick()
 
 	self.onQuit(self)
+
+	Log.analytic("END_GAME")
 end
 
 return LocalGame
