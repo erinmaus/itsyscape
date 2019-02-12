@@ -447,7 +447,7 @@ end
 -- Calculates the maximum hit given the level (including boosts), multiplier,
 -- and equipment strength bonus.
 function Utility.Combat.calcMaxHit(level, multiplier, bonus)
-	return math.floor(0.5 + level * multiplier * (bonus + 64) / 640)
+	return math.max(math.floor(0.5 + level * multiplier * (bonus + 64) / 640), 1)
 end
 
 function Utility.Combat.calcAccuracyRoll(level, bonus)
