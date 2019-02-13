@@ -138,7 +138,7 @@ function One:assign(director, key, ...)
 	stats.stats = Stats("Player.One", director:getGameDB(), 99)
 
 	local storage = director:getPlayerStorage(self):getRoot()
-	if storage:get("filename") then
+	if storage:get("filename") and storage:hasSection("Location") then
 		local name = storage:getSection("Player"):getSection("Info"):get("name")
 		self:setName(name or self:getName())
 
