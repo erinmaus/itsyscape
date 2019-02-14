@@ -125,6 +125,10 @@ function ShopWindowController:buy(e)
 	assert(self.inventoryByID[e.id] ~= nil, "action with ID not found")
 	assert(type(e.count) == "number", "count must be number")
 
+	if e.count < 0 then
+		return
+	end
+
 	local action = self.inventoryByID[e.id]
 	local player = self:getPeep()
 	local count = math.min(action:count(player:getState(), player), e.count)
@@ -266,7 +270,10 @@ end
 function ShopWindowController:sell(e)
 	assert(type(e.index) == "number", "index must be number")
 	assert(type(e.count) == "number", "count must be number")
-	assert(e.count >= 1, "count must be greater than zero")
+
+	if e.count <= 0 then
+		return
+	end
 
 	local item, value = self:pullInventoryItem(e.index)
 
