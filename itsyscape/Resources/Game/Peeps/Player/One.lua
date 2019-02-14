@@ -154,6 +154,11 @@ function One:assign(director, key, ...)
 
 		stats.stats:load(Utility.Peep.getStorage(self))
 
+		-- Ensure player always has at least 10 HP.
+		if stats.stats:getSkill("Constitution"):getBaseLevel() < 10 then
+			stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
+		end
+
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.currentHitpoints = stats.stats:getSkill("Constitution"):getWorkingLevel()
 		combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
@@ -175,6 +180,8 @@ function One:assign(director, key, ...)
 			skill:getName(),
 			skill:getBaseLevel())
 		Log.analytic("PLAYER_GOT_LEVEL_UP", value)
+
+		Utility.UI.openInterface(self, "LevelUpNotification", false, skill)
 	end)
 	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
