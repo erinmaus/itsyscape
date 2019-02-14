@@ -17,6 +17,7 @@ local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerInventory = Class(PlayerTab)
@@ -103,6 +104,8 @@ function PlayerInventory:setNumItems(value)
 				button.onLeftClick:register(self.activate, self)
 				button.onRightClick:register(self.probe, self)
 
+				button.onMouseMove:register(self.examine, self, i)
+
 				self.layout:addChild(button)
 				table.insert(self.buttons, button)
 			end
@@ -111,7 +114,51 @@ function PlayerInventory:setNumItems(value)
 		self.onInventoryResized(self, #self.buttons)
 	end
 
+	local state = self:getState()
+	for i = 1, #self.buttons do
+		local item = state.items[i]
+		self.buttons[i]:setText(
+			ToolTip.Header())
+	end
+
 	self.numItems = value
+end
+
+function PlayerInventory:examine(index, button)
+	local icon = button:getData('icon')
+
+	local item = self:getState().items[index]
+	if not item then
+		icon:setToolTip()
+		return
+	end
+
+	local object, description = Utility.Item.getInfo(
+		item.id,
+		self:getView():getGame():getGameDB())
+
+	local actions = {}
+	for i = 1, #item.actions do
+		table.insert(actions, ToolTip.Text(" - " .. item.actions[i].verb))
+	end
+
+	if #actions > 1 then
+		icon:setToolTip(
+			ToolTip.Header(object),
+			ToolTip.Text(description),
+			ToolTip.Text("Available actions (right-click):"),
+			unpack(actions))
+	elseif #actions == 1 then
+		icon:setToolTip(
+			ToolTip.Header(object),
+			ToolTip.Text(description),
+			ToolTip.Text("Action:"),
+			actions[1])
+	else
+		icon:setToolTip(
+			ToolTip.Header(object),
+			ToolTip.Text(description))
+	end
 end
 
 function PlayerInventory:drag(button, x, y)

@@ -668,6 +668,22 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.getInfo(id, gameDB, lang)
+	lang = lang or "en-US"
+
+	name = Utility.Item.getName(id, gameDB, lang)
+	if not name then
+		name = "*" .. id
+	end
+
+	description = Utility.Item.getDescription(id, gameDB, lang)
+	if not description then
+		description = string.format("It's %s, as if you didn't know.", object)
+	end
+
+	return name, description
+end
+
 function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 	local flags = { ['item-inventory'] = true }
 	if noted then

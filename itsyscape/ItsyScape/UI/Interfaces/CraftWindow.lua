@@ -26,6 +26,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local TextInput = require "ItsyScape.UI.TextInput"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 local CraftWindow = Class(Interface)
@@ -125,6 +126,10 @@ function CraftWindow:update(...)
 				end
 
 				if item then
+					local name, description = Utility.Item.getInfo(
+						item.name,
+						self:getView():getGame():getGameDB())
+
 					local button = Button()
 					button.onClick:register(self.selectAction, self, state.actions[i])
 
@@ -133,6 +138,10 @@ function CraftWindow:update(...)
 					itemIcon:setItemCount(count)
 					itemIcon:setPosition(2, 2)
 					button:addChild(itemIcon)
+
+					itemIcon:setToolTip(
+						ToolTip.Header(name),
+						ToolTip.Text(description))
 
 					self.grid:addChild(button)
 				end

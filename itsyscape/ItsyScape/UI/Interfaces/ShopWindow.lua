@@ -23,6 +23,7 @@ local TextInput = require "ItsyScape.UI.TextInput"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Widget = require "ItsyScape.UI.Widget"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local ShopWindow = Class(Interface)
@@ -219,6 +220,10 @@ function ShopWindow:update(...)
 				end
 
 				if item then
+					local name, description = Utility.Item.getInfo(
+						item.name,
+						self:getView():getGame():getGameDB())
+
 					local button = Button()
 					button.onClick:register(self.selectItem, self, state.inventory[i])
 
@@ -228,6 +233,10 @@ function ShopWindow:update(...)
 						itemIcon:setItemCount(quantity)
 					end
 					itemIcon:setPosition(2, 2)
+
+					itemIcon:setToolTip(
+						ToolTip.Header(name),
+						ToolTip.Text(description))
 
 					button:addChild(itemIcon)
 
@@ -251,6 +260,10 @@ function ShopWindow:update(...)
 			local item = state.playerInventory[i]
 
 			if item then
+				local name, description = Utility.Item.getInfo(
+					item.id,
+					self:getView():getGame():getGameDB())
+
 				local button = self.sellInventory[index] or Button()
 				button.onClick:unregister(self.selectItem)
 				button.onClick:register(self.selectItem, self, i)
@@ -260,6 +273,10 @@ function ShopWindow:update(...)
 				itemIcon:setItemCount(item.count)
 				itemIcon:setItemIsNoted(item.noted)
 				itemIcon:setPosition(2, 2)
+
+				itemIcon:setToolTip(
+					ToolTip.Header(name),
+					ToolTip.Text(description))
 
 				button:addChild(itemIcon)
 
