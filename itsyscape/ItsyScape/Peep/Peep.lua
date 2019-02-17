@@ -262,6 +262,20 @@ function Peep:getCommandQueue(channel)
 	return queue
 end
 
+-- Interrupts all command queues.
+--
+-- This is the same as calling 'clear' on all the command queues.
+--
+-- If 'force' is true, command queues are forcibly flushed. Only advisable if
+-- the peep is dead or disabled.
+function Peep:interrupt(force)
+	for _, queue in pairs(self.commandQueues) do
+		queue:clear(force)
+	end
+
+	self:poke('interrupt')
+end
+
 function Peep:getTally()
 	return self.index
 end

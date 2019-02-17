@@ -121,12 +121,12 @@ end
 --
 -- Returns true if the current command, if any, could be interrupted, false
 -- otherwise.
-function CommandQueue:clear()
+function CommandQueue:clear(force)
 	self:flush()
 
 	if self:getIsPending() then
 		local currentCommand = self.queue[1]
-		if not currentCommand:getIsInterruptible() then
+		if not currentCommand:getIsInterruptible() and not force then
 			return false
 		end
 
