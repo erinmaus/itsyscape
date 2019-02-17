@@ -58,7 +58,7 @@ function LandscapeToolPanel:new(application)
 	self.sizeInput:setSize(128, 48)
 	self.sizeInput:setText("0")
 	self.sizeInput.onValueChanged = function()
-		self.toolSize = math.max(tonumber(self.sizeInput.text) or 0, 0)
+		self.toolSize = math.max(tonumber(self.sizeInput.text) or 0, -1)
 	end
 	gridLayout:addChild(self.sizeInput)
 
@@ -113,9 +113,9 @@ end
 
 function LandscapeToolPanel:increaseSize(distance)
 	if distance > 0 then
-		self.toolSize = math.max(self.toolSize + 1, 0)
+		self.toolSize = math.max(self.toolSize + 1, -1)
 	elseif distance < 0 then
-		self.toolSize = math.max(self.toolSize - 1, 0)
+		self.toolSize = math.max(self.toolSize - 1, -1)
 	end
 
 	self.sizeInput:setText(tostring(self.toolSize))
