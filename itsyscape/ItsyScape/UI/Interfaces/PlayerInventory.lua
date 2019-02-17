@@ -114,13 +114,6 @@ function PlayerInventory:setNumItems(value)
 		self.onInventoryResized(self, #self.buttons)
 	end
 
-	local state = self:getState()
-	for i = 1, #self.buttons do
-		local item = state.items[i]
-		self.buttons[i]:setText(
-			ToolTip.Header())
-	end
-
 	self.numItems = value
 end
 

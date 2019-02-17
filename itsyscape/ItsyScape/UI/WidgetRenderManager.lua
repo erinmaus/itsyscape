@@ -104,6 +104,15 @@ function WidgetRenderManager:start()
 	end
 
 	self.hovered = {}
+
+	local hoveredWidgets = self.input:getWidgetsUnderPoint(love.mouse.getPosition())
+	for i = #hoveredWidgets, 1, -1 do
+		if hoveredWidgets[i]:getIsFocusable() or hoveredWidgets[i]:getToolTip() then
+			self.topHovered = hoveredWidgets[i]
+			break
+		end
+	end
+
 	local currentTime = love.timer.getTime()
 	for widget, time in self.input:getHoveredWidgets() do
 		local duration = currentTime - time
@@ -157,7 +166,11 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	end
 
 	if self.hovered[widget] ~= nil and widget:getToolTip() then
-		self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
+		if widget == self.topHovered then
+			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
+		else
+			self.hovered[widget] = false
+		end
 	end
 
 	if Class.isCompatibleType(widget, Interface) then
