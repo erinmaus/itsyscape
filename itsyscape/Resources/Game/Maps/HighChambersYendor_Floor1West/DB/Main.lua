@@ -110,6 +110,18 @@ do
 	}
 end
 
+M["Anchor_FromFloor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103,
+		PositionY = 1,
+		PositionZ = 99,
+		Name = "Anchor_FromFloor2",
+		Map = M._MAP,
+		Resource = M["Anchor_FromFloor2"]
+	}
+end
+
 M["HighChambersYendor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1581,5 +1593,25 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon",
 		MapObject = M["SoulSiphon"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromFloor1West",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Floor2"] {
+		TravelAction
 	}
 end

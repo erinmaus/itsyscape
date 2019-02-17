@@ -595,7 +595,7 @@ function HighChambersYendor:giveMinibossLoot()
 
 		if siphon then
 			siphon:poke('materialize', {
-				count = math.random(20, 30),
+				count = math.random(30, 40),
 				dropTable = gameDB:getResource("HighChambersYendor_SoulSiphon_Rewards", "DropTable"),
 				peep = director:getGameInstance():getPlayer():getActor():getPeep(),
 				chest = siphon
