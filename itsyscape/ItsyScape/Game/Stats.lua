@@ -64,10 +64,14 @@ function Stats.Skill:setXP(value, suppressNotify)
 	self.isDirty = true
 	local currentLevel = self:getBaseLevel()
 
-	if previousLevel ~= currentLevel and not suppressNotify then
-		self.onLevelUp(self, previousLevel)
+	if previousLevel ~= currentLevel then
+		if not suppressNotify then
+			self.onLevelUp(self, previousLevel)
+		end
+
 		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
 	end
+
 end
 
 -- Gets how much XP the skill has.
