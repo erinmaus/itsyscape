@@ -203,35 +203,20 @@ function PlayerEquipment:examine(index, button)
 		return
 	end
 
-
 	local icon = button:getData('icon')
 
 	local object, description = Utility.Item.getInfo(
 		item.id,
 		self:getView():getGame():getGameDB())
 
-	local actions = {}
-	for i = 1, #item.actions do
-		table.insert(actions, ToolTip.Text(" - " .. item.actions[i].verb))
+	local action = item.actions[1]
+	if action then
+		object = action.verb .. " " .. object
 	end
 
-	if #actions > 1 then
-		icon:setToolTip(
-			ToolTip.Header(object),
-			ToolTip.Text(description),
-			ToolTip.Text("Available actions (right-click):"),
-			unpack(actions))
-	elseif #actions == 1 then
-		icon:setToolTip(
-			ToolTip.Header(object),
-			ToolTip.Text(description),
-			ToolTip.Text("Action:"),
-			actions[1])
-	else
-		icon:setToolTip(
-			ToolTip.Header(object),
-			ToolTip.Text(description))
-	end
+	icon:setToolTip(
+		ToolTip.Header(object),
+		ToolTip.Text(description))
 end
 
 function PlayerEquipment:probe(button)
