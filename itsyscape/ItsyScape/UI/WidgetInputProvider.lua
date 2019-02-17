@@ -23,9 +23,11 @@ function WidgetInputProvider:new(root)
 end
 
 function WidgetInputProvider:getHoveredWidgets()
+	local index = 1
 	local widget = nil
 	return function()
-		widget = next(self.hoveredWidgets, widget)
+		widget = self.hoveredWidgets[index]
+		index = index + 1
 		return widget, self.hoveredWidgetsTime[widget]
 	end
 end
@@ -69,8 +71,6 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 	   y >= py + wy and y < py + wy + wh)
 	   or widget:getOverflow()
 	then
-		result[widget] = true
-
 		local sx, sy = widget:getScroll()
 		for i = #widget.children, 1, -1 do
 			local w = widget.children[i]
@@ -81,13 +81,16 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 				w,
 				result)
 		end
+
+		table.insert(result, 1, widget)
+		result[widget] = true
 	end
 
 	return result
 end
 
 function WidgetInputProvider:isBlocking(x, y, overflow)
-	return self:getWidgetUnderPoint(x, y, overflow) ~= self.root
+	return self:getWidgetUnderPoint(x, y, nil, nil, nil, overflow) ~= self.root
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)
@@ -173,13 +176,13 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 	end
 
 	local widgets = self:getWidgetsUnderPoint(x, y)
-	for widget in pairs(widgets) do
+	for _, widget in ipairs(widgets) do
 		if not self.hoveredWidgets[widget] then
 			widget:mouseEnter(x, y)
 		end
 	end
 
-	for widget in pairs(self.hoveredWidgets) do
+	for _, widget in ipairs(self.hoveredWidgets) do
 		if not widgets[widget] then
 			widget:mouseLeave(x, y)
 		end
@@ -189,7 +192,7 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 
 	local oldTimes = self.hoveredWidgetsTime
 	self.hoveredWidgetsTime = {}
-	for widget in pairs(self.hoveredWidgets) do
+	for _, widget in pairs(self.hoveredWidgets) do
 		if oldTimes[widget] then
 			self.hoveredWidgetsTime[widget] = oldTimes[widget]
 		else
@@ -197,7 +200,7 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 		end
 	end
 
-	for widget in pairs(self.hoveredWidgets) do
+	for _, widget in ipairs(self.hoveredWidgets) do
 		widget:mouseMove(x, y, dx, dy)
 	end
 
@@ -208,7 +211,7 @@ end
 
 function WidgetInputProvider:mouseScroll(x, y)
 	local widgets = self:getWidgetsUnderPoint(love.mouse.getPosition())
-	for widget in pairs(widgets) do
+	for _, widget in ipairs(widgets) do
 		widget:mouseScroll(x, y)
 	end
 end
