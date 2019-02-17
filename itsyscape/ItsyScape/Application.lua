@@ -249,7 +249,7 @@ function Application:tick()
 end
 
 function Application:quit()
-	return true
+	return false
 end
 
 function Application:quitGame(game)
