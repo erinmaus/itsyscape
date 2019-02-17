@@ -1038,6 +1038,30 @@ do
 		Weight = 10
 	}
 
+	local AirRuneReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 100
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = AirRuneReward,
+		Weight = 100
+	}
+
+	local EarthRuneReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 30
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = EarthRuneReward,
+		Weight = 100
+	}
+
 	local BoneShardsReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "BoneShards",
@@ -1104,6 +1128,8 @@ do
 	ItsyScape.Resource.DropTable "HighChambersYendor_SoulSiphon_Rewards" {
 		CavePotatoReward,
 		SailorsHatReward,
+		AirRuneReward,
+		EarthRuneReward,
 		BoneShardsReward,
 		BonesReward,
 		EldritchMyrrhReward
