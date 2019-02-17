@@ -27,6 +27,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -37,6 +38,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local One = Class(Peep)
 
@@ -300,6 +302,7 @@ function One:ready(director, game)
 	self:getState():addProvider("Item", BankInventoryStateProvider(self))
 
 	self.deadTimer = math.huge
+	self.rezzTimer = math.huge
 
 	Peep.ready(self, director, game)
 end
@@ -323,6 +326,17 @@ function One:onTransferItemFrom(e)
 	end
 end
 
+function One:onInterrupt()
+	self:removeBehavior(TargetTileBehavior)
+end
+
+function One:onTravel(e)
+	local game = self:getDirector():getGameInstance()
+	game:getUI():interrupt(self)
+
+	self:interrupt(true)
+end
+
 function One:onWalk(e)
 	local game = self:getDirector():getGameInstance()
 	game:getUI():interrupt(self)
@@ -344,7 +358,7 @@ function One:onMiss(p)
 end
 
 function One:onDie(p)
-	self:getCommandQueue():clear()
+	self:interrupt(true)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocity = Vector.ZERO
@@ -356,18 +370,45 @@ function One:onDie(p)
 	Utility.save(self, false, true, "Aaah!")
 
 	self.deadTimer = 5
+	self:addBehavior(DisabledBehavior)
 
 	Log.analytic("PLAYER_DIED", Utility.Peep.getMap(self).name)
 end
 
 function One:onResurrect()
 	Log.analytic("PLAYER_REZZED", Utility.Peep.getMap(self).name)
+
+	self.rezzTimer = 2
+
+	-- Keep them dead until we rezz ourselves
+	local combatStatus = self:getBehavior(CombatStatusBehavior)
+	combatStatus.dead = true
 end
 
 function One:update(...)
 	Peep.update(self, ...)
 
-	self.deadTimer = self.deadTimer - self:getDirector():getGameInstance():getDelta()
+	local delta = self:getDirector():getGameInstance():getDelta()
+
+	do
+		local combatStatus = self:getBehavior(CombatStatusBehavior)
+		if combatStatus.dead or
+		   (self.rezzTimer > 0 and self.rezzTimer ~= math.huge)
+		then
+			self:interrupt(true)
+		end
+
+		if self.rezzTimer > 0 then
+			self.rezzTimer = self.rezzTimer - delta
+			if self.rezzTimer < 0 then
+				self:removeBehavior(DisabledBehavior)
+				self.rezzTimer = math.huge
+				combatStatus.dead = false
+			end
+		end
+	end
+
+	self.deadTimer = self.deadTimer - delta
 	if self.deadTimer < 0 then
 		self.deadTimer = math.huge
 
@@ -411,6 +452,17 @@ end
 
 function One:onActionFailed(e)
 	Utility.UI.openInterface(self, "Notification", false, e)
+end
+
+function One:onActionPerformed(e)
+	local combatStatus = self:getBehavior(CombatStatusBehavior)
+	if (self.deadTimer > 0 and self.deadTimer ~= math.huge) or
+	   (self.rezzTimer > 0 and self.rezzTimer ~= math.huge) or
+	   (combatStatus and combatStatus.dead) or
+	   self:hasBehavior(DisabledBehavior)
+	then
+		self:interrupt(true)
+	end
 end
 
 return One

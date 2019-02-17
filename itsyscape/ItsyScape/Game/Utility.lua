@@ -996,6 +996,14 @@ end
 function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
+		do
+			local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+			if status.dead then
+				Log.info("Peep %s is dead; can't walk!", peep:getName())
+				return false, "dead"
+			end
+		end
+
 		local queue = peep:getCommandQueue()
 		return queue:interrupt(command)
 	end
