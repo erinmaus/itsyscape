@@ -150,6 +150,44 @@ function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID)
 	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture)
 end
 
+function MapEditorApplication:recursivePaint(map, i, j, e)
+	if i < 0 or j < 0 or i > map:getWidth() or j > map:getHeight() then
+		return
+	end
+
+	e = e or {}
+	local index = j * map:getWidth() + i
+	if not e[index] then
+		e[index] = true
+
+		local tile = map:getTile(i, j)
+		local mode = self.landscapeToolPanel:getMode()
+		if mode == LandscapeToolPanel.MODE_FLAT then
+			tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
+		elseif mode == LandscapeToolPanel.MODE_EDGE then
+			tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
+		elseif mode == LandscapeToolPanel.MODE_DECAL then
+			tile.decals[1] = self.tileSetPalette:getCurrentTile()
+		end
+
+		if map:canMove(i, j, -1, 0) then
+			self:recursivePaint(map, i - 1, j, e)
+		end
+
+		if map:canMove(i, j, 1, 0) then
+			self:recursivePaint(map, i + 1, j, e)
+		end
+
+		if map:canMove(i, j, 0, -1) then
+			self:recursivePaint(map, i, j - 1, e)
+		end
+
+		if map:canMove(i, j, 0, 1) then
+			self:recursivePaint(map, i, j + 1, e)
+		end
+	end
+end
+
 function MapEditorApplication:paint()
 	local i, j, width, height
 	do
@@ -163,34 +201,41 @@ function MapEditorApplication:paint()
 		local tile
 		tile, i, j = motion:getTile()
 
-		i = i - self.landscapeToolPanel:getToolSize()
-		j = j - self.landscapeToolPanel:getToolSize()
-		local s = self.landscapeToolPanel:getToolSize() * 2 + 1
-		width, height = s, s
+		local s = self.landscapeToolPanel:getToolSize()
+		if s >= 0 then
+			i = i - s
+			j = j - s
+			s = s * 2 + 1
+			width, height = s, s
+		end
 	end
 
 	local map = self:getGame():getStage():getMap(1)
 	local mode = self.landscapeToolPanel:getMode()
 
 	if map then
-		for t = 1, height do
-			for s = 1, width do
-				local u = i + s - 1
-				local v = j + t - 1
+		if width and height then
+			for t = 1, height do
+				for s = 1, width do
+					local u = i + s - 1
+					local v = j + t - 1
 
-				if u >= 1 and u <= map:getWidth() and
-				   v >= 1 and v <= map:getHeight()
-				then
-					local tile = map:getTile(u, v)
-					if mode == LandscapeToolPanel.MODE_FLAT then
-						tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
-					elseif mode == LandscapeToolPanel.MODE_EDGE then
-						tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
-					elseif mode == LandscapeToolPanel.MODE_DECAL then
-						tile.decals[1] = self.tileSetPalette:getCurrentTile()
+					if u >= 1 and u <= map:getWidth() and
+					   v >= 1 and v <= map:getHeight()
+					then
+						local tile = map:getTile(u, v)
+						if mode == LandscapeToolPanel.MODE_FLAT then
+							tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
+						elseif mode == LandscapeToolPanel.MODE_EDGE then
+							tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
+						elseif mode == LandscapeToolPanel.MODE_DECAL then
+							tile.decals[1] = self.tileSetPalette:getCurrentTile()
+						end
 					end
 				end
 			end
+		else
+			self:recursivePaint(map, i, j)
 		end
 	end
 
@@ -423,14 +468,14 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 
 			local _, i, j = motion:getTile()
-
+			local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
 			self.currentToolNode:fromMap(
 				self:getGame():getStage():getMap(1),
 				false,
-				i - self.landscapeToolPanel:getToolSize(),
-				i + self.landscapeToolPanel:getToolSize(),
-				j - self.landscapeToolPanel:getToolSize(),
-				j + self.landscapeToolPanel:getToolSize())
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
 			if self.isDragging and
 			   (self.previousI ~= self.currentI or self.currentJ ~= self.previousJ)
