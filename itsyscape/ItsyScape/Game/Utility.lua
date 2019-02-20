@@ -915,15 +915,21 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
-function Utility.Peep.equipXWeapon(peep, id)
-	local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+function Utility.Peep.getXWeapon(game, id)
 
 	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
 	local XType = require(XName)
-	
+
+	return XType(nil, game:getDirector():getItemManager())
+end
+
+function Utility.Peep.equipXWeapon(peep, id)
+	local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+
+	local xWeapon = Utility.Peep.getXWeapon(peep:getDirector():getGameInstance(), id)
 	local s, weapon = peep:addBehavior(WeaponBehavior)
 	if s then
-		weapon.weapon = XType(nil, peep:getDirector():getItemManager())
+		weapon.weapon = xWeapon
 	end
 end
 

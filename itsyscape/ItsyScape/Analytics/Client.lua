@@ -18,11 +18,25 @@ Client.EVENTS = require "ItsyScape.Analytics.Events"
 
 function Client:new(filename, key)
 	self.API_KEY = key or Client.API_KEY
-	self:load(filename or "phantom.cfg")
+	self.acked = false
+	self.filename = filename or "phantom.cfg"
+	self:load()
 end
 
+function Client:getAcked()
+	return self.acked
+end
+
+function Client:ack()
+	if not self.acked then
+		self.acked = true
+		self:write()
+	end
+end
+
+
 function Client:load(filename)
-	local file = love.filesystem.read(filename)
+	local file = love.filesystem.read(self.filename)
 	if file then
 		local r, e = loadstring('return ' .. file)
 		if not r then
@@ -32,15 +46,29 @@ function Client:load(filename)
 			if not r then
 				Log.warn("Failed to load analytics meta: '%s'\n", e)
 			else
-				return self:init(filename, e)
+				return self:init(e)
 			end
 		end
 	end
 
-	return self:init(filename, nil)
+	return self:init(nil)
 end
 
-function Client:init(filename, t)
+function Client:write()
+	local t = {
+		enable = self.isEnabled,
+		acked = self.acked
+	}
+
+	if self.userKey then
+		t.userKey = self.userKey
+	end
+
+	local file = serpent.block(t, { comment = false })
+	love.filesystem.write(self.filename, file)
+end
+
+function Client:init(t)
 	if not t then
 		t = { enable = true }
 	end
@@ -68,10 +96,11 @@ function Client:init(filename, t)
 	end
 	
 	local file = serpent.block(t, { comment = false })
-	love.filesystem.write(filename, file)
+	love.filesystem.write(self.filename, file)
 
 	self.isEnabled = t.enable and t.key ~= ""
 	self.userKey = t.key or false
+	self.acked = t.acked or false
 
 	if self.isEnabled and self.userKey then
 		self.client = PhantomClient(self.API_KEY, self.userKey)

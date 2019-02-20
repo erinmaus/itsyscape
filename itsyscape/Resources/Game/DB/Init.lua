@@ -405,6 +405,18 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ResourceType "Power"
+	ActionType "Activate"
+
+	Meta "CombatPowerCoolDown" {
+		BaseCoolDown = Meta.TYPE_INTEGER,
+		MaxReduction = Meta.TYPE_INTEGER,
+		MinLevel = Meta.TYPE_INTEGER,
+		MaxLevel = Meta.TYPE_INTEGER,
+		Skill = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -592,6 +604,9 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 -- Prayers
 include "Resources/Game/DB/Prayers/Murmurs.lua"
+
+-- Powers
+include "Resources/Game/DB/Powers/Magic.lua"
 
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"

@@ -84,10 +84,8 @@ function LevelUpNotification:getIsFocusable()
 end
 
 function LevelUpNotification:mouseRelease(x, y, button, ...)
-	print 'yes'
 	Interface.mouseRelease(self, x, y, button, ...)
 
-	print('button', button)
 	if button == 1 then
 		self:sendPoke("open", nil, {})
 	end

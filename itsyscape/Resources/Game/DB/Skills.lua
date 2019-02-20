@@ -197,6 +197,39 @@ ItsyScape.Resource.Skill "Sailing"
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
 
+
+-- Powers
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Magic"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Archery"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Attack"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Defense"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Mining"
+}
+
+ItsyScape.Meta.SkillAction {
+	ActionType = "Activate",
+	Skill = ItsyScape.Resource.Skill "Woodcutting"
+}
+
+
 ItsyScape.Meta.ResourceName {
 	Value = "Magic",
 	Language = "en-US",
