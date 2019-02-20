@@ -55,7 +55,6 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 			end)
 
 		for i = 1, #p do
-			print('target', p[i]:getName())
 			if p[i] ~= mashina then
 				state[self.RESULT] = p[i]
 				return B.Status.Success

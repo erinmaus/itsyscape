@@ -17,6 +17,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
+local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
 local DemoApplication = Class(Application)
 DemoApplication.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
@@ -112,6 +113,24 @@ function DemoApplication:mousePress(x, y, button)
 		self.titleScreen:suppressTitle()
 
 		self:getUIView():getRoot():addChild(self.mainMenu)
+
+		if _ANALYTICS and not _ANALYTICS:getAcked() then
+			local WIDTH = 480
+			local HEIGHT = 240
+			local alertWindow = AlertWindow(self)
+			alertWindow:open(
+				"ItsyRealm collects anonymous analytics about things like how far you progress. " ..
+				"You can opt-out any time by using the Configure ItsyRealm shortcut created by the launcher. " ..
+				"Any analytics collected, assuming you opt out, will be deleted.",
+				"A Boring Disclaimer",
+				WIDTH,
+				HEIGHT)
+			alertWindow.onSubmit:register(function()
+				if _ANALYTICS then
+					_ANALYTICS:ack()
+				end
+			end)
+		end
 	else
 		if not Application.mousePress(self, x, y, button) then
 			if button == 1 then

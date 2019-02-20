@@ -32,8 +32,6 @@ DecorationPalette.PADDING = 8
 function DecorationPalette:new(application)
 	Widget.new(self)
 
-	print(application.currentDecorationTileSet)
-
 	self.application = application
 	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", application.currentDecorationTileSet))
 	self.texture = TextureResource()

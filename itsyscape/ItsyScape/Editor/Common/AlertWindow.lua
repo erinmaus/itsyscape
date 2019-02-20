@@ -72,6 +72,14 @@ function AlertWindow:open(message, title, width, height)
 	self.titleLabel:setText(title or "Alert")
 	self.messageLabel:setText(message or "Something interesting happened.")
 
+	self.messageLabel:setStyle(LabelStyle({
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 20,
+		color = { 1, 1, 1, 1 },
+		textShadow = true,
+		width = width - self.PADDING * 2
+	}, self.application:getUIView():getResources()))
+
 	self:setSize(width, height)
 
 	local windowWidth, windowHeight = love.window.getMode()

@@ -78,7 +78,6 @@ function CombatStatusHUDController:updateState()
 
 	-- Effects.
 	do
-		local peep = self:getPeep()
 		for effect in peep:getEffects() do
 			local resource = effect:getResource()
 			local e = {

@@ -353,7 +353,7 @@ function Weapon:rollDamage(peep, purpose, target)
 	end
 
 	if target then
-		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 			effect:applyTargetToDamage(roll, purpose)
 		end
 	end

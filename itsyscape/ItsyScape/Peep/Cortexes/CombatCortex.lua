@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
+local CombatPower = require "ItsyScape.Game.CombatPower"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
@@ -20,8 +21,9 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -282,7 +284,25 @@ function CombatCortex:update(delta)
 
 						if canAttack then
 							logic = logic or self.defaultWeapon
-							if logic:isCompatibleType(Weapon) then
+
+							local power = peep:getBehavior(PendingPowerBehavior)
+							if power then
+								power = power.power
+							end
+							
+							if power and power:isCompatibleType(CombatPower) then
+								power:activate(peep, target)
+
+								if logic and logic:isCompatibleType(Weapon) then
+									logic:applyCooldown(peep)
+								end
+
+								logic = power:getXWeapon()
+
+								peep:removeBehavior(PendingPowerBehavior)
+							end
+
+							if logic and logic:isCompatibleType(Weapon) then
 								local success = logic:perform(peep, target)
 
 								if success then
