@@ -22,7 +22,7 @@ function Icon:new()
 end
 
 function Icon:setIcon(value)
-	self.icon = value or self.icon
+	self.icon = value or false
 end
 
 function Icon:getIcon()

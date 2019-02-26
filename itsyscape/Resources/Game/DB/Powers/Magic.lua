@@ -17,19 +17,19 @@ ItsyScape.Resource.Power "Confuse" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Wisdom",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
-	MaxReduction = 30,
+	MaxReduction = 20,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -52,6 +52,18 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Effect "Power_Confuse"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Confuse",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Confuse"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers your opponent's accuracy by 10-30% depending on your Wisdom level for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Confuse"
+}
+
 ItsyScape.Resource.Power "Weaken" {
 	ItsyScape.Action.Activate() {
 		Requirement {
@@ -61,19 +73,19 @@ ItsyScape.Resource.Power "Weaken" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Wisdom",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
-	MaxReduction = 30,
+	MaxReduction = 20,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -96,6 +108,18 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Effect "Power_Weaken"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Weaken",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Weaken"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers your opponent's damage by 10-30% depending on your Wisdom level for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Weaken"
+}
+
 ItsyScape.Resource.Power "Curse" {
 	ItsyScape.Action.Activate() {
 		Requirement {
@@ -105,19 +129,19 @@ ItsyScape.Resource.Power "Curse" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Wisdom",
-			Coutn = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
-	MaxReduction = 30,
+	MaxReduction = 20,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -139,3 +163,16 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Curse"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Curse",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Curse"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers your opponent's defense by 10-30% depending on your Wisdom level for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Curse"
+}
+

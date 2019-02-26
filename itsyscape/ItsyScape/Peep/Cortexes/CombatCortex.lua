@@ -23,6 +23,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -289,15 +290,33 @@ function CombatCortex:update(delta)
 							if power then
 								power = power.power
 							end
+
+							local coolDowns = peep:getBehavior(PowerCoolDownBehavior)
+							if not coolDowns then
+								peep:addBehavior(PowerCoolDownBehavior)
+								coolDowns = peep:getBehavior(PowerCoolDownBehavior)
+							end
 							
 							if power and power:isCompatibleType(CombatPower) then
-								power:activate(peep, target)
+								local canUseAbility = true
 
-								if logic and logic:isCompatibleType(Weapon) then
-									logic:applyCooldown(peep)
+								local id = power:getResource().id.value
+								local time = game:getCurrentTick() * game:getDelta()
+								if coolDowns.powers[id] then
+									canUseAbility = time > coolDowns.powers[id]
 								end
 
-								logic = power:getXWeapon()
+								if canUseAbility then
+									power:activate(peep, target)
+
+									if logic and logic:isCompatibleType(Weapon) then
+										logic:applyCooldown(peep)
+									end
+
+									logic = power:getXWeapon()
+
+									coolDowns.powers[id] = time + power:getCoolDown(peep)
+								end
 
 								peep:removeBehavior(PendingPowerBehavior)
 							end

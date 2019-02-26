@@ -33,7 +33,7 @@ function CombatPower:new(...)
 	if coolDown then
 		self:setCoolDown(
 			coolDown:get("Skill").name,
-			coolDown:get("BaseCooldown"),
+			coolDown:get("BaseCoolDown"),
 			coolDown:get("MaxReduction"),
 			coolDown:get("MinLevel"),
 			coolDown:get("MaxLevel"))
