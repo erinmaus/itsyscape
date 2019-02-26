@@ -987,6 +987,18 @@ function Utility.Peep.toggleEffect(peep, resource, ...)
 	end
 end
 
+function Utility.Peep.getPowerType(resource, gameDB)
+	local PowerTypeName = string.format("Resources.Game.Powers.%s.Power", resource.name)
+	local s, r = pcall(require, PowerTypeName)
+	if s then
+		return r
+	else
+		Log.error("Couldn't load power '%s': %s", Utility.getName(resource, gameDB) or resource.name, r)
+	end
+
+	return nil
+end
+
 function Utility.Peep.canAttack(peep)
 	local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
 	if not status then

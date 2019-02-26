@@ -59,7 +59,17 @@ function PlayerStorage.Section:hasSection(key)
 end
 
 function PlayerStorage.Section:removeSection(key)
+	if type(key) == 'number' then
+		table.remove(self.array, key)
+	end
+
 	self.sections[key] = nil
+end
+
+function PlayerStorage.Section:reset()
+	self.sections = {}
+	self.values = {}
+	self.array = {}
 end
 
 function PlayerStorage.Section:set(key, value)
@@ -138,8 +148,17 @@ end
 
 function PlayerStorage.Section:deserialize(t)
 	t = t or { values = {}, sections = {} }
+	t.values = t.values or {}
+	t.sections = t.sections or {}
+
+	for i = 1, #t.values do
+		self:set(i, t.values[i])
+	end
+
 	for key, value in pairs(t.values or {}) do
-		self:set(key, value)
+		if type(key) ~= 'number' then
+			self:set(key, value)
+		end
 	end
 
 	for key, value in pairs(t.sections or {}) do

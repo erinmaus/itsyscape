@@ -81,6 +81,7 @@ function DemoApplication:closeTitleScreen()
 	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
+	self:getGame():getUI():open(playerPeep, "StrategyBar")
 end
 
 function DemoApplication:openTitleScreen()

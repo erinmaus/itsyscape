@@ -64,4 +64,8 @@ function Power:activate(activator, target)
 	self:getAction():perform(activator:getState(), activator, target)
 end
 
+function Power:getCoolDown(peep)
+	return math.huge
+end
+
 return Power

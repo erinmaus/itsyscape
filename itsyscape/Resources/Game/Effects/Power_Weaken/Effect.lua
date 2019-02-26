@@ -14,6 +14,7 @@ local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
 -- Lowers damage 10-30%, depending on Wisdom level, capping at level 50.
 local Weaken = Class(CombatEffect)
+Weaken.DURATION = 30
 
 function Weaken:new(activator)
 	CombatEffect.new(self)

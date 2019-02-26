@@ -14,6 +14,7 @@ local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
 -- Lowers accuracy 10-30%, depending on Wisdom level, capping at level 50.
 local Confuse = Class(CombatEffect)
+Confuse.DURATION = 30
 
 function Confuse:new(activator)
 	CombatEffect.new(self)
