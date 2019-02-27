@@ -915,12 +915,11 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
-function Utility.Peep.getXWeapon(game, id)
-
+function Utility.Peep.getXWeapon(game, id, proxyID, ...)
 	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
 	local XType = require(XName)
 
-	return XType(nil, game:getDirector():getItemManager())
+	return XType(proxyID or nil, game:getDirector():getItemManager(), ...)
 end
 
 function Utility.Peep.equipXWeapon(peep, id)

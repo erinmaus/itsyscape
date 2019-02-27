@@ -41,6 +41,10 @@ function Projectile:getTime()
 	return self.time
 end
 
+function Projectile:getDuration()
+	return math.huge
+end
+
 function Projectile:getDelta()
 	return math.min(math.max(self.time / self:getDuration(), 0), 1)
 end

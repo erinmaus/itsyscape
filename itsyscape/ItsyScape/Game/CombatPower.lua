@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Power = require "ItsyScape.Game.Power"
 local Utility = require "ItsyScape.Game.Utility"
 
@@ -50,21 +51,26 @@ end
 
 function CombatPower:setXWeaponID(id)
 	self.xWeapon = id or false
-	self.xWeaponInstance = false
 end
 
 function CombatPower:getXWeaponID()
 	return self.xWeapon
 end
 
-function CombatPower:getXWeapon()
+function CombatPower:getXWeapon(peep)
 	if self.xWeapon then
-		if not self.xWeaponInstance then
-			self.xWeaponInstance = Utility.Peep.getXWeapon(self:getGame(), self.xWeapon)
+		local equippedWeapon =
+			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
+			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+		local itemID
+		if equippedWeapon then
+			itemID = equippedWeapon:getID()
 		end
+
+		return Utility.Peep.getXWeapon(self:getGame(), self.xWeapon, itemID)
 	end
 
-	return self.xWeaponInstance
+	return nil
 end
 
 function CombatPower:getCoolDown(peep)

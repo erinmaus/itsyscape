@@ -18,6 +18,8 @@ function Curse:new(...)
 
 	local gameDB = self:getGame():getGameDB()
 	self.effectResource = gameDB:getResource("Power_Curse", "Effect")
+
+	self:setXWeaponID("Power_Curse")
 end
 
 function Curse:activate(activator, target)

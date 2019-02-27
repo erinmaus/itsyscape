@@ -18,6 +18,8 @@ function Confuse:new(...)
 
 	local gameDB = self:getGame():getGameDB()
 	self.effectResource = gameDB:getResource("Power_Confuse", "Effect")
+
+	self:setXWeaponID("Power_Confuse")
 end
 
 function Confuse:activate(activator, target)
