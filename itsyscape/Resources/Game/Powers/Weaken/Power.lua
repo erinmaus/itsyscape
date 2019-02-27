@@ -18,6 +18,8 @@ function Weaken:new(...)
 
 	local gameDB = self:getGame():getGameDB()
 	self.effectResource = gameDB:getResource("Power_Weaken", "Effect")
+
+	self:setXWeaponID("Power_Weaken")
 end
 
 function Weaken:activate(activator, target)

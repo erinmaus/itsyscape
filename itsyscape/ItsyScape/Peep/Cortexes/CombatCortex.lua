@@ -313,7 +313,7 @@ function CombatCortex:update(delta)
 										logic:applyCooldown(peep)
 									end
 
-									logic = power:getXWeapon()
+									logic = power:getXWeapon(peep)
 
 									coolDowns.powers[id] = time + power:getCoolDown(peep)
 								end
