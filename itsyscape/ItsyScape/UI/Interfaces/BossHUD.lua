@@ -21,6 +21,7 @@ local BossHUD = Class(HUD)
 BossHUD.BIG_STAT_WIDTH = 640
 BossHUD.BIG_STAT_HEIGHT = 64
 BossHUD.BIG_STAT_PADDING = 8
+BossHUD.TOP = 48 -- account for strategy bar
 BossHUD.BIG_STAT_LEFT_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 	color = { 1, 1, 1, 1 },
@@ -118,7 +119,7 @@ function BossHUD:populateStats()
 
 	local resources = self:getView():getResources()
 
-	local y = BossHUD.BIG_STAT_PADDING * 2
+	local y = BossHUD.BIG_STAT_PADDING * 4 + BossHUD.TOP
 	do
 		local big = state.bigStats
 		local w, h = love.window.getMode()
