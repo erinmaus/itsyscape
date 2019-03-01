@@ -176,3 +176,58 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Curse"
 }
 
+ItsyScape.Resource.Power "Corrupt" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 30,
+	MaxReduction = 10,
+	MinLevel = 5,
+	MaxLevel = 35,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Corrupt"
+}
+
+ItsyScape.Resource.Effect "Power_Corrupt" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Corrupt",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Corrupt"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Inflicts a corrupting influence on you, dealing 100%-300% damage over time.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Corrupt"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Corrupt",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Corrupt"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Inflicts a corrupting influence on your opponent, dealing 100%-300% damage (based on your Wisdom level) over 10 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Corrupt"
+}

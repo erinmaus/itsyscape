@@ -1535,6 +1535,10 @@ end
 
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.dead then
+		return
+	end
+
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
 	local attack = AttackPoke({
