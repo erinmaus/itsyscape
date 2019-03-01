@@ -1801,10 +1801,14 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
 	peep:addResource("animation-idle-fishing-rod", idleFishingRodAnimation)
-	local idleCaneAnimation = CacheRef(
+	local defendShieldRightAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Human_IdleCane_1/Script.lua")
-	peep:addResource("animation-idle-cane", idleCaneAnimation)
+		"Resources/Game/Animations/Human_Defend_Shield_Right_1/Script.lua")
+	peep:addResource("animation-defend-shield-right", defendShieldRightAnimation)
+	local defendShieldLeftAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Defend_Shield_Left_1/Script.lua")
+	peep:addResource("animation-defend-shield-left", defendShieldLeftAnimation)
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Die_1/Script.lua")

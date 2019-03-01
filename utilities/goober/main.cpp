@@ -144,6 +144,7 @@ struct Vertex
 	float position[3] = { 0, 0, 0 };
 	float normal[3] = { 0, 1, 0 };
 	float texture[2] = { 0, 0 };
+	float direction = 0;
 	int boneIndex[4] = { -1, -1, -1, -1 };
 	float boneWeight[4] = { 0, 0, 0, 0 };
 	int bones = 0;
@@ -165,6 +166,10 @@ void exportMesh(const aiScene* scene, FILE* output)
 	std::fprintf(output, "\t\t{ 'VertexTexture', 'float', 2 },\n");
 	std::fprintf(output, "\t\t{ 'VertexBoneIndex', 'float', 4 },\n");
 	std::fprintf(output, "\t\t{ 'VertexBoneWeight', 'float', 4 },\n");
+	if (mesh->GetNumUVChannels() > 1)
+	{
+		std::fprintf(output, "\t\t{ 'VertexDirection', 'float', 1 },\n");
+	}
 	std::fprintf(output, "\t},\n");
 
 	std::map<int, Vertex> vertices;
@@ -211,6 +216,11 @@ void exportMesh(const aiScene* scene, FILE* output)
 		vertex.normal[2] = mesh->mNormals[i].z;
 		vertex.texture[0] = mesh->mTextureCoords[0][i].x;
 		vertex.texture[1] = mesh->mTextureCoords[0][i].y;
+
+		if (mesh->GetNumUVChannels() > 1)
+		{
+			vertex.direction = mesh->mTextureCoords[1][i].x;
+		}
 	}
 
 	std::fprintf(output, "\tvertices = {\n");
@@ -258,6 +268,12 @@ void exportMesh(const aiScene* scene, FILE* output)
 				vertex.boneWeight[1],
 				vertex.boneWeight[2],
 				vertex.boneWeight[3]);
+
+			if (mesh->GetNumUVChannels() > 1)
+			{
+				std::fprintf(output, "%d, ", (int)vertex.direction);
+			}
+			
 			std::fprintf(output, "},\n");
 		}
 	}

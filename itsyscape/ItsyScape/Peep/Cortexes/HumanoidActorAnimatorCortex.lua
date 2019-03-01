@@ -10,6 +10,7 @@
 
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Shield = require "ItsyScape.Game.Shield"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
@@ -111,9 +112,38 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 end
 
 function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
-	local resource = peep:getResource(
-		"animation-defend",
-		"ItsyScape.Graphics.AnimationResource")
+	local hasShield = false
+	do
+		local rightHandItem = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
+		if rightHandItem then
+			local shieldLogic = peep:getDirector():getItemManager():getLogic(rightHandItem:getID())
+			if shieldLogic:isCompatibleType(Shield) then
+				hasShield = true
+			end
+		end
+	end
+
+	local direction = peep:getBehavior(MovementBehavior).facing
+
+	local resource
+	if hasShield then
+		if direction == MovementBehavior.FACING_LEFT then
+			resource = peep:getResource(
+				"animation-defend-shield-left",
+				"ItsyScape.Graphics.AnimationResource")
+		elseif direction == MovementBehavior.FACING_RIGHT then
+			resource = peep:getResource(
+				"animation-defend-shield-right",
+				"ItsyScape.Graphics.AnimationResource")
+		end
+	end
+
+	if not resource then
+		resource = peep:getResource(
+			"animation-defend",
+			"ItsyScape.Graphics.AnimationResource")
+	end
+
 	if resource then
 		self:playCombatAnimation(
 			peep,

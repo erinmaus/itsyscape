@@ -3,6 +3,9 @@ uniform mat4 scape_Bones[MAX_BONES];
 
 attribute vec4 VertexBoneIndex;
 attribute vec4 VertexBoneWeight;
+attribute float VertexDirection;
+
+varying vec2 frag_Direction;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -22,4 +25,9 @@ void performTransform(
 
 	localPosition = weightedBonePosition.xyz;
 	projectedPosition = modelViewProjectionMatrix * weightedBonePosition;
+
+	frag_Direction = vec2(
+		VertexDirection,
+		(scape_WorldMatrix * vec4(1, 0, 0, 0)).x
+	);
 }

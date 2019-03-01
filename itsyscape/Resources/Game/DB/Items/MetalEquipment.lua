@@ -49,6 +49,14 @@ local ITEMS = {
 		tier = 0
 	},
 
+	["Shield"] = {
+		skills = { "Defense", "Strength" },
+		niceName = "%s shield",
+		slot = "Shield",
+		bars = 3,
+		tier = 1
+	},
+
 	["Dagger"] = {
 		skills = { "Attack" },
 		niceName = "%s dagger",
@@ -224,6 +232,22 @@ do
 		Value = "Warning: don't stand on a hill during a lightning storm and curse the gods.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzePlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(10, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "BronzeShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "At least it's not a wooden shield...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeShield"
 	}
 
 	ItsyScape.Meta.Equipment {
