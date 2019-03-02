@@ -231,3 +231,58 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Corrupt"
 }
+ItsyScape.Resource.Power "Nirvana" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(15)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(15)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 300,
+	MaxReduction = 150,
+	MinLevel = 10,
+	MaxLevel = 100,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
+
+ItsyScape.Resource.Effect "Power_Nirvana" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Nirvana",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Nirvana"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Channel the power of Prisium, the Great Intelligence, and cast spells without runes.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Nirvana"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Nirvana",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Channel the power of Prisium, the Great Intelligence, and eliminate the need of runes for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
