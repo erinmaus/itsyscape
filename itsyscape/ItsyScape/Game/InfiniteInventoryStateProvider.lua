@@ -38,7 +38,7 @@ function InfiniteInventoryStateProvider:has(name, count, flags)
 end
 
 function InfiniteInventoryStateProvider:take(name, count, flags)
-	if self.items[item] and not flags['item-noted'] then
+	if self.items[name] and not flags['item-noted'] then
 		return true
 	end
 end
