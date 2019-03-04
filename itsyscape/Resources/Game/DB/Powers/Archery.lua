@@ -87,3 +87,43 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "DoubleTake"
 }
+
+ItsyScape.Resource.Power "PiercingShot" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(5)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 1,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "PiercingShot"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Piercing Shot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "PiercingShot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Shoot a piercing shot that hurts all enemies along projectile's path. Target gets deal 50%-200% damage based on Dexterity level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "PiercingShot"
+}
