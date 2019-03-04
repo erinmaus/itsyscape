@@ -47,3 +47,43 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Shockwave"
 }
+
+ItsyScape.Resource.Power "DoubleTake" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(5)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 40,
+	MaxReduction = 20,
+	MinLevel = 1,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "DoubleTake"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Double Take",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "DoubleTake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Shoot two arrows. Should the first hit, the second will also. However, should the first miss, so will the second.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "DoubleTake"
+}
