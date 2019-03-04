@@ -85,7 +85,7 @@ function CombatPower:getCoolDown(peep)
 				return self.baseCoolDown
 			end
 
-			local difference = stat - self.minLevel
+			local difference = math.min(stat - self.minLevel, width)
 			local percent = difference / width
 			local reduction = math.floor(percent * self.maxReduction + 0.5)
 

@@ -70,8 +70,8 @@ function ItemManager:isTradeable(id)
 	end
 end
 
-function ItemManager:getLogic(id)
-	if not self.logic[id] then
+function ItemManager:getLogic(id, unique)
+	if not self.logic[id] or unique then
 		local Logic
 		do
 			local file = string.format("Resources.Game.Items.%s.Logic", id)
@@ -97,6 +97,10 @@ function ItemManager:getLogic(id)
 
 		if not Logic then
 			return nil
+		end
+
+		if unique then
+			return Logic(self)
 		end
 
 		self.logic[id] = Logic(self)
