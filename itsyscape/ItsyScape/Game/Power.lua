@@ -48,6 +48,10 @@ function Power:getAction()
 	return self.action or false
 end
 
+function Power:perform(activator, target)
+	return self:getAction():perform(activator:getState(), activator, target)
+end
+
 function Power:activate(activator, target)
 	activator:poke('powerActivated', {
 		power = self,
@@ -60,8 +64,6 @@ function Power:activate(activator, target)
 		activator = activator,
 		action = self:getAction()
 	})
-
-	self:getAction():perform(activator:getState(), activator, target)
 end
 
 function Power:getCoolDown(peep)

@@ -210,6 +210,62 @@ function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
 	end
 end
 
+function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
+	radius = radius or 1
+
+	if type(prop) == 'string' then
+		local gameDB = peep:getDirector():getGameDB()
+		prop = gameDB:getResource(prop, "Prop")
+	end
+
+	if not prop then
+		return nil
+	end
+
+	local layer
+	do
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			layer = position.layer
+		end
+
+		layer = layer or 1
+	end
+
+	local stage = peep:getDirector():getGameInstance():getStage(peep)
+	local success, prop = stage:placeProp("resource://" .. prop.name, layer)
+
+	if success then
+		local propPeep = prop:getPeep()
+		local position = propPeep:getBehavior(PositionBehavior)
+		if position then
+			position.position = Vector(
+				x + ((math.random() * 2) - 1) * radius,
+				y, 
+				z + ((math.random() * 2) - 1) * radius)
+		end
+
+		propPeep:poke('spawnedByPeep', { peep = peep })
+	end
+
+	return prop
+end
+
+function Utility.spawnPropAtAnchor(peep, prop, anchor, radius)
+	local map = Utility.Peep.getMap(peep)
+	local x, y, z = Utility.Map.getAnchorPosition(
+		peep:getDirector():getGameInstance(),
+		map,
+		anchor)
+
+	if x and y and z then
+		return Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
+	else
+		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
+		return nil
+	end
+end
+
 function Utility.performAction(game, resource, id, scope, ...)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()

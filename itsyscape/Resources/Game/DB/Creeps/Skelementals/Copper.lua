@@ -151,6 +151,14 @@ ItsyScape.Meta.DropTableEntry {
 }
 
 ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Dynamite",
+	Weight = 50,
+	Count = 15,
+	Range = 5,
+	Resource = ItsyScape.Resource.DropTable "CopperSkelemental_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "Bones",
 	Weight = 1,
 	Count = 1,
