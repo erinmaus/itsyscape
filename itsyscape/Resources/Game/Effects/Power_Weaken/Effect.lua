@@ -24,7 +24,7 @@ function Weaken:new(activator)
 		"Wisdom",
 		{ ['skill-as-level'] = true })
 
-	self.damageDebuff = 1 - (math.max(level / 50 * 20, 20) + 10) / 100
+	self.damageDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
 end
 
 function Weaken:getBuffType()

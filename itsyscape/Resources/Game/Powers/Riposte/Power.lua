@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Powers/Boom/Power.lua
+-- Resources/Game/Powers/Riposte/Power.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,30 +10,19 @@
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local Utility = require "ItsyScape.Game.Utility"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
-local Boom = Class(CombatPower)
+local Riposte = Class(CombatPower)
 
-function Boom:new(...)
+function Riposte:new(...)
 	CombatPower.new(self, ...)
 
-	self:setXWeaponID("Power_Boom")
+	local gameDB = self:getGame():getGameDB()
+	self.effectResource = gameDB:getResource("Power_Riposte", "Effect")
 end
 
-function Boom:activate(activator, target)
+function Riposte:activate(activator, target)
 	CombatPower.activate(self, activator, target)
-
-	local position = target:getBehavior(PositionBehavior)
-	if position then
-		position = position.position
-		Utility.spawnPropAtPosition(
-			activator,
-			"Power_Bomb_Default",
-			position.x,
-			position.y,
-			position.z,
-			0.25)
-	end
+	Utility.Peep.applyEffect(activator, self.effectResource, true, activator)
 end
 
-return Boom
+return Riposte

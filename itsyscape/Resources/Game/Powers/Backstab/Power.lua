@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Powers/Boom/Power.lua
+-- Resources/Game/Powers/Shockwave/Power.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,30 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local Utility = require "ItsyScape.Game.Utility"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
-local Boom = Class(CombatPower)
+local Shockwave = Class(CombatPower)
 
-function Boom:new(...)
+function Shockwave:new(...)
 	CombatPower.new(self, ...)
 
-	self:setXWeaponID("Power_Boom")
+	self:setXWeaponID("Power_Backstab")
 end
 
-function Boom:activate(activator, target)
-	CombatPower.activate(self, activator, target)
-
-	local position = target:getBehavior(PositionBehavior)
-	if position then
-		position = position.position
-		Utility.spawnPropAtPosition(
-			activator,
-			"Power_Bomb_Default",
-			position.x,
-			position.y,
-			position.z,
-			0.25)
-	end
-end
-
-return Boom
+return Shockwave
