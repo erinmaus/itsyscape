@@ -24,7 +24,7 @@ function Curse:new(activator)
 		"Wisdom",
 		{ ['skill-as-level'] = true })
 
-	self.defenseDebuff = 1 - (math.max(level / 50 * 20, 20) + 10) / 100
+	self.defenseDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
 end
 
 function Curse:getBuffType()

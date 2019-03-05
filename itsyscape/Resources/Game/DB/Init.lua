@@ -608,6 +608,7 @@ include "Resources/Game/DB/Prayers/Murmurs.lua"
 -- Powers
 include "Resources/Game/DB/Powers/Magic.lua"
 include "Resources/Game/DB/Powers/Archery.lua"
+include "Resources/Game/DB/Powers/Melee.lua"
 
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
