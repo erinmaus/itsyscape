@@ -17,6 +17,7 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
@@ -174,8 +175,10 @@ function LocalStage:spawnActor(actorID, layer)
 end
 
 function LocalStage:killActor(actor)
-	if actor and self.actors[actor] then
-		local a = self.actors[actor]
+	if actor and self.actors[actor] or self.peeps[actor] then
+		if actor:isCompatibleType(Peep) then
+			actor = self.peeps[actor]
+		end
 
 		self.onActorKilled(self, actor)
 		actor:depart()
@@ -220,8 +223,10 @@ function LocalStage:placeProp(propID, layer)
 end
 
 function LocalStage:removeProp(prop)
-	if prop and self.props[prop] then
-		local p = self.props[prop]
+	if prop and self.props[prop] or self.peeps[prop] then
+		if prop:isCompatibleType(Peep) then
+			prop = self.peeps[prop]
+		end
 
 		self.onPropRemoved(self, prop)
 		prop:remove()

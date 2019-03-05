@@ -32,7 +32,7 @@ glm::mat4 nbunny::SceneNodeTransform::get_local(float delta)
 	auto cT = currentTranslation;
 
 	auto rotation = glm::slerp(pR, cR, delta);
-	auto scale = glm::mix(pS, cS, 1.0f - delta);
+	auto scale = glm::mix(pS, cS, delta);
 	auto translation = glm::mix(cT, pT, 1.0f - delta);
 
 	auto r = glm::toMat4(rotation);

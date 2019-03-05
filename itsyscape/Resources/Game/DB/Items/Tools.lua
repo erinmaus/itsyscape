@@ -149,3 +149,25 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "WimpyFishingRod"
 }
 
+ItsyScape.Resource.Item "Dynamite" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Dynamite",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Dynamite"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(5),
+	Weight = 0,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "Dynamite"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "BOOM!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Dynamite"
+}

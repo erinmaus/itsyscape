@@ -307,6 +307,10 @@ function CombatCortex:update(delta)
 								end
 
 								if canUseAbility then
+									canUseAbility = power:perform(peep, target)
+								end
+
+								if canUseAbility then
 									power:activate(peep, target)
 
 									if logic and logic:isCompatibleType(Weapon) then

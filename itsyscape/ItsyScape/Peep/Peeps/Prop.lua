@@ -34,6 +34,7 @@ function Prop:new(resource, ...)
 	Utility.Peep.setResource(self, resource)
 
 	self:addPoke('spawnedByAction')
+	self:addPoke('spawnedByPeep')
 end
 
 function Prop:spawnOrPoofTile(tile, i, j, mode)
