@@ -277,7 +277,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(8, 1.0),
+		AccuracySlash = ItsyScape.Utility.styleBonusForItem(8, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(8),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "BronzeLongsword"
