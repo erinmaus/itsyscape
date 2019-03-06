@@ -49,7 +49,12 @@ function Power:getAction()
 end
 
 function Power:perform(activator, target)
-	return self:getAction():perform(activator:getState(), activator, target)
+	if not self:getAction():perform(activator:getState(), activator, target) then
+		self:getAction():fail(activator:getState(), activator)
+		return false
+	end
+
+	return true
 end
 
 function Power:activate(activator, target)

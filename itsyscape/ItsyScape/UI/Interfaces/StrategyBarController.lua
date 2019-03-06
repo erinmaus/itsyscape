@@ -20,7 +20,7 @@ local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehav
 local StrategyBarController = Class(Controller)
 StrategyBarController.VIEW_SELF = 1
 StrategyBarController.VIEW_TARGET = 2
-StrategyBarController.MAX_STRIP_SIZE = 7
+StrategyBarController.MAX_STRIP_SIZE = 14
 
 function StrategyBarController:new(peep, director)
 	Controller.new(self, peep, director)
@@ -118,12 +118,14 @@ end
 function StrategyBarController:bindAbility(index)
 	local style = self.state.style
 
-	local abilities = {}
+	local offensivePowers = {}
+	local defensivePowers = {}
 
 	local gameDB = self:getDirector():getGameDB()
 	local brochure = gameDB:getBrochure()
 	for power in gameDB:getResources("Power") do
 		local isSameStyle = false
+		local isDefensive = false
 		local xp
 		
 		for action in brochure:findActionsByResource(power) do
@@ -135,29 +137,44 @@ function StrategyBarController:bindAbility(index)
 						isSameStyle = true
 						xp = requirement.count
 						break
+					elseif resource.name == "Defense" then
+						isDefensive = true
+						xp = requirement.count
+						break
 					end
 				end
 			end
 
-			if isSameStyle then
+			if isSameStyle or isDefensive then
 				break
 			end
 		end
 
-		if isSameStyle then
-			if self:getPeep():getState():count("Skill", style) >= xp then
-				table.insert(abilities, {
-					index = power.id.value,
-					id = power.name,
-					name = Utility.getName(power, gameDB) or "*" .. power.name,
-					description = Utility.getDescription(power, gameDB),
-					level = Curve.XP_CURVE:getLevel(xp)
-				})
+		if isSameStyle or isDefensive then
+			local result = {
+				index = power.id.value,
+				id = power.name,
+				name = Utility.getName(power, gameDB) or "*" .. power.name,
+				description = Utility.getDescription(power, gameDB),
+				level = Curve.XP_CURVE:getLevel(xp)
+			}
+
+			local skill, powers
+			if isSameStyle then
+				skill = style
+				powers = offensivePowers
+			elseif isDefensive then
+				skill = "Defense"
+				powers = defensivePowers
+			end
+
+			if self:getPeep():getState():count("Skill", skill) >= xp then
+				table.insert(powers, result)
 			end
 		end
 	end
 
-	table.sort(abilities, function(a, b)
+	table.sort(offensivePowers, function(a, b)
 			if a.level < b.level then
 				return true
 			elseif a.level == b.level then
@@ -167,14 +184,35 @@ function StrategyBarController:bindAbility(index)
 			end
 		end)
 
-	table.insert(abilities, 1, index)
+	table.sort(defensivePowers, function(a, b)
+			if a.level < b.level then
+				return true
+			elseif a.level == b.level then
+				return a.index < b.index
+			else
+				return false
+			end
+		end)
+
+	local args = {}
+	do
+		for i = 1, #offensivePowers do
+			table.insert(args, offensivePowers[i])
+		end
+
+		for i = 1, #defensivePowers do
+			table.insert(args, defensivePowers[i])
+		end
+	end
+
+	table.insert(args, 1, index)
 
 	local ui = self:getDirector():getGameInstance():getUI()
 	ui:sendPoke(
 		self,
 		"bindAbility",
 		nil,
-		abilities)
+		args)
 end
 
 function StrategyBarController:unbind(e)
@@ -193,7 +231,7 @@ function StrategyBarController:bind(e)
 	assert(e.index <= StrategyBarController.MAX_STRIP_SIZE, "index must be less than max strip size")
 
 	self.powers[e.index] = {
-		type = "Power", id = e.ability
+		type = "Power", id = e.power
 	}
 
 	self:savePowers()

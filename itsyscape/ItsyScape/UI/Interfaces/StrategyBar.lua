@@ -23,8 +23,8 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local StrategyBar = Class(Interface)
 StrategyBar.BUTTON_SIZE = 48
 StrategyBar.PADDING = 8
-StrategyBar.NUM_BUTTONS = 7
-StrategyBar.WIDTH = (StrategyBar.NUM_BUTTONS + 1) * (StrategyBar.BUTTON_SIZE + StrategyBar.PADDING * 2)
+StrategyBar.NUM_BUTTONS = 14
+StrategyBar.WIDTH = (StrategyBar.NUM_BUTTONS + 1) * (StrategyBar.BUTTON_SIZE + StrategyBar.PADDING) + StrategyBar.PADDING
 StrategyBar.HEIGHT = StrategyBar.BUTTON_SIZE + StrategyBar.PADDING * 2
 
 StrategyBar.Pending = Class(Drawable)
@@ -126,18 +126,18 @@ function StrategyBar:activate(index, bind)
 end
 
 function StrategyBar:bindAbility(index, ...)
-	local abilities = { ... }
+	local powers = { ... }
 
 	local poke = {}
-	for i = 1, #abilities do
+	for i = 1, #powers do
 		table.insert(poke, {
 			id = i,
 			verb = "Bind",
-			object = abilities[i].name,
+			object = powers[i].name,
 			callback = function()
 				self:sendPoke("bind", nil, {
 					index = index,
-					ability = abilities[i].id
+					power = powers[i].id
 				})
 			end
 		})
