@@ -18,6 +18,14 @@ local FABRICS = {
 	}
 }
 
+local SHIELDS = {
+	["BlueCotton"] = {
+		name = "Blue book",
+		logs = "CommonLogs",
+		fabric = 3
+	}
+}
+
 local ITEMS = {
 	["Gloves"] = {
 		niceName = "%s gloves",
@@ -143,6 +151,109 @@ for name, fabric in pairs(FABRICS) do
 	end
 end
 
+for name, itemProps in pairs(SHIELDS) do
+	local fabric = FABRICS[name]
+	local ItemName = string.format("%sShield", name)
+	local Item = ItsyScape.Resource.Item(ItemName)
+
+	local EquipAction = ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+		}
+	}
+
+	local DequipAction = ItsyScape.Action.Dequip()
+
+	local CraftAction = ItsyScape.Action.Craft()
+	CraftAction {
+		Input {
+			Resource = ItsyScape.Resource.Item(name),
+			Count = itemProps.fabric
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(fabric.thread),
+			Count = math.floor(itemProps.fabric * 1.5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(fabric.rune),
+			Count = math.floor(itemProps.fabric * 2)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(itemProps.logs),
+			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Needle",
+			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier + itemProps.fabric + 1, 1))
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier + itemProps.fabric + 1, 1))
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(math.max(fabric.tier + itemProps.fabric + 3, 1)) * itemProps.fabric
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(math.max(fabric.tier + itemProps.fabric + 3, 1)) * itemProps.fabric
+		},
+
+		Output {
+			Resource = Item,
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(fabric.tier + itemProps.fabric + 3) * 3,
+		Weight = fabric.weight * itemProps.fabric,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = itemProps.name,
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = string.format("Resources/Game/Skins/%s/%s.lua", name, "Shield"),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Fabric",
+		Value = name,
+		Resource = Item
+	}
+
+	Item {
+		EquipAction,
+		DequipAction,
+		CraftAction
+	}
+end
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "How nice, it already has a pattern!",
 	Language = "en-US",
@@ -218,5 +329,22 @@ do
 		Value = "When you need to be that fumbling old grandpa.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlueCottonRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.6),
+		DefenseRanged = 0,
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(10, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "BlueCottonShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A glorified picture book. Might as well use it as a shield.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlueCottonShield"
 	}
 end

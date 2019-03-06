@@ -937,6 +937,21 @@ function Utility.Peep.getEquippedItem(peep, slot)
 	end
 end
 
+function Utility.Peep.getEquippedShield(peep)
+	local Equipment = require "ItsyScape.Game.Equipment"
+	local Shield = require "ItsyScape.Game.Shield"
+
+	local rightHandItem = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
+	if rightHandItem then
+		local shieldLogic = peep:getDirector():getItemManager():getLogic(rightHandItem:getID())
+		if shieldLogic:isCompatibleType(Shield) then
+			return shieldLogic, rightHandItem
+		end
+	end
+
+	return nil, nil
+end
+
 function Utility.Peep.getEquipmentBonuses(peep)
 	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 	local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
