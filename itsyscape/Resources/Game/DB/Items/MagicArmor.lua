@@ -347,4 +347,20 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlueCottonShield"
 	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(5, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Passive aggressive moo.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+	}
 end

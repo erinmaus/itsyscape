@@ -43,6 +43,14 @@ local ITEMS = {
 	},
 }
 
+local SHIELDS = {
+	["MooishLeather"] = {
+		name = "Mooish buckler",
+		hides = 3,
+		logs = "CommonLogs"
+	}
+}
+
 for name, leather in pairs(LEATHERS) do
 	for itemName, itemProps in pairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
@@ -127,6 +135,94 @@ for name, leather in pairs(LEATHERS) do
 	end
 end
 
+for name, itemProps in pairs(SHIELDS) do
+	local leather = LEATHERS[name]
+	local ItemName = string.format("%sBuckler", name)
+	local Item = ItsyScape.Resource.Item(ItemName)
+
+	local EquipAction = ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(leather.tier)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForLevel(leather.tier)
+		}
+	}
+
+	local DequipAction = ItsyScape.Action.Dequip()
+
+	local CraftAction = ItsyScape.Action.Craft()
+	CraftAction {
+		Input {
+			Resource = ItsyScape.Resource.Item(string.format("%sHide", name)),
+			Count = itemProps.hides
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(leather.thread),
+			Count = math.floor(itemProps.hides * 1.5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(itemProps.logs),
+			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Needle",
+			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(math.max(leather.tier + itemProps.hides + 1, 1))
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(math.max(leather.tier + itemProps.hides + 3, 1)) * itemProps.hides
+		},
+
+		Output {
+			Resource = Item,
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(leather.tier + itemProps.hides + 3) * 3,
+		Weight = leather.weight * itemProps.hides,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = itemProps.name,
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = string.format("Resources/Game/Skins/%s/%s.lua", name, "Buckler"),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Leather",
+		Value = name,
+		Resource = Item
+	}
+
+	Item {
+		EquipAction,
+		DequipAction,
+		CraftAction
+	}
+end
+
 -- Leather
 do
 	ItsyScape.Meta.Equipment {
@@ -192,5 +288,21 @@ do
 		Value = "Big moo.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MooishLeatherBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(5, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Passive aggressive moo.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
 	}
 end
