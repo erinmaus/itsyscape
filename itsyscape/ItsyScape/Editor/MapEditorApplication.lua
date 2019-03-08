@@ -71,6 +71,17 @@ function MapEditorApplication:new()
 		self.propPalette
 	}
 
+	self.flagIcons = {
+		{
+			name = "impassable",
+			icon = love.graphics.newImage("Resources/Game/UI/Icons/Editor/Impassable.png")
+		},
+		{
+			name = "building",
+			icon = love.graphics.newImage("Resources/Game/UI/Icons/Editor/Building.png")
+		}
+	}
+
 	self.currentTool = MapEditorApplication.TOOL_NONE
 
 	self.mapGridSceneNode = MapGridMeshSceneNode()
@@ -454,6 +465,18 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				self:getGame():getStage():getMap(1),
 				motion,
 				i, i, j, j)
+
+			local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
+
+			if love.keyboard.isDown('i') and isShiftDown then
+				local map = self:getGame():getStage():getMap(1)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('impassable')
+			elseif love.keyboard.isDown('b') and isShiftDown then
+				local map = self:getGame():getStage():getMap(1)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('building')
+			end
 		elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 			if not self.currentToolNode then
 				self:makeCurrentToolNode()
@@ -513,16 +536,24 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_PROP)
 			end
 
-			if key == 'i' then
-				local map = self:getGame():getStage():getMap(1)
-				local tile = map:getTile(self.currentI, self.currentJ)
-				if tile:hasFlag('impassable') then
-					tile:unsetFlag('impassable')
-				else
-					tile:setFlag('impassable')
+			if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
+				if key == 'i' then
+					local map = self:getGame():getStage():getMap(1)
+					local tile = map:getTile(self.currentI, self.currentJ)
+					if tile:hasFlag('impassable') then
+						tile:unsetFlag('impassable')
+					else
+						tile:setFlag('impassable')
+					end
+				elseif key == 'b' then
+					local map = self:getGame():getStage():getMap(1)
+					local tile = map:getTile(self.currentI, self.currentJ)
+					if tile:hasFlag('building') then
+						tile:unsetFlag('building')
+					else
+						tile:setFlag('building')
+					end
 				end
-
-				self:getGame():getStage():updateMap(1)
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE
@@ -834,8 +865,45 @@ function MapEditorApplication:unload()
 	self.propNames = {}
 end
 
+function MapEditorApplication:drawFlags()
+	local projectionView
+	do
+		local projection, view = self:getCamera():getTransforms()
+		projectionView = projection * view
+	end
+
+	local w, h = love.window.getMode()
+
+	local map = self:getGame():getStage():getMap(1)
+	for j = 1, map:getHeight() do
+		for i = 1, map:getWidth() do
+			local x = (i - 1) * map:getCellSize()
+			local y = map:getTileCenter(i, j).y
+			local z = (j - 1) * map:getCellSize()
+
+			local s, t, r = projectionView:transformPoint(x, y, z)
+			s = (s + 1) / 2  * w
+			t = (t + 1) / 2 * h
+			if r > 0 and r < 1 then
+				local tile = map:getTile(i, j)
+				for i = 1, #self.flagIcons do
+					local flag = self.flagIcons[i]
+					if tile:hasFlag(flag.name) then
+						love.graphics.draw(flag.icon, s, t, 0, 0.5, 0.5)
+						s = s + flag.icon:getWidth() * 0.5
+					end
+				end
+			end
+		end
+	end
+end
+
 function MapEditorApplication:draw(...)
 	EditorApplication.draw(self, ...)
+
+	if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
+		self:drawFlags()
+	end
 
 	do
 		local map = self:getGame():getStage():getMap(1)
