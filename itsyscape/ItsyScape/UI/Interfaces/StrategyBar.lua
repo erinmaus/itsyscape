@@ -88,9 +88,10 @@ function StrategyBar:new(id, index, ui)
 		button:setData('icon', icon)
 		button:addChild(icon)
 
-		button.onClick:register(self.activate, self, i, false)
-		button.onMousePress:register(function(_, _, _, button)
-			if button == 2 then
+		button.onClick:register(function(_, button)
+			if button == 1 then
+				self:activate(i, false)
+			elseif button == 2 then
 				self:activate(i, true)
 			end
 		end)

@@ -17,16 +17,21 @@ function Button:new()
 	Widget.new(self)
 	self.onClick = Callback()
 	self.isMouseOver = false
-	self.isPressed = false
+	self.isPressed = {}
 end
 
 function Button:getIsFocusable()
 	return true
 end
 
-function Button:mouseEnter(...)
-	self.isMouseOver = true
-	Widget.mouseEnter(self, ...)
+function Button:mouseEnter(x, y, top)
+	if top then
+		self.isMouseOver = true
+	else
+		self.isMouseOver = false
+	end
+
+	Widget.mouseEnter(self, x, y, top)
 end
 
 function Button:mouseLeave(...)
@@ -35,19 +40,17 @@ function Button:mouseLeave(...)
 end
 
 function Button:mousePress(x, y, button)
-	if button == 1 then
-		self.isPressed = true
-	end
+	self.isPressed[button] = true
 	Widget.mousePress(self, x, y, button)
 end
 
 function Button:mouseRelease(x, y, button, ...)
-	if self.isPressed and self.isMouseOver then
-		self.onClick(self)
+	if self.isPressed[button] and self.isMouseOver then
+		self.onClick(self, button)
 		self:blur()
 	end
 
-	self.isPressed = false
+	self.isPressed[button] = nil
 
 	Widget.mouseRelease(self, x, y, button, ...)
 end

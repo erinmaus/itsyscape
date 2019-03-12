@@ -105,12 +105,14 @@ function WidgetRenderManager:start()
 
 	self.hovered = {}
 
-	local hoveredWidgets = self.input:getWidgetsUnderPoint(love.mouse.getPosition())
-	for i = #hoveredWidgets, 1, -1 do
-		if hoveredWidgets[i]:getIsFocusable() or hoveredWidgets[i]:getToolTip() then
-			self.topHovered = hoveredWidgets[i]
-			break
-		end
+	do
+		local mx, my = love.mouse.getPosition()
+		self.topHovered = self.input:getWidgetUnderPoint(
+			mx, my,
+			0, 0, nil,
+			function(w)
+				return w:getIsFocusable() or w:getToolTip()
+			end)
 	end
 
 	local currentTime = love.timer.getTime()

@@ -58,7 +58,7 @@ function WidgetInputProvider:getFocusedWidget()
 	end
 end
 
-function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
+function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow, result)
 	px = px or 0
 	py = py or 0
 	widget = widget or self.root
@@ -69,7 +69,7 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 
 	if (x >= px + wx and x < px + wx + ww and
 	   y >= py + wy and y < py + wy + wh)
-	   or widget:getOverflow()
+	   or (overflow and widget:getOverflow())
 	then
 		local sx, sy = widget:getScroll()
 		for i = #widget.children, 1, -1 do
@@ -79,6 +79,7 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 				px + wx - sx,
 				py + wy - sy,
 				w,
+				overflow,
 				result)
 		end
 
@@ -90,46 +91,38 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, result)
 end
 
 function WidgetInputProvider:isBlocking(x, y, overflow)
-	return self:getWidgetUnderPoint(x, y, nil, nil, nil, overflow) ~= self.root
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, overflow)
+
+	return widget ~= self.root and widget
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)
-	px = px or 0
-	py = py or 0
-	widget = widget or self.root
-	filter = filter or function(widget) return true end
+	local widgets = self:getWidgetsUnderPoint(x, y, px, py, widget, overflow)
 
-	local wx, wy = widget:getPosition()
-	local ww, wh = widget:getSize()
-
-	if (x >= px + wx and x < px + wx + ww and
-	   y >= py + wy and y < py + wy + wh)
-	   or (widget:getOverflow() and overflow)
-	then
-		local sx, sy = widget:getScroll()
-
-		for i = #widget.children, 1, -1 do
-			local w = widget.children[i]
-			local f = self:getWidgetUnderPoint(
-				x, y,
-				px + wx - sx,
-				py + wy - sy,
-				w,
-				filter,
-				overflow)
-			if f then
-				return f
+	for i = #widgets, 1, -1 do
+		local widget = widgets[i]
+		local hasParent
+		for j = #widgets, i, -1 do
+			if widgets[j]:hasParent(widget) or
+			   widgets[j]:isSiblingOf(widget)
+			then
+				hasParent = true
+			else
+				hasParent = false
+				break
 			end
 		end
-	else
-		return nil
+
+		if not hasParent then
+			return nil
+		else
+			if not filter or filter(widget) then
+				return widget
+			end
+		end
 	end
 
-	if filter(widget) then
-		return widget
-	else
-		return nil
-	end
+	return nil
 end
 
 function WidgetInputProvider:mousePress(x, y, button)
@@ -137,7 +130,7 @@ function WidgetInputProvider:mousePress(x, y, button)
 		return w:getIsFocusable()
 	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, false)
 	if widget then
 		self.clickedWidgets[button] = widget
 		widget:mousePress(x, y, button)
@@ -175,10 +168,12 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 		return w:getIsFocusable()
 	end
 
-	local widgets = self:getWidgetsUnderPoint(x, y)
+	local top = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
+
+	local widgets = self:getWidgetsUnderPoint(x, y, nil, nil, nil, true)
 	for _, widget in ipairs(widgets) do
 		if not self.hoveredWidgets[widget] then
-			widget:mouseEnter(x, y)
+			widget:mouseEnter(x, y, widget == top or top == nil)
 		end
 	end
 

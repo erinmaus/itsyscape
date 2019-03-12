@@ -181,6 +181,41 @@ function Widget:iterate()
 	return ipairs(self.children)
 end
 
+function Widget:hasParent(p)
+	local current = self.parent
+	while current do
+		if current == p then
+			return true
+		else
+			current = current.parent
+		end
+	end
+
+	return false
+end
+
+function Widget:isParentOf(widget)
+	for _, child in self:iterate() do
+		if child == widget or child:isParentOf(widget) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Widget:isSiblingOf(widget)
+	if self.parent then
+		for _, child in self.parent:iterate() do
+			if child == widget then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
 function Widget:getParent()
 	return self.parent
 end
