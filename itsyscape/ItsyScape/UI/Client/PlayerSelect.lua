@@ -89,7 +89,8 @@ end
 function PlayerSelect:new(application)
 	Widget.new(self)
 
-	local width, height = love.window.getMode() 
+	local width, height = love.window.getMode()
+	self:setSize(width, height)
 
 	self.application = application
 

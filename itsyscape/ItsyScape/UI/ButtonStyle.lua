@@ -72,8 +72,19 @@ end
 function ButtonStyle:draw(widget)
 	love.graphics.setColor(1, 1, 1, 1)
 
+	local isPressed
+	do
+		if type(widget.isPressed) == 'boolean' then
+			isPressed = widget.isPressed
+		elseif type(widget.isPressed) == 'table' then
+			isPressed = #widget.isPressed > 0
+		else
+			isPressed = false
+		end
+	end
+
 	local width, height = widget:getSize()
-	if widget.isPressed and self.states['pressed'] then
+	if isPressed and self.states['pressed'] then
 		self.states['pressed'](width, height)
 	elseif (widget.isMouseOver or widget:getIsFocused())
 	       and self.states['hover']
