@@ -90,6 +90,16 @@ function ShipMapPeep:onLoad(filename, args)
 			instance = self
 		})
 
+		local otherShipLayer, otherShipScript
+		if args['otherShip'] then
+			otherShipLayer, otherShipScript = stage:loadMapResource(
+				args['otherShip'],
+				{
+					ship = filename,
+					instance = self
+				})
+		end
+
 		-- TODO: get this from the map
 		local WATER_ELEVATION = 2.25
 
@@ -158,9 +168,21 @@ function ShipMapPeep:onHit(p)
 		self.healthStat.currentValue = health
 	end
 
+	if p:getWeaponType() ~= 'none' then
+		self:_rock()
+	end
+
 	if health <= 0 then
 		self:poke('sink')
 		self.isSinking = true
+	end
+end
+
+function ShipMapPeep:_rock()
+	local gameDB = self:getDirector():getGameDB()
+	local effect = gameDB:getResource("X_ShipRock", "Effect")
+	if effect then
+		Utility.Peep.applyEffect(self, effect, true)
 	end
 end
 
@@ -169,6 +191,8 @@ function ShipMapPeep:onLeak(p)
 	leak:listen('poof', function()
 		self.leaks = self.leaks - 1
 	end)
+
+	self:_rock()
 
 	self.leaks = self.leaks + 1
 end

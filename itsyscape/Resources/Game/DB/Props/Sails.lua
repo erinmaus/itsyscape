@@ -37,3 +37,33 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Sailing_BasicSail_Default"
 }
+
+ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 7,
+	SizeZ = 12,
+	OffsetX = -2,
+	OffsetY = 5.5,
+	MapObject = ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pirate's sail",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Bearing the skull and crossbones, beware!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default"
+}

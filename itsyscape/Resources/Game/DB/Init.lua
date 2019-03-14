@@ -625,11 +625,12 @@ include "Resources/Game/DB/Props/Torch.lua"
 include "Resources/Game/DB/Props/Furniture.lua"
 include "Resources/Game/DB/Props/Range.lua"
 
--- Props (boats)
+-- Props, etc (boats)
 include "Resources/Game/DB/Props/Sails.lua"
 include "Resources/Game/DB/Props/Cannons.lua"
 include "Resources/Game/DB/Props/BoatFoam.lua"
 include "Resources/Game/DB/Props/Helms.lua"
+include "Resources/Game/DB/Effects/Sailing.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
