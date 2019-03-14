@@ -1132,6 +1132,10 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = peep:getDirector():getMap(k)
+	if not map then
+		return false, "no map"
+	end
+
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
 	local pathFinder = SmartPathFinder(map, peep, t)
 	local path = pathFinder:find(

@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
@@ -85,10 +86,24 @@ function BasicCannon:onFire(peep)
 
 			local director = self:getDirector()
 
+			local direction
+			do
+				local rotation = self:getBehavior(RotationBehavior)
+				if rotation then
+					rotation = rotation.rotation
+					local transform = love.math.newTransform()
+
+					transform:applyQuaternion(rotation.x, rotation.y, rotation.z, rotation.w)
+					direction = Vector(transform:transformPoint((-Vector.UNIT_Z):get()))
+				else
+					direction = -Vector.UNIT_Z
+				end
+			end
+
 			-- TODO: Take into account 'face' from MapObjectLocation
 			local ray = Ray(
-				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y - Vector.UNIT_Z,
-				-Vector.UNIT_Z)
+				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y + direction,
+				direction)
 
 			local hits = director:probe(self:getLayerName(), function(peep)
 				local position = Utility.Peep.getAbsolutePosition(peep)

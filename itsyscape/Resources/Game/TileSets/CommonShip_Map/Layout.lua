@@ -8,10 +8,10 @@
 	textureHeight = 1024,
 
 	{
-		x = 128,
-		y = 896,
+		x = 0,
+		y = 768,
 		width = 128,
-		height = 128,
+		height = 256,
 		name = "placeholder"
 	},
 
