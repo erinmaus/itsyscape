@@ -31,6 +31,7 @@ function Stage:new()
 	self.onPropRemoved = Callback()
 	self.onWaterFlood = Callback()
 	self.onWaterDrain = Callback()
+	self.onForecast = Callback()
 
 	-- (projectileID, source, destination, time)
 	self.onProjectile = Callback()

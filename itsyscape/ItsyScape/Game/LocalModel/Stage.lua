@@ -47,6 +47,7 @@ function LocalStage:new(game)
 	self.gravity = Vector(0, -9.8, 0)
 	self.stageName = "::orphan"
 	self.tests = { id = 1 }
+	self.weathers = {}
 
 	self.grounds = {}
 	self:spawnGround(self.stageName, 1)
@@ -423,6 +424,10 @@ function LocalStage:unloadAll()
 		self:decorate(group, nil)
 	end
 
+	for weather in pairs(self.weathers) do
+		self:forecast(nil, weather, nil)
+	end
+
 	do
 		local p = {}
 
@@ -552,6 +557,8 @@ function LocalStage:loadMapResource(filename, args)
 
 	self.numMaps = maxLayer
 
+	local layer = baseLayer + 1
+
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
@@ -559,7 +566,7 @@ function LocalStage:loadMapResource(filename, args)
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water, baseLayer + 1)
+			self.onWaterFlood(self, item, water, layer)
 			self.water[item] = water
 		end
 	end
@@ -567,12 +574,13 @@ function LocalStage:loadMapResource(filename, args)
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
 		local group = item:match("(.*)%.ldeco$")
 		if group then
+			local key = directoryPath .. "/Decorations/" .. item
 			local decoration = Decoration(directoryPath .. "/Decorations/" .. item)
-			self:decorate(group, decoration)
+			self:decorate(key, decoration, layer)
 		end
 	end
 
-	self:spawnGround(filename, baseLayer + 1)
+	self:spawnGround(filename, layer)
 
 	local mapScript
 
@@ -587,12 +595,12 @@ function LocalStage:loadMapResource(filename, args)
 
 			self.mapScripts[filename] = {
 				peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
-				layer = baseLayer + 1
+				layer = layer
 			}
 
 			self.mapScripts[filename].peep:listen('ready',
 				function(self)
-					self:poke('load', filename, args or {})
+					self:poke('load', filename, args or {}, layer)
 				end
 			)
 
@@ -815,6 +823,11 @@ function LocalStage:fireProjectile(projectileID, source, destination)
 	end
 
 	self.onProjectile(self, projectileID, peepToModel(source), peepToModel(destination), 0)
+end
+
+function LocalStage:forecast(layer, name, id, props)
+	self.onForecast(self, name, id, props)
+	self.weathers[name] = true
 end
 
 function LocalStage:decorate(group, decoration, layer)

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_AbandonedMine.lua"
+include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_FarOcean.lua"
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_FoggyForest.lua"
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_Port.lua"
 include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_Tower.lua"

@@ -195,4 +195,8 @@ function RainWeather:update(delta)
 	self.mesh:setVertices(self.vertices)
 end
 
+function RainWeather:remove()
+	self.node:setParent(nil)
+end
+
 return RainWeather

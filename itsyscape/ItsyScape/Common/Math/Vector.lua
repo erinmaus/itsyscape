@@ -240,6 +240,10 @@ function Metatable.__pow(a, b)
 	return result
 end
 
+function Metatable.__eq(a, b)
+	return a.x == b.x and a.y == b.y and a.z == b.z
+end
+
 -- Some useful vector constants.
 Vector.ZERO   = Vector(0, 0, 0)
 Vector.ONE    = Vector(1, 1, 1)

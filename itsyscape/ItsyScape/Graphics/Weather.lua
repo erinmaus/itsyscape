@@ -23,11 +23,11 @@ function Weather:getMap()
 	return self.map
 end
 
-function Weather:update(delta)
+function Weather:remove()
 	-- Nothing.
 end
 
-function Weather:draw()
+function Weather:update(delta)
 	-- Nothing.
 end
 

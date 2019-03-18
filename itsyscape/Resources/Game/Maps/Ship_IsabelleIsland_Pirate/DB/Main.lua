@@ -17,6 +17,64 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["Light_Lantern1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 11,
+		Name = "Light_Lantern1",
+		Map = M._MAP,
+		Resource = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 200,
+		ColorGreen = 160,
+		ColorBlue = 66,
+		Resource = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 16,
+		Resource = M["Light_Lantern1"]
+	}
+end
+
+M["Light_Lantern2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 11,
+		Name = "Light_Lantern2",
+		Map = M._MAP,
+		Resource = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 200,
+		ColorGreen = 160,
+		ColorBlue = 66,
+		Resource = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 16,
+		Resource = M["Light_Lantern2"]
+	}
+end
+
 M["Sailing_IronCannon_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -110,5 +168,41 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default4"]
+	}
+end
+
+M["Cannon_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4.0,
+		PositionZ = 13,
+		Direction = -1,
+		Name = "Cannon_Pirate1",
+		Map = M._MAP,
+		Resource = M["Cannon_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
+		MapObject = M["Cannon_Pirate1"]
+	}
+end
+
+M["Cannon_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 4.0,
+		PositionZ = 13,
+		Direction = -1,
+		Name = "Cannon_Pirate1",
+		Map = M._MAP,
+		Resource = M["Cannon_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
+		MapObject = M["Cannon_Pirate1"]
 	}
 end

@@ -1,5 +1,5 @@
 {
-	tileSetID = "CommonShip",
+	tileSetID = "PirateShip",
 	{
 		id = "Bow",
 		position = { 9.000000, 1.000000, 11.000000 },

@@ -17,6 +17,64 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["Light_Lantern1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 11,
+		Name = "Light_Lantern1",
+		Map = M._MAP,
+		Resource = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 200,
+		ColorGreen = 160,
+		ColorBlue = 66,
+		Resource = M["Light_Lantern1"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 8,
+		Resource = M["Light_Lantern1"]
+	}
+end
+
+M["Light_Lantern2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 11,
+		Name = "Light_Lantern2",
+		Map = M._MAP,
+		Resource = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 200,
+		ColorGreen = 160,
+		ColorBlue = 66,
+		Resource = M["Light_Lantern2"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 8,
+		Resource = M["Light_Lantern2"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -84,22 +142,18 @@ do
 	}
 end
 
-M["Jenkins"] = ItsyScape.Resource.MapObject.Unique()
+M["Jenkins_Squid"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.0,
-		PositionY = 5.0,
-		PositionZ = 11.0,
-		Direction = -1,
-		Name = "Jenkins",
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Jenkins_Squid",
 		Map = M._MAP,
-		Resource = M["Jenkins"]
+		Resource = M["Jenkins_Squid"]
 	}
 
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Jenkins"],
+		Resource = M["Jenkins_Squid"],
 		Name = "Jenkins",
 		Action = TalkAction
 	}
@@ -118,21 +172,30 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
-		MapObject = M["Jenkins"]
+		MapObject = M["Jenkins_Squid"]
 	}
 
-	M["Jenkins"] {
+	M["Jenkins_Squid"] {
 		TalkAction
+	}
+end
+
+M["Anchor_Jenkins_Squid_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.0,
+		PositionY = 5.0,
+		PositionZ = 11.0,
+		Direction = -1,
+		Name = "Anchor_Jenkins_Squid_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Jenkins_Squid_Spawn"]
 	}
 end
 
 M["Sailor1"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 21.0,
-		PositionY = 5.0,
-		PositionZ = 11.0,
-		Direction = -1,
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Sailor1",
 		Map = M._MAP,
 		Resource = M["Sailor1"]
@@ -151,13 +214,22 @@ do
 	}
 end
 
-M["Sailor2"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Sailor1_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.0,
+		PositionX = 21.0,
 		PositionY = 5.0,
-		PositionZ = 13.0,
+		PositionZ = 11.0,
 		Direction = -1,
+		Name = "Anchor_Sailor1_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Sailor1_Spawn"]
+	}
+end
+
+M["Sailor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Sailor2",
 		Map = M._MAP,
 		Resource = M["Sailor2"]
@@ -173,6 +245,19 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Sailor_Panicked",
 		MapObject = M["Sailor2"]
+	}
+end
+
+M["Anchor_Sailor2_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.0,
+		PositionY = 5.0,
+		PositionZ = 13.0,
+		Direction = -1,
+		Name = "Anchor_Sailor2_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Sailor2_Spawn"]
 	}
 end
 
