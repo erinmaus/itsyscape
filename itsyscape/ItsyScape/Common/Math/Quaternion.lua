@@ -169,6 +169,10 @@ function Metatable.__unm(a)
 	return Quaternion(-a.x, -a.y, -a.z, a.w)
 end
 
+function Metatable.__eq(a, b)
+	return a.x == b.x and a.y == b.y and a.z == b.z and a.w == b.w
+end
+
 -- Some useful quaternion constants.
 Quaternion.IDENTITY = Quaternion(0, 0, 0, 1)
 

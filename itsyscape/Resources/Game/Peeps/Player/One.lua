@@ -444,18 +444,6 @@ function One:update(...)
 		local position = Utility.Peep.getAbsolutePosition(self)
 		Log.info("Peep: position = (%0.2f, %0.2f; %0.2f)", position.x, position.y, position.z)
 	end
-
-	if love.keyboard.isDown('space') then
-		local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
-		local CursePower = require "Resources.Game.Powers.Curse.Power"
-		local _, pendingPower = self:addBehavior(PendingPowerBehavior)
-		local gameDB = self:getDirector():getGameDB()
-		pendingPower.power = CursePower(
-			self:getDirector():getGameInstance(),
-			gameDB:getResource("Curse", "Power"))
-
-		Log.info("CURSE!!!")
-	end
 end
 
 function One:onPoof()

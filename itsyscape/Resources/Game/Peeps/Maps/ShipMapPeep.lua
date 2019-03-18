@@ -90,18 +90,8 @@ function ShipMapPeep:onLoad(filename, args)
 			instance = self
 		})
 
-		local otherShipLayer, otherShipScript
-		if args['otherShip'] then
-			otherShipLayer, otherShipScript = stage:loadMapResource(
-				args['otherShip'],
-				{
-					ship = filename,
-					instance = self
-				})
-		end
-
 		-- TODO: get this from the map
-		local WATER_ELEVATION = 2.25
+		local WATER_ELEVATION = 1.75
 
 		if script then
 			local baseMap = stage:getMap(1)

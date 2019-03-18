@@ -22,6 +22,7 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local TileSet = require "ItsyScape.World.TileSet"
+local WeatherMap = require "ItsyScape.World.WeatherMap"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
@@ -98,6 +99,11 @@ function GameView:new(game)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
+	self._onForecast = function(_, key, id, props)
+		self:forecast(key, id, props)
+	end
+	stage.onForecast:register(self._onForecast)
+
 	self._onProjectile = function(_, projectileID, source, destination, time)
 		self:fireProjectile(projectileID, source, destination, time)
 	end
@@ -131,6 +137,9 @@ function GameView:new(game)
 	self.itemTexture = TextureResource(love.graphics.newImage(itemTextureImageData))
 
 	self.projectiles = {}
+
+	self.weatherMap = WeatherMap(-8, -8, 2, 64 + 8, 64 + 8)
+	self.weather = {}
 end
 
 function GameView:getGame()
@@ -172,6 +181,7 @@ function GameView:release()
 	stage.onDecorate:unregister(self._onDecorate)
 	stage.onWaterFlood:unregister(self._onWaterFlood)
 	stage.onWaterDrain:unregister(self._onWaterDrain)
+	stage.onForecast:unregister(self._onForecast)
 	stage.onProjectile:unregister(self._onProjectile)
 end
 
@@ -194,6 +204,7 @@ function GameView:addMap(map, layer, tileSetID)
 		parts = {}
 	}
 	m.node:setParent(self.scene)
+	self.weatherMap:addMap(m.map)
 
 	self.mapMeshes[layer] = m
 end
@@ -206,6 +217,8 @@ function GameView:removeMap(layer)
 		for i = 1, #m.parts do
 			m.parts[i]:setMapMesh(nil)
 		end
+
+		self.weatherMap:removeMap(m.map)
 
 		self.mapMeshes[layer] = nil
 	end
@@ -261,6 +274,8 @@ function GameView:updateMap(map, layer)
 				end)
 			end
 		end
+
+		self.weatherMap:addMap(m.map)
 	end
 end
 
@@ -271,6 +286,11 @@ function GameView:moveMap(layer, position, rotation, scale)
 		transform:setLocalTranslation(position)
 		transform:setLocalRotation(rotation)
 		transform:setLocalScale(scale)
+	end
+
+	local m = self.mapMeshes[layer]
+	if m then
+		self.weatherMap:updateMap(m.map, position, rotation, scale)
 	end
 end
 
@@ -423,6 +443,8 @@ function GameView:decorate(group, decoration, layer)
 			TextureResource,
 			textureFilename)
 
+		print('group', group, layer)
+
 		local sceneNode = DecorationSceneNode()
 		sceneNode:fromDecoration(decoration, staticMesh:getResource())
 		sceneNode:getMaterial():setTextures(texture)
@@ -472,6 +494,35 @@ function GameView:drain(key)
 		self.water[key]:setParent(nil)
 		self.water[key]:degenerate()
 		self.water[key] = nil
+	end
+end
+
+function GameView:forecast(key, id, props)
+	if not id then
+		local current = self.weather[key]
+		if current then
+			current:remove()
+		end
+
+		self.weather[key] = nil
+		return
+	end
+
+	local WeatherType
+	do
+		local WeatherTypeName = string.format("ItsyScape.Graphics.%sWeather", id)
+		local s, r = pcall(require, WeatherTypeName)
+		if not s then
+			Log.error("Failed to load weather '%s': %s.", id, r)
+			return
+		end
+
+		WeatherType = r
+	end
+
+	if WeatherType then
+		local weather = WeatherType(self, self.weatherMap, props or {})
+		self.weather[key] = weather
 	end
 end
 
@@ -530,6 +581,10 @@ function GameView:update(delta)
 	for i = 1, #finishedProjectiles do
 		finishedProjectiles[i]:poof()
 		self.projectiles[finishedProjectiles[i]] = nil
+	end
+
+	for _, weather in pairs(self.weather) do
+		weather:update(delta)
 	end
 
 	self.spriteManager:update(delta)

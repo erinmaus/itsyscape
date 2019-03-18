@@ -97,6 +97,36 @@ function Utility.save(player, location, talk, ...)
 	return false
 end
 
+function Utility.orientateToAnchor(peep, map, anchor)
+	if peep then
+		local game = peep:getDirector():getGameInstance()
+		local rotation = Quaternion(Utility.Map.getAnchorRotation(game, map, anchor))
+		local scale = Vector(Utility.Map.getAnchorScale(game, map, anchor))
+		local direction = Utility.Map.getAnchorDirection(game, map, anchor)
+
+		if rotation ~= Quaternion.IDENTITY then
+			local _, r = peep:addBehavior(RotationBehavior)
+			r.rotation = rotation
+		end
+
+		if scale ~= Vector.ONE then
+			local _, s = peep:addBehavior(ScaleBehavior)
+			s.scale = scale
+		end
+
+		print ('facing', peep:getName(), direction)
+		if direction ~= 0 then
+			local movement = peep:getBehavior(MovementBehavior)
+			if movement then
+				movement.facing = direction
+				movement.targetFacing = direction
+			end
+		end
+	end
+
+	return peep
+end
+
 function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 	radius = radius or 1
 
@@ -137,7 +167,16 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 		anchor)
 
 	if x and y and z then
-		return Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
+		local actor = Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
+		if actor then
+			actor:getPeep():listen('finalize',
+				Utility.orientateToAnchor,
+				actor:getPeep(),
+				map,
+				anchor)
+		end
+
+		return actor
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil
@@ -203,7 +242,26 @@ function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
 		anchor)
 
 	if x and y and z then
-		return Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
+		local actor, prop = Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
+		do
+			if actor then
+				actor:getPeep():listen('finalize',
+					Utility.orientateToAnchor,
+					actor:getPeep(),
+					map,
+					anchor)
+			end
+
+			if prop then
+				prop:getPeep():listen('finalize',
+					Utility.orientateToAnchor,
+					prop:getPeep(),
+					map,
+					anchor)
+			end
+		end
+
+		return actor, prop
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil
@@ -259,7 +317,16 @@ function Utility.spawnPropAtAnchor(peep, prop, anchor, radius)
 		anchor)
 
 	if x and y and z then
-		return Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
+		local prop = Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
+		if prop then
+			prop:getPeep():listen('finalize',
+				Utility.orientateToAnchor,
+				prop:getPeep(),
+				map,
+				anchor)
+		end
+
+		return prop
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil
@@ -750,6 +817,7 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 end
 
 Utility.Map = {}
+
 function Utility.Map.getAnchorPosition(game, map, anchor)
 	local gameDB = game:getGameDB()
 
@@ -768,6 +836,119 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 	end
 
 	return nil, nil, nil
+end
+
+function Utility.Map.getAnchorRotation(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	if mapObject then
+		local x, y, z, w = mapObject:get("RotationX"), mapObject:get("RotationY"), mapObject:get("RotationZ"), mapObject:get("RotationW")
+		if x == 0 and y == 0 and z == 0 and w == 0 then
+			return 0, 0, 0, 1
+		else
+			return x or 0, y or 0, z or 0, w or 1
+		end
+	end
+
+	return nil, nil, nil
+end
+
+function Utility.Map.getAnchorScale(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	if mapObject then
+		local x, y, z = mapObject:get("ScaleX"), mapObject:get("ScaleY"), mapObject:get("ScaleZ")
+		return x or 0, y or 0, z or 0
+	end
+
+	return nil, nil, nil
+end
+
+function Utility.Map.getAnchorDirection(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	if mapObject then
+		print('yes', anchor)
+		return mapObject:get("Direction") or 0
+	end
+
+	return nil, nil, nil
+end
+
+function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
+	local WATER_ELEVATION = 1.75
+
+	local stage = peep:getDirector():getGameInstance():getStage()
+
+	local shipLayer, shipScript = stage:loadMapResource(shipName)
+
+	if shipScript then
+		local baseMap = stage:getMap(layer)
+
+		local x, z
+		do
+			local position = shipScript:getBehavior(PositionBehavior)
+			local map = stage:getMap(shipLayer)
+			local s = i - map:getWidth() / 2
+			local t = j - map:getHeight() / 2
+
+			position.position = baseMap:getTileCenter(s, t)
+
+			x = position.position.x + map:getWidth() / 2 * map:getCellSize()
+			z = position.position.z + map:getHeight() / 2 * map:getCellSize()
+		end
+
+		local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
+		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer)
+		if boatFoamProp then
+			local peep = boatFoamProp:getPeep()
+			peep:listen('finalize', function()
+				local position = peep:getBehavior(PositionBehavior)
+				if position then
+					position.position = Vector(x, WATER_ELEVATION, z)
+				end
+			end)
+		end
+
+		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
+		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer)
+		if boatFoamTrailProp then
+			local peep = boatFoamTrailProp:getPeep()
+			peep:listen('finalize', function()
+				local position = peep:getBehavior(PositionBehavior)
+				if position then
+					position.position = Vector(x, WATER_ELEVATION, z)
+				end
+			end)
+		end
+	end
 end
 
 Utility.Peep = {}
@@ -1104,8 +1285,14 @@ function Utility.Peep.getTile(peep)
 		return 0, 0
 	end
 
-	local position = peep:getBehavior(PositionBehavior).position
-	local k = position.layer or 1
+	local position = peep:getBehavior(PositionBehavior)
+	local k
+	if not position then
+		return 0, 0, 0
+	else
+		k = position.layer or 1
+		position = position.position
+	end
 
 	local map = peep:getDirector():getMap(k)
 	if not map then
@@ -1130,7 +1317,13 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		return nil, "missing walking behaviors"
 	end
 
-	local position = peep:getBehavior(PositionBehavior).position
+	local position = peep:getBehavior(PositionBehavior)
+	if position.layer ~= k then
+		return nil, "different map"
+	else
+		position = position.position
+	end
+
 	local map = peep:getDirector():getMap(k)
 	if not map then
 		return false, "no map"

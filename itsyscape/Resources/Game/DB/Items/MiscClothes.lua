@@ -178,3 +178,44 @@ ItsyScape.Meta.EquipmentModel {
 	Filename = "Resources/Game/Skins/FishermansHat/FishermansHat.lua",
 	Resource = ItsyScape.Resource.Item "FishermansHat"
 }
+
+ItsyScape.Resource.Item "PiratesHat" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(10),
+			Resource = ItsyScape.Resource.Skill "Sailing"
+		}
+	},
+
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pirate's hat",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PiratesHat"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Just missing the eye patch.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PiratesHat"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(25),
+	Weight = -4,
+	Resource = ItsyScape.Resource.Item "PiratesHat"
+}
+
+ItsyScape.Meta.Equipment {
+	Prayer = -8,
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "PiratesHat"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/PiratesHat/PiratesHat.lua",
+	Resource = ItsyScape.Resource.Item "PiratesHat"
+}
