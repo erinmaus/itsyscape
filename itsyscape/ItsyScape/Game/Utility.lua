@@ -114,7 +114,6 @@ function Utility.orientateToAnchor(peep, map, anchor)
 			s.scale = scale
 		end
 
-		print ('facing', peep:getName(), direction)
 		if direction ~= 0 then
 			local movement = peep:getBehavior(MovementBehavior)
 			if movement then
@@ -194,6 +193,10 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 			Name = mapObject,
 			Map = map
 		})
+
+		if not reference then
+			return nil, nil
+		end
 
 		mapObject = reference:get("Resource")
 		if not mapObject then
@@ -895,7 +898,6 @@ function Utility.Map.getAnchorDirection(game, map, anchor)
 	})
 
 	if mapObject then
-		print('yes', anchor)
 		return mapObject:get("Direction") or 0
 	end
 
@@ -2022,6 +2024,45 @@ function Utility.Peep.makeSkiller(peep)
 end
 
 Utility.Peep.Human = {}
+function Utility.Peep.Human:applySkins()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+
+		local body = CacheRef(
+			"ItsyScape.Game.Body",
+			"Resources/Game/Bodies/Human.lskel")
+		actor:setBody(body)
+
+		local function applySkins(resource)
+			local skins = gameDB:getRecords("PeepSkin", {
+				Resource = resource
+			})
+
+			for i = 1, #skins do
+				local skin = skins[i]
+				if skin:get("Type") and skin:get("Filename") then
+					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+				end
+			end
+		end
+
+		local resource = Utility.Peep.getResource(self)
+		if resource then
+			applySkins(resource)
+		end
+
+		local mapObject = Utility.Peep.getMapObject(self)
+		if mapObject then
+			applySkins(mapObject)
+		end
+	end
+end
+
 function Utility.Peep.Human:onFinalize(director)
 	local stats = self:getBehavior(StatsBehavior)
 	if stats and stats.stats then
@@ -2034,6 +2075,8 @@ function Utility.Peep.Human:onFinalize(director)
 			end
 		end)
 	end
+
+	Utility.Peep.Human.applySkins(self)
 end
 
 function Utility.Peep.makeHuman(peep)

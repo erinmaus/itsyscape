@@ -31,17 +31,44 @@ function Ship:onLoad(filename, arguments, layer)
 		Utility.spawnMapObjectAtAnchor(
 			self,
 			"Jenkins_Squid",
-			"Anchor_Jenkins_Squid_Spawn")
+			"Anchor_Jenkins_Squid_Spawn",
+			0)
 		Utility.spawnMapObjectAtAnchor(
 			self,
 			"Sailor1",
-			"Anchor_Sailor1_Spawn")
+			"Anchor_Sailor1_Spawn",
+			0)
 		Utility.spawnMapObjectAtAnchor(
 			self,
 			"Sailor2",
-			"Anchor_Sailor2_Spawn")
+			"Anchor_Sailor2_Spawn",
+			0)
 	else
-
+		Utility.spawnMapObjectAtAnchor(
+			self,
+			"Jenkins_Squid",
+			"Anchor_Jenkins_Squid_Spawn",
+			0)
+		Utility.spawnMapObjectAtAnchor(
+			self,
+			"Wizard",
+			"Anchor_Sailor1_Spawn",
+			0)
+		Utility.spawnMapObjectAtAnchor(
+			self,
+			"Archer",
+			"Anchor_Sailor2_Spawn",
+			0)
+		Utility.spawnMapObjectAtAnchor(
+			self,
+			"Pirate",
+			"Anchor_Pirate1_Spawn",
+			0)
+		Utility.spawnMapObjectAtAnchor(
+			self,
+			"Pirate",
+			"Anchor_Pirate2_Spawn",
+			0)
 	end
 end
 

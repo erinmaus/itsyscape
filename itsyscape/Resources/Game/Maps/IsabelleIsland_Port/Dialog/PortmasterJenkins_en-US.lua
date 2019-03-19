@@ -112,7 +112,7 @@ repeat
 				local stage = _TARGET:getDirector():getGameInstance():getStage()
 				stage:movePeep(
 					_TARGET,
-					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_Ocean,i=16,j=16,shore=IsabelleIsland_Port,shoreAnchor=Anchor_ReturnFromSea",
+					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_Ocean,jenkins_state=0,i=16,j=16,shore=IsabelleIsland_Port,shoreAnchor=Anchor_ReturnFromSea",
 					"Anchor_Spawn")
 				result = NEVERMIND
 			end

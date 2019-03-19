@@ -215,6 +215,14 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepSkin" {
+		Type = Meta.TYPE_TEXT,
+		Filename = Meta.TYPE_TEXT,
+		Priority = Meta.TYPE_REAL,
+		Slot = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Item" {
 		Value = Meta.TYPE_INTEGER,
 		Weight = Meta.TYPE_REAL,
