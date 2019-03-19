@@ -214,6 +214,54 @@ do
 	}
 end
 
+M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Wizard",
+		Map = M._MAP,
+		Resource = M["Wizard"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard",
+		MapObject = M["Wizard"]
+	}
+end
+
+M["Archer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Archer",
+		Map = M._MAP,
+		Resource = M["Archer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer",
+		MapObject = M["Archer"]
+	}
+end
+
+M["Pirate"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Pirate",
+		Map = M._MAP,
+		Resource = M["Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
+		MapObject = M["Pirate"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
+	}
+end
+
 M["Anchor_Sailor1_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -224,6 +272,19 @@ do
 		Name = "Anchor_Sailor1_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Sailor1_Spawn"]
+	}
+end
+
+M["Anchor_Pirate1_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19.0,
+		PositionY = 5.0,
+		PositionZ = 11.0,
+		Direction = 1,
+		Name = "Anchor_Pirate1_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Pirate1_Spawn"]
 	}
 end
 
@@ -254,10 +315,23 @@ do
 		PositionX = 29.0,
 		PositionY = 5.0,
 		PositionZ = 13.0,
-		Direction = -1,
+		Direction = 1,
 		Name = "Anchor_Sailor2_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Sailor2_Spawn"]
+	}
+end
+
+M["Anchor_Pirate2_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.0,
+		PositionY = 5.0,
+		PositionZ = 13.0,
+		Direction = 1,
+		Name = "Anchor_Pirate2_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Pirate2_Spawn"]
 	}
 end
 

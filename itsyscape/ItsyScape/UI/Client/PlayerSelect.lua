@@ -264,6 +264,16 @@ function PlayerSelect:newPlayer(player)
 	game:getPlayer():spawn()
 	game:tick()
 
+	game:getStage():movePeep(
+		game:getPlayer():getActor():getPeep(),
+		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
+		"jenkins_state=1," ..
+		"i=16," ..
+		"j=16," ..
+		"shore=IsabelleIsland_Port" ..
+		"shoreAnchor=Anchor_ReturnFromSea",
+		"Anchor_Spawn")
+
 	self.application:closeTitleScreen()
 
 	Log.analytic("START_GAME")

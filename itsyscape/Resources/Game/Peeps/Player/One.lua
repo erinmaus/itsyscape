@@ -308,21 +308,18 @@ function One:ready(director, game)
 end
 
 function One:onDropItem(e)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 end
 
 function One:onTransferItemTo(e)
 	if e.purpose ~= 'bank-withdraw' then
-		local game = self:getDirector():getGameInstance()
-		game:getUI():interrupt(self)
+		self:interruptUI()
 	end
 end
 
 function One:onTransferItemFrom(e)
 	if e.purpose ~= 'bank-deposit' then
-		local game = self:getDirector():getGameInstance()
-		game:getUI():interrupt(self)
+		self:interruptUI()
 	end
 end
 
@@ -331,30 +328,25 @@ function One:onInterrupt()
 end
 
 function One:onTravel(e)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 
 	self:interrupt(true)
 end
 
 function One:onWalk(e)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 end
 
 function One:onHeal(p)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 end
 
 function One:onHit(p)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 end
 
 function One:onMiss(p)
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 end
 
 function One:onDie(p)
@@ -364,8 +356,7 @@ function One:onDie(p)
 	movement.velocity = Vector.ZERO
 	movement.acceleration = Vector.ZERO
 
-	local game = self:getDirector():getGameInstance()
-	game:getUI():interrupt(self)
+	self:interruptUI()
 
 	Utility.save(self, false, true, "Aaah!")
 
@@ -462,6 +453,13 @@ function One:onActionPerformed(e)
 	   self:hasBehavior(DisabledBehavior)
 	then
 		self:interrupt(true)
+	end
+end
+
+function One:interruptUI()
+	if not self:getBehavior(DisabledBehavior) then
+		local game = self:getDirector():getGameInstance()
+		game:getUI():interrupt(self)
 	end
 end
 
