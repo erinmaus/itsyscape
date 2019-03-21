@@ -604,6 +604,11 @@ function LocalStage:loadMapResource(filename, args)
 				end
 			)
 
+			do
+				local _, m = self.mapScripts[filename].peep:addBehavior(MapResourceReferenceBehavior)
+				m.map = resource
+			end 
+
 			mapScript = self.mapScripts[filename].peep
 		end
 

@@ -55,6 +55,28 @@ function Ship:initSquidEncounter()
 		0)
 end
 
+function Ship:onRaiseCthulhu()
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:forecast(self:getLayer(), 'IsabelleIsland_FarOcean_HeavyRain_Cthulhu', 'Rain', {
+		wind = { -15, 0, 0 },
+		heaviness = 0.5
+	})
+
+	local oceanMapScript = stage:getMapScript("IsabelleIsland_FarOcean")
+	Utility.spawnMapObjectAtAnchor(
+		oceanMapScript,
+		"UndeadSquid",
+		"Anchor_Squid_Spawn1")
+	Utility.spawnMapObjectAtAnchor(
+		oceanMapScript,
+		"UndeadSquid",
+		"Anchor_Squid_Spawn2")
+	Utility.spawnMapObjectAtAnchor(
+		oceanMapScript,
+		"UndeadSquid",
+		"Anchor_Squid_Spawn3")
+end
+
 function Ship:initPirateEncounter()
 	Utility.spawnMapObjectAtAnchor(
 		self,
@@ -106,6 +128,9 @@ function Ship:update(director, game)
 		local isOpen = ui:isOpen(self.blockingInterfaceID, self.blockingInterfaceIndex)
 		if not isOpen then
 			self.player:removeBehavior(DisabledBehavior)
+
+			self.blockingInterfaceID = nil
+			self.blockingInterfaceIndex = nil
 		end
 	end
 end

@@ -87,7 +87,9 @@ function UndeadSquid:ready(director, game)
 	Creep.ready(self, director, game)
 
 	Utility.Peep.equipXWeapon(self, "UndeadSquidRock")
+end
 
+function UndeadSquid:onBoss()
 	Utility.UI.openInterface(
 		game:getPlayer():getActor():getPeep(),
 		"BossHUD",

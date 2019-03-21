@@ -15,18 +15,20 @@ local ProxyXWeapon = Class(Weapon)
 function ProxyXWeapon:new(id, manager)
 	Weapon.new(self, id, manager)
 
-	self.logic = manager:getLogic(id, true)
-	if not self.logic:isCompatibleType(Weapon) then
-		self.logic = nil
-	else
-		self._onAttackHit = self.logic.onAttackHit
-		self.logic.onAttackHit = function(s, ...)
-			self:onAttackHit(...)
-		end
+	if id then
+		self.logic = manager:getLogic(id, true)
+		if not self.logic:isCompatibleType(Weapon) then
+			self.logic = nil
+		else
+			self._onAttackHit = self.logic.onAttackHit
+			self.logic.onAttackHit = function(s, ...)
+				self:onAttackHit(...)
+			end
 
-		self._onAttackMiss = self.logic.onAttackMiss
-		self.logic.onAttackMiss = function(s, ...)
-			self:onAttackMiss(...)
+			self._onAttackMiss = self.logic.onAttackMiss
+			self.logic.onAttackMiss = function(s, ...)
+				self:onAttackMiss(...)
+			end
 		end
 	end
 end
@@ -63,7 +65,7 @@ function ProxyXWeapon:onAttackHit(...)
 	if self._onAttackHit then
 		self._onAttackHit(self.logic, ...)
 	else
-		return Weapon.onAttackHit(...)
+		return Weapon.onAttackHit(self, ...)
 	end
 end
 
@@ -71,7 +73,7 @@ function ProxyXWeapon:onAttackMiss(...)
 	if self._onAttackMiss then
 		self._onAttackMiss(self.logic, ...)
 	else
-		return Weapon.onAttackMiss(...)
+		return Weapon.onAttackMiss(self, ...)
 	end
 end
 

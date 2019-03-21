@@ -100,6 +100,7 @@ function GameView:new(game)
 	stage.onWaterDrain:register(self._onWaterDrain)
 
 	self._onForecast = function(_, key, id, props)
+		self:forecast(key, nil)
 		self:forecast(key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)

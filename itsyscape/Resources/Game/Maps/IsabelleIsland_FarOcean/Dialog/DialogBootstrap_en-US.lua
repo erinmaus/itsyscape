@@ -1,6 +1,5 @@
 if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated") then
 	defer "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/InitialBanter_en-US.lua"
-	_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated")
 else
 	local piratesAlive = true
 	do
@@ -16,19 +15,22 @@ else
 			piratesAlive = false
 
 			for i = 1, #hits do
-				local pirate = hits[1]
+				local pirate = hits[i]
 				local status = pirate:getBehavior("CombatStatus")
-				if not status or (status.currentHitpoints > 0 and not status.dead) then
-					piratesAlive = true
-					break
+				if status and status.currentHitpoints > 0 and not status.dead then
+					local pirateMap = Utility.Peep.getMap(pirate)
+					if pirateMap.id.value == Utility.Peep.getMap(_TARGET).id.value then
+						piratesAlive = true
+						break
+					end
 				end
 			end
 		end
 	end
 
-	if piratesAlive then
-		defer "Resources/Game/Maps/IsabelleIsland_FarOcean/CombatBanter_en-US.lua"
+	if piratesAlive and false then
+		defer "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/CombatBanter_en-US.lua"
 	else
-		defer "Resources/Game/Maps/IsabelleIsland_FarOcean/PostBanter_en-US.lua"
+		defer "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/PostBanter_en-US.lua"
 	end
 end
