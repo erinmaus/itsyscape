@@ -9,6 +9,41 @@
 --------------------------------------------------------------------------------
 
 do
+	ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.CapnRaven.CapnRaven",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Cap'n Raven",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "She's a lot meaner than the rest of them.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(200),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Value = ItsyScape.Utility.xpForLevel(99),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+end
+
+do
 	ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate" {
 		-- Nothing.
 	}
@@ -45,6 +80,17 @@ do
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Sailing",
 		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = -100,
+		AccuracySlash = -100,
+		AccuracyCrush = -100,
+		DefenseStab = -50,
+		DefenseSlash = -50,
+		DefenseCrush = -50,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate"
 	}
 end
@@ -128,6 +174,12 @@ do
 		Priority = math.huge,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer"
 	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = -1000,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer"
+	}
 end
 
 do
@@ -207,6 +259,13 @@ do
 		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua",
 		Slot = ItsyScape.Utility.Equipment.SLOT_HEAD,
 		Priority = math.huge,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		AccuracyMagic = -1000,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
 	}
 end

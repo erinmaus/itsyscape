@@ -29,6 +29,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm"
 }
 
+ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_PirateEncounterInitiated"
+
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",
 	"CalmBeforeTheStorm_TalkedToIsabelle1"
