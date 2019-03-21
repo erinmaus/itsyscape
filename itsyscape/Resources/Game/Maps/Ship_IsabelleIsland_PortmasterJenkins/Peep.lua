@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
 local Ship = Class(Map)
 Ship.STATE_SQUID   = 0
@@ -26,49 +27,86 @@ end
 function Ship:onLoad(filename, arguments, layer)
 	Map.onLoad(self, filename, arguments, layer)
 
+	self.player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+
 	local state = tonumber(arguments['jenkins_state'] or Ship.STATE_SQUID)
 	if state == Ship.STATE_SQUID then
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Jenkins_Squid",
-			"Anchor_Jenkins_Squid_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Sailor1",
-			"Anchor_Sailor1_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Sailor2",
-			"Anchor_Sailor2_Spawn",
-			0)
+		self:initSquidEncounter()
 	else
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Jenkins_Squid",
-			"Anchor_Jenkins_Squid_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Wizard",
-			"Anchor_Sailor1_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Archer",
-			"Anchor_Sailor2_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Pirate",
-			"Anchor_Pirate1_Spawn",
-			0)
-		Utility.spawnMapObjectAtAnchor(
-			self,
-			"Pirate",
-			"Anchor_Pirate2_Spawn",
-			0)
+		self:initPirateEncounter()
+	end
+end
+
+function Ship:initSquidEncounter()
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Jenkins_Squid",
+		"Anchor_Jenkins_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Sailor1",
+		"Anchor_Sailor1_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Sailor2",
+		"Anchor_Sailor2_Spawn",
+		0)
+end
+
+function Ship:initPirateEncounter()
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Jenkins_Pirate",
+		"Anchor_Jenkins_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Wizard",
+		"Anchor_Sailor1_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Archer",
+		"Anchor_Sailor2_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Pirate1",
+		"Anchor_Pirate1_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"Pirate2",
+		"Anchor_Pirate2_Spawn",
+		0)
+	Utility.spawnMapObjectAtAnchor(
+		self,
+		"CapnRaven",
+		"Anchor_CapnRaven_Spawn",
+		0)
+
+	local s, index = Utility.UI.openInterface(
+		self.player,
+		"CharacterCustomization",
+		true)
+	if s then
+		self.blockingInterfaceID = "CharacterCustomization"
+		self.blockingInterfaceIndex = index
+		self.player:addBehavior(DisabledBehavior)
+	end
+end
+
+function Ship:update(director, game)
+	Map.update(self, director, game)
+
+	if self.blockingInterfaceID and self.blockingInterfaceIndex then
+		local ui = game:getUI()
+		local isOpen = ui:isOpen(self.blockingInterfaceID, self.blockingInterfaceIndex)
+		if not isOpen then
+			self.player:removeBehavior(DisabledBehavior)
+		end
 	end
 end
 

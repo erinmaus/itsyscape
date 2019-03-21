@@ -17,15 +17,4 @@ function Tower:new(resource, name, ...)
 	Map.new(self, resource, name or 'Tower', ...)
 end
 
-function Tower:ready(director, game)
-	Map.ready(self, director, game)
-
-	local player = game:getPlayer():getActor():getPeep()
-	local state = player:getState()
-
-	if not state:has("KeyItem", "CalmBeforeTheStorm_Start") then
-		Utility.UI.openInterface(player, "CharacterCustomization", true)
-	end
-end
-
 return Tower

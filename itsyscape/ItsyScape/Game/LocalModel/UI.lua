@@ -49,7 +49,7 @@ function LocalUI:pull(interfaceID, index, actionID, actionIndex, e)
 	return {}
 end
 
-function LocalUI:isOpen(interface, index)
+function LocalUI:isOpen(interfaceID, index)
 	local interfaces = self.interfaces[interfaceID]
 	if interfaces then
 		if index == nil then

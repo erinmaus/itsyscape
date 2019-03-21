@@ -1273,6 +1273,12 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 				Log.info("Peep %s is dead; can't walk!", peep:getName())
 				return false, "dead"
 			end
+
+			local isDisabled = peep:hasBehavior(require "ItsyScape.PEep.Behaviors.DisabledBehavior")
+			if isDisabled then
+				Log.info("Peep %s is disabled; can't walk!", peep:getName())
+				return false, "disabled"
+			end
 		end
 
 		local queue = peep:getCommandQueue()

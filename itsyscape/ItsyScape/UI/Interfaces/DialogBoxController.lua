@@ -50,6 +50,7 @@ function DialogBoxController:new(peep, director, action)
 					end
 
 					if not s then
+						print('woops', speaker:get("Name"))
 						local r = speaker:get("Resource")
 						peeps = director:probe(peep:getLayerName(), Probe.resource(r))
 						for _, p in ipairs(peeps) do

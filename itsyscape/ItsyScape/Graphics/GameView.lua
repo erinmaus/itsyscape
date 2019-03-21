@@ -443,8 +443,6 @@ function GameView:decorate(group, decoration, layer)
 			TextureResource,
 			textureFilename)
 
-		print('group', group, layer)
-
 		local sceneNode = DecorationSceneNode()
 		sceneNode:fromDecoration(decoration, staticMesh:getResource())
 		sceneNode:getMaterial():setTextures(texture)

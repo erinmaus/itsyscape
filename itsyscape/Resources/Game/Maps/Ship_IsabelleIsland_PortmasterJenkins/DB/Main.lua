@@ -17,6 +17,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+local PirateEncounterTalkAction = ItsyScape.Action.Talk()
+
 M["Light_Lantern1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -180,16 +182,65 @@ do
 	}
 end
 
-M["Anchor_Jenkins_Squid_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+M["Jenkins_Pirate"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Jenkins_Pirate",
+		Map = M._MAP,
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
+		MapObject = M["Jenkins_Pirate"]
+	}
+
+	M["Jenkins_Pirate"] {
+		PirateEncounterTalkAction
+	}
+end
+
+M["Anchor_Jenkins_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29.0,
 		PositionY = 5.0,
 		PositionZ = 11.0,
 		Direction = -1,
-		Name = "Anchor_Jenkins_Squid_Spawn",
+		Name = "Anchor_Jenkins_Spawn",
 		Map = M._MAP,
-		Resource = M["Anchor_Jenkins_Squid_Spawn"]
+		Resource = M["Anchor_Jenkins_Spawn"]
+	}
+end
+
+M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "CapnRaven",
+		Map = M._MAP,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
+		MapObject = M["CapnRaven"]
+	}
+
+	M["CapnRaven"] {
+		PirateEncounterTalkAction
+	}
+end
+
+M["Anchor_CapnRaven_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.0,
+		PositionY = 4.0,
+		PositionZ = 11.0,
+		Direction = -1,
+		Name = "Anchor_CapnRaven_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_CapnRaven_Spawn"]
 	}
 end
 
@@ -226,6 +277,10 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard",
 		MapObject = M["Wizard"]
 	}
+
+	M["Wizard"] {
+		PirateEncounterTalkAction
+	}
 end
 
 M["Archer"] = ItsyScape.Resource.MapObject.Unique()
@@ -240,25 +295,57 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer",
 		MapObject = M["Archer"]
 	}
+
+	M["Archer"] {
+		PirateEncounterTalkAction
+	}
 end
 
-M["Pirate"] = ItsyScape.Resource.MapObject.Unique()
+M["Pirate1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
-		Name = "Pirate",
+		Name = "Pirate1",
 		Map = M._MAP,
-		Resource = M["Pirate"]
+		Resource = M["Pirate1"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Pirate"]
+		MapObject = M["Pirate1"]
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "BronzeLongsword",
 		Count = 1,
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
+		Resource = M["Pirate1"]
+	}
+
+	M["Pirate1"] {
+		ItsyScape.Action.Attack()
+	}
+end
+
+M["Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Pirate2",
+		Map = M._MAP,
+		Resource = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
+		MapObject = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Count = 1,
+		Resource = M["Pirate2"]
+	}
+
+	M["Pirate2"] {
+		ItsyScape.Action.Attack()
 	}
 end
 
@@ -315,7 +402,7 @@ do
 		PositionX = 29.0,
 		PositionY = 5.0,
 		PositionZ = 13.0,
-		Direction = 1,
+		Direction = -1,
 		Name = "Anchor_Sailor2_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Sailor2_Spawn"]
@@ -363,3 +450,21 @@ do
 		MapObject = M["SunkenChest"]
 	}
 end
+
+ItsyScape.Meta.TalkSpeaker {
+	Resource = M["Jenkins_Pirate"],
+	Name = "Jenkins",
+	Action = PirateEncounterTalkAction
+}
+
+ItsyScape.Meta.TalkSpeaker {
+	Resource = M["CapnRaven"],
+	Name = "CapnRaven",
+	Action = PirateEncounterTalkAction
+}
+
+ItsyScape.Meta.TalkDialog {
+	Script = "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/DialogBootstrap_en-US.lua",
+	Language = "en-US",
+	Action = PirateEncounterTalkAction
+}
