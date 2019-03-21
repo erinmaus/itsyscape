@@ -30,6 +30,10 @@ local Tree = BTreeBuilder.Node() {
 			message = "Raaaaaaaa!"
 		},
 
+		Mashina.Peep.PokeSelf {
+			event = "boss"
+		},
+
 		Mashina.Repeat {
 			Mashina.ParallelTry {
 				Mashina.Step {

@@ -31,7 +31,7 @@ function FarOcean:onLoad(filename, args, layer)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'IsabelleIsland_FarOcean_HeavyRain', 'Rain', {
 		wind = { -15, 0, 0 },
-		heaviness = 0.75
+		heaviness = 0.25
 	})
 end
 

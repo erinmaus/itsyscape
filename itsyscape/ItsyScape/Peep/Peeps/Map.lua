@@ -32,15 +32,20 @@ function Map:getArguments()
 	return self.arguments
 end
 
+function Map:getLayer()
+	return self.layer or 1
+end
+
 function Map:ready(director, game)
 	Peep.ready(self, director, game)
 
 	Utility.Peep.setNameMagically(self)
 end
 
-function Map:onLoad(filename, arguments)
+function Map:onLoad(filename, arguments, layer)
 	self.filename = filename
 	self.arguments = arguments
+	self.layer = layer
 end
 
 return Map

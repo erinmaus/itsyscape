@@ -102,3 +102,72 @@ do
 		Resource = M["Light_Fog"]
 	}
 end
+
+M["Anchor_Squid_Spawn1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 1,
+		PositionZ = 19,
+		Name = "Anchor_Squid_Spawn1",
+		Map = M._MAP,
+		Resource = M["Anchor_Squid_Spawn1"]
+	}
+end
+
+M["Anchor_Squid_Spawn2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 1,
+		PositionY = 1,
+		PositionZ = 5,
+		Name = "Anchor_Squid_Spawn2",
+		Map = M._MAP,
+		Resource = M["Anchor_Squid_Spawn2"]
+	}
+end
+
+M["Anchor_Squid_Spawn3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 1,
+		PositionZ = 7,
+		Name = "Anchor_Squid_Spawn3",
+		Map = M._MAP,
+		Resource = M["Anchor_Squid_Spawn3"]
+	}
+end
+
+M["UndeadSquid"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "UndeadSquid",
+		Map = M._MAP,
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Undead squid",
+		Language = "en-US",
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Loyal servants to Cthulhu and Yendor.",
+		Language = "en-US",
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid",
+		MapObject = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "spawn",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean/Scripts/UndeadSquid.lua",
+		IsDefault = 1,
+		Resource = M["UndeadSquid"]
+	}
+end

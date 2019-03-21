@@ -96,7 +96,7 @@ function RainWeather:new(gameView, map, props)
 
 	self.gravity = Vector(unpack(props.gravity or { 0, -20, 0 }))
 	self.wind = Vector(unpack(props.wind or { 0, 0, 0 }))
-	self.heaviness = math.floor(math.max(props.heaviness or 0.5, 0.5) * width * height)
+	self.heaviness = math.floor(math.max(props.heaviness or 0.0, 0.0) * width * height)
 	self.height = props.height or 30
 	self.minLength = props.minLength or 2
 	self.maxLength = props.maxLength or 4

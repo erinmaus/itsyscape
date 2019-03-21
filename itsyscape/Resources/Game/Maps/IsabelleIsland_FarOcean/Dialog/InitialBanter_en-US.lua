@@ -17,7 +17,7 @@ speaker "CapnRaven"
 
 message {
 	"We stopped being mates when ye threw off yer hat.",
-	"Now give us yer valuables and out of the litle respect I still have fer ye, I'll let ye live."
+	"Now give us yer valuables and out of the little respect I still have fer ye, I'll let ye live."
 }
 
 speaker "Jenkins"
@@ -65,6 +65,8 @@ end
 
 attack("IsabelleIsland_FarOcean_Wizard", "Pirate1")
 attack("IsabelleIsland_FarOcean_Archer", "Pirate2")
+
+_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated")
 
 speaker "CapnRaven"
 message {
