@@ -20,8 +20,8 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Repeat {
 			Mashina.Step {
 				Mashina.Peep.TimeOut {
-					min_duration = 2,
-					max_duration = 4
+					min_duration = 4,
+					max_duration = 12
 				},
 
 				Mashina.Peep.PokeSelf {
