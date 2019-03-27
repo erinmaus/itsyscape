@@ -103,6 +103,32 @@ do
 	}
 end
 
+M["Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Cthulhu",
+		Map = M._MAP,
+		Resource = M["Cthulhu"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu",
+		MapObject = M["Cthulhu"]
+	}
+end
+
+M["Cthulhu_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = -10,
+		PositionZ = -16,
+		Name = "Cthulhu_Spawn",
+		Map = M._MAP,
+		Resource = M["Cthulhu_Spawn"]
+	}
+end
+
 M["Anchor_Squid_Spawn1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -153,8 +179,8 @@ do
 		Resource = M["UndeadSquid"]
 	}
 
-	ItsyScape.Meta.ResourceName {
-		Value = "Loyal servants to Cthulhu and Yendor.",
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Loyal servants to Cthulhu and its master, Yendor.",
 		Language = "en-US",
 		Resource = M["UndeadSquid"]
 	}

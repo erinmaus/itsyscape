@@ -18,7 +18,7 @@ Game "ItsyScape"
 
 	Meta "PeepStat" {
 		Skill = Meta.TYPE_RESOURCE,
-		Value = Meta.TYPE_INTEGER,
+		Value = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

@@ -65,6 +65,10 @@ function Ship:onRaiseCthulhu()
 	local oceanMapScript = stage:getMapScript("IsabelleIsland_FarOcean")
 	Utility.spawnMapObjectAtAnchor(
 		oceanMapScript,
+		"Cthulhu",
+		"Cthulhu_Spawn")
+	Utility.spawnMapObjectAtAnchor(
+		oceanMapScript,
 		"UndeadSquid",
 		"Anchor_Squid_Spawn1")
 	Utility.spawnMapObjectAtAnchor(

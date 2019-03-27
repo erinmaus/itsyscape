@@ -269,3 +269,68 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
 	}
 end
+
+do
+	ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Cthulhu.Cthulhu",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(400),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(400),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(500),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(400),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(999),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Cthulhu, High Priest of Yendor",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Hope is lost! Only madness awaits you now. Give in!",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(120),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(90, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(90, 1.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(90, 1.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1.0),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 1.0),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(100),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu"
+	}
+end
