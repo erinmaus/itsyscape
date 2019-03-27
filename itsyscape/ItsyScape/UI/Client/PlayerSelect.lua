@@ -270,8 +270,8 @@ function PlayerSelect:newPlayer(player)
 		"jenkins_state=1," ..
 		"i=16," ..
 		"j=16," ..
-		"shore=IsabelleIsland_Port" ..
-		"shoreAnchor=Anchor_ReturnFromSea",
+		"shore=IsabelleIsland_Tower," ..
+		"shoreAnchor=Anchor_StartGame",
 		"Anchor_Spawn")
 
 	self.application:closeTitleScreen()

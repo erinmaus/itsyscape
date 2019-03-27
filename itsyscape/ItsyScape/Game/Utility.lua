@@ -195,6 +195,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 		})
 
 		if not reference then
+			Log.warn("Map object reference '%s' not found.", m)
 			return nil, nil
 		end
 
@@ -1546,7 +1547,7 @@ Utility.Peep.Stats = {}
 function Utility.Peep.Stats.onAssign(max, self, director)
 	local stats = self:getBehavior(StatsBehavior)
 	if stats then
-		stats.stats = Stats(self:getName(), director:getGameDB())
+		stats.stats = Stats(self:getName(), director:getGameDB(), max)
 		stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 			local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 
@@ -1579,6 +1580,7 @@ function Utility.Peep.Stats:onReady(director)
 
 				if stats:hasSkill(skill) then
 					stats:getSkill(skill):setXP(xp)
+					print(self:getName(), 'lvl', stats:getSkill(skill):getWorkingLevel())
 				else
 					Log.warn("Skill %s not found on Peep %s.", skill, self:getName())
 				end
