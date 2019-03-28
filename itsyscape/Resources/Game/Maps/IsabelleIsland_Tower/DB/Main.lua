@@ -487,6 +487,11 @@ do
 end
 
 M["Door_Office"] {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+M["Door_Tower"] {
 	ItsyScape.Action.Open() {
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
@@ -494,24 +499,12 @@ M["Door_Office"] {
 		}
 	},
 
-	ItsyScape.Action.Close() {
-	}
-}
-
-M["Door_Tower"] {
-	ItsyScape.Action.Open() {
-	},
-
-	ItsyScape.Action.Close() {
-	}
+	ItsyScape.Action.Close()
 }
 
 M["Door_Merchant"] {
-	ItsyScape.Action.Open() {
-	},
-
-	ItsyScape.Action.Close() {
-	}
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
 }
 
 return M

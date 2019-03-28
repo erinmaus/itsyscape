@@ -72,7 +72,7 @@ end
 function Projectile:getTargetPosition(target)
 	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
 		local positionable
-		do
+		if self.gameView:getView(target) then
 			if target:isCompatibleType(Prop) then
 				positionable = self.gameView:getView(target):getRoot()
 			elseif target:isCompatibleType(Actor) then

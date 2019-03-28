@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Utility = require "ItsyScape.Game.Utility"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local NullActor = require "ItsyScape.Game.Null.Actor"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -185,6 +186,25 @@ function PlayerSelect:addPlayerButton(player)
 	button:addChild(nameLabel)
 
 	local gameDB = self.application:getGameDB()
+
+	if not player.storage:getRoot():getSection("Location"):get("name") then
+		local location = player.storage:getRoot():getSection("Location")
+		location:set("name", "IsabelleIsland_Tower")
+
+		local x, y, z = Utility.Map.getAnchorPosition(
+			self.application:getGame(),
+			"IsabelleIsland_Tower",
+			"Anchor_StartGame")
+		location:set("x", x)
+		location:set("y", y)
+		location:set("z", z)
+
+		love.filesystem.createDirectory("Player")
+
+		local result = player.storage:toString()
+		love.filesystem.write(player.storage:getRoot():get("filename"), result)
+	end
+
 	local location = gameDB:getResource(
 		player.storage:getRoot():getSection("Location"):get("name"),
 		"Map")

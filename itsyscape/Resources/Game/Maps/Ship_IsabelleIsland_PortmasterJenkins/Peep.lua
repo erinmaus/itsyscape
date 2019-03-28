@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
@@ -113,6 +114,16 @@ function Ship:initPirateEncounter()
 		"Anchor_CapnRaven_Spawn",
 		0)
 
+	do
+		local state = self.player:getState()
+		local FLAGS = { ["item-inventory"] = true }
+		state:give("Item", "RustyHelmet", 1, FLAGS)
+		state:give("Item", "RustyPlatebody",  1,FLAGS)
+		state:give("Item", "RustyGloves",  1,FLAGS)
+		state:give("Item", "RustyBoots",  1,FLAGS)
+		state:give("Item", "RustyDagger",  1,FLAGS)
+	end
+
 	local s, index = Utility.UI.openInterface(
 		self.player,
 		"CharacterCustomization",
@@ -135,6 +146,26 @@ function Ship:update(director, game)
 
 			self.blockingInterfaceID = nil
 			self.blockingInterfaceIndex = nil
+
+			local capnRaven
+			do
+				local gameDB = director:getGameDB()
+				local capnRavenResource = gameDB:getResource("IsabelleIsland_FarOcean_PirateCaptain", "Peep")
+				local hits = director:probe(self:getLayerName(), Probe.resource(capnRavenResource))
+				capnRaven = hits[1]
+			end
+
+			if capnRaven then
+				local capnRavenMapObject = Utility.Peep.getMapObject(capnRaven)
+				Utility.performAction(
+					game,
+					capnRavenMapObject,
+					'talk',
+					'world',
+					self.player:getState(),
+					self.player,
+					capnRaven)
+			end
 		end
 	end
 end

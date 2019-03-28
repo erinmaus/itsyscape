@@ -82,38 +82,6 @@ function DemoApplication:closeTitleScreen()
 	self:getGame():getUI():open(playerPeep, "Ribbon")
 	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
 	self:getGame():getUI():open(playerPeep, "StrategyBar")
-	self:getGame():getUI():open(playerPeep, "VideoTutorial", {
-		{
-			video = "Resources/Game/Videos/Tutorial/Camera.ogv",
-			text =
-				"Press and drag the middle mouse button to move the camera.\n\n" ..
-				"Scroll the middle mouse button to zoom in or out.\n\n" ..
-				"Left click to perform the default action.\n\n" ..
-				"Right click to see all available options."
-		},
-		{
-			video = "Resources/Game/Videos/Tutorial/Equipment.ogv",
-			text = 
-				"Click on equipment in your inventory tab to equip it.\n\n" ..
-				"To dequip items, click on the item in the equipment tab.\n\n" ..
-				"There's three primary classes of equipment (magic, archery, and melee). Choose wisely!"
-		},
-		{
-			video = "Resources/Game/Videos/Tutorial/Combat.ogv",
-			text = 
-				"Bind powers to the strategy bar by right clicking on a spot.\n\n" ..
-				"Left click on the power before your next attack to use it.\n\n" ..
-				"Powers have cooldowns and other requirements to use.\n\n" ..
-				"You automatically perform basic attacks otherwise.\n\n",
-		},
-		{
-			video = "Resources/Game/Videos/Tutorial/Food.ogv",
-			text =
-				"After taking damage, use food and other items to heal.\n\n" ..
-				"If you die, you'll wake up at the last spot you slept at.\n\n" ..
-				"(Sleeping at a bed also saves your progress and restores your stats.)"
-		}
-	})
 end
 
 function DemoApplication:openTitleScreen()
