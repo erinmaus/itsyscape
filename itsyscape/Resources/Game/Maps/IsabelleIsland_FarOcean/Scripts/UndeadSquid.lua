@@ -17,11 +17,16 @@ local Tree = BTreeBuilder.Node() {
 			message = "Raaaaaaaa!"
 		},
 
+		Mashina.Peep.TimeOut {
+			min_duration = 2,
+			max_duration = 4
+		},
+
 		Mashina.Repeat {
 			Mashina.Step {
 				Mashina.Peep.TimeOut {
-					min_duration = 4,
-					max_duration = 12
+					min_duration = 2,
+					max_duration = 4
 				},
 
 				Mashina.Peep.PokeSelf {

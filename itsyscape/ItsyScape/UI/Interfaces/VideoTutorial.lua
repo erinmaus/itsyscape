@@ -128,26 +128,6 @@ function VideoTutorial:new(id, index, ui)
 
 	self:setZDepth(math.huge)
 
-	self.nextButton = Button()
-	self.nextButton:setStyle(ButtonStyle(VideoTutorial.BUTTON_STYLE, ui:getResources()))
-	self.nextButton:setText("NEXT >")
-	self.nextButton:setSize(VideoTutorial.BUTTON_WIDTH, VideoTutorial.BUTTON_HEIGHT)
-	self.nextButton:setPosition(
-		w - VideoTutorial.BUTTON_WIDTH - VideoTutorial.PADDING,
-		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
-	self.nextButton.onClick:register(self.next, self, 1)
-	self:addChild(self.nextButton)
-
-	self.previousButton = Button()
-	self.previousButton:setStyle(ButtonStyle(VideoTutorial.BUTTON_STYLE, ui:getResources()))
-	self.previousButton:setText("< PREV")
-	self.previousButton:setSize(VideoTutorial.BUTTON_WIDTH, VideoTutorial.BUTTON_HEIGHT)
-	self.previousButton:setPosition(
-		VideoTutorial.PADDING,
-		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
-	self.previousButton.onClick:register(self.next, self, -1)
-	self:addChild(self.previousButton)
-
 	local videoWidth = w / 2
 	local textWidth = w - videoWidth
 	self.text = Label()
@@ -242,6 +222,28 @@ function VideoTutorial:new(id, index, ui)
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
+
+	self.nextButton = Button()
+	self.nextButton:setZDepth(10)
+	self.nextButton:setStyle(ButtonStyle(VideoTutorial.BUTTON_STYLE, ui:getResources()))
+	self.nextButton:setText("NEXT >")
+	self.nextButton:setSize(VideoTutorial.BUTTON_WIDTH, VideoTutorial.BUTTON_HEIGHT)
+	self.nextButton:setPosition(
+		w - VideoTutorial.BUTTON_WIDTH - VideoTutorial.PADDING,
+		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
+	self.nextButton.onClick:register(self.next, self, 1)
+	self:addChild(self.nextButton)
+
+	self.previousButton = Button()
+	self.previousButton:setZDepth(10)
+	self.previousButton:setStyle(ButtonStyle(VideoTutorial.BUTTON_STYLE, ui:getResources()))
+	self.previousButton:setText("< PREV")
+	self.previousButton:setSize(VideoTutorial.BUTTON_WIDTH, VideoTutorial.BUTTON_HEIGHT)
+	self.previousButton:setPosition(
+		VideoTutorial.PADDING,
+		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
+	self.previousButton.onClick:register(self.next, self, -1)
+	self:addChild(self.previousButton)
 
 	self.current = 1
 	self:next(0)

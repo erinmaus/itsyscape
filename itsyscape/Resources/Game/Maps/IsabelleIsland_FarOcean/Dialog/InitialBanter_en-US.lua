@@ -54,7 +54,8 @@ local function attack(mercenaryName, pirateName)
 		Utility.Peep.attack(mercenary, pirate)
 
 		local actor = pirate:getBehavior("ActorReference")
-		if actor and actor.actor then
+		local status = pirate:getBehavior("CombatStatus")
+		if actor and actor.actor and status and status.currentHitpoints > 0 and not status.dead then
 			local actor = actor.actor
 			actor:flash("Message", 1, "Arrr, ye scallywag!")
 		end
@@ -76,7 +77,7 @@ message {
 speaker "Jenkins"
 
 message {
-	"${PLAYER_NAME}, help 'em out!"
+	"${PLAYER_NAME}, help 'em out! Attack 'em pirates, mate!"
 }
 
 speaker "_TARGET"
@@ -84,3 +85,47 @@ speaker "_TARGET"
 message {
 	"Got it!"
 }
+
+Utility.UI.openInterface(
+	_TARGET,
+	"VideoTutorial",
+	true,
+	{
+		{
+			video = "Resources/Game/Videos/Tutorial/Static.ogv",
+			text = "Welcome to the ItsyRealm combat tutorial!\n\n" ..
+				"Click on the TV to the left to see a bigger example of the tutorial.\n\n" ..
+				"Use the next & previous buttons to navigate.\n\n" ..
+				"Click the 'X' button in the top-right corner any time to return to the game."
+		},
+		{
+			video = "Resources/Game/Videos/Tutorial/Camera.ogv",
+			text =
+				"Press and drag the middle mouse button to move the camera.\n\n" ..
+				"Scroll the middle mouse button to zoom in or out.\n\n" ..
+				"Left click to perform the default action.\n\n" ..
+				"Right click to see all available options."
+		},
+		{
+			video = "Resources/Game/Videos/Tutorial/Equipment.ogv",
+			text = 
+				"Click on equipment in your inventory tab to equip it.\n\n" ..
+				"To dequip items, click on the item in the equipment tab.\n\n" ..
+				"There's three primary classes of equipment (magic, archery, and melee). Choose wisely!"
+		},
+		{
+			video = "Resources/Game/Videos/Tutorial/Combat.ogv",
+			text = 
+				"Bind powers to the strategy bar by right clicking on a spot.\n\n" ..
+				"Left click on the power before your next attack to use it.\n\n" ..
+				"Powers have cooldowns and other requirements to use.\n\n" ..
+				"You automatically perform basic attacks otherwise.\n\n",
+		},
+		{
+			video = "Resources/Game/Videos/Tutorial/Food.ogv",
+			text =
+				"After taking damage, use food and other items to heal.\n\n" ..
+				"If you die, you'll wake up at the last spot you slept at.\n\n" ..
+				"(Sleeping at a bed also saves your progress and restores your stats.)"
+		}
+	})
