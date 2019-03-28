@@ -1580,7 +1580,6 @@ function Utility.Peep.Stats:onReady(director)
 
 				if stats:hasSkill(skill) then
 					stats:getSkill(skill):setXP(xp)
-					print(self:getName(), 'lvl', stats:getSkill(skill):getWorkingLevel())
 				else
 					Log.warn("Skill %s not found on Peep %s.", skill, self:getName())
 				end
