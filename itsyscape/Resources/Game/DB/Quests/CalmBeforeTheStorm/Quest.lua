@@ -30,6 +30,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_PirateEncounterInitiated"
+ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GaveOrlandoFish"
 
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",

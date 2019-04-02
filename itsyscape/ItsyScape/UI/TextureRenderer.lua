@@ -60,6 +60,9 @@ function TextureRenderer:draw(widget, state)
 				scaleX = width / w
 				scaleY = height / h
 			end
+		else
+			scaleX = width / w
+			scaleY = height / h
 		end
 
 		local hw, hh = w, h

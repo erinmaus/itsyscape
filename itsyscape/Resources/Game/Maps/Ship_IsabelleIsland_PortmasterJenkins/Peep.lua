@@ -144,27 +144,41 @@ function Ship:update(director, game)
 		if not isOpen then
 			self.player:removeBehavior(DisabledBehavior)
 
-			self.blockingInterfaceID = nil
-			self.blockingInterfaceIndex = nil
+			if self.blockingInterfaceID == "CharacterCustomization" then
+				local capnRaven
+				do
+					local gameDB = director:getGameDB()
+					local capnRavenResource = gameDB:getResource("IsabelleIsland_FarOcean_PirateCaptain", "Peep")
+					local hits = director:probe(self:getLayerName(), Probe.resource(capnRavenResource))
+					capnRaven = hits[1]
+				end
 
-			local capnRaven
-			do
-				local gameDB = director:getGameDB()
-				local capnRavenResource = gameDB:getResource("IsabelleIsland_FarOcean_PirateCaptain", "Peep")
-				local hits = director:probe(self:getLayerName(), Probe.resource(capnRavenResource))
-				capnRaven = hits[1]
-			end
+				if capnRaven then
+					local capnRavenMapObject = Utility.Peep.getMapObject(capnRaven)
+					local actions = Utility.getActions(
+						game,
+						capnRavenMapObject,
+						'world')
+					for i = 1, #actions do
+						if actions[i].instance:is("talk") then
+							local s, index = Utility.UI.openInterface(
+								self.player,
+								"DialogBox",
+								true,
+								actions[i].instance:getAction())
 
-			if capnRaven then
-				local capnRavenMapObject = Utility.Peep.getMapObject(capnRaven)
-				Utility.performAction(
-					game,
-					capnRavenMapObject,
-					'talk',
-					'world',
-					self.player:getState(),
-					self.player,
-					capnRaven)
+							if s then
+								self.blockingInterfaceID = "DialogBox"
+								self.blockingInterfaceIndex = index
+							end
+						end
+					end
+				end
+
+				self.player:addBehavior(DisabledBehavior)
+			else
+				self.blockingInterfaceID = nil
+				self.blockingInterfaceIndex = nil
 			end
 		end
 	end

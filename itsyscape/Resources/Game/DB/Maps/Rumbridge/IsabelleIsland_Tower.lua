@@ -113,6 +113,43 @@ end
 do
 	local TalkAction = ItsyScape.Action.Talk()
 
+	ItsyScape.Resource.Peep "IsabelleIsland_Orlando" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Orlando_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Orlando.Orlando",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Sir Orlando",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Hopeless romantic.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
 	ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm" {
 		TalkAction
 	}

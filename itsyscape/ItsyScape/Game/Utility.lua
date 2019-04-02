@@ -1268,20 +1268,6 @@ end
 function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
-		do
-			local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
-			if status.dead then
-				Log.info("Peep %s is dead; can't walk!", peep:getName())
-				return false, "dead"
-			end
-
-			local isDisabled = peep:hasBehavior(require "ItsyScape.PEep.Behaviors.DisabledBehavior")
-			if isDisabled then
-				Log.info("Peep %s is disabled; can't walk!", peep:getName())
-				return false, "disabled"
-			end
-		end
-
 		local queue = peep:getCommandQueue()
 		return queue:interrupt(command)
 	end
@@ -1315,6 +1301,20 @@ end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	t = t or { asCloseAsPossible = true }
+
+	do
+		local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+		if status.dead then
+			Log.info("Peep %s is dead; can't walk!", peep:getName())
+			return false, "dead"
+		end
+
+		local isDisabled = peep:hasBehavior(require "ItsyScape.PEep.Behaviors.DisabledBehavior")
+		if isDisabled then
+			Log.info("Peep %s is disabled; can't walk!", peep:getName())
+			return false, "disabled"
+		end
+	end
 
 	local distance = distance or 0
 	local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
