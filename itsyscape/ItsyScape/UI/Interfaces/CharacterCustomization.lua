@@ -27,7 +27,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local CharacterCustomization = Class(Interface)
 CharacterCustomization.WIDTH = 480
-CharacterCustomization.HEIGHT = 496
+CharacterCustomization.HEIGHT = 544
 CharacterCustomization.TAB_SIZE = 48
 CharacterCustomization.INPUT_HEIGHT = 64
 CharacterCustomization.PADDING = 12
@@ -141,6 +141,9 @@ function CharacterCustomization:new(id, index, ui)
 				self:removeChild(self.tabs[self.currentTab].panel)
 				self:addChild(self.tabs[tab].panel)
 				self.currentTab = tab
+
+				self:removeChild(self.confirmButton)
+				self:addChild(self.confirmButton)
 			end)
 
 			tabButtons[tab] = button
@@ -235,6 +238,14 @@ function CharacterCustomization:new(id, index, ui)
 
 		info.basic:addChild(genderSelect)
 
+		local label = Label()
+		label:setText(
+			"\n  Here you can customizer name & gender.\n" ..
+			"  Click the mask tab to change your appearance.")
+		label:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
+		label:setSize(contentWidth, 96)	
+		info.panel:addChild(label)
+
 		info.panel:addChild(info.basic)
 		info.panel:setSize(contentWidth, contentHeight)
 		info.panel:setScrollSize(info.panel:getInnerPanel():getSize())
@@ -320,6 +331,19 @@ function CharacterCustomization:new(id, index, ui)
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
+
+	self.confirmButton = Button()
+	self.confirmButton:setSize(
+		CharacterCustomization.TAB_SIZE * 2,
+		CharacterCustomization.TAB_SIZE)
+	self.confirmButton:setPosition(
+		CharacterCustomization.WIDTH - CharacterCustomization.TAB_SIZE * 2 - CharacterCustomization.PADDING,
+		CharacterCustomization.HEIGHT - CharacterCustomization.TAB_SIZE - CharacterCustomization.PADDING)
+	self.confirmButton:setText("Confirm")
+	self.confirmButton.onClick:register(function()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(self.confirmButton)
 
 	self.ready = false
 end

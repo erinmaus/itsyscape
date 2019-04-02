@@ -37,8 +37,8 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			}
 
 			message {
-				"There is a helpful ... man, Joe, I think, deep in the dungeon.",
-				"I suggest finding him as quickly as possible; he knows more."
+				"Isabelle's older brother, Orlando, is guarding the mines.",
+				"He can let you in, assuming he's not busy writing a sonnet or something silly."
 			}
 
 			message {
@@ -59,17 +59,6 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 					message "And here's a hammer to help you smith."
 				else
 					message "If you had more inventory space, I could give you a hammer."
-				end
-			end
-
-			if not _TARGET:getState():has("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, SEARCH_FLAGS) then
-				if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, TAKE_FLAGS) then
-					message {
-						"Lastly, here's a key to enter the dungeon.",
-						"Please close the door behind yourself--we can't have the creeps surfacing."
-					}
-				else
-					message "If you had more inventory space, I could give you the key to enter the mine."
 				end
 			end
 

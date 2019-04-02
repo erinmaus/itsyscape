@@ -31,9 +31,14 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local VideoTutorial = Class(Interface)
 VideoTutorial.BUTTON_STYLE = {
-	inactive = Color(0.5, 0.5, 0.5, 0.5),
-	hover = Color(1, 1, 1, 0.5),
-	pressed = Color(0.25, 0.25, 0.25, 0.5)
+	pressed = "Resources/Renderers/Widget/Button/VideoTutorial-Pressed.9.png",
+	inactive = "Resources/Renderers/Widget/Button/VideoTutorial-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/VideoTutorial-Hover.9.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	textShadow = true,
+	padding = 4
 }
 VideoTutorial.INVISIBLE_BUTTON_STYLE = {
 	inactive = false,
@@ -50,7 +55,7 @@ VideoTutorial.TEXT_STYLE = function(width)
 end
 
 VideoTutorial.BUTTON_WIDTH = 128
-VideoTutorial.BUTTON_HEIGHT = 32
+VideoTutorial.BUTTON_HEIGHT = 48
 VideoTutorial.PADDING = 8
 
 VideoTutorial.Pageinator = Class(Drawable)
@@ -129,7 +134,7 @@ function VideoTutorial:new(id, index, ui)
 	self:setZDepth(math.huge)
 
 	local videoWidth = w / 2
-	local textWidth = w - videoWidth
+	local textWidth = w - videoWidth - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING
 	self.text = Label()
 	self.text:setStyle(LabelStyle(
 		VideoTutorial.TEXT_STYLE(textWidth - VideoTutorial.PADDING),
@@ -138,7 +143,7 @@ function VideoTutorial:new(id, index, ui)
 	self.text:setSize(textWidth - VideoTutorial.PADDING, h)
 	self.text:setPosition(videoWidth, VideoTutorial.PADDING)
 	self.text:setZDepth(10)
-	self:addChild(self.text)
+	self.panel:addChild(self.text)
 
 	self.pageinator = VideoTutorial.Pageinator()
 	self.pageinator:setPosition(
@@ -147,7 +152,7 @@ function VideoTutorial:new(id, index, ui)
 	self.pageinator:setSize(
 		w - VideoTutorial.PADDING * 2,
 		VideoTutorial.BUTTON_HEIGHT)
-	self:addChild(self.pageinator)
+	self.panel:addChild(self.pageinator)
 
 	self.video = Video()
 	self.video.onVideoFinished:register(function()
@@ -166,7 +171,7 @@ function VideoTutorial:new(id, index, ui)
 	self.tvButton.onClick:register(self.showVideo, self, true)
 	self.tvButton:setToolTip(
 		ToolTip.Text("Click on the TV to see the video full screen."))
-	self:addChild(self.tvButton)
+	self.panel:addChild(self.tvButton)
 
 	self.tv = SceneSnippet()
 	self.tv:setSize(videoWidth, videoWidth)
@@ -221,7 +226,7 @@ function VideoTutorial:new(id, index, ui)
 	self.closeButton.onClick:register(function()
 		self:sendPoke("close", nil, {})
 	end)
-	self:addChild(self.closeButton)
+	self.panel:addChild(self.closeButton)
 
 	self.nextButton = Button()
 	self.nextButton:setZDepth(10)
@@ -232,7 +237,7 @@ function VideoTutorial:new(id, index, ui)
 		w - VideoTutorial.BUTTON_WIDTH - VideoTutorial.PADDING,
 		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
 	self.nextButton.onClick:register(self.next, self, 1)
-	self:addChild(self.nextButton)
+	self.panel:addChild(self.nextButton)
 
 	self.previousButton = Button()
 	self.previousButton:setZDepth(10)
@@ -243,7 +248,7 @@ function VideoTutorial:new(id, index, ui)
 		VideoTutorial.PADDING,
 		h - VideoTutorial.BUTTON_HEIGHT - VideoTutorial.PADDING)
 	self.previousButton.onClick:register(self.next, self, -1)
-	self:addChild(self.previousButton)
+	self.panel:addChild(self.previousButton)
 
 	self.current = 1
 	self:next(0)

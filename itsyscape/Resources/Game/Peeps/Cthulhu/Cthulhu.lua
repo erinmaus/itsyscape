@@ -15,6 +15,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local Cthulhu = Class(Creep)
 
@@ -22,11 +23,15 @@ function Cthulhu:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Cthulhu', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(38, 23, 4)
+	size.size = Vector(12, 24, 4)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocityMultiplier = 0.25
 	movement.accelerationMultiplier = 0.25
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 20000
+	status.maximumHitpoints = 20000
 end
 
 function Cthulhu:ready(director, game)
