@@ -91,7 +91,7 @@ end
 
 function UndeadSquid:onBoss()
 	Utility.UI.openInterface(
-		game:getPlayer():getActor():getPeep(),
+		self:getDirector():getGameInstance():getPlayer():getActor():getPeep(),
 		"BossHUD",
 		false,
 		self)
