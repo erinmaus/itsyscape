@@ -587,6 +587,104 @@ do
 end
 
 do
+	local Archer = ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Archer_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zombi archer",
+		Language = "en-US",
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An archer faithful to Yendor, even in death.",
+		Language = "en-US",
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "MooishLeatherBody",
+		Count = 1,
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "MooishLeatherBoots",
+		Count = 1,
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "MooishLeatherGloves",
+		Count = 1,
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "PunyLongbow",
+		Count = 1,
+		Resource = Archer
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeArrow",
+		Count = 10000,
+		Resource = Archer
+	}
+end
+
+do
 	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Primary"
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Secondary"
 
@@ -755,6 +853,183 @@ do
 end
 
 do
+	local Parasite = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite_Regular"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite_Regular" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhuianParasite_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhuianParasite_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.CthulhuianParasite",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "New-born Cthulhuian parasite",
+		Language = "en-US",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A human recently turned by Cthulhu, Yendor's ancient avatar and the First High Priest of His faith.",
+		Language = "en-US",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Eldritch",
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Parasite
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "DinkyStaff",
+		Count = 1,
+		Resource = Parasite
+	}
+end
+
+do
+	local Warrior = ItsyScape.Resource.Peep "HighChambersYendor_ZombiWarrior"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_ZombiWarrior" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Warrior_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zombi warrior",
+		Language = "en-US",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A warrior faithful to Yendor, even in death.",
+		Language = "en-US",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "RustyPlatebody",
+		Count = 1,
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "RustyGloves",
+		Count = 1,
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "RustyBoots",
+		Count = 1,
+		Resource = Warrior
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Count = 1,
+		Resource = Warrior
+	}
+end
+
+do
 	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Primary"
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Chef_Secondary"
 
@@ -815,6 +1090,211 @@ do
 		Weight = 1,
 		Count = 1,
 		Resource = SecondaryDropTable
+	}
+end
+
+do
+	local Pirate = ItsyScape.Resource.Peep "HighChambersYendor_ZombiPirate"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_ZombiPirate" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Pirate_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/PirateVest.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zombi pirate",
+		Language = "en-US",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A member of the Black Tentacle bound to an eternity in service to Yendor.",
+		Language = "en-US",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Count = 1,
+		Resource = Pirate
+	}
+end
+
+do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Pirate_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 200,
+		Count = 2000,
+		Range = 1000,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSardine",
+		Weight = 200,
+		Count = 3,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSeaBass",
+		Weight = 100,
+		Count = 2,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "PiratesHat",
+		Weight = 25,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IronCannonball",
+		Weight = 100,
+		Count = 10,
+		Range = 5,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "RustyDagger",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+end
+
+do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhianParasite_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 200,
+		Count = 1000,
+		Range = 500,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSardine",
+		Weight = 100,
+		Count = 3,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSeaBass",
+		Weight = 50,
+		Count = 2,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SailorsHat",
+		Weight = 25,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "PiratesHat",
+		Weight = 10,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AirRune",
+		Weight = 50,
+		Count = 100,
+		Range = 50,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "EarthRune",
+		Weight = 50,
+		Count = 100,
+		Range = 50,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "RustyDagger",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
 	}
 end
 
@@ -1133,6 +1613,176 @@ do
 		BoneShardsReward,
 		BonesReward,
 		EldritchMyrrhReward
+	}
+end
+
+do
+	local Sailor = ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Sailor_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Hands/Zombi.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/White.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zombi sailor",
+		Language = "en-US",
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Driven mad by Cthulhu and forced to serve Yendor for eternity.",
+		Language = "en-US",
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Count = 1,
+		Resource = Sailor
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "SailorsHat",
+		Count = 1,
+		Resource = Sailor
+	}
+end
+
+do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Sailor_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 400,
+		Count = 500,
+		Range = 100,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSardine",
+		Weight = 200,
+		Count = 3,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedSeaBass",
+		Weight = 100,
+		Count = 2,
+		Range = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SailorsHat",
+		Weight = 200,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IronCannonball",
+		Weight = 100,
+		Count = 5,
+		Range = 3,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "RustyDagger",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeDagger",
+		Weight = 100,
+		Count = 1,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinCan",
+		Weight = 25,
+		Count = 10,
+		Range = 5,
+		Noted = 1,
+		Resource = PrimaryDropTable
 	}
 end
 

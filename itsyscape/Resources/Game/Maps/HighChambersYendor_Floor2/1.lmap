@@ -4955,7 +4955,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -4965,7 +4965,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -4975,7 +4975,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 1, topRight = 1, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -4985,7 +4985,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -4995,7 +4995,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -5555,7 +5555,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -5565,7 +5565,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -5575,7 +5575,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -5585,7 +5585,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -5595,7 +5595,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6155,7 +6155,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 1, topRight = 0, bottomLeft = 1, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6165,7 +6165,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6175,7 +6175,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6185,7 +6185,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6195,7 +6195,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 1, bottomLeft = 0, bottomRight = 1,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6755,7 +6755,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6765,7 +6765,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6775,7 +6775,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6785,7 +6785,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6795,7 +6795,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7355,7 +7355,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7365,7 +7365,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7375,7 +7375,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 1, bottomRight = 1,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7385,7 +7385,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7395,7 +7395,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
