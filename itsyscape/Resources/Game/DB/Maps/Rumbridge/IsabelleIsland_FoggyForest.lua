@@ -15,6 +15,11 @@ do
 			Count = ItsyScape.Utility.xpForLevel(0)
 		},
 
+		Requirement {
+			Resource = ItsyScape.Resource.Item "CopperHatchet",
+			Count = 1
+		},
+
 		Output {
 			Resource = ItsyScape.Resource.Skill "Woodcutting",
 			Count = ItsyScape.Utility.xpForResource(10)
@@ -111,6 +116,90 @@ do
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/AncientDriftwoodMask/AncientDriftwoodMask.lua",
 		Resource = ItsyScape.Resource.Item "AncientDriftwoodMask"
+	}
+end
+
+do
+	ItsyScape.Resource.Item "CopperHatchet" {
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Woodcutting",
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Attack",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Smith() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "CopperBar",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(2)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "CopperHatchet",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Copper hatchet",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The only hatchet that can break the magical enchantment on the ancient driftwood.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 32,
+		Weight = 0.0,
+		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "WeaponType",
+		Value = "hatchet",
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/CopperHatchet/CopperHatchet.lua",
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1, 0.5),
+		Prayer = 2,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "CopperHatchet"
 	}
 end
 
