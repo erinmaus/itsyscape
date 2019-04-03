@@ -20,6 +20,7 @@ local Make = require "Resources.Game.Actions.Make"
 local Chop = Class(Make)
 Chop.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 Chop.FLAGS = {
+	['item-equipment'] = true,
 	['item-inventory'] = true,
 	['item-drop-excess'] = true
 }

@@ -163,6 +163,60 @@ do
 	}
 end
 
+M["ZombiGuard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 5,
+		PositionZ = 67,
+		Name = "ZombiGuard",
+		Map = M._MAP,
+		Resource = M["ZombiGuard"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base",
+		MapObject = M["ZombiGuard"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "CopperHatchet",
+		Count = 1,
+		Resource = M["ZombiGuard"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Scripts/ZombiGuard_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["ZombiGuard"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ZombiGuard"],
+		Name = "Zombi",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Dialog/ZombiGuard_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zombi Guard",
+		Language = "en-US",
+		Resource = M["ZombiGuard"]
+	}
+
+	M["ZombiGuard"] {
+		TalkAction
+	}
+end
+
 M["LumberjackTutor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
