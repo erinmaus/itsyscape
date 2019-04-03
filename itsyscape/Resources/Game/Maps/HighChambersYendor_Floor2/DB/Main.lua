@@ -41,7 +41,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.6,
+		Ambience = 0.8,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -127,5 +127,501 @@ do
 
 	M["Ladder_ToFloor1West"] {
 		TravelAction
+	}
+end
+
+M["Room1_SkeletonArcher"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 107,
+		PositionY = 1,
+		PositionZ = 73,
+		Name = "Room1_SkeletonArcher",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room1_SkeletonArcher"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["Room1_SkeletonArcher"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room1",
+		Map = M._MAP,
+		MapObject = M["Room1_SkeletonArcher"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room1_SkeletonArcher"]
+	}
+end
+
+M["Room1_SkeletonWizard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 113,
+		PositionY = 1,
+		PositionZ = 73,
+		Name = "Room1_SkeletonWizard",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room1_SkeletonWizard"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["Room1_SkeletonWizard"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room1",
+		Map = M._MAP,
+		MapObject = M["Room1_SkeletonWizard"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room1_SkeletonWizard"]
+	}
+end
+
+M["Room1_SkeletonWarrior"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 113,
+		PositionY = 1,
+		PositionZ = 73,
+		Name = "Room1_SkeletonWarrior",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room1_SkeletonWarrior"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["Room1_SkeletonWarrior"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room1",
+		Map = M._MAP,
+		MapObject = M["Room1_SkeletonWarrior"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room1_SkeletonWarrior"]
+	}
+end
+
+M["Room2_ZombiWarrior1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 1,
+		PositionZ = 51,
+		Name = "Room2_ZombiWarrior1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room2_ZombiWarrior1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiWarrior",
+		MapObject = M["Room2_ZombiWarrior1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room2",
+		Map = M._MAP,
+		MapObject = M["Room2_ZombiWarrior1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room2_ZombiWarrior1"]
+	}
+end
+
+M["Room2_ZombiWarrior2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "Room2_ZombiWarrior2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room2_ZombiWarrior2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiWarrior",
+		MapObject = M["Room2_ZombiWarrior2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room2",
+		Map = M._MAP,
+		MapObject = M["Room2_ZombiWarrior2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room2_ZombiWarrior2"]
+	}
+end
+
+M["Room3_ZombiArcher1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103,
+		PositionY = 1,
+		PositionZ = 29,
+		Name = "Room3_ZombiArcher1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room3_ZombiArcher1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher",
+		MapObject = M["Room3_ZombiArcher1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room3",
+		Map = M._MAP,
+		MapObject = M["Room3_ZombiArcher1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room3_ZombiArcher1"]
+	}
+end
+
+M["Room3_ZombiArcher2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 111,
+		PositionY = 1,
+		PositionZ = 29,
+		Name = "Room3_ZombiArcher2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room3_ZombiArcher2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher",
+		MapObject = M["Room3_ZombiArcher2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room3",
+		Map = M._MAP,
+		MapObject = M["Room3_ZombiArcher2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room3_ZombiArcher2"]
+	}
+end
+
+M["Room3_ZombiArcher3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103,
+		PositionY = 1,
+		PositionZ = 25,
+		Name = "Room3_ZombiArcher3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room3_ZombiArcher3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher",
+		MapObject = M["Room3_ZombiArcher3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room3",
+		Map = M._MAP,
+		MapObject = M["Room3_ZombiArcher3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room3_ZombiArcher3"]
+	}
+end
+
+M["Room3_ZombiArcher4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 111,
+		PositionY = 1,
+		PositionZ = 25,
+		Name = "Room3_ZombiArcher4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room3_ZombiArcher4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiArcher",
+		MapObject = M["Room3_ZombiArcher4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room3",
+		Map = M._MAP,
+		MapObject = M["Room3_ZombiArcher4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room3_ZombiArcher4"]
+	}
+end
+
+M["Room4_Zombi1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 1,
+		PositionZ = 33,
+		Name = "Room4_Zombi1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room4_Zombi1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Room4_Zombi1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room4",
+		Map = M._MAP,
+		MapObject = M["Room4_Zombi1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room4_Zombi1"]
+	}
+end
+
+M["Room4_Zombi2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 1,
+		PositionZ = 37,
+		Name = "Room4_Zombi2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room4_Zombi2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Room4_Zombi2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room4",
+		Map = M._MAP,
+		MapObject = M["Room4_Zombi2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room4_Zombi2"]
+	}
+end
+
+M["Room4_Zombi3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "Room4_Zombi3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room4_Zombi3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Room4_Zombi3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room4",
+		Map = M._MAP,
+		MapObject = M["Room4_Zombi3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/UnaggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room4_Zombi3"]
+	}
+end
+
+M["Room6_Sailor1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 21,
+		Name = "Room6_Sailor1",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room6_Sailor1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor",
+		MapObject = M["Room6_Sailor1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room6",
+		Map = M._MAP,
+		MapObject = M["Room6_Sailor1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room6_Sailor1"]
+	}
+end
+
+M["Room6_Sailor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 1,
+		PositionZ = 15,
+		Name = "Room6_Sailor2",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room6_Sailor2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor",
+		MapObject = M["Room6_Sailor2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room6",
+		Map = M._MAP,
+		MapObject = M["Room6_Sailor2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room6_Sailor2"]
+	}
+end
+
+M["Room6_Sailor3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 1,
+		PositionZ = 21,
+		Name = "Room6_Sailor3",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room6_Sailor3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor",
+		MapObject = M["Room6_Sailor3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room6",
+		Map = M._MAP,
+		MapObject = M["Room6_Sailor3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room6_Sailor3"]
+	}
+end
+
+M["Room6_Sailor4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 1,
+		PositionZ = 27,
+		Name = "Room6_Sailor4",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Room6_Sailor4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_ZombiSailor",
+		MapObject = M["Room6_Sailor4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Room6",
+		Map = M._MAP,
+		MapObject = M["Room6_Sailor4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Room6_Sailor4"]
 	}
 end

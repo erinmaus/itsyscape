@@ -162,7 +162,7 @@ do
 	ItsyScape.Meta.PeepSkin {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/PlayerKit1/Head/Minifig.lua",
-		Slot = ItsyScape.Utility.Equipment.SLOT_HEAD,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer"
 	}
@@ -170,7 +170,7 @@ do
 	ItsyScape.Meta.PeepSkin {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua",
-		Slot = ItsyScape.Utility.Equipment.SLOT_HEAD,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Priority = math.huge,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer"
 	}
@@ -249,7 +249,7 @@ do
 	ItsyScape.Meta.PeepSkin {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/PlayerKit1/Head/Minifig.lua",
-		Slot = ItsyScape.Utility.Equipment.SLOT_HEAD,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
 	}
@@ -257,7 +257,7 @@ do
 	ItsyScape.Meta.PeepSkin {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua",
-		Slot = ItsyScape.Utility.Equipment.SLOT_HEAD,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Priority = math.huge,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard"
 	}
