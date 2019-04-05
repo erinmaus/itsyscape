@@ -225,6 +225,108 @@ do
 end
 
 do
+	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Ghost_Primary"
+	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Ghost_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Count = 5000,
+		Range = 2500,
+		Weight = 100,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BoneShards",
+		Count = 100,
+		Range = 50,
+		Weight = 100,
+		Resource = SecondaryDropTable
+	}
+end
+
+do
+	local Ghost = ItsyScape.Resource.Peep "HighChambersYendor_Ghost"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_Ghost" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Ghost_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Ghost_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Ghost.BaseGhost",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ghost",
+		Language = "en-US",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Boo!",
+		Language = "en-US",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Ghost
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Ghost
+	}
+end
+
+do
 	local PrimaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Primary"
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Wizard_Secondary"
 
@@ -860,14 +962,14 @@ do
 
 		ItsyScape.Action.Loot() {
 			Output {
-				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhuianParasite_Primary",
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhianParasite_Primary",
 				Count = 1
 			}
 		},
 
 		ItsyScape.Action.Loot() {
 			Output {
-				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhuianParasite_Primary",
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_CthulhianParasite_Primary",
 				Count = 1
 			}
 		}
@@ -1238,23 +1340,15 @@ do
 
 	ItsyScape.Meta.DropTableEntry {
 		Item = ItsyScape.Resource.Item "Coins",
-		Weight = 200,
+		Weight = 400,
 		Count = 1000,
 		Range = 500,
 		Resource = PrimaryDropTable
 	}
 
 	ItsyScape.Meta.DropTableEntry {
-		Item = ItsyScape.Resource.Item "CookedSardine",
-		Weight = 100,
-		Count = 3,
-		Range = 1,
-		Resource = PrimaryDropTable
-	}
-
-	ItsyScape.Meta.DropTableEntry {
 		Item = ItsyScape.Resource.Item "CookedSeaBass",
-		Weight = 50,
+		Weight = 200,
 		Count = 2,
 		Range = 1,
 		Resource = PrimaryDropTable
@@ -1783,6 +1877,143 @@ do
 		Range = 5,
 		Noted = 1,
 		Resource = PrimaryDropTable
+	}
+end
+
+do
+	local Rat = ItsyScape.Resource.Peep "HighChambersYendor_Rat"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_Rat" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Rat_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rat.BaseRat",
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rat",
+		Language = "en-US",
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Disgusting!",
+		Language = "en-US",
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Rat
+	}
+end
+
+do
+	local RatKing = ItsyScape.Resource.Peep "HighChambersYendor_RatKing"
+
+	ItsyScape.Resource.Peep "HighChambersYendor_RatKing" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "HighChambersYendor_Rat_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rat.BaseRatKing",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rat King",
+		Language = "en-US",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "King of disgusting!",
+		Language = "en-US",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = RatKing
+	}
+end
+
+do
+	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Rat_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bones",
+		Weight = 1,
+		Count = 1,
+		Resource = SecondaryDropTable
 	}
 end
 
