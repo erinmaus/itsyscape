@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Chicken/BaseChicken.lua
+-- Resources/Peeps/Rat/BaseRatKing.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,16 +16,16 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
-local BaseChicken = Class(Creep)
+local BaseRatKing = Class(Creep)
 
-function BaseChicken:new(resource, name, ...)
-	Creep.new(self, resource, name or 'Chicken_Base', ...)
+function BaseRatKing:new(resource, name, ...)
+	Creep.new(self, resource, name or 'RatKing_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2, 2, 2)
+	size.size = Vector(2, 4, 2)
 end
 
-function BaseChicken:ready(director, game)
+function BaseRatKing:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -33,35 +33,39 @@ function BaseChicken:ready(director, game)
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Chicken.lskel")
+		"Resources/Game/Bodies/Rat.lskel")
 	actor:setBody(body)
 
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Chicken_Idle/Script.lua")
+		"Resources/Game/Animations/Rat_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Chicken_Walk/Script.lua")
+		"Resources/Game/Animations/Rat_Walk/Script.lua")
 	self:addResource("animation-walk", walkAnimation)
 
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Chicken_Die/Script.lua")
+		"Resources/Game/Animations/Rat_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
 
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Chicken_Attack/Script.lua")
+		"Resources/Game/Animations/Rat_Attack/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Chicken/Chicken.lua")
+		"Resources/Game/Skins/Rat/RatKing.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+	local crown = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Rat/RatKingCrown.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, crown)
 
 	Creep.ready(self, director, game)
 end
 
-return BaseChicken
+return BaseRatKing
