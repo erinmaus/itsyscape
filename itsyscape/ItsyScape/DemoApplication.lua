@@ -43,6 +43,8 @@ function DemoApplication:new()
 	self.toolTipTick = math.huge
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
+
+	self.cameraOffset = Vector(0)
 end
 
 function DemoApplication:getPlayerPosition(delta)
@@ -57,7 +59,7 @@ function DemoApplication:getPlayerPosition(delta)
 		end
 	end
 
-	return position
+	return position or Vector.ZERO
 end
 
 function DemoApplication:initialize()
@@ -352,6 +354,51 @@ function DemoApplication:update(delta)
 			unpack(self.toolTip))
 	end
 
+	if _DEBUG then
+		local isShiftDown = love.keyboard.isDown('lshift') or
+		                    love.keyboard.isDown('rshift')
+		local isCtrlDown = love.keyboard.isDown('lctrl') or
+		                   love.keyboard.isDown('rctrl')
+		local speed
+		if isShiftDown then
+			speed = 8
+		else
+			speed = 2
+		end
+
+		do
+			if love.keyboard.isDown('up') then
+				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Z * speed * delta
+			end
+
+			if love.keyboard.isDown('down') then
+				self.cameraOffset = self.cameraOffset + Vector.UNIT_Z * speed * delta
+			end
+		end
+
+		do
+			if love.keyboard.isDown('left') then
+				self.cameraOffset = self.cameraOffset + -Vector.UNIT_X * speed * delta
+			end
+			if love.keyboard.isDown('right') then
+				self.cameraOffset = self.cameraOffset + Vector.UNIT_X * speed * delta
+			end
+		end
+
+		do
+			if love.keyboard.isDown('pageup') then
+				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
+			end
+			if love.keyboard.isDown('pagedown') then
+				self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
+			end
+		end
+
+		if love.keyboard.isDown('space') then
+			self.cameraOffset = Vector(0)
+		end
+	end
+
 	if self.titleScreen then
 		self.titleScreen:update(delta)
 	end
@@ -360,7 +407,8 @@ end
 function DemoApplication:draw(delta)
 	local previous = self.previousPlayerPosition
 	local current = self.currentPlayerPosition
-	self:getCamera():setPosition(self:getPlayerPosition(self:getFrameDelta()))
+	self:getCamera():setPosition(
+		self:getPlayerPosition(self:getFrameDelta()) + self.cameraOffset)
 
 	if self.titleScreen then
 		self.titleScreen:draw()

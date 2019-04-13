@@ -1259,7 +1259,7 @@ function Utility.Peep.canAttack(peep)
 		return false
 	end
 
-	return status.currentHitpoints > 0
+	return status.currentHitpoints > 0 and not status.dead
 end
 
 -- Makes the peep walk to the tile (i, j, k).
@@ -1386,32 +1386,34 @@ end
 function Utility.Peep.attack(peep, other, distance)
 	local target = peep:getBehavior(CombatTargetBehavior)
 	if not target then
-		local actor = other:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			if peep:getCommandQueue():interrupt(AttackCommand()) then
-				local _, target = peep:addBehavior(CombatTargetBehavior)
-				target.actor = actor.actor
+		target = peep:addBehavior(CombatTargetBehavior)
+	end
 
-				local mashina = peep:getBehavior(MashinaBehavior)
-				if mashina then
-					if mashina.currentState ~= 'begin-attack' and
-					   mashina.currentState ~= 'attack'
-					then
-						if mashina.states['begin-attack'] then
-							mashina.currentState = 'begin-attack'
-						elseif mashina.states['attack'] then
-							mashina.currentState = 'attack'
-						else
-							mashina.currentState = false
-						end
+	local actor = other:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		if peep:getCommandQueue():interrupt(AttackCommand()) then
+			local _, target = peep:addBehavior(CombatTargetBehavior)
+			target.actor = actor.actor
+
+			local mashina = peep:getBehavior(MashinaBehavior)
+			if mashina then
+				if mashina.currentState == 'idle' or
+				   mashina.currentState == false
+				then
+					if mashina.states['begin-attack'] then
+						mashina.currentState = 'begin-attack'
+					elseif mashina.states['attack'] then
+						mashina.currentState = 'attack'
+					else
+						mashina.currentState = false
 					end
 				end
 			end
+		end
 
-			if distance then
-				local status = peep:getBehavior(CombatStatusBehavior)
-				status.maxChaseDistance = distance
-			end
+		if distance then
+			local status = peep:getBehavior(CombatStatusBehavior)
+			status.maxChaseDistance = distance
 		end
 	end
 end

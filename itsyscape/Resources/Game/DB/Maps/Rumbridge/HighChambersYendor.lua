@@ -2007,6 +2007,135 @@ do
 end
 
 do
+	local Coins500Reward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 500
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = Coins500Reward,
+		Weight = 500
+	}
+
+	local Coins1000Reward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 1000
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = Coins1000Reward,
+		Weight = 250
+	}
+
+	local Coins100KReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 100000
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = Coins100KReward,
+		Weight = 1
+	}
+
+	local SapphireReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Sapphire",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = SapphireReward,
+		Weight = 40
+	}
+
+	local EmeraldReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Emerald",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = EmeraldReward,
+		Weight = 20
+	}
+
+	local RubyReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Ruby",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(15)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = RubyReward,
+		Weight = 10
+	}
+
+	local DiamondReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Diamond",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = DiamondReward,
+		Weight = 10
+	}
+
+	local GoldenRingReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "GoldenRing",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = GoldenRingReward,
+		Weight = 20
+	}
+
+	ItsyScape.Resource.DropTable "HighChambersYendor_RatKing_Rewards" {
+		Coins500Reward,
+		Coins1000Reward,
+		Coins100KReward,
+		SapphreReward,
+		EmeraldReward,
+		RubyReward,
+		DiamondReward,
+		GoldenRingReward
+	}
+end
+
+do
 	local SecondaryDropTable = ItsyScape.Resource.DropTable "HighChambersYendor_Rat_Secondary"
 
 	ItsyScape.Meta.DropTableEntry {

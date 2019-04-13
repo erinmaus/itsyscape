@@ -303,12 +303,12 @@ do
 	ItsyScape.Resource.Item "SquidSkull" {
 		ItsyScape.Action.Equip() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Magic",
+				Resource = ItsyScape.Resource.Skill "Archery",
 				Count = ItsyScape.Utility.xpForLevel(5)
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Wisdom",
+				Resource = ItsyScape.Resource.Skill "Dexterity",
 				Count = ItsyScape.Utility.xpForLevel(10)
 			}
 		},

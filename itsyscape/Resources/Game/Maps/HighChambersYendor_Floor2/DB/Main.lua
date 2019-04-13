@@ -1,9 +1,9 @@
 local M = include "Resources/Game/Maps/HighChambersYendor_Floor2/DB/Default.lua"
 
---ItsyScape.Meta.PeepID {
-	--Value = "Resources.Game.Maps.HighChambersYendor_Floor2.Peep",
-	--Resource = M._MAP
---}
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.HighChambersYendor_Floor2.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
 	Value = "High Chambers of Yendor, Floor 2",
@@ -1009,8 +1009,20 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "idle",
-		Tree = "Resources/Game/Peeps/HighChambersYendor/AggressiveCreep_IdleLogic.lua",
+		Tree = "Resources/Game/Maps/HighChambersYendor_Floor2/Scripts/RatKing_IdleLogic.lua",
 		IsDefault = 1,
+		Resource = M["Room10_RatKing"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/HighChambersYendor_Floor2/Scripts/RatKing_AttackLogic.lua",
+		Resource = M["Room10_RatKing"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "hungry",
+		Tree = "Resources/Game/Maps/HighChambersYendor_Floor2/Scripts/RatKing_HungryLogic.lua",
 		Resource = M["Room10_RatKing"]
 	}
 end
@@ -1319,3 +1331,7 @@ do
 		MapObject = M["Door_Room9"]
 	}
 end
+
+M["RatKingRewardChest"] {
+	ItsyScape.Action.Collect()
+}
