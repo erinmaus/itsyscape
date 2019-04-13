@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseRatKing = Class(Creep)
@@ -21,8 +22,34 @@ local BaseRatKing = Class(Creep)
 function BaseRatKing:new(resource, name, ...)
 	Creep.new(self, resource, name or 'RatKing_Base', ...)
 
+	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 4, 2)
+end
+
+function BaseRatKing:onEat(p)
+	local target = p.target
+
+	if target then
+		target:poke('die')
+
+		local targetStatus = target:getBehavior(CombatStatusBehavior)
+		if targetStatus then
+			self:poke('heal', {
+				hitPoints = targetStatus.maximumHitpoints * 2
+			})
+		end
+	end
+end
+
+function BaseRatKing:onBoss()
+	Utility.UI.openInterface(
+		self:getDirector():getGameInstance():getPlayer():getActor():getPeep(),
+		"BossHUD",
+		false,
+		self)
 end
 
 function BaseRatKing:ready(director, game)

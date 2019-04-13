@@ -383,13 +383,13 @@ function DeferredRendererPass:draw(scene, delta)
 	self:drawLights(scene, delta)
 	self:drawFog(scene, delta)
 
-	if _DEBUG and love.keyboard.isDown('f3') then
+	if _DEBUG and love.keyboard.isDown('f4') then
 		local DebugFrustumSceneNode = require "ItsyScape.Graphics.DebugFrustumSceneNode"
 		self._frustum = DebugFrustumSceneNode()
 		self._frustum:fromCamera(self:getRenderer():getCamera())
 	end
 
-	if _DEBUG and love.keyboard.isDown('f2') then
+	if _DEBUG and love.keyboard.isDown('f5') then
 		self:debugDrawNodes(scene, delta)
 		if self._frustum then
 			self._frustum:draw(self:getRenderer(), delta)

@@ -568,6 +568,7 @@ include "Resources/Game/DB/Items/IncenseIngredients.lua"
 include "Resources/Game/DB/Items/Leathers.lua"
 include "Resources/Game/DB/Items/Feathers.lua" -- leathers, feathers, oh my
 include "Resources/Game/DB/Items/Fabrics.lua"
+include "Resources/Game/DB/Items/Gems.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Arrows.lua"
@@ -580,6 +581,7 @@ include "Resources/Game/DB/Items/MagicArmor.lua"
 include "Resources/Game/DB/Items/MagicWeapons.lua"
 include "Resources/Game/DB/Items/MiscClothes.lua"
 include "Resources/Game/DB/Items/Rusty.lua"
+include "Resources/Game/DB/Items/Trinkets.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"

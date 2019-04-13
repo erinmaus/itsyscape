@@ -28,26 +28,9 @@ function EngageCombatTarget:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local actor = peep:getBehavior(ActorReferenceBehavior)
-	if not actor or not actor.actor then
-		return B.Status.Failure
-	else
-		actor = actor.actor
-	end
+	Utility.Peep.attack(mashina, peep)
 
-	if mashina:getCommandQueue():interrupt(AttackCommand()) then
-		local _, target = mashina:addBehavior(CombatTargetBehavior)
-		if not target then
-			mashina:getCommandQueue():clear()
-			return B.Status.Failure
-		end
-
-		target.actor = actor
-
-		return B.Status.Success
-	end
-
-	return B.Status.Failure
+	return B.Status.Success
 end
 
 return EngageCombatTarget

@@ -151,6 +151,10 @@ function love.keypressed(...)
 	if _DEBUG then
 		if (select(1, ...) == 'f1') then
 			_APP.showDebug = not _APP.showDebug
+		elseif (select(1, ...) == 'f2') then
+			_APP.show2D = not _APP.show2D
+		elseif (select(1, ...) == 'f3') then
+			_APP.show3D = not _APP.show3D
 		elseif (select(1, ...) == 'f12') then
 			local p = require "ProFi"
 			jit.off()

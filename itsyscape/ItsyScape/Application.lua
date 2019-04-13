@@ -106,6 +106,8 @@ function Application:new()
 	self.gameView:getRenderer():setCamera(self.camera)
 
 	self.showDebug = true
+	self.show2D = true
+	self.show3D = true
 
 	self.clickActionTime = 0
 	self.clickActionType = Application.CLICK_NONE
@@ -318,15 +320,25 @@ function Application:draw()
 		self.camera:setWidth(width)
 		self.camera:setHeight(height)
 
-		self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
-		self.gameView:getRenderer():present()
-		self.gameView:getSpriteManager():draw(self.camera, delta)
+		do
+			if self.show3D then
+				self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+			end
+
+			self.gameView:getRenderer():present()
+
+			if self.show2D then
+				self.gameView:getSpriteManager():draw(self.camera, delta)
+			end
+		end
 
 		love.graphics.setBlendMode('alpha')
 		love.graphics.origin()
 		love.graphics.ortho(width, height)
 
-		self.uiView:draw()
+		if self.show2D then
+			self.uiView:draw()
+		end
 
 		if self.clickActionTime > 0 then
 			local color
