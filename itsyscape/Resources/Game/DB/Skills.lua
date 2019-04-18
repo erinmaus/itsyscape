@@ -82,6 +82,7 @@ ItsyScape.Resource.Skill "Faith"
 
 	ActionType "Bury"
 	ActionType "Pray"
+	ActionType "Offer"
 
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"

@@ -6,7 +6,7 @@
 	{
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
+			edge = 3, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -7126,7 +7126,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
+			edge = 5, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -7136,7 +7136,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
+			edge = 3, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -7146,7 +7146,7 @@
 		},
 		{
 			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			edge = 2, flat = 6, decals = {  },
+			edge = 4, flat = 6, decals = {  },
 			data =
 			{
 			},
@@ -8335,7 +8335,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -8935,7 +8935,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -9535,7 +9535,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -10125,7 +10125,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -10135,7 +10135,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 2, topRight = 2, bottomLeft = 1, bottomRight = 1,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -10145,7 +10145,7 @@
 			},
 		},
 		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{

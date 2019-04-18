@@ -635,6 +635,8 @@ include "Resources/Game/DB/Props/Lights.lua"
 include "Resources/Game/DB/Props/Torch.lua"
 include "Resources/Game/DB/Props/Furniture.lua"
 include "Resources/Game/DB/Props/Range.lua"
+include "Resources/Game/DB/Props/Bones.lua"
+include "Resources/Game/DB/Props/Chandelier.lua"
 
 -- Props, etc (boats)
 include "Resources/Game/DB/Props/Sails.lua"
