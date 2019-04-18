@@ -2146,6 +2146,34 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "YendorianObelisk" {
+		ItsyScape.Action.Offer() {
+			Input {
+				Resource = ItsyScape.Resource.Item "Bones",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian obelisk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "YendorianObelisk"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Your prayers may be heard, given a sacrifice...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "YendorianObelisk"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "YendorianObelisk"
+	}
+end
+
 ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
 	-- Nothing.
 }
