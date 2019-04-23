@@ -2174,6 +2174,48 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant1"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant1"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian vase",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant1"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Who knows what those patterns represent...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant1"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant2"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant2"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian vase",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant2"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's something moving inside!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Vase_Variant2"
+	}
+end
+
 ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
 	-- Nothing.
 }

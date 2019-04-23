@@ -425,6 +425,15 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Rotate"
+	Meta "RotateActionDirection" {
+		RotationX = Meta.TYPE_REAL,
+		RotationY = Meta.TYPE_REAL,
+		RotationZ = Meta.TYPE_REAL,
+		RotationW = Meta.TYPE_REAL,
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
