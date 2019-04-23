@@ -98,6 +98,35 @@ do
 	}
 end
 
+M["Light_Chandlier"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 1,
+		PositionZ = 43,
+		Name = "Light_Chandlier",
+		Map = M._MAP,
+		Resource = M["Light_Chandlier"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Chandlier"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Light_Chandlier"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 20,
+		Resource = M["Light_Chandlier"]
+	}
+end
+
 M["Anchor_FromAbandonedMine"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
