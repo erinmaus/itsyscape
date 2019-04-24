@@ -100,6 +100,10 @@ function Director:movePeep(peep, key)
 		layer[peep] = true
 	end
 
+	for _, cortex in ipairs(self.cortexes) do
+		cortex:previewPeep(peep)
+	end
+
 	peep:move(self, key)
 end
 
