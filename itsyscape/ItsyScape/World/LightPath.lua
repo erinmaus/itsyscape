@@ -13,6 +13,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local MirrorBehavior = require "ItsyScape.Peep.Behaviors.MirrorBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local LightPath = Class()
 LightPath.Node = Class()
@@ -59,7 +60,15 @@ function LightPath:add(previousMirror, currentMirror, ray)
 		local currentDirection = Quaternion.lookAt(Vector.UNIT_Z, ray.direction)
 		local m = currentMirror:getBehavior(MirrorBehavior)
 		if m then
-			currentDirection = currentDirection * m.reflection
+			local reflection = m.reflection
+			do
+				local currentRotation = currentMirror:getBehavior(RotationBehavior)
+				if currentRotation then
+					reflection = currentRotation.rotation * reflection
+				end
+			end
+
+			currentDirection = currentDirection * reflection
 		end
 
 		local transform = love.math.newTransform()

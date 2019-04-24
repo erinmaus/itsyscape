@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -28,7 +29,27 @@ function BasicLightRayCaster:new(...)
 end
 
 function BasicLightRayCaster:getPropState()
-	return {}
+	local state = { rays = {} }
+
+	local light = self:getBehavior(LightRaySourceBehavior)
+	if light then
+		for _, path in ipairs(light.paths) do
+			local results = {}
+			for _, node in path:iterate() do
+				local result = {
+					a = { node:getInputRay().origin:get() },
+					b = { node:getOutputRay().origin:get() },
+					id = node:getMirror():getTally()
+				}
+
+				table.insert(results, result)
+			end
+
+			table.insert(state.rays, results)
+		end
+	end
+
+	return state
 end
 
 return BasicLightRayCaster
