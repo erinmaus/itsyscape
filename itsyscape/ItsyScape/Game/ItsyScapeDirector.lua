@@ -23,6 +23,7 @@ function ItsyScapeDirector:new(game, gameDB)
 
 	self:addCortex(MovementCortex)
 	self:addCortex(MoveToTileCortex)
+	self:addCortex(require "ItsyScape.Peep.Cortexes.MirrorCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatXPCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.PrayerDrainCortex")

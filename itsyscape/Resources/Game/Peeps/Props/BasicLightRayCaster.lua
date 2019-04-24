@@ -8,11 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local LightRaySourceBehavior = require "ItsyScape.Peep.Behaviors.LightRaySourceBehavior"
 
 local BasicLightRayCaster = Class(Prop)
@@ -33,19 +35,47 @@ function BasicLightRayCaster:getPropState()
 
 	local light = self:getBehavior(LightRaySourceBehavior)
 	if light then
-		for _, path in ipairs(light.paths) do
-			local results = {}
-			for _, node in path:iterate() do
-				local result = {
-					a = { node:getInputRay().origin:get() },
-					b = { node:getOutputRay().origin:get() },
-					id = node:getMirror():getTally()
-				}
+		if #light.path > 0 then
+			for _, path in ipairs(light.paths) do
+				local results = {}
+				for _, node in path:iterate() do
+					local result = {
+						a = { node:getInputRay().origin:get() },
+						b = { node:getOutputRay().origin:get() },
+						direction = { node:getOutputRay().origin:get() },
+						id = node:getMirror():getTally()
+					}
 
-				table.insert(results, result)
+					table.insert(results, result)
+				end
+
+				table.insert(state.rays, results)
 			end
+		else
+			for _, ray in ipairs(light.rays) do
+				local results = {}
 
-			table.insert(state.rays, results)
+				local transformedRay
+				do
+					local transformedOrigin = ray.origin + Utility.Peep.getAbsolutePosition(self)
+					local transformedDirection = ray.direction
+
+					local rotation = lightSource:getBehavior(RotationBehavior)
+					if rotation then						local transform = love.math.newTransform()
+						transform:applyQuaternion(rotation.rotation:get())
+						transformedDirection = Vector(transform:transformPoint(transformedDirection:get()))
+					end
+
+					transformedRay = Ray(transformedOrigin, transformedDirection)
+				end
+
+				table.insert(results, {
+					a = { transformedRay.origin:get() },
+					b = { transformedRay.origin:project(100):get() },
+					direction = { transformedRay.direction:get() },
+					id = 0
+				})
+			end
 		end
 	end
 

@@ -86,8 +86,12 @@ function MirrorCortex:previewPeep(peep)
 	if peep:hasBehavior(LightRaySourceBehavior) then
 		self:addToLayeredSet(peep, self.lightSources)
 	elseif self.layers[peep] then
-		-- The peep may have been a light source, so try and remove it.
+		-- The peep may have been a light source, so try and remove it anyway.
 		self:removeFromLayeredSet(peep, self.lightSources)
+
+		if not peep:hasBehavior(MirrorBehavior) then
+			self.layers[peep] = nil
+		end
 	end
 end
 
@@ -146,7 +150,7 @@ function MirrorCortex:update(delta)
 					if rotation then
 						local transform = love.math.newTransform()
 						transform:applyQuaternion(rotation.rotation:get())
-						newDirection = Vector(transform:transformPoint(ray.direction))
+						newDirection = Vector(transform:transformPoint(ray.direction:get()))
 					end
 
 					ray = Ray(newPosition, newDirection)
