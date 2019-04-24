@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MirrorBehavior = require "ItsyScape.Peep.Behaviors.MirrorBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local LightRaySourceBehavior = require "ItsyScape.Peep.Behaviors.LightRaySourceBehavior"
 local LightPath = require "ItsyScape.World.LightPath"
@@ -84,8 +85,8 @@ function MirrorCortex:previewPeep(peep)
 
 	if peep:hasBehavior(LightRaySourceBehavior) then
 		self:addToLayeredSet(peep, self.lightSources)
-	elseif self.layers[peep] and not peep:hasBehavior(MirrorBehavior) then
-		-- The peep must have been a light source, so try and remove it.
+	elseif self.layers[peep] then
+		-- The peep may have been a light source, so try and remove it.
 		self:removeFromLayeredSet(peep, self.lightSources)
 	end
 end
@@ -140,6 +141,13 @@ function MirrorCortex:update(delta)
 				do
 					local newPosition = ray.position + Utility.Peep.getAbsolutePosition(lightSource)
 					local newDirection = ray.direction
+
+					local rotation = lightSource:getBehavior(RotationBehavior)
+					if rotation then
+						local transform = love.math.newTransform()
+						transform:applyQuaternion(rotation.rotation:get())
+						newDirection = Vector(transform:transformPoint(ray.direction))
+					end
 
 					ray = Ray(newPosition, newDirection)
 				end
