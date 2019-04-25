@@ -138,6 +138,14 @@ function Quaternion:getNormal()
 	end
 end
 
+function Quaternion:transformVector(vector)
+	local v = Quaternion(vector.x, vector.y, vector.z, 0)
+	local normal = self:getNormal()
+	local conjugate = -normal
+
+	return Vector((normal * v * conjugate):get())
+end
+
 -- Adds two quaternions.
 function Metatable.__add(a, b)
 	local result = Quaternion()

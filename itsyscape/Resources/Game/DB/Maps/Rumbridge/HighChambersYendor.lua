@@ -2281,13 +2281,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Ancient mirror",
+		Value = "Eye of Man'Tok, The First One",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Light glints off the surface.",
+		Value = "The ancient eye of an ancient beast. What horrors has it seen?",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
 	}

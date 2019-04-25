@@ -66,7 +66,7 @@ function Rotate:rotate(player, target)
 	end
 
 	local _, r = target:addBehavior(RotationBehavior)
-	r.rotation = r.rotation * rotation
+	r.rotation = rotation * r.rotation
 
 	target:poke('rotate', {
 		rotation = rotation

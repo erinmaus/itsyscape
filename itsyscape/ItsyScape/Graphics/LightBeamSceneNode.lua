@@ -62,7 +62,7 @@ function LightBeamSceneNode:initVertexCache(count)
 	local length = count * #LightBeamSceneNode.QUAD
 
 	if length < #self.vertices then
-		for i = #self.vertices, length, -1 do
+		for i = #self.vertices, length + 1, -1 do
 			self.vertices[i] = nil
 		end
 	else

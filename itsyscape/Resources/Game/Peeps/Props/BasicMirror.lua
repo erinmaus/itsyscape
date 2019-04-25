@@ -20,7 +20,7 @@ function BasicMirror:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(3.5, 4, 3.5)
+	size.size = Vector(2.5, 4, 2.5)
 
 	self:addPoke('rotate')
 	self:addPoke('lightHit')

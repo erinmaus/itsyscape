@@ -35,24 +35,24 @@ function BasicLightRayCaster:getPropState()
 
 	local light = self:getBehavior(LightRaySourceBehavior)
 	if light then
-		if #light.paths > 0 then
-			for _, path in ipairs(light.paths) do
-				local results = {}
-				for _, node in path:iterate() do
-					local result = {
-						a = { node:getInputRay().origin:get() },
-						b = { node:getOutputRay().origin:get() },
-						direction = { node:getOutputRay().origin:get() },
-						id = node:getMirror():getTally()
-					}
+		for index, path in pairs(light.paths) do
+			local results = {}
+			for _, node in path:iterate() do
+				local result = {
+					a = { node:getInputRay().origin:get() },
+					b = { node:getOutputRay().origin:get() },
+					direction = { node:getOutputRay().origin:get() },
+					id = node:getMirror():getTally()
+				}
 
-					table.insert(results, result)
-				end
-
-				table.insert(state.rays, results)
+				table.insert(results, result)
 			end
-		else
-			for _, ray in ipairs(light.rays) do
+
+			state.rays[index] = results
+		end
+
+		for index, ray in ipairs(light.rays) do
+			if state.rays[index] == nil then
 				local results = {}
 
 				local transformedRay
@@ -62,9 +62,7 @@ function BasicLightRayCaster:getPropState()
 
 					local rotation = self:getBehavior(RotationBehavior)
 					if rotation then
-						local transform = love.math.newTransform()
-						transform:applyQuaternion(rotation.rotation:get())
-						transformedDirection = Vector(transform:transformPoint(transformedDirection:get()))
+						transformedDirection = rotation.rotation:transformVector(transformedDirection)
 					end
 
 					transformedRay = Ray(transformedOrigin, transformedDirection)
@@ -77,7 +75,7 @@ function BasicLightRayCaster:getPropState()
 					id = 0
 				})
 
-				table.insert(state.rays, results)
+				state.rays[index] = results
 			end
 		end
 	end
