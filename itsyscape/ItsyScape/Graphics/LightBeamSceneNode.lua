@@ -42,8 +42,12 @@ LightBeamSceneNode.QUAD = {
 function LightBeamSceneNode:new()
 	SceneNode.new(self)
 
-	self.size = 8
+	self:getMaterial():setShader(LightBeamSceneNode.SHADER)
+	self:getMaterial():setIsFullLit(true)
+
+	self.size = 1 / 8
 	self.path = {}
+	self.vertices = {}
 end
 
 function LightBeamSceneNode:getBeamSize()
@@ -57,12 +61,12 @@ end
 function LightBeamSceneNode:initVertexCache(count)
 	local length = count * #LightBeamSceneNode.QUAD
 
-	if length > #self.vertices then
+	if length < #self.vertices then
 		for i = #self.vertices, length, -1 do
 			self.vertices[i] = nil
 		end
 	else
-		for i = #self.vertices, length do
+		for i = #self.vertices + 1, length do
 			self.vertices[i] = { 0, 0, 0 }
 		end
 	end
@@ -91,8 +95,8 @@ function LightBeamSceneNode:same(path)
 			end
 		end
 
-		local sB = s.a
-		local tB = t.a
+		local sB = s.b
+		local tB = t.b
 		if #sB ~= #tB then
 			return false
 		end
@@ -143,7 +147,7 @@ function LightBeamSceneNode:build(path)
 		max = max:max(b)
 
 		local direction = b - a
-		local length = position:getLength()
+		local length = direction:getLength()
 		direction = direction * (1.0 / length)
 
 		for i = 1, #VERTICES do
@@ -178,7 +182,7 @@ function LightBeamSceneNode:draw(renderer, delta)
 	local mesh = self.mesh
 	if mesh then
 		love.graphics.push('all')
-		love.graphics.setBlendMode('additive')
+		love.graphics.setBlendMode('add')
 		love.graphics.setMeshCullMode('none')
 		love.graphics.setDepthMode('lequal', false)
 		love.graphics.draw(mesh)

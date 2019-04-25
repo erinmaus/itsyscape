@@ -88,4 +88,8 @@ function LightPath:iterate()
 	return ipairs(self.path)
 end
 
+function LightPath:count()
+	return #self.path
+end
+
 return LightPath

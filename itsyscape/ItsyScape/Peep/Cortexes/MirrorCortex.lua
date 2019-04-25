@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MirrorBehavior = require "ItsyScape.Peep.Behaviors.MirrorBehavior"
@@ -60,10 +61,12 @@ function MirrorCortex:removeFromLayeredSet(peep, set)
 	local key = self.layers[peep]
 	if key then
 		local oldLayer = set[key]
-		oldLayer[peep] = nil
+		if oldLayer then
+			oldLayer[peep] = nil
 
-		if not next(oldLayer, nil) then
-			set[key] = nil
+			if not next(oldLayer, nil) then
+				set[key] = nil
+			end
 		end
 	end
 end
@@ -143,7 +146,7 @@ function MirrorCortex:update(delta)
 				local currentMirror = nil
 				local ray = l.rays[i]
 				do
-					local newPosition = ray.position + Utility.Peep.getAbsolutePosition(lightSource)
+					local newPosition = ray.origin + Utility.Peep.getAbsolutePosition(lightSource)
 					local newDirection = ray.direction
 
 					local rotation = lightSource:getBehavior(RotationBehavior)
@@ -164,6 +167,10 @@ function MirrorCortex:update(delta)
 						currentMirror = m
 					end
 				until not currentMirror
+
+				if path:count() > 0 then
+					table.insert(paths, path)
+				end
 			end
 
 			l.paths = paths

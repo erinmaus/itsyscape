@@ -2272,6 +2272,62 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.LightSphere",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ancient mirror",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Light glints off the surface.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere"
+	}
+
+	local RotateRightAction = ItsyScape.Action.Rotate()
+	ItsyScape.Meta.RotateActionDirection {
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
+		Action = RotateRightAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Rotate-right",
+		Language = "en-US",
+		Action = RotateRightAction
+	}
+
+	local RotateForwardAction = ItsyScape.Action.Rotate()
+	ItsyScape.Meta.RotateActionDirection {
+		RotationX = ItsyScape.Utility.Quaternion.Z_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Z_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Z_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Z_90.w,
+		Action = RotateForwardAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Rotate-forward",
+		Language = "en-US",
+		Action = RotateForwardAction
+	}
+
+	ItsyScape.Resource.Prop "HighChambersYendor_LightSphere" {
+		RotateRightAction,
+		RotateForwardAction
+	}
+end
+
 ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
 	-- Nothing.
 }
