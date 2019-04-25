@@ -50,20 +50,30 @@ function SimpleStaticLightCasterView:load()
 			self.decoration:setParent(root)
 		end)
 
-	self.light = LightBeamSceneNode()
-	self.light:setParent(self:getGameView():getScene())
+	self.lights = {}
 end
 
 function SimpleStaticLightCasterView:tick()
 	PropView.tick(self)
 
-	if self.light then
-		self.light:build(self:getProp():getState().rays or {})
+	if self.lights then
+		local rays = self:getProp():getState().rays
+		for i = 1, #rays do
+			local light = self.lights[i]
+			if not light then
+				light = LightBeamSceneNode()
+				light:setParent(self:getGameView():getScene())
+
+				self.lights[i] = light
+			end
+
+			light:build(rays[i])
+		end
 	end
 end
 
 function SimpleStaticLightCasterView:remove()
-	PropView.tick(self)
+	PropView.remove(self)
 
 	if self.light then
 		self.light:setParent(nil)

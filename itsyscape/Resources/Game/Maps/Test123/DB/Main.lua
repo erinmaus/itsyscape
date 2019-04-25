@@ -126,3 +126,20 @@ do
 		MapObject = M["Zombi"]
 	}
 end
+
+M["LightSphere"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 6,
+		PositionZ = 29,
+		Name = "LightSphere",
+		Map = M._MAP,
+		Resource = M["LightSphere"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_LightSphere",
+		MapObject = M["LightSphere"]
+	}
+end

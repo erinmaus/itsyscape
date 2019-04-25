@@ -291,7 +291,9 @@ function LocalStage:instantiateMapObject(resource, layer)
 							local rz = object:get("RotationZ") or 0
 							local rw = object:get("RotationW") or 1
 
-							rotation.rotation = Quaternion(rx, ry, rz, rw)
+							if rw ~= 0 then
+								rotation.rotation = Quaternion(rx, ry, rz, rw)
+							end
 						end
 
 						propInstance = p

@@ -35,7 +35,7 @@ function BasicLightRayCaster:getPropState()
 
 	local light = self:getBehavior(LightRaySourceBehavior)
 	if light then
-		if #light.path > 0 then
+		if #light.paths > 0 then
 			for _, path in ipairs(light.paths) do
 				local results = {}
 				for _, node in path:iterate() do
@@ -60,8 +60,9 @@ function BasicLightRayCaster:getPropState()
 					local transformedOrigin = ray.origin + Utility.Peep.getAbsolutePosition(self)
 					local transformedDirection = ray.direction
 
-					local rotation = lightSource:getBehavior(RotationBehavior)
-					if rotation then						local transform = love.math.newTransform()
+					local rotation = self:getBehavior(RotationBehavior)
+					if rotation then
+						local transform = love.math.newTransform()
 						transform:applyQuaternion(rotation.rotation:get())
 						transformedDirection = Vector(transform:transformPoint(transformedDirection:get()))
 					end
@@ -71,10 +72,12 @@ function BasicLightRayCaster:getPropState()
 
 				table.insert(results, {
 					a = { transformedRay.origin:get() },
-					b = { transformedRay.origin:project(100):get() },
+					b = { transformedRay:project(100):get() },
 					direction = { transformedRay.direction:get() },
 					id = 0
 				})
+
+				table.insert(state.rays, results)
 			end
 		end
 	end
