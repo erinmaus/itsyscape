@@ -57,23 +57,18 @@ function LightPath:add(previousMirror, currentMirror, ray)
 	do
 		newOrigin = Utility.Peep.getAbsolutePosition(currentMirror)
 
-		local currentDirection = Quaternion.lookAt(Vector.UNIT_Z, ray.direction)
 		local m = currentMirror:getBehavior(MirrorBehavior)
 		if m then
 			local reflection = m.reflection
 			do
 				local currentRotation = currentMirror:getBehavior(RotationBehavior)
 				if currentRotation then
-					reflection = currentRotation.rotation * reflection
+					reflection = reflection * currentRotation.rotation
 				end
 			end
 
-			currentDirection = currentDirection * reflection
+			newDirection = reflection:transformVector(ray.direction)
 		end
-
-		local transform = love.math.newTransform()
-		transform:applyQuaternion(currentDirection:get())
-		newDirection = Vector(transform:transformPoint(Vector.UNIT_Z:get()))
 	end
 
 	local newRay = Ray(newOrigin, newDirection)

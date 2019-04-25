@@ -121,8 +121,8 @@ function MirrorCortex:stepRayCast(layer, path, currentMirror, ray)
 					local position = Utility.Peep.getAbsolutePosition(peep)
 
 					if ray:hitBounds(
-						position + size.offset - size,
-						position + size.offset + size)
+						position + size.offset - halfSize,
+						position + size.offset + halfSize)
 					then
 						local success, _, nextRay = path:add(currentMirror, peep, ray)
 						return success, nextRay, peep
@@ -165,11 +165,13 @@ function MirrorCortex:update(delta)
 					if s then
 						ray = r
 						currentMirror = m
+					else
+						currentMirror = nil
 					end
 				until not currentMirror
 
 				if path:count() > 0 then
-					table.insert(paths, path)
+					paths[i] = path
 				end
 			end
 

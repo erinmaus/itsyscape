@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 
 -- Ray type, composed of an origin and direction.
 local Ray = Class()

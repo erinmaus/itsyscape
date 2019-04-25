@@ -143,3 +143,71 @@ do
 		MapObject = M["LightSphere"]
 	}
 end
+
+M["Mirror1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 6,
+		PositionZ = 29,
+		Name = "Mirror1",
+		Map = M._MAP,
+		Resource = M["Mirror1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Mirror",
+		MapObject = M["Mirror1"]
+	}
+end
+
+M["Mirror2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 6,
+		PositionZ = 37,
+		Name = "Mirror2",
+		Map = M._MAP,
+		Resource = M["Mirror2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Mirror",
+		MapObject = M["Mirror2"]
+	}
+end
+
+M["Mirror3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 6,
+		PositionZ = 37,
+		Name = "Mirror3",
+		Map = M._MAP,
+		Resource = M["Mirror3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Mirror",
+		MapObject = M["Mirror3"]
+	}
+end
+
+M["Mirror4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 6,
+		PositionZ = 37,
+		Name = "Mirror4",
+		Map = M._MAP,
+		Resource = M["Mirror4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Mirror",
+		MapObject = M["Mirror4"]
+	}
+end
