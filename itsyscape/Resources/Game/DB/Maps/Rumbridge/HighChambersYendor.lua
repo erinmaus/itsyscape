@@ -2309,10 +2309,10 @@ do
 
 	local RotateForwardAction = ItsyScape.Action.Rotate()
 	ItsyScape.Meta.RotateActionDirection {
-		RotationX = ItsyScape.Utility.Quaternion.Z_90.x,
-		RotationY = ItsyScape.Utility.Quaternion.Z_90.y,
-		RotationZ = ItsyScape.Utility.Quaternion.Z_90.z,
-		RotationW = ItsyScape.Utility.Quaternion.Z_90.w,
+		RotationX = ItsyScape.Utility.Quaternion.X_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.X_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.X_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.X_90.w,
 		Action = RotateForwardAction
 	}
 
