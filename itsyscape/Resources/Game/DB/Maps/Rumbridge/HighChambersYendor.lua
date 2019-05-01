@@ -2238,9 +2238,9 @@ do
 
 	local RotateRightAction = ItsyScape.Action.Rotate()
 	ItsyScape.Meta.RotateActionDirection {
-		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
-		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
-		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationX = -ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = -ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = -ItsyScape.Utility.Quaternion.Y_90.z,
 		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
 		Action = RotateRightAction
 	}
@@ -2253,9 +2253,9 @@ do
 
 	local RotateLeftAction = ItsyScape.Action.Rotate()
 	ItsyScape.Meta.RotateActionDirection {
-		RotationX = -ItsyScape.Utility.Quaternion.Y_90.x,
-		RotationY = -ItsyScape.Utility.Quaternion.Y_90.y,
-		RotationZ = -ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
 		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
 		Action = RotateLeftAction
 	}
@@ -2294,9 +2294,9 @@ do
 
 	local RotateRightAction = ItsyScape.Action.Rotate()
 	ItsyScape.Meta.RotateActionDirection {
-		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
-		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
-		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationX = -ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = -ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = -ItsyScape.Utility.Quaternion.Y_90.z,
 		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
 		Action = RotateRightAction
 	}

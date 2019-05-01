@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local MirrorBehavior = require "ItsyScape.Peep.Behaviors.MirrorBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local LightPath = Class()
 LightPath.Node = Class()
@@ -58,18 +59,63 @@ function LightPath:add(previousMirror, currentMirror, ray)
 		newOrigin = Utility.Peep.getAbsolutePosition(currentMirror)
 
 		local m = currentMirror:getBehavior(MirrorBehavior)
-		if m then
-			local reflection = m.reflection
+		local s = currentMirror:getBehavior(SizeBehavior)
+		if m and s then
+			local quad
 			do
-				local currentRotation = currentMirror:getBehavior(RotationBehavior)
-				if currentRotation then
-					reflection = reflection * currentRotation.rotation
+				local halfSize = s.size / 2
+				local y = s.size.y
+				quad = {
+					Vector(-halfSize.x, 0, -halfSize.z),
+					Vector( halfSize.x, 0,  halfSize.z),
+					Vector(-halfSize.x, y, -halfSize.z),
+					Vector( halfSize.x, y,  halfSize.z),
+				}
+
+				local rotation = currentMirror:getBehavior(RotationBehavior)
+				if rotation then
+					for i = 1, #quad do
+						quad[i] = rotation.rotation:transformVector(quad[i])
+					end
+				end
+
+				for i = 1, #quad do
+					quad[i] = quad[i] + newOrigin
 				end
 			end
 
-			newDirection = reflection:transformVector(ray.direction)
+			local p, n
+			do
+				local success, hit
+				success, hit = ray:hitTriangle(quad[1], quad[2], quad[3])
+				if success then
+					p = hit
+					n = Vector.cross(quad[1] - quad[2], quad[2] - quad[3])
+				else
+					success, hit = ray:hitTriangle(quad[3], quad[4], quad[2])
+					if success then
+						p = hit
+						n = Vector.cross(quad[3] - quad[4], quad[4] - quad[2])
+					end
+				end
+			end
+
+			if not p then
+				return false, nil, nil
+			end
+
+			p = ray.direction
+			n = n:getNormal()
+
+			local reflection = p - 2 * n * p:dot(n)
+
+			newDirection = reflection
+		else
+			newDirection = ray.direction
 		end
 	end
+
+	newOrigin.y = ray.origin.y
 
 	local newRay = Ray(newOrigin, newDirection)
 	local node = LightPath.Node(currentMirror, ray, newRay)

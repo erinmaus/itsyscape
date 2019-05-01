@@ -148,7 +148,7 @@ M["Mirror1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 31,
-		PositionY = 6,
+		PositionY = 5,
 		PositionZ = 29,
 		Name = "Mirror1",
 		Map = M._MAP,
@@ -165,7 +165,7 @@ M["Mirror2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 31,
-		PositionY = 6,
+		PositionY = 5,
 		PositionZ = 37,
 		Name = "Mirror2",
 		Map = M._MAP,
@@ -182,7 +182,7 @@ M["Mirror3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 27,
-		PositionY = 6,
+		PositionY = 5,
 		PositionZ = 37,
 		Name = "Mirror3",
 		Map = M._MAP,
@@ -199,7 +199,7 @@ M["Mirror4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 35,
-		PositionY = 6,
+		PositionY = 5,
 		PositionZ = 37,
 		Name = "Mirror4",
 		Map = M._MAP,
