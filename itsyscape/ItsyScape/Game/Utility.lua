@@ -1384,6 +1384,13 @@ function Utility.Peep.face(peep, target)
 end
 
 function Utility.Peep.attack(peep, other, distance)
+	do
+		local status = peep:getBehavior(CombatStatusBehavior)
+		if status and status.dead then
+			return false
+		end
+	end
+
 	local target = peep:getBehavior(CombatTargetBehavior)
 	if not target then
 		target = peep:addBehavior(CombatTargetBehavior)
@@ -1416,6 +1423,8 @@ function Utility.Peep.attack(peep, other, distance)
 			status.maxChaseDistance = distance
 		end
 	end
+
+	return true
 end
 
 function Utility.Peep.getResource(peep)
