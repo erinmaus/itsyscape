@@ -110,8 +110,54 @@ function MirrorCortex:removePeep(peep)
 	self:removeFromLayeredSet(peep, self.mirrors)
 end
 
-function MirrorCortex:stepRayCast(layer, path, currentMirror, ray)
+function MirrorCortex:hit(ray, mirror)
+	local position = Utility.Peep.getAbsolutePosition(mirror)
+
+	local size, halfSize
+	do
+		size = mirror:getBehavior(SizeBehavior)
+		if not size then
+			return false, false, nil
+		end
+
+		halfSize = size.size / 2
+	end
+
+	local s, p = ray:hitBounds(
+		position + size.offset - halfSize,
+		position + size.offset + halfSize)
+	if not s then
+		return false, false, nil
+	end
+
+	local x, z = p.x, p.z
+	local m = mirror:getBehavior(MirrorBehavior)
+	if m then
+		local direction
+		do
+			local rotation = mirror:getBehavior(RotationBehavior)
+			if rotation then
+				direction = rotation.rotation:transformVector(m.direction)
+			else
+				direction = m.direction
+			end
+
+			direction = direction:getNormal()
+		end
+
+		local dot = math.pi - math.acos(direction:dot(Vector(position.x - x, 0, position.z - z):getNormal()))
+		if math.floor(math.deg(dot)) > math.floor(math.deg(m.range)) then
+			return true, false, p
+		end
+	end
+
+	return true, true, p
+end
+
+function MirrorCortex:stepRayCast(layer, path, currentMirror, currentPosition, ray)
 	local peeps = self.mirrors[layer]
+	local mirrorsHit = {}
+	local success = false
 	if peeps then
 		for peep in pairs(peeps) do
 			if peep ~= currentMirror then
@@ -120,19 +166,41 @@ function MirrorCortex:stepRayCast(layer, path, currentMirror, ray)
 					local halfSize = size.size / 2
 					local position = Utility.Peep.getAbsolutePosition(peep)
 
-					if ray:hitBounds(
-						position + size.offset - halfSize,
-						position + size.offset + halfSize)
-					then
-						local success, _, nextRay = path:add(currentMirror, peep, ray)
-						return success, nextRay, peep
+					local s, b, p = self:hit(ray, peep)
+					if s then
+						table.insert(mirrorsHit, {
+							mirror = peep,
+							position = p,
+							bounce = b
+						})
+
+						success = true
 					end
 				end
 			end
 		end
 	end
 
-	return false, nil
+	table.sort(mirrorsHit, function(a, b)
+		local s = (a.position - currentPosition):getLength() 
+		local t = (b.position - currentPosition):getLength()
+
+		return s < t
+	end)
+
+	local hit = mirrorsHit[1]
+	if hit then
+		local s, _, nextRay = path:add(currentMirror, hit.mirror, ray)
+		if s then
+			if hit.bounce then
+				return true, nextRay, hit.mirror
+			else
+				return false, nil, nil
+			end
+		end
+	end
+
+	return false, nil, nil
 end
 
 function MirrorCortex:update(delta)
@@ -144,6 +212,7 @@ function MirrorCortex:update(delta)
 				local path = LightPath()
 
 				local currentMirror = nil
+				local currentPosition = Utility.Peep.getAbsolutePosition(lightSource)
 				local ray = l.rays[i]
 				do
 					local newPosition = ray.origin + Utility.Peep.getAbsolutePosition(lightSource)
@@ -160,11 +229,17 @@ function MirrorCortex:update(delta)
 				end
 
 				repeat
-					local s, r, m = self:stepRayCast(layerName, path, currentMirror, ray)
+					local s, r, m = self:stepRayCast(
+						layerName,
+						path,
+						currentMirror,
+						currentPosition,
+						ray)
 
 					if s then
 						ray = r
 						currentMirror = m
+						currentPosition = Utility.Peep.getAbsolutePosition(m)
 					else
 						currentMirror = nil
 					end
