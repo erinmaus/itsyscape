@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/HighChambersYendor_LightSphere/View.lua
+-- Resources/Game/Props/HighChambersYendor_Mirror/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,22 +9,15 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local SimpleStaticLightCasterView = require "Resources.Game.Props.Common.SimpleStaticLightCasterView"
-local Color = require "ItsyScape.Graphics.Color"
 
-local LightSphere = Class(SimpleStaticLightCasterView)
+local Mirror = Class(SimpleStaticLightCasterView)
 
-function LightSphere:load()
-	SimpleStaticLightCasterView.load(self)
-
-	self:setLightColor(Color(1, 0, 0, 0.8))
+function Mirror:getTextureFilename()
+	return "Resources/Game/Props/HighChambersYendor_Mirror/Texture.png"
 end
 
-function LightSphere:getTextureFilename()
-	return "Resources/Game/Props/HighChambersYendor_LightSphere/Texture.png"
+function Mirror:getModelFilename()
+	return "Resources/Game/Props/HighChambersYendor_Mirror/Model.lstatic", "Mirror"
 end
 
-function LightSphere:getModelFilename()
-	return "Resources/Game/Props/HighChambersYendor_LightSphere/Model.lstatic", "LightSphere"
-end
-
-return LightSphere
+return Mirror

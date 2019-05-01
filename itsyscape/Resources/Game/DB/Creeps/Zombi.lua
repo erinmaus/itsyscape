@@ -190,7 +190,7 @@ ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "ZombiBrains",
 	Weight = 20,
 	Count = 1,
-	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Secondary"	
+	Resource = ItsyScape.Resource.DropTable "Zombi_Base_Primary"	
 }
 
 ItsyScape.Meta.DropTableEntry {
