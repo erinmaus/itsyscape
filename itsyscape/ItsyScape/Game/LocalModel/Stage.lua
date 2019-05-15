@@ -21,6 +21,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -452,16 +453,7 @@ function LocalStage:unloadAll()
 		end
 
 		do
-			local broker = self.game:getDirector():getItemBroker()
-			for _, ground in pairs(self.grounds) do
-				inventory = ground:getBehavior(InventoryBehavior).inventory
-				if broker:hasProvider(inventory) then
-					for item in broker:iterateItems(inventory) do
-						local ref = broker:getItemRef(item)
-						self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
-					end
-				end
-			end
+			self:collectItems()
 
 			self.grounds = {}
 		end
@@ -743,7 +735,7 @@ function LocalStage:getItemsAtTile(i, j, layer)
 	end
 end
 
-function LocalStage:dropItem(item, count)
+function LocalStage:dropItem(item, count, owner)
 	local broker = self.game:getDirector():getItemBroker()
 	local provider = broker:getItemProvider(item)
 	local map = provider:getPeep():getLayerName()
@@ -756,7 +748,7 @@ function LocalStage:dropItem(item, count)
 
 	transaction:addParty(provider)
 	transaction:addParty(destination)
-	transaction:transfer(destination, item, count, 'drop', false)
+	transaction:transfer(destination, item, count, owner or 'drop', false)
 	transaction:commit()
 end
 
@@ -806,6 +798,56 @@ function LocalStage:takeItem(i, j, layer, ref)
 					queue:interrupt(CompositeCommand(condition, walkStep, takeStep))
 				end
 			end
+		end
+	end
+end
+
+function LocalStage:collectItems()
+	local transactions = {}
+
+	local broker = self.game:getDirector():getItemBroker()
+	local manager = self.game:getDirector():getItemManager()
+
+	for key, ground in pairs(self.grounds) do
+		inventory = ground:getBehavior(InventoryBehavior).inventory
+		if broker:hasProvider(inventory) then
+			for item in broker:iterateItems(inventory) do
+				-- In the ground table, grounds are stored by layer (number) and layer (string).
+				if type(key) == 'string' then
+					local owner = broker:getItemTag(item, "owner")
+					if owner and owner:hasBehavior(PlayerBehavior) then
+						local bank = owner:getBehavior(InventoryBehavior).bank
+
+						if bank then
+							local transaction = transactions[owner]
+							if not transaction then
+								transaction = broker:createTransaction()
+								transaction:addParty(bank)
+
+								transactions[owner] = transaction
+							end
+
+							transaction:addParty(inventory)
+							transaction:transfer(bank, item, item:getCount(), 'take')
+
+							if not item:isNoted() and manager:isNoteable(item:getID()) then
+								transaction:note(bank, item:getID(), item:getCount())
+							end
+						end
+					end
+
+
+					local ref = broker:getItemRef(item)
+					self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+				end
+			end
+		end
+	end
+
+	for _, transaction in pairs(transactions) do
+		local s, r = transaction:commit()
+		if not s then
+			Log.warn("Couldn't commit pickicide: %s", r)
 		end
 	end
 end

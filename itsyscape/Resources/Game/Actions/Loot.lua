@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Action = require "ItsyScape.Peep.Action"
 
 local Loot = Class(Action)
@@ -50,7 +52,36 @@ function Loot.getDroppedItem(loot)
 	return item
 end
 
+function Loot:getSlayer(peep)
+	local currentPeep = nil
+	local currentDamage = 0
+
+	local status = peep:getBehavior(CombatStatusBehavior)
+	if status then
+		for p, damage in pairs(status.damage) do
+			if damage > currentDamage then
+				if not currentPeep or
+			 	   not currentPeep:hasBehavior(PlayerBehavior)
+				   or p:hasBehavior(PlayerBehavior)
+				then
+					currentPeep = p
+					currentDamage = damage
+				end
+			elseif p:hasBehavior(PlayerBehavior) then
+				if currentPeep and not currentPeep:hasBehavior(PlayerBehavior) then
+					currentPeep = p
+					currentDamage = damage
+				end
+			end
+		end
+	end
+
+	return currentPeep
+end
+
 function Loot:materializeDropTable(peep, inventory, loot)
+	local slayer = self:getSlayer(peep)
+
 	local item = Loot.getDroppedItem(loot)
 	if item then
 		local count = item:get("Count") or 1
@@ -75,7 +106,7 @@ function Loot:materializeDropTable(peep, inventory, loot)
 			if t:commit() then
 				local stage = self:getGame():getStage()
 				for i in broker:iterateItems(inventory) do
-					stage:dropItem(i, i:getCount())
+					stage:dropItem(i, i:getCount(), slayer)
 				end
 			end
 		end
