@@ -68,6 +68,12 @@ function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 				local key = GroundInventoryProvider.Key(i, j, sourcePeepPosition.layer or 1)
 				self:getBroker():setItemKey(item, key)
 
+				if purpose == 'drop' then
+					self:getBroker():tagItem(item, "owner", sourcePeep)
+				else
+					self:getBroker():tagItem(item, "owner", purpose)
+				end
+
 				self.onDropItem(item, key, source, count)
 			end
 		end

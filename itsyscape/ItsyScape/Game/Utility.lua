@@ -1950,7 +1950,6 @@ function Utility.Peep.Attackable:onDie(p)
 						Utility.Combat.giveCombatXP(peep, xp * damage)
 					end
 
-					status.damage = {}
 					status.dead = true
 				end
 			end
@@ -1961,6 +1960,7 @@ end
 function Utility.Peep.Attackable:onResurrect()
 	local status = self:getBehavior(CombatStatusBehavior)
 	if status then
+		status.damage = {}
 		status.dead = false
 	end
 end
