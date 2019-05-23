@@ -31,6 +31,7 @@ function MirrorCortex:new()
 	self.lightSources = {}
 	self.mirrors = {}
 	self.layers = {}
+	self.hits = {}
 end
 
 function MirrorCortex:addToLayeredSet(peep, set)
@@ -68,6 +69,10 @@ function MirrorCortex:removeFromLayeredSet(peep, set)
 				set[key] = nil
 			end
 		end
+	end
+
+	if self.hits[peep] then
+		peep:poke('lightFade')
 	end
 end
 
@@ -204,6 +209,7 @@ function MirrorCortex:stepRayCast(layer, path, currentMirror, currentPosition, r
 end
 
 function MirrorCortex:update(delta)
+	local hits = {}
 	for layerName, lightSources in pairs(self.lightSources) do
 		for lightSource in pairs(lightSources) do
 			local paths = {}
@@ -240,6 +246,8 @@ function MirrorCortex:update(delta)
 						ray = r
 						currentMirror = m
 						currentPosition = Utility.Peep.getAbsolutePosition(m)
+
+						hits[m] = true
 					else
 						currentMirror = nil
 					end
@@ -253,6 +261,20 @@ function MirrorCortex:update(delta)
 			l.paths = paths
 		end
 	end
+
+	for m in pairs(hits) do
+		if not self.hits[m] then
+			m:poke('lightHit')
+		end
+	end
+
+	for m in pairs(self.hits) do
+		if not hits[m] then
+			m:poke('lightFade')
+		end
+	end
+
+	self.hits = hits
 end
 
 return MirrorCortex

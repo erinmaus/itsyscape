@@ -168,7 +168,7 @@ function LightBeamSceneNode:build(path)
 		'dynamic')
 	self.mesh:setAttributeEnabled("VertexPosition", true)
 
-	self:setBounds(min, max)
+	self:setBounds(Vector(-9999), Vector(9999))
 end
 
 function LightBeamSceneNode:release()

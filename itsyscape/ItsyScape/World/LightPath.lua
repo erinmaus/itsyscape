@@ -104,12 +104,14 @@ function LightPath:add(previousMirror, currentMirror, ray)
 				return false, nil, nil
 			end
 
-			p = ray.direction
-			n = n:getNormal()
+			if m.range >= math.pi * 2 then
+				newDirection = Vector.ZERO
+			else
+				p = ray.direction
+				n = n:getNormal()
 
-			local reflection = p - 2 * n * p:dot(n)
-
-			newDirection = reflection
+				newDirection = p - 2 * n * p:dot(n)
+			end
 		else
 			newDirection = ray.direction
 		end
