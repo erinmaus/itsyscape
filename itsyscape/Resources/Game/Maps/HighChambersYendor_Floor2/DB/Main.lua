@@ -130,6 +130,38 @@ do
 	}
 end
 
+M["Anchor_FromFloor3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 111,
+		PositionY = 2,
+		PositionZ = 99,
+		Name = "Anchor_FromFloor3",
+		Map = M._MAP,
+		Resource = M["Anchor_FromFloor3"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromFloor2",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor3",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_ToFloor3"] {
+		TravelAction
+	}
+end
+
 M["YendorianPriest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

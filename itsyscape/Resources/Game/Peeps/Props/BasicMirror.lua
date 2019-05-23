@@ -9,9 +9,11 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local MirrorBehavior = require "ItsyScape.Peep.Behaviors.MirrorBehavior"
 
 local BasicMirror = Class(Prop)
@@ -31,12 +33,26 @@ function BasicMirror:new(...)
 	self:addBehavior(MirrorBehavior)
 end
 
+function BasicMirror:onFinalize(...)
+	Prop.onFinalize(self, ...)
+
+	local rotation = self:getBehavior(RotationBehavior)
+	do
+		local angle = (math.random(1, 4) - 1) * (math.pi / 2)
+		rotation.rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
+	end
+end
+
 function BasicMirror:onLightHit()
 	self.hitCount = self.hitCount + 1
 end
 
 function BasicMirror:onLightFade()
 	self.hitCount = math.max(self.hitCount - 1, 0)
+end
+
+function BasicMirror:isLit()
+	return self.hitCount > 0
 end
 
 function BasicMirror:getPropState()

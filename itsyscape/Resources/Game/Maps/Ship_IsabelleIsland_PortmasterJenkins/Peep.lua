@@ -154,19 +154,18 @@ function Ship:onPirateDeath(pirate)
 	local deadCount = 0
 
 	for i = 1, #self.pirates do
-		local pirate = self.pirates[i]
+		local p = self.pirates[i]
 
-		local success = Utility.Peep.attack(pirate:getPeep(), self.player, math.huge)
-		if not success then
+		local success = Utility.Peep.attack(p:getPeep(), self.player, math.huge)
+		if not success or p:getPeep() == pirate then
 			deadCount = deadCount + 1
 		else
-			pirate:flash("Message", 1, "Arrr, ye'll pay, landlubber!")
+			p:flash("Message", 1, "Arrr, ye'll pay, landlubber!")
 		end
 	end
 
 	if deadCount >= #self.pirates then
 		self:makePlayerListen()
-		print "listening!"
 	end
 end
 
