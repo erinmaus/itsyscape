@@ -180,6 +180,10 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 			remainingCount = remainingCount - transferCount
 			withdrawnCount = withdrawnCount + transferCount
 		end
+
+		if remainingCount <= 0 then
+			break
+		end
 	end
 
 	if remainingCount > 0 then
