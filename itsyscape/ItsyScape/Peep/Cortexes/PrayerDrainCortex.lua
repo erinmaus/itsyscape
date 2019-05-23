@@ -50,7 +50,7 @@ function PrayerDrainCortex:update()
 			local resistance
 			do
 				local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-				resistance = 60 + (bonuses['Prayer'] * game:getTicks() * (faithLevel / 10))
+				resistance = math.max(60 + (bonuses['Prayer'] * game:getTicks() * (faithLevel / 10)), 0)
 			end
 
 			local status = peep:getBehavior(CombatStatusBehavior)
@@ -59,6 +59,7 @@ function PrayerDrainCortex:update()
 					drain = drain - resistance
 
 					status.currentPrayer = math.max(status.currentPrayer - 1, 0)
+					print('stuck')
 				end
 			end
 
