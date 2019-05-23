@@ -106,7 +106,7 @@ do
 		DefenseSlash = -ItsyScape.Utility.styleBonusForItem(5, 0.5),
 		DefenseCrush = -ItsyScape.Utility.styleBonusForItem(5, 0.5),
 		DefenseRanged = -ItsyScape.Utility.styleBonusForItem(10, 1),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
 		Prayer = -3,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "AncientDriftwoodMask"

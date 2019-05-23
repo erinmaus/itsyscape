@@ -340,9 +340,9 @@ do
 		DefenseSlash = -ItsyScape.Utility.styleBonusForItem(10, 0.4),
 		DefenseCrush = -ItsyScape.Utility.styleBonusForItem(10, 0.3),
 		DefenseRanged = -ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15, 1),
-		Prayer = 1,
+		Prayer = 10,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "SquidSkull"
 	}
