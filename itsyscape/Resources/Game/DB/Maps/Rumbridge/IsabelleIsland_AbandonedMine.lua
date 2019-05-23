@@ -194,6 +194,84 @@ ItsyScape.Meta.Equipment {
 }
 
 do
+	ItsyScape.Resource.Item "BronzeKriegHelm" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Smelt() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(10)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "BronzeKriegHelm",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Kursed bronze krieg helm",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(15),
+		Weight = -10,
+		Untradeable = 1,
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Bronze",
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Whosoever wears this brings the Kurse upon the land.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/BronzeKriegHelm/BronzeKriegHelm.lua",
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForItem(10, 1),
+		AccuracySlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseSlash = 1,
+		DefenseStab = 1,
+		DefenseCrush = 1,
+		DefenseRanged = 2,
+		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(20),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15, 1.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "BronzeKriegHelm"
+	}
+end
+
+do
 	local MineAction = ItsyScape.Action.Mine() {
 		Output {
 			Resource = ItsyScape.Resource.Skill "Mining",
