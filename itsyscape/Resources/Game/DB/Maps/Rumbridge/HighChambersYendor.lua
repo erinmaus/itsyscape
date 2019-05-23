@@ -2328,6 +2328,50 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_LightLock"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.LightLock",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightLock"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Prisium's Great Receiver",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightLock"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What happens when light hits it?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightLock"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_LightDoor" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Dungeon door",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "The doors have eyes. And the eyes are Yendor's.",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightDoor"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.HighChambersYendor.LightDoor",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_LightDoor"
+	}
+end
+
 ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
 	-- Nothing.
 }
