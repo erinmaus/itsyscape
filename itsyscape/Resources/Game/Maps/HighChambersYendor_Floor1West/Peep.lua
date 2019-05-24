@@ -22,6 +22,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ChestMimicCommon = require "Resources.Game.Peeps.ChestMimic.Common"
+local HighChambersYendorCommon = require "Resources.Game.Peeps.HighChambersYendor.Common"
 
 local HighChambersYendor = Class(Map)
 
@@ -53,6 +54,8 @@ function HighChambersYendor:onFinalize(director, game)
 	self:initTorchPuzzle()
 	self:initDoubleLock()
 	self:initMiniboss()
+
+	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever1")
 end
 
 function HighChambersYendor:initTorchPuzzle()

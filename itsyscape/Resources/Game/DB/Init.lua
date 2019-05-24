@@ -387,6 +387,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Pick"
+	ActionType "Pull"
 	ActionType "Sleep"
 
 	Meta "Cannon" {

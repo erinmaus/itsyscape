@@ -37,7 +37,7 @@ function Close:perform(state, player, prop, channel)
 
 		if walk then
 			local close = CallbackCommand(function()
-				prop:poke('close')
+				prop:poke('close', player)
 			end)
 			local perform = CallbackCommand(Action.perform, self, state, player, { prop = prop })
 			local command = CompositeCommand(true, walk, close, perform)

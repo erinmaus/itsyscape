@@ -35,7 +35,7 @@ function BasicDoor:canOpen()
 	return true
 end
 
-function BasicDoor:onOpen(force)
+function BasicDoor:onOpen(peep, force)
 	if self:canOpen() or force then
 		self.isOpen = true
 

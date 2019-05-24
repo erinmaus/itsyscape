@@ -30,6 +30,7 @@ end
 
 function WaterMesh:release()
 	self.mesh:release()
+	self.mesh = false
 end
 
 function WaterMesh:getBounds()
@@ -37,8 +38,10 @@ function WaterMesh:getBounds()
 end
 
 function WaterMesh:draw(texture, ...)
-	self.mesh:setTexture(texture)
-	love.graphics.draw(self.mesh, ...)
+	if self.mesh then
+		self.mesh:setTexture(texture)
+		love.graphics.draw(self.mesh, ...)
+	end
 end
 
 function WaterMesh:_buildMesh()

@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
+local HighChambersYendorCommon = require "Resources.Game.Peeps.HighChambersYendor.Common"
 
 local HighChambersYendor = Class(Map)
 
@@ -20,6 +21,8 @@ end
 
 function HighChambersYendor:onFinalize(director, game)
 	self:initMiniboss()
+
+	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever1")
 end
 
 function HighChambersYendor:initMiniboss()
