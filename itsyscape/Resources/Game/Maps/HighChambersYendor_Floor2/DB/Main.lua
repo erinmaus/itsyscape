@@ -1422,6 +1422,23 @@ do
 	}
 end
 
+M["Lever"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 1,
+		PositionZ = 57,
+		Name = "Lever",
+		Map = M._MAP,
+		Resource = M["Lever"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Lever",
+		MapObject = M["Lever"]
+	}
+end
+
 M["RatKingRewardChest"] {
 	ItsyScape.Action.Collect()
 }

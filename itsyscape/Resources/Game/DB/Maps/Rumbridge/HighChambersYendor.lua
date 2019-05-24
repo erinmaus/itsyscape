@@ -2372,6 +2372,29 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_Lever" {
+		ItsyScape.Action.Pull()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Mysterious lever",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Lever"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Who knows what it does?",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Lever"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicLever",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_Lever"
+	}
+end
+
 ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey" {
 	-- Nothing.
 }
@@ -2393,3 +2416,7 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "This key unlocks access to the innermost room in the High Chambers of Yendor, Floor 1 West.",
 	Resource = ItsyScape.Resource.Item "HighChambersYendor_BloodyIronKey"
 }
+
+ItsyScape.Resource.KeyItem "HighChambersYendor_Lever1"
+ItsyScape.Resource.KeyItem "HighChambersYendor_Lever2"
+ItsyScape.Resource.KeyItem "HighChambersYendor_Lever3"

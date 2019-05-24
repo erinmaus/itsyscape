@@ -19,7 +19,7 @@ Open.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function Open:canPerform(state, flags, prop)
 	if Action.canPerform(self, state, flags) and Action.canTransfer(self, state, flags) then
-		if prop:isType(require "Resources.Game.Peeps.Props.BasicDoor") then
+		if prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicDoor") then
 			return true
 		end
 
@@ -56,7 +56,7 @@ function Open:perform(state, player, prop, channel)
 		if walk or distance < 3 or not channel then
 			local open = CallbackCommand(function()
 				self:transfer(state, player, flags)
-				prop:poke('open')
+				prop:poke('open', player)
 			end)
 			local wait = WaitCommand(1)
 			local perform = CallbackCommand(Action.perform, self, state, player, { prop = prop })

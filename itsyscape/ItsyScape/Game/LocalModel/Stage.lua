@@ -407,6 +407,14 @@ function LocalStage:unloadMap(layer)
 	end
 end
 
+function LocalStage:flood(key, water, layer)
+	self.onWaterFlood(self, key, water, layer)
+end
+
+function LocalStage:drain(key, layer)
+	self.onWaterDrain(self, key)
+end
+
 function LocalStage:unloadAll()
 	do
 		self.game:getDirector():getItemBroker():toStorage()
