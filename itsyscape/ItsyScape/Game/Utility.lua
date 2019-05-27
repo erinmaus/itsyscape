@@ -1121,6 +1121,29 @@ function Utility.Peep.getEquippedItem(peep, slot)
 	end
 end
 
+function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
+		Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+	if weapon then
+		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
+		if logic then
+			return logic
+		end
+	end
+
+	if includeXWeapon then
+		local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+		local xWeapon = peep:getBehavior(WeaponBehavior)
+		if xWeapon and xWeapon.weapon then
+			return xWeapon.weapon
+		end
+	end
+
+	return nil
+end
+
 function Utility.Peep.getEquippedShield(peep)
 	local Equipment = require "ItsyScape.Game.Equipment"
 	local Shield = require "ItsyScape.Game.Shield"

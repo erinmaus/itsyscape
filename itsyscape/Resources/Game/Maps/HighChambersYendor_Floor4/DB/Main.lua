@@ -1,18 +1,18 @@
-local M = include "Resources/Game/Maps/HighChambersYendor_Floor3/DB/Default.lua"
+local M = include "Resources/Game/Maps/HighChambersYendor_Floor4/DB/Default.lua"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Maps.HighChambersYendor_Floor3.Peep",
+	Value = "Resources.Game.Maps.HighChambersYendor_Floor4.Peep",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "High Chambers of Yendor, Floor 3",
+	Value = "High Chambers of Yendor, Floor 4",
 	Language = "en-US",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Prisium's first Terrible Machine...",
+	Value = "The final floor of the High Chambers of Yendor.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -41,7 +41,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 1.1,
+		Ambience = 0.4,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -93,6 +93,32 @@ do
 		ColorGreen = 76,
 		ColorBlue = 76,
 		NearDistance = 50,
+		FarDistance = 75,
+		Resource = M["Light_Fog2"]
+	}
+end
+
+M["Light_Fog3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog2",
+		Map = M._MAP,
+		Resource = M["Light_Fog2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog2"]
+	}
+
+	ItsyScape.Meta.Fog {
+		ColorRed = 31,
+		ColorGreen = 28,
+		ColorBlue = 36,
+		NearDistance = 50,
 		FarDistance = 100,
 		Resource = M["Light_Fog2"]
 	}
@@ -101,9 +127,9 @@ end
 M["Light_Chandlier1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 91,
-		PositionY = 4,
-		PositionZ = 51,
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 15,
 		Name = "Light_Chandlier1",
 		Map = M._MAP,
 		Resource = M["Light_Chandlier1"]
@@ -122,44 +148,20 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 20,
+		Attenuation = 25,
 		Resource = M["Light_Chandlier1"]
 	}
 end
 
-M["Anchor_FromFloor2"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromFloor3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 111,
-		PositionY = 2,
-		PositionZ = 99,
-		Name = "Anchor_FromFloor2",
+		PositionX = 23,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "Anchor_FromFloor3",
 		Map = M._MAP,
-		Resource = M["Anchor_FromFloor2"]
-	}
-end
-
-M["Anchor_FromFloor4"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 103,
-		PositionY = 2,
-		PositionZ = 99,
-		Name = "Anchor_FromFloor4",
-		Map = M._MAP,
-		Resource = M["Anchor_FromFloor4"]
-	}
-end
-
-M["Anchor_FromFloor2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 111,
-		PositionY = 2,
-		PositionZ = 99,
-		Name = "Anchor_FromFloor2",
-		Map = M._MAP,
-		Resource = M["Anchor_FromFloor2"]
+		Resource = M["Anchor_FromFloor3"]
 	}
 end
 
@@ -167,8 +169,8 @@ do
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromFloor3",
-		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor2",
+		Anchor = "Anchor_FromFloor4",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor3",
 		Action = TravelAction
 	}
 
@@ -178,61 +180,25 @@ do
 		Action = TravelAction
 	}
 
-	M["Ladder_ToFloor2"] {
+	M["Ladder_ToFloor3"] {
 		TravelAction
 	}
 end
 
-do
-	local TravelAction = ItsyScape.Action.Travel()
-
-	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromFloor3",
-		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor4",
-		Action = TravelAction
-	}
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Climb-down",
-		Language = "en-US",
-		Action = TravelAction
-	}
-
-	M["Ladder_ToFloor4"] {
-		TravelAction
-	}
-end
-
-M["Door_Waterfall"] = ItsyScape.Resource.MapObject.Unique()
+M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 44,
-		PositionY = 1,
-		PositionZ = 45,
-		Name = "Door_Waterfall",
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 15,
+		Direction = 1,
+		Name = "Isabelle",
 		Map = M._MAP,
-		Resource = M["Door_Waterfall"]
+		Resource = M["Isabelle"]
 	}
 
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_LightDoor",
-		MapObject = M["Door_Waterfall"]
-	}
-end
-
-M["Lever"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59,
-		PositionY = 1,
-		PositionZ = 57,
-		Name = "Lever",
-		Map = M._MAP,
-		Resource = M["Lever"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Lever",
-		MapObject = M["Lever"]
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
+		MapObject = M["Isabelle"]
 	}
 end
