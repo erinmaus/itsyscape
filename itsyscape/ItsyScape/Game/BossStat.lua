@@ -19,12 +19,13 @@ end
 
 function BossStat:set(t)
 	t = t or {}
-	self.inColor = Color(unpack(t.inColor)) or self.inColor or Color(0, 1, 0, 1)
-	self.outColor = Color(unpack(t.outColor)) or self.outColor or Color(1, 0, 0, 1)
+	self.inColor = Color(unpack(t.inColor or { 0, 1, 0, 1 })) or self.inColor or Color(0, 1, 0, 1)
+	self.outColor = Color(unpack(t.outColor or { 1, 0, 0, 1 })) or self.outColor or Color(1, 0, 0, 1)
 	self.text = t.text or self.text or false
 	self.icon = t.icon or self.icon or false
 	self.currentValue = t.current or self.currentValue or 0
 	self.maxValue = t.max or self.maxValue or 1
+	self.isBoolean = t.isBoolean or self.isBoolean or false
 end
 
 function BossStat:get()
@@ -34,7 +35,8 @@ function BossStat:get()
 		text = self.text,
 		icon = self.icon,
 		current = self.currentValue,
-		max = self.maxValue
+		max = self.maxValue,
+		isBoolean = self.isBoolean
 	}
 end
 
