@@ -174,19 +174,23 @@ function BossHUD:populateStats()
 		local little = state.littleStats
 
 		for i = 1, #little do
-			local statBar = BossHUD.StatBar()
-			statBar:setSize(
-				BossHUD.LITTLE_STAT_WIDTH,
-				BossHUD.LITTLE_STAT_HEIGHT)
-			statBar:setPosition(
-				BossHUD.LITTLE_STAT_PADDING * 2 + BossHUD.LITTLE_STAT_ICON_SIZE,
-				y + BossHUD.LITTLE_STAT_ICON_SIZE / 2 - BossHUD.LITTLE_STAT_HEIGHT / 2)
-			statBar:setInColor(Color(unpack(little[i].inColor)))
-			statBar:setOutColor(Color(unpack(little[i].outColor)))
-			self:addChild(statBar)
+			local statBar, icon
+
+			if not little[i].isBoolean then
+				statBar = BossHUD.StatBar()
+				statBar:setSize(
+					BossHUD.LITTLE_STAT_WIDTH,
+					BossHUD.LITTLE_STAT_HEIGHT)
+				statBar:setPosition(
+					BossHUD.LITTLE_STAT_PADDING * 2 + BossHUD.LITTLE_STAT_ICON_SIZE,
+					y + BossHUD.LITTLE_STAT_ICON_SIZE / 2 - BossHUD.LITTLE_STAT_HEIGHT / 2)
+				statBar:setInColor(Color(unpack(little[i].inColor)))
+				statBar:setOutColor(Color(unpack(little[i].outColor)))
+				self:addChild(statBar)
+			end
 
 			if little[i].icon then
-				local icon = Icon()
+				icon = Icon()
 				icon:setIcon(little[i].icon)
 				icon:setPosition(BossHUD.LITTLE_STAT_PADDING, y)
 
@@ -198,7 +202,8 @@ function BossHUD:populateStats()
 			end
 
 			table.insert(self.littleStats, {
-				statBar = statBar
+				statBar = statBar,
+				icon = icon
 			})
 
 			y = y + BossHUD.LITTLE_STAT_HEIGHT + BossHUD.LITTLE_STAT_PADDING * 2
@@ -223,9 +228,17 @@ function BossHUD:updateStats()
 	do
 		local little = state.littleStats
 		for i = 1, #little do
-			local stat = self.littleStats[i].statBar
-			stat:setCurrent(little[i].current)
-			stat:setMax(little[i].max)
+			if little[i].isBoolean and little[i].current == 0 then
+				self:removeChild(self.littleStats[i].icon)
+			else
+				self:addChild(self.littleStats[i].icon)
+			
+				local stat = self.littleStats[i].statBar
+				if stat then
+					stat:setCurrent(little[i].current)
+					stat:setMax(little[i].max)
+				end
+			end
 		end
 	end
 end

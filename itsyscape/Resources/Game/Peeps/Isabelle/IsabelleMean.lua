@@ -132,7 +132,7 @@ function IsabelleMean:rezzMinion(minion)
 		local status = minion:getBehavior(CombatStatusBehavior)
 		if status.dead then
 			minion:poke('resurrect')
-			status.currentHitpoints = status.maximumHitpoints
+			status.currentHitpoints = math.floor(status.maximumHitpoints / 2)
 		end
 
 		local target = self:getBehavior(CombatTargetBehavior)

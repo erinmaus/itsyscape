@@ -632,6 +632,9 @@ include "Resources/Game/DB/Powers/Archery.lua"
 include "Resources/Game/DB/Powers/Melee.lua"
 include "Resources/Game/DB/Powers/Defense.lua"
 
+-- Misc gameplay things
+include "Resources/Game/DB/Effects/Immunities.lua"
+
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Flax.lua"
