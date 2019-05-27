@@ -74,6 +74,107 @@ do
 end
 
 do
+	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Isabelle.IsabelleMean",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Isabelle",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "But she was so nice!",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AmuletOfYendor",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+end
+
+do
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Resource.Peep "IsabelleIsland_Rosalind" {

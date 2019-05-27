@@ -249,11 +249,6 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice",
 		MapObject = M["Isabelle"]
 	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Lever",
-		MapObject = M["Isabelle"]
-	}
 end
 
 M["AdvisorGrimm"] = ItsyScape.Resource.MapObject.Unique()

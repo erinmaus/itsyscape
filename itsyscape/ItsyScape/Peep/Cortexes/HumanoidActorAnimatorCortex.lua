@@ -183,16 +183,12 @@ end
 
 function HumanoidActorAnimatorCortex:getPeepWeaponType(peep, weapon)
 	if not weapon then
-		weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
-		         Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+		weapon = Utility.Peep.getEquippedWeapon(peep, true)
 	end
 
 	local x
-	if weapon then
-		weapon = peep:getDirector():getItemManager():getLogic(weapon:getID())
-		if weapon:isCompatibleType(Weapon) then
-			x = weapon:getWeaponType()
-		end
+	if weapon and weapon:isCompatibleType(Weapon) then
+		x = weapon:getWeaponType()
 	end
 
 	return x
