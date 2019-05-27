@@ -45,8 +45,6 @@ end
 function Absorb:sizzle()
 	self:getPeep():silence('hit', self._onHit)
 
-	print('damage', self.damage)
-
 	self:getPeep():poke('heal', {
 		hitPoints = math.floor(self.damage * self.damageMultiplier + 0.5)
 	})

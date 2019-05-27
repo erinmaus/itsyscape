@@ -50,6 +50,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('transferItemFrom', self.peekEquip, self)
 	peep:listen('transferItemTo', self.peekEquip, self)
 	peep:listen('spawnEquipment', self.peekEquip, self)
+	peep:listen('switchStyle', self.peekStyle, self)
 	peep:silence('actionFailed', self.actionFailed, self)
 end
 
@@ -68,6 +69,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('transferItemFrom', self.peekEquip)
 	peep:silence('transferItemTo', self.peekEquip)
 	peep:silence('spawnEquipment', self.peekEquip)
+	peep:silence('switchStyle', self.peekStyle)
 	peep:silence('actionFailed', self.actionFailed, self, peep)
 end
 
@@ -271,8 +273,21 @@ function HumanoidActorAnimatorCortex:peekEquip(peep, e)
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	local logic = peep:getDirector():getItemManager():getLogic(e.item:getID())
 	if logic:isCompatibleType(Weapon) then
-		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, item)) or
-		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, item))
+		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, logic)) or
+		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, logic))
+		then
+			self.idling[actor] = nil
+			self.walking[actor] = nil
+		end
+	end
+end
+
+function HumanoidActorAnimatorCortex:peekStyle(peep, e)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	local logic = Utility.Peep.getEquippedWeapon(peep, true)
+	if logic and logic:isCompatibleType(Weapon) then
+		if (self.idling[actor] and self.idling[actor] ~= self:getIdleAnimation(peep, logic)) or
+		   (self.walking[actor] and self.walking[actor] ~= self:getWalkAnimation(peep, logic))
 		then
 			self.idling[actor] = nil
 			self.walking[actor] = nil

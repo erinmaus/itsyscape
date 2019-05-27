@@ -30,11 +30,9 @@ function Corrupt:new(activator)
 		"Wisdom",
 		{ ['skill-as-level'] = true })
 
-	local weapon = Utility.Peep.getEquippedItem(activator, Equipment.PLAYER_SLOT_RIGHT_HAND) or
-	               Utility.Peep.getEquippedItem(activator, Equipment.PLAYER_SLOT_TWO_HANDED)
+	local weapon = Utility.Peep.getEquippedWeapon(activator, true)
 	if weapon then
-		local logic = activator:getDirector():getItemManager():getLogic(weapon:getID())
-		local damageRoll = logic:rollDamage(activator, Weapon.PURPOSE_KILL)
+		local damageRoll = weapon:rollDamage(activator, Weapon.PURPOSE_KILL)
 		local maxHit = damageRoll:getMaxHit() + 1
 		local multiplier = math.min(math.max(level - 5, 0) / 50, 2) + 1
 

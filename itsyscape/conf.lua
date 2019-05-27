@@ -24,8 +24,8 @@ function love.conf(t)
 
 	t.identity = "ItsyRealm"
 	t.title = "ItsyRealm"
-	t.window.width = s.width or 1280
-	t.window.height = s.height or 720
+	t.window.width = s.width or 1024
+	t.window.height = s.height or 768
 	t.window.depth = 24
 	t.window.fullscreen = s.fullscreen or false
 	t.window.vsync = s.vsync or 0

@@ -172,6 +172,12 @@ do
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Isabelle/AttackLogic.lua",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
 end
 
 do

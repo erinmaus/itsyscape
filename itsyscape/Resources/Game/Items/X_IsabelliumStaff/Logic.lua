@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_IsabelleiumStaff/Logic.lua
+-- Resources/Game/Items/X_Isabellium/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Staff = require "Resources.Game.Items.Common.Staff"
 
-local IsabelleiumStaff = Class(Staff)
+local IsabelliumStaff = Class(Staff)
 
-return IsabelleiumStaff
+function IsabelliumStaff:getID()
+	return 'X_IsabelliumStaff'
+end
+
+return IsabelliumStaff
