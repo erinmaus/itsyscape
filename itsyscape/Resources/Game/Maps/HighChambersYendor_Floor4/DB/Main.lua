@@ -202,3 +202,57 @@ do
 		MapObject = M["Isabelle"]
 	}
 end
+
+M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 1,
+		PositionZ = 9,
+		Direction = 1,
+		Name = "Wizard",
+		Map = M._MAP,
+		Resource = M["Wizard"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
+		MapObject = M["Wizard"]
+	}
+end
+
+M["Archer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 1,
+		PositionZ = 9,
+		Direction = 1,
+		Name = "Archer",
+		Map = M._MAP,
+		Resource = M["Archer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
+		MapObject = M["Archer"]
+	}
+end
+
+M["Warrior"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 9,
+		Direction = 1,
+		Name = "Warrior",
+		Map = M._MAP,
+		Resource = M["Warrior"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
+		MapObject = M["Warrior"]
+	}
+end

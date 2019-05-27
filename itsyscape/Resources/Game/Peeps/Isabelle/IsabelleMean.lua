@@ -13,10 +13,13 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Probe = require "ItsyScape.Peep.Probe"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
@@ -40,9 +43,7 @@ function IsabelleMean:new(resource, name, ...)
 
 	self:addBehavior(StanceBehavior)
 	self:addBehavior(ActiveSpellBehavior)
-
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = math.huge
+	self:addBehavior(CombatStatusBehavior)
 end
 
 function IsabelleMean:ready(director, game)
@@ -78,6 +79,7 @@ function IsabelleMean:ready(director, game)
 	runes:add("EarthRune")
 	runes:add("WaterRune")
 	runes:add("FireRune")
+	runes:add("Dynamite")
 
 	self:getState():addProvider("Item", runes)
 
@@ -87,6 +89,9 @@ function IsabelleMean:ready(director, game)
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
 	spell.spell = Utility.Magic.newSpell("AirStrike", game)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 end
 
 function IsabelleMean:onSwitchStyle(style)
@@ -107,6 +112,41 @@ function IsabelleMean:onSwitchStyle(style)
 	if xWeapon then
 		Utility.Peep.equipXWeapon(self, xWeapon)
 	end
+end
+
+function IsabelleMean:onBoss()
+	Utility.UI.openInterface(
+		self:getDirector():getGameInstance():getPlayer():getActor():getPeep(),
+		"BossHUD",
+		false,
+		self)
+end
+
+function IsabelleMean:rezzMinion(minion)
+	local director = self:getDirector()
+	local hits = director:probe(
+		self:getLayerName(),
+		Probe.namedMapObject(minion))
+	if #hits >= 1 then
+		local minion = hits[1]
+		local status = minion:getBehavior(CombatStatusBehavior)
+		if status.dead then
+			minion:poke('resurrect')
+			status.currentHitpoints = status.maximumHitpoints
+		end
+
+		local target = self:getBehavior(CombatTargetBehavior)
+		if target then
+			status.maxChaseDistance = math.huge
+			Utility.Peep.attack(minion, target.actor:getPeep())
+		end
+	end
+end
+
+function IsabelleMean:onRezzMinions()
+	self:rezzMinion("Wizard")
+	self:rezzMinion("Archer")
+	self:rezzMinion("Warrior")
 end
 
 return IsabelleMean

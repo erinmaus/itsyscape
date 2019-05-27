@@ -22,6 +22,10 @@ function BasicLight:new(...)
 	self.global = true
 end
 
+function BasicLight:spawnOrPoofTile(tile, i, j, mode)
+	-- Nothing.
+end
+
 function BasicLight:ready(director, game)
 	Prop.ready(self, director, game)
 

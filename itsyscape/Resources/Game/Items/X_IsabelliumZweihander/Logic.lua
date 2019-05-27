@@ -13,4 +13,8 @@ local Zweihander = require "Resources.Game.Items.Common.Zweihander"
 
 local IsabelliumZweihander = Class(Zweihander)
 
+function IsabelliumZweihander:getID()
+	return 'X_IsabelliumZweihander'
+end
+
 return IsabelliumZweihander

@@ -2036,6 +2036,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('initiateAttack')
 	peep:listen('initiateAttack', Utility.Peep.Attackable.onInitiateAttack)
 	peep:addPoke('receiveAttack')
+	peep:addPoke('switchStyle')
 
 	peep:listen('ready', Utility.Peep.Attackable.onReady)
 

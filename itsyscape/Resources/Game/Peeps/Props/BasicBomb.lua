@@ -77,8 +77,7 @@ function BasicBomb:calculatePrimedDamage()
 		return 0
 	end
 
-	local weapon = Utility.Peep.getEquippedItem(self.peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
-	               Utility.Peep.getEquippedItem(self.peep, Equipment.PLAYER_SLOT_TWO_HANDED)
+	local weapon = Utility.Peep.getEquippedWeapon(self.peep, true)
 	if not weapon then
 		return 0
 	end
@@ -88,8 +87,7 @@ function BasicBomb:calculatePrimedDamage()
 		"Dexterity",
 		{ ['skill-as-level'] = true })
 
-	local logic = self:getDirector():getItemManager():getLogic(weapon:getID())
-	local damageRoll = logic:rollDamage(self.peep, Weapon.PURPOSE_KILL)
+	local damageRoll = weapon:rollDamage(self.peep, Weapon.PURPOSE_KILL)
 	local maxHit = damageRoll:getMaxHit() + 1
 	local multiplier = math.min(math.max(level - 5, 0) / 50 * 2, 2) + 1
 

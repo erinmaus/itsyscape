@@ -59,15 +59,8 @@ end
 
 function CombatPower:getXWeapon(peep)
 	if self.xWeapon then
-		local equippedWeapon =
-			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
-			Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
-		local itemID
-		if equippedWeapon then
-			itemID = equippedWeapon:getID()
-		end
-
-		return Utility.Peep.getXWeapon(self:getGame(), self.xWeapon, itemID)
+		local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
+		return Utility.Peep.getXWeapon(self:getGame(), self.xWeapon, equippedWeapon:getID())
 	end
 
 	return nil

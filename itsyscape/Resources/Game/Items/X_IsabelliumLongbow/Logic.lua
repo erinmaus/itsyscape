@@ -14,6 +14,10 @@ local Longbow = require "Resources.Game.Items.Common.Longbow"
 local IsabelliumLongbow = Class(Longbow)
 IsabelliumLongbow.AMMO = Equipment.AMMO_NONE
 
+function IsabelliumLongbow:getID()
+	return 'X_IsabelliumLongbow'
+end
+
 function IsabelliumLongbow:getProjectile()
 	return 'BronzeArrow'
 end
