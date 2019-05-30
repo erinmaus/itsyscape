@@ -185,6 +185,30 @@ do
 	}
 end
 
+M["Anchor_Bridge_TopLeft"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 0,
+		PositionZ = 33,
+		Name = "Anchor_Bridge_TopLeft",
+		Map = M._MAP,
+		Resource = M["Anchor_Bridge_TopLeft"]
+	}
+end
+
+M["Anchor_Bridge_BottomRight"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 37,
+		Name = "Anchor_Bridge_BottomRight",
+		Map = M._MAP,
+		Resource = M["Anchor_Bridge_BottomRight"]
+	}
+end
+
 M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -200,6 +224,42 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
 		MapObject = M["Isabelle"]
+	}
+
+	M["Isabelle"] {
+		ItsyScape.Action.Attack()
+	}
+end
+
+M["Isabelle_Dummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Isabelle_Dummy",
+		Map = M._MAP,
+		Resource = M["Isabelle_Dummy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
+		MapObject = M["Isabelle_Dummy"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Isabelle_Dummy"],
+		Name = "Isabelle",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/HighChambersYendor_Floor4/Dialog/Isabelle_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Isabelle_Dummy"] {
+		TalkAction
 	}
 end
 

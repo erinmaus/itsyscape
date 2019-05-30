@@ -40,6 +40,10 @@ else
 		end
 	end
 
+	if _DEBUG then
+		piratesAlive = false
+	end
+
 	if piratesAlive then
 		defer "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/CombatBanter_en-US.lua"
 	elseif not cthulhuSpawned then

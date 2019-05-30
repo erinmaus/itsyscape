@@ -39,7 +39,7 @@ function HighChambersYendor:openWaterfallRoom()
 		self:getLayerName(),
 		Probe.namedMapObject("Door_Waterfall"))
 	if #hits >= 1 then
-		hits[1]:poke('open', true)
+		hits[1]:poke('open', nil, true)
 	end
 end
 

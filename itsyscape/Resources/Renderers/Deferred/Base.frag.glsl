@@ -20,7 +20,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate);
 void effect()
 {
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
-	if (diffuse.a < 254.0 / 255.0)
+	if (diffuse.a < 250.0 / 255.0)
 	{
 		discard;
 	}

@@ -195,7 +195,17 @@ ItsyScape.Meta.Equipment {
 
 do
 	ItsyScape.Resource.Item "BronzeKriegHelm" {
-		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Attack",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Strength",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			}
+		},
 		ItsyScape.Action.Dequip(),
 		ItsyScape.Action.Smelt() {
 			Requirement {

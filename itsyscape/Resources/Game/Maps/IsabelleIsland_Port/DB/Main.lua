@@ -292,3 +292,55 @@ do
 		Resource = M["Anchor_ReturnFromSea"]
 	}
 end
+
+M["Anchor_FromHighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 10,
+		PositionZ = 35,
+		Name = "Anchor_FromHighChambersYendor",
+		Map = M._MAP,
+		Resource = M["Anchor_FromHighChambersYendor"]
+	}
+end
+
+M["TrapDoor_ToHighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 10,
+		PositionZ = 33,
+		Name = "TrapDoor_ToHighChambersYendor",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToHighChambersYendor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToHighChambersYendor"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_OpenedHighChambersYendor",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromPort",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToHighChambersYendor"] {
+		TravelAction
+	}
+end

@@ -59,7 +59,6 @@ function PrayerDrainCortex:update()
 					drain = drain - resistance
 
 					status.currentPrayer = math.max(status.currentPrayer - 1, 0)
-					print('stuck')
 				end
 			end
 
