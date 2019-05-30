@@ -157,6 +157,7 @@ function PlayerInventory:swap(button, x, y)
 			local i = math.floor(x / buttonSize)
 			local j = math.floor(y / buttonSize)
 			local newIndex = j * math.max(math.floor(width / buttonSize), 1) + i + 1
+			newIndex = math.min(math.max(1, newIndex), self.numItems)
 
 			self:sendPoke("swap", nil, { a = index, b = newIndex })
 		end

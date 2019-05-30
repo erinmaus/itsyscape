@@ -75,7 +75,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean" {
-		ItsyScape.Action.Attack()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {

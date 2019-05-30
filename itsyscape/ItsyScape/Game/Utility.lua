@@ -822,6 +822,28 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getMapObject(game, map, name)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectReference", {
+		Name = name,
+		Map = map
+	}) or gameDB:getRecord("MapObjectLocation", {
+		Name = name,
+		Map = map
+	})
+
+	if mapObject then
+		return mapObject:get("Resource")
+	end
+
+	return nil
+end
+
 function Utility.Map.getAnchorPosition(game, map, anchor)
 	local gameDB = game:getGameDB()
 
@@ -880,7 +902,7 @@ function Utility.Map.getAnchorScale(game, map, anchor)
 
 	if mapObject then
 		local x, y, z = mapObject:get("ScaleX"), mapObject:get("ScaleY"), mapObject:get("ScaleZ")
-		return x or 0, y or 0, z or 0
+		return math.max(x or 1, 1), math.max(y or 1, 1), math.max(z or 1, 1)
 	end
 
 	return nil, nil, nil

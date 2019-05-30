@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Isabellium/Logic.lua
+-- Resources/Game/Props/TrapDoor_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,17 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Staff = require "Resources.Game.Items.Common.Staff"
+local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 
-local IsabelliumStaff = Class(Staff)
+local TrapDoor = Class(SimpleStaticView)
 
-function IsabelliumStaff:getCooldown(peep)
-	return 4
+function TrapDoor:getTextureFilename()
+	return "Resources/Game/Props/TrapDoor_Default/TrapDoor.png"
 end
 
-function IsabelliumStaff:getID()
-	return 'X_IsabelliumStaff'
+function TrapDoor:getModelFilename()
+	return "Resources/Game/Props/TrapDoor_Default/TrapDoor.lstatic", "TrapDoor"
 end
 
-return IsabelliumStaff
+return TrapDoor

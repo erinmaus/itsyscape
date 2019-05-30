@@ -22,7 +22,7 @@ end
 function HighChambersYendor:onFinalize(director, game)
 	self:initMiniboss()
 
-	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever1")
+	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever2")
 end
 
 function HighChambersYendor:initMiniboss()
