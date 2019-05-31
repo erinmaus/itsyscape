@@ -14,6 +14,9 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local HighChambersYendorCommon = require "Resources.Game.Peeps.HighChambersYendor.Common"
 
 local HighChambersYendor = Class(Map)
@@ -64,6 +67,8 @@ function HighChambersYendor:initBoss(director, game)
 				"HighChambersYendor_Floor4",
 				"Isabelle_Dummy")
 			Utility.Peep.setMapObject(isabelle, mapObject)
+
+			isabelle:listen('die', self.onKillBoss, self, director, game)
 		end
 	end
 end
@@ -183,6 +188,71 @@ function HighChambersYendor:initWater(director, game)
 			for i = l, r do
 				local tile = map:getTile(i, j)
 				tile:pushFlag('impassable')
+			end
+		end
+	end
+end
+
+function HighChambersYendor:killMinion(name)
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+	do
+		local hits = director:probe(
+			self:getLayerName(),
+			Probe.namedMapObject(name))
+		if #hits >= 1 then
+			local minion = hits[1]
+
+			local status = minion:getBehavior(CombatStatusBehavior)
+			if not status.dead or status.currentHitpoints > 0 then
+				minion:poke('die')
+			end
+		end
+	end
+end
+
+function HighChambersYendor:onKillBoss(director, game)
+	local player = game:getPlayer():getActor():getPeep()
+	player:getState():give("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+
+	self:killMinion("Wizard")
+	self:killMinion("Archer")
+	self:killMinion("Warrior")
+
+	do
+		local hits = director:probe(
+			self:getLayerName(),
+			Probe.namedMapObject("Isabelle"))
+		if #hits >= 1 then
+			isabelle = hits[1]
+			isabelle:removeBehavior(MashinaBehavior)
+			isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+			isabelle:pushPoke('resurrect')
+
+			local status = isabelle:getBehavior(CombatStatusBehavior)
+			status.dead = false
+			status.currentHitpoints = math.huge
+
+			player:removeBehavior(CombatTargetBehavior)
+
+			local mapObject = Utility.Map.getMapObject(
+				game,
+				"HighChambersYendor_Floor4",
+				"Isabelle_Dead")
+			Utility.Peep.setMapObject(isabelle, mapObject)
+
+			local actions = Utility.getActions(
+				game,
+				mapObject,
+				'world')
+			for i = 1, #actions do
+				if actions[i].instance:is("talk") then
+					return Utility.UI.openInterface(
+						player,
+						"DialogBox",
+						true,
+						actions[i].instance:getAction())
+				end
 			end
 		end
 	end
