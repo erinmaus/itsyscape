@@ -263,6 +263,38 @@ do
 	}
 end
 
+M["Isabelle_Dead"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Isabelle_Dead",
+		Map = M._MAP,
+		Resource = M["Isabelle_Dead"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
+		MapObject = M["Isabelle_Dead"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Isabelle_Dead"],
+		Name = "Isabelle",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/HighChambersYendor_Floor4/Dialog/IsabelleDead_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Isabelle_Dead"] {
+		TalkAction
+	}
+end
+
 M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

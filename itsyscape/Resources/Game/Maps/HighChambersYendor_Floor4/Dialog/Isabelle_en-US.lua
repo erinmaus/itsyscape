@@ -79,6 +79,8 @@ local mapObject = Utility.Map.getMapObject(
 local isabelle = _SPEAKERS["Isabelle"]
 Utility.Peep.setMapObject(isabelle, mapObject)
 
+_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_MysteryBoss")
+
 if option == DIE then
 	Utility.Peep.attack(isabelle, _TARGET)
 end

@@ -6,6 +6,15 @@ message {
 	"I'm Isabelle's big bro, Orlando."
 }
 
+local killedIsabelle = _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+
+if killedIsabelle then
+	message {
+		"Sorry 'bout my sis being so loony.",
+		"Ever since she got that amulet she's been a bit strange, y'know?",
+	}
+end
+
 local gaveFish = _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GaveOrlandoFish")
 
 local INFO   = option "What are you doing?"
