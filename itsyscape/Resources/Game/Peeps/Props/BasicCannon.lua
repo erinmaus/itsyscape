@@ -10,10 +10,12 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
@@ -58,6 +60,17 @@ end
 function BasicCannon:onFire(peep)
 	local health = self:getBehavior(PropResourceHealthBehavior)
 	health.currentProgress = health.maxProgress
+
+	do
+		local fireAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Action_FireCannon/Script.lua")
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:playAnimation('x-cannon-fire', 1, fireAnimation, true)
+		end
+	end
 
 	local resource = Utility.Peep.getResource(self)
 	if resource then

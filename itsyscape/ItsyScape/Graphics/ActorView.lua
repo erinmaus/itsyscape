@@ -22,6 +22,7 @@ function ActorView.Animatable:new(actor)
 	self.actor = actor
 	self.transforms = {}
 	self.sceneNodes = {}
+	self.sounds = {}
 end
 
 function ActorView.Animatable:setColor(value)
@@ -32,6 +33,17 @@ function ActorView.Animatable:setColor(value)
 			end
 		end
 	end
+end
+
+function ActorView.Animatable:playSound(filename)
+	local sound = self.sounds[filename]
+	if not sound then
+		sound = love.audio.newSource(filename, 'static')
+		self.sounds[filename] = sound
+	end
+
+	sound:seek(0)
+	sound:play()
 end
 
 function ActorView.Animatable:getSkeleton()
@@ -89,6 +101,27 @@ function ActorView.Animatable:setTransform(index, transform)
 
 	self.transforms[index]:reset()
 	self.transforms[index]:apply(transform)
+end
+
+function ActorView.Animatable:update()
+	local transform = self.actor:getSceneNode():getTransform():getGlobalDeltaTransform(0)
+	local x, y, z = transform:transformPoint(0, 0, 0)
+
+	local pending
+	for filename, sound in pairs(self.sounds) do
+		sound:setPosition(x, y, z)
+
+		if not sound:isPlaying() then
+			pending = pending or {}
+			pending[filename] = true
+		end
+	end
+
+	if pending then
+		for sound in pairs(pending) do
+			self.sounds[sound] = nil
+		end
+	end
 end
 
 function ActorView:new(actor, actorID)
@@ -417,6 +450,8 @@ end
 function ActorView:update(delta)
 	self.animationsDirty = true
 	self.animationDelta = delta
+
+	self.animatable:update()
 end
 
 function ActorView:updateAnimations()

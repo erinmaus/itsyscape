@@ -19,6 +19,11 @@ function Animatable:setColor(value)
 	return Class.ABSTRACT()
 end
 
+-- Plays a sound.
+function Animatable:playSound(filename)
+	Class.ABSTRACT()
+end
+
 -- Gets the target skeleton of the the animatable.
 function Animatable:getSkeleton()
 	return Class.ABSTRACT()

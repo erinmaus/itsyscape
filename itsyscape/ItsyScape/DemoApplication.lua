@@ -65,6 +65,8 @@ end
 function DemoApplication:initialize()
 	Application.initialize(self)
 
+	love.audio.setDistanceModel('linear')
+
 	self:openTitleScreen()
 end
 
@@ -90,6 +92,8 @@ function DemoApplication:openTitleScreen()
 	self:setIsPaused(true)
 	local TitleScreen = require "Resources.Game.TitleScreens.IsabelleIsland.Title"
 	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
+
+	self:getGameView():playMusic('main', "IsabelleIsland")
 end
 
 function DemoApplication:quit()

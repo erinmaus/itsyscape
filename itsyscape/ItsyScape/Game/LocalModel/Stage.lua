@@ -49,6 +49,7 @@ function LocalStage:new(game)
 	self.stageName = "::orphan"
 	self.tests = { id = 1 }
 	self.weathers = {}
+	self.music = {}
 
 	self.grounds = {}
 	self:spawnGround(self.stageName, 1)
@@ -539,6 +540,18 @@ function LocalStage:loadMapResource(filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
+	local musicMeta
+	do
+		local metaFilename = directoryPath .. "/meta.music"
+		local data = "return " .. (love.filesystem.read(metaFilename) or "")
+		local chunk = assert(loadstring(data))
+		musicMeta = setfenv(chunk, {})() or {}
+	end
+
+	for key, song in pairs(musicMeta) do
+		self:playMusic(self.stageName, key, song)
+	end
+
 	local maxLayer = baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
 		local layer = item:match(".*(-?%d)%.lmap$")
@@ -626,6 +639,28 @@ function LocalStage:loadMapResource(filename, args)
 	return baseLayer + 1, mapScript
 end
 
+function LocalStage:playMusic(layerName, channel, song)
+	self.onPlayMusic(self, channel, song)
+	table.insert(self.music, {
+		channel = channel,
+		song = song
+	})
+end
+
+function LocalStage:stopMusic(layerName, channel, song)
+	self.onStopMusic(self, channel, song)
+
+	local index = 1
+	while index <= #self.music do
+		local m = self.music[index]
+		if m.channel == channel and m.song == song then
+			table.remove(self.music, index)
+		else
+			index = index + 1
+		end
+	end
+end
+
 function LocalStage:loadStage(path)
 	local filename
 	local args = {}
@@ -650,9 +685,29 @@ function LocalStage:loadStage(path)
 		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
 	end
 
+	local oldMusic = self.music
+	self.music = {}
+
 	self:unloadAll()
 	self.oldStageName = self.stageName
 	self.stageName = filename
+
+	do
+		for i = 1, #oldMusic do
+			local m = oldMusic[i]
+			local hasSong = false
+			for j = 1, #self.music do
+				if self.music[j].channel == m.channel then
+					hasSong = true
+					break
+				end
+			end
+
+			if not hasSong then
+				self:stopMusic(self.stageName, m.channel, m.song)
+			end
+		end
+	end
 
 	self:loadMapResource(filename, args)
 
