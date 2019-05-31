@@ -7,6 +7,9 @@ message {
 	"I'm willing to let you leave alive, for now, should you return to whence you came..."
 }
 
+local stage = _DIRECTOR:getGameInstance():getStage()
+stage:playMusic(_TARGET:getLayerName(), "main", "IsabelleFight")
+
 local WHAT      = option "What are you doing?!"
 local WHO       = option "Who do you think you are?"
 local DIE       = option "Die, traitor!"

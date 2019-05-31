@@ -110,8 +110,20 @@ function GameView:new(game)
 	end
 	stage.onProjectile:register(self._onProjectile)
 
+	self._onPlayMusic = function(_, track, song)
+		self:playMusic(track, song)
+	end
+	stage.onPlayMusic:register(self._onPlayMusic)
+
+	self._onStopMusic = function(_, track, song)
+		self:playMusic(track, false)
+	end
+	stage.onStopMusic:register(self._onStopMusic)
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+
+	self.music = {}
 
 	self.water = {}
 
@@ -184,6 +196,8 @@ function GameView:release()
 	stage.onWaterDrain:unregister(self._onWaterDrain)
 	stage.onForecast:unregister(self._onForecast)
 	stage.onProjectile:unregister(self._onProjectile)
+	stage.onPlayMusic:unregister(self._onPlayMusic)
+	stage.onStopMusic:unregister(self._onStopMusic)
 end
 
 function GameView:addMap(map, layer, tileSetID)
@@ -546,6 +560,30 @@ function GameView:fireProjectile(projectileID, source, destination, time)
 	end
 end
 
+function GameView:playMusic(track, song)
+	if not song then
+		local t = self.music[track]
+		if t then
+			table.insert(t, false)
+		end
+	else
+		local filename = string.format("Resources/Game/Music/%s/Music.ogg", song)
+		local song = love.audio.newSource(filename, 'stream')
+		song:setVolume(0)
+		song:setLooping(true)
+		song:play()
+
+		local t = self.music[track]
+		if t then
+			table.insert(t, song)
+		else
+			t = { song }
+		end
+
+		self.music[track] = t
+	end
+end
+
 function GameView:getDecorations()
 	local result = {}
 	local count = 0
@@ -587,6 +625,45 @@ function GameView:update(delta)
 	end
 
 	self.spriteManager:update(delta)
+
+	do
+		local actor = self:getActor(self.game:getPlayer():getActor())
+		if actor then
+			player = actor:getSceneNode()
+			local transform = player:getTransform():getGlobalDeltaTransform(0, 0, 0)
+			love.audio.setPosition(transform:transformPoint(0, 0, 0))
+		end
+	end
+
+	local music = {}
+	for track, songs in pairs(self.music) do
+		local index = 1
+		while index < #songs do
+			local song = songs[index]
+			if song then
+				song:setVolume(math.max(song:getVolume() - 0.5 * delta, 0))
+			end
+
+			if not song or song:getVolume() <= 0.01 then
+				if song then
+					song:stop()
+					song:release()
+				end
+				table.remove(songs, index)
+			else
+				index = index + 1
+			end
+		end
+
+		local lastSong = songs[#songs]
+		if not lastSong then
+			if #songs == 1 then
+				table.remove(songs, 1)
+			end
+		else
+			lastSong:setVolume(math.min(lastSong:getVolume() + 0.5 * delta, 1))
+		end
+	end
 end
 
 function GameView:tick()

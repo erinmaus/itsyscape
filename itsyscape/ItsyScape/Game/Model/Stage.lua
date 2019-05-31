@@ -32,6 +32,8 @@ function Stage:new()
 	self.onWaterFlood = Callback()
 	self.onWaterDrain = Callback()
 	self.onForecast = Callback()
+	self.onPlayMusic = Callback()
+	self.onStopMusic = Callback()
 
 	-- (projectileID, source, destination, time)
 	self.onProjectile = Callback()
