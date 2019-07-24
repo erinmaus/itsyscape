@@ -30,4 +30,6 @@ function love.conf(t)
 	t.window.fullscreen = s.fullscreen or false
 	t.window.vsync = s.vsync or 0
 	t.window.display = s.display or t.window.display
+
+	_CONF = s
 end
