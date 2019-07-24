@@ -1,3 +1,5 @@
+_MOBILE = false
+
 do
 	if love.system.getOS() == "Android" then
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
@@ -10,6 +12,7 @@ do
 			cpath)
 
 		_DEBUG = true
+		_MOBILE = true
 	else
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
@@ -68,8 +71,10 @@ function love.load(args)
 	end
 
 	do
-		local AnalyticsClient = require "ItsyScape.Analytics.Client"
-		_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
+		if not _MOBILE then
+			local AnalyticsClient = require "ItsyScape.Analytics.Client"
+			_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
+		end
 
 		local function printAnalytic(key, value)
 			key = _ANALYTICS.EVENTS[key]
@@ -86,7 +91,7 @@ function love.load(args)
 			end
 		end
 
-		if _ANALYTICS:getIsEnabled() then
+		if _ANALYTICS and _ANALYTICS:getIsEnabled() then
 			Log.analytic = function(key, value)
 				printAnalytic(key, value)
 				_ANALYTICS:push(key, value)
@@ -110,7 +115,13 @@ function love.load(args)
 		_APP:initialize()
 	end
 
+	Log.info("Game initialized.")
+
 	love.keyboard.setKeyRepeat(true)
+	love.audio.setVolume(_CONF.volume or 1)
+
+	Log.info("Settings applied.")
+	Log.info("Volume: %d%%.", love.audio.getVolume() * 100)
 end
 
 function love.update(delta)
