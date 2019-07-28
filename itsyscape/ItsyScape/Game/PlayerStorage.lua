@@ -182,9 +182,15 @@ function PlayerStorage:deserialize(t)
 			Log.error("Failed to deserialize player storage: %s", e)
 		end
 
-		t = r()
+		r, e = pcall(setfenv(r, {}))
+		if not r then
+			Log.error("Failed to execute player storage: %s", e)
+		else
+			t = e
+		end
 	end
 
+	t = t or {}
 	self.root = PlayerStorage.Section("root")
 	self.root:deserialize(t)
 end
