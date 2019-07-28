@@ -178,7 +178,7 @@ function LocalStage:spawnActor(actorID, layer)
 end
 
 function LocalStage:killActor(actor)
-	if actor and self.actors[actor] or self.peeps[actor] then
+	if actor and (self.actors[actor] or self.peeps[actor]) then
 		if actor:isCompatibleType(Peep) then
 			actor = self.peeps[actor]
 		end
@@ -226,7 +226,7 @@ function LocalStage:placeProp(propID, layer)
 end
 
 function LocalStage:removeProp(prop)
-	if prop and self.props[prop] or self.peeps[prop] then
+	if prop and (self.props[prop] or self.peeps[prop]) then
 		if prop:isCompatibleType(Peep) then
 			prop = self.peeps[prop]
 		end
