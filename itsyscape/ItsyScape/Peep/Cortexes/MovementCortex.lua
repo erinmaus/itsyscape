@@ -96,12 +96,20 @@ function MovementCortex:update(delta)
 			end
 
 			local oldPosition = position.position
+			local oldTile, oldI, oldJ = map:getTileAt(oldPosition.x, oldPosition.z)
 
 			local velocity = movement.velocity * delta * movement.velocityMultiplier
 			position.position = position.position + velocity * multiplier
 
+			local newTile, newI, newJ = map:getTileAt(position.position.x, position.position.z)
+
 			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
 			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)
+
+			if newTile:hasFlag('impassable') and not oldTile:hasFlag('impassable') then
+				position.position = oldPosition
+				Log.info("Peep '%s' entered an impassable region.", peep:getName())
+			end
 
 			local y = map:getInterpolatedHeight(
 				position.position.x,
