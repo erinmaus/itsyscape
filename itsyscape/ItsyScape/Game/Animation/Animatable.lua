@@ -49,12 +49,12 @@ end
 -- Sets the array of transforms.
 --
 -- 'transforms' can be a sparse array.
-function Animatable:setTransforms(transforms)
+function Animatable:setTransforms(transforms, animation, time)
 	Class.ABSTRACT()
 end
 
 -- Sets a transform at the specified index.
-function Animatable:setTransform(index, transform)
+function Animatable:setTransform(index, transform, animation, time)
 	Class.ABSTRACT()
 end
 

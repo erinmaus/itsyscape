@@ -46,16 +46,16 @@ function PlayAnimationInstance:play(animatable, time)
 	end
 
 	if self.animation then
-		self.animation:computeTransforms(time, self.transforms)
+		self.animation:computeTransforms(time, self.transforms, true)
 
 		local bones = self.command:getBones()
 		if #bones == 0 then
-			animatable:setTransforms(self.transforms)
+			animatable:setTransforms(self.transforms, self.animation, time)
 		else
 			for i = 1, #bones do
 				local boneIndex = self.skeleton:getBoneIndex(bones[i])
 				if boneIndex then
-					animatable:setTransform(boneIndex, self.transforms[boneIndex])
+					animatable:setTransform(boneIndex, self.transforms[boneIndex], self.animation, time)
 				end
 			end
 		end

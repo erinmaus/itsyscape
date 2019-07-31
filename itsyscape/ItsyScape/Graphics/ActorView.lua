@@ -21,6 +21,7 @@ ActorView.Animatable = Class(Animatable)
 function ActorView.Animatable:new(actor)
 	self.actor = actor
 	self.transforms = {}
+	self.animations = {}
 	self.sceneNodes = {}
 	self.sounds = {}
 end
@@ -84,15 +85,24 @@ function ActorView.Animatable:getTransforms()
 	return self.transforms
 end
 
-function ActorView.Animatable:setTransforms(transforms)
+function ActorView.Animatable:setTransforms(transforms, animation, time)
 	for k, transform in pairs(transforms) do
 		if type(k) == 'number' then
-			self:setTransform(k, transform)
+			self:setTransform(k, transform, animation, time)
 		end
 	end
 end
 
-function ActorView.Animatable:setTransform(index, transform)
+function ActorView.Animatable:getAnimationForBone(index)
+	local a = self.animations[index]
+	if not a then
+		return nil, nil
+	else
+		return unpack(self.animations[index])
+	end
+end
+
+function ActorView.Animatable:setTransform(index, transform, animation, time)
 	for i = 1, index do
 		if self.transforms[index] == nil then
 			self.transforms[index] = love.math.newTransform()
@@ -101,6 +111,7 @@ function ActorView.Animatable:setTransform(index, transform)
 
 	self.transforms[index]:reset()
 	self.transforms[index]:apply(transform)
+	self.animations[index] = { animation, time }
 end
 
 function ActorView.Animatable:update()
@@ -468,7 +479,7 @@ function ActorView:updateAnimations()
 			table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
 		end
 
-		for _, a in ipairs(animations) do
+		for index, a in ipairs(animations) do
 			local animation = a.value
 			local slot = a.key
 
@@ -487,7 +498,25 @@ function ActorView:updateAnimations()
 
 				animation.done = false
 			else
-				animation.done = animation.instance:play(animation.time, animation.next ~= nil)
+				animation.done = animation.instance:play(animation.time, animation.next ~= nil, animations)
+			end
+		end
+
+		local transforms = self.animatable:getTransforms()
+		do
+			for i = 1, #transforms do
+				local animation, time = self.animatable:getAnimationForBone(i)
+				if animation then
+					animation:computeTransform(time, transforms, i)
+				end
+			end
+
+
+			for i = 1, #transforms do
+				local animation, time = self.animatable:getAnimationForBone(i)
+				if animation then
+					animation:applyBindPose(time, transforms, i)
+				end
 			end
 		end
 

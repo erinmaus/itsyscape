@@ -123,53 +123,63 @@ function SkeletonAnimation:getDuration()
 	return self.duration
 end
 
-function SkeletonAnimation:computeTransforms(time, transforms)
+function SkeletonAnimation:computeTransforms(time, transforms, localOnly)
 	for index = 1, self.skeleton:getNumBones() do
-		local bone = self.skeleton:getBoneByIndex(index)
-		local name = bone:getName()
-		local boneFrame = self.bones[name]
-		local transform = transforms[index] or love.math.newTransform()
-		transform:reset()
+		self:computeTransform(time, transforms, index, localOnly)
+	end
 
-		if bone:getParent() then
-			local parentIndex = self.skeleton:getBoneIndex(bone:getParent())
-			transform:apply(transforms[parentIndex])
+	if not localOnly then
+		for index = 1, self.skeleton:getNumBones() do
+			self:applyBindPose(time, transforms, index)
 		end
+	end
+end
 
-		local duration = boneFrame[#boneFrame].time
-		local wrappedTime
-		if duration ~= 0 then
-			if time > duration then
-				wrappedTime = time % duration
-			else
-				wrappedTime = time
-			end
+function SkeletonAnimation:computeTransform(time, transforms, index, localOnly)
+	local bone = self.skeleton:getBoneByIndex(index)
+	local name = bone:getName()
+	local boneFrame = self.bones[name]
+	local transform = transforms[index] or love.math.newTransform()
+	transform:reset()
+
+	if bone:getParent() and not localOnly then
+		local parentIndex = self.skeleton:getBoneIndex(bone:getParent())
+		transform:apply(transforms[parentIndex])
+	end
+
+	local duration = boneFrame[#boneFrame].time
+	local wrappedTime
+	if duration ~= 0 then
+		if time > duration then
+			wrappedTime = time % duration
 		else
-			wrappedTime = 0
+			wrappedTime = time
 		end
-
-		local currentFrameIndex = 1
-		for i = 1, #boneFrame do
-			if wrappedTime > boneFrame[i].time then
-				currentFrameIndex = i
-			else
-				break
-			end
-		end
-
-		local nextFrameIndex = currentFrameIndex % #boneFrame + 1
-		local currentFrame = boneFrame[currentFrameIndex]
-		local nextFrame = boneFrame[nextFrameIndex]
-		currentFrame:interpolate(nextFrame, wrappedTime, transform)
-
-		transforms[index] = transform
+	else
+		wrappedTime = 0
 	end
 
-	for index = 1, self.skeleton:getNumBones() do
-		local bone = self.skeleton:getBoneByIndex(index)
-		local transform = transforms[index]
-		transform:apply(bone:getInverseBindPose())
+	local currentFrameIndex = 1
+	for i = 1, #boneFrame do
+		if wrappedTime > boneFrame[i].time then
+			currentFrameIndex = i
+		else
+			break
+		end
 	end
+
+	local nextFrameIndex = currentFrameIndex % #boneFrame + 1
+	local currentFrame = boneFrame[currentFrameIndex]
+	local nextFrame = boneFrame[nextFrameIndex]
+	currentFrame:interpolate(nextFrame, wrappedTime, transform)
+
+	transforms[index] = transform
+end
+
+function SkeletonAnimation:applyBindPose(time, transforms, index)
+	local bone = self.skeleton:getBoneByIndex(index)
+	local transform = transforms[index]
+	transform:apply(bone:getInverseBindPose())
 end
 
 return SkeletonAnimation
