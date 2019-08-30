@@ -14,12 +14,6 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 23.000000, 4.000000, 43.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 27.000000, 4.000000, 43.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
 		scale = { 1.000000, 1.000000, 1.000000 },
@@ -38,12 +32,6 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 35.000000, 4.000000, 43.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 37.000000, 4.000000, 43.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
 		scale = { 1.000000, 1.000000, 1.000000 },
@@ -51,12 +39,6 @@
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 39.000000, 4.000000, 43.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 41.000000, 4.000000, 43.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
@@ -140,19 +122,7 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 39.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 37.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 35.000000, 4.000000, 17.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
@@ -170,19 +140,7 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 27.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 25.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 23.000000, 4.000000, 17.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
@@ -200,12 +158,6 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 19.000000, 4.000000, 19.000000 },
-		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 19.000000, 4.000000, 21.000000 },
 		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
@@ -213,12 +165,6 @@
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 19.000000, 4.000000, 23.000000 },
-		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 19.000000, 4.000000, 25.000000 },
 		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
@@ -236,12 +182,6 @@
 	},
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 19.000000, 4.000000, 33.000000 },
-		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 19.000000, 4.000000, 35.000000 },
 		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
@@ -249,12 +189,6 @@
 	{
 		id = "StoneAndYellowWallpaper-wall.oedge",
 		position = { 19.000000, 4.000000, 39.000000 },
-		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
-		id = "StoneAndYellowWallpaper-wall.oedge",
-		position = { 19.000000, 4.000000, 41.000000 },
 		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
@@ -472,6 +406,72 @@
 		id = "StoneAndYellowWallpaper-wall.iflat",
 		position = { 25.000000, 4.000000, 41.000000 },
 		rotation = { 0.000000, -0.707107, 0.000000, 0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 23.000000, 4.000000, 43.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 35.000000, 4.000000, 43.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 41.000000, 4.000000, 43.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 35.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 39.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 27.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 23.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 19.000000, 4.000000, 19.000000 },
+		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 19.000000, 4.000000, 25.000000 },
+		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 19.000000, 4.000000, 33.000000 },
+		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.oedge.001",
+		position = { 19.000000, 4.000000, 41.000000 },
+		rotation = { 0.000000, 0.000000, 0.000000, -1.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
 }
