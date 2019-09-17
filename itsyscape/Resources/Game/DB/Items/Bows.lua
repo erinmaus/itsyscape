@@ -14,6 +14,13 @@ local LOGS = {
 		weight = 8,
 		style = "Puny",
 		bowstring = "Bowstring"
+	},
+
+	["Willow"] = {
+		tier = 10,
+		weight = 6,
+		style = "Bendy",
+		bowstring = "Bowstring"
 	}
 }
 
@@ -207,5 +214,46 @@ do
 		Value = "A weak longbow; slow to fire, but awesome range.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "PunyLongbow"
+	}
+end
+
+-- Willow/iron
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(14, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(13, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BendyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A small breeze will snap it.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BendyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BendyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Extra bendy, but short range.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BendyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BendyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Good range, but low arrow-power.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BendyLongbow"
 	}
 end

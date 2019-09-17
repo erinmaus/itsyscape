@@ -93,9 +93,11 @@ function TreeView:load()
 				self.node:getMaterial():setTextures(self.texture)
 				self.node:setParent(root)
 
+				local idleDuration = self.animations[TreeView.ANIMATION_IDLE]:getDuration()
+
 				self.node:onWillRender(function()
 					local animation = self:getCurrentAnimation()
-					if self.currentAnimation ~= TreeView.ANIMATION_IDLE or
+					if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and idleDuration <= 1 / 30) or
 					   self.time <= animation:getDuration()
 					then
 						animation:computeTransforms(self.time, self.transforms)
@@ -103,7 +105,8 @@ function TreeView:load()
 					end
 				end)
 
-				self.animations[TreeView.ANIMATION_IDLE]:computeTransforms(0, self.transforms)
+				local offset = idleDuration * math.random()
+				self.animations[TreeView.ANIMATION_IDLE]:computeTransforms(offset, self.transforms)
 				self.node:setTransforms(self.transforms)
 
 				local state = self:getProp():getState()
@@ -188,7 +191,10 @@ function TreeView:update(delta)
 		local animation = self:getCurrentAnimation()
 		self.time = math.min(self.time + delta, animation:getDuration())
 
-		if self.currentAnimation == TreeView.ANIMATION_CHOPPED and self.time >= animation:getDuration() then
+		if (self.currentAnimation == TreeView.ANIMATION_CHOPPED or
+			self.currentAnimation == TreeView.ANIMATION_IDLE) and
+			self.time >= animation:getDuration()
+		then
 			self.time = 0
 			self.currentAnimation = TreeView.ANIMATION_IDLE
 		end

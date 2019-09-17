@@ -341,9 +341,11 @@ function DemoApplication:update(delta)
 					ToolTip.Text(action.description)
 				}
 			else
-				renderer:unsetToolTip()
-				self.toolTip = nil
-				self.showingToolTip = false
+				if renderer:getToolTip() == self.toolTipWidget then
+					renderer:unsetToolTip()
+					self.toolTip = nil
+					self.showingToolTip = false
+				end
 			end
 		end, { ['actors'] = true, ['props'] = true })
 
@@ -353,7 +355,7 @@ function DemoApplication:update(delta)
 
 	if self.showingToolTip then
 		local renderer = self:getUIView():getRenderManager()
-		renderer:setToolTip(
+		self.toolTipWidget = renderer:setToolTip(
 			math.huge,
 			unpack(self.toolTip))
 	end
