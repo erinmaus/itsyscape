@@ -14,6 +14,27 @@ local LOGS = {
 		weight = 8,
 		health = 6,
 		tinderbox = "Tinderbox"
+	},
+
+	["Shadow"] = {
+		tier = 0,
+		weight = -2,
+		health = 10,
+		tinderbox = "Tinderbox"
+	},
+
+	["Willow"] = {
+		tier = 10,
+		weight = 6,
+		health = 20,
+		tinderbox = "Tinderbox"
+	},
+
+	["Azathothian"] = {
+		tier = 90,
+		weight = -10,
+		health = 255,
+		tinderbox = "Tinderbox"
 	}
 }
 
@@ -210,7 +231,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "An evergreen found all over the Realm",
+	Value = "An evergreen found all over the Realm.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CommonTree_Default"
 }
@@ -221,3 +242,56 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "CommonFire"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Logs found from a common willow.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WillowLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Found near water.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WillowTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "These logs are damp. Miracle they lit at all.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WillowFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "I hope I don't get sick from these!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AzathothianLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Leaking multidimensional energy from Azathoth, Yendor's home.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AzathothianTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A fire that burns blue with the fiery of Yendor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AzathothianFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "These logs are useless...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ShadowLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the great common fir tree of the Realm",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A sickly fire.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowFire"
+}

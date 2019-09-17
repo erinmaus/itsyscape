@@ -53,6 +53,8 @@ function WidgetRenderManager:setToolTip(duration, ...)
 	self.toolTip = ToolTip(...)
 	self.toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
 	self.toolTip:setPosition(love.mouse.getPosition())
+
+	return self.toolTip
 end
 
 function WidgetRenderManager:unsetToolTip()

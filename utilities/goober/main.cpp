@@ -195,7 +195,7 @@ void exportMesh(const aiScene* scene, FILE* output)
 		float sum = 0.0f;
 		for (int j = 0; j < vertex.bones; ++j)
 		{
-			sum += vertex.boneWeight[j] * vertex.boneWeight[j];
+			sum += vertex.boneWeight[j];
 		}
 
 		float length = std::sqrt(sum);

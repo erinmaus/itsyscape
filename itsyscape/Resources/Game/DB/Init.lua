@@ -438,9 +438,11 @@ Game "ItsyScape"
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
-local RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+local RESOURCE_CURVE = Curve(nil, nil, nil, nil)
 ItsyScape.Utility.xpForResource = function(a)
-	return RESOURCE_CURVE(a + 1)
+	local point1 = RESOURCE_CURVE(a)
+	local point2 = RESOURCE_CURVE(a + 1)
+	return math.floor((point2 - point1) / 4)
 end
 
 -- Calculates the sum style bonus for an item of the specified tier.
