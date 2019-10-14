@@ -435,6 +435,8 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ActionType "Teleport"
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -637,6 +639,7 @@ include "Resources/Game/DB/Powers/Defense.lua"
 
 -- Misc gameplay things
 include "Resources/Game/DB/Effects/Immunities.lua"
+include "Resources/Game/DB/Effects/Misc.lua"
 
 -- Props
 include "Resources/Game/DB/Props/Anvil.lua"
@@ -654,6 +657,7 @@ include "Resources/Game/DB/Props/Furniture.lua"
 include "Resources/Game/DB/Props/Range.lua"
 include "Resources/Game/DB/Props/Bones.lua"
 include "Resources/Game/DB/Props/Chandelier.lua"
+include "Resources/Game/DB/Props/Azathoth.lua"
 
 -- Props, etc (boats)
 include "Resources/Game/DB/Props/Sails.lua"
@@ -664,6 +668,7 @@ include "Resources/Game/DB/Effects/Sailing.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
+include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 
 -- Quests
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"

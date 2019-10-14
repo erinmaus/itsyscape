@@ -385,6 +385,19 @@ function ActorView:changeSkin(slot, priority, skin)
 			end
 		end
 	else
+		for i = 1, #slotNodes do
+			local s = slotNodes[i]
+			if s.priority == priority then
+				table.remove(slotNodes, i)
+
+				if s.sceneNode then
+					s.sceneNode:setParent(nil)
+				end
+
+				break
+			end
+		end
+
 		local s = {
 			definition = skin,
 			priority = priority

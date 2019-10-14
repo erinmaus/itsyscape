@@ -16,6 +16,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -81,6 +82,12 @@ function FungalDemogorgon:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
+function FungalDemogorgon:onFinalize()
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 4000
+	status.maximumHitpoints = 4000
+end
+
 function FungalDemogorgon:playOpenOrCloseAnimation()
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -99,6 +106,25 @@ function FungalDemogorgon:playOpenOrCloseAnimation()
 
 		actor:playAnimation(
 			'x-mouth', math.huge, animation)
+	end
+end
+
+function FungalDemogorgon:onWander()
+	local _, _, layer = Utility.Peep.getTile(self)
+	local map = self:getDirector():getMap(layer)
+
+	if map then
+		local foundTile = false
+		repeat
+			local i, j = math.random(map:getWidth()), math.random(map:getHeight())
+
+			local tile = map:getTile(i, j)
+			if not tile:hasFlag('impassable') then
+				if Utility.Peep.walk(self, i, j, layer, 0) then
+					foundTile = true
+				end
+			end
+		until foundTile
 	end
 end
 

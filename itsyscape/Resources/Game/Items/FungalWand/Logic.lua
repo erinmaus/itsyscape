@@ -9,8 +9,14 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Fungal = require "Resources.Game.Items.Common.Fungal"
 local Wand = require "Resources.Game.Items.Common.Wand"
 
 local FungalWand = Class(Wand)
+
+function FungalWand:perform(peep, target)
+	Wand.perform(self, peep, target)
+	Fungal.perform(self, peep, target)
+end
 
 return FungalWand
