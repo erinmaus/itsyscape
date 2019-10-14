@@ -237,6 +237,11 @@ function FungalWeather:update(delta)
 	end
 
 	self.mesh:setVertices(self.vertices)
+	self.node:getTransform():setLocalTranslation(map:getAbsolutePosition())
+end
+
+function FungalWeather:remove()
+	self.node:setParent(nil)
 end
 
 return FungalWeather

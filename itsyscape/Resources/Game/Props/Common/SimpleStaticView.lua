@@ -25,6 +25,10 @@ function SimpleStaticView:getModelFilename()
 	return Class.ABSTRACT()
 end
 
+function SimpleStaticView:getModelNode()
+	return self.decoration
+end
+
 function SimpleStaticView:load()
 	PropView.load(self)
 

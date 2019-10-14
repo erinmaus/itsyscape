@@ -91,11 +91,19 @@ function LocalStage:notifyDropItem(item, key, source)
 end
 
 function LocalStage:getMapScript(key)
-	local map = self.mapScripts[key]
-	if map then
-		return map.peep, map.layer
+	if type(key) == 'number' then
+		for _, map in pairs(self.mapScripts) do
+			if map.layer == key then
+				return map.peep, map.filename
+			end
+		end
 	else
-		return nil
+		local map = self.mapScripts[key]
+		if map then
+			return map.peep, map.layer
+		else
+			return nil
+		end
 	end
 end
 
@@ -499,6 +507,9 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 		if Class.isType(anchor, Vector) then
 			position.position = Vector(anchor.x, anchor.y, anchor.z)
+
+			local _, layer = self:getMapScript(self.stageName)
+			position.layer = layer
 		else
 			local gameDB = self.game:getGameDB()
 			local map = gameDB:getResource(filename, "Map")
@@ -510,6 +521,7 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
 				position.position = Vector(x, y, z)
+				position.layer = self.mapScripts[filename].layer
 			end
 		end
 	else
@@ -610,7 +622,8 @@ function LocalStage:loadMapResource(filename, args)
 
 			self.mapScripts[filename] = {
 				peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
-				layer = layer
+				layer = layer,
+				name = filename
 			}
 
 			self.mapScripts[filename].peep:listen('ready',
@@ -938,7 +951,7 @@ function LocalStage:fireProjectile(projectileID, source, destination)
 end
 
 function LocalStage:forecast(layer, name, id, props)
-	self.onForecast(self, name, id, props)
+	self.onForecast(self, layer, name, id, props)
 	self.weathers[name] = true
 end
 

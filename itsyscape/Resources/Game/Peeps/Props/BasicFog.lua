@@ -23,6 +23,30 @@ function BasicFog:new(...)
 	self.farDistance = 100
 end
 
+function BasicFog:getNearDistance()
+	return self.nearDistance
+end
+
+function BasicFog:setNearDistance(value)
+	self.nearDistance = value or self.nearDistance
+end
+
+function BasicFog:getFarDistance()
+	return self.farDistance
+end
+
+function BasicFog:setFarDistance(value)
+	self.farDistance = value or self.farDistance
+end
+
+function BasicFog:getColor()
+	return self.color
+end
+
+function BasicFog:setColor(value)
+	self.color = value or self.color
+end
+
 function BasicFog:ready(director, game)
 	Prop.ready(self, director, game)
 

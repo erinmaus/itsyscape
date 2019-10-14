@@ -19,6 +19,14 @@ function BasicAmbientLight:new(...)
 	self.ambience = 0.5
 end
 
+function BasicAmbientLight:getAmbience()
+	return self.ambience
+end
+
+function BasicLight:setAmbience(value)
+	self.ambience = value or self.ambience
+end
+
 function BasicAmbientLight:ready(director, game)
 	BasicLight.ready(self, director, game)
 

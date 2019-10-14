@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
@@ -99,9 +100,9 @@ function GameView:new(game)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
-	self._onForecast = function(_, key, id, props)
-		self:forecast(key, nil)
-		self:forecast(key, id, props)
+	self._onForecast = function(_, layer, key, id, props)
+		self:forecast(layer, key, nil)
+		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
 
@@ -151,7 +152,6 @@ function GameView:new(game)
 
 	self.projectiles = {}
 
-	self.weatherMap = WeatherMap(-8, -8, 2, 64 + 8, 64 + 8)
 	self.weather = {}
 end
 
@@ -216,10 +216,11 @@ function GameView:addMap(map, layer, tileSetID)
 		tileSetID = tileSetID or "GrassyPlain",
 		map = map,
 		node = SceneNode(),
-		parts = {}
+		parts = {},
+		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 8, map:getHeight() + 8)
 	}
 	m.node:setParent(self.scene)
-	self.weatherMap:addMap(m.map)
+	m.weatherMap:addMap(m.map)
 
 	self.mapMeshes[layer] = m
 end
@@ -233,7 +234,7 @@ function GameView:removeMap(layer)
 			m.parts[i]:setMapMesh(nil)
 		end
 
-		self.weatherMap:removeMap(m.map)
+		m.weatherMap:removeMap(m.map)
 
 		self.mapMeshes[layer] = nil
 	end
@@ -290,7 +291,7 @@ function GameView:updateMap(map, layer)
 			end
 		end
 
-		self.weatherMap:addMap(m.map)
+		m.weatherMap:addMap(m.map)
 	end
 end
 
@@ -305,7 +306,13 @@ function GameView:moveMap(layer, position, rotation, scale)
 
 	local m = self.mapMeshes[layer]
 	if m then
-		self.weatherMap:updateMap(m.map, position, rotation, scale)
+		m.weatherMap:updateMap(m.map, position, rotation, scale)
+
+		local x = ((m.map:getWidth() + 0.5) * m.map:getCellSize()) / 2
+		local z = ((m.map:getHeight() + 0.5) * m.map:getCellSize()) / 2
+		local globalTransform = m.node:getTransform():getGlobalTransform()
+		local position = Vector(globalTransform:transformPoint(x, 0, z))
+		m.weatherMap:setAbsolutePosition(position)
 	end
 end
 
@@ -510,7 +517,7 @@ function GameView:drain(key)
 	end
 end
 
-function GameView:forecast(key, id, props)
+function GameView:forecast(layer, key, id, props)
 	if not id then
 		local current = self.weather[key]
 		if current then
@@ -534,7 +541,8 @@ function GameView:forecast(key, id, props)
 	end
 
 	if WeatherType then
-		local weather = WeatherType(self, self.weatherMap, props or {})
+		local map = self.mapMeshes[layer].weatherMap
+		local weather = WeatherType(self, map, props or {})
 		self.weather[key] = weather
 	end
 end

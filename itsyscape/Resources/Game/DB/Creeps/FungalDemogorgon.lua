@@ -52,3 +52,23 @@ ItsyScape.Meta.PeepStat {
 	Value = ItsyScape.Utility.xpForLevel(255),
 	Resource = ItsyScape.Resource.Peep "FungalDemogorgon"
 }
+
+ItsyScape.Meta.Equipment {
+	AccuracyRanged = ItsyScape.Utility.styleBonusForItem(90),
+	AccuracyStab = ItsyScape.Utility.styleBonusForItem(90),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(120, 1.1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(120, 1.1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(120, 1.1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 0.5),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.5),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(255),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
+	Resource = ItsyScape.Resource.Peep "FungalDemogorgon"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/FungalDemogorgon/FungalDemogorgon_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "FungalDemogorgon"
+}

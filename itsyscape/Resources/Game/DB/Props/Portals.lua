@@ -26,3 +26,24 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
+
+ItsyScape.Resource.Prop "Portal_Default" {
+	ItsyScape.Action.Teleport()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicPortal",
+	Resource = ItsyScape.Resource.Prop "Portal_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A split in the fabric of reality.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Default"
+}

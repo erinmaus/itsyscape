@@ -14,9 +14,10 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 
 local WeatherMap = Class()
 
-function WeatherMap:new(i, j, cellSize, width, height)
+function WeatherMap:new(layer, i, j, cellSize, width, height)
 	self.maps = {}
 
+	self.layer = layer
 	self.realI = i or 1
 	self.realJ = j or 1
 	self.realWidth = width or 1
@@ -26,6 +27,7 @@ function WeatherMap:new(i, j, cellSize, width, height)
 	self.width = (self.realWidth - self.realI)
 	self.height = (self.realHeight - self.realJ)
 	self.cellSize = cellSize or 2
+	self.position = Vector(0, 0, 0)
 	self.isDirty = true
 
 	self.tiles = false
@@ -53,6 +55,14 @@ function WeatherMap:resize(width, height)
 	self.width = width or self.width
 	self.height = height or self.height
 	self.isDirty = true
+end
+
+function WeatherMap:getAbsolutePosition()
+	return self.position
+end
+
+function WeatherMap:setAbsolutePosition(position)
+	self.position = position or value
 end
 
 function WeatherMap:addMap(map)

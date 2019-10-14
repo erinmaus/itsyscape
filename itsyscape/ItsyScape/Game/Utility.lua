@@ -501,6 +501,7 @@ function Utility.Combat.getCombatLevel(peep)
 				faith = status.maximumPrayer
 			else
 				constitution = 1
+				faith = 1
 			end
 		end
 
@@ -822,6 +823,16 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
+	local stage = director:getGameInstance():getStage()
+	local mapScript = stage:getMapScript(layer)
+
+	local center = stage:getMap(layer):getTileCenter(i, j)
+
+	local transform = Utility.Peep.getTransform(mapScript)
+	return Vector(transform:transformPoint(center.x, center.y, center.z))
+end
+
 function Utility.Map.getMapObject(game, map, name)
 	local gameDB = game:getGameDB()
 
@@ -925,6 +936,14 @@ function Utility.Map.getAnchorDirection(game, map, anchor)
 	end
 
 	return nil, nil, nil
+end
+
+function Utility.Map.spawnMap(peep, map, position)
+	local stage = peep:getDirector():getGameInstance():getStage()
+	local mapLayer, mapScript = stage:loadMapResource(map)
+
+	local _, p = mapScript:addBehavior(PositionBehavior)
+	p.position = position
 end
 
 function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
@@ -1666,10 +1685,10 @@ function Utility.Peep.Stats:onFinalize(director)
 	if combat and stats and stats.stats then
 		stats = stats.stats
 
-		combat.maximumHitpoints = stats:getSkill("Constitution"):getWorkingLevel()
-		combat.currentHitpoints = stats:getSkill("Constitution"):getWorkingLevel()
-		combat.maximumPrayer = stats:getSkill("Faith"):getWorkingLevel()
-		combat.currentPrayer = stats:getSkill("Faith"):getWorkingLevel()
+		combat.maximumHitpoints = math.max(stats:getSkill("Constitution"):getWorkingLevel(), combat.maximumHitpoints)
+		combat.currentHitpoints = math.max(stats:getSkill("Constitution"):getWorkingLevel(), combat.currentHitpoints)
+		combat.maximumPrayer = math.max(stats:getSkill("Faith"):getWorkingLevel(), combat.maximumPrayer)
+		combat.currentPrayer = math.max(stats:getSkill("Faith"):getWorkingLevel(), combat.currentPrayer)
 	end
 end
 

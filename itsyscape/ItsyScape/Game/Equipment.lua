@@ -22,6 +22,7 @@ Equipment.PLAYER_SLOT_BACK   = 7
 Equipment.PLAYER_SLOT_FINGER = 8
 Equipment.PLAYER_SLOT_POCKET = 9
 Equipment.PLAYER_SLOT_QUIVER = 10
+Equipment.PLAYER_SLOT_EFFECT = 11
 
 Equipment.AMMO_NONE  = 0
 Equipment.AMMO_ARROW = 1

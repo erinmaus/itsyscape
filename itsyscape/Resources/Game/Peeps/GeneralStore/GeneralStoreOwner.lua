@@ -33,15 +33,15 @@ function GeneralStoreOwner:ready(director, game)
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, eyes)
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Hair/ForwardSpike.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hair)
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Shirts/PaleBrown.lua")

@@ -185,7 +185,7 @@ function SceneNode:beforeDraw(renderer, delta)
 	love.graphics.applyTransform(self.transform:getGlobalDeltaTransform(delta))
 
 	if self.willRender then
-		self.willRender()
+		self.willRender(renderer, delta)
 	end
 
 	love.graphics.setColor(self.material:getColor():get())

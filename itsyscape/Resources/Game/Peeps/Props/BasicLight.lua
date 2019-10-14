@@ -22,6 +22,14 @@ function BasicLight:new(...)
 	self.global = true
 end
 
+function BasicLight:getColor()
+	return self.color
+end
+
+function BasicLight:setColor(value)
+	self.color = value or self.color
+end
+
 function BasicLight:spawnOrPoofTile(tile, i, j, mode)
 	-- Nothing.
 end

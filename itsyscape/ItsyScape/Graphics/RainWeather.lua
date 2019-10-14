@@ -97,7 +97,8 @@ function RainWeather:new(gameView, map, props)
 	self.gravity = Vector(unpack(props.gravity or { 0, -20, 0 }))
 	self.wind = Vector(unpack(props.wind or { 0, 0, 0 }))
 	self.heaviness = math.floor(math.max(props.heaviness or 0.0, 0.0) * width * height)
-	self.height = props.height or 30
+	self.minHeight = props.minHeight or 30
+	self.maxHeight = props.maxHeight or 50
 	self.minLength = props.minLength or 2
 	self.maxLength = props.maxLength or 4
 	self.size = props.size or 1 / 32
@@ -133,6 +134,7 @@ end
 function RainWeather:update(delta)
 	Weather.update(self, delta)
 
+
 	local map = self:getMap()
 	local startI, startJ = map:getPosition()
 	local mapWidth, mapHeight = map:getSize()
@@ -156,11 +158,12 @@ function RainWeather:update(delta)
 
 			local i, j = math.random(startI, startI + mapWidth), math.random(startJ, startJ + mapHeight)
 			local x = (i - 1) * cellSize + s
+			local y = math.random() * (self.maxHeight - self.minHeight) + self.minHeight
 			local z = (j - 1) * cellSize + t
 
 			local length = math.random() * (self.maxLength - self.minLength) + self.minLength
 
-			p.x, p.y, p.z = x, self.height, z
+			p.x, p.y, p.z = x, y, z
 			p.length = length
 			p.moving = true
 		else
@@ -168,8 +171,8 @@ function RainWeather:update(delta)
 				local i = math.floor(p.x / cellSize + 1)
 				local j = math.floor(p.z / cellSize + 1)
 
-				local height = map:getHeightAt(i, j)
-				if p.y <= height or height == -math.huge then
+				local height = math.max(map:getHeightAt(i, j), 0)
+				if p.y <= height then
 					p.moving = false
 				else
 					p.x = p.x + velocity.x
@@ -193,6 +196,7 @@ function RainWeather:update(delta)
 	end
 
 	self.mesh:setVertices(self.vertices)
+	self.node:getTransform():setLocalTranslation(map:getAbsolutePosition())
 end
 
 function RainWeather:remove()

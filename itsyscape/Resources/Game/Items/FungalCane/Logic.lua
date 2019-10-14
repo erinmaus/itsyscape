@@ -10,7 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Cane = require "Resources.Game.Items.Common.Cane"
+local Fungal = require "Resources.Game.Items.Common.Fungal"
 
 local FungalCane = Class(Cane)
+
+function FungalCane:perform(peep, target)
+	Cane.perform(self, peep, target)
+	Fungal.perform(self, peep, target)
+end
 
 return FungalCane
