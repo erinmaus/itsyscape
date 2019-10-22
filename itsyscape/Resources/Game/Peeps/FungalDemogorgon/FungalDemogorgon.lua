@@ -32,6 +32,10 @@ function FungalDemogorgon:new(resource, name, ...)
 	size.size = Vector(2, 2, 2)
 
 	self:addBehavior(RotationBehavior)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 4000
+	status.maximumHitpoints = 4000
 end
 
 function FungalDemogorgon:ready(director, game)
@@ -80,12 +84,6 @@ function FungalDemogorgon:ready(director, game)
 	self:playOpenOrCloseAnimation()
 
 	Creep.ready(self, director, game)
-end
-
-function FungalDemogorgon:onFinalize()
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 4000
-	status.maximumHitpoints = 4000
 end
 
 function FungalDemogorgon:playOpenOrCloseAnimation()
