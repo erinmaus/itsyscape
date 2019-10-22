@@ -29,6 +29,9 @@ function Cthulhu:new(resource, name, ...)
 	movement.velocityMultiplier = 0.25
 	movement.accelerationMultiplier = 0.25
 
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 20000
+	status.maximumHitpoints = 20000
 end
 
 function Cthulhu:ready(director, game)
@@ -53,12 +56,6 @@ function Cthulhu:ready(director, game)
 	self:addResource("animation-idle", idleAnimation)
 
 	Creep.ready(self, director, game)
-end
-
-function Cthulhu:onFinalize()
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 20000
-	status.maximumHitpoints = 20000
 end
 
 return Cthulhu

@@ -523,7 +523,7 @@ function Utility.Combat.getCombatXP(peep)
 	local stats = peep:getBehavior(StatsBehavior)
 	if stats and stats.stats then
 		stats = stats.stats
-		local combatLevel = Utility.Combat.getCombatLevel(peep)
+		local combatLevel = math.min(Utility.Combat.getCombatLevel(peep), 512)
 		local cFactor = math.max(math.floor((stats:getSkill("Constitution"):getBaseLevel() / 10 + 0.5)), 1)
 		return math.floor(math.sqrt(combatLevel ^ 3 * cFactor) * 4 + 0.5)
 	end
@@ -1674,7 +1674,7 @@ function Utility.Peep.Stats:onReady(director)
 		end
 	end
 
-	Log.info("%s combat level: %d", self:getName(), Utility.Combat.getCombatLevel(self))
+	Log.info("%s combat level: %d (%d XP)", self:getName(), Utility.Combat.getCombatLevel(self), Utility.Combat.getCombatXP(self))
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 end

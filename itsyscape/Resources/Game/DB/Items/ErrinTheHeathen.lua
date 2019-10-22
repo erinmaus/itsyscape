@@ -12,7 +12,7 @@ ItsyScape.Resource.Item "ErrinTheHeathensHat" {
 	ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		}
 	},
 
@@ -67,7 +67,7 @@ ItsyScape.Resource.Item "ErrinTheHeathensBoots" {
 	ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		}
 	},
 
@@ -114,7 +114,7 @@ ItsyScape.Resource.Item "ErrinTheHeathensGloves" {
 	ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		}
 	},
 
@@ -161,7 +161,7 @@ ItsyScape.Resource.Item "ErrinTheHeathensCoat" {
 	ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		}
 	},
 
@@ -208,7 +208,7 @@ ItsyScape.Resource.Item "ErrinTheHeathensStaff" {
 	ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		}
 	},
 
