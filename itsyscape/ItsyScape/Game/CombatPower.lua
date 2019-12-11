@@ -60,7 +60,9 @@ end
 function CombatPower:getXWeapon(peep)
 	if self.xWeapon then
 		local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
-		return Utility.Peep.getXWeapon(self:getGame(), self.xWeapon, equippedWeapon:getID())
+		if equippedWeapon then
+			return Utility.Peep.getXWeapon(self:getGame(), self.xWeapon, equippedWeapon:getID())
+		end
 	end
 
 	return nil

@@ -16,6 +16,7 @@ local Controller = require "ItsyScape.UI.Controller"
 local Effect = require "ItsyScape.Peep.Effect"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local StrategyBarController = Class(Controller)
 StrategyBarController.VIEW_SELF = 1
@@ -28,27 +29,84 @@ function StrategyBarController:new(peep, director)
 	self.currentInterfaceID = false
 	self.currentInterfaceIndex = false
 
+	self.powers = {}
+
 	self:updateState()
+	self:bindToPlayer(peep)
+end
+
+function StrategyBarController:bindToPlayer(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+
+		self._onLevelUp = function(stats, skill, oldLevel)
+			self:updateStripWithNewPowers(skill:getName(), oldLevel, skill:getBaseLevel())
+		end
+		stats.onLevelUp:register(self._onLevelUp)
+	end
+end
+
+function StrategyBarController:unbindToPlayer(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+
+		stats.onLevelUp:unregister(self._onLevelUp)
+	end
+end
+
+function StrategyBarController:updateStripWithNewPowers(skill, oldLevel, currentLevel)
+	local offensivePowers, defensivePowers = self:getAvailablePowers()
+
+	local function bindNewPowers(powers, oldLevel, currentLevel)
+		for i = #powers, 1, -1 do
+			local power = powers[i]
+			if power.level > oldLevel and power.level <= currentLevel and #self.powers < StrategyBarController.MAX_STRIP_SIZE then
+				self:bind({ index = #self.powers + 1, type = "Power", power = power.id })
+			end
+		end
+	end
+
+	if skill == "Defense" then
+		bindNewPowers(defensivePowers, oldLevel, currentLevel)
+	elseif skill == self.style then
+		bindNewPowers(offensivePowers, oldLevel, currentLevel)
+	end
+end
+
+function StrategyBarController:close()
+	Controller.close(self)
+
+	self:getPeep()
 end
 
 function StrategyBarController:getCurrentPowerStripStorage()
 	local storage = self:getDirector():getPlayerStorage(self:getPeep())
 	local powers = storage:getRoot():getSection("StrategyBar"):getSection("Powers")
-	local strip = powers:getSection(self.style):getSection(1)
+	local strip = powers:getSection(self.style)
 
-	return strip
+	local empty = not strip:hasSection(1)
+	return strip:getSection(1), empty
 end
 
 function StrategyBarController:loadPowers()
-	local strip = self:getCurrentPowerStripStorage()
-
 	self.powers = {}
-	for i = 1, strip:length() do
-		local power = strip:getSection(i)
-		self.powers[power:get("index")] = {
-			type = power:get("type"),
-			id = power:get("id")
-		}
+
+	local strip, empty = self:getCurrentPowerStripStorage()
+	do
+		if empty then
+			self:updateStripWithNewPowers(self.style, 0, 1)
+			self:updateStripWithNewPowers("Defense", 0, 1)
+		end
+
+		for i = 1, strip:length() do
+			local power = strip:getSection(i)
+			self.powers[power:get("index")] = {
+				type = power:get("type"),
+				id = power:get("id")
+			}
+		end
 	end
 
 	self:getPeep():removeBehavior(PendingPowerBehavior)
@@ -115,9 +173,7 @@ function StrategyBarController:activate(e)
 	end
 end
 
-function StrategyBarController:bindAbility(index)
-	local style = self.state.style
-
+function StrategyBarController:getAvailablePowers()
 	local offensivePowers = {}
 	local defensivePowers = {}
 
@@ -133,7 +189,7 @@ function StrategyBarController:bindAbility(index)
 			if actionType.name:lower() == "activate" then
 				for requirement in brochure:getRequirements(action) do
 					local resource = brochure:getConstraintResource(requirement)
-					if resource.name == style then
+					if resource.name == self.style then
 						isSameStyle = true
 						xp = requirement.count
 						break
@@ -161,7 +217,7 @@ function StrategyBarController:bindAbility(index)
 
 			local skill, powers
 			if isSameStyle then
-				skill = style
+				skill = self.style
 				powers = offensivePowers
 			elseif isDefensive then
 				skill = "Defense"
@@ -193,6 +249,13 @@ function StrategyBarController:bindAbility(index)
 				return false
 			end
 		end)
+
+	return offensivePowers, defensivePowers
+end
+
+function StrategyBarController:bindAbility(index)
+	local style = self.state.style
+	local offensivePowers, defensivePowers = self:getAvailablePowers()
 
 	local args = {}
 	do
@@ -229,6 +292,7 @@ function StrategyBarController:bind(e)
 	assert(type(e.index) == 'number', "index must be number")
 	assert(e.index >= 1, "index must be greater than zero")
 	assert(e.index <= StrategyBarController.MAX_STRIP_SIZE, "index must be less than max strip size")
+	assert(type(e.power) == 'string', "power must be string")
 
 	self.powers[e.index] = {
 		type = "Power", id = e.power
