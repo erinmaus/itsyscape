@@ -73,6 +73,10 @@ end
 function LocalUI:getInterfacesForPeep(peep, interfaceID)
 	if interfaceID then
 		local interfaces = self.interfaces[interfaceID]
+		if not interfaces then
+			return function() return nil, nil end
+		end
+
 		local currentIndex, current
 
 		return function()

@@ -682,6 +682,16 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 	end
 end
 
+function Utility.UI.isOpen(peep, interfaceID, interfaceIndex)
+	local ui = peep:getDirector():getGameInstance():getUI()
+
+	for _, index in ui:getInterfacesForPeep(peep, interfaceID) do
+		if index == interfaceIndex or not interfaceIndex then
+			return true
+		end
+	end
+end
+
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 

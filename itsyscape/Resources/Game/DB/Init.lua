@@ -668,6 +668,7 @@ include "Resources/Game/DB/Effects/Sailing.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
+include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 
 -- Quests
