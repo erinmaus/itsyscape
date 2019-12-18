@@ -92,7 +92,6 @@ end
 
 function WidgetInputProvider:isBlocking(x, y, overflow)
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, overflow)
-
 	return widget ~= self.root and widget
 end
 

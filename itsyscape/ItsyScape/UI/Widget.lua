@@ -46,6 +46,14 @@ function Widget:new()
 	self.toolTip = false
 end
 
+function Widget:getID()
+	return self.id
+end
+
+function Widget:setID(value)
+	self.id = value or false
+end
+
 -- Binds 'property' to the path.
 function Widget:bind(property, path)
 	self.properties[property] = {

@@ -88,6 +88,7 @@ function Ribbon:addButton(tab, icon)
 	local x = width + Ribbon.PADDING
 
 	local button = Button()
+	button:setID('Ribbon-' .. tab)
 	button:setPosition(x, Ribbon.PADDING)
 	button:setSize(Ribbon.BUTTON_SIZE, Ribbon.BUTTON_SIZE)
 	button.onClick:register(function()

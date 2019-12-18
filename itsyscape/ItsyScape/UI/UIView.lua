@@ -216,6 +216,23 @@ function UIView:probe(actions)
 	end
 end
 
+function UIView:findWidgetByID(id, topLevelWidget)
+	topLevelWidget = topLevelWidget or self.root
+
+	if topLevelWidget:getID() == id then
+		return topLevelWidget
+	else
+		for _, childWidget in topLevelWidget:iterate() do
+			local result = self:findWidgetByID(id, childWidget)
+			if result then
+				return result
+			end
+		end
+	end
+
+	return nil
+end
+
 function UIView:update(delta)
 	self.root:update(delta)
 

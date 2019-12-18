@@ -55,17 +55,21 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
+		local x
 		if width == 0 then
-			width = math.huge
+			width = font:getWidth(text)
+			x = -width / 2
+		else
+			x = 0
 		end
 
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(text, 1, 1, self.width or width, self.align)
+			love.graphics.printf(text, x + 1, 1, self.width or width, self.align)
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(text, 0, 0, self.width or width, self.align)
+		love.graphics.printf(text, x, 0, self.width or width, self.align)
 
 		love.graphics.setFont(previousFont)
 	end
