@@ -192,18 +192,6 @@ function ThirdPersonCamera:apply()
 
 	love.graphics.projection(projection)
 	love.graphics.replaceTransform(view)
-	--[[love.graphics.perspective(
-		self.fieldOfView,
-		self.width / self.height,
-		self.near, self.far)
-
-	love.graphics.origin()
-
-	local eye = self:getEye()
-	love.graphics.lookAt(
-		eye.x, eye.y, eye.z,
-		self.position.x, self.position.y, self.position.z,
-		self.up.x, self.up.y, self.up.z)]]--
 end
 
 return ThirdPersonCamera
