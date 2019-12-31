@@ -82,8 +82,8 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 2,
+	SizeX = 1.5,
 	SizeY = 1.5,
-	SizeZ = 4,
+	SizeZ = 3.5,
 	MapObject = ItsyScape.Resource.Prop "Bed_Rumbridge"
 }

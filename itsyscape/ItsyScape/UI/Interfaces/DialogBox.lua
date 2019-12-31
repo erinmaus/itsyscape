@@ -192,6 +192,21 @@ function DialogBox:next()
 			end
 		end
 	end
+
+	self.propView = nil
+	if state.prop then
+		local game = self:getView():getGame()
+		local gameView = self:getView():getGameView()
+		for prop in game:getStage():iterateProps() do
+			if prop:getID() == state.prop then
+				local propView = gameView:getProp(prop)
+				if propView then
+					self.speakerIcon:setRoot(propView:getRoot())
+					self.prop = prop
+				end
+			end
+		end
+	end
 end
 
 function DialogBox:update(...)
@@ -206,13 +221,22 @@ function DialogBox:update(...)
 
 	local offset
 	local zoom
-	if self.actor then
-		local min, max, z, y = self.actor:getBounds()
-		offset = (max.y - min.y) - (y or 0.75)
+	if self.actor or self.prop then
+		local node = self.actor or self.prop
+		local min, max, z, y = node:getBounds()
+
+		local otherY
+		if self.prop then
+			otherY = 1
+		else
+			otherY = 0.75
+		end
+
+		offset = (max.y - min.y) - (y or otherY)
 		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
 
 		-- Flip if facing left.
-		if self.actor:getDirection().x < 0 then
+		if node == self.actor and node:getDirection().x < 0 then
 			self.camera:setVerticalRotation(
 				self.camera:getVerticalRotation() + math.pi)
 		end

@@ -8,6 +8,34 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Prop "Table_2x2_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Table_2x2_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 2,
+	SizeZ = 3.5,
+	MapObject = ItsyScape.Resource.Prop "Table_2x2_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Table",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Table_2x2_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wait until you see an eight-legged table.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Table_2x2_Default"
+}
+
 ItsyScape.Resource.Prop "DiningTable_Default" {
 	-- Nothing.
 }
@@ -77,7 +105,7 @@ ItsyScape.Resource.Prop "Crate_Default1" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicTableProp",
+	Value = "Resources.Game.Peeps.Props.StaticProp",
 	Resource = ItsyScape.Resource.Prop "Crate_Default1"
 }
 
@@ -128,9 +156,10 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 4,
+	SizeX = 3.5,
 	SizeY = 2,
-	SizeZ = 2,
+	SizeZ = 1.5,
+	OffsetX = -1.5,
 	MapObject = ItsyScape.Resource.Prop "Dresser_Default"
 }
 
@@ -292,4 +321,114 @@ ItsyScape.Meta.MapObjectSize {
 	SizeY = 3,
 	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "Lamp_Default"
+}
+
+ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Stairs",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Scary spooky staircase.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5.5,
+	SizeY = 8,
+	SizeZ = 9.5,
+	MapObject = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
+}
+
+ItsyScape.Resource.Prop "ComfyChair_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyChair_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "One of the comfiest chairs in all the Realm!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
+}
+
+ItsyScape.Resource.Prop "Bookshelf_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Bookshelf_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 6,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Bookshelf_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bookshelf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bookshelf_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains all sorts of knowledge.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bookshelf_Default"
+}
+
+ItsyScape.Resource.Prop "Desk_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Desk_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Desk_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Desk",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Desk_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Not very useful if you have writer's block.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Desk_Default"
 }

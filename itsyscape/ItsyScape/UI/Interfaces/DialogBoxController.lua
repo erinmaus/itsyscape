@@ -16,14 +16,18 @@ local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
 local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DialogBoxController = Class(Controller)
 
-function DialogBoxController:new(peep, director, action)
+function DialogBoxController:new(peep, director, action, target)
 	Controller.new(self, peep, director)
 
 	self.action = action
+	self.target = target
+
+	target:poke('talkingStart')
 
 	self.state = {}
 	do
@@ -123,12 +127,14 @@ function DialogBoxController:pump(e, ...)
 			self.state = {
 				speaker = self.state.speaker,
 				actor = self.state.actor,
+				prop = self.state.prop,
 				input = self.currentPacket:getQuestion():inflate()
 			}
 		elseif self.currentPacket:isType(MessagePacket) then
 			self.state = {
 				speaker = self.state.speaker or "",
 				actor = self.state.actor,
+				prop = self.state.prop,
 				content = { self.currentPacket:getMessage()[1]:inflate() }
 			}
 		elseif self.currentPacket:isType(SelectPacket) then
@@ -140,6 +146,7 @@ function DialogBoxController:pump(e, ...)
 			self.state = {
 				speaker = self.state.speaker or "",
 				actor = self.state.actor,
+				prop = self.state.prop,
 				options = options
 			}
 		elseif self.currentPacket:isType(SpeakerPacket) then
@@ -158,6 +165,15 @@ function DialogBoxController:pump(e, ...)
 				local actor = peep:getBehavior(ActorReferenceBehavior)
 				if actor and actor.actor then
 					self.state.actor = actor.actor:getID()
+				else
+					self.state.actor = nil
+				end
+
+				local prop = peep:getBehavior(PropReferenceBehavior)
+				if prop and prop.prop then
+					self.state.prop = prop.prop:getID()
+				else
+					self.state.prop = nil
 				end
 			end
 
@@ -186,6 +202,7 @@ function DialogBoxController:pull()
 end
 
 function DialogBoxController:close()
+	self.target:poke('talkingStop')
 	Utility.UI.broadcast(
 		self:getDirector():getGameInstance():getUI(),
 		self:getPeep(),

@@ -52,7 +52,7 @@ end
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "RumbridgeCabin"
+	self.currentDecorationTileSet = "Grave"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
@@ -100,6 +100,7 @@ function MapEditorApplication:new()
 	self.currentJ = 0
 
 	self.lastDecorationFeature = false
+	self.lastProp = false
 	self.filename = false
 
 	self.propNames = {}
@@ -360,6 +361,8 @@ function MapEditorApplication:mousePress(x, y, button)
 
 							self.propNames[name] = p
 							self.propNames[p] = name
+
+							self.lastProp = p
 						end
 					end
 				end
@@ -461,10 +464,14 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				self:makeCurrentToolNode()
 			end
 
+			local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
 			self.currentToolNode:fromMap(
 				self:getGame():getStage():getMap(1),
 				motion,
-				i, i, j, j)
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
 			local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
 
@@ -547,12 +554,63 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					end
 				elseif key == 'b' then
 					local map = self:getGame():getStage():getMap(1)
-					local tile = map:getTile(self.currentI, self.currentJ)
-					if tile:hasFlag('building') then
-						tile:unsetFlag('building')
-					else
-						tile:setFlag('building')
+
+					local top = self.currentJ - (self.terrainToolPanel.toolSize - 1)
+					local bottom = self.currentJ + (self.terrainToolPanel.toolSize - 1)
+					local left = self.currentI - (self.terrainToolPanel.toolSize - 1)
+					local right = self.currentI + (self.terrainToolPanel.toolSize - 1)
+
+					top = math.max(top, 1)
+					bottom = math.min(map:getHeight(), bottom)
+					left = math.max(left, 1)
+					right = math.min(map:getWidth(), right)
+
+					for i = left, right do
+						for j = top, bottom do
+							local tile = map:getTile(i, j)
+							if love.keyboard.isDown('lalt') or love.keyboard.isDown('ralt') then
+								tile:unsetFlag('building')
+							else
+								tile:setFlag('building')
+							end
+						end
 					end
+				end
+			end
+
+			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp then
+				if key == 'r' then
+					local rotation = Quaternion.IDENTITY
+					if love.keyboard.isDown('y') then
+						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
+					end
+					if love.keyboard.isDown('x') then
+						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 2)
+					end
+					if love.keyboard.isDown('z') then
+						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 2)
+					end
+
+					local behavior = self.lastProp:getPeep():getBehavior('Rotation')
+					behavior.rotation = behavior.rotation * rotation
+				else
+					local position = Vector.ZERO
+					if key == 'up' then
+						position = position - Vector.UNIT_Z / 2
+					elseif key == 'down' then
+						position = position + Vector.UNIT_Z / 2
+					elseif key == 'left' then
+						position = position - Vector.UNIT_X / 2
+					elseif key == 'right' then
+						position = position + Vector.UNIT_X / 2
+					elseif key == 'pageup' then
+						position = position + Vector.UNIT_Y / 2
+					elseif key == 'pagedown' then
+						position = position - Vector.UNIT_Y / 2
+					end
+
+					local behavior = self.lastProp:getPeep():getBehavior('Position')
+					behavior.position = behavior.position + position
 				end
 			end
 
@@ -565,13 +623,15 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					--newRotation = newRotation:getNormal()
 
 					local group, decoration = self.decorationList:getCurrentDecoration()
-					if decoration:remove(self.lastDecorationFeature) then
-						self.lastDecorationFeature = decoration:add(
-							self.lastDecorationFeature:getID(),
-							self.lastDecorationFeature:getPosition(),
-							newRotation,
-							self.lastDecorationFeature:getScale())
-						self:getGame():getStage():decorate(group, decoration)
+					if decoration then
+						if decoration:remove(self.lastDecorationFeature) then
+							self.lastDecorationFeature = decoration:add(
+								self.lastDecorationFeature:getID(),
+								self.lastDecorationFeature:getPosition(),
+								newRotation,
+								self.lastDecorationFeature:getScale())
+							self:getGame():getStage():decorate(group, decoration)
+						end
 					end
 				end
 			end
@@ -817,6 +877,13 @@ function MapEditorApplication:load(filename, preferExisting)
 				local x = objects[i]:get("PositionX") or 0
 				local y = objects[i]:get("PositionY") or 0
 				local z = objects[i]:get("PositionZ") or 0
+				local qx = objects[i]:get("RotationX") or 0
+				local qy = objects[i]:get("RotationY") or 0
+				local qz = objects[i]:get("RotationZ") or 0
+				local qw = objects[i]:get("RotationW") or 1
+				local sx = objects[i]:get("ScaleX")
+				local sy = objects[i]:get("ScaleY")
+				local sz = objects[i]:get("ScaleZ")
 
 				do
 					local prop = gameDB:getRecord("PropMapObject", {
@@ -832,6 +899,10 @@ function MapEditorApplication:load(filename, preferExisting)
 								local peep = p:getPeep()
 								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
 								position.position = Vector(x, y, z)
+								local scale = peep:getBehavior(require "ItsyScape.Peep.Behaviors.ScaleBehavior")
+								scale.scale = Vector(sx, sy, sz)
+								local rotation = peep:getBehavior(require "ItsyScape.Peep.Behaviors.RotationBehavior")
+								rotation.rotation = Quaternion(qx, qy, qz, qw)
 							end
 
 							local name = objects[i]:get("Name")
