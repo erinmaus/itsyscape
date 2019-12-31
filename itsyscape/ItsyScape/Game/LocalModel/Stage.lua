@@ -250,7 +250,7 @@ function LocalStage:removeProp(prop)
 	end
 end
 
-function LocalStage:instantiateMapObject(resource, layer)
+function LocalStage:instantiateMapObject(resource, layer, isLayer)
 	layer = layer or 1
 
 	local gameDB = self.game:getGameDB()
@@ -273,7 +273,13 @@ function LocalStage:instantiateMapObject(resource, layer)
 				MapObject = object:get("Resource")
 			})
 
-			if prop then
+			local spawnProp
+			do
+				local map = self:getMap(layer)
+				spawnProp = not isLayer or not map:getTileAt(x, z):hasFlag('building')
+			end
+
+			if prop and spawnProp then
 				prop = prop:get("Prop")
 				if prop then
 					local s, p = self:placeProp("resource://" .. prop.name, layer)
@@ -301,7 +307,7 @@ function LocalStage:instantiateMapObject(resource, layer)
 							local rz = object:get("RotationZ") or 0
 							local rw = object:get("RotationW") or 1
 
-							if rw ~= 0 then
+							if rw ~= 0 or rx ~= 0 or ry ~= 0 or rz ~= 0 then
 								rotation.rotation = Quaternion(rx, ry, rz, rw)
 							end
 						end
@@ -323,6 +329,8 @@ function LocalStage:instantiateMapObject(resource, layer)
 			local actor = gameDB:getRecord("PeepMapObject", {
 				MapObject = object:get("Resource")
 			})
+
+			local spawnActor = not isLayer
 
 			if actor then
 				actor = actor:get("Peep")
@@ -645,7 +653,7 @@ function LocalStage:loadMapResource(filename, args)
 		})
 
 		for i = 1, #objects do
-			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer + 1)
+			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer + 1, args.isLayer)
 		end
 	end
 

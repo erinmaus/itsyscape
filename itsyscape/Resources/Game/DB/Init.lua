@@ -658,6 +658,7 @@ include "Resources/Game/DB/Props/Range.lua"
 include "Resources/Game/DB/Props/Bones.lua"
 include "Resources/Game/DB/Props/Chandelier.lua"
 include "Resources/Game/DB/Props/Azathoth.lua"
+include "Resources/Game/DB/Props/Books.lua"
 
 -- Props, etc (boats)
 include "Resources/Game/DB/Props/Sails.lua"

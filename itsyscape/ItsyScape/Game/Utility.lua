@@ -948,9 +948,9 @@ function Utility.Map.getAnchorDirection(game, map, anchor)
 	return nil, nil, nil
 end
 
-function Utility.Map.spawnMap(peep, map, position)
+function Utility.Map.spawnMap(peep, map, position, args)
 	local stage = peep:getDirector():getGameInstance():getStage()
-	local mapLayer, mapScript = stage:loadMapResource(map)
+	local mapLayer, mapScript = stage:loadMapResource(map, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
 	p.position = position
