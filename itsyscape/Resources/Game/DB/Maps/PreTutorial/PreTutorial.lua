@@ -319,3 +319,34 @@ do
 		Resource = ItsyScape.Resource.Item "BurntLarry"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion" {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 2,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Knock, knock.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion"
+	}
+end

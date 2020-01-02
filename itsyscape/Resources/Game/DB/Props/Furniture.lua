@@ -458,7 +458,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Pretty fancy way to get water.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "KitchenShelf_Default"
+	Resource = ItsyScape.Resource.Prop "KitchenSink_Default"
 }
 
 ItsyScape.Resource.Prop "Desk_Default" {
@@ -487,4 +487,88 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Not very useful if you have writer's block.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Desk_Default"
+}
+
+ItsyScape.Resource.Prop "BathroomSink_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "BathroomSink_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "BathroomSink_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bathroom sink",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BathroomSink_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Hygiene wizardy ahead of its time!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BathroomSink_Default"
+}
+
+ItsyScape.Resource.Prop "Bathtub_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Bathtub_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Bathtub_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bathtub",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bathtub_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you get squeaky clean.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Bathtub_Default"
+}
+
+ItsyScape.Resource.Prop "Loo_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Loo_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Loo_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Loo",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Loo_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Nasty!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Loo_Default"
 }

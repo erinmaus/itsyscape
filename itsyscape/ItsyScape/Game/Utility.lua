@@ -2183,6 +2183,8 @@ function Utility.Peep.makeHuman(peep)
 		movement.stoppingForce = 3
 	end
 
+	peep:addPoke('trip')
+
 	peep:addBehavior(HumanoidBehavior)
 
 	local walkAnimation = CacheRef(
@@ -2193,6 +2195,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_WalkCane_1/Script.lua")
 	peep:addResource("animation-walk-cane", walkCaneAnimation)
+	local tripAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Trip_1/Script.lua")
+	peep:addResource("animation-trip", tripAnimation)
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Idle_1/Script.lua")

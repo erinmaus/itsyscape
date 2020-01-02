@@ -51,7 +51,8 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('transferItemTo', self.peekEquip, self)
 	peep:listen('spawnEquipment', self.peekEquip, self)
 	peep:listen('switchStyle', self.peekStyle, self)
-	peep:silence('actionFailed', self.actionFailed, self)
+	peep:listen('actionFailed', self.actionFailed, self)
+	peep:listen('trip', self.onTrip, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -71,6 +72,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('spawnEquipment', self.peekEquip)
 	peep:silence('switchStyle', self.peekStyle)
 	peep:silence('actionFailed', self.actionFailed, self, peep)
+	peep:silence('trip', self.onTrip, self)
 end
 
 function HumanoidActorAnimatorCortex:playSkillAnimation(peep, priority, resource)
@@ -179,6 +181,18 @@ function HumanoidActorAnimatorCortex:onResurrect(peep, p)
 				resource)
 		else
 			actor:playAnimation('combat', false)
+		end
+	end
+end
+
+function HumanoidActorAnimatorCortex:onTrip(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior).actor
+	if actor then
+		local resource = peep:getResource(
+			"animation-trip",
+			"ItsyScape.Graphics.AnimationResource")
+		if resource then
+			actor:playAnimation('main', math.huge, resource, true)
 		end
 	end
 end
