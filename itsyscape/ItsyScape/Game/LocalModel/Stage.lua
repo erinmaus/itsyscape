@@ -661,10 +661,29 @@ function LocalStage:loadMapResource(filename, args)
 end
 
 function LocalStage:playMusic(layerName, channel, song)
+	local oldSong
+	for i = 1, #self.music do
+		local music = self.music[i]
+		if music.channel == channel then
+			oldSong = music
+			break
+		end
+	end
+
+	if oldSong then
+		if oldSong.song == song then
+			oldSong.stopping = false
+			return
+		end
+
+		self:stopMusic(layerName, channel, oldSong.song)
+	end
+
 	self.onPlayMusic(self, channel, song)
 	table.insert(self.music, {
 		channel = channel,
-		song = song
+		song = song,
+		stopping = false
 	})
 end
 
@@ -706,31 +725,27 @@ function LocalStage:loadStage(path)
 		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
 	end
 
-	local oldMusic = self.music
-	self.music = {}
+	for i = 1, #self.music do
+		self.music[i].stopping = true
+	end
 
 	self:unloadAll()
 	self.oldStageName = self.stageName
 	self.stageName = filename
 
-	do
-		for i = 1, #oldMusic do
-			local m = oldMusic[i]
-			local hasSong = false
-			for j = 1, #self.music do
-				if self.music[j].channel == m.channel then
-					hasSong = true
-					break
-				end
-			end
+	self:loadMapResource(filename, args)
 
-			if not hasSong then
-				self:stopMusic(self.stageName, m.channel, m.song)
-			end
+
+	local index = 1
+	while index <= #self.music do
+		local m = self.music[index]
+		if m.stopping then
+			self.onStopMusic(self.stageName, m.channel, m.song)
+			table.remove(self.music, index)
+		else
+			index = index + 1
 		end
 	end
-
-	self:loadMapResource(filename, args)
 
 	do
 		local director = self.game:getDirector()
