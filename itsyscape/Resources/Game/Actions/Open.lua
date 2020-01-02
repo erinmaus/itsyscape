@@ -8,11 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Action = require "ItsyScape.Peep.Action"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local Open = Class(Action)
 Open.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -55,6 +57,10 @@ function Open:perform(state, player, prop, channel)
 
 		if walk or distance < 3 or not channel then
 			local open = CallbackCommand(function()
+				local movement = player:getBehavior(MovementBehavior)
+				movement.acceleration = Vector.ZERO
+				movement.velocity = Vector.ZERO
+
 				self:transfer(state, player, flags)
 				prop:poke('open', player)
 			end)
