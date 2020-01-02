@@ -850,7 +850,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -861,19 +861,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -885,7 +873,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -897,7 +885,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -909,7 +897,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -921,7 +909,7 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -933,7 +921,19 @@
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 11, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 11, decals = {  },
 			data =
 			{
 			},
@@ -1141,6 +1141,7 @@
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -1485,7 +1486,6 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
 			},
 		},

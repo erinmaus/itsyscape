@@ -26,3 +26,4 @@ S: Knife/sword stab #2.MP3 by SoundsForHim -- https://freesound.org/s/399617/ --
 S: SwordClash01 by 32cheeseman32 -- https://freesound.org/s/180820/ -- License: Attribution
 S: Pickaxe mining stone by ryanconway -- https://freesound.org/s/240801/ -- License: Attribution
 S: chop.wav by hazure -- https://freesound.org/s/23700/ -- License: Attribution
+S: thunder3.ogg by Josh74000MC -- https://freesound.org/s/475094/ -- License: Creative Commons 0

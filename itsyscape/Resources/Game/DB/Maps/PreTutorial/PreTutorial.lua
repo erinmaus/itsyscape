@@ -115,3 +115,207 @@ do
 		Resource = SecondaryDropTable
 	}
 end
+
+-- Larry
+do
+	ItsyScape.Resource.Prop "Larry_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Larry",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(2)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Larry the 8th",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Larry_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Fancy name for a goldfish.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Larry_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 2,
+		SpawnTime = 1,
+		Resource = ItsyScape.Resource.Prop "Larry_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "Larry_Default"
+	}
+
+	ItsyScape.Resource.Item "Larry" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Larry the 8th",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Aw, he's gone! Maybe he can be cooked...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(3),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 1,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Larry",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedLarry",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(3)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Larry",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntLarry",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 1,
+		Stop = 6,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedLarry" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked Larry",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "WOW!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(4),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedLarry"
+	}
+
+	ItsyScape.Resource.Item "BurntLarry" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt Larry",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Should've just flushed him.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+end

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Bookshelf_Default/View.lua
+-- Resources/Game/Props/KitchenShelf_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -15,15 +15,15 @@ local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local Bookshelf = Class(SimpleStaticView)
+local KitchenShelf = Class(SimpleStaticView)
 
-function Bookshelf:new(...)
+function KitchenShelf:new(...)
 	SimpleStaticView.new(self, ...)
 
 	self.spawned = false
 end
 
-function Bookshelf:tick()
+function KitchenShelf:tick()
 	if not self.spawned then
 		local root = self:getRoot()
 		local position = self:getProp():getPosition()
@@ -39,7 +39,7 @@ function Bookshelf:tick()
 
 		resources:queue(
 			TextureResource,
-			string.format("Resources/Game/Props/Bookshelf_Default/Books%d.png", index),
+			string.format("Resources/Game/Props/KitchenShelf_Default/PotsAndPans%d.png", index),
 			function(texture)
 				self.booksTexture = texture
 			end)
@@ -58,12 +58,12 @@ function Bookshelf:tick()
 	SimpleStaticView.tick(self)
 end
 
-function Bookshelf:getTextureFilename()
+function KitchenShelf:getTextureFilename()
 	return "Resources/Game/Props/Shelf_Common/Texture.png"
 end
 
-function Bookshelf:getModelFilename()
+function KitchenShelf:getModelFilename()
 	return "Resources/Game/Props/Shelf_Common/Model.lstatic", "Shelf"
 end
 
-return Bookshelf
+return KitchenShelf
