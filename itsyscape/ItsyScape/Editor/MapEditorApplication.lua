@@ -596,17 +596,17 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				else
 					local position = Vector.ZERO
 					if key == 'up' then
-						position = position - Vector.UNIT_Z / 2
+						position = position - Vector.UNIT_Z / 8
 					elseif key == 'down' then
-						position = position + Vector.UNIT_Z / 2
+						position = position + Vector.UNIT_Z / 8
 					elseif key == 'left' then
-						position = position - Vector.UNIT_X / 2
+						position = position - Vector.UNIT_X / 8
 					elseif key == 'right' then
-						position = position + Vector.UNIT_X / 2
+						position = position + Vector.UNIT_X / 8
 					elseif key == 'pageup' then
-						position = position + Vector.UNIT_Y / 2
+						position = position + Vector.UNIT_Y / 8
 					elseif key == 'pagedown' then
-						position = position - Vector.UNIT_Y / 2
+						position = position - Vector.UNIT_Y / 8
 					end
 
 					local behavior = self.lastProp:getPeep():getBehavior('Position')

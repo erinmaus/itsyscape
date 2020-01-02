@@ -859,12 +859,6 @@
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
 	{
-		id = "StoneAndYellowWallpaper-xcorner.002",
-		position = { 43.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, -1.000000, 0.000000, -0.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
 		id = "StoneAndYellowWallpaper-wall.iedge",
 		position = { 43.000000, 4.000000, 15.000000 },
 		rotation = { 0.000000, -0.707107, 0.000000, 0.707107 },
@@ -961,12 +955,6 @@
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
 	{
-		id = "StoneAndYellowWallpaper-wall.iedge",
-		position = { 47.000000, 4.000000, 17.000000 },
-		rotation = { 0.000000, -1.000000, 0.000000, -0.000000 },
-		scale = { 1.000000, 1.000000, 1.000000 },
-	},
-	{
 		id = "StoneAndYellowWallpaper-wall.iflat",
 		position = { 15.000000, 4.000000, 35.000000 },
 		rotation = { 0.000000, 0.000000, 0.000000, 1.000000 },
@@ -1018,6 +1006,24 @@
 		id = "StoneAndYellowWallpaper-wall.iflat",
 		position = { 27.000000, 4.000000, 9.000000 },
 		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.itcorner",
+		position = { 43.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, -0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.iedge",
+		position = { 45.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, -1.000000, 0.000000, -0.000000 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+	},
+	{
+		id = "StoneAndYellowWallpaper-wall.iflat",
+		position = { 47.000000, 4.000000, 17.000000 },
+		rotation = { 0.000000, -1.000000, 0.000000, -0.000000 },
 		scale = { 1.000000, 1.000000, 1.000000 },
 	},
 }

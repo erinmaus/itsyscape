@@ -12,6 +12,7 @@ local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 
 local Lamp = Class(PropView)
 
@@ -37,6 +38,10 @@ function Lamp:load()
 			self.node:fromGroup(mesh:getResource(), "Lamp")
 			self.node:getMaterial():setTextures(self.texture)
 			self.node:setParent(root)
+
+			self.light = PointLightSceneNode()
+			self.light:setParent(root)
+			self.light:setAttenuation(4.0)
 		end)
 end
 
