@@ -643,7 +643,6 @@ function GameView:update(delta)
 		end
 	end
 
-	local music = {}
 	for track, songs in pairs(self.music) do
 		local index = 1
 		while index < #songs do
