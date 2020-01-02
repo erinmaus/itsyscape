@@ -9,11 +9,11 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
-local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local Mansion = Class(Map)
 Mansion.MIN_LIGHTNING_PERIOD = 3
@@ -54,6 +54,19 @@ function Mansion:zap()
 	Log.info("CRACKLE-BOOM-ZAP!")
 end
 
+function Mansion:boom()
+	local actor = self:getDirector():getGameInstance():getPlayer():getActor()
+	if actor then
+		local animation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/SFX_LightningStrike/Script.lua")
+		actor:playAnimation(
+			'x-haunted-mansion-lightning',
+			math.huge,
+			animation)
+	end
+end
+
 function Mansion:update(director, game)
 	local delta = game:getDelta()
 
@@ -67,6 +80,7 @@ function Mansion:update(director, game)
 		self.wait = self.wait - delta
 		if self.wait <= 0 then
 			self:zap()
+			self:boom()
 			self.lightningTime = self.LIGHTNING_TIME
 		end
 	end

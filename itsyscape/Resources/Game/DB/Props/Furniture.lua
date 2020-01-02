@@ -405,6 +405,62 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Bookshelf_Default"
 }
 
+ItsyScape.Resource.Prop "KitchenShelf_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "KitchenShelf_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 6,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "KitchenShelf_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Shelf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "KitchenShelf_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Looks pretty empty...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "KitchenShelf_Default"
+}
+
+ItsyScape.Resource.Prop "KitchenSink_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "KitchenSink_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 3,
+	SizeZ = 3.5,
+	MapObject = ItsyScape.Resource.Prop "KitchenSink_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sink",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "KitchenSink_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pretty fancy way to get water.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "KitchenShelf_Default"
+}
+
 ItsyScape.Resource.Prop "Desk_Default" {
 	-- Nothing.
 }
