@@ -322,7 +322,12 @@ end
 
 do
 	ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion" {
-		ItsyScape.Action.Open(),
+		ItsyScape.Action.Open() {
+			Output {
+				Resource = ItsyScape.Resource.KeyItem "PreTutorial_Start",
+				Count = 1
+			}
+		},
 		ItsyScape.Action.Close()
 	}
 
@@ -379,5 +384,128 @@ do
 		Value = "What's behind that door?",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor"
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Resource.Peep "PreTutorial_ZombiButler" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		Name = "Butler",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/PreTutorial/ZombiButler_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.PreTutorial.ZombiButler",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Hans, Zombi Butler",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "He's a bit slow, but what's left of his heart is in the right place.",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler"
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Resource.Peep "PreTutorial_Elizabeth" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		Name = "Butler",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Elizabeth",
+		Name = "Edward",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/PreTutorial/Elizabeth_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.PreTutorial.Elizabeth",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Elizabeth"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Elizabeth",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Elizabeth"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Cold, even for a ghost.",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Elizabeth"
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Resource.Peep "PreTutorial_Edward" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		Name = "Butler",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Edward",
+		Name = "Edward",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/PreTutorial/Edward_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.PreTutorial.Edward",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Edward"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Edward",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Edward"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Scared and pale as a ghost. Wait...",
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Edward"
 	}
 end
