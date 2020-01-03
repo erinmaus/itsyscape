@@ -578,7 +578,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				end
 			end
 
-			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp then
+			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp and self.lastProp:getPeep() then
 				if key == 'r' then
 					local rotation = Quaternion.IDENTITY
 					if love.keyboard.isDown('y') then

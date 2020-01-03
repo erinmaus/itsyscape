@@ -79,7 +79,7 @@ function Notification:new(id, index, ui)
 		if #state.inputs > 0 then
 			innerPannel:addChild(inputs)
 			inputs:setPosition(Notification.PADDING, h1 + Notification.PADDING * 2)
-			inputs:setSize(w1, h1 + Notification.PADDING)
+			inputs:setSize(w1, h2 + Notification.PADDING)
 			height = height + h2 + Notification.PADDING
 		end
 

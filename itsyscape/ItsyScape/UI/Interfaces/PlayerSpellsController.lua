@@ -14,6 +14,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Spell = require "ItsyScape.Game.Spell"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local InterfaceSpell = require "ItsyScape.Game.InterfaceSpell"
 local Utility = require "ItsyScape.Game.Utility"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -117,8 +118,8 @@ function PlayerSpellsController:cast(e)
 	assert(self.spells[e.spell] ~= nil, "spell not loaded")
 
 	local spell = self.spells[e.spell]
+	local peep = self:getPeep()
 	if spell:isCompatibleType(CombatSpell) then
-		local peep = self:getPeep()
 		local s, b = peep:addBehavior(ActiveSpellBehavior)
 		if s then
 			b.spell = self.spells[e.spell]
@@ -135,6 +136,14 @@ function PlayerSpellsController:cast(e)
 					end
 				end
 			end
+		end
+	elseif spell:isCompatibleType(InterfaceSpell) then
+		local result = spell:canCast(peep)
+		if result:good() then
+			spell:cast(peep)
+		else
+			local action = Utility.getAction(self:getDirector():getGameInstance(), spell:getAction())
+			action.instance:fail(peep:getState(), peep)
 		end
 	else
 		Log.warn("cannot cast spell '%s': not yet implemented", e.spell)

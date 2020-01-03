@@ -40,6 +40,7 @@ function DemoApplication:new()
 	self:getCamera():setVerticalRotation(DemoApplication.CAMERA_VERTICAL_ROTATION)
 
 	self.showingToolTip = false
+	self.lastToolTipObject = false
 	self.toolTipTick = math.huge
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
@@ -336,15 +337,19 @@ function DemoApplication:update(delta)
 			if action and action.type ~= 'examine' then
 				local text = string.format("%s %s", action.verb, action.object)
 				self.showingToolTip = true
-				self.toolTip = {
-					ToolTip.Header(text),
-					ToolTip.Text(action.description)
-				}
+				if self.lastToolTipObject ~= action.id then
+					self.toolTip = {
+						ToolTip.Header(text),
+						ToolTip.Text(action.description)
+					}
+					self.lastToolTipObject = action.id
+				end
 			else
 				if renderer:getToolTip() == self.toolTipWidget then
 					renderer:unsetToolTip()
 					self.toolTip = nil
 					self.showingToolTip = false
+					self.lastToolTipObject = false
 				end
 			end
 		end, { ['actors'] = true, ['props'] = true })

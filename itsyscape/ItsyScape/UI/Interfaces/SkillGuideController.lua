@@ -166,6 +166,7 @@ function SkillGuideController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1) or resource.name,
 					count = requirement.count
 				})
 		end
@@ -182,6 +183,7 @@ function SkillGuideController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1) or resource.name,
 					count = input.count
 				})
 		end
@@ -198,6 +200,7 @@ function SkillGuideController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1) or resource.name,
 					count = output.count
 				})
 		end
