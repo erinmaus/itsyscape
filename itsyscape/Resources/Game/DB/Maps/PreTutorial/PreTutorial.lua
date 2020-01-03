@@ -350,3 +350,34 @@ do
 		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothMansion"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor" {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Front door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What's behind that door?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor"
+	}
+end

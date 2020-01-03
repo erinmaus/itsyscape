@@ -198,3 +198,28 @@ do
 		Resource = M["Anchor_FromBasement"]
 	}
 end
+
+M["FrontDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 42.000000,
+		PositionY = 4.000000,
+		PositionZ = 53.750000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "FrontDoor",
+		Map = M._MAP,
+		Resource = M["FrontDoor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor",
+		MapObject = M["FrontDoor"],
+		IsMultiLayer = 1
+	}
+end
