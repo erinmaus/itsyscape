@@ -115,6 +115,7 @@ function CraftWindowController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
 					count = requirement.count
 				})
 		end
@@ -131,6 +132,7 @@ function CraftWindowController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
 					count = input.count
 				})
 		end
@@ -147,6 +149,7 @@ function CraftWindowController:select(e)
 					type = resourceType.name,
 					resource = resource.name,
 					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
 					count = output.count
 				})
 		end

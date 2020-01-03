@@ -28,6 +28,7 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local CraftWindow = Class(Interface)
 CraftWindow.WIDTH = 480
@@ -183,83 +184,13 @@ function CraftWindow:populateRequirements(e)
 	local function emitSection(t, title, options)
 		options = options or {}
 
-		local panel = Panel()
-		panel:setStyle(PanelStyle({ image = false }))
-		local titleLabel = Label()
-		titleLabel:setPosition(CraftWindow.PADDING, CraftWindow.PADDING)
-		titleLabel:setStyle(LabelStyle({
-			fontSize = 16,
-			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-			textShadow = true
-		}, self:getView():getResources()))
-		titleLabel:setText(title)
-		panel:addChild(titleLabel)
-
-		local layout = GridLayout()
-		layout:setPadding(CraftWindow.PADDING)
-		layout:setSize(width, 0)
-		layout:setWrapContents(true)
-		layout:setPosition(CraftWindow.PADDING, 16 + CraftWindow.PADDING)
-		layout:setPadding(CraftWindow.PADDING, CraftWindow.PADDING)
-		panel:addChild(layout)
-
-		local leftWidth = 32
-		local rightWidth = width - leftWidth - CraftWindow.PADDING * 3
-		local rowHeight = 32
-		for i = 1, #t do
-			local left
-			if t[i].type:lower() == 'skill' then
-				left = Icon()
-				left:setSize(leftWidth, rowHeight)
-				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", t[i].resource))
-			elseif t[i].type:lower() == 'item' then
-				left = ItemIcon()
-				left:setSize(leftWidth, rowHeight)
-				left:setItemID(t[i].resource)
-			else
-				left = Widget()
-				left:setSize(leftWidth, rowHeight)
-			end
-			layout:addChild(left)
-
-			local right = Label()
-			right:setStyle(LabelStyle({
-				fontSize = 16,
-				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-				width = math.huge
-			}, self:getView():getResources()))
-			if t[i].type:lower() == 'skill' then
-				if options.skillAsLevel then
-					local level = Curve.XP_CURVE:getLevel(t[i].count)
-					local text = string.format("Lvl %d %s", level, t[i].name)
-					right:setText(text)
-				else
-					local text = string.format("+%d %s XP", math.floor(t[i].count), t[i].name)
-					right:setText(text)
-				end
-			elseif t[i].type:lower() == 'item' then
-				local text
-				if t[i].count <= 1 then
-					text = t[i].name
-				else
-					text = string.format("%dx %s", t[i].count, t[i].name)
-				end
-				right:setText(text)
-			else
-				local text
-				if t[i].count <= 1 then
-					text = t[i].name
-				else
-					text = string.format("%d %s", t[i].count, t[i].name)
-				end
-				right:setText(text)
-			end
-			right:setSize(rightWidth, rowHeight)
-			layout:addChild(right)
+		local panel = ConstraintsPanel(self:getView())
+		panel:setText(title)
+		if options.skillAsLevel then
+			panel:setData("skillAsLevel", true)
 		end
-
-		local innerWidth, innerHeight = layout:getSize()
-		panel:setSize(innerWidth, innerHeight + 16 + CraftWindow.PADDING)
+		panel:setSize(width - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+		panel:setConstraints(t)
 
 		self.requirementsPanel:addChild(panel)
 	end
