@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -41,18 +42,34 @@ function Mansion:onLoad(filename, args, layer)
 		heaviness = 0.25
 	})
 
+	self.player = self:getDirector():getGameInstance():getPlayer():getActor()
+	do
+		local playerPeep = self.player:getPeep()
+
+		self.runes = InfiniteInventoryStateProvider(self)
+		self.runes:add("AirRune")
+		self.runes:add("EarthRune")
+		self.runes:add("WaterRune")
+		self.runes:add("FireRune")
+		self.runes:add("CosmicRune")
+
+		playerPeep:getState():addProvider("Item", self.runes)
+		playerPeep:listen('travel', self.onPlayerTravel, self)
+	end
+
 	self.lightning = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("Light_Lightning"))[1]
 	self.lightningTime = 0
 
-	self.zombiButler = self:getDirector():probe(
-		self:getLayerName(),
-		Probe.namedMapObject("Hans"))[1]
+	if not args.isLayer then
+		self.zombiButler = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.namedMapObject("Hans"))[1]
 
-	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
-	if player:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
-		self.zombiButler:poke('followPlayer', player)
+		if self.player:getPeep():getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
+			self.zombiButler:poke('followPlayer', self.player:getPeep())
+		end
 	end
 
 	self:zap()
@@ -74,6 +91,11 @@ function Mansion:boom()
 			math.huge,
 			animation)
 	end
+end
+
+function Mansion:onPlayerTravel()
+	self.player:getPeep():getState():removeProvider("Item", self.runes)
+	self.player:getPeep():silence('travel', self.onPlayerTravel)
 end
 
 function Mansion:update(director, game)

@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Mansion = Class(Map)
@@ -24,6 +25,13 @@ end
 
 function Mansion:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
+
+	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+	self.zombiButler = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Hans"))[1]
+	self.zombiButler:poke('followPlayer', player)
+	self.zombiButler:poke('floorChange', 2)
 
 	Utility.Map.spawnMap(self, "PreTutorial_MansionFloor1", Vector(0, -6.1, 0), { isLayer = true })
 end

@@ -6,7 +6,7 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Azathoth, Haunted Mansion South of Woodston, 2nd Floor",
+	Value = "Azathoth, Haunted Mansion, 2nd Floor",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -55,7 +55,7 @@ do
 	}
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Climb-down",
+		Value = "Walk-down",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -77,3 +77,19 @@ do
 	}
 end
 
+M["Hans"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 45,
+		Name = "Hans",
+		Map = M._MAP,
+		Resource = M["Hans"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		MapObject = M["Hans"]
+	}
+end
