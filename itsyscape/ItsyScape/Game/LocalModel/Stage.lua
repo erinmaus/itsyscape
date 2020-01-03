@@ -276,7 +276,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 			local spawnProp
 			do
 				local map = self:getMap(layer)
-				spawnProp = not isLayer or not map:getTileAt(x, z):hasFlag('building')
+				spawnProp = not isLayer or (prop and prop:get("IsMultiLayer") ~= 0) or not map:getTileAt(x, z):hasFlag('building')
 			end
 
 			if prop and spawnProp then

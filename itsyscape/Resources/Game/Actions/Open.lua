@@ -55,7 +55,7 @@ function Open:perform(state, player, prop, channel)
 				{ canUseObjects = false, asCloseAsPossible = true })
 		end
 
-		if walk or distance < 3 or not channel then
+		if (walk or distance < 3 or not channel) and k == r then
 			local open = CallbackCommand(function()
 				local movement = player:getBehavior(MovementBehavior)
 				movement.acceleration = Vector.ZERO
