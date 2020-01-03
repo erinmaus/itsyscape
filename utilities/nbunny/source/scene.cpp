@@ -111,7 +111,7 @@ void nbunny::SceneNode::walk_by_material(
 	auto parent = node->parent.lock();
 	if (!parent)
 	{
-		std::sort(
+		std::stable_sort(
 			result.begin(),
 			result.end(),
 			[&](const auto& a, const auto& b)
@@ -143,7 +143,7 @@ void nbunny::SceneNode::walk_by_position(
 	if (!parent)
 	{
 		std::unordered_map<SceneNode*, glm::vec3> screen_positions;
-		std::sort(
+		std::stable_sort(
 			result.begin(),
 			result.end(),
 			[&](const auto& a, const auto& b)
@@ -174,7 +174,7 @@ void nbunny::SceneNode::walk_by_position(
 					bScreenPosition = screen_positions.insert(std::make_pair(b.get(), p)).first;
 				}
 
-				return aScreenPosition->second.z < bScreenPosition->second.z;
+				return glm::floor(aScreenPosition->second.z * 1000) < glm::floor(bScreenPosition->second.z);
 			}
 		);
 	}

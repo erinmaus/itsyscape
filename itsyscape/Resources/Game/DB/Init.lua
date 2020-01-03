@@ -674,6 +674,7 @@ include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 
 -- Quests
+include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 
 do

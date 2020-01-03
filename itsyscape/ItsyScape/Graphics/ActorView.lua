@@ -318,6 +318,7 @@ function ActorView:applySkin(slotNodes)
 
 						if slot.instance:getIsTranslucent() then
 							slot.sceneNode:getMaterial():setIsTranslucent(true)
+							slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
 						end
 
 						local transform = slot.sceneNode:getTransform()

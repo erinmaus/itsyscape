@@ -30,9 +30,10 @@ function Message:new(...)
 	self.ready = false
 end
 
-function Message:spawn(message, color)
+function Message:spawn(message, color, duration)
 	self.message = message
 	self.color = color or Color(1, 1, 0, 1)
+	self.duration = duration or Message.DURATION
 
 	local resources = self:getSpriteManager():getResources()
 	resources:queueEvent(function()
@@ -41,7 +42,7 @@ function Message:spawn(message, color)
 end
 
 function Message:isDone(time)
-	return time > Message.DURATION
+	return time > self.duration
 end
 
 function Message:draw(position, time)

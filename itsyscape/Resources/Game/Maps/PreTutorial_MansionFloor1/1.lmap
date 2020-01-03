@@ -3226,6 +3226,7 @@
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{

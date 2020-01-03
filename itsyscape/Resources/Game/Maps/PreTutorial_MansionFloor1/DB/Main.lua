@@ -139,9 +139,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectSize {
-		SizeX = 9.5,
+		SizeX = 5.5,
 		SizeY = 4,
-		SizeZ = 5.5,
+		SizeZ = 9.5,
 		MapObject = M["Portal_UpStairs"]
 	}
 
@@ -156,7 +156,12 @@ do
 		Resource = M["Portal_UpStairs"]
 	}
 
-	local TravelAction = ItsyScape.Action.Travel()
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler1",
+			Count = 1
+		}
+	}
 
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromDownstairs",
@@ -202,16 +207,9 @@ end
 M["FrontDoor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 42.000000,
-		PositionY = 4.000000,
-		PositionZ = 53.750000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
+		PositionX = 42,
+		PositionY = 4,
+		PositionZ = 53.75,
 		Name = "FrontDoor",
 		Map = M._MAP,
 		Resource = M["FrontDoor"]
@@ -221,5 +219,56 @@ do
 		Prop = ItsyScape.Resource.Prop "Door_PreTutorialAzathothFrontDoor",
 		MapObject = M["FrontDoor"],
 		IsMultiLayer = 1
+	}
+end
+
+M["Hans"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 45,
+		Name = "Hans",
+		Map = M._MAP,
+		Resource = M["Hans"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		MapObject = M["Hans"]
+	}
+end
+
+M["Edward"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 29,
+		Name = "Edward",
+		Map = M._MAP,
+		Resource = M["Edward"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Edward",
+		MapObject = M["Edward"]
+	}
+end
+
+M["Elizabeth"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 45,
+		Name = "Elizabeth",
+		Map = M._MAP,
+		Resource = M["Elizabeth"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Elizabeth",
+		MapObject = M["Elizabeth"]
 	}
 end

@@ -46,6 +46,15 @@ function Mansion:onLoad(filename, args, layer)
 		Probe.namedMapObject("Light_Lightning"))[1]
 	self.lightningTime = 0
 
+	self.zombiButler = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Hans"))[1]
+
+	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+	if player:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
+		self.zombiButler:poke('followPlayer', player)
+	end
+
 	self:zap()
 end
 

@@ -24,6 +24,7 @@ function Material:new(node, shader, ...)
 	self:setTextures(...)
 	self.isTranslucent = false
 	self.isFullLit = false
+	self.zWriteDisabled = false
 	self.color = Color(1, 1, 1, 1)
 	self.uniforms = {}
 end
@@ -84,6 +85,15 @@ end
 
 function Material:setIsFullLit(value)
 	self.isFullLit = value or false
+end
+
+-- Returns true if the Material should not write to the depth buffer, false otherwise.
+function Material:getIsZWriteDisabled(value)
+	return self.zWriteDisabled
+end
+
+function Material:setIsZWriteDisabled(value)
+	self.zWriteDisabled = value or false
 end
 
 function Material:getColor()

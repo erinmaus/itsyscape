@@ -152,9 +152,17 @@ function ForwardRendererPass:drawNodes(scene, delta)
 				currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
 			end
 
+			if material:getIsZWriteDisabled() then
+				love.graphics.setDepthMode('lequal', false)
+			end
+
 			node:beforeDraw(self:getRenderer(), delta)
 			node:draw(self:getRenderer(), delta)
 			node:afterDraw(self:getRenderer(), delta)
+
+			if material:getIsZWriteDisabled() then
+				love.graphics.setDepthMode('lequal', true)
+			end
 		end
 	end
 end
