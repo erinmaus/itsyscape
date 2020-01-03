@@ -586,6 +586,7 @@ include "Resources/Game/DB/Items/Fabrics.lua"
 include "Resources/Game/DB/Items/Gems.lua"
 
 -- Equipment
+include "Resources/Game/DB/Items/Amulets.lua"
 include "Resources/Game/DB/Items/Arrows.lua"
 include "Resources/Game/DB/Items/Bows.lua"
 include "Resources/Game/DB/Items/Pickaxes.lua"
@@ -627,6 +628,7 @@ include "Resources/Game/DB/Shops/GeneralStore.lua"
 include "Resources/Game/DB/Shops/FishingStore.lua"
 
 -- Spells
+include "Resources/Game/DB/Spells/ModernMisc.lua"
 include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 -- Prayers

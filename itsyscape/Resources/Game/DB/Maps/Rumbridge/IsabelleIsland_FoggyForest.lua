@@ -140,6 +140,16 @@ do
 				Count = ItsyScape.Utility.xpForLevel(1)
 			},
 
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Hammer",
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToGrimm1",
+				Count = 1
+			},
+
 			Input {
 				Resource = ItsyScape.Resource.Item "CopperBar",
 				Count = 1

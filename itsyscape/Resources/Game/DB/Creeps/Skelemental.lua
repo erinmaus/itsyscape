@@ -76,6 +76,11 @@ do
 				Count = ItsyScape.Utility.xpForLevel(1)
 			},
 
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Hammer",
+				Count = 1
+			},
+
 			Input {
 				Resource = ItsyScape.Resource.Item "TinBar",
 				Count = 1
@@ -139,6 +144,11 @@ do
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Smithing",
 				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Hammer",
+				Count = 1
 			},
 
 			Input {

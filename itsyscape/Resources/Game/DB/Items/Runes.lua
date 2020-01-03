@@ -138,6 +138,28 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "WaterRune"
 }
 
+ItsyScape.Resource.Item "CosmicRune" {
+	-- Nothing
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(20),
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "CosmicRune"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Cosmic Rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CosmicRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sparkles with a strange, otherworldly energy.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CosmicRune"
+}
+
 ItsyScape.Resource.Item "FireRune" {
 	-- Nothing
 }

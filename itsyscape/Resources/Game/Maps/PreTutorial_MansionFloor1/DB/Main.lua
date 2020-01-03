@@ -6,7 +6,7 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Azathoth, Haunted Mansion South of Woodston, 1st Floor",
+	Value = "Azathoth, Haunted Mansion, 1st Floor",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -170,12 +170,65 @@ do
 	}
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Climb-up",
+		Value = "Walk-down",
 		Language = "en-US",
 		Action = TravelAction
 	}
 
 	M["Portal_UpStairs"] {
+		TravelAction
+	}
+end
+
+M["Portal_DownStairs"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = -0.5,
+		PositionZ = 43,
+		Name = "Portal_DownStairs",
+		Map = M._MAP,
+		Resource = M["Portal_DownStairs"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 5.5,
+		SizeY = 1,
+		SizeZ = 9.5,
+		MapObject = M["Portal_DownStairs"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_DownStairs"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Basement",
+		Language = "en-US",
+		Resource = M["Portal_DownStairs"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler1",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromUpstairs",
+		Map = ItsyScape.Resource.Map "PreTutorial_MansionBasement",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_DownStairs"] {
 		TravelAction
 	}
 end
@@ -270,5 +323,40 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Elizabeth",
 		MapObject = M["Elizabeth"]
+	}
+end
+
+M["SearchableCrate"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Search",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 29,
+		Name = "SearchableCrate",
+		Map = M._MAP,
+		Resource = M["SearchableCrate"]
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/PreTutorial/Crate_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["SearchableCrate"]
+	}
+
+	M["SearchableCrate"] {
+		TalkAction
 	}
 end

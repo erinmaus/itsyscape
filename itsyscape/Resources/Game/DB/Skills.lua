@@ -10,6 +10,7 @@
 
 ItsyScape.Resource.Skill "Magic"
 	ActionType "Runecraft"
+	ActionType "Enchant"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Runecraft",
@@ -18,6 +19,11 @@ ItsyScape.Resource.Skill "Magic"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Cast",
+		Skill = ItsyScape.Resource.Skill "Magic"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Enchant",
 		Skill = ItsyScape.Resource.Skill "Magic"
 	}
 
