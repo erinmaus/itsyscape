@@ -597,6 +597,7 @@ include "Resources/Game/DB/Items/MagicArmor.lua"
 include "Resources/Game/DB/Items/MagicWeapons.lua"
 include "Resources/Game/DB/Items/MiscClothes.lua"
 include "Resources/Game/DB/Items/Rusty.lua"
+include "Resources/Game/DB/Items/ToyWeapons.lua"
 include "Resources/Game/DB/Items/Trinkets.lua"
 
 -- Misc

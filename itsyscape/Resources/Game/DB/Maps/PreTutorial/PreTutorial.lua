@@ -439,7 +439,7 @@ do
 
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = ItsyScape.Resource.Peep "PreTutorial_Elizabeth",
-		Name = "Edward",
+		Name = "Elizabeth",
 		Action = TalkAction
 	}
 
