@@ -170,7 +170,7 @@ do
 	}
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Walk-down",
+		Value = "Walk-up",
 		Language = "en-US",
 		Action = TravelAction
 	}

@@ -122,7 +122,7 @@ function ForwardRendererPass:drawNodes(scene, delta)
 				currentShaderProgram = self:useShader(material:getShader())
 				previousShader = shader
 
-				if material:getIsFullLit() then
+				if material:getIsFullLit() or numGlobalLights == 0 then
 					local light = Light()
 					light:setAmbience(1.0)
 					setLightProperties(currentShaderProgram, 1, light)

@@ -332,7 +332,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 
 			local spawnActor = not isLayer
 
-			if actor then
+			if actor and spawnActor then
 				actor = actor:get("Peep")
 				if actor then
 					local s, a = self:spawnActor("resource://" .. actor.name, layer)
