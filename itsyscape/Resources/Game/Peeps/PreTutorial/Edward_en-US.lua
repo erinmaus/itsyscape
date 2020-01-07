@@ -17,6 +17,14 @@ if not hasGhostSpeakEquipped then
 	end
 else
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
+	local hasToyWeaponEquipped =
+		state:has('Item', "ToyLongsword", 1, { ['item-equipment'] = true }) or
+		state:has('Item', "ToyWand", 1, { ['item-equipment'] = true }) or
+		state:has('Item', "ToyBoomerang", 1, { ['item-equipment'] = true })
+	local hasToyWeaponInventory =
+		state:has('Item', "ToyLongsword", 1, { ['item-inventory'] = true }) or
+		state:has('Item', "ToyWand", 1, { ['item-inventory'] = true }) or
+		state:has('Item', "ToyBoomerang", 1, { ['item-inventory'] = true })
 	if not saved then
 		speaker "Edward"
 		message "H-h-hello, ${PLAYER_NAME}. There's a monster under my bed!"
@@ -31,20 +39,41 @@ else
 			"Anyway, you n-n-n-need a special type of weapon to fight it."
 		}
 
-		speaker "_TARGET"
-		message "What kind of weapon do you need?"
+		if hasToyWeaponEquipped then
+			speaker "Edward"
+			message "L-l-looks like you've got one in y-y-your hand!"
 
-		speaker "Edward"
-		message {
-			"You n-n-n-need a toy weapon.",
-			"I once hurt it with a w-w-w-w-wooden sword, but it just made the m-m-m-monster angrier."
-		}
+			local maggot = Utility.spawnMapObjectAtAnchor(
+				_TARGET,
+				"Maggot",
+				"Anchor_Maggot")
 
-		speaker "_TARGET"
-		message "Got it! I'll figure out how to help you, Edward."
+			speaker "Edward"
+			message "S-S-SAVE ME!"
 
-		speaker "Edward"
-		message "Thank you!"
+			Utility.Peep.attack(maggot:getPeep(), _TARGET)
+		elseif hasToyWeaponInventory then
+			speaker "Edward"
+			message {
+				"L-l-looks like you've got one in y-y-your bag!",
+				"Equip it then t-t-t-talk to me again."
+			}
+		else
+			speaker "_TARGET"
+			message "What kind of weapon do you need?"
+
+			speaker "Edward"
+			message {
+				"You n-n-n-need a toy weapon.",
+				"I once hurt it with a w-w-w-w-wooden sword, but it just made the m-m-m-monster angrier."
+			}
+
+			speaker "_TARGET"
+			message "Got it! I'll figure out how to help you, Edward."
+
+			speaker "Edward"
+			message "Thank you!"
+		end
 	else
 		speaker "Edward"
 		message "T-thank you for saving me! I'll stick around for a little while longer before I enter the light."

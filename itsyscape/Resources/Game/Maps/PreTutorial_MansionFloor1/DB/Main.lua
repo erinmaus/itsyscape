@@ -17,6 +17,18 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 42,
+		PositionY = 4,
+		PositionZ = 57,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
+	}
+end
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -358,5 +370,32 @@ do
 
 	M["SearchableCrate"] {
 		TalkAction
+	}
+end
+
+M["Maggot"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Maggot",
+		Map = M._MAP,
+		Resource = M["Maggot"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
+		MapObject = M["Maggot"]
+	}
+end
+
+M["Anchor_Maggot"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.0,
+		PositionY = 4.0,
+		PositionZ = 31.0,
+		Direction = -1,
+		Name = "Anchor_Maggot",
+		Map = M._MAP,
+		Resource = M["Anchor_Maggot"]
 	}
 end

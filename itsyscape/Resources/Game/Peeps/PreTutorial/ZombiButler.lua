@@ -151,7 +151,7 @@ function ZombiButler:updateLocation(currentI, currentJ)
 		self:giveHint("Feel free to talk the tools from the crate.")
 		self.lastArea = 'shed'
 	elseif self:isIn(self, 'butler-quarters') and self.lastArea ~= 'butler-quarters' then
-		self:giveHint("Get back to work, Skeleton Maid!")
+		self:giveHint("I could use some sleep!")
 		self.lastArea = 'butler-quarters'
 	elseif self:isIn(self, 'study') and self.lastArea ~= 'study' then
 		self:giveHint("The book on the table is probably useful, but my eyes are too gone to read it.")

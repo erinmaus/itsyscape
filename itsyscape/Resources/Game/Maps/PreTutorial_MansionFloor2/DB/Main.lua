@@ -93,3 +93,49 @@ do
 		MapObject = M["Hans"]
 	}
 end
+
+M["Powernomicon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 2,
+		PositionZ = 29,
+		Name = "Powernomicon",
+		Map = M._MAP,
+		Resource = M["Powernomicon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Book_Powernomicon",
+		MapObject = M["Powernomicon"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk() {
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Prop "Book_Powernomicon",
+		Name = "Powernomicon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/PreTutorial/Powernomicon_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Read",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Powernomicon"] {
+		TalkAction
+	}
+end

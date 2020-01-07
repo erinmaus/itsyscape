@@ -548,6 +548,8 @@ function LocalStage:movePeep(peep, path, anchor, force)
 end
 
 function LocalStage:loadMapResource(filename, args)
+	args = args or {}
+
 	local directoryPath = "Resources/Game/Maps/" .. filename
 
 	local baseLayer = self.numMaps or 0

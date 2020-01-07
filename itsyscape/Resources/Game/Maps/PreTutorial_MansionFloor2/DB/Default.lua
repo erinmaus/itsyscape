@@ -482,30 +482,6 @@ do
 	}
 end
 
-M["Book_Powernomicon1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 25.000000,
-		PositionY = 2.000000,
-		PositionZ = 29.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Book_Powernomicon1",
-		Map = M._MAP,
-		Resource = M["Book_Powernomicon1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Book_Powernomicon",
-		MapObject = M["Book_Powernomicon1"]
-	}
-end
-
 M["Bed_Rumbridge6"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
