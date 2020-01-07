@@ -229,7 +229,7 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Still hurts, just not much.",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Item "ToyWand"
+		Resource = ItsyScape.Resource.Item "ToyBoomerang"
 	}
 
 	ItsyScape.Meta.ResourceCategory {

@@ -29,6 +29,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Quest "PreTutorial"
 }
 
+ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
+
 ItsyScape.Utility.questStep(
 	"PreTutorial_Start",
 	"PreTutorial_TalkedToButler1"

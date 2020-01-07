@@ -509,3 +509,47 @@ do
 		Resource = ItsyScape.Resource.Peep "PreTutorial_Edward"
 	}
 end
+
+do
+	local Maggot = ItsyScape.Resource.Peep "PreTutorial_Maggot"
+
+	ItsyScape.Resource.Peep "PreTutorial_Maggot" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Maggot.BaseMaggot",
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Giant maggot",
+		Language = "en-US",
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "It writhes in horror.",
+		Language = "en-US",
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = -100,
+		AccuracySlash = -100,
+		AccuracyCrush = -100,
+		DefenseStab = -50,
+		DefenseSlash = -50,
+		DefenseCrush = -50,
+		DefenseMagic = -50,
+		DefenseRanged = -50,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Maggot
+	}
+end

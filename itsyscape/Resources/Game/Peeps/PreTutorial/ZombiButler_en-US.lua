@@ -1,5 +1,7 @@
 speaker "Butler"
 
+_TARGET:getState():give('KeyItem', "PreTutorial_Start")
+
 PLAYER_NAME = _TARGET:getName()
 TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(_TARGET, Utility.Text.FORMAL_ADDRESS)
 
@@ -85,7 +87,7 @@ else
 		}
 	elseif Z:isIn(P, 'study') then
 		message {
-			"That power is called the Powernomicon.",
+			"That book is called the Powernomicon.",
 			"An ancient book that describes magics over death."
 		}
 	elseif Z:isIn(P, 'library') then
@@ -99,5 +101,62 @@ else
 		}
 	else
 		message "If you need any help, feel free to ask me."
+	end
+
+	local savedChildren =
+		P:getState():has('KeyItem', "PreTutorial_SavedGhostGirl") and
+		P:getState():has('KeyItem', "PreTutorial_SavedGhostBoy")
+
+	if savedChildren then
+		local WAKE_UP  = option "What do I do next?"
+		local QUESTION = option "Can I ask you a different question?"
+
+		local option = select { WAKE_UP, QUESTION }
+		if option == WAKE_UP then
+			speaker "_TARGET"
+			message "I've saved Edward and Elizabeth, what's next, Hans?"
+
+			speaker "Butler"
+			message "Well, you need to wake up, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}."
+
+			P:getState():give('KeyItem', "PreTutorial_TalkedToButler2")
+
+			local stage = _TARGET:getDirector():getGameInstance():getStage()
+			stage:movePeep(
+				_TARGET,
+				"IsabelleIsland_Tower",
+				"Anchor_StartGame")
+
+			P:getState():give('KeyItem', "PreTutorial_WokeUp")
+		end
+	end
+
+	if P:getState():has('KeyItem', "PreTutorial_ReadPowernomicon") then
+		local FIND_COPPER    = option "Where do I find copper?"
+		local CRAFT_COPPER   = option "How do I make copper into an amulet?"
+		local ENCHANT_COPPER = option "How do I enchant copper?"
+		local THANK_YOU      = option "Thanks, but I'm good."
+
+		local option
+		repeat
+			option = select { FIND_COPPER, CRAFT_COPPER, ENCHANT_COPPER, THANK_YOU }
+
+			if option == FIND_COPPER then
+				message "You may find copper in the basement. You'll need to equip a pick-axe to mine it."
+			elseif option == CRAFT_COPPER then
+				message {
+					"You may go to the shed and smelt copper into a bar.",
+					"After that, take a hammer and smith it into what shape you want on the anvil."
+				}
+			elseif option == ENCHANT_COPPER then
+				message "You'll need to have a copper amulet, then you can cast the Enchant spell."
+			end
+		until option == THANK_YOU
+
+		speaker "_TARGET"
+		message "Thank you!"
+
+		speaker "Butler"
+		message "I'm here to help you, ${TARGET_FORMAL_ADDRESS}."
 	end
 end

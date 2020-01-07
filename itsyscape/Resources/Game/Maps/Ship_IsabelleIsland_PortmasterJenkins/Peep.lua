@@ -193,7 +193,7 @@ function Ship:makePlayerListen()
 					self.player,
 					"DialogBox",
 					true,
-					actions[i].instance:getAction().
+					actions[i].instance:getAction(),
 					capnRaven)
 			end
 		end
