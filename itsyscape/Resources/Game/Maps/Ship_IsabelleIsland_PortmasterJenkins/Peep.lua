@@ -9,13 +9,114 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local Ship = Class(Map)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
+Ship.COMBAT_HINT = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerInventory",
+		message = "Click here to access your inventory.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerInventory")
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Inventory-RustyDagger",
+		message = "Click on the rusty dagger to equip it.\nRight-click on the dagger to see additional options.",
+		open = function(target)
+			return function()
+				return not target:getState():has('Item', "RustyDagger", 1, { ['item-inventory'] = true })
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Ribbon-PlayerEquipment",
+		message = "Click here to see your equipment.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerEquipment")
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "PlayerEquipment",
+		message = "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.",
+		open = function(target)
+			local time = love.timer.getTime()
+			return function()
+				return love.timer.getTime() > time + 10 
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "Ribbon-PlayerStance",
+		message = "Click here to see your stance.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerStance")
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "PlayerStance",
+		message = "Change your stance to 'Aggressive' to deal more damage.\nHover over the other stances to see what they do.",
+		open = function(target)
+			return function()
+				return target:getBehavior(StanceBehavior).stance == Weapon.STANCE_AGGRESSIVE
+			end
+		end
+	},
+	{
+		position = 'down',
+		id = "StrategyBar",
+		message = "This is your strategy bar.\nClick on the power 'Backstab' to activate it on your next attack.\n(Remember, right-click on a spot to bind different powers.)\nThen attack a pirate to continue!",
+		open = function(target)
+			return function()
+				local power = target:getBehavior(PendingPowerBehavior)
+				return power and power.power and power.power:getResource().name == "Backstab"
+			end
+		end
+	},
+}
+
+function Ship.showTip(tips, target)
+	target:addBehavior(DisabledBehavior)
+
+	local index = 0
+	local function after()
+		index = index + 1
+		if index <= #tips then
+			Utility.UI.openInterface(
+				target,
+				"TutorialHint",
+				false,
+				tips[index].id,
+				tips[index].message,
+				tips[index].open(target),
+				{ position = tips[index].position },
+				after)
+		else
+			target:removeBehavior(DisabledBehavior)
+		end
+	end
+
+	after()
+end
 
 function Ship:new(resource, name, ...)
 	Map.new(self, resource, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
@@ -224,6 +325,15 @@ function Ship:update(director, game)
 				self.blockingInterfaceID = nil
 				self.blockingInterfaceIndex = nil
 			end
+		end
+	end
+
+	if Utility.UI.isOpen(self.player, "VideoTutorial") then
+		self.showedVideoTutorial = true
+	elseif self.showedVideoTutorial then
+		if not self.showedCombatHints then
+			Ship.showTip(Ship.COMBAT_HINT, self.player)
+			self.showedCombatHints = true
 		end
 	end
 end

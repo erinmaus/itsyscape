@@ -79,6 +79,7 @@ function CraftWindow:new(id, index, ui)
 
 	self.quantityInput = TextInput()
 	self.quantityInput:setText("0")
+	self.quantityInput:setID("Craft-QuantityInput")
 	self.quantityInput:setSize(192, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self.controlLayout:addChild(self.quantityInput)
 	self.quantityInput.onFocus:register(function()
@@ -89,6 +90,7 @@ function CraftWindow:new(id, index, ui)
 	self.craftButton.onClick:register(self.craft, self)
 	self.craftButton:setSize(160, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self.craftButton:setText("Make it!")
+	self.craftButton:setID("Craft-MakeIt!")
 	self.controlLayout:addChild(self.craftButton)
 
 	self.closeButton = Button()
@@ -139,6 +141,8 @@ function CraftWindow:update(...)
 					itemIcon:setItemCount(count)
 					itemIcon:setPosition(2, 2)
 					button:addChild(itemIcon)
+
+					button:setID("Craft-" .. item.name)
 
 					itemIcon:setToolTip(
 						ToolTip.Header(name),

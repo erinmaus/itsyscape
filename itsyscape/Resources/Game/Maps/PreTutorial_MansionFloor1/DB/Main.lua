@@ -225,6 +225,11 @@ do
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler1",
 			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon",
+			Count = 1
 		}
 	}
 

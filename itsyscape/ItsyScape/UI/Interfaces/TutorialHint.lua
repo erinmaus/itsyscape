@@ -171,6 +171,8 @@ function TutorialHint:update(...)
 		if widget then
 			self:place(widget)
 			self:highlight(widget)
+		else
+			Log.warn("Couldn't find widget %s.", state.id)
 		end
 
 		self.isPlaced = true

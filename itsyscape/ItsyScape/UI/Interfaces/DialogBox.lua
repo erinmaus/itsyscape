@@ -27,6 +27,23 @@ local DialogBox = Class(Interface)
 DialogBox.PADDING = 16
 DialogBox.HEIGHT = 240
 
+function DialogBox.concatMessage(message)
+	local m = {}
+	for i = 1, #message do
+		local content = message[i]
+		for k = 1, #content do
+			for j = 1, #content[k] do
+				table.insert(m, content[k][j])
+			end
+
+			table.insert(m, { 1, 1, 1, 1 })
+			table.insert(m, "\n")
+		end
+	end
+
+	return m
+end
+
 function DialogBox:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -130,12 +147,13 @@ function DialogBox:next()
 	self.options = {}
 
 	if state.content then
-		self.messageLabel:setText(table.concat(state.content[1], "\n"))
+		self.messageLabel:setText(DialogBox.concatMessage(state.content))
+
 		self:addChild(self.nextButton)
 		self:addChild(self.speakerIcon)
 		self:addChild(self.speakerIconBackground)
 	elseif state.input then
-		self.messageLabel:setText(table.concat(state.input, "\n"))
+		self.messageLabel:setText(DialogBox.concatMessage(state.content))
 
 		self:getView():getInputProvider():setFocusedWidget(self.inputBox)
 		self.inputBox:setText("")
@@ -149,7 +167,7 @@ function DialogBox:next()
 		local w, h = self:getSize()
 		for i = 1, #state.options do
 			local option = Button()
-			option:setText(table.concat(state.options[i], " "))
+			option:setText(DialogBox.concatMessage({ state.options[i] }))
 			option:setSize(w - DialogBox.PADDING * 2, 32)
 			option:setPosition(DialogBox.PADDING, y)
 			option.onClick:register(DialogBox.select, self, i)

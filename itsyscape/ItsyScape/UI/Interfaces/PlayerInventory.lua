@@ -238,4 +238,16 @@ function PlayerInventory:activate(button)
 	end
 end
 
+function PlayerInventory:update()
+	local items = self:getState().items or {}
+
+	for i = 1, self.numItems do
+		if items[i] then
+			self.buttons[i]:setID("Inventory-" .. items[i].id)
+		else
+			self.buttons[i]:setID(nil)
+		end
+	end
+end
+
 return PlayerInventory

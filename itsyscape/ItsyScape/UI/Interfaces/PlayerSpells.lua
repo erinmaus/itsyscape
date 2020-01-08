@@ -113,6 +113,8 @@ function PlayerSpells:setNumSpells(value)
 			table.insert(runes, ToolTip.Text(s))
 		end
 
+		button:setID("Spell-" .. spell.id)
+
 		button:setToolTip(
 			ToolTip.Header(spell.name),
 			ToolTip.Text(spell.description),
