@@ -3,14 +3,14 @@ PLAYER_NAME = _TARGET:getName()
 speaker "CapnRaven"
 
 message { 
-	"Avast, Jenkins! We know yer that merchant's portmaster!",
-	"Give us yer loot and ye can sail another day."
+	"Avast, %person{Jenkins}! We know yer that merchant's portmaster!",
+	"Give us yer %item{loot} and ye can sail another day."
 }
 
 speaker "Jenkins"
 
 message {
-	"How could ye do this? We use'd t'be mates, Cap'n Raven!"
+	"How could ye do this? We use'd t'be mates, %person{Cap'n Raven}!"
 }
 
 speaker "CapnRaven"
@@ -77,7 +77,7 @@ message {
 speaker "Jenkins"
 
 message {
-	"${PLAYER_NAME}, help 'em out! Attack 'em pirates, mate!"
+	"${PLAYER_NAME}, help 'em out! %hint{Attack 'em pirates, mate!}"
 }
 
 speaker "_TARGET"

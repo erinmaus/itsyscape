@@ -30,6 +30,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
+ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
 
 ItsyScape.Utility.questStep(
 	"PreTutorial_Start",
@@ -59,6 +60,12 @@ ItsyScape.Utility.questStep(
 	"PreTutorial_TalkedToButler2",
 	"PreTutorial_WokeUp"
 )
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "You need to read the Powernomicon.",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
+}
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",

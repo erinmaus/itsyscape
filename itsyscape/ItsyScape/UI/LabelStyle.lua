@@ -37,7 +37,11 @@ function LabelStyle:new(t, resources)
 end
 
 function LabelStyle:draw(widget, state)
-	local text = tostring(widget:get("text", state, ""))
+	local text = widget:get("text", state, "")
+
+	if type(text) ~= 'string' and type(text) ~= 'table' then
+		text = tostring(text)
+	end
 
 	if #text > 0 then
 		local previousFont = love.graphics.getFont()

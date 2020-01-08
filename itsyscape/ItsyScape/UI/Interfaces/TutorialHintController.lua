@@ -58,7 +58,6 @@ function TutorialHintController:update(delta)
 
 	if result then
 		if self.nextCallback then
-			print('next')
 			self.nextCallback()
 		end
 

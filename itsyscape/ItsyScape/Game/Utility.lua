@@ -690,6 +690,8 @@ function Utility.UI.isOpen(peep, interfaceID, interfaceIndex)
 			return true
 		end
 	end
+
+	return false
 end
 
 -- Contains utility methods to deal with items.

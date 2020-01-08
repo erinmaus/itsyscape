@@ -49,4 +49,6 @@ end
 
 if not gaveItem then
 	message "There's nothing else in here."
+else
+	state:give('KeyItem', "PreTutorial_SearchedCrate")
 end

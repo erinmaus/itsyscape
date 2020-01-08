@@ -7,17 +7,18 @@ TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(_TARGET, Utility.Text.FORMAL_ADD
 
 if not _TARGET:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
 	message {
-		"Thank goodness for an adventurer like you, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}!"
+		"Thank goodness for an adventurer like you, %person{${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}}!"
 	}
 
 	message {
-		"My charges passed on many moons ago to disease.",
-		"If only I could speak with the dead, I'd ask those poor souls why they haven't moved on."
+		"My charges, %person{Elizabeth} and %person{Edward}, passed on many moons ago to disease.",
+		"If only I could %hint{speak with the dead}, I'd ask those poor souls why they haven't moved on."
 	}
 
 	message {
 		"If I can be of any help to you, then please ask me anything.",
-		"All the resources I can give you, like the tools from the crate in the shed, are yours to take."
+		"I'll be at your side at all times on this urgent matter.",
+		"All the resources I can give you, like the %item{tools from the crate in the shed} or the %location{library on the second floor}, are yours to use."
 	}
 
 	_TARGET:getState():give('KeyItem', "PreTutorial_TalkedToButler1")
@@ -73,7 +74,7 @@ else
 		}
 	elseif Z:isIn(P, 'courtyard') then
 		message {
-			"If you want to fish, you'll need a fishing rod.",
+			"If you want to fish, you'll need to equip a fishing rod.",
 			"You may find one in the toolshed."
 		}
 	elseif Z:isIn(P, 'shed') then
@@ -103,60 +104,119 @@ else
 		message "If you need any help, feel free to ask me."
 	end
 
-	local savedChildren =
-		P:getState():has('KeyItem', "PreTutorial_SavedGhostGirl") and
-		P:getState():has('KeyItem', "PreTutorial_SavedGhostBoy")
+	local didPreReqs =
+		P:getState():has('KeyItem', "PreTutorial_ReadPowernomicon") and
+		P:getState():has('KeyItem', "PreTutorial_SearchedCrate")
+	if not didPreReqs then
+		message {
+			"Remember, the %item{tools from the crate in the shed} or the %location{library on the second floor}, are yours to use."
+		}
 
-	if savedChildren then
-		local WAKE_UP  = option "What do I do next?"
-		local QUESTION = option "Can I ask you a different question?"
-
-		local option = select { WAKE_UP, QUESTION }
-		if option == WAKE_UP then
-			speaker "_TARGET"
-			message "I've saved Edward and Elizabeth, what's next, Hans?"
-
-			speaker "Butler"
-			message "Well, you need to wake up, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}."
-
-			P:getState():give('KeyItem', "PreTutorial_TalkedToButler2")
-
-			local stage = _TARGET:getDirector():getGameInstance():getStage()
-			stage:movePeep(
-				_TARGET,
-				"IsabelleIsland_Tower",
-				"Anchor_StartGame")
-
-			P:getState():give('KeyItem', "PreTutorial_WokeUp")
-		end
-	end
-
-	if P:getState():has('KeyItem', "PreTutorial_ReadPowernomicon") then
-		local FIND_COPPER    = option "Where do I find copper?"
-		local CRAFT_COPPER   = option "How do I make copper into an amulet?"
-		local ENCHANT_COPPER = option "How do I enchant copper?"
-		local THANK_YOU      = option "Thanks, but I'm good."
+		local WHERE_LIBRARY = option "Where's the library?"
+		local WHERE_SHED    = option "Where's the shed?"
+		local THANK_YOU     = option "Thank you!"
 
 		local option
 		repeat
-			option = select { FIND_COPPER, CRAFT_COPPER, ENCHANT_COPPER, THANK_YOU }
+			option = select { WHERE_SHED, WHERE_LIBRARY, THANK_YOU }
+			if option == WHERE_LIBRARY then
+				speaker "_TARGET"
+				message "This place is massive! Where's the library?"
 
-			if option == FIND_COPPER then
-				message "You may find copper in the basement. You'll need to equip a pick-axe to mine it."
-			elseif option == CRAFT_COPPER then
+				speaker "Butler"
 				message {
-					"You may go to the shed and smelt copper into a bar.",
-					"After that, take a hammer and smith it into what shape you want on the anvil."
+					"The library is on the second floor.",
+					"Take the stairs in the %location{foyer} then head %hint{north-west}.",
+					"I've set a book on the table you might find useful."
 				}
-			elseif option == ENCHANT_COPPER then
-				message "You'll need to have a copper amulet, then you can cast the Enchant spell."
+			elseif option == WHERE_SHED then
+				speaker "_TARGET"
+				message "I didn't see a shed on the way in!"
+
+				speaker "Butler"
+				message {
+					"The shed is to the east of the %location{courtyard}.",
+					"And the %location{courtyard} is on the first floor, just north of the %location{foyer}."
+				}
+			elseif option == THANK_YOU then
+				speaker "_TARGET"
+				message "Thank you!"
+
+				speaker "Butler"
+				message "Anything, ${TARGET_FORMAL_ADDRESS}."
 			end
 		until option == THANK_YOU
+	else
 
-		speaker "_TARGET"
-		message "Thank you!"
+		local savedChildren =
+			P:getState():has('KeyItem', "PreTutorial_SavedGhostGirl") and
+			P:getState():has('KeyItem', "PreTutorial_SavedGhostBoy")
 
-		speaker "Butler"
-		message "I'm here to help you, ${TARGET_FORMAL_ADDRESS}."
+		if savedChildren then
+			local WAKE_UP  = option "What do I do next?"
+			local QUESTION = option "Can I ask you a different question?"
+
+			local option = select { WAKE_UP, QUESTION }
+			if option == WAKE_UP then
+				speaker "_TARGET"
+				message "I've saved Edward and Elizabeth, what's next, Hans?"
+
+				speaker "Butler"
+				message "Well, you need to wake up, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}."
+
+				P:getState():give('KeyItem', "PreTutorial_TalkedToButler2")
+
+				local stage = _TARGET:getDirector():getGameInstance():getStage()
+				stage:movePeep(
+					_TARGET,
+					"IsabelleIsland_Tower",
+					"Anchor_StartGame")
+
+				P:getState():give('KeyItem', "PreTutorial_WokeUp")
+			end
+		end
+
+		if P:getState():has('KeyItem', "PreTutorial_ReadPowernomicon") then
+			local FIND_COPPER    = option "Where do I find copper?"
+			local CRAFT_COPPER   = option "How do I make copper into an amulet?"
+			local ENCHANT_COPPER = option "How do I enchant copper?"
+			local THANK_YOU      = option "Thanks, but I'm good."
+
+			local result
+			repeat
+				result = select { FIND_COPPER, CRAFT_COPPER, ENCHANT_COPPER, THANK_YOU }
+
+				if result == FIND_COPPER then
+					message "You may find %item{copper} in the basement. You'll need to equip a pick-axe to mine it."
+				elseif result == CRAFT_COPPER then
+					message {
+						"You may go to the %location{shed} and smelt %item{copper} into a %item{copper bar}.",
+						"After that, take a %item{hammer} and smith it into what shape you want on the %item{anvil}."
+					}
+				elseif result == ENCHANT_COPPER then
+					message "You'll need to have a %item{copper amulet}, then you can cast the Enchant spell."
+
+					if P:getState():has('Item', "CopperAmulet", 1, { ['item-inventory'] = true }) then
+						local YES = option "Yes, please!"
+						local NO  = option "No, I can figure it out myself."
+
+						message "I see you have a %item{copper amulet}. I can show you how to enchant it, if you want."
+
+						local result = select { YES, NO }
+						if result == YES then
+							local Common = require "Resources.Game.Peeps.PreTutorial.Common"
+							Common.showEnchantTip(_TARGET)
+							return
+						end
+					end
+				end
+			until result == THANK_YOU
+
+			speaker "_TARGET"
+			message "Thank you!"
+
+			speaker "Butler"
+			message "I'm here to help you, ${TARGET_FORMAL_ADDRESS}."
+		end
 	end
 end
