@@ -13,7 +13,7 @@ if not hasGhostSpeakEquipped then
 
 	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-equipment'] = true })
 	if hasGhostSpeakInInventory then
-		message "Maybe if I equip thet Ghostspeak amulet..."
+		message "Maybe if I equip that Ghostspeak amulet..."
 	end
 else
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
