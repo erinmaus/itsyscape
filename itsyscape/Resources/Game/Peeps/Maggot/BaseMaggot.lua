@@ -23,7 +23,6 @@ function BaseMaggot:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 8, 2)
-	size.offset = Vector(-1, 0, 0)
 end
 
 function BaseMaggot:ready(director, game)

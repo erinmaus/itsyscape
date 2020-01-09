@@ -13,7 +13,7 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local Common = {}
 Common.ENCHANT_HINT = {
 	{
-		position = 'left',
+		position = 'up',
 		id = "Ribbon-PlayerSpells",
 		message = "Click here to access your spells.",
 		open = function(target)
