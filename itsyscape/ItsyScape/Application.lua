@@ -182,7 +182,7 @@ function Application:probe(x, y, performDefault, callback, tests)
 	probe:all(function()
 		if performDefault then
 			for action in probe:iterate() do
-				if action.id ~= "Examine" then
+				if action.id ~= "Examine" and not action.suppress then
 					if action.id == "Walk" then
 						self.clickActionType = Application.CLICK_WALK
 					else

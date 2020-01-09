@@ -334,7 +334,7 @@ function DemoApplication:update(delta)
 		self:probe(self.mouseX, self.mouseY, false, function(probe)
 			local action = probe:toArray()[1]
 			local renderer = self:getUIView():getRenderManager()
-			if action and action.type ~= 'examine' then
+			if action and (action.type ~= 'examine' and not action.suppress) then
 				local text = string.format("%s %s", action.verb, action.object)
 				self.showingToolTip = true
 				if self.lastToolTipObject ~= action.id then
