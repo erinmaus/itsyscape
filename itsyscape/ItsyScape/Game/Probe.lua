@@ -346,7 +346,7 @@ function Probe:props()
 				if filter then
 					isHidden = filter(prop)
 				else
-					isHidden = true
+					isHidden = false
 				end
 
 				local action = {
