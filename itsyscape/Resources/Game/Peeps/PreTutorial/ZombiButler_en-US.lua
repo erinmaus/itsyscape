@@ -60,7 +60,7 @@ else
 		message {
 			"Unfortunately, this food is poisonous to the living.",
 			"Ectoplasm glaze was used on all the food here.",
-			"So unless you have a deathwish..."
+			"So unless you have a death-wish..."
 		}
 	elseif Z:isIn(P, 'boys-room')then
 		message {
@@ -135,7 +135,7 @@ else
 
 				speaker "Butler"
 				message {
-					"The shed is to the east of the %location{courtyard}.",
+					"The toolshed is to the east of the %location{courtyard}.",
 					"And the %location{courtyard} is on the first floor, just north of the %location{foyer}."
 				}
 			elseif option == THANK_YOU then
@@ -159,7 +159,7 @@ else
 			local option = select { WAKE_UP, QUESTION }
 			if option == WAKE_UP then
 				speaker "_TARGET"
-				message "I've saved Edward and Elizabeth, what's next, Hans?"
+				message "I've saved %person{Edward} and %person{Elizabeth}. What's next, %person{Hans}?"
 
 				speaker "Butler"
 				message "Well, you need to wake up, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}."
