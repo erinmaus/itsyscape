@@ -22,6 +22,12 @@ Probe.TESTS = {
 	['props'] = true
 }
 
+Probe.PROP_FILTERS = {
+	['open'] = function(prop)
+		return prop:getState().open
+	end
+}
+
 function Probe:new(game, gameView, gameDB, ray, tests)
 	self.onExamine = Callback()
 
@@ -334,10 +340,20 @@ function Probe:props()
 		if s then
 			local actions = prop:getActions('world')
 			for i = 1, #actions do
+				local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
+
+				local isHidden
+				if filter then
+					isHidden = filter(prop)
+				else
+					isHidden = true
+				end
+
 				local action = {
 					id = actions[i].id,
 					verb = actions[i].verb,
 					object = prop:getName(),
+					suppress = i > 1 or isHidden,
 					description = prop:getDescription(),
 					callback = function()
 						prop:poke(actions[i].id, 'world')
