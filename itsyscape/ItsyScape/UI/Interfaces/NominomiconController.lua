@@ -104,6 +104,7 @@ function NominomiconController:new(peep, director)
 	local quests = gameDB:getResources("Quest")
 	for q in gameDB:getResources("Quest") do
 		local quest = {
+			id = q.name,
 			name = Utility.getName(q, gameDB),
 			description = Utility.getDescription(q, gameDB)
 		}
@@ -147,6 +148,7 @@ function NominomiconController:new(peep, director)
 	end
 
 	table.insert(self.quests, 1, {
+		id = "X_Introduction",
 		name = "Introduction",
 		description = "Learn about the world of ItsyRealm."
 	})
@@ -224,6 +226,7 @@ function NominomiconController:select(e)
 	end
 
 	self.state.currentQuest = result
+	self.state.currentQuestID = self.quests[e.index].id
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,

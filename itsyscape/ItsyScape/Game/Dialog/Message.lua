@@ -15,7 +15,7 @@ local Message = Class()
 Message.COLORS = {
 	location = { 0, 0.5, 1.0, 1 },
 	item = { 0.5, 1, 0, 1 },
-	person = { 1, 0.5, 0, 1 },
+	person = { 1, 0.0, 0, 1 },
 	hint = { 1, 1, 0, 1 },
 	empty = { 0.3, 0.3, 0.3, 1 },
 }

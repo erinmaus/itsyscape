@@ -116,7 +116,7 @@ end
 function LocalUI:get(interfaceID, index)
 	local interfaces = self.interfaces[interfaceID]
 	if interfaces then
-		return interfaces[index]
+		return interfaces.v[index]
 	end
 
 	return nil

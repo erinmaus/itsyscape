@@ -120,6 +120,7 @@ function Nominomicon:update(...)
 				ButtonStyle(
 					Nominomicon.INACTIVE_BUTTON_STYLE,
 					self:getView():getResources()))
+			button:setID("Quest-" .. quest.id)
 
 			self.grid:addChild(button)
 		end
