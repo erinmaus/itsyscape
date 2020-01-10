@@ -685,13 +685,18 @@ end
 function Utility.UI.isOpen(peep, interfaceID, interfaceIndex)
 	local ui = peep:getDirector():getGameInstance():getUI()
 
-	for _, index in ui:getInterfacesForPeep(peep, interfaceID) do
+	for index in ui:getInterfacesForPeep(peep, interfaceID) do
 		if index == interfaceIndex or not interfaceIndex then
-			return true
+			return true, index
 		end
 	end
 
 	return false
+end
+
+function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
+	local ui = peep:getDirector():getGameInstance():getUI()
+	return ui:get(interfaceID, interfaceIndex)
 end
 
 -- Contains utility methods to deal with items.

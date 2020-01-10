@@ -111,7 +111,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You talked to Hans, the Zombi butler. Turns out two sick children once in his care refuse to pass on.",
+	Value = "You talked to Hans, the Zombi butler. Turns out two sick children once in his care refuse to pass on. You need to find a way to talk to ghosts.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler1"
 }
 

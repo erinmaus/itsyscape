@@ -20,7 +20,7 @@ Common.ENCHANT_HINT = {
 			return function()
 				return Utility.UI.isOpen(target, "PlayerSpells")
 			end
-		end,
+		end
 	},
 	{
 		position = 'up',
@@ -30,7 +30,7 @@ Common.ENCHANT_HINT = {
 			return function()
 				return Utility.UI.isOpen(target, "CraftWindow")
 			end
-		end,
+		end
 	},
 	{
 		position = 'up',
@@ -40,6 +40,35 @@ Common.ENCHANT_HINT = {
 			return function()
 				return not target:getState():has('Item', "CopperAmulet", 1, { ['item-inventory'] = true }) or
 				       not Utility.UI.isOpen(target, "CraftWindow")
+			end
+		end
+	}
+}
+
+Common.QUEST_HINT = {
+	{
+		position = 'up',
+		id = "Ribbon-Nominomicon",
+		message = "Click here to access the Nominomicon.\nThe Nominomicon let's you see quest progress.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "Nominomicon")
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "Quest-PreTutorial",
+		message = "Click here to view the tutorial progress.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "Nominomicon")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "Nominomicon", index)
+					return interface.state.currentQuestID == "PreTutorial"
+				end
+
+				return false
 			end
 		end
 	}
@@ -71,6 +100,10 @@ end
 
 function Common.showEnchantTip(target)
 	Common.showTip(Common.ENCHANT_HINT, target)
+end
+
+function Common.showQuestTip(target)
+	Common.showTip(Common.QUEST_HINT, target)
 end
 
 return Common
