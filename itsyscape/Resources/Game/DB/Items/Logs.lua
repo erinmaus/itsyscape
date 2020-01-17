@@ -209,9 +209,9 @@ for name, log in pairs(LOGS) do
 	}
 
 	Log {
-		LightAction,
+		CraftAction,
 		FletchAction,
-		CraftAction
+		LightAction
 	}
 
 	ItsyScape.Meta.PeepID {

@@ -54,6 +54,7 @@ function UIView:new(gameView)
 	ui.onPoke:register(self.poke, self)
 
 	self.root = Widget()
+	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
 
 	self.resources = WidgetResourceManager()

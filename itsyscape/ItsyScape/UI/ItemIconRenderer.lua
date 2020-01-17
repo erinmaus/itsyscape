@@ -83,7 +83,16 @@ function ItemIconRenderer:draw(widget, state)
 			itemScaleY = scaleY
 		end
 
+		local isDisabled = widget:get("isDisabled", state)
+		if isDisabled then
+			love.graphics.setColor(0.3, 0.3, 0.3, 1)
+		end
+
 		love.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
+
+		if isDisabled then
+			love.graphics.setColor(1, 1, 1, 1)
+		end
 	end
 
 	local count = widget:get("itemCount", state)
