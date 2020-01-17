@@ -250,6 +250,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ResourceCategoryGroup" {
+		Key = Meta.TYPE_TEXT,
+		Value = Meta.TYPE_TEXT,
+		Tier = Meta.TYPE_INTEGER
+	}
+
 	Meta "ActionTypeVerb" {
 		Value = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
@@ -571,6 +577,7 @@ include "Resources/Game/DB/KeyItems.lua"
 
 -- Items
 -- Materials
+include "Resources/Game/DB/Items/Tiers.lua"
 include "Resources/Game/DB/Items/Tools.lua"
 include "Resources/Game/DB/Items/Ores.lua"
 include "Resources/Game/DB/Items/Logs.lua"

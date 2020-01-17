@@ -53,11 +53,11 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "PlayerEquipment",
-		message = "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.",
+		message = "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.\nClose this tab when you're done by clicking the icon again.",
 		open = function(target)
 			local time = love.timer.getTime()
 			return function()
-				return love.timer.getTime() > time + 10 
+				return love.timer.getTime() > time + 10 or not Utility.UI.isOpen(target, "PlayerEquipment")
 			end
 		end
 	},
@@ -332,6 +332,17 @@ function Ship:update(director, game)
 		self.showedVideoTutorial = true
 	elseif self.showedVideoTutorial then
 		if not self.showedCombatHints then
+			print('player', self.player)
+			Utility.UI.openInterface(
+				self.player,
+				"TutorialHint",
+				false,
+				"root",
+				"Look at the bottom right corner.\nClick on the flashing icon to continue.",
+				function()
+					return Utility.UI.isOpen(self.player, "PlayerInventory")
+				end,
+				{ position = 'center' })
 			Ship.showTip(Ship.COMBAT_HINT, self.player)
 			self.showedCombatHints = true
 		end

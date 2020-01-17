@@ -51,10 +51,7 @@ function CraftWindow:new(id, index, ui)
 	self:addChild(panel)
 
 	self.grid = ScrollablePanel(GridLayout)
-	self.grid:getInnerPanel():setUniformSize(
-		true,
-		CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2,
-		CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2)
+	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(CraftWindow.BUTTON_PADDING)
 	self.grid:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
 	self:addChild(self.grid)
@@ -74,13 +71,19 @@ function CraftWindow:new(id, index, ui)
 
 	local quantityLabel = Label()
 	quantityLabel:setText("Quantity:")
-	quantityLabel:setSize(96)
+	quantityLabel:setSize(128)
+	quantityLabel:setStyle(LabelStyle({
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		fontSize = 22,
+		textShadow = true,
+		color = { 1, 1, 1, 1 }
+	}, ui:getResources()))
 	self.controlLayout:addChild(quantityLabel)
 
 	self.quantityInput = TextInput()
 	self.quantityInput:setText("0")
 	self.quantityInput:setID("Craft-QuantityInput")
-	self.quantityInput:setSize(192, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
+	self.quantityInput:setSize(160, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self.controlLayout:addChild(self.quantityInput)
 	self.quantityInput.onFocus:register(function()
 		self.quantityInput:setCursor(0, #self.quantityInput:getText() + 1)
@@ -114,50 +117,79 @@ function CraftWindow:update(...)
 		local state = self:getState()
 		local gameDB = self:getView():getGame():getGameDB()
 		local brochure = gameDB:getBrochure()
-		for i = 1, #state.actions do
-			local action = gameDB:getAction(state.actions[i].id)
-			if action then
-				local item, count
-				for output in brochure:getOutputs(action) do
-					local outputResource = brochure:getConstraintResource(output)
-					local outputType = brochure:getResourceTypeFromResource(outputResource)
-					if outputType.name == "Item" then
-						item = outputResource
-						count = output.count
-						break
+
+		local gridWidth = self.grid:getSize()
+		for i = 1, #state.groups do
+			local group = state.groups[i]
+			local grid = GridLayout()
+
+			grid:setWrapContents(true)
+			grid:setSize(gridWidth, 0)
+			grid:setPadding(CraftWindow.PADDING, CraftWindow.PADDING)
+
+			local label = Label()
+			label:setText(group.value)
+			label:setStyle(LabelStyle({
+				font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+				fontSize = 24,
+				textShadow = true,
+				color = { 1, 1, 1, 1 }
+			}, self:getView():getResources()))
+			label:setSize(gridWidth, 32)
+			grid:addChild(label)
+
+			for j = 1, #group do
+				local action = gameDB:getAction(group[j].id)
+				if action then
+					local item, count
+					for output in brochure:getOutputs(action) do
+						local outputResource = brochure:getConstraintResource(output)
+						local outputType = brochure:getResourceTypeFromResource(outputResource)
+						if outputType.name == "Item" then
+							item = outputResource
+							count = output.count
+							break
+						end
+					end
+
+					if item then
+						local name, description = Utility.Item.getInfo(
+							item.name,
+							self:getView():getGame():getGameDB())
+
+						local button = Button()
+						button.onClick:register(self.selectAction, self, group[j], group[j].canPerform)
+						button:setSize(
+							CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2,
+							CraftWindow.BUTTON_SIZE + CraftWindow.BUTTON_PADDING * 2)
+
+						local itemIcon = ItemIcon()
+						itemIcon:setItemID(item.name)
+						itemIcon:setItemCount(count)
+						itemIcon:setIsDisabled(not group[j].canPerform)
+						itemIcon:setPosition(2, 2)
+						button:addChild(itemIcon)
+
+						button:setID("Craft-" .. item.name)
+
+						itemIcon:setToolTip(
+							ToolTip.Header(name),
+							ToolTip.Text(description))
+
+						grid:addChild(button)
 					end
 				end
-
-				if item then
-					local name, description = Utility.Item.getInfo(
-						item.name,
-						self:getView():getGame():getGameDB())
-
-					local button = Button()
-					button.onClick:register(self.selectAction, self, state.actions[i])
-
-					local itemIcon = ItemIcon()
-					itemIcon:setItemID(item.name)
-					itemIcon:setItemCount(count)
-					itemIcon:setPosition(2, 2)
-					button:addChild(itemIcon)
-
-					button:setID("Craft-" .. item.name)
-
-					itemIcon:setToolTip(
-						ToolTip.Header(name),
-						ToolTip.Text(description))
-
-					self.grid:addChild(button)
-				end
 			end
+
+			self.grid:addChild(grid)
 		end
+		self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
 
 		self.ready = true
 	end
 end
 
-function CraftWindow:selectAction(action, button)
+function CraftWindow:selectAction(action, canPerform, button)
 	if self.previousSelection then
 		self.previousSelection:setStyle(nil)
 	end
@@ -171,12 +203,14 @@ function CraftWindow:selectAction(action, button)
 
 		self.activeAction = action
 		self.previousSelection = button
+		self.canPerform = canPerform
 
 		self.quantityInput:setText(tostring(action.count))
 
 		self:sendPoke("select", nil, { id = action.id })
 	else
 		self.activeAction = false
+		self.canPerform = false
 		self.previousSelection = false
 	end
 end
@@ -219,7 +253,7 @@ function CraftWindow:populateRequirements(e)
 end
 
 function CraftWindow:craft()
-	if self.activeAction then
+	if self.activeAction and self.canPerform then
 		local count = tonumber(self.quantityInput:getText()) or 1
 		self:sendPoke("craft", nil, { id = self.activeAction.id, count = count })
 	end
