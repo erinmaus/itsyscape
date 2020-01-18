@@ -32,7 +32,8 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	do
 		local g = gameDB:getRecords("ResourceCategoryGroup", {
 			Key = categoryKey,
-			Value = categoryValue
+			Value = categoryValue,
+			Language = "en-US"
 		})
 
 		table.sort(g, function(a, b)
@@ -51,13 +52,14 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 			local value = g[i]:get("Value")
 			local hasIndex = groupIndices[value]
 			if not hasIndex then
-				table.insert(groups, { value = g[i]:get("Value") })
+				table.insert(groups, { value = g[i]:get("Value"), literal = g[i]:get("Name") })
+				print(groups[#groups].value)
 				groupIndices[groups[i].value] = i
 			end
 		end
 	end
 
-	table.insert(groups, { value = "Misc" })
+	table.insert(groups, { value = "Misc", literal = "Misc" })
 	groupIndices["Misc"] = #groups
 
 	self.state = { groups = groups }

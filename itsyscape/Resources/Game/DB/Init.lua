@@ -253,6 +253,8 @@ Game "ItsyScape"
 	Meta "ResourceCategoryGroup" {
 		Key = Meta.TYPE_TEXT,
 		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Name = Meta.TYPE_TEXT,
 		Tier = Meta.TYPE_INTEGER
 	}
 

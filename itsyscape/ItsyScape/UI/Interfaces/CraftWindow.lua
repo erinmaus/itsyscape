@@ -128,7 +128,7 @@ function CraftWindow:update(...)
 			grid:setPadding(CraftWindow.PADDING, CraftWindow.PADDING)
 
 			local label = Label()
-			label:setText(group.value)
+			label:setText(group.literal)
 			label:setStyle(LabelStyle({
 				font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 				fontSize = 24,
