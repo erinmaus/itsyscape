@@ -324,6 +324,8 @@ function Probe:props()
 		return self.probes['props']
 	end
 
+	local _, _, playerLayer = self.game:getPlayer():getActor():getTile()
+
 	local count = 0
 	for prop in self.game:getStage():iterateProps() do
 		local min, max = prop:getBounds()
@@ -336,17 +338,17 @@ function Probe:props()
 			end
 		end
 
+		local _, _, propLayer = prop:getTile()
+
 		local s, p = self.ray:hitBounds(min, max)
 		if s then
 			local actions = prop:getActions('world')
 			for i = 1, #actions do
 				local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
 
-				local isHidden
+				local isHidden = propLayer ~= playerLayer
 				if filter then
-					isHidden = filter(prop)
-				else
-					isHidden = false
+					isHidden = isHidden or filter(prop)
 				end
 
 				local action = {
