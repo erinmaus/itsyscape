@@ -44,6 +44,11 @@ for name, bar in pairs(BARS) do
 	end
 
 	SmeltAction {
+		Output {
+			Resource = Bar,
+			Count = 1
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForLevel(math.max(bar.tier, 1))
@@ -52,11 +57,6 @@ for name, bar in pairs(BARS) do
 		Output {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForResource(math.max(bar.tier, 1)) * #bar
-		},
-
-		Output {
-			Resource = Bar,
-			Count = 1
 		}
 	}
 
