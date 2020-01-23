@@ -107,7 +107,9 @@ function MovementCortex:update(delta)
 			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
 			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)
 
-			if newTile:hasFlag('impassable') and not oldTile:hasFlag('impassable') then
+			if (newTile:hasFlag('impassable') and not oldTile:hasFlag('impassable')) or
+			   (newTile:hasFlag('door') and not oldTile:hasFlag('door'))
+			then
 				position.position = oldPosition
 				Log.info("Peep '%s' entered an impassable region.", peep:getName())
 				movement.acceleration = Vector.ZERO
