@@ -61,7 +61,7 @@ while result ~= QUIT do
 
 		result = QUIT
 
-		Utility.UI.openInterface(_TARGET, "CharacterCustomization")
+		Utility.UI.openInterface(_TARGET, "CharacterCustomization", true)
 	elseif result == QUIT then
 		speaker "_TARGET"
 		message "If I need your help I'll definitely visit!"

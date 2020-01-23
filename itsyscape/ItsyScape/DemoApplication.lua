@@ -46,6 +46,8 @@ function DemoApplication:new()
 	self.mouseX, self.mouseY = math.huge, math.huge
 
 	self.cameraOffset = Vector(0)
+
+	self.wasActionButtonPressed = love.keyboard.isDown('space')
 end
 
 function DemoApplication:getPlayerPosition(delta)
@@ -326,8 +328,59 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
+function DemoApplication:updatePlayerMovement()
+	if not _DEBUG then
+		return
+	end
+
+	local player = self:getGame():getPlayer()
+	local up = love.keyboard.isDown('w')
+	local down = love.keyboard.isDown('s')
+	local left = love.keyboard.isDown('a')
+	local right = love.keyboard.isDown('d')
+
+	local x, z = 0, 0
+	do
+		if up then
+			z = z - 1
+		end
+
+		if down then
+			z = z + 1
+		end
+
+		if left then
+			x = x - 1
+		end
+
+		if right then
+			x = x + 1
+		end
+	end
+
+	local action = love.keyboard.isDown('space')
+
+	local focusedWidget = self:getUIView():getInputProvider():getFocusedWidget()
+	if not focusedWidget or
+	   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
+	then
+		player:move(x, z)
+		if action and not self.wasActionButtonPressed then
+			print('ACTION')
+			player:poke()
+		end
+	else
+		player:move(0, 0)
+	end
+
+	self.wasActionButtonPressed = action
+end
+
+
 function DemoApplication:update(delta)
 	Application.update(self, delta)
+
+	self:updatePlayerMovement()
 
 	self.toolTipTick = self.toolTipTick - delta
 	if self.mouseMoved and self.toolTipTick < 0 then
@@ -416,8 +469,6 @@ function DemoApplication:update(delta)
 end
 
 function DemoApplication:draw(delta)
-	local previous = self.previousPlayerPosition
-	local current = self.currentPlayerPosition
 	self:getCamera():setPosition(
 		self:getPlayerPosition(self:getFrameDelta()) + self.cameraOffset)
 
