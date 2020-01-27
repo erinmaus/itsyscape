@@ -46,8 +46,6 @@ function DemoApplication:new()
 	self.mouseX, self.mouseY = math.huge, math.huge
 
 	self.cameraOffset = Vector(0)
-
-	self.wasActionButtonPressed = love.keyboard.isDown('space')
 end
 
 function DemoApplication:getPlayerPosition(delta)
@@ -358,22 +356,14 @@ function DemoApplication:updatePlayerMovement()
 		end
 	end
 
-	local action = love.keyboard.isDown('space')
-
 	local focusedWidget = self:getUIView():getInputProvider():getFocusedWidget()
 	if not focusedWidget or
 	   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
 	then
 		player:move(x, z)
-		if action and not self.wasActionButtonPressed then
-			print('ACTION')
-			player:poke()
-		end
 	else
 		player:move(0, 0)
 	end
-
-	self.wasActionButtonPressed = action
 end
 
 
