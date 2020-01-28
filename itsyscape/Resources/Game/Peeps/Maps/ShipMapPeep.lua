@@ -206,7 +206,7 @@ function ShipMapPeep:update(director, game)
 		position.position = Vector(
 			position.position.x,
 			math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth()),
-			position.position.z)
+			position.position.z) + position.offset
 		if self.isSinking then
 			position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
 		end

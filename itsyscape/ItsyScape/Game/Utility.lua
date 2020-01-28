@@ -961,6 +961,8 @@ function Utility.Map.spawnMap(peep, map, position, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
 	p.position = position
+
+	return mapLayer, mapScript
 end
 
 function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
