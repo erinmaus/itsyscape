@@ -189,9 +189,9 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 	local top = self.tileSet:getTileProperty(tileIndex, 'textureTop', 0)
 	local bottom = self.tileSet:getTileProperty(tileIndex, 'textureBottom', 1)
 
-	local red = self.tileSet:getTileProperty(tileIndex, 'colorRed', 255)
-	local green = self.tileSet:getTileProperty(tileIndex, 'colorGreen', 255)
-	local blue = self.tileSet:getTileProperty(tileIndex, 'colorBlue', 255)
+	local red = self.tileSet:getTileProperty(tileIndex, 'colorRed', 255) * tile.red
+	local green = self.tileSet:getTileProperty(tileIndex, 'colorGreen', 255) * tile.green
+	local blue = self.tileSet:getTileProperty(tileIndex, 'colorBlue', 255) * tile.blue
 	local alpha = 255
 
 	local texture = { s = s, t = t }

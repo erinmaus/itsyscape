@@ -11,15 +11,17 @@ local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 
 local Decoration = Class()
 Decoration.Feature = Class()
 
-function Decoration.Feature:new(tileID, position, rotation, scale)
+function Decoration.Feature:new(tileID, position, rotation, scale, color)
 	self.tileID = tileID or false
 	self.position = position or Vector(0)
 	self.rotation = rotation or Quaternion(0)
 	self.scale = scale or Vector(1)
+	self.color = color or Color()
 end
 
 function Decoration.Feature:getID()
@@ -50,6 +52,15 @@ function Decoration.Feature:setScale(value)
 	self.scale = value or self.scale
 end
 
+function Decoration.Feature:getColor()
+	return self.color
+end
+
+function Decoration.Feature:setColor(value)
+	self.color = value or self.color
+end
+
+
 function Decoration:new(d)
 	self.tileSetID = false
 	self.features = {}
@@ -79,21 +90,24 @@ function Decoration:loadFromTable(t)
 		local position = Vector(unpack(feature.position or { 0, 0, 0 }))
 		local rotation = Quaternion(unpack(feature.rotation or { 0, 0, 0, 1 }))
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
+		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
 		table.insert(self.features, Decoration.Feature(
 			feature.id,
 			position,
 			rotation,
-			scale
+			scale,
+			color
 		))
 	end
 end
 
-function Decoration:add(id, position, rotation, scale)
+function Decoration:add(id, position, rotation, scale, color)
 	local feature = Decoration.Feature(
 			id,
 			position,
 			rotation,
-			scale
+			scale,
+			color
 		)
 	table.insert(self.features, feature)
 
@@ -142,6 +156,9 @@ function Decoration:toString()
 			r:pushFormatLine(
 				"scale = { %f, %f, %f },",
 				scale.x, scale.y, scale.z)
+			r:pushFormatLine(
+				"color = { %f, %f, %f, %f },",
+				color.r, color.g, color.b, color.a)
 		end
 		r:pushIndent(1)
 		r:pushLine("},")

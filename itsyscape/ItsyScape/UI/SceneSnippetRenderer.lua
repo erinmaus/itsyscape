@@ -42,6 +42,10 @@ function SceneSnippetRenderer:draw(widget)
 	if camera then
 		local renderer = self.renderers[widget]
 		do
+			if renderer.finalDeferredPass then
+				renderer.finalDeferredPass:setIsFullLit(widget:getIsFullLit())
+			end
+
 			love.graphics.push('all')
 			love.graphics.setScissor()
 			renderer:setCamera(camera)

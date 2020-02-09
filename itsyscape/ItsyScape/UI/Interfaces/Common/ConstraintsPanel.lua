@@ -102,6 +102,10 @@ function ConstraintsPanel:performLayout(doLogic)
 			left = ItemIcon()
 			left:setSize(leftWidth, rowHeight)
 			left:setItemID(c.resource)
+		elseif c.type:lower() == 'sailingitem' then
+			left = Icon()
+			left:setSize(leftWidth, rowHeight)
+			left:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", c.resource))
 		else
 			left = Widget()
 			left:setSize(leftWidth, rowHeight)

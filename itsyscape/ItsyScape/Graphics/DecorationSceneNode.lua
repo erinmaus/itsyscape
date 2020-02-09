@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
 
 local DecorationSceneNode = Class(SceneNode)
 DecorationSceneNode.DEFAULT_SHADER = ShaderResource()
@@ -84,6 +85,7 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 
 		-- Assumes indices 1-3 are vertex positions. Bad.
 		-- Also assumes indices 4-6 are vertex normals. And also bad.
+		-- Lastly, assumes indices 9-12 are color. Ugh.
 		if staticMesh:hasGroup(group) then
 			local groupVertices = staticMesh:getVertices(group)
 			for i = 1, #groupVertices do
@@ -97,6 +99,8 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 					v[6] = v[6] * l
 				end
 
+				v[9], v[10], v[11], v[12] = feature:getColor():get()
+
 				local p = Vector(v[1], v[2], v[3])
 				min = min:min(p)
 				max = max:max(p)
@@ -107,7 +111,7 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 	end
 
 	if #vertices > 0 then
-		local format = staticMesh:getFormat()
+		local format = StaticMesh.DEFAULT_FORMAT
 		self.mesh = love.graphics.newMesh(format, vertices, 'triangles', 'static')	
 		for _, element in ipairs(format) do
 			self.mesh:setAttributeEnabled(element[1], true)

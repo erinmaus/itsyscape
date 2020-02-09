@@ -14,7 +14,8 @@ local EVENTS = {
 	PLAYER_GOT_KEY_ITEM = true,
 	PLAYER_GOT_LEVEL_UP = true,
 	PLAYER_DIED = true,
-	PLAYER_REZZED = true
+	PLAYER_REZZED = true,
+	PLAYER_GOT_SAILING_ITEM = true,
 }
 
 local index = function(_, key)

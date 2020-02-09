@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/PreTutorial_MansionFloor1/Peep.lua
+-- Resources/Game/Maps/Rumbridge_Port/Peep.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,24 +16,29 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
-local Mansion = Class(Map)
-Mansion.MIN_LIGHTNING_PERIOD = 3
-Mansion.MAX_LIGHTNING_PERIOD = 6
-Mansion.LIGHTNING_TIME = 0.5
-Mansion.MAX_AMBIENCE = 2
+local Port = Class(Map)
 
-function Mansion:new(resource, name, ...)
-	Map.new(self, resource, name or 'PreTutorial_MansionFloor1', ...)
+function Port:new(resource, name, ...)
+	Map.new(self, resource, name or 'Rumbridge_Port', ...)
+
+	self:addPoke('spawnShip')
 end
 
-function Mansion:onLoad(filename, args, layer)
+function Port:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local _, ship = Utility.Map.spawnMap(self, "Ship_IsabelleIsland_Pirate", Vector(12, 0, 48))
-	local rotation = ship:getBehavior(RotationBehavior)
-	rotation.rotation = Quaternion.Y_90
-	local position = ship:getBehavior(PositionBehavior)
-	position.offset = Vector(0, 2, 0)
+	self:poke('spawnShip')	
 end
 
-return Mansion
+function Port:onSpawnShip(filename, args, layer)
+	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+	if player:getState():has("SailingItem", "Ship") then
+		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(12, 0, 48))
+		local rotation = ship:getBehavior(RotationBehavior)
+		rotation.rotation = Quaternion.Y_90
+		local position = ship:getBehavior(PositionBehavior)
+		position.offset = Vector(0, 2, 0)
+	end
+end
+
+return Port

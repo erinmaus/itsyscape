@@ -282,6 +282,9 @@ function Map.loadFromString(value)
 			outputTile.topRight = inputTile.topRight or 1
 			outputTile.bottomLeft = inputTile.bottomLeft or 1
 			outputTile.bottomRight = inputTile.bottomRight or 1
+			outputTile.red = inputTile.red or 1
+			outputTile.green = inputTile.green or 1
+			outputTile.blue = inputTile.blue or 1
 
 			outputTile.edge = inputTile.edge or 2
 			outputTile.flat = inputTile.flat or 1
@@ -345,6 +348,9 @@ function Map:toString()
 				r:pushFormatLine(
 					"topLeft = %d, topRight = %d, bottomLeft = %d, bottomRight = %d,",
 					tile.topLeft, tile.topRight, tile.bottomLeft, tile.bottomRight)
+				r:pushFormatLine(
+					"red = %f, green = %f, blue = %f,",
+					tile.red, tile.green, tile.blue)
 
 				r:pushIndent(3)
 				r:pushFormatLine(

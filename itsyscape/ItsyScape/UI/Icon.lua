@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Widget = require "ItsyScape.UI.Widget"
+local Color = require "ItsyScape.Graphics.Color"
 
 local Icon = Class(Widget)
 Icon.DEFAULT_SIZE = 48
@@ -17,6 +18,7 @@ function Icon:new()
 	Widget.new(self)
 
 	self.icon = false
+	self.color = Color(1, 1, 1, 1)
 
 	self:setSize(Icon.DEFAULT_SIZE, Icon.DEFAULT_SIZE)
 end
@@ -27,6 +29,14 @@ end
 
 function Icon:getIcon()
 	return self.icon
+end
+
+function Icon:setColor(value)
+	self.color = value or self.color
+end
+
+function Icon:getColor()
+	return self.color
 end
 
 return Icon

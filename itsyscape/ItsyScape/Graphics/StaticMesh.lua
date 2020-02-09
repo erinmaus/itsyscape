@@ -10,6 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 
 local StaticMesh = Class()
+StaticMesh.DEFAULT_FORMAT = {
+	{ 'VertexPosition', 'float', 3 },
+	{ 'VertexNormal', 'float', 3 },
+	{ 'VertexTexture', 'float', 2 },
+	{ 'VertexColor', 'float', 4 }
+}
+
 function StaticMesh:new(d, skeleton)
 	self.groups = {}
 
@@ -31,11 +38,7 @@ function StaticMesh:loadFromFile(filename, skeleton)
 end
 
 function StaticMesh:loadFromTable(t)
-	local format = t.format or {
-		{ 'VertexPosition', 'float', 3 },
-		{ 'VertexNormal', 'float', 3 },
-		{ 'VertexTexture', 'float', 2 },
-	}
+	local format = t.format or StaticMesh.DEFAULT_FORMAT
 
 	self.format = format
 

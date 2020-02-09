@@ -254,12 +254,6 @@ for name, itemProps in pairs(SHIELDS) do
 	}
 end
 
-ItsyScape.Meta.ResourceDescription {
-	Value = "How nice, it already has a pattern!",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "BlueCotton"
-}
-
 -- Blue cotton
 do
 	ItsyScape.Meta.Equipment {

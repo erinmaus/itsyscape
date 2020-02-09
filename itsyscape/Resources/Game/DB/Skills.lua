@@ -201,6 +201,16 @@ ItsyScape.Resource.Skill "Sailing"
 		Skill = ItsyScape.Resource.Skill "Strength"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "SailingBuy",
+		Skill = ItsyScape.Resource.Skill "Sailing"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "SailingUnlock",
+		Skill = ItsyScape.Resource.Skill "Sailing"
+	}
+
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
 

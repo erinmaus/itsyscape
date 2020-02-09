@@ -29,6 +29,8 @@ local SKINS = {
 		{ name = "Zombi punk", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ZombiPunk.lua" },
 		{ name = "Forward swirl", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ForwardSwirl.lua" },
 		{ name = "Forward spike", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ForwardSpike.lua" },
+		{ name = "Slick pokey", t = MODEL_SKIN, filename = "PlayerKit1/Hair/SlickPokey.lua" },
+		{ name = "Black braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/BlackBraid.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
 	},
 
@@ -72,6 +74,7 @@ local SKINS = {
 		{ name = "Grey suit", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BankerSuit.lua" },
 		{ name = "Red plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/RedPlaid.lua" },
 		{ name = "Green plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/GreenPlaid.lua" },
+		{ name = "Seafarer's garb", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/SeafarerGarb.lua" },
 	},
 
 	hands = {
@@ -83,6 +86,7 @@ local SKINS = {
 		{ name = "Gold gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/GoldGloves.lua" },
 		{ name = "Black gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/BlackGloves.lua" },
 		{ name = "Pink rose gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/PinkRoseGloves.lua" },
+		{ name = "Seafarer's gloves", t = MODEL_SKIN, filename = "PlayerKit1/Hands/SeafarerGloves.lua" },
 		{ name = "Light", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Light.lua" },
 		{ name = "Medium", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Medium.lua" },
 		{ name = "Dark", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Dark.lua" },
@@ -98,7 +102,8 @@ local SKINS = {
 		{ name = "Worn boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots2.lua" },
 		{ name = "Fancy shoes", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/FancyShoes1.lua" },
 		{ name = "Sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3.lua" },
-		{ name = "Red sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3_Red.lua" }
+		{ name = "Red sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3_Red.lua" },
+		{ name = "Seafarer's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots_Seafarer1.lua" }
 	}
 }
 
