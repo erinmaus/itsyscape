@@ -8,6 +8,36 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Prop "Sailing_Player_CommonSail" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicPlayerSail",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonSail"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 7,
+	SizeZ = 12,
+	OffsetX = -2,
+	OffsetY = 5.5,
+	MapObject = ItsyScape.Resource.Prop "Sailing_Player_CommonSail"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Common sail",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonSail"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Just the most basic of sails, but it works well enough.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonSail"
+}
+
 ItsyScape.Resource.Prop "Sailing_BasicSail_Default" {
 	-- Nothing.
 }

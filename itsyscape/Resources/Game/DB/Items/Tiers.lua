@@ -98,4 +98,12 @@ do
 		Name = "Blue Cotton",
 		Tier = 1
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Fabric",
+		Value = "CottonCloth",
+		Language = "en-US",
+		Name = "Cheep Cotton",
+		Tier = 10
+	}
 end

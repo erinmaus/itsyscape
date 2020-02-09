@@ -51,6 +51,7 @@ function DeferredRendererPass:new(renderer)
 	self.gBuffer = false
 	self.lBuffer = false
 	self.cBuffer = false
+	self.isFullLit = false
 
 	self:loadBaseShaderFromFile(
 		"Resources/Renderers/Deferred/Base.frag.glsl",
@@ -74,6 +75,14 @@ end
 
 function DeferredRendererPass:getCBuffer()
 	return self.cBuffer
+end
+
+function DeferredRendererPass:getIsFullLit()
+	return self.isFullLit
+end
+
+function DeferredRendererPass:setIsFullLit(value)
+	self.isFullLit = value or false
 end
 
 function DeferredRendererPass:walk(node, delta)
@@ -290,18 +299,18 @@ function DeferredRendererPass:drawLights(scene, delta)
 	self.lBuffer:use()
 	love.graphics.clear(0, 0, 0, 1, false, false)
 
-	if #self.lights == 0 then
+	if #self.lights == 0 or self.isFullLit then
 		self:drawAmbientLight(self.fullLit, delta)
-	else
-		for i = 1, #self.lights do
-			local node = self.lights[i]
-			if node:isCompatibleType(DirectionalLightSceneNode) then
-				self:drawDirectionalLight(node, delta)
-			elseif node:isCompatibleType(AmbientLightSceneNode) then
-				self:drawAmbientLight(node, delta)
-			elseif node:isCompatibleType(PointLightSceneNode) then
-				self:drawPointLight(node, delta)
-			end
+	end
+
+	for i = 1, #self.lights do
+		local node = self.lights[i]
+		if node:isCompatibleType(DirectionalLightSceneNode) then
+			self:drawDirectionalLight(node, delta)
+		elseif node:isCompatibleType(AmbientLightSceneNode) then
+			self:drawAmbientLight(node, delta)
+		elseif node:isCompatibleType(PointLightSceneNode) then
+			self:drawPointLight(node, delta)
 		end
 	end
 

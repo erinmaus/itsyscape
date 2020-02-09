@@ -101,7 +101,7 @@ function Material:getColor()
 end
 
 function Material:setColor(value)
-	self.color = value or color
+	self.color = value or self.color
 end
 
 -- Gets the number of textures.

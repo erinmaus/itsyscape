@@ -76,8 +76,8 @@ function ShipMapPeep:onFinalize(...)
 	table.insert(stats.stats, self.healthStat)
 end
 
-function ShipMapPeep:onLoad(filename, args)
-	Map.onLoad(self, filename, args)
+function ShipMapPeep:onLoad(filename, args, layer)
+	Map.onLoad(self, filename, args, layer)
 
 	local game = self:getDirector():getGameInstance()
 	local stage = game:getStage()
@@ -206,7 +206,7 @@ function ShipMapPeep:update(director, game)
 		position.position = Vector(
 			position.position.x,
 			math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth()),
-			position.position.z) + position.offset
+			position.position.z) + (position.offset or Vector.ZERO)
 		if self.isSinking then
 			position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
 		end

@@ -399,6 +399,66 @@ function Utility.getAction(game, action, scope)
 	end
 end
 
+function Utility.getActionConstraints(game, action)
+	local gameDB = game:getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	local result = {}
+	do
+		result.requirements = {}
+		for requirement in brochure:getRequirements(action) do
+			local resource = brochure:getConstraintResource(requirement)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.requirements,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
+					count = requirement.count
+				})
+		end
+	end
+	do
+		result.inputs = {}
+		for input in brochure:getInputs(action) do
+			local resource = brochure:getConstraintResource(input)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.inputs,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
+					count = input.count
+				})
+		end
+	end
+	do
+		result.outputs = {}
+		for output in brochure:getOutputs(action) do
+			local resource = brochure:getConstraintResource(output)
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+
+			table.insert(
+				result.outputs,
+				{
+					type = resourceType.name,
+					resource = resource.name,
+					name = Utility.getName(resource, gameDB) or resource.name,
+					description = Utility.getDescription(resource, gameDB, nil, 1),
+					count = output.count
+				})
+		end
+	end
+
+	return result
+end
+
 function Utility.getActions(game, resource, scope)
 	local actions = {}
 	local gameDB = game:getGameDB()
@@ -485,6 +545,39 @@ function Utility.Magic.newSpell(id, game)
 	local Type = require(TypeName)
 
 	return Type(id, game)
+end
+
+-- Contains time management.
+Utility.Time = {}
+function Utility.Time.getDays(currentTime)
+	local referenceTime = os.time({ day = 23, month = 3, year = 2018 })
+	return math.floor(os.difftime(currentTime, referenceTime) / (24 * 60 * 60))
+end
+
+function Utility.Time.addDay(currentTime, days)
+	days = days or 1
+
+	return currentTime + days * 24 * 60 * 60
+end
+
+function Utility.Time.getAndUpdateTime(root)
+	local storedTime = root:getSection("Clock"):get("time")
+	local currentTime = os.time()
+
+	if storedTime <= currentTime then
+		root:getSection("Clock"):set("time", currentTime)
+		return currentTime
+	else
+		-- The clock in the storage is ahead due to time traveling trickery (e.g., Time Turner).
+		return storedTime
+	end
+end
+
+function Utility.Time.updateTime(root, days)
+	local futureTime = Utility.Time.addDay(Utility.Time.getAndUpdateTime(root), days)
+	root:getSection("Clock"):set("time", futureTime)
+
+	return futureTime
 end
 
 -- Contains utility methods that deal with combat.
@@ -1624,16 +1717,24 @@ function Utility.Peep.setNameMagically(peep)
 end
 
 function Utility.Peep.poof(peep)
-	local stage = peep:getDirector():getGameInstance():getStage()
+	local function performPoof()
+		local stage = peep:getDirector():getGameInstance():getStage()
 
-	local actor = peep:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		stage:killActor(actor.actor)
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			stage:killActor(actor.actor)
+		end
+
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		if prop and prop.prop then
+			stage:removeProp(prop.prop)
+		end
 	end
 
-	local prop = peep:getBehavior(PropReferenceBehavior)
-	if prop and prop.prop then
-		stage:removeProp(prop.prop)
+	if not peep:getDirector() then
+		peep:listen('finalize', performPoof)
+	else
+		performPoof()
 	end
 end
 

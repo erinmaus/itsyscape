@@ -41,7 +41,7 @@ end
 function IconRenderer:draw(widget, state)
 	self:visit(widget)
 
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(widget:getColor():get())
 
 	local icon = widget:get("icon", state)
 	if icon then
@@ -60,6 +60,8 @@ function IconRenderer:draw(widget, state)
 
 		love.graphics.draw(icon, 0, 0, 0, scaleX, scaleY)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return IconRenderer

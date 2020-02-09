@@ -219,58 +219,7 @@ function CraftWindowController:select(e)
 	local brochure = gameDB:getBrochure()
 
 	local action = self.actionsByID[e.id]:getAction()
-	local result = {}
-	do
-		result.requirements = {}
-		for requirement in brochure:getRequirements(action) do
-			local resource = brochure:getConstraintResource(requirement)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
-
-			table.insert(
-				result.requirements,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = requirement.count
-				})
-		end
-	end
-	do
-		result.inputs = {}
-		for input in brochure:getInputs(action) do
-			local resource = brochure:getConstraintResource(input)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
-
-			table.insert(
-				result.inputs,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = input.count
-				})
-		end
-	end
-	do
-		result.outputs = {}
-		for output in brochure:getOutputs(action) do
-			local resource = brochure:getConstraintResource(output)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
-
-			table.insert(
-				result.outputs,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = output.count
-				})
-		end
-	end
+	local result = Utility.getActionConstraints(self:getDirector():getGameInstance(), action)
 
 	director:getGameInstance():getUI():sendPoke(
 		self,

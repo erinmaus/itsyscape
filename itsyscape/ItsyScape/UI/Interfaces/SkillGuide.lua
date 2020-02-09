@@ -129,7 +129,7 @@ function SkillGuide:update(...)
 			local action = gameDB:getAction(state.actions[i].id)
 			if action then
 				local item, quantity
-				local prop, peep, spell, prayer, power
+				local prop, peep, spell, prayer, power, sailing
 				for output in brochure:getOutputs(action) do
 					local outputResource = brochure:getConstraintResource(output)
 					local outputType = brochure:getResourceTypeFromResource(outputResource)
@@ -157,6 +157,9 @@ function SkillGuide:update(...)
 					elseif resourceType.name == "Power" then
 						power = resource
 						break
+					elseif resourceType.name == "SailingItem" then
+						sailing = resource
+						break
 					end
 				end
 
@@ -183,7 +186,7 @@ function SkillGuide:update(...)
 					end
 				end
 
-				if item or peep or prop or prayer or power then
+				if item or peep or prop or prayer or power or sailing then
 					local button = Button()
 					button.onClick:register(self.selectItem, self, state.actions[i])
 
@@ -197,6 +200,12 @@ function SkillGuide:update(...)
 					elseif prayer then
 						local icon = Icon()
 						icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.name))
+						icon:setPosition(4, 4)
+
+						button:addChild(icon)
+					elseif sailing then
+						local icon = Icon()
+						icon:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", sailing.name))
 						icon:setPosition(4, 4)
 
 						button:addChild(icon)
@@ -227,6 +236,8 @@ function SkillGuide:update(...)
 						button:setText(Utility.getName(prayer, gameDB))
 					elseif power then
 						button:setText(Utility.getName(power, gameDB))
+					elseif sailing then
+						button:setText(Utility.getName(sailing, gameDB))
 					else
 						button:setText(Utility.getName(item, gameDB))
 					end

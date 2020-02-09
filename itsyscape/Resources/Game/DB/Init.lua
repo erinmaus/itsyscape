@@ -446,6 +446,33 @@ Game "ItsyScape"
 
 	ActionType "Teleport"
 
+	ResourceType "SailingItem"
+	ActionType "SailingBuy"
+	ActionType "SailingUnlock"
+
+	Meta "SailingItemDetails" {
+		Prop = Meta.TYPE_TEXT,
+		CanCustomizeColor = Meta.TYPE_INTEGER,
+		IsPirate = Meta.TYPE_INTEGER,
+		ItemGroup = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "SailingItemStats" {
+		Health = Meta.TYPE_INTEGER,
+		Distance = Meta.TYPE_INTEGER,
+		Defense = Meta.TYPE_INTEGER,
+		Speed = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "SailingItemGroupNameDescription" {
+		ItemGroup = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Name = Meta.TYPE_TEXT,
+		Description = Meta.TYPE_TEXT
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -613,6 +640,9 @@ include "Resources/Game/DB/Items/Trinkets.lua"
 include "Resources/Game/DB/Items/Currency.lua"
 include "Resources/Game/DB/Items/MiscFood.lua"
 
+-- Legendaries
+include "Resources/Game/DB/Items/Legendaries/TimeTurner.lua"
+
 -- Creeps
 include "Resources/Game/DB/Creeps/Cow.lua"
 include "Resources/Game/DB/Creeps/ChestMimic.lua"
@@ -673,12 +703,14 @@ include "Resources/Game/DB/Props/Chandelier.lua"
 include "Resources/Game/DB/Props/Azathoth.lua"
 include "Resources/Game/DB/Props/Books.lua"
 
--- Props, etc (boats)
+-- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
 include "Resources/Game/DB/Props/Cannons.lua"
 include "Resources/Game/DB/Props/BoatFoam.lua"
 include "Resources/Game/DB/Props/Helms.lua"
 include "Resources/Game/DB/Effects/Sailing.lua"
+include "Resources/Game/DB/Sailing/General.lua"
+include "Resources/Game/DB/Sailing/Tier1.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

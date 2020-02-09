@@ -35,3 +35,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Sailing_CommonHelm_Default"
 }
+
+ItsyScape.Resource.Prop "Sailing_Player_CommonHelm" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonHelm"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1,
+	SizeY = 3,
+	SizeZ = 1,
+	MapObject = ItsyScape.Resource.Prop "Sailing_Player_CommonHelm"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Common helm",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonHelm"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Steers the ship.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_CommonHelm"
+}

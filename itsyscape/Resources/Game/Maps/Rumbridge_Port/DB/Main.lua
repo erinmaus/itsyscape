@@ -114,3 +114,39 @@ do
 		Resource = M["Anchor_FromTown"]
 	}
 end
+
+M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 56,
+		PositionY = 5,
+		PositionZ = 47,
+		Direction = -1,
+		Name = "SeafarerGuildMaster",
+		Map = M._MAP,
+		Resource = M["SeafarerGuildMaster"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rumbridge_Port_SeafarerGuildmaster",
+		MapObject = M["SeafarerGuildMaster"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SeafarerGuildMaster"],
+		Name = "Robert",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Port/Dialog/SeafarerGuildMasterRobert_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["SeafarerGuildMaster"] {
+		TalkAction
+	}
+end

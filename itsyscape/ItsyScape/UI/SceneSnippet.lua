@@ -19,6 +19,7 @@ function SceneSnippet:new()
 
 	self.root = SceneNode()
 	self.camera = false
+	self.isFullLit = false
 end
 
 function SceneSnippet:getRoot()
@@ -27,6 +28,14 @@ end
 
 function SceneSnippet:setRoot(value)
 	self.root = value or self.root
+end
+
+function SceneSnippet:getIsFullLit()
+	return self.isFullLit
+end
+
+function SceneSnippet:setIsFullLit(value)
+	self.isFullLit = value or false
 end
 
 function SceneSnippet:getCamera()

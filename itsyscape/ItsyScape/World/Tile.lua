@@ -38,6 +38,10 @@ function Tile:new()
 	self.runtimeFlags = {}
 	self.data = {}
 	self.links = {}
+
+	self.red = 1
+	self.green = 1
+	self.blue = 1
 end
 
 function Tile:addLink(link)

@@ -219,3 +219,42 @@ ItsyScape.Meta.EquipmentModel {
 	Filename = "Resources/Game/Skins/PiratesHat/PiratesHat.lua",
 	Resource = ItsyScape.Resource.Item "PiratesHat"
 }
+
+ItsyScape.Resource.Item "PiratesHatWithBeard" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(15),
+			Resource = ItsyScape.Resource.Skill "Sailing"
+		}
+	},
+
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pirate's hat with fake beard",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PiratesHatWithBeard"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Fake beard, made with real hair.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PiratesHatWithBeard"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(30) * 1.5,
+	Resource = ItsyScape.Resource.Item "PiratesHatWithBeard"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "PiratesHatWithBeard"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/PiratesHat/PiratesHatWithBeard.lua",
+	Resource = ItsyScape.Resource.Item "PiratesHatWithBeard"
+}
