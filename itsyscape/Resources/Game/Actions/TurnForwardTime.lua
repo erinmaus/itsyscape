@@ -20,9 +20,10 @@ function TurnForwardTime:perform(state, peep, item)
 		return false
 	end
 
-	if self:transfer(state) then
+	if self:transfer(state, peep) then
 		local director = peep:getDirector()
-		Utility.Time.updateTime(director:getPlayerStorage(peep), 1)
+		local time = Utility.Time.updateTime(director:getPlayerStorage(peep):getRoot(), 1)
+		Log.info("The time is now %d day(s) since Creation.", Utility.Time.getDays(time))
 		Action.perform(self, state, peep)
 		return true
 	end

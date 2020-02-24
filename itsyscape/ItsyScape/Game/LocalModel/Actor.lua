@@ -264,14 +264,18 @@ function LocalActor:getBounds()
 	end
 end
 
+function LocalActor:getResource()
+	return self.resource or Utility.Peep.getResource(self.peep)
+end
+
 function LocalActor:getActions(scope)
 	local status = self.peep:getBehavior(CombatStatusBehavior)
 	if status and status.dead then
 		return {}
 	end
 
-	if self.resource and self:getCurrentHealth() > 0 then
-		local actions = Utility.getActions(self.game, self.resource, scope or 'world')
+	if self:getResource() and self:getCurrentHealth() > 0 then
+		local actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
 		if self.peep then
 			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
@@ -290,12 +294,12 @@ function LocalActor:getActions(scope)
 end
 
 function LocalActor:poke(action, scope)
-	if self.resource then
+	if self:getResource() then
 		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,
-			self.resource,
+			self:getResource(),
 			action,
 			scope,
 			player:getState(), player, peep)

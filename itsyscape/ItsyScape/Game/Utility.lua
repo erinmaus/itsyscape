@@ -20,6 +20,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -549,35 +550,37 @@ end
 
 -- Contains time management.
 Utility.Time = {}
+Utility.Time.DAY = 24 * 60 * 60
+Utility.Time.BIRTHDAY_INFO = {
+	year = 2018,
+	month = 3,
+	day = 23
+}
+Utility.Time.BIRTHDAY_TIME = os.time(Utility.Time.BIRTHDAY_INFO)
+
 function Utility.Time.getDays(currentTime)
-	local referenceTime = os.time({ day = 23, month = 3, year = 2018 })
-	return math.floor(os.difftime(currentTime, referenceTime) / (24 * 60 * 60))
-end
-
-function Utility.Time.addDay(currentTime, days)
-	days = days or 1
-
-	return currentTime + days * 24 * 60 * 60
+	local referenceTime = Utility.Time.BIRTHDAY_TIME
+	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
 end
 
 function Utility.Time.getAndUpdateTime(root)
-	local storedTime = root:getSection("Clock"):get("time")
+	local currentOffset = root:getSection("Clock"):get("offset") or 0
+	local currentGameTime = root:getSection("Clock"):get("time") or os.time()
 	local currentTime = os.time()
 
-	if storedTime <= currentTime then
-		root:getSection("Clock"):set("time", currentTime)
-		return currentTime
-	else
-		-- The clock in the storage is ahead due to time traveling trickery (e.g., Time Turner).
-		return storedTime
+	if currentTime >= currentGameTime then
+		root:getSection("clock"):set("time", currentTime)
 	end
+
+	return currentTime + currentOffset
 end
 
 function Utility.Time.updateTime(root, days)
-	local futureTime = Utility.Time.addDay(Utility.Time.getAndUpdateTime(root), days)
-	root:getSection("Clock"):set("time", futureTime)
+	local currentOffset = root:getSection("Clock"):get("offset") or 0
+	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1)
+	root:getSection("Clock"):set("offset", futureOffset)
 
-	return futureTime
+	return Utility.Time.getAndUpdateTime(root)
 end
 
 -- Contains utility methods that deal with combat.
@@ -688,10 +691,24 @@ Utility.Text.PRONOUN_POSSESSIVE = GenderBehavior.PRONOUN_POSSESSIVE
 Utility.Text.FORMAL_ADDRESS     = GenderBehavior.FORMAL_ADDRESS
 Utility.Text.DEFAULT_PRONOUNS   = {
 	["en-US"] = {
-		"they",
-		"them",
-		"theirs",
-		"mazer"
+		["x"] = {
+			"they",
+			"them",
+			"theirs",
+			"mazer"
+		},
+		["male"] = {
+			"he",
+			"him",
+			"his",
+			"ser"
+		},
+		["female"] = {
+			"she",
+			"her",
+			"hers",
+			"miss"
+		},
 	}
 }
 Utility.Text.BE = {
@@ -1109,6 +1126,33 @@ end
 
 Utility.Peep = {}
 
+function Utility.Peep.getPlayerActor(peep)
+	return peep:getDirector():getGameInstance():getPlayer():getActor()
+end
+
+function Utility.Peep.getPlayer(peep)
+	return Utility.Peep.getPlayerActor(peep):getPeep()
+end
+
+function Utility.Peep.dismiss(peep)
+	local follower = peep:getBehavior(FollowerBehavior)
+	if follower and follower.id ~= FollowerBehavior.NIL_ID then
+		local director = peep:getDirector()
+		local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
+		local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
+		local followerID = follower.id
+
+		Utility.Peep.poof(peep)
+
+		for i = 1, scopedStorage:length() do
+			if scopedStorage:getSection(i):get("id") == followerID then
+				scopedStorage:removeSection(i)
+				break
+			end
+		end
+	end
+end
+
 function Utility.Peep.getTransform(peep)
 	local transform = love.math.newTransform()
 	do
@@ -1219,6 +1263,25 @@ function Utility.Peep.getStorage(peep)
 		local root = director:getPlayerStorage(peep):getRoot()
 		return root:getSection("Peep")
 	else
+		local follower = peep:getBehavior(FollowerBehavior)
+		if follower and follower.id ~= FollowerBehavior.NIL_ID then
+			local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
+			local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
+
+			local length = scopedStorage:length()
+			for i = 1, length do
+				local peepStorage = scopedStorage:getSection(i)
+				if peepStorage:get("id") == follower.id then
+					return peepStorage
+				end
+			end
+
+			local storage = scopedStorage:getSection(scopedStorage:length() + 1)
+			storage:set("id", follower.id)
+
+			return storage
+		end
+
 		local resource = Utility.Peep.getResource(peep)
 		if resource then
 			local singleton = gameDB:getRecord("Peep", {
@@ -1699,9 +1762,20 @@ function Utility.Peep.setNameMagically(peep)
 	local gameDB = peep:getDirector():getGameDB()
 	local resource = Utility.Peep.getResource(peep)
 	local mapObject = Utility.Peep.getMapObject(peep)
+	local storage = Utility.Peep.getStorage(peep)
 
 	local name
-	if mapObject then
+	if storage then
+		if storage:hasSection("flavor") then
+			name = storage:getSection("flavor"):get("name")
+		end
+
+		if not name then
+			name = storage:get("name")
+		end
+	end
+
+	if not name and mapObject then
 		name = Utility.getName(mapObject, gameDB)
 	end
 
@@ -1861,6 +1935,13 @@ function Utility.Peep.makeMashina(peep)
 end
 
 Utility.Peep.Inventory = {}
+function Utility.Peep.Inventory:reload(skipSerialize)
+	local director = self:getDirector()
+	local inventory = self:getBehavior(InventoryBehavior)
+	director:getItemBroker():removeProvider(inventory.inventory, skipSerialize)
+	director:getItemBroker():addProvider(inventory.inventory)
+end
+
 function Utility.Peep.Inventory:onAssign(director)
 	local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 
@@ -1927,6 +2008,13 @@ function Utility.Peep.addInventory(peep, InventoryType)
 end
 
 Utility.Peep.Equipment = {}
+function Utility.Peep.Equipment:reload(skipSerialize)
+	local director = self:getDirector()
+	local equipment = self:getBehavior(EquipmentBehavior)
+	director:getItemBroker():removeProvider(equipment.equipment, skipSerialize)
+	director:getItemBroker():addProvider(equipment.equipment)
+end
+
 function Utility.Peep.Equipment:onAssign(director)
 	local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 
@@ -2256,7 +2344,10 @@ function Utility.Peep.Human:applySkins()
 
 		local resource = Utility.Peep.getResource(self)
 		if resource then
-			applySkins(resource)
+			local resourceType = gameDB:getBrochure():getResourceTypeFromResource(resource)
+			if resourceType.name:lower() == "peep" then
+				applySkins(resource)
+			end
 		end
 
 		local mapObject = Utility.Peep.getMapObject(self)

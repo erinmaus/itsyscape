@@ -925,7 +925,7 @@ end
 --
 -- If provider.load fails, then the error is propagated. In such a case, the
 -- provider is not added.
-function ItemBroker:addProvider(provider)
+function ItemBroker:addProvider(provider, skipSerialize)
 	assert(provider ~= nil, "provider cannot be nil")
 	assert(Class.isCompatibleType(provider, InventoryProvider), "provider must be derived from InventoryProvider")
 	assert(not self:hasProvider(provider), "provider already exists")
@@ -933,7 +933,7 @@ function ItemBroker:addProvider(provider)
 	self.inventories[provider] = ItemBroker.Inventory(provider)
 	provider:attach(self)
 
-	if provider:getIsSerializable() then
+	if provider:getIsSerializable() and not skipSerialize then
 		local s, r = xpcall(function() provider:load(self) end, debug.traceback)
 		if not s then
 			self.inventories[provider] = nil
@@ -948,18 +948,18 @@ end
 --
 -- If provider.unload fails, then the error is propagated. Regardless, the
 -- provider is removed from the Inventory and all ItemInstances are removed.
-function ItemBroker:removeProvider(provider)
+function ItemBroker:removeProvider(provider, skipSerialize)
 	assert(provider ~= nil, "provider cannot be nil")
 	assert(self:hasProvider(provider), "provider does not exist")
 
-	provider:detach(self)
-
 	local s, r
-	if provider:getIsSerializable() then
+	if provider:getIsSerializable() and not skipSerialize then
 		s, r = xpcall(function() provider:unload(self, true) end, debug.traceback)
 	else
 		s = true
 	end
+
+	provider:detach(self)
 
 	local inventory = self.inventories[provider]
 	for item in inventory:iterate() do

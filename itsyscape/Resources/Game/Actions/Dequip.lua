@@ -16,9 +16,9 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local Dequip = Class(Action)
 Dequip.SCOPES = { ['equipment'] = true }
 
-function Dequip:perform(state, peep, item)
+function Dequip:perform(state, peep, item, target)
 	local director = peep:getDirector()
-	local inventory = peep:getBehavior(InventoryBehavior)
+	local inventory = (target or peep):getBehavior(InventoryBehavior)
 	local equipment = peep:getBehavior(EquipmentBehavior)
 	if inventory and inventory.inventory and
 	   equipment and equipment.equipment

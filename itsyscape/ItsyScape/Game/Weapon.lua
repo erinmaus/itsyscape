@@ -21,6 +21,7 @@ local Weapon = Class(Equipment)
 Weapon.STANCE_AGGRESSIVE = 1 -- Gives strength, wisdom, or dexterity XP
 Weapon.STANCE_CONTROLLED = 2 -- Gives attack, magic, or archery XP
 Weapon.STANCE_DEFENSIVE  = 3 -- Gives defense XP
+Weapon.STYLE_NONE    = 0
 Weapon.STYLE_MAGIC   = 1
 Weapon.STYLE_ARCHERY = 2
 Weapon.STYLE_MELEE   = 3

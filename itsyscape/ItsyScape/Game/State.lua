@@ -53,6 +53,24 @@ function State:removeProvider(resource, provider)
 	return false
 end
 
+function State:countProviders(resource)
+	local p = self.providers[resource]
+	if p then
+		return #p
+	end
+
+	return 0
+end
+
+function State:getProviderAt(resource, index)
+	local p = self.providers[resource]
+	if p then
+		return p[index]
+	end
+
+	return nil
+end
+
 function State:has(resource, name, count, flags)
 	flags = flags or {}
 	count = count or 1

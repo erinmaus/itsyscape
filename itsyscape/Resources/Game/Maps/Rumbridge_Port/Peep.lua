@@ -13,21 +13,35 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local Port = Class(Map)
+Port.CREW_PASSAGE = {
+	i1 = 21,
+	j1 = 18,
+	i2 = 24,
+	j2 = 28
+}
 
 function Port:new(resource, name, ...)
 	Map.new(self, resource, name or 'Rumbridge_Port', ...)
 
 	self:addPoke('spawnShip')
+	self:addPoke('recruit')
 end
 
 function Port:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	self:poke('spawnShip')	
+	self:poke('spawnShip')
+
+	local playerStorage = self:getDirector():getPlayerStorage():getRoot()
+	local followersStorage = playerStorage:getSection("Follower"):getSection("SailingCrew")
+	for i = 1, followersStorage:length() do
+		self:poke('recruit', followersStorage:getSection(i):get("id"))
+	end
 end
 
 function Port:onSpawnShip(filename, args, layer)
@@ -38,6 +52,38 @@ function Port:onSpawnShip(filename, args, layer)
 		rotation.rotation = Quaternion.Y_90
 		local position = ship:getBehavior(PositionBehavior)
 		position.offset = Vector(0, 2, 0)
+	end
+end
+
+function Port:onRecruit(id)
+	local stage = self:getDirector():getGameInstance():getStage()
+	local success, actor = stage:spawnActor(
+		"Resources.Game.Peeps.Sailors.BaseSailor",
+		self:getLayer())
+
+	if success then
+		local peep = actor:getPeep()
+		peep:listen('finalize', function()
+			local map = self:getDirector():getMap(self:getLayer())
+
+			local position
+			repeat
+				local i = math.random(Port.CREW_PASSAGE.i1, Port.CREW_PASSAGE.i2)
+				local j = math.random(Port.CREW_PASSAGE.j1, Port.CREW_PASSAGE.j2)
+				local tile = map:getTile(i, j)
+
+				if not tile:hasFlag('impassable') then
+					position = map:getTileCenter(i, j)
+				end
+			until position
+
+			peep:getBehavior(PositionBehavior).position = position
+
+			peep:pushPoke('place', id)
+		end)
+
+		local follower = peep:getBehavior(FollowerBehavior)
+		follower.id = id
 	end
 end
 

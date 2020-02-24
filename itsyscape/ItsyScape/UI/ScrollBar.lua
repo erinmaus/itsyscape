@@ -27,7 +27,7 @@ function ScrollBar:new()
 	self.scrollArea = 0
 	self.scrollAreaStart = 0
 	self.scrollAreaEnd = 0
-	self.scrollTick = 8
+	self.scrollTick = 32
 	self.target = false
 
 	self.upButton.onMousePress:register(self.scroll, self, -1)
@@ -160,9 +160,9 @@ function ScrollBar:performLayout()
 		self.downButton:setText("v")
 
 		if buttonHeight < height then
-			local p  = self:getParent() --= self:getTarget()
-			if p and self:getParent() then
-				local parentWidth, parentHeight = self:getParent():getSize()
+			local p  = self:getParent()
+			if p then
+				local parentWidth, parentHeight = p:getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
 
 				local ratio = parentHeight / parentScrollSizeY
@@ -195,7 +195,7 @@ function ScrollBar:performLayout()
 		if buttonWidth < width then
 			local p = self:getParent()
 			if p then
-				local parentWidth, parentHeight = self:getParent():getSize()
+				local parentWidth, parentHeight = p:getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
 				local ratio = parentHeight / parentScrollSizeX
 

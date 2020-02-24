@@ -6,21 +6,26 @@ local hasShip = _TARGET:getState():has("SailingItem", "Ship")
 if hasShip then
 	message {
 		"'Ey, welcome back, %person{${PLAYER_NAME}}.",
-		"Need to manage yer ship?"
+		"Need to manage yer ship? Or are ye interested in recruiting sailors, eh?"
 	}
 
-	local YES = option "Yes"
-	local NO  = option "No"
+	local MANAGE  = option "Yes, I want to manage my ship."
+	local SAILORS = option "What sailors are about today?"
+	local NO      = option "No, I don't want your help right now."
 
 	local option = select {
-		YES,
+		MANAGE,
+		SAILORS,
 		NO
 	}
 
-	if option == YES then
+	if option == MANAGE then
 		Utility.UI.openInterface(_TARGET, "ShipCustomization", true)
-		return
+	elseif option == SAILORS then
+		Utility.UI.openInterface(_TARGET, "RecruitSailor", true)
 	end
+
+	return
 else
 	message {
 		"How be you, %person{${PLAYER_NAME}}?",
