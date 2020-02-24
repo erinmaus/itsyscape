@@ -81,6 +81,7 @@ function One:new(...)
 	self:addPoke('transferItemTo')
 	self:addPoke('transferItemFrom')
 	self:addPoke('travel')
+	self:addPoke('walk')
 end
 
 function One:onChangeWardrobe(e)

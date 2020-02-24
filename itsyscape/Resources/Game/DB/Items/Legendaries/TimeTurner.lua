@@ -12,14 +12,21 @@ ActionType "TurnForwardTime"
 ItsyScape.Meta.ActionTypeVerb {
 	Value = "Turn-Forward",
 	Language = "en-US",
-	Value = "TurnForwardTime"
+	Type = "TurnForwardTime"
 }
 
 ActionType "TurnBackwardTime"
 ItsyScape.Meta.ActionTypeVerb {
 	Value = "Turn-Backward",
 	Language = "en-US",
-	Value = "TurnBackwardTime"	
+	Type = "TurnBackwardTime"	
+}
+
+local TurnForwardTime = ItsyScape.Action.TurnForwardTime()
+
+local TurnBackwardTime = ItsyScape.Action.TurnBackwardTime()
+ItsyScape.Meta.DebugAction {
+	Action = TurnBackwardTime
 }
 
 ItsyScape.Resource.Item "TimeTurner" {
@@ -37,8 +44,8 @@ ItsyScape.Resource.Item "TimeTurner" {
 
 	ItsyScape.Action.Dequip(),
 
-	ItsyScape.Action.TurnForwardTime(),
-	ItsyScape.Action.TurnBackwardTime()
+	TurnForwardTime,
+	TurnBackwardTime
 }
 
 ItsyScape.Meta.Equipment {
@@ -53,7 +60,7 @@ ItsyScape.Meta.Equipment {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(100),
+	Value = ItsyScape.Utility.valueForItem(100) * 10,
 	Weight = -100,
 	Resource = ItsyScape.Resource.Item "TimeTurner"
 }
@@ -65,7 +72,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A machina that can move time for the wearer without splitting timelines by invoking the unholy genius of Prisium. And try as you might, it resists being turned backwards, on forward... Tick, tick tick.",
+	Value = "A mashina that can move time for the wearer without splitting timelines by invoking the unholy genius of Prisium. And try as you might, it resists being turned backwards... Tick, tick tick.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "TimeTurner"
 }

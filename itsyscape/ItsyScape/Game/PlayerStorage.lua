@@ -81,6 +81,10 @@ function PlayerStorage.Section:set(key, value)
 
 	if type(key) == 'table' then
 		for k, v in pairs(key) do
+			if type(v) == 'table' then
+				self:removeSection(k)
+			end
+
 			self:set(k, v)
 		end
 	elseif type(value) == 'table' then
@@ -122,7 +126,20 @@ function PlayerStorage.Section:set(key, value)
 end
 
 function PlayerStorage.Section:get(key)
-	return self.sections[key] or self.values[key]
+	if key == nil then
+		local result = {}
+		for key, value in self:iterateValues() do
+			result[key] = value
+		end
+
+		for key, section in self:iterateSections() do
+			result[key] = section:get()
+		end
+
+		return result
+	else
+		return self.sections[key] or self.values[key]
+	end
 end
 
 function PlayerStorage.Section:iterateValues()
@@ -165,6 +182,10 @@ function PlayerStorage.Section:deserialize(t)
 		local section = self:getSection(key)
 		section:deserialize(value)
 	end
+end
+
+function PlayerStorage.Section:toString()
+	return serpent.block(self:serialize(), { comment = false })
 end
 
 function PlayerStorage:new()

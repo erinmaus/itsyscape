@@ -141,6 +141,7 @@ function Decoration:toString()
 			local position = feature:getPosition()
 			local rotation = feature:getRotation()
 			local scale = feature:getScale()
+			local color = feature:getColor()
 
 			r:pushIndent(2)
 			r:pushFormatLine("id = %q,", feature:getID())

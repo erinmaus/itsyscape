@@ -40,6 +40,7 @@ function DialogBoxController:new(peep, director, action, target)
 				self.dialog = Dialog(filename)
 
 				self.dialog:setTarget(peep)
+				self.dialog:setSpeaker("_SELF", self.target)
 				self.dialog:setDirector(director)
 
 				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
@@ -155,9 +156,13 @@ function DialogBoxController:pump(e, ...)
 			if speaker then
 				local name = Utility.getName(speaker:get("Resource"), gameDB) or speaker:get("Name")
 				self.state.speaker = name
-
 			elseif self.currentPacket:getSpeaker():upper() == "_TARGET" then
 				self.state.speaker = self:getPeep():getName()
+			else
+				local speaker = self.dialog:getSpeaker(self.currentPacket:getSpeaker())
+				if speaker then
+					self.state.speaker = speaker:getName()
+				end
 			end
 
 			local peep = self.dialog:getSpeaker(self.currentPacket:getSpeaker())

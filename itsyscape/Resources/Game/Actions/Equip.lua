@@ -21,14 +21,14 @@ function Equip:canPerform(state)
 	return Action.canPerform(self, state, { ["item-inventory"] = true })
 end
 
-function Equip:perform(state, peep, item)
+function Equip:perform(state, peep, item, target)
 	if not self:canPerform(state) then
 		return false
 	end
 
 	local director = peep:getDirector()
 	local inventory = peep:getBehavior(InventoryBehavior)
-	local equipment = peep:getBehavior(EquipmentBehavior)
+	local equipment = (target or peep):getBehavior(EquipmentBehavior)
 	if inventory and inventory.inventory and
 	   equipment and equipment.equipment
 	then

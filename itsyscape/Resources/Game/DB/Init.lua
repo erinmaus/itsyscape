@@ -224,6 +224,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepBody" {
+		Type = Meta.TYPE_TEXT,
+		Filename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Item" {
 		Value = Meta.TYPE_INTEGER,
 		Weight = Meta.TYPE_REAL,
@@ -447,6 +453,7 @@ Game "ItsyScape"
 	ActionType "Teleport"
 
 	ResourceType "SailingItem"
+	ResourceType "SailingCrew"
 	ActionType "SailingBuy"
 	ActionType "SailingUnlock"
 
@@ -471,6 +478,17 @@ Game "ItsyScape"
 		Language = Meta.TYPE_TEXT,
 		Name = Meta.TYPE_TEXT,
 		Description = Meta.TYPE_TEXT
+	}
+
+	Meta "SailingCrewName" {
+		Value = Meta.TYPE_TEXT,
+		Gender = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "SailingCrewClass" {
+		Value = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
 	}
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
@@ -521,6 +539,11 @@ ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
 ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
 
 ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
+ItsyScape.Utility.Weapon = {}
+ItsyScape.Utility.Weapon.STYLE_NONE    = 0
+ItsyScape.Utility.Weapon.STYLE_MAGIC   = 1
+ItsyScape.Utility.Weapon.STYLE_ARCHERY = 2
+ItsyScape.Utility.Weapon.STYLE_MELEE   = 3
 
 ItsyScape.Utility.Vector = require "ItsyScape.Common.Math.Vector"
 ItsyScape.Utility.Quaternion = require "ItsyScape.Common.Math.Quaternion"
@@ -711,6 +734,7 @@ include "Resources/Game/DB/Props/Helms.lua"
 include "Resources/Game/DB/Effects/Sailing.lua"
 include "Resources/Game/DB/Sailing/General.lua"
 include "Resources/Game/DB/Sailing/Tier1.lua"
+include "Resources/Game/DB/Sailing/Crew.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

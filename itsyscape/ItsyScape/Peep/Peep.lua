@@ -65,6 +65,7 @@ function Peep:new(name)
 	self:addPoke('effectAdded')
 	self:addPoke('effectRemoved')
 	self:addPoke('command')
+	self:addPoke('actionPerformed')
 end
 
 -- Adds a poke 'name'.
@@ -123,16 +124,18 @@ end
 --
 -- If a poke with the name 'event' exists, it is also invoked.
 --
+-- The poke is called first, then the method on the Peep.
+--
 -- Any extra arguments ('...') are passed on to the method and/or pokes.
 function Peep:poke(name, ...)
 	local callback = "on" .. name:sub(1, 1):upper() .. name:sub(2)
 
-	if self[callback] then
-		self[callback](self, ...)
-	end
-
 	if self.pokes[name] then
 		self.pokes[name](self, ...)
+	end
+
+	if self[callback] then
+		self[callback](self, ...)
 	end
 end
 

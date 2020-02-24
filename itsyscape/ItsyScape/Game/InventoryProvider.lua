@@ -157,7 +157,7 @@ end
 
 -- Called when the provider is attached to the broker.
 function InventoryProvider:detach(broker)
-	-- Nothing.
+	self.broker = false
 end
 
 -- Called when the Inventory is loaded.

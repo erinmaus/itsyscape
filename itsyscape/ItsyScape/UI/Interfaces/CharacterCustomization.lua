@@ -234,7 +234,7 @@ function CharacterCustomization:new(id, index, ui)
 
 		addGender("- Male", 'male')
 		addGender("- Female", 'female')
-		addGender("- Other", 'x')
+		addGender("- Other (X)", 'x')
 
 		info.basic:addChild(genderSelect)
 
