@@ -53,7 +53,6 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 			local hasIndex = groupIndices[value]
 			if not hasIndex then
 				table.insert(groups, { value = g[i]:get("Value"), literal = g[i]:get("Name") })
-				print(groups[#groups].value)
 				groupIndices[groups[i].value] = i
 			end
 		end
