@@ -643,6 +643,8 @@ include "Resources/Game/DB/Items/Leathers.lua"
 include "Resources/Game/DB/Items/Feathers.lua" -- leathers, feathers, oh my
 include "Resources/Game/DB/Items/Fabrics.lua"
 include "Resources/Game/DB/Items/Gems.lua"
+include "Resources/Game/DB/Items/Dyes.lua"
+include "Resources/Game/DB/Items/PrideCapes.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
