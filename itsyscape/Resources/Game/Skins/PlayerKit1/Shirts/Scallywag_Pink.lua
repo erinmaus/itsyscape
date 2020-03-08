@@ -1,4 +1,4 @@
 {
 	model = "Resources/Game/Skins/Common/PlayerKit1/BodyMedium.lmesh",
-	texture = "Resources/Game/Skins/PlayerKit1/Shirts/PaleBrown.png"
+	texture = "Resources/Game/Skins/PlayerKit1/Shirts/Scallywag_Pink.png"
 }
