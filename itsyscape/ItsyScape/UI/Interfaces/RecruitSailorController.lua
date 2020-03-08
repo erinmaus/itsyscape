@@ -84,7 +84,6 @@ function RecruitSailorController:refreshState()
 		self.crewStorage:set("time", currentTime)
 
 		Utility.save(self:getPeep()) -- No cheating!
-		print('new day')
 	else
 		self:pullSailorsFromState()
 	end

@@ -1135,6 +1135,10 @@ function Utility.Peep.getPlayer(peep)
 end
 
 function Utility.Peep.dismiss(peep)
+	local name = peep:getName()
+
+	Log.info("Dismissing '%s'...", name)
+
 	local follower = peep:getBehavior(FollowerBehavior)
 	if follower and follower.id ~= FollowerBehavior.NIL_ID then
 		local director = peep:getDirector()
@@ -1142,14 +1146,20 @@ function Utility.Peep.dismiss(peep)
 		local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
 		local followerID = follower.id
 
-		Utility.Peep.poof(peep)
-
-		for i = 1, scopedStorage:length() do
-			if scopedStorage:getSection(i):get("id") == followerID then
-				scopedStorage:removeSection(i)
-				break
+		peep:listen('poof', function()
+			for i = 1, scopedStorage:length() do
+				if scopedStorage:getSection(i):get("id") == followerID then
+					scopedStorage:removeSection(i)
+					Log.info("Removed storage for '%s'.")
+					break
+				end
 			end
-		end
+		end)
+
+		Utility.Peep.poof(peep)
+		Log.info("Dismissed '%s'.", name)
+	else
+		Log.warn("Can't dismiss '%s': not a follower.")
 	end
 end
 
