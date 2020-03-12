@@ -142,7 +142,7 @@ function SkillGuide:update(...)
 
 				for resource in brochure:findResourcesByAction(action) do
 					local resourceType = brochure:getResourceTypeFromResource(resource)
-					if resourceType.name == "Prop" then
+					if resourceType.name == "Prop" or resourceType.name == "SailingCrew" then
 						prop = resource
 						break
 					elseif resourceType.name == "Peep" then
