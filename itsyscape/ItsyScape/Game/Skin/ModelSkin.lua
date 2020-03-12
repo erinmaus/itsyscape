@@ -102,7 +102,7 @@ function ModelSkin:loadFromFile(filename)
 	   type(result.rotation) == 'table' and
 	   #result.rotation == 4
 	then
-		self.rotation = Vector(unpack(result.rotation))
+		self.rotation = Quaternion(unpack(result.rotation))
 	end
 
 	if result.fullLit ~= nil then
