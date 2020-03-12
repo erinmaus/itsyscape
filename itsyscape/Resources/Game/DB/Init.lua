@@ -454,6 +454,7 @@ Game "ItsyScape"
 
 	ResourceType "SailingItem"
 	ResourceType "SailingCrew"
+	ResourceType "SailingFirstMate"
 	ActionType "SailingBuy"
 	ActionType "SailingUnlock"
 
@@ -737,6 +738,7 @@ include "Resources/Game/DB/Effects/Sailing.lua"
 include "Resources/Game/DB/Sailing/General.lua"
 include "Resources/Game/DB/Sailing/Tier1.lua"
 include "Resources/Game/DB/Sailing/Crew.lua"
+include "Resources/Game/DB/Sailing/FirstMates.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
