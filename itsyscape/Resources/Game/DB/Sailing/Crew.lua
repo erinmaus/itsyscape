@@ -199,7 +199,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Human",
-		Resource = Meta.TYPE_TEXT
+		Resource = Landlubber
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "Crew",
+		Resource = Landlubber
 	}
 
 	ItsyScape.Meta.PeepBody {
@@ -551,7 +557,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Human",
-		Resource = Meta.TYPE_TEXT
+		Resource = Navigator
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "Crew",
+		Resource = Navigator
 	}
 
 	ItsyScape.Meta.PeepBody {
@@ -863,7 +875,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Human",
-		Resource = Meta.TYPE_TEXT
+		Resource = Cannoneer
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "Crew",
+		Resource = Cannoneer
 	}
 
 	ItsyScape.Meta.PeepBody {
@@ -1200,7 +1218,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Human",
-		Resource = Meta.TYPE_TEXT
+		Resource = Scallywag
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "Crew",
+		Resource = Scallywag
 	}
 
 	ItsyScape.Meta.PeepBody {
@@ -1488,7 +1512,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Human",
-		Resource = Meta.TYPE_TEXT
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "Crew",
+		Resource = Pirate
 	}
 
 	ItsyScape.Meta.PeepBody {

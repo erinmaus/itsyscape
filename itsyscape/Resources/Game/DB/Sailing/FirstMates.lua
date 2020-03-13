@@ -54,7 +54,13 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Species",
 		Value = "Dog",
-		Resource = Meta.TYPE_TEXT
+		Resource = Nyan
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "FirstMate",
+		Resource = Nyan
 	}
 
 	ItsyScape.Meta.SailingCrewClass {
