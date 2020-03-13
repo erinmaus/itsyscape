@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/BuyBoat.lua
+-- ItsyScape/UI/ExpensiveBuy.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -19,28 +19,28 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
-local BuyBoat = Class(Interface)
-BuyBoat.WIDTH = 320
-BuyBoat.HEIGHT = 480
-BuyBoat.PADDING = 8
-BuyBoat.BUTTON_SIZE = 48
+local ExpensiveBuy = Class(Interface)
+ExpensiveBuy.WIDTH = 320
+ExpensiveBuy.HEIGHT = 480
+ExpensiveBuy.PADDING = 8
+ExpensiveBuy.BUTTON_SIZE = 48
 
-function BuyBoat:new(id, index, ui)
+function ExpensiveBuy:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.window.getMode()
-	self:setSize(BuyBoat.WIDTH, BuyBoat.HEIGHT)
+	self:setSize(ExpensiveBuy.WIDTH, ExpensiveBuy.HEIGHT)
 	self:setPosition(
-		(w - BuyBoat.WIDTH) / 2,
-		(h - BuyBoat.HEIGHT) / 2)
+		(w - ExpensiveBuy.WIDTH) / 2,
+		(h - ExpensiveBuy.HEIGHT) / 2)
 
 	local panel = Panel()
-	panel:setSize(BuyBoat.WIDTH, BuyBoat.HEIGHT)
+	panel:setSize(ExpensiveBuy.WIDTH, ExpensiveBuy.HEIGHT)
 	self:addChild(panel)
 
 	self.closeButton = Button()
-	self.closeButton:setSize(BuyBoat.BUTTON_SIZE, BuyBoat.BUTTON_SIZE)
-	self.closeButton:setPosition(BuyBoat.WIDTH - BuyBoat.BUTTON_SIZE, 0)
+	self.closeButton:setSize(ExpensiveBuy.BUTTON_SIZE, ExpensiveBuy.BUTTON_SIZE)
+	self.closeButton:setPosition(ExpensiveBuy.WIDTH - ExpensiveBuy.BUTTON_SIZE, 0)
 	self.closeButton:setText("X")
 	self.closeButton.onClick:register(function()
 		self:sendPoke("close", nil, {})
@@ -52,11 +52,11 @@ function BuyBoat:new(id, index, ui)
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 24,
 		textShadow = true,
-		width = BuyBoat.WIDTH - BuyBoat.PADDING * 2,
+		width = ExpensiveBuy.WIDTH - ExpensiveBuy.PADDING * 2,
 		color = { 1, 1, 1, 1 }
 	}, ui:getResources()))
 	confirmLabel:setText("Confirm Purchase")
-	confirmLabel:setPosition(BuyBoat.PADDING, BuyBoat.PADDING)
+	confirmLabel:setPosition(ExpensiveBuy.PADDING, ExpensiveBuy.PADDING)
 	self:addChild(confirmLabel)
 
 	local constraintsPanelBackground = Panel()
@@ -64,18 +64,18 @@ function BuyBoat:new(id, index, ui)
 		image = "Resources/Renderers/Widget/Panel/Group.9.png"
 	}, ui:getResources()))
 	constraintsPanelBackground:setSize(
-		BuyBoat.WIDTH - BuyBoat.PADDING * 2,
-		BuyBoat.HEIGHT - BuyBoat.BUTTON_SIZE * 2 - BuyBoat.PADDING * 4)
-	constraintsPanelBackground:setPosition(BuyBoat.PADDING, BuyBoat.BUTTON_SIZE + BuyBoat.PADDING)
+		ExpensiveBuy.WIDTH - ExpensiveBuy.PADDING * 2,
+		ExpensiveBuy.HEIGHT - ExpensiveBuy.BUTTON_SIZE * 2 - ExpensiveBuy.PADDING * 4)
+	constraintsPanelBackground:setPosition(ExpensiveBuy.PADDING, ExpensiveBuy.BUTTON_SIZE + ExpensiveBuy.PADDING)
 	self:addChild(constraintsPanelBackground)
 
 	self.constraintsPanel = ScrollablePanel(GridLayout)
 	self.constraintsPanel:setSize(
-		BuyBoat.WIDTH,
-		BuyBoat.HEIGHT - BuyBoat.BUTTON_SIZE * 2 - BuyBoat.PADDING * 4)
-	self.constraintsPanel:setPosition(0, BuyBoat.BUTTON_SIZE + BuyBoat.PADDING)
+		ExpensiveBuy.WIDTH,
+		ExpensiveBuy.HEIGHT - ExpensiveBuy.BUTTON_SIZE * 2 - ExpensiveBuy.PADDING * 4)
+	self.constraintsPanel:setPosition(0, ExpensiveBuy.BUTTON_SIZE + ExpensiveBuy.PADDING)
 	self.constraintsPanel:getInnerPanel():setWrapContents(true)
-	self.constraintsPanel:getInnerPanel():setPadding(BuyBoat.PADDING * 2, BuyBoat.PADDING)
+	self.constraintsPanel:getInnerPanel():setPadding(ExpensiveBuy.PADDING * 2, ExpensiveBuy.PADDING)
 
 	do
 		local state = self:getState()
@@ -83,7 +83,7 @@ function BuyBoat:new(id, index, ui)
 		self.requirementsConstraints = ConstraintsPanel(ui)
 		self.requirementsConstraints:setData("skillAsLevel", true)
 		self.requirementsConstraints:setSize(
-			BuyBoat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - BuyBoat.PADDING * 2,
+			ExpensiveBuy.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - ExpensiveBuy.PADDING * 2,
 			0)
 		self.requirementsConstraints:setText("Requirements")
 		self.requirementsConstraints:setConstraints(state.requirements)
@@ -91,7 +91,7 @@ function BuyBoat:new(id, index, ui)
 
 		self.inputsConstraints = ConstraintsPanel(ui)
 		self.inputsConstraints:setSize(
-			BuyBoat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - BuyBoat.PADDING * 2,
+			ExpensiveBuy.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - ExpensiveBuy.PADDING * 2,
 			0)
 		self.inputsConstraints:setText("Cost")
 		self.inputsConstraints:setConstraints(state.inputs)
@@ -99,7 +99,7 @@ function BuyBoat:new(id, index, ui)
 
 		self.outputsConstraints = ConstraintsPanel(ui)
 		self.outputsConstraints:setSize(
-			BuyBoat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - BuyBoat.PADDING * 2,
+			ExpensiveBuy.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - ExpensiveBuy.PADDING * 2,
 			0)
 		self.outputsConstraints:setText("Goods")
 		self.outputsConstraints:setConstraints(state.outputs)
@@ -110,8 +110,8 @@ function BuyBoat:new(id, index, ui)
 	self:addChild(self.constraintsPanel)
 
 	self.buyButton = Button()
-	self.buyButton:setSize(BuyBoat.WIDTH / 2 - BuyBoat.PADDING * 4, BuyBoat.BUTTON_SIZE)
-	self.buyButton:setPosition(BuyBoat.PADDING, BuyBoat.HEIGHT - BuyBoat.BUTTON_SIZE - BuyBoat.PADDING)
+	self.buyButton:setSize(ExpensiveBuy.WIDTH / 2 - ExpensiveBuy.PADDING * 4, ExpensiveBuy.BUTTON_SIZE)
+	self.buyButton:setPosition(ExpensiveBuy.PADDING, ExpensiveBuy.HEIGHT - ExpensiveBuy.BUTTON_SIZE - ExpensiveBuy.PADDING)
 	self.buyButton:setText("Buy!")
 	self.buyButton.onClick:register(function()
 		self:sendPoke("buy", nil, {})
@@ -121,10 +121,10 @@ function BuyBoat:new(id, index, ui)
 	self:addChild(self.buyButton)
 
 	self.cancelButton = Button()
-	self.cancelButton:setSize(BuyBoat.WIDTH / 2 - BuyBoat.PADDING * 4, BuyBoat.BUTTON_SIZE)
+	self.cancelButton:setSize(ExpensiveBuy.WIDTH / 2 - ExpensiveBuy.PADDING * 4, ExpensiveBuy.BUTTON_SIZE)
 	self.cancelButton:setPosition(
-		BuyBoat.WIDTH - (BuyBoat.WIDTH / 2 - BuyBoat.PADDING * 4) - BuyBoat.PADDING,
-		BuyBoat.HEIGHT - BuyBoat.BUTTON_SIZE - BuyBoat.PADDING)
+		ExpensiveBuy.WIDTH - (ExpensiveBuy.WIDTH / 2 - ExpensiveBuy.PADDING * 4) - ExpensiveBuy.PADDING,
+		ExpensiveBuy.HEIGHT - ExpensiveBuy.BUTTON_SIZE - ExpensiveBuy.PADDING)
 	self.cancelButton:setText("Nevermind!")
 	self.cancelButton.onClick:register(function()
 		self:sendPoke("nevermind", nil, {})
@@ -132,4 +132,4 @@ function BuyBoat:new(id, index, ui)
 	self:addChild(self.cancelButton)
 end
 
-return BuyBoat
+return ExpensiveBuy
