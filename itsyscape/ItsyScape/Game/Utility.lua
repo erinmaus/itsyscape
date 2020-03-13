@@ -353,7 +353,7 @@ function Utility.performAction(game, resource, id, scope, ...)
 				Log.error("failed to load action %s: %s", typeName, r)
 			else
 				local ActionType = r
-				if ActionType.SCOPES and ActionType.SCOPES[scope] then
+				if ActionType.SCOPES and (ActionType.SCOPES[scope] or not scope) then
 					local a = ActionType(game, action)
 					if not a:perform(...) then
 						a:fail(...)
@@ -559,6 +559,8 @@ Utility.Time.BIRTHDAY_INFO = {
 Utility.Time.BIRTHDAY_TIME = os.time(Utility.Time.BIRTHDAY_INFO)
 
 function Utility.Time.getDays(currentTime)
+	currentTime = currentTime or referenceTime
+
 	local referenceTime = Utility.Time.BIRTHDAY_TIME
 	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
 end

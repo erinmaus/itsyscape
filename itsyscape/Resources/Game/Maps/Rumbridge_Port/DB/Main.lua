@@ -115,6 +115,30 @@ do
 	}
 end
 
+M["Anchor_FirstMateLocked"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 5,
+		PositionZ = 53,
+		Name = "Anchor_FirstMateLocked",
+		Map = M._MAP,
+		Resource = M["Anchor_FirstMateLocked"]
+	}
+end
+
+M["Anchor_FirstMateUnlocked"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 4,
+		PositionZ = 27,
+		Name = "Anchor_FirstMateUnlocked",
+		Map = M._MAP,
+		Resource = M["Anchor_FirstMateUnlocked"]
+	}
+end
+
 M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

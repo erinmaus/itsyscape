@@ -16,6 +16,7 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local Port = Class(Map)
 Port.CREW_PASSAGE = {
@@ -30,12 +31,58 @@ function Port:new(resource, name, ...)
 
 	self:addPoke('spawnShip')
 	self:addPoke('recruit')
+	self:addPoke('rollFirstMate')
+
+	self.currentTime = 0
+end
+
+function Port:updateTime()
+	local playerStorage = self:getDirector():getPlayerStorage():getRoot()
+	local firstMateStorage = playerStorage:getSection("Ship"):getSection("FirstMate")
+	local referenceTime = firstMateStorage:get("time") or (Utility.Time.BIRTHDAY_TIME - Utility.Time.DAY)
+	local currentTime = Utility.Time.getAndUpdateTime(playerStorage)
+
+	local referenceDays = Utility.Time.getDays(referenceTime)
+	local currentDays = Utility.Time.getDays(currentTime)
+
+	if currentDays > referenceDays then
+		self:poke('rollFirstMate', true)
+		firstMateStorage:set("time", currentTime)
+	end
+end
+
+function Port:onRollFirstMate(reroll)
+	if self.firstMate then
+		Utility.Peep.poof(self.firstMate:getPeep())
+		self.firstMate = nil
+	end
+
+	local player = Utility.Peep.getPlayer(self)
+
+	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
+	if not firstMate or (pending and reroll) then
+		local firstMates = SailorsCommon.getUnlockableFirstMates(player, "SailingBuy")
+		firstMate = firstMates[math.random(#firstMates)]
+
+		SailorsCommon.setActiveFirstMateResource(player, firstMate, true)
+		Utility.save(player)
+
+		local name = Utility.getName(firstMate, self:getDirector():getGameDB())
+		Log.info("First mate of the day: '%s'.", name)
+	end
+
+	if pending then
+		self.firstMate = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMateLocked", 0)
+	else
+		self.firstMate = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMateUnlocked", 0)
+	end
 end
 
 function Port:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
 	self:poke('spawnShip')
+	self:poke('rollFirstMate', false)
 
 	local playerStorage = self:getDirector():getPlayerStorage():getRoot()
 	local followersStorage = playerStorage:getSection("Follower"):getSection("SailingCrew")
@@ -85,6 +132,12 @@ function Port:onRecruit(id)
 		local follower = peep:getBehavior(FollowerBehavior)
 		follower.id = id
 	end
+end
+
+function Port:update(...)
+	Map.update(self, ...)
+
+	self:updateTime()
 end
 
 return Port
