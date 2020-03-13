@@ -60,7 +60,29 @@ else
 				"Ye'll need to %hint{recruit a first mate and some crew}, too, to sail 'er."
 			}
 
-			Utility.UI.openInterface(_TARGET, "BuyBoat", true, _SPEAKERS["Robert"])
+			local gameDB = _DIRECTOR:getGameDB()
+			local game = _DIRECTOR:getGameInstance()
+			local resource = gameDB:getResource("Ship", "SailingItem")
+			local action
+			do
+				local actions = Utility.getActions(game, resource, 'sailing')
+				for k = 1, #actions do
+					if actions[k].instance:is('SailingBuy') or actions[k].instance:is('SailingUnlock') then
+						action = actions[k].instance
+						break
+					end
+				end
+			end
+
+			if not resource or not action then
+				message {
+					"Whoops, seems we're out of boats, mate. Erroneously sorry. Please accept me apologies.",
+					"Mayhaps you contact the kind mate who created the universe, they'll help ye out."
+				}
+			else
+				Utility.UI.openInterface(_TARGET, "ExpensiveBuy", true, resource, action, _SPEAKERS["Robert"])
+			end
+
 			return
 		elseif option == NO_IM_FINANCIALLY_RESPONSIBLE then
 			speaker "_TARGET"

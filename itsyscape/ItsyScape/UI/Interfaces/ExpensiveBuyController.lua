@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/BuyBoatController.lua
+-- ItsyScape/UI/ExpensiveBuyController.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,33 +11,23 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 
-local BuyBoatController = Class(Controller)
+local ExpensiveBuyController = Class(Controller)
 
-function BuyBoatController:new(peep, director, guildMaster)
+function ExpensiveBuyController:new(peep, director, resource, action, seller)
 	Controller.new(self, peep, director)
 
-	local gameDB = director:getGameDB()
-	local resource = gameDB:getResource("Ship", "SailingItem")
-
-	local action
-	do
-		local actions = Utility.getActions(director:getGameInstance(), resource, 'sailing')
-		for k = 1, #actions do
-			if actions[k].instance:is('SailingBuy') then
-				action = actions[k].instance
-				break
-			end
-		end
-	end
+	local gameDB = self:getGame():getGameDB()
+	local brochure = gameDB:getBrochure()
 
 	self.resource = resource
+	self.resourceType = brochure:getResourceTypeFromResource(self.resource)
 	self.action = action
 	self.state = Utility.getActionConstraints(director:getGameInstance(), action:getAction())
 	self.storage = director:getPlayerStorage(peep):getRoot():getSection("Ship")
-	self.guildMaster = guildMaster
+	self.seller = seller
 end
 
-function BuyBoatController:poke(actionID, actionIndex, e)
+function ExpensiveBuyController:poke(actionID, actionIndex, e)
 	if actionID == "buy" then
 		self:buy(e)
 	elseif actionID == "nevermind" or actionID == "close" then
@@ -47,26 +37,28 @@ function BuyBoatController:poke(actionID, actionIndex, e)
 	end
 end
 
-function BuyBoatController:buy(e)
-	local hasShip = self:getPeep():getState():has("SailingItem", "Ship")
-	local success = hasShip or Utility.performAction(
+function ExpensiveBuyController:buy(e)
+	local hasResource = self:getPeep():getState():has(
+		self.resourceType.name,
+		self.resource.name)
+	local success = hasResource or Utility.performAction(
 		self:getGame(),
 		self.resource,
 		self.action:getAction().id.value,
-		'sailing',
+		nil,
 		self:getPeep():getState(), self:getPeep())
 
 	if success then
-		if self.guildMaster then
-			self.guildMaster:poke('soldShip')
+		if self.seller then
+			self.seller:poke('soldResource', self:getPeep())
 		end
 
 		self:getGame():getUI():closeInstance(self)
 	end
 end
 
-function BuyBoatController:pull()
+function ExpensiveBuyController:pull()
 	return self.state
 end
 
-return BuyBoatController
+return ExpensiveBuyController

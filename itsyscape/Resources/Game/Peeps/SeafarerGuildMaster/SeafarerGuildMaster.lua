@@ -18,7 +18,7 @@ local SeafarerGuildMaster = Class(Player)
 function SeafarerGuildMaster:new(resource, name, ...)
 	Player.new(self, resource, name or 'SeafarerGuildMaster', ...)
 
-	self:addPoke('soldShip')
+	self:addPoke('soldResource')
 end
 
 function SeafarerGuildMaster:ready(director, game)
@@ -35,7 +35,7 @@ function SeafarerGuildMaster:ready(director, game)
 			"Resources/Game/Bodies/Human.lskel"))
 end
 
-function SeafarerGuildMaster:onSoldShip()
+function SeafarerGuildMaster:onSoldResource()
 	local map = Utility.Peep.getMapScript(self)
 	if map then
 		map:poke('spawnShip')
