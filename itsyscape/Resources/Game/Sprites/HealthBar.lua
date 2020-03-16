@@ -13,7 +13,8 @@ local FontResource = require "ItsyScape.Graphics.FontResource"
 
 local HealthBar = Class(Sprite)
 HealthBar.WIDTH = 50
-HealthBar.HEIGHT = 10
+HealthBar.GOAL_HEIGHT     = 10
+HealthBar.PROGRESS_HEIGHT = 12
 
 function HealthBar:new(...)
 	Sprite.new(self, ...)
@@ -31,15 +32,15 @@ end
 
 function HealthBar:draw(position, time)
 	local x = position.x - HealthBar.WIDTH / 2
-	local y = position.y - HealthBar.HEIGHT
+	local y = position.y - HealthBar.GOAL_HEIGHT
 
 	local alpha = 1 - math.max((time - 5.5) / 0.5)
 
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.rectangle('fill', x + 1, y + 1, HealthBar.WIDTH, HealthBar.HEIGHT)
+	love.graphics.rectangle('fill', x + 1, y + 1, HealthBar.WIDTH, HealthBar.GOAL_HEIGHT)
 
 	love.graphics.setColor(0, 1, 0, alpha)
-	love.graphics.rectangle('fill', x, y, HealthBar.WIDTH, HealthBar.HEIGHT)
+	love.graphics.rectangle('fill', x, y, HealthBar.WIDTH, HealthBar.GOAL_HEIGHT)
 
 	if self.actor:getCurrentHitpoints() < self.actor:getMaximumHitpoints() then
 		local percent = self.actor:getCurrentHitpoints() / self.actor:getMaximumHitpoints()
@@ -52,9 +53,17 @@ function HealthBar:draw(position, time)
 		love.graphics.rectangle(
 			'fill',
 			x + HealthBar.WIDTH - w,
-			y,
+			y - (HealthBar.PROGRESS_HEIGHT - HealthBar.GOAL_HEIGHT),
 			w,
-			HealthBar.HEIGHT)
+			HealthBar.PROGRESS_HEIGHT)
+
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.rectangle(
+			'fill',
+			x + HealthBar.WIDTH - w - 2,
+			y - (HealthBar.PROGRESS_HEIGHT - HealthBar.GOAL_HEIGHT),
+			2,
+			HealthBar.PROGRESS_HEIGHT)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
