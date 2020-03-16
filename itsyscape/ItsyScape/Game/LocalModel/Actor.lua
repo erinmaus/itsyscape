@@ -16,6 +16,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -167,6 +168,19 @@ function LocalActor:getPosition()
 		return position.position
 	else
 		return Vector.ZERO
+	end
+end
+
+function LocalActor:getScale()
+	if not self.peep then
+		return Vector.ONE
+	end
+
+	local scale = self.peep:getBehavior(ScaleBehavior)
+	if scale then
+		return scale.scale
+	else
+		return Vector.ONE
 	end
 end
 

@@ -676,6 +676,10 @@ end
 function GameView:tick()
 	self.scene:tick()
 
+	for _, actor in pairs(self.actors) do
+		actor:tick()
+	end
+
 	for _, prop in pairs(self.props) do
 		prop:tick()
 	end
