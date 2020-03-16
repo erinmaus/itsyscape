@@ -106,6 +106,10 @@ function Actor:getPosition()
 	return Class.ABSTRACT()
 end
 
+function Actor:getScale()
+	return Class.ABSTRACT()
+end
+
 -- Gets the tile as a tuple in the form (i, j, layer).
 function Actor:getTile()
 	return Class.ABSTRACT()

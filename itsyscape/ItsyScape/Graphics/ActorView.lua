@@ -472,6 +472,10 @@ function ActorView:flash(message, anchor, ...)
 	sprite:add(message, self.sceneNode, size * anchor, ...)
 end
 
+function ActorView:tick()
+	self.sceneNode:getTransform():setLocalScale(self.actor:getScale())
+end
+
 function ActorView:update(delta)
 	self.animationsDirty = true
 	self.animationDelta = delta
