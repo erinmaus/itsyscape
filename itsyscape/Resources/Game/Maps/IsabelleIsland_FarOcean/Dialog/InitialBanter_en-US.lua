@@ -101,10 +101,11 @@ Utility.UI.openInterface(
 		{
 			video = "Resources/Game/Videos/Tutorial/Camera.ogv",
 			text =
-				"Press and drag the middle mouse button to move the camera.\n\n" ..
-				"Scroll the middle mouse button to zoom in or out.\n\n" ..
+				"Press and drag the middle mouse button to move the camera." ..
+				" Scroll the middle mouse button to zoom in or out.\n\n" ..
 				"Left click to perform the default action.\n\n" ..
-				"Right click to see all available options."
+				"Right click to see all available options.\n\n" ..
+				"Also, you can walk by clicking where you want or using WASD."
 		},
 		{
 			video = "Resources/Game/Videos/Tutorial/Equipment.ogv",

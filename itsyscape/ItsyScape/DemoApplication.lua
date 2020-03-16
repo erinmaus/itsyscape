@@ -327,10 +327,6 @@ function DemoApplication:snapshotGame()
 end
 
 function DemoApplication:updatePlayerMovement()
-	if not _DEBUG then
-		return
-	end
-
 	local player = self:getGame():getPlayer()
 	local up = love.keyboard.isDown('w')
 	local down = love.keyboard.isDown('s')
