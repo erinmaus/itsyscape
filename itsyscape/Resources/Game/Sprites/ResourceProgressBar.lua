@@ -13,7 +13,8 @@ local FontResource = require "ItsyScape.Graphics.FontResource"
 
 local ResourceProgressBar = Class(Sprite)
 ResourceProgressBar.WIDTH = 50
-ResourceProgressBar.HEIGHT = 10
+ResourceProgressBar.GOAL_HEIGHT = 10
+ResourceProgressBar.PROGRESS_HEIGHT  = 12
 
 function ResourceProgressBar:new(...)
 	Sprite.new(self, ...)
@@ -37,13 +38,13 @@ end
 
 function ResourceProgressBar:draw(position, time)
 	local x = position.x - ResourceProgressBar.WIDTH / 2
-	local y = position.y - ResourceProgressBar.HEIGHT
+	local y = position.y - ResourceProgressBar.GOAL_HEIGHT
 
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.rectangle('fill', x + 1, y + 1, ResourceProgressBar.WIDTH, ResourceProgressBar.HEIGHT)
+	love.graphics.rectangle('fill', x + 1, y + 1, ResourceProgressBar.WIDTH, ResourceProgressBar.GOAL_HEIGHT)
 
 	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.rectangle('fill', x, y, ResourceProgressBar.WIDTH, ResourceProgressBar.HEIGHT)
+	love.graphics.rectangle('fill', x, y, ResourceProgressBar.WIDTH, ResourceProgressBar.GOAL_HEIGHT)
 
 	local state = self.prop:getState()
 	if state.resource then
@@ -57,9 +58,17 @@ function ResourceProgressBar:draw(position, time)
 		love.graphics.rectangle(
 			'fill',
 			x,
-			y,
+			y - (ResourceProgressBar.PROGRESS_HEIGHT - ResourceProgressBar.GOAL_HEIGHT),
 			w,
-			ResourceProgressBar.HEIGHT)
+			ResourceProgressBar.PROGRESS_HEIGHT)
+
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.rectangle(
+			'fill',
+			x + w - 2,
+			y - (ResourceProgressBar.PROGRESS_HEIGHT - ResourceProgressBar.GOAL_HEIGHT),
+			2,
+			ResourceProgressBar.PROGRESS_HEIGHT)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)

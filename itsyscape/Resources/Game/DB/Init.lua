@@ -749,6 +749,9 @@ include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 
+-- Minigames
+include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
+
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
