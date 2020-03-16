@@ -27,6 +27,7 @@ local PathNode = require "ItsyScape.World.PathNode"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local Player = Class()
+Player.MOVEMENT_STOP_THRESHOLD = 10
 
 -- Constructs a new player.
 --
@@ -116,7 +117,7 @@ function Player:move(x, z)
 	local movement = peep:getBehavior(MovementBehavior)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		local currentAccceleration = movement.acceleration:getLength()
-		if currentAccceleration < 1 then
+		if currentAccceleration < Player.MOVEMENT_STOP_THRESHOLD then
 			movement.acceleration = Vector.ZERO
 			movement.velocity = Vector.ZERO
 			movement.isStopping = true

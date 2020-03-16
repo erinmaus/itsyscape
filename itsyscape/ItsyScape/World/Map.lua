@@ -177,6 +177,10 @@ function Map:canMove(i, j, di, dj)
 		return false
 	end
 
+	if di == 0 and dj == 0 then
+		return true
+	end
+
 	local tile = self:getTile(i, j)
 
 	local isLeftPassable, isRightPassable
@@ -206,7 +210,7 @@ function Map:canMove(i, j, di, dj)
 	if dj < 0 and j > 1 then
 		local top = self:getTile(i, j - 1)
 		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topLeft) and
+		    top.bottomRight <= tile.topRight) and
 		   not top:hasFlag('impassable') and
 		   not top:hasFlag('door')
 		then
@@ -225,13 +229,15 @@ function Map:canMove(i, j, di, dj)
 		end
 	end
 
-	if math.abs(di) + math.abs(dj) > 0 then
+	if math.abs(di) + math.abs(dj) > 1 then
 		if di < 0 and dj < 0 and i > 1 and j > 1 and isTopPassable and isLeftPassable then
 			local topLeft = self:getTile(i - 1, j - 1)
 			if topLeft.bottomRight <= tile.topLeft and
 			   not topLeft:hasFlag('impassable')
 			then
 				return true
+			else
+				return false
 			end
 		end
 
@@ -241,6 +247,8 @@ function Map:canMove(i, j, di, dj)
 			   not bottomLeft:hasFlag('impassable')
 			then
 				return true
+			else
+				return false
 			end
 		end
 
@@ -250,6 +258,8 @@ function Map:canMove(i, j, di, dj)
 			   not topRight:hasFlag('impassable')
 			then
 				return true
+			else
+				return false
 			end
 		end
 
@@ -259,6 +269,8 @@ function Map:canMove(i, j, di, dj)
 			   not bottomRight:hasFlag('impassable')
 			then
 				return true
+			else
+				return false
 			end
 		end
 	end
