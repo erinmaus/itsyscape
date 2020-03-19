@@ -79,6 +79,8 @@ function UIView:new(gameView)
 	self.interfaces = {}
 
 	self.pokeMenu = false
+
+	self.keyBinds = {}
 end
 
 function UIView:release()
