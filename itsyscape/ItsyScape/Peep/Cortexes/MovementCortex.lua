@@ -70,7 +70,7 @@ function MovementCortex:update(delta)
 		if map then
 			movement:clampMovement()
 
-			movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity * delta
+			movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity
 			clampVector(movement.acceleration)
 
 			local wasMoving
@@ -121,15 +121,22 @@ function MovementCortex:update(delta)
 			local y = map:getInterpolatedHeight(
 				position.position.x,
 				position.position.z)
-			if math.abs(position.position.y - y) < MovementCortex.GROUND_EPSILON and
-			   math.abs(movement.velocity.y * delta) < MovementCortex.GROUND_EPSILON
-			then
-				movement.isOnGround = true
-			elseif position.position.y < y and not movement.isOnGround then
-				movement.acceleration.y = -movement.acceleration.y * movement.bounce
-				movement.velocity.y = -movement.velocity.y * movement.bounce
-				position.position.y = y
-				movement.isOnGround = false
+			if position.position.y < y then
+				if movement.bounce > 0 then
+					movement.acceleration.y = -movement.acceleration.y * movement.bounce
+					movement.velocity.y = -movement.velocity.y * movement.bounce
+					position.position.y = y
+
+					if movement.velocity.y < movement.bounceThreshold then
+						movement.acceleration.y = 0
+						movement.velocity.y = 0
+						movement.isOnGround = true
+					else
+						movement.isOnGround = false
+					end
+				elseif not movement.isOnGround then
+					movement.isOnGround = true
+				end
 			elseif position.position.y > y + MovementCortex.GROUND_EPSILON
 			       and movement.isOnGround
 			then
@@ -146,7 +153,7 @@ function MovementCortex:update(delta)
 					movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
 				end
 			else
-				position.position.y = math.max(position.position.y + gravity.y * delta, y)
+				position.position.y = math.max(position.position.y, y)
 			end
 
 			local stepY = position.position.y - oldPosition.y 
