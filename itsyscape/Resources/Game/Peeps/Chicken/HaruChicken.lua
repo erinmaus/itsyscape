@@ -14,6 +14,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local BaseChicken = require "Resources.Game.Peeps.Chicken.BaseChicken"
 
@@ -22,8 +23,8 @@ HaruChicken.SIZES = {
 	1,
 	1.5,
 	2,
-	4,
-	8
+	3,
+	4
 }
 
 HaruChicken.HATS = {
@@ -40,6 +41,13 @@ function HaruChicken:new(resource, name, ...)
 
 	local _, scale = self:addBehavior(ScaleBehavior)
 	scale.scale = Vector(factor)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.bounce = 0.9
+	movement.bounceThreshold = 2.5
+	movement.maxSpeed = math.huge
+	movement.maxAcceleration = math.huge
+	movement.maxStepHeight = math.huge
 end
 
 function HaruChicken:ready(director, game)
