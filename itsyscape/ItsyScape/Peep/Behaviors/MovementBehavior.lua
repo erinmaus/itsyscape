@@ -61,6 +61,7 @@ function MovementBehavior:new()
 	self.velocityMultiplier = 1
 	self.accelerationMultiplier = 1
 	self.bounce = 0
+	self.bounceThreshold = 0
 	self.decay = 1
 	self.isOnGround = false
 	self.isStopping = false
