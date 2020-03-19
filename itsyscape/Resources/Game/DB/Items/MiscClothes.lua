@@ -156,6 +156,39 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "FishermansHat"
 }
 
+ItsyScape.Resource.Item "StrawHat" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Straw hat",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "StrawHat"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Keeps the sun out of your eyes.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "StrawHat"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(50),
+	Resource = ItsyScape.Resource.Item "StrawHat"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+	Resource = ItsyScape.Resource.Item "StrawHat"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/StrawHat/StrawHat.lua",
+	Resource = ItsyScape.Resource.Item "StrawHat"
+}
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "Also makes you look like a ruin plunderin' adventurer.",
 	Language = "en-US",
