@@ -200,7 +200,21 @@ function love.quit()
 		p:writeReport("itsyscape.log")
 	end
 
-	return _APP:quit()
+	local result = _APP:quit()
+
+	do	
+		local Keybinds = require "ItsyScape.UI.Keybinds"
+		for i = 1, #Keybinds do
+			Keybinds[i]:save()
+		end
+
+		local serpent = require "serpent"
+		local serializedConf = serpent.block(_CONF, { comment = false })
+
+		love.filesystem.write("settings.cfg", serializedConf)
+	end
+
+	return result
 end
 
 function love.threaderror(m, e)
