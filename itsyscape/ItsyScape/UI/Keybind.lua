@@ -23,7 +23,7 @@ end
 function Keybind:bind(binding)
 	local keys = {}
 
-	for key in binding:gmatch("(%w+).*") do
+	for key in binding:gmatch("[^%s]+") do
 		table.insert(keys, key)
 	end
 
@@ -39,8 +39,8 @@ function Keybind:save()
 end
 
 function Keybind:isDown()
-	for i = 1, #keys do
-		local key = keys[i]
+	for i = 1, #self.keys do
+		local key = self.keys[i]
 		local isDown = love.keyboard.isDown(key)
 
 		if not isDown then

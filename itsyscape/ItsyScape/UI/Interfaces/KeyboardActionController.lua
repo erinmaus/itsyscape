@@ -10,7 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Controller = require "ItsyScape.UI.Controller"
 
-function KeyboardActionController:new(peep, director, id, keybind, callback, isOpen)
+local KeyboardActionController = Class(Controller)
+
+function KeyboardActionController:new(peep, director, keybind, callback, isOpen)
 	Controller.new(self, peep, director)
 
 	self.state = { keybind = keybind }
@@ -42,7 +44,7 @@ function KeyboardActionController:update(delta)
 		self:getDirector(),
 		self:getGame():getUI())
 
-	if result then
+	if not result then
 		self:getGame():getUI():closeInstance(self)
 	end
 end

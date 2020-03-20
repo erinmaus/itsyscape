@@ -12,7 +12,8 @@ local Keybind = require "ItsyScape.UI.Keybind"
 local Keybinds = {}
 
 local function add(name, defaultBinding)
-	local keybind = Keybind(name, defaultBinding)
+	local existing = _CONF.keybinds or {} 
+	local keybind = Keybind(name, existing[name] or defaultBinding)
 
 	table.insert(Keybinds, keybind)
 	Keybinds[name] = keybind
