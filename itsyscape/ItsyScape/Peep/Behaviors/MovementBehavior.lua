@@ -56,6 +56,8 @@ function MovementBehavior:new()
 	self.targetFacing = false
 	self.acceleration = Vector(0, 0, 0)
 	self.velocity = Vector(0, 0, 0)
+	self.additionalAcceleration = Vector(0, 0, 0)
+	self.additionalVelocity = Vector(0, 0, 0)
 	self.maxSpeed = 0
 	self.maxAcceleration = 0
 	self.velocityMultiplier = 1

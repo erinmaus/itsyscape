@@ -81,7 +81,7 @@ function MovementCortex:update(delta)
 				end
 			end
 
-			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier
+			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier + movement.additionalAcceleration
 			movement.velocity = movement.velocity + acceleration * multiplier
 			clampVector(movement.velocity)
 
@@ -99,7 +99,7 @@ function MovementCortex:update(delta)
 			local oldPosition = position.position
 			local oldTile, oldI, oldJ = map:getTileAt(oldPosition.x, oldPosition.z)
 
-			local velocity = movement.velocity * delta * movement.velocityMultiplier
+			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			position.position = position.position + velocity * multiplier
 
 			local newTile, newI, newJ = map:getTileAt(position.position.x, position.position.z)

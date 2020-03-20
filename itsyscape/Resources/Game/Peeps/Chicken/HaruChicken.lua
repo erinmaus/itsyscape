@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local BaseChicken = require "Resources.Game.Peeps.Chicken.BaseChicken"
 
@@ -26,6 +27,13 @@ HaruChicken.SIZES = {
 	3,
 	4
 }
+HaruChicken.HEALTH = {
+	10,
+	15,
+	20,
+	30,
+	40
+}
 
 HaruChicken.HATS = {
 	"Resources/Game/Skins/Chicken/Hat_Pirate.lua",
@@ -35,7 +43,8 @@ HaruChicken.HATS = {
 function HaruChicken:new(resource, name, ...)
 	BaseChicken.new(self, resource, name or 'Chicken_Haru', ...)
 
-	local factor = HaruChicken.SIZES[math.random(#HaruChicken.SIZES)]
+	local index = math.random(#HaruChicken.SIZES)
+	local factor = HaruChicken.SIZES[index]
 	local size = self:getBehavior(SizeBehavior)
 	size.size = size.size * factor
 
@@ -48,6 +57,13 @@ function HaruChicken:new(resource, name, ...)
 	movement.maxSpeed = math.huge
 	movement.maxAcceleration = math.huge
 	movement.maxStepHeight = math.huge
+
+	local combatStatus = self:getBehavior(CombatStatusBehavior)
+	combatStatus.currentHitpoints = HaruChicken.HEALTH[index]
+	combatStatus.maximumHitpoints = HaruChicken.HEALTH[index]
+	
+	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
 end
 
 function HaruChicken:ready(director, game)
