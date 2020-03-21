@@ -35,6 +35,11 @@ HaruChicken.HEALTH = {
 	40
 }
 
+HaruChicken.DIRECTIONS = {
+	MovementBehavior.FACING_LEFT,
+	MovementBehavior.FACING_RIGHT
+}
+
 HaruChicken.HATS = {
 	"Resources/Game/Skins/Chicken/Hat_Pirate.lua",
 	"Resources/Game/Skins/Chicken/Hat_Sailor.lua"
@@ -89,6 +94,15 @@ function HaruChicken:onHit()
 	if actor and actor.actor then
 		actor = actor.actor
 		actor:flash("Message", 1, "BWAK BWAK BWAK!")
+
+		local bwakAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/SFX_ChickenQuack/Script.lua")
+		actor:playAnimation(
+			'minigame-chicken-dash',
+			1,
+			bwakAnimation,
+			true)
 	end
 end
 
@@ -105,6 +119,10 @@ function HaruChicken:ready(director, game)
 		local hat = CacheRef("ItsyScape.Game.Skin.ModelSkin", hat)
 		actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_EQUIPMENT, hat)
 	end
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.facing = HaruChicken.DIRECTIONS[math.random(#HaruChicken.DIRECTIONS)]
+	movement.targetFacing = movement.facing
 end
 
 return HaruChicken

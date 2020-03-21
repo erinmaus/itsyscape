@@ -59,12 +59,13 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
-		local x
+		local x = 0
 		if width == 0 then
 			width = font:getWidth(text)
-			x = -width / 2
-		else
-			x = 0
+
+			if self.align == 'center' then
+				x = -width / 2
+			end
 		end
 
 		if self.textShadow then

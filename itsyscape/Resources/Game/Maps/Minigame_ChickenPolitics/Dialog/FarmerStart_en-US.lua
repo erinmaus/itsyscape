@@ -1,6 +1,6 @@
 TARGET_NAME = _TARGET:getName()
 
-local mapScript = Utility.Peep.getMapResourceScript(_TARGET)
+local mapScript = Utility.Peep.getMapScript(_TARGET)
 if mapScript.hasStarted then
 	speaker "Farmer"
 	message "Tackle 'em chickens, %person{${TARGET_NAME}}!"
