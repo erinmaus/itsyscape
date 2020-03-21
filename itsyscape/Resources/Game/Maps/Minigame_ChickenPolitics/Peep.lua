@@ -25,15 +25,26 @@ Minigame.MIN_TICK = 1
 Minigame.MAX_TICK = 10
 Minigame.SPAWN_ELEVATION = 50
 Minigame.MAX_DASH_DURATION = 3
+Minigame.INIT_CHICKEN_COUNT = 3
+
+function Minigame:new(...)
+	Map.new(self, ...)
+
+	self:addPoke('start')
+	self:addPoke('stop')
+end
 
 function Minigame:onLoad(...)
 	Map.onLoad(self, ...)
 
+	self.hasStarted = false
 	self.isDashing = false
 	self.dashDuration = 0
 	self.isPreppingDash = false
 	self.prepDashStart = 0
+end
 
+function Minigame:onStart()
 	local function actionCallback(action)
 		self:onPlayerDash(action)
 	end
@@ -47,6 +58,28 @@ function Minigame:onLoad(...)
 		"KeyboardAction",
 		false,
 		"MINIGAME_DASH", actionCallback, openCallback)
+
+	local player = Utility.Peep.getPlayer(self)
+	player:addBehavior(DisabledBehavior)
+
+	local function finishCallback()
+		player:removeBehavior(DisabledBehavior)
+
+		self.hasStarted = true
+		for i = 1, Minigame.INIT_CHICKEN_COUNT do
+			self:spawnChicken()
+		end
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"Countdown",
+		false,
+		3, finishCallback)
+end
+
+function Minigame:onStop()
+	
 end
 
 function Minigame:spawnChicken()
@@ -77,7 +110,14 @@ function Minigame:makePlayerDash()
 	player:addBehavior(DisabledBehavior)
 
 	local movement = player:getBehavior(MovementBehavior)
-	movement.additionalVelocity = Vector(movement.facing * 8, 0, 0)
+	local direction
+	do
+		direction = movement.velocity:getNormal()
+		if direction:getLength() == 0 then
+			direction = Vector(movement.facing, 0, 0)
+		end
+	end
+	movement.additionalVelocity = direction * 8
 
 	local actor = player:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -97,7 +137,7 @@ function Minigame:makePlayerDash()
 
 	self.isDashing = true
 	self.dashDuration = math.max(dashDuration, Minigame.MAX_DASH_DURATION) / 2
-	self.dashStrength = math.floor(6 ^ dashDuration + 0.5)
+	self.dashStrength = math.floor(6 ^ (dashDuration + 0.5) + 5)
 	self.collisions = {}
 end
 
@@ -120,7 +160,7 @@ function Minigame:stopPlayerDash()
 end
 
 function Minigame:onPlayerDash(action)
-	if not self.isDashing then
+	if not self.isDashing and self.hasStarted then
 		if self.isPreppingDashing and action == 'released' then
 			self.isPreppingDashing = false
 
@@ -194,7 +234,7 @@ function Minigame:update(director, game)
 	Map.update(self, director, game)
 
 	self.nextTick = (self.nextTick or 0) - game:getDelta()
-	if self.nextTick <= 0 then
+	if self.nextTick <= 0 and self.hasStarted then
 		self:spawnChicken()
 	end
 

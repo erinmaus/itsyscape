@@ -39,7 +39,7 @@ function PathRandom:update(mashina, state, executor)
 		if type(tile) == 'string' then
 			Log.info("Chose anchor %s.", tile)
 
-			local mapResource = Utility.Peep.getMap(mashina)
+			local mapResource = Utility.Peep.getMapResource(mashina)
 			local gameDB = mashina:getDirector():getGameDB()
 			local anchor = gameDB:getRecord( "MapObjectLocation",{
 				Name = tile,

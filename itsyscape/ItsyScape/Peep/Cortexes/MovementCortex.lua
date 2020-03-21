@@ -103,6 +103,7 @@ function MovementCortex:update(delta)
 			position.position = position.position + velocity * multiplier
 
 			local newTile, newI, newJ = map:getTileAt(position.position.x, position.position.z)
+			if newTile == nil then print('newTile', newI, newJ) end
 
 			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
 			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)

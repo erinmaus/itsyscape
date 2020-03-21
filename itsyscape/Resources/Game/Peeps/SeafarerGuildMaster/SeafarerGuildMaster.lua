@@ -36,7 +36,7 @@ function SeafarerGuildMaster:ready(director, game)
 end
 
 function SeafarerGuildMaster:onSoldResource()
-	local map = Utility.Peep.getMapScript(self)
+	local map = Utility.Peep.getMapResourceScript(self)
 	if map then
 		map:poke('spawnShip')
 	end

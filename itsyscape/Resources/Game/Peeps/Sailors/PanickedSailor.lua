@@ -90,7 +90,7 @@ function Sailor:ready(director, game)
 		"Resources/Game/Animations/Human_Run_Crazy_1/Script.lua")
 	self:addResource("animation-walk", runAnimation)
 
-	local map = Utility.Peep.getMapScript(self)
+	local map = Utility.Peep.getMapResourceScript(self)
 	if map then
 		map:listen('hit', function(_, p)
 			local health = self:getBehavior(CombatStatusBehavior)
@@ -115,7 +115,7 @@ end
 function Sailor:onDie()
 	local health = self:getBehavior(CombatStatusBehavior)
 	if health then
-		local mapScript = Utility.Peep.getMapScript(self)
+		local mapScript = Utility.Peep.getMapResourceScript(self)
 		if mapScript then
 			mapScript:poke('hit', AttackPoke({
 				damage = health.maximumHitpoints * 2,

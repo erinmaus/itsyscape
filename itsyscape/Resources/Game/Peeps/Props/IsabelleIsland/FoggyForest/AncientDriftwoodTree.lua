@@ -33,7 +33,7 @@ end
 function AncientDriftwoodTree:onResourceObtained(e)
 	self.ticks = self.ticks + 1
 
-	local map = Utility.Peep.getMap(self)
+	local map = Utility.Peep.getMapResource(self)
 	local director = self:getDirector()
 	local t = director:probe(self:getLayerName(), Probe.resource(map))
 

@@ -358,11 +358,11 @@ function One:onDie(p)
 	self.deadTimer = 5
 	self:addBehavior(DisabledBehavior)
 
-	Log.analytic("PLAYER_DIED", Utility.Peep.getMap(self).name)
+	Log.analytic("PLAYER_DIED", Utility.Peep.getMapResource(self).name)
 end
 
 function One:onResurrect()
-	Log.analytic("PLAYER_REZZED", Utility.Peep.getMap(self).name)
+	Log.analytic("PLAYER_REZZED", Utility.Peep.getMapResource(self).name)
 
 	self.rezzTimer = 2
 

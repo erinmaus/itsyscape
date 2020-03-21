@@ -14,7 +14,7 @@ do
 	local game = director:getGameInstance()
 	local stage = game:getStage()
 
-	local map = Utility.Peep.getMap(_TARGET)
+	local map = Utility.Peep.getMapResource(_TARGET)
 	local mapScript = stage:getMapScript(map.name)
 
 	if mapScript then

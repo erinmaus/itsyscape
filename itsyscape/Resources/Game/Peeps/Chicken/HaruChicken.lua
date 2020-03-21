@@ -54,8 +54,8 @@ function HaruChicken:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.bounce = 0.9
 	movement.bounceThreshold = 2.5
-	movement.maxSpeed = math.huge
-	movement.maxAcceleration = math.huge
+	movement.maxSpeed = 16
+	movement.maxAcceleration = 16
 	movement.maxStepHeight = math.huge
 
 	local combatStatus = self:getBehavior(CombatStatusBehavior)
@@ -64,6 +64,32 @@ function HaruChicken:new(resource, name, ...)
 	
 	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+end
+
+function HaruChicken:onHit()
+	local map = Utility.Peep.getMap(self)
+
+	local i, j, k
+	repeat
+		local testI = math.random(1, map:getWidth())
+		local testJ = math.random(1, map:getHeight())
+		local tile = map:getTile(testI, testJ)
+
+		if not tile:hasFlag('impassable') then
+			i, j = testI, testJ
+
+			local currentI, currentJ, currentK = Utility.Peep.getTile(self)
+			k = currentK
+		end
+	until i and j
+
+	Utility.Peep.walk(self, i, j, k)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+		actor:flash("Message", 1, "BWAK BWAK BWAK!")
+	end
 end
 
 function HaruChicken:ready(director, game)
