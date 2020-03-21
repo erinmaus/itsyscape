@@ -44,7 +44,7 @@ function BossHUDController:update(...)
 	local stats = {}
 	self.stats = {}
 	do
-		local peepMapScript = Utility.Peep.getMapResourceScript(self:getPeep())
+		local peepMapScript = Utility.Peep.getMapScript(self:getPeep())
 		if peepMapScript then
 			local bossStats = peepMapScript:getBehavior(BossStatsBehavior)
 			if bossStats then
@@ -59,7 +59,7 @@ function BossHUDController:update(...)
 	end
 	do
 		for i = 1, #self.bosses do
-			local peepMapScript = Utility.Peep.getMapResourceScript(self.bosses[i])
+			local peepMapScript = Utility.Peep.getMapScript(self.bosses[i])
 			if peepMapScript then
 				local bossStats = peepMapScript:getBehavior(BossStatsBehavior)
 				if bossStats then

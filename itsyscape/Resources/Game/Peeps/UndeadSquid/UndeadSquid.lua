@@ -98,7 +98,7 @@ function UndeadSquid:onBoss()
 end
 
 function UndeadSquid:onEnraged()
-	local script = Utility.Peep.getMapResourceScript(self)
+	local script = Utility.Peep.getMapScript(self)
 	if script then
 		script:poke('squidEnraged', { squid = self })
 	end

@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Score = require "ItsyScape.Game.Score"
 local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -18,17 +19,20 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local ScoreBehavior = require "ItsyScape.Peep.Behaviors.ScoreBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Minigame = Class(Map)
 Minigame.MIN_TICK = 1
 Minigame.MAX_TICK = 10
-Minigame.SPAWN_ELEVATION = 50
+Minigame.SPAWN_ELEVATION = 15
 Minigame.MAX_DASH_DURATION = 3
 Minigame.INIT_CHICKEN_COUNT = 3
 
 function Minigame:new(...)
 	Map.new(self, ...)
+
+	self:addBehavior(ScoreBehavior)
 
 	self:addPoke('start')
 	self:addPoke('stop')
@@ -42,6 +46,22 @@ function Minigame:onLoad(...)
 	self.dashDuration = 0
 	self.isPreppingDash = false
 	self.prepDashStart = 0
+	self.score = Score({
+		text = "Score",
+		icon = "Resources/Game/Items/Feather/Icon.png",
+		current = 0,
+		precision = 4
+	})
+	self.multiplier = Score({
+		text = "Multiplier",
+		icon = "Resources/Game/UI/Icons/Concepts/Star.png",
+		current = 0,
+		precision = 1
+	})
+
+	local score = self:getBehavior(ScoreBehavior)
+	table.insert(score.scores, self.score)
+	table.insert(score.scores, self.multiplier)
 end
 
 function Minigame:onStart()
@@ -72,10 +92,14 @@ function Minigame:onStart()
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player,
 		"Countdown",
 		false,
 		3, finishCallback)
+	Utility.UI.openInterface(
+		player,
+		"ScoreHUD",
+		false)
 end
 
 function Minigame:onStop()
@@ -180,6 +204,9 @@ function Minigame:updateDash(director, delta)
 	if self.dashDuration < 0 then
 		self.isDashing = false
 		self:stopPlayerDash()
+		self.multiplier:set({
+			current = 0
+		})
 		return
 	end
 
@@ -228,6 +255,17 @@ function Minigame:updateDash(director, delta)
 	for i = 1, #hits do
 		self.collisions[hits[i]] = true
 	end
+
+	self.multiplier:set({
+		current = self.multiplier:get().current + #hits
+	})
+
+	local multiplier = self.multiplier:get().current
+	local score = self.score:get().current
+
+	self.score:set({
+		current = score + #hits * multiplier * self.dashStrength
+	})
 end 
 
 function Minigame:update(director, game)

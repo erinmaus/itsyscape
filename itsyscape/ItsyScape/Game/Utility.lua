@@ -1773,7 +1773,7 @@ function Utility.Peep.getMapResource(peep)
 	end
 end
 
-function Utility.Peep.getMapResourceScript(peep)
+function Utility.Peep.getMapScript(peep)
 	local map = Utility.Peep.getMapResource(peep)
 	if map then
 		local stage = peep:getDirector():getGameInstance():getStage()

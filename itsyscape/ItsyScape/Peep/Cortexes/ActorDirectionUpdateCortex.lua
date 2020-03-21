@@ -32,7 +32,8 @@ function ActorDirectionUpdateCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		if actor then
-			if direction:getLength() == 0 then
+			local xzDirection = direction * Vector(1, 0, 1)
+			if xzDirection:getLength() == 0 then
 				direction = Vector.UNIT_X * facing
 			end
 
