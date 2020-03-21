@@ -31,7 +31,7 @@ else
 
 	local count, ratio
 	do
-		local ship = Utility.Peep.getMapScript(_TARGET)
+		local ship = Utility.Peep.getMapResourceScript(_TARGET)
 		if ship:isCompatibleType(require "Resources.Game.Peeps.Maps.ShipMapPeep") then
 			ratio = ship:getCurrentHealth() / ship:getMaxHealth()
 			count = math.max(math.floor(ratio * 50), 10)

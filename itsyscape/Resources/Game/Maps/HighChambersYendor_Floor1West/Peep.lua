@@ -64,7 +64,7 @@ function HighChambersYendor:initTorchPuzzle()
 
 	local torches = gameDB:getRecords("MapObjectGroup", {
 		MapObjectGroup = "Puzzle_Torch",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	for i = 1, #torches do
@@ -92,7 +92,7 @@ function HighChambersYendor:initDoubleLock()
 	local function snuffTorch(name)
 		local torchMeta = gameDB:getRecord("MapObjectLocation", {
 			Name = name,
-			Map = Utility.Peep.getMap(self)
+			Map = Utility.Peep.getMapResource(self)
 		})
 
 		local torch = director:probe(
@@ -110,7 +110,7 @@ function HighChambersYendor:initDoubleLock()
 	do
 		local doorMeta = gameDB:getRecord("MapObjectLocation", {
 			Name = "Door_DoubleLockWest",
-			Map = Utility.Peep.getMap(self)
+			Map = Utility.Peep.getMapResource(self)
 		})
 
 		local door = director:probe(
@@ -127,7 +127,7 @@ function HighChambersYendor:onTorchPuzzleLight(torch)
 
 	local ghostMeta = gameDB:getRecord("MapObjectLocation", {
 		Name = "PuzzleTorch_Ghost",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	local ghost = director:probe(
@@ -152,7 +152,7 @@ function HighChambersYendor:activateDoubleLock(torchName)
 
 	local torchMeta = gameDB:getRecord("MapObjectLocation", {
 		Name = torchName,
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	local torch = director:probe(
@@ -170,7 +170,7 @@ function HighChambersYendor:activateDoubleLock(torchName)
 			if #self.doubleLockPuzzle >= 2 then
 				local doorMeta = gameDB:getRecord("MapObjectLocation", {
 					Name = "Door_DoubleLockEast",
-					Map = Utility.Peep.getMap(self)
+					Map = Utility.Peep.getMapResource(self)
 				})
 
 				local door = director:probe(
@@ -194,7 +194,7 @@ function HighChambersYendor:onDiningTableFoodEaten(e)
 
 	local chefs = gameDB:getRecords("MapObjectGroup", {
 		MapObjectGroup = "Kitchen_Staff",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	local chefPeeps = {}
@@ -260,7 +260,7 @@ function HighChambersYendor:getMiniboss()
 
 	local cthulhuians = gameDB:getRecords("MapObjectGroup", {
 		MapObjectGroup = "CthulhuianMiniboss",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	for i = 1, #cthulhuians do
@@ -347,7 +347,7 @@ function HighChambersYendor:minibossBeginChanting()
 
 	local center = gameDB:getRecord("MapObjectLocation", {
 		Name = "Anchor_SoulSiphon",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	local stage = director:getGameInstance():getStage()
@@ -359,7 +359,7 @@ function HighChambersYendor:minibossBeginChanting()
 		do
 			local map
 			do
-				local _, layer = stage:getMapScript(Utility.Peep.getMap(self).name)
+				local _, layer = stage:getMapScript(Utility.Peep.getMapResource(self).name)
 				map = director:getMap(layer)
 
 				k = layer
@@ -588,7 +588,7 @@ function HighChambersYendor:giveMinibossLoot()
 
 	local siphon = gameDB:getRecord("MapObjectLocation", {
 		Name = "SoulSiphon",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	if siphon then

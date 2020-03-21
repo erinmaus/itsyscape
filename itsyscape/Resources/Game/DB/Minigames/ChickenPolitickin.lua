@@ -8,35 +8,35 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 do
-	ItsyScape.Resource.Peep "Chicken_Haru"
+	local Chicken = ItsyScape.Resource.Peep "Chicken_Haru"
 
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Chicken.HaruChicken",
-		Resource = ItsyScape.Resource.Peep "Chicken_Haru"
+		Resource = Chicken
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Chicken",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Peep "Chicken_Haru"
+		Resource = Chicken
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Definitely a chicken.",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Peep "Chicken_Haru"
+		Resource = Chicken
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "What do you call a chicken's opinion? FeedBAWK!",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Peep "Chicken_Haru"
+		Resource = Chicken
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Why did she cross the road? To get to the other side!",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Peep "Chicken_Base"
+		Resource = Chicken
 	}
 end
 
@@ -91,6 +91,18 @@ do
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "StrawHat",
 		Count = 1,
+		Resource = Farmer
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Farmer",
+		Language = "en-US",
+		Resource = Farmer
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Definitely a chicken farmer.",
+		Language = "en-US",
 		Resource = Farmer
 	}
 end

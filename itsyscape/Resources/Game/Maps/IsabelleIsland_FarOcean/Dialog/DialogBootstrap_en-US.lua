@@ -21,8 +21,8 @@ else
 					local pirate = hits[i]
 					local status = pirate:getBehavior("CombatStatus")
 					if status and status.currentHitpoints > 0 and not status.dead then
-						local pirateMap = Utility.Peep.getMap(pirate)
-						if pirateMap.id.value == Utility.Peep.getMap(_TARGET).id.value then
+						local pirateMap = Utility.Peep.getMapResource(pirate)
+						if pirateMap.id.value == Utility.Peep.getMapResource(_TARGET).id.value then
 							piratesAlive = true
 							break
 						end

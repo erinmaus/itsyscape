@@ -160,7 +160,7 @@ function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 end
 
 function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
-	local map = Utility.Peep.getMap(peep)
+	local map = Utility.Peep.getMapResource(peep)
 	local x, y, z = Utility.Map.getAnchorPosition(
 		peep:getDirector():getGameInstance(),
 		map,
@@ -188,7 +188,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 
 	if type(mapObject) == 'string' then
 		local m = mapObject
-		local map = Utility.Peep.getMap(peep)
+		local map = Utility.Peep.getMapResource(peep)
 		local gameDB = peep:getDirector():getGameDB()
 		local reference = gameDB:getRecord("MapObjectReference", {
 			Name = mapObject,
@@ -240,7 +240,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 end
 
 function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
-	local map = Utility.Peep.getMap(peep)
+	local map = Utility.Peep.getMapResource(peep)
 	local x, y, z = Utility.Map.getAnchorPosition(
 		peep:getDirector():getGameInstance(),
 		map,
@@ -315,7 +315,7 @@ function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
 end
 
 function Utility.spawnPropAtAnchor(peep, prop, anchor, radius)
-	local map = Utility.Peep.getMap(peep)
+	local map = Utility.Peep.getMapResource(peep)
 	local x, y, z = Utility.Map.getAnchorPosition(
 		peep:getDirector():getGameInstance(),
 		map,
@@ -1749,6 +1749,17 @@ function Utility.Peep.getTier(peep)
 end
 
 function Utility.Peep.getMap(peep)
+	local director = peep:getDirector()
+	local position = peep:getBehavior(PositionBehavior)
+
+	if position and position.layer and director then 
+		return director:getMap(position.layer)
+	end
+
+	return nil
+end
+
+function Utility.Peep.getMapResource(peep)
 	local map = peep:getBehavior(MapResourceReferenceBehavior)
 	if map and map.map then
 		return map.map
@@ -1762,8 +1773,8 @@ function Utility.Peep.getMap(peep)
 	end
 end
 
-function Utility.Peep.getMapScript(peep)
-	local map = Utility.Peep.getMap(peep)
+function Utility.Peep.getMapResourceScript(peep)
+	local map = Utility.Peep.getMapResource(peep)
 	if map then
 		local stage = peep:getDirector():getGameInstance():getStage()
 		return stage:getMapScript(map.name)

@@ -94,7 +94,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13,
 		PositionY = 4,
-		PositionZ = 15,
+		PositionZ = 23,
 		Name = "Farmer",
 		Map = M._MAP,
 		Resource = M["Farmer"]
@@ -105,11 +105,66 @@ do
 		MapObject = M["Farmer"]
 	}
 
+	local TalkAction = ItsyScape.Action.Talk()
+	local QuickTalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Quick-Start",
+		Language = "en-US",
+		Action = QuickTalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Farmer"],
+		Name = "Farmer",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Minigame_ChickenPolitics/Dialog/Farmer_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Farmer"],
+		Name = "Farmer",
+		Action = QuickTalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Minigame_ChickenPolitics/Dialog/FarmerStart_en-US.lua",
+		Language = "en-US",
+		Action = QuickTalkAction
+	}
+
+	M["Farmer"] {
+		TalkAction,
+		QuickTalkAction
+	}
+end
+
+M["ScaredFarmer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "ScaredFarmer",
+		Map = M._MAP,
+		Resource = M["ScaredFarmer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ChickenPolitickin_Farmer",
+		MapObject = M["ScaredFarmer"]
+	}
+
 	ItsyScape.Meta.PeepMashinaState {
 		State = "idle",
 		Tree = "Resources/Game/Maps/Minigame_ChickenPolitics/Scripts/Farmer_IdleLogic.lua",
 		IsDefault = 1,
-		Resource = M["Farmer"]
+		Resource = M["ScaredFarmer"]
 	}
 end
 

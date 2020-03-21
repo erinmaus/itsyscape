@@ -126,7 +126,7 @@ function Ship:loadProp(storage, item, defaultItem, ...)
 				p = p:getPeep()
 				table.insert(self.props, p)
 				p:listen('finalize', function()
-					Utility.orientateToAnchor(p, Utility.Peep.getMap(self), anchor)
+					Utility.orientateToAnchor(p, Utility.Peep.getMapResource(self), anchor)
 
 					local _, color = p:addBehavior(ColorBehavior)
 					color.primary = color1

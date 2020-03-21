@@ -30,7 +30,7 @@ function Mine:getTorches()
 
 	local torches = gameDB:getRecords("MapObjectGroup", {
 		MapObjectGroup = "HighChambersYendor_Torch",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	local result = {}

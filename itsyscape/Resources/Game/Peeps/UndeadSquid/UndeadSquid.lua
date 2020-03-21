@@ -98,7 +98,7 @@ function UndeadSquid:onBoss()
 end
 
 function UndeadSquid:onEnraged()
-	local script = Utility.Peep.getMapScript(self)
+	local script = Utility.Peep.getMapResourceScript(self)
 	if script then
 		script:poke('squidEnraged', { squid = self })
 	end
@@ -120,7 +120,7 @@ function UndeadSquid:onInk(p)
 end
 
 function UndeadSquid:onAttackShip()
-	local map = Utility.Peep.getMap(self)
+	local map = Utility.Peep.getMapResource(self)
 	if map then
 		local stage = self:getDirector():getGameInstance():getStage()
 		local mapScript = stage:getMapScript(map.name)

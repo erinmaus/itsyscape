@@ -22,7 +22,7 @@ function BaseChicken:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Chicken_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2, 2, 2)
+	size.size = Vector(2, 1, 2)
 end
 
 function BaseChicken:ready(director, game)

@@ -11,7 +11,7 @@ local Utility = require "ItsyScape.Game.Utility"
 
 local Common = {}
 function Common.spawn(mapScript, mimicAnchor, aliceAnchor, mimics, chance)
-	local map = Utility.Peep.getMap(mapScript)
+	local map = Utility.Peep.getMapResource(mapScript)
 	if not map then
 		Log.warn("No map for map script %s.", mapScript:getName())
 		return false

@@ -269,7 +269,7 @@ function RecruitSailorController:recruit(e)
 					storage = recruit.storage
 				})
 
-				local mapScript = Utility.Peep.getMapScript(self:getPeep())
+				local mapScript = Utility.Peep.getMapResourceScript(self:getPeep())
 				mapScript:poke('recruit', id)
 			end
 

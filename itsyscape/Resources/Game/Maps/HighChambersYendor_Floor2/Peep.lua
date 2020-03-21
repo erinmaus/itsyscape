@@ -43,7 +43,7 @@ function HighChambersYendor:giveMinibossLoot()
 
 	local chest = gameDB:getRecord("MapObjectLocation", {
 		Name = "RatKingRewardChest",
-		Map = Utility.Peep.getMap(self)
+		Map = Utility.Peep.getMapResource(self)
 	})
 
 	if chest then
