@@ -482,6 +482,37 @@ do
 		Peep = ItsyScape.Resource.Peep "Chicken_Base",
 		MapObject = M["Clucker1"]
 	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Clucker1"],
+		Name = "Chicken",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Chicken_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Clucker1"] {
+		TalkAction
+	}
+end
+
+M["Anchor_Clucker"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 1,
+		PositionZ = 33,
+		Direction = -1,
+		Name = "Anchor_Clucker",
+		Map = M._MAP,
+		Resource = M["Anchor_Clucker"]
+	}
 end
 
 do

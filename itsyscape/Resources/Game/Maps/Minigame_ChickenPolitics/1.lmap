@@ -145,6 +145,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -1549,6 +1550,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -1773,18 +1775,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 3, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
@@ -1807,15 +1797,25 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 3, flat = 3, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
-				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
 			},
 		},
 		{
@@ -2834,6 +2834,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{

@@ -3,14 +3,14 @@ speaker "Farmer"
 TARGET_NAME = _TARGET:getName()
 
 local mapScript = Utility.Peep.getMapScript(_TARGET)
-if mapScript.hasStarted then
+if mapScript.hasStarted and not mapScript.isDone then
 	message "Tackle 'em chickens, %person{${TARGET_NAME}}!"
 	return
 else
 	message "Ello, %person{${TARGET_NAME}}."
 end
 
-do
+if not mapScript.isDone then
 	local INFO        = option "Where am I?"
 	local WHAT_DO     = option "What do I need to do to get out of here?"
 	local PLAY        = option "Let's get started!"
@@ -58,7 +58,7 @@ do
 			speaker "Farmer"
 			message {
 				"Yeah, that's 'ight, friend!",
-				"Tackle as many chickens in a couple o' minutes as possible an ya good to go.",
+				"Tackle as many chickens in o' minute as possible an ya good to go.",
 				"Ya'll get combat XP based on ya're weapon and stance, plus I'll give you some coins and other goodies for ya time."
 			}
 		elseif result == PLAY then
@@ -76,4 +76,34 @@ do
 			}
 		end
 	until result == LOOK_AROUND
+else
+	message {
+		"Thank ya for knockin' some sense into 'em chickens."
+	}
+
+	message {
+		"Ya rewards are in the chest.",
+		"Grab 'em or not, it's ya choice."
+	}
+
+	local RETURN_HOME = option "Ask to leave"
+	local OOOOOH_LOOT = option "Check out the loot"
+
+	local result = select {
+		RETURN_HOME,
+		OOOOOH_LOOT
+	}
+
+	if result == RETURN_HOME then
+		message "Be seeing ya!"
+
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(
+			_TARGET,
+			"IsabelleIsland_Tower",
+			"Anchor_Clucker")
+		return
+	elseif result == OOOOOH_LOOT then
+		message "Thank ya again! Be seein' me if ya wanna leave."
+	end
 end

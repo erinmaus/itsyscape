@@ -110,6 +110,25 @@ end
 
 function Minigame:onStop()
 	self.isDone = true
+
+	local player = Utility.Peep.getPlayer(self)
+	local combatLevel = Utility.Combat.getCombatLevel(player)
+
+	local feathers = self.score:get().current
+	local coins = combatLevel * feathers
+
+	local director = self:getDirector()
+	local rewardChest = director:probe(
+		self:getLayerName(),
+		Probe.namedMapObject("RewardChest"))[1]
+
+	if rewardChest then
+		local flags = { ['item-inventory'] = true }
+		rewardChest:getState():give("Item", "Feather", feathers, flags)
+		rewardChest:getState():give("Item", "Coins", coins, flags)
+	else
+		Log.warn("No reward chest; cannot give reward.")
+	end
 end
 
 function Minigame:spawnChicken()
@@ -301,7 +320,7 @@ function Minigame:update(director, game)
 		end
 
 		if time >= Minigame.DURATION_SECONDS then
-			self.isDone = true
+			self:onStop()
 		end
 	end
 end
