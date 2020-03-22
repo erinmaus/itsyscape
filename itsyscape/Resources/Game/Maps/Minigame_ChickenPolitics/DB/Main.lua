@@ -82,7 +82,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 17,
 		PositionY = 4,
-		PositionZ = 27,
+		PositionZ = 29,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
@@ -147,9 +147,9 @@ end
 M["ScaredFarmer"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13,
+		PositionX = 17,
 		PositionY = 4,
-		PositionZ = 15,
+		PositionZ = 17,
 		Name = "ScaredFarmer",
 		Map = M._MAP,
 		Resource = M["ScaredFarmer"]
@@ -171,9 +171,9 @@ end
 M["Anchor_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13,
+		PositionX = 17,
 		PositionY = 4,
-		PositionZ = 15,
+		PositionZ = 17,
 		Name = "Anchor_1",
 		Map = M._MAP,
 		Resource = M["Anchor_1"]
@@ -225,5 +225,26 @@ do
 		Name = "Anchor_5",
 		Map = M._MAP,
 		Resource = M["Anchor_5"]
+	}
+end
+
+M["RewardChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "RewardChest",
+		Map = M._MAP,
+		Resource = M["RewardChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["RewardChest"]
+	}
+
+	M["RewardChest"] {
+		ItsyScape.Action.Collect()
 	}
 end
