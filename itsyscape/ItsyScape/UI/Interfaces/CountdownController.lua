@@ -13,13 +13,14 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local CountdownController = Class(Controller)
 
-function CountdownController:new(peep, director, time, finishCallback)
+function CountdownController:new(peep, director, time, finishCallback, message)
 	Controller.new(self, peep, director)
 
 	time = math.max(time or 3, 1)
 	self.state = {
 		totalTime = time,
-		time = time
+		time = time,
+		message = message
 	}
 
 	self.finishCallback = finishCallback or function() end

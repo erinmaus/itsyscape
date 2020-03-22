@@ -58,7 +58,7 @@ function Countdown.Number:draw()
 	local message
 	local finalColor
 	if time == 0 then
-		message = "GO!"
+		message = state.message or "GO!"
 		finalColor = Color(0, 1, 0, 1)
 		alpha = 1
 	else
