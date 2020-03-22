@@ -28,6 +28,8 @@ Minigame.MAX_TICK = 10
 Minigame.SPAWN_ELEVATION = 15
 Minigame.MAX_DASH_DURATION = 3
 Minigame.INIT_CHICKEN_COUNT = 3
+Minigame.DURATION_SECONDS = 60
+Minigame.WARNING_SECONDS = 10
 
 function Minigame:new(...)
 	Map.new(self, ...)
@@ -42,6 +44,8 @@ function Minigame:onLoad(...)
 	Map.onLoad(self, ...)
 
 	self.hasStarted = false
+	self.isDone = false
+	self.isFinishing = false
 	self.isDashing = false
 	self.dashDuration = 0
 	self.isPreppingDash = false
@@ -89,13 +93,15 @@ function Minigame:onStart()
 		for i = 1, Minigame.INIT_CHICKEN_COUNT do
 			self:spawnChicken()
 		end
+
+		self.startTime = love.timer.getTime()
 	end
 
 	Utility.UI.openInterface(
 		player,
 		"Countdown",
 		false,
-		3, finishCallback)
+		3, finishCallback, "TACKLE!")
 	Utility.UI.openInterface(
 		player,
 		"ScoreHUD",
@@ -103,7 +109,7 @@ function Minigame:onStart()
 end
 
 function Minigame:onStop()
-	
+	self.isDone = true
 end
 
 function Minigame:spawnChicken()
@@ -129,7 +135,7 @@ function Minigame:spawnChicken()
 	self.nextTick = math.random(Minigame.MIN_TICK, Minigame.MAX_TICK)
 end
 
-function Minigame:makePlayerDash()
+function Minigame:startPlayerDash()
 	local player = Utility.Peep.getPlayer(self)
 	player:addBehavior(DisabledBehavior)
 
@@ -161,7 +167,7 @@ function Minigame:makePlayerDash()
 
 	self.isDashing = true
 	self.dashDuration = math.max(dashDuration, Minigame.MAX_DASH_DURATION) / 2
-	self.dashStrength = math.floor(6 ^ (dashDuration + 0.5) + 5)
+	self.dashStrength = math.min(math.floor(6 ^ (dashDuration + 0.5) + 5), 20)
 	self.collisions = {}
 end
 
@@ -184,11 +190,11 @@ function Minigame:stopPlayerDash()
 end
 
 function Minigame:onPlayerDash(action)
-	if not self.isDashing and self.hasStarted then
+	if not self.isDashing and self.hasStarted and not self.isDone then
 		if self.isPreppingDashing and action == 'released' then
 			self.isPreppingDashing = false
 
-			self:makePlayerDash()
+			self:startPlayerDash()
 		elseif not self.isPreppingDashing and action == 'pressed' then
 			self.isPreppingDashing = true
 			self.prepDashStart = love.timer.getTime()
@@ -272,12 +278,31 @@ function Minigame:update(director, game)
 	Map.update(self, director, game)
 
 	self.nextTick = (self.nextTick or 0) - game:getDelta()
-	if self.nextTick <= 0 and self.hasStarted then
+	if self.nextTick <= 0 and self.hasStarted and not self.isDone then
 		self:spawnChicken()
 	end
 
 	if self.isDashing then
 		self:updateDash(director, game:getDelta())
+	end
+
+	if self.hasStarted and not self.isDone then
+		local time = love.timer.getTime() - self.startTime
+
+		if time >= Minigame.DURATION_SECONDS - Minigame.WARNING_SECONDS and
+		   not self.isFinishing
+		then
+			self.isFinishing = true
+			Utility.UI.openInterface(
+				Utility.Peep.getPlayer(self),
+				"Countdown",
+				false,
+				Minigame.WARNING_SECONDS, nil, "CEASEFIRE!")
+		end
+
+		if time >= Minigame.DURATION_SECONDS then
+			self.isDone = true
+		end
 	end
 end
 
