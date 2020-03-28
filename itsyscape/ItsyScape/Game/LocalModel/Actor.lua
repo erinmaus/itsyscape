@@ -272,7 +272,7 @@ function LocalActor:getBounds()
 		local min = position - xzSize
 		local max = position + xzSize + ySize
 
-		return min + size.offset, max + size.offset, size.zoom, size.yPan
+		return min + size.offset, max + size.offset, size.zoom, size.pan
 	else
 		return position, position, 1, 0
 	end

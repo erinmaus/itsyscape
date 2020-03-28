@@ -241,7 +241,7 @@ function DialogBox:update(...)
 	local zoom
 	if self.actor or self.prop then
 		local node = self.actor or self.prop
-		local min, max, z, y = node:getBounds()
+		local min, max, z, o = node:getBounds()
 
 		local otherY
 		if self.prop then
@@ -250,7 +250,7 @@ function DialogBox:update(...)
 			otherY = 0.75
 		end
 
-		offset = (max.y - min.y) - (y or otherY)
+		offset = Vector.UNIT_Y * (max.y - min.y) - o
 		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
 
 		-- Flip if facing left.
@@ -266,7 +266,7 @@ function DialogBox:update(...)
 		zoom = 1
 	end
 
-	local x, y, z = transform:transformPoint(0, offset, 0)
+	local x, y, z = transform:transformPoint(offset:get())
 
 	local w, h = self.speakerIcon:getSize()
 	self.camera:setWidth(w)
