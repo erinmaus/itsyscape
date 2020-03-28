@@ -22,6 +22,7 @@ function ModelSkin:new()
 	self.isBlocking = true
 	self.isOccluded = false
 	self.isTranslucent = false
+	self.isGhosty = false
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
@@ -84,6 +85,12 @@ function ModelSkin:loadFromFile(filename)
 		self.isOccluded = false
 	end
 
+	if result.isGhosty then
+		self.isGhosty = true
+	else
+		self.isGhosty = false
+	end
+
 	if result.position and
 	   type(result.position) == 'table' and
 	   #result.position == 3
@@ -130,6 +137,10 @@ end
 
 function ModelSkin:getIsOccluded()
 	return self.isOccluded
+end
+
+function ModelSkin:getIsGhosty()
+	return self.isGhosty
 end
 
 function ModelSkin:getIsTranslucent()

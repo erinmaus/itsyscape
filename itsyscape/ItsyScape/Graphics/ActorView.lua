@@ -263,7 +263,6 @@ function ActorView:applySkin(slotNodes)
 	slotNodes.index = (slotNodes.index or 0) + 1
 	local index = slotNodes.index
 
-	local ignore = false
 	local i = #slotNodes
 	local iterate
 	local function step()
@@ -276,6 +275,19 @@ function ActorView:applySkin(slotNodes)
 		if i > 1 then
 			self.game:getResourceManager():queueEvent(iterate)
 			i = i - 1
+		else
+			for i = 1, #slotNodes do
+				local slotNode = slotNodes[i]
+				if i + 1 < #slotNodes and slotNode.instance:getIsOccluded() then
+					if not slotNodes[i + 1].instance:getIsGhosty() then
+						slotNode.sceneNode:setParent(nil)
+					end
+				elseif slotNode.instance:getIsBlocking() then
+					for j = 1, i - 1 do
+						slotNodes[j].sceneNode:setParent(nil)
+					end
+				end
+			end
 		end
 	end
 
@@ -291,14 +303,9 @@ function ActorView:applySkin(slotNodes)
 			slot.sceneNode:setParent(false)
 		end
 
-		if self.body and not ignore then
+		if self.body then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
 				self.game:getResourceManager():queueCacheRef(skin, function(instance)
-					if i + 1 < #slotNodes and instance:getIsOccluded() then
-						step()
-						return
-					end
-
 					slot.instance = instance
 					slot.sceneNode = ModelSceneNode()
 
@@ -332,10 +339,6 @@ function ActorView:applySkin(slotNodes)
 						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
 
 						self.models[slot.sceneNode] = true
-
-						if slot.instance:getIsBlocking() then
-							ignore = true
-						end
 
 						step()
 					end)
