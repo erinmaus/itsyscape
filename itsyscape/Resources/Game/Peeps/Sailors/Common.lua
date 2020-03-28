@@ -106,6 +106,21 @@ function Common.getActiveFirstMateResource(player)
 	return nil, false
 end
 
+function Common.isActiveFirstMate(player, firstMate)
+	local activeFirstMateResource, pending = Common.getActiveFirstMateResource(player)
+	local firstMateResource = Utility.Peep.getResource(firstMate)
+
+	if not pending and
+	   activeFirstMateResource and
+	   firstMateResource and
+	   activeFirstMateResource.id.value == firstMateResource.id.value
+	then
+		return true
+	end
+
+	return false
+end
+
 function Common.setActiveFirstMateResource(player, resource, pending)
 	local director = player:getDirector()
 	local playerStorage = director:getPlayerStorage(player):getRoot()
@@ -115,6 +130,13 @@ function Common.setActiveFirstMateResource(player, resource, pending)
 		resource = resource.name,
 		pending = pending or false
 	})
+end
+
+function Common.unsetActiveFirstMateResource(player)
+	local director = player:getDirector()
+	local playerStorage = director:getPlayerStorage(player):getRoot()
+	local firstMateStorage = playerStorage:getSection("Ship"):getSection("FirstMate")
+	firstMateStorage:set({ pending = true })
 end
 
 return Common

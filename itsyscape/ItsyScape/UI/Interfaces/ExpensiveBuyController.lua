@@ -50,7 +50,7 @@ function ExpensiveBuyController:buy(e)
 
 	if success then
 		if self.seller then
-			self.seller:poke('soldResource', self:getPeep())
+			self.seller:poke('soldResource', self:getPeep(), self.resource, self.action)
 		end
 
 		self:getGame():getUI():closeInstance(self)

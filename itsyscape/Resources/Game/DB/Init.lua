@@ -231,7 +231,7 @@ Game "ItsyScape"
 	}
 
 	Meta "Item" {
-		Value = Meta.TYPE_INTEGER,
+		Value = Meta.TYPE_REAL,
 		Weight = Meta.TYPE_REAL,
 		Untradeable = Meta.TYPE_INTEGER,
 		Unnoteable = Meta.TYPE_INTEGER,
@@ -661,6 +661,7 @@ include "Resources/Game/DB/Items/MiscClothes.lua"
 include "Resources/Game/DB/Items/Rusty.lua"
 include "Resources/Game/DB/Items/ToyWeapons.lua"
 include "Resources/Game/DB/Items/Trinkets.lua"
+include "Resources/Game/DB/Items/PartyHats.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"

@@ -16,6 +16,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local Nyan = Class(Creep)
 Nyan.SIT = 2
@@ -24,7 +25,9 @@ function Nyan:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Nyan', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2, 1.5, 1)
+	size.size = Vector(2.5, 2, 1)
+	size.pan = Vector(-1, 1, 0)
+	size.zoom = 2
 
 	self.isSitting = false
 	self.sittingDuration = 0
@@ -103,6 +106,20 @@ function Nyan:update(director, game)
 		self.sittingDuration = 0
 		self.isSitting = false
 	end
+end
+
+function Nyan:onSoldResource(player, resource)
+	local selfResource = Utility.Peep.getResource(self)
+	if selfResource.id.value ~= resource.id.value then
+		Log.warn("%s unlocked %s? How?",
+			selfResource.name,
+			resource.name)
+	end
+
+	SailorsCommon.setActiveFirstMateResource(
+		player,
+		resource,
+		false)
 end
 
 return Nyan
