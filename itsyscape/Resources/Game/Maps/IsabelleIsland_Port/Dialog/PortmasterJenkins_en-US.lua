@@ -35,7 +35,7 @@ repeat
 		message {
 			"The squids were reborn, like all of 'is loons, and haunt the seas.",
 			"They lurked at the deepest oceans guarding The City in the Sea.",
-			"...or as us pirates would call it, Davy Jone's Tomb."
+			"...or as us pirates and ex-pirates would call it, Davy Jone's Locker."
 		}
 
 		speaker "_TARGET"

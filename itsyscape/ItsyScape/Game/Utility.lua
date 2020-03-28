@@ -1275,6 +1275,24 @@ function Utility.Peep.getStorage(peep)
 		local root = director:getPlayerStorage(peep):getRoot()
 		return root:getSection("Peep")
 	else
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			local singleton = gameDB:getRecord("Peep", {
+				Resource = resource
+			})
+
+			if singleton and singleton:get("Singleton") ~= 0 then
+				local name = singleton:get("SingletonID")
+				if name and name ~= "" then
+					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local mapStorage = worldStorage:getSection("Singleton")
+					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
+
+					return peepStorage
+				end
+			end
+		end
+
 		local follower = peep:getBehavior(FollowerBehavior)
 		if follower and follower.id ~= FollowerBehavior.NIL_ID then
 			local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
@@ -1292,24 +1310,6 @@ function Utility.Peep.getStorage(peep)
 			storage:set("id", follower.id)
 
 			return storage
-		end
-
-		local resource = Utility.Peep.getResource(peep)
-		if resource then
-			local singleton = gameDB:getRecord("Peep", {
-				Resource = resource
-			})
-
-			if singleton and singleton:get("Singleton") ~= 0 then
-				local name = singleton:get("SingletonID")
-				if name and name ~= "" then
-					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
-					local mapStorage = worldStorage:getSection("Singleton")
-					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
-
-					return peepStorage
-				end
-			end
 		end
 
 		local mapObject = Utility.Peep.getMapObject(peep)

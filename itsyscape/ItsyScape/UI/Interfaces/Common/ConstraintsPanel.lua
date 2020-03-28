@@ -132,7 +132,7 @@ function ConstraintsPanel:performLayout(doLogic)
 			if c.count <= 1 then
 				text = c.name
 			else
-				text = string.format("%dx %s", c.count, c.name)
+				text = string.format("%.0fx %s", c.count, c.name)
 			end
 			right:setText(text)
 		elseif c.type:lower() == 'keyitem' then

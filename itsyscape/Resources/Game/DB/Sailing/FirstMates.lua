@@ -9,6 +9,80 @@
 --------------------------------------------------------------------------------
 
 do
+	local Jenkins = ItsyScape.Resource.Peep "Sailing_Jenkins" {
+		ItsyScape.Action.SailingBuy() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Sailing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coins",
+				Count = 10000
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.PortmasterJenkins.PortmasterJenkins",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "Sailing_Jenkins",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Jenkins",
+		Language = "en-US",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Won't put up a fight, but will sail you wherever you need.",
+		Language = "en-US",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Species",
+		Value = "Human",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "FirstMate",
+		Resource = Jenkins
+	}
+
+	ItsyScape.Meta.SailingCrewClass {
+		Value = ItsyScape.Utility.Weapon.STYLE_MELEE,
+		Resource = Jenkins
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/Sailors/Jenkins/Jenkins_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	Jenkins {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "SailorsHat",
+		Count = 1,
+		Resource = Jenkins
+	}
+end
+
+do
 	local Nyan = ItsyScape.Resource.Peep "Sailing_Nyan" {
 		ItsyScape.Action.SailingBuy() {
 			Requirement {
@@ -66,5 +140,17 @@ do
 	ItsyScape.Meta.SailingCrewClass {
 		Value = ItsyScape.Utility.Weapon.STYLE_MELEE,
 		Resource = Nyan
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/Sailors/Nyan/Nyan_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	Nyan {
+		TalkAction
 	}
 end
