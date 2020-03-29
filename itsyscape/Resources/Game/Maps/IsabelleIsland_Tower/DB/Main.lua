@@ -483,6 +483,12 @@ do
 		MapObject = M["Clucker1"]
 	}
 
+	ItsyScape.Meta.ResourceName {
+		Value = "Sanders",
+		Language = "en-US",
+		Resource = M["Clucker1"]
+	}
+
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
@@ -493,6 +499,12 @@ do
 
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Chicken_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Discuss-politics",
 		Language = "en-US",
 		Action = TalkAction
 	}
