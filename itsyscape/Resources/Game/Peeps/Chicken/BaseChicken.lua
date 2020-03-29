@@ -23,6 +23,8 @@ function BaseChicken:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 1, 2)
+	size.zoom = 2
+	size.pan = Vector(0, 0, 0)
 end
 
 function BaseChicken:ready(director, game)
