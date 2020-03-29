@@ -121,6 +121,7 @@ do
 		PositionX = 53,
 		PositionY = 5,
 		PositionZ = 53,
+		Direction = -1,
 		Name = "Anchor_FirstMateLocked",
 		Map = M._MAP,
 		Resource = M["Anchor_FirstMateLocked"]
@@ -133,6 +134,7 @@ do
 		PositionX = 33,
 		PositionY = 4,
 		PositionZ = 27,
+		Direction = -1,
 		Name = "Anchor_FirstMateUnlocked",
 		Map = M._MAP,
 		Resource = M["Anchor_FirstMateUnlocked"]

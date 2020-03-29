@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/PortmasterJenkins/PortmasterJenkins.lua
+-- Resources/Peeps/Sailors/Elizabeth.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -15,13 +15,13 @@ local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
-local PortmasterJenkins = Class(Player)
+local Elizabeth = Class(Player)
 
-function PortmasterJenkins:new(resource, name, ...)
-	Player.new(self, resource, name or 'PortmasterJenkins', ...)
+function Elizabeth:new(resource, name, ...)
+	Player.new(self, resource, name or 'Elizabeth', ...)
 end
 
-function PortmasterJenkins:ready(director, game)
+function Elizabeth:ready(director, game)
 	Player.ready(self, director, game)
 
 	local actor = self:getBehavior(ActorReferenceBehavior)
@@ -36,35 +36,35 @@ function PortmasterJenkins:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua")
+		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/SailorsBeard.lua")
+		"Resources/Game/Skins/PlayerKit1/Hair/DarkRedBraid.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
+	local hat = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/SeafarerHat/SeafarerHat.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_EQUIPMENT, hat)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_DarkRed.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/White.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/PrestigiousSailorsDress.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local neck = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Neck/SailorsStar.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_NECK, Equipment.SKIN_PRIORITY_BASE, neck)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/SailorBlueGloves.lua")
+		"Resources/Game/Skins/PlayerKit1/Hands/SeaMedallionGloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots3.lua")
+		"Resources/Game/Skins/PlayerKit1/Shoes/Boots_Seafarer2.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
 end
 
-function PortmasterJenkins:onSoldResource(player, resource)
+function Elizabeth:onSoldResource(player, resource)
 	local selfResource = Utility.Peep.getResource(self)
 	if selfResource.id.value ~= resource.id.value then
 		Log.warn("%s unlocked %s? How?",
@@ -78,4 +78,4 @@ function PortmasterJenkins:onSoldResource(player, resource)
 		false)
 end
 
-return PortmasterJenkins
+return Elizabeth

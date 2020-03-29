@@ -83,6 +83,74 @@ do
 end
 
 do
+	local Elizabeth = ItsyScape.Resource.Peep "Sailing_Elizabeth" {
+		ItsyScape.Action.SailingBuy() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Sailing",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coins",
+				Count = 50000
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Sailors.Elizabeth",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "Sailing_Elizabeth",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Elizabeth",
+		Language = "en-US",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "She's used that blunderbuss to chop lettuce and fight off zombi hordes.",
+		Language = "en-US",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Species",
+		Value = "Human",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "SailingRole",
+		Value = "FirstMate",
+		Resource = Elizabeth
+	}
+
+	ItsyScape.Meta.SailingCrewClass {
+		Value = ItsyScape.Utility.Weapon.STYLE_MELEE,
+		Resource = Elizabeth
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/Sailors/Elizabeth/Elizabeth_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	Elizabeth {
+		TalkAction
+	}
+end
+
+do
 	local Nyan = ItsyScape.Resource.Peep "Sailing_Nyan" {
 		ItsyScape.Action.SailingBuy() {
 			Requirement {

@@ -262,7 +262,7 @@ function DialogBox:update(...)
 		self.camera:setNear(0.01)
 		self.camera:setFar(zoom * 2)
 	else
-		offset = 0
+		offset = Vector.ZERO
 		zoom = 1
 	end
 
