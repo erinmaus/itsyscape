@@ -31,6 +31,7 @@ local SKINS = {
 		{ name = "Forward spike", t = MODEL_SKIN, filename = "PlayerKit1/Hair/ForwardSpike.lua" },
 		{ name = "Slick pokey", t = MODEL_SKIN, filename = "PlayerKit1/Hair/SlickPokey.lua" },
 		{ name = "Black braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/BlackBraid.lua" },
+		{ name = "Dark red braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DarkRedBraid.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
 	},
 
@@ -40,6 +41,7 @@ local SKINS = {
 		{ name = "Runic", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes.lua" },
 		{ name = "Grey", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Grey.lua" },
 		{ name = "Red", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Red.lua" },
+		{ name = "Dark Red", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_DarkRed.lua" },
 		{ name = "Green", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Green.lua" },
 		{ name = "Brown", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Brown.lua" },
 		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/WhiteEyes_Green.lua" },
@@ -76,6 +78,7 @@ local SKINS = {
 		{ name = "Fisherman green plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/GreenPlaid.lua" },
 		{ name = "Farmer green plaid", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BluePlaid.lua" },
 		{ name = "Seafarer's garb", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/SeafarerGarb.lua" },
+		{ name = "Prestigious sailor's dress", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PrestigiousSailorsDress.lua" },
 		{ name = "Scallywag (yellow)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Scallywag_Yellow.lua" },
 		{ name = "Scallywag (blue)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Scallywag_Blue.lua" },
 		{ name = "Scallywag (pink)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Scallywag_Pink.lua" },
@@ -117,7 +120,8 @@ local SKINS = {
 		{ name = "Fancy shoes", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/FancyShoes1.lua" },
 		{ name = "Sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3.lua" },
 		{ name = "Red sailor's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots3_Red.lua" },
-		{ name = "Seafarer's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots_Seafarer1.lua" }
+		{ name = "Seafarer's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots_Seafarer1.lua" },
+		{ name = "Navy-blue seafarer's boots", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Boots_Seafarer2.lua" }
 	}
 }
 

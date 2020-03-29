@@ -46,7 +46,6 @@ do
 		Resource = GuildMaster
 	}
 
-
 	ItsyScape.Meta.PeepSkin {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
