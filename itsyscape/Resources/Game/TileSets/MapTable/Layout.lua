@@ -46,4 +46,12 @@
 		height = 64,
 		name = "coconut"
 	},
+
+	{
+		x = 64,
+		y = 384,
+		width = 64,
+		height = 64,
+		name = "x-marks-the-spot"
+	}
 }

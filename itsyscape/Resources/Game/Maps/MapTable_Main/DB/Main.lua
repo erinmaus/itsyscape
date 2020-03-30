@@ -98,51 +98,111 @@ do
 	}
 end
 
-M["Anchor_Rumbridge"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_ChartTown_Rumbridge"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 81,
 		PositionY = 5,
 		PositionZ = 79,
-		Name = "Anchor_Rumbridge",
+		Name = "Anchor_ChartTown_Rumbridge",
 		Map = M._MAP,
-		Resource = M["Anchor_Rumbridge"]
+		Resource = M["Anchor_ChartTown_Rumbridge"]
 	}
 end
 
-M["Anchor_ViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_ChartTown_ViziersRock"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 81,
 		PositionY = 7,
 		PositionZ = 59,
-		Name = "Anchor_ViziersRock",
+		Name = "Anchor_ChartTown_ViziersRock",
 		Map = M._MAP,
-		Resource = M["Anchor_ViziersRock"]
+		Resource = M["Anchor_ChartTown_ViziersRock"]
 	}
 end
 
-M["Anchor_WhiteCastleUponTheRock"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_ChartTown_WhiteCastleUponTheRock"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 67,
 		PositionY = 5,
-		PositionZ = 73,
-		Name = "Anchor_WhiteCastleUponTheRock",
+		PositionZ = 63,
+		Name = "Anchor_ChartTown_WhiteCastleUponTheRock",
 		Map = M._MAP,
-		Resource = M["Anchor_WhiteCastleUponTheRock"]
+		Resource = M["Anchor_ChartTown_WhiteCastleUponTheRock"]
 	}
 end
 
-M["Anchor_EmptyRuins"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_ChartTown_EmptyRuins"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 71,
 		PositionY = 5,
 		PositionZ = 45,
-		Name = "Anchor_EmptyRuins",
+		Name = "Anchor_ChartTown_EmptyRuins",
 		Map = M._MAP,
-		Resource = M["Anchor_EmptyRuins"]
+		Resource = M["Anchor_ChartTown_EmptyRuins"]
+	}
+end
+
+M["Anchor_ChartTown_IsabelleIsland"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 6,
+		PositionZ = 95,
+		Name = "Anchor_ChartTown_IsabelleIsland",
+		Map = M._MAP,
+		Resource = M["Anchor_ChartTown_IsabelleIsland"]
+	}
+end
+
+M["Anchor_ChartX_MermanStronghold"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 91,
+		PositionY = 6,
+		PositionZ = 95,
+		Name = "Anchor_ChartX_MermanStronghold",
+		Map = M._MAP,
+		Resource = M["Anchor_ChartX_MermanStronghold"]
+	}
+end
+
+M["Anchor_ChartX_RuinsOfRhysylk"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 5,
+		PositionZ = 91,
+		Name = "Anchor_ChartX_RuinsOfRhysylk",
+		Map = M._MAP,
+		Resource = M["Anchor_ChartX_RuinsOfRhysylk"]
+	}
+end
+
+M["Anchor_ChartX_MheesasIsland"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 73,
+		PositionY = 5,
+		PositionZ = 105,
+		Name = "Anchor_ChartX_MheesasIsland",
+		Map = M._MAP,
+		Resource = M["Anchor_ChartX_MheesasIsland"]
+	}
+end
+
+M["Anchor_ChartX_BlackmeltLagoon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 95,
+		PositionY = 5,
+		PositionZ = 111,
+		Name = "Anchor_ChartX_BlackmeltLagoon",
+		Map = M._MAP,
+		Resource = M["Anchor_ChartX_BlackmeltLagoon"]
 	}
 end
 
