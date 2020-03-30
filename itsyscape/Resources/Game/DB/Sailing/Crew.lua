@@ -525,7 +525,7 @@ do
 
 			Input {
 				Resource = ItsyScape.Resource.Item "Coins",
-				Count = 50000
+				Count = 25000
 			}
 		}
 	}
@@ -843,7 +843,7 @@ do
 
 			Input {
 				Resource = ItsyScape.Resource.Item "Coins",
-				Count = 50000
+				Count = 25000
 			}
 		}
 	}
@@ -1186,7 +1186,7 @@ do
 
 			Input {
 				Resource = ItsyScape.Resource.Item "Coins",
-				Count = 50000
+				Count = 25000
 			}
 		}
 	}
@@ -1210,7 +1210,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Brawls like no one's business.",
+		Value = "Brawls like no one's business. Also might have a drinking problem...",
 		Language = "en-US",
 		Resource = Scallywag
 	}
@@ -1480,7 +1480,7 @@ do
 
 			Input {
 				Resource = ItsyScape.Resource.Item "Coins",
-				Count = 150000
+				Count = 50000
 			}
 		}
 	}
