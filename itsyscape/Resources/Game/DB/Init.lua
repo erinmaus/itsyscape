@@ -455,8 +455,11 @@ Game "ItsyScape"
 	ResourceType "SailingItem"
 	ResourceType "SailingCrew"
 	ResourceType "SailingFirstMate"
+	ResourceType "SailingMapAnchor"
+	ResourceType "SailingSeaChart"
 	ActionType "SailingBuy"
 	ActionType "SailingUnlock"
+	ActionType "Sail"
 
 	Meta "SailingItemDetails" {
 		Prop = Meta.TYPE_TEXT,
@@ -490,6 +493,21 @@ Game "ItsyScape"
 	Meta "SailingCrewClass" {
 		Value = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "SailingMapLocation" {
+		AnchorI = Meta.TYPE_REAL,
+		AnchorJ = Meta.TYPE_REAL,
+		RealityWarpDistanceMultiplier = Meta.TYPE_REAL,
+		IsPort = Meta.TYPE_INTEGER,
+		Map = Meta.TYPE_RESOURCE,
+		SeaChart = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "MapSeaChart" {
+		SeaChart = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
 	}
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
@@ -740,6 +758,7 @@ include "Resources/Game/DB/Sailing/General.lua"
 include "Resources/Game/DB/Sailing/Tier1.lua"
 include "Resources/Game/DB/Sailing/Crew.lua"
 include "Resources/Game/DB/Sailing/FirstMates.lua"
+include "Resources/Game/DB/Sailing/MapAnchors.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

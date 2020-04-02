@@ -1752,6 +1752,10 @@ function Utility.Peep.getMap(peep)
 	local director = peep:getDirector()
 	local position = peep:getBehavior(PositionBehavior)
 
+	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
+		return director:getMap(peep:getLayer())
+	end
+
 	if position and position.layer and director then 
 		return director:getMap(position.layer)
 	end
@@ -2597,6 +2601,20 @@ function Utility.Quest.build(quest, gameDB)
 	end
 
 	return result
+end
+
+Utility.Sailing = {}
+
+-- This scales a distance from map units to "pseudo-kilometers".
+Utility.Sailing.DISTANCE_SCALE = 70
+
+function Utility.Sailing.getDistanceBetweenLocations(fromLocation, toLocation)
+	local fromI, fromJ = fromLocation:get("AnchorI"), fromLocation:get("AnchorI")
+	local toI, toJ = toLocation:get("AnchorI"), toLocation:get("AnchorI")
+	local realityWarpMultiplier = 1 + toLocation:get("RealityWarpDistanceMultiplier")
+
+	local distance = (math.abs(fromI - toI) + math.abs(fromJ - toJ)) * realityWarpMultiplier
+	return distance * Utility.Sailing.DISTANCE_SCALE
 end
 
 return Utility
