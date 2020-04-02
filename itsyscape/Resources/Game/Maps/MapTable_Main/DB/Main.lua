@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/MapTable_Main/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Maps.BasicMapTable",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Map Table",
 	Language = "en-US",
@@ -10,6 +15,11 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "The map of the known Realm.",
 	Language = "en-US",
 	Resource = M._MAP
+}
+
+ItsyScape.Meta.MapSeaChart {
+	SeaChart = ItsyScape.Resource.SailingSeaChart "Main",
+	Map = M._MAP
 }
 
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
