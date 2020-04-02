@@ -67,7 +67,15 @@ function DebugTeleport:new(id, index, ui)
 	do
 		local gameDB = ui:getGame():getGameDB()
 
+		local maps = {}
 		for map in gameDB:getResources("Map") do
+			table.insert(maps, map)
+		end
+
+		table.sort(maps, function(a, b) return a.name < b.name end)
+
+		for i = 1, #maps do
+			local map = maps[i]
 			local button = Button()
 			button:setText(map.name)
 			button:setStyle(self.buttonStyle)
