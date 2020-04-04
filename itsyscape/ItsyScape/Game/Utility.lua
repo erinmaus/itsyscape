@@ -338,6 +338,37 @@ function Utility.spawnPropAtAnchor(peep, prop, anchor, radius)
 	end
 end
 
+function Utility.spawnMapAtAnchor(peep, resource, anchor)
+	local resourceName
+	if type(resource) == 'string' then
+	resourceName = resource
+	else
+		resourceName = resource.name
+	end
+
+	local map = Utility.Peep.getMapResource(peep)
+	local x, y, z = Utility.Map.getAnchorPosition(
+		peep:getDirector():getGameInstance(),
+		map,
+		anchor)
+
+	if x and y and z then
+		local _, ship = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z))
+
+		ship:listen('finalize', function()
+			Utility.orientateToAnchor(ship, map, anchor)
+			local position = ship:getBehavior(PositionBehavior)
+			position.offset = Vector(0, position.position.y, 0)
+			position.position = Vector(position.position.x, 0, position.position.z)
+		end)
+		
+		return ship
+	else
+		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
+		return nil
+	end
+end
+
 function Utility.performAction(game, resource, id, scope, ...)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()

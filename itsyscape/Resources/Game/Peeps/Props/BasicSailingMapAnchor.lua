@@ -35,6 +35,9 @@ function BasicSailingMapAnchor:onAssignMapLocation(mapLocation, playerMapLocatio
 
 	if mapLocation then
 		self.mapAnchor = mapLocation:get("Resource")
+
+		local gameDB = self:getDirector():getGameDB()
+		self:setName(Utility.getName(self.mapAnchor, gameDB) or "*" .. self.mapAnchor.name)
 	else
 		self.mapAnchor = false
 	end

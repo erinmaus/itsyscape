@@ -55,7 +55,7 @@ function MapTable:onLoad(filename, arguments, layer)
 				0)
 			if prop then
 				prop:getPeep():listen('finalize', function(peep)
-					peep:poke('assignMapLocation', sailingMapLocation, playerMapLocation)
+					peep:pushPoke('assignMapLocation', sailingMapLocation, playerMapLocation)
 				end)
 			else
 				Log.warn("Couldn't spawn map anchor prop for location '%s'.", sailingMapLocations[i]:get("Resource").name)

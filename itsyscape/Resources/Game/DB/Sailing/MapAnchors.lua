@@ -75,7 +75,7 @@ do
 	ItsyScape.Meta.SailingMapLocation {
 		AnchorI = 28,
 		AnchorJ = 48,
-		RealityWarpingModifier = -0.5,
+		RealityWarpDistanceMultiplier = -0.7,
 		IsPort = 1,
 		Map = ItsyScape.Resource.Map "IsabelleIsland_Port",
 		SeaChart = CHART_MAIN,
@@ -129,13 +129,13 @@ do
 	ItsyScape.Meta.ResourceName {
 		Value = "Blackmelt Lagoon",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "Sailing_BlackmeltLagoon"
+		Resource = ItsyScape.Resource.SailingMapAnchor "BlackmeltLagoon"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "A lagoon with plenty of fishing opportunities...",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "Sailing_BlackmeltLagoon"
+		Resource = ItsyScape.Resource.SailingMapAnchor "BlackmeltLagoon"
 	}
 end
 
@@ -165,7 +165,7 @@ do
 	ItsyScape.Meta.SailingMapLocation {
 		AnchorI = 37,
 		AnchorJ = 53,
-		RealityWarpingModifier = 1.5,
+		RealityWarpDistanceMultiplier = 1.5,
 		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk",
 		SeaChart = CHART_MAIN,
 		Resource = ItsyScape.Resource.SailingMapAnchor "RuinsOfRhysilk"
