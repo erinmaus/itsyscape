@@ -132,32 +132,19 @@ function WeatherMap:update()
 				transform:scale(s.x, s.y, s.z)
 			end
 
-			for j = 1, map:getHeight() do
-				for i = 1, map:getWidth() do
-					local center = map:getTileCenter(i, j)
+			for j = 0, self.width - 1 do
+				for i = 0, self.height - 1 do
+					local center = map:getTileCenter(i + self.realI, j + self.realJ)
+					center = Vector(transform:transformPoint(center:get()))
 
-					local absoluteI, absoluteJ
-					do
-						center = Vector(transform:transformPoint(center:get()))
-						absoluteI = math.floor(center.x / self.cellSize) + 1
-						absoluteJ = math.floor(center.z / self.cellSize) + 1
+					local index = j * self.width + i
+
+					local y = center.y
+					if map:getTile(i, j):hasFlag("building") then
+						y = math.huge
 					end
 
-					if absoluteI >= self.realI and absoluteJ >= self.realJ and
-					   absoluteI < self.realI + self.realWidth and
-					   absoluteJ < self.realJ + self.realHeight
-					then
-						local relativeI = absoluteI - self.realI
-						local relativeJ = absoluteJ - self.realJ
-						local index = relativeJ * self.width + relativeI
-
-						local y = center.y
-						if map:getTile(i, j):hasFlag("building") then
-							y = math.huge
-						end
-
-						t[index] = y
-					end
+					t[index] = y
 				end
 			end
 		end
