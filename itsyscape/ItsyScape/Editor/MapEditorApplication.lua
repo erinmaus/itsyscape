@@ -241,7 +241,15 @@ function MapEditorApplication:paint()
 						elseif mode == LandscapeToolPanel.MODE_EDGE then
 							tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
 						elseif mode == LandscapeToolPanel.MODE_DECAL then
-							tile.decals[1] = self.tileSetPalette:getCurrentTile()
+							if love.keyboard.isDown('lalt') or
+							   love.keyboard.isDown('ralt')
+							then
+								tile.decals[#tile.decals + 1] = self.tileSetPalette:getCurrentTile()
+							else
+								tile.decals = {
+									self.tileSetPalette:getCurrentTile()
+								}
+							end
 						end
 					end
 				end
