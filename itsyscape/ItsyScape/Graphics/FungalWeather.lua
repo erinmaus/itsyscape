@@ -237,7 +237,7 @@ function FungalWeather:update(delta)
 	end
 
 	self.mesh:setVertices(self.vertices)
-	self.node:getTransform():setLocalTranslation(map:getAbsolutePosition())
+	self.node:getTransform():setLocalTranslation(Vector(startI * cellSize, 0, startJ * cellSize))
 end
 
 function FungalWeather:remove()
