@@ -210,6 +210,8 @@ function GameView:addMap(map, layer, tileSetID)
 		self:removeMap(layer)
 	end
 
+	print(tileSetID, layer, map:getWidth(), map:getHeight())
+
 	local m = {
 		tileSet = tileSet,
 		texture = texture,

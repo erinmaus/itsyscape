@@ -134,7 +134,6 @@ end
 function RainWeather:update(delta)
 	Weather.update(self, delta)
 
-
 	local map = self:getMap()
 	local startI, startJ = map:getPosition()
 	local mapWidth, mapHeight = map:getSize()
@@ -173,6 +172,7 @@ function RainWeather:update(delta)
 
 				local height = math.max(map:getHeightAt(i, j), 0)
 				if p.y <= height then
+
 					p.moving = false
 				else
 					p.x = p.x + velocity.x
@@ -196,7 +196,7 @@ function RainWeather:update(delta)
 	end
 
 	self.mesh:setVertices(self.vertices)
-	self.node:getTransform():setLocalTranslation(map:getAbsolutePosition())
+	self.node:getTransform():setLocalTranslation(Vector(startI * cellSize, 0, startJ * cellSize))
 end
 
 function RainWeather:remove()
