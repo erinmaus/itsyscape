@@ -105,6 +105,12 @@ function SpriteManager:draw(camera, delta)
 		positions[sprite] = Vector(love.graphics.project(position.x, position.y, position.z))
 	end
 
+	table.sort(self.sprites, function(a, b)
+		local i = positions[a]
+		local j = positions[b]
+		return i.z > j.z
+	end)
+
 	local width, height = love.window.getMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
