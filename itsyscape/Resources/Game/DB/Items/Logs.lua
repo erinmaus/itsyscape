@@ -30,6 +30,13 @@ local LOGS = {
 		tinderbox = "Tinderbox"
 	},
 
+	["Coconut"] = {
+		tier = 15,
+		weight = 2,
+		health = 20,
+		tinderbox = "Tinderbox"
+	},
+
 	["Azathothian"] = {
 		tier = 90,
 		weight = -10,
@@ -294,4 +301,22 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A sickly fire.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ShadowFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Probably useful... But for what?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CoconutLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Hopefully you're not allergic...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CoconutTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What a crazy fire!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CoconutFire"
 }
