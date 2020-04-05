@@ -30,7 +30,7 @@ function AnchorView:load()
 	self.decoration = DecorationSceneNode()
 end
 
-function PropView:attach()
+function AnchorView:attach()
 	self.sprite = self:getGameView():getSpriteManager():add(
 		"SailingMapAnchor",
 		self:getRoot(),
