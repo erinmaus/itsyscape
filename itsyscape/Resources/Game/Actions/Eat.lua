@@ -36,7 +36,7 @@ function Eat:perform(state, peep, item)
 	local broker = director:getItemBroker()
 	local transaction = broker:createTransaction()
 	transaction:addParty(inventory)
-	transaction:consume(item)
+	transaction:consume(item, 1)
 	do
 		local gameDB = self:getGameDB()
 		local healingPower = gameDB:getRecord("HealingPower", { Action = self:getAction() })

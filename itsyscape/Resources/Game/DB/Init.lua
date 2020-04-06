@@ -759,6 +759,7 @@ include "Resources/Game/DB/Sailing/Tier1.lua"
 include "Resources/Game/DB/Sailing/Crew.lua"
 include "Resources/Game/DB/Sailing/FirstMates.lua"
 include "Resources/Game/DB/Sailing/MapAnchors.lua"
+include "Resources/Game/DB/Sailing/Coconut.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

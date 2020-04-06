@@ -211,6 +211,12 @@ ItsyScape.Resource.Skill "Sailing"
 		Skill = ItsyScape.Resource.Skill "Sailing"
 	}
 
+	-- 'Cause of coconuts! NUTS!
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Pick",
+		Skill = ItsyScape.Resource.Skill "Sailing"
+	}
+
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
 
