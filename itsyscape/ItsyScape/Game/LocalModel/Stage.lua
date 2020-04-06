@@ -504,10 +504,11 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 	local playerPeep = self.game:getPlayer():getActor():getPeep()
 	if playerPeep == peep then
-		-- We want to reload if this is a new stage, if it's forced, or if it's
-		-- an instance (has a ?).
+		local teleportedPeep = false
+		-- We want to reload if this is a new stage, if it's forced.
 		if filename ~= self.stageName or force or filename ~= path then
 			self:loadStage(path)
+			teleportedPeep = true
 		end
 
 		playerPeep = self.game:getPlayer():getActor():getPeep()
@@ -530,6 +531,13 @@ function LocalStage:movePeep(peep, path, anchor, force)
 				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
 				position.position = Vector(x, y, z)
 				position.layer = self.mapScripts[filename].layer
+
+				if not teleportedPeep then
+					peep:poke('travel', {
+						from = filename,
+						to = filename
+					})
+				end
 			end
 		end
 	else

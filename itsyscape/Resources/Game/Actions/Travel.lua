@@ -69,7 +69,7 @@ function Travel:travel(state, peep, target)
 	self:transfer(state, peep, Travel.FLAGS)
 
 	local arguments = record:get("Arguments")
-	if arguments then
+	if arguments and arguments ~= "" then
 		arguments = "?" .. arguments
 	else
 		arguments = ""

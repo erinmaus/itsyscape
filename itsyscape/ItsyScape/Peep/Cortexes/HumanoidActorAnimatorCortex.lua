@@ -18,6 +18,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
@@ -52,7 +53,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('spawnEquipment', self.peekEquip, self)
 	peep:listen('switchStyle', self.peekStyle, self)
 	peep:listen('actionFailed', self.actionFailed, self)
-	peep:listen('trip', self.onTrip, self)
+	peep:listen('travel', self.onTravel, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -72,7 +73,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('spawnEquipment', self.peekEquip)
 	peep:silence('switchStyle', self.peekStyle)
 	peep:silence('actionFailed', self.actionFailed, self, peep)
-	peep:silence('trip', self.onTrip, self)
+	peep:silence('travel', self.onTravel, self)
 end
 
 function HumanoidActorAnimatorCortex:playSkillAnimation(peep, priority, resource)
@@ -185,15 +186,11 @@ function HumanoidActorAnimatorCortex:onResurrect(peep, p)
 	end
 end
 
-function HumanoidActorAnimatorCortex:onTrip(peep)
+function HumanoidActorAnimatorCortex:onTravel(peep)
+	local position = peep:getBehavior(PositionBehavior)
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	if actor then
-		local resource = peep:getResource(
-			"animation-trip",
-			"ItsyScape.Graphics.AnimationResource")
-		if resource then
-			actor:playAnimation('main', math.huge, resource, true)
-		end
+		actor:teleport(position.position)
 	end
 end
 
