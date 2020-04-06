@@ -174,4 +174,164 @@
 		height = 128,
 		name = "blue.hrug.l"
 	},
+
+	{
+		x = 640,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "brick.edge.tl"
+	},
+
+	{
+		x = 768,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "brick.edge.tm"
+	},
+
+	{
+		x = 896,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "brick.edge.tr"
+	},
+
+	{
+		x = 640,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "brick.edge.ml"
+	},
+
+	{
+		x = 896,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "brick.edge.mr"
+	},
+
+	{
+		x = 640,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "brick.edge.bl"
+	},
+
+	{
+		x = 768,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "brick.edge.bm"
+	},
+
+	{
+		x = 896,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "brick.edge.br"
+	},
+
+	{
+		x = 256,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.tl"
+	},
+
+	{
+		x = 384,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.tm"
+	},
+
+	{
+		x = 512,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.tr"
+	},
+
+	{
+		x = 256,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.ml"
+	},
+
+	{
+		x = 512,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.mr"
+	},
+
+	{
+		x = 256,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.bl"
+	},
+
+	{
+		x = 384,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.bm"
+	},
+
+	{
+		x = 512,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "cave_ground.edge.br"
+	},
+
+	{
+		x = 128,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "wood"
+	},
+
+	{
+		x = 128,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "cave_ground"
+	},
+
+	{
+		x = 128,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "brick"
+	},
+
+	{
+		x = 0,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "brick_wall"
+	},
 }
