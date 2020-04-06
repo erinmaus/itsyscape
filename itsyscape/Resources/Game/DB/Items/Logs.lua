@@ -34,7 +34,8 @@ local LOGS = {
 		tier = 15,
 		weight = 2,
 		health = 20,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		peepID = "Resources.Game.Peeps.CoconutTree.CoconutTree"
 	},
 
 	["Azathothian"] = {
@@ -142,7 +143,7 @@ for name, log in pairs(LOGS) do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicTree",
+		Value = log.peepID or "Resources.Game.Peeps.Props.BasicTree",
 		Resource = Tree
 	}
 
