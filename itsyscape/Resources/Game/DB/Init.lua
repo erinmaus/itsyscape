@@ -747,6 +747,7 @@ include "Resources/Game/DB/Props/Bones.lua"
 include "Resources/Game/DB/Props/Chandelier.lua"
 include "Resources/Game/DB/Props/Azathoth.lua"
 include "Resources/Game/DB/Props/Books.lua"
+include "Resources/Game/DB/Props/Rocks.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"

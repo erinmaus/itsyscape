@@ -450,3 +450,246 @@ do
 		Resource = ItsyScape.Resource.Item "BurntSeaBass"
 	}
 end
+
+-- Coelacanth
+do
+	ItsyScape.Resource.Prop "Coelacanth_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(20)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SeaBass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Coelacanth",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(30)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Coelacanth.Coelacanth",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a coelacanth swimming in the water!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 100,
+		SpawnTime = 1800,
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
+	}
+
+	ItsyScape.Resource.Item "Coelacanth" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A rare, pre-historic monstrosity, what a catch!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 150000,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 20,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedCoelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(30)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntCoelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 20,
+		Stop = 100,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedCoelacanth" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Dine like a dinosaur!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 200000,
+		Weight = 1.1,
+		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
+	}
+
+	ItsyScape.Resource.Item "BurntCoelacanth" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Well that's one way to ruin a fish.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 150000,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
+	}
+
+	local TakeAction = ItsyScape.Action.Pick() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Take",
+		Language = "en-US",
+		Action = TakeAction
+	}
+
+	ItsyScape.Resource.Prop "Coelacanth_Dead" {
+		TakeAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Coelacanth.DeadCoelacanth",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Dead"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dead coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Dead"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Literally a fish out of water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Dead"
+	}
+end
