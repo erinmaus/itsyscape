@@ -28,7 +28,17 @@ function Pick:perform(state, player, target)
 
 	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 0, { asCloseAsPossible = false })
+		local asCloseAsPossible
+		do
+			local map = Utility.Peep.getMap(target)
+			if map:getTile(i, j):hasFlag('impassable') then
+				asCloseAsPossible = true
+			else
+				asCloseAsPossible = false
+			end
+		end
+
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = asCloseAsPossible })
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)
