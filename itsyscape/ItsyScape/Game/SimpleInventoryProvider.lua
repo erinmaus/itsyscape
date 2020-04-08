@@ -47,7 +47,8 @@ function SimpleInventoryProvider:onTransferFrom(destination, item, count, purpos
 	self:getPeep():poke('transferItemFrom', {
 		destination = destination:getPeep(),
 		item = item,
-		count = count
+		count = count,
+		purpose = purpose
 	})
 end
 
