@@ -302,18 +302,14 @@ function One:ready(director, game)
 	Peep.ready(self, director, game)
 end
 
-function One:onDropItem(e)
-	self:interruptUI()
-end
-
 function One:onTransferItemTo(e)
-	if e.purpose ~= 'bank-withdraw' then
+	if e.purpose ~= 'bank-withdraw' and e.purpose ~= self then
 		self:interruptUI()
 	end
 end
 
 function One:onTransferItemFrom(e)
-	if e.purpose ~= 'bank-deposit' then
+	if e.purpose ~= 'bank-deposit' and e.purpose ~= 'uninterrupted-drop' then
 		self:interruptUI()
 	end
 end

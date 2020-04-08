@@ -286,3 +286,73 @@ do
 		Resource = M["Anchor_FromMainCavern_Bottom"]
 	}
 end
+
+M["Crate_SeaBass1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 4,
+		PositionZ = 9,
+		Name = "Crate_SeaBass1",
+		Map = M._MAP,
+		Resource = M["Crate_SeaBass1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_SeaBass1"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_BlackmeltLagoon_Cavern/Dialog/SeaBassCrate_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Search",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Crate_SeaBass1"] {
+		TalkAction
+	}
+end
+
+M["Crate_SeaBass2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 4,
+		PositionZ = 11,
+		Name = "Crate_SeaBass2",
+		Map = M._MAP,
+		Resource = M["Crate_SeaBass2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_SeaBass2"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_BlackmeltLagoon_Cavern/Dialog/SeaBassCrate_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Search",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Crate_SeaBass2"] {
+		TalkAction
+	}
+end
