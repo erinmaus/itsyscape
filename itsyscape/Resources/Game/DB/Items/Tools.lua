@@ -171,3 +171,121 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Dynamite"
 }
+
+ItsyScape.Resource.Item "IronBlowpipe" {
+	ItsyScape.Action.Smith() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(12),
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(10),
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Hammer",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "IronBar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "IronBlowpipe",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(12)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceCategory {
+	Key = "Metal",
+	Value = "Iron",
+	Resource = ItsyScape.Resource.Item "IronBlowpipe"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(15),
+	Weight = 1.6,
+	Resource = ItsyScape.Resource.Item "IronBlowpipe"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron glassblowing pipe",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronBlowpipe"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Look at this sucker! Wait, you probably don't wanna do that...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronBlowpipe"
+}
+
+ItsyScape.Resource.Item "IronShovel" {
+	ItsyScape.Action.Dig(),
+
+	ItsyScape.Action.Smith() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(11),
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Hammer",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "IronBar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "IronShovel",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(11)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceCategory {
+	Key = "Metal",
+	Value = "Iron",
+	Resource = ItsyScape.Resource.Item "IronShovel"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(11),
+	Weight = 3,
+	Resource = ItsyScape.Resource.Item "IronShovel"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron shovel",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronShovel"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Let's dig up some fossils!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronShovel"
+}

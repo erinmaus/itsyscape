@@ -9,12 +9,15 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 
 local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
@@ -53,6 +56,16 @@ function ActorView.Animatable:getSkeleton()
 	else
 		return Skeleton.EMPTY
 	end
+end
+
+function ActorView.Animatable:setSkin(slot, priority, skin)
+	if slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+		if self.actor.skins[Equipment.PLAYER_SLOT_TWO_HANDED] then
+			slot = Equipment.PLAYER_SLOT_TWO_HANDED
+		end
+	end
+
+	self.actor:changeSkin(slot, priority, skin)
 end
 
 function ActorView.Animatable:addSceneNode(SceneNodeType, ...)
@@ -337,6 +350,28 @@ function ActorView:applySkin(slotNodes)
 
 						slot.sceneNode:setParent(self.sceneNode)
 						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
+
+						local lights = slot.instance:getLights()
+						if #lights >= 0 then
+							slot.lights = {}
+
+							for i = 1, #lights do
+								local inputLight = lights[i]
+								local outputLight
+
+								if inputLight:isPoint() then
+									outputLight = PointLightSceneNode()
+								elseif inputLight:getAmbience() > 0 then
+									outputLight = AmbientLightSceneNode()
+								end
+								
+								if outputLight then
+									outputLight:fromLight(inputLight)
+									outputLight:setParent(slot.sceneNode)
+									table.insert(slot.lights, outputLight)
+								end
+							end
+						end
 
 						self.models[slot.sceneNode] = true
 

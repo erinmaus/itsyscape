@@ -29,6 +29,11 @@ function Animatable:getSkeleton()
 	return Class.ABSTRACT()
 end
 
+-- Sets a skin.
+function Animatable:setSkin(slot, priority, skin)
+	Class.ABSTRACT()
+end
+
 -- Adds a scene node of the of the provided type and returns it.
 function Animatable:addSceneNode(SceneNodeType, ...)
 	return Class.ABSTRACT()

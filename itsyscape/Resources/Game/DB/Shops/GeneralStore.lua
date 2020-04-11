@@ -12,6 +12,17 @@ ItsyScape.Resource.Shop "Standard_GeneralStore" {
 	ItsyScape.Action.Buy() {
 		Input {
 			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 15
+		},
+
+		Output { 
+			Resource = ItsyScape.Resource.Item "BucketOfMoltenGlass",
+		}
+	},
+
+	ItsyScape.Action.Buy() {
+		Input {
+			Resource = ItsyScape.Resource.Item "Coins",
 			Count = 10
 		},
 

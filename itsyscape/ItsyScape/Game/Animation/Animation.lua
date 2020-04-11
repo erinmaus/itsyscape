@@ -13,6 +13,7 @@ local AnimationInstance = require "ItsyScape.Game.Animation.AnimationInstance"
 local TargetChannel = require "ItsyScape.Game.Animation.TargetChannel"
 local Command = "ItsyScape.Game.Animation.Commands.Command"
 local Blend = require "ItsyScape.Game.Animation.Commands.Blend"
+local Equipment = require "ItsyScape.Game.Equipment"
 
 local Animation, Metatable = Class()
 Animation.CURRENT_ID = 1
@@ -54,7 +55,17 @@ function Animation:loadFromFile(filename)
 		G.PlayAnimation = require "ItsyScape.Game.Animation.Commands.PlayAnimation"
 		G.PlaySound = require "ItsyScape.Game.Animation.Commands.PlaySound"
 		G.Tint = require "ItsyScape.Game.Animation.Commands.Tint"
+		G.Wait = require "ItsyScape.Game.Animation.Commands.Wait"
+		G.ApplySkin = require "ItsyScape.Game.Animation.Commands.ApplySkin"
 		G.Blend = Blend
+
+		G.SLOTS = {}
+		for k, v in pairs(Equipment) do
+			if k:match("^PLAYER_.*$") or k:match("%^SKIN_PRIORITY.*$") then
+				G.SLOTS[k] = v
+			end
+		end
+
 		G.math = {}
 		for k, v in pairs(math) do
 			G.math[k] = value

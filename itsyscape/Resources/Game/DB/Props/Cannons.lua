@@ -9,10 +9,15 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Item "IronCannonball" {
-	ItsyScape.Action.Smelt() {
+	ItsyScape.Action.Smith() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Hammer",
+			Count = 1
 		},
 
 		Input {
@@ -22,7 +27,7 @@ ItsyScape.Resource.Item "IronCannonball" {
 
 		Output {
 			Resource = ItsyScape.Resource.Item "IronCannonball",
-			Count = 1
+			Count = 5
 		},
 
 		Output {
@@ -48,6 +53,12 @@ ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(11),
 	Weight = 0,
 	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "IronCannonball"
+}
+
+ItsyScape.Meta.ResourceCategory {
+	Key = "Metal",
+	Value = "Iron",
 	Resource = ItsyScape.Resource.Item "IronCannonball"
 }
 

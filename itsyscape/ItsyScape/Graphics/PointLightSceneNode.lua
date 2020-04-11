@@ -39,6 +39,11 @@ function PointLightSceneNode:toLight(delta)
 	return result
 end
 
+function PointLightSceneNode:fromLight(light)
+	LightSceneNode.fromLight(self, light)
+	self.attenuation = light:getAttenuation()
+end
+
 function PointLightSceneNode:tick()
 	LightSceneNode.tick(self)
 
