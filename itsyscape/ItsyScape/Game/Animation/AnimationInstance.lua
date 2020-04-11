@@ -69,9 +69,10 @@ function AnimationInstance:play(time, windingDown)
 			end
 
 			if command:pending(relativeTime, windingDown) then
-				if command.previous ~= j then
-					command:start(animatable)
-					command.previous = j
+				if channel.previous ~= j then
+					command:start(self.animatable)
+					channel.previous = j
+					channel.stopped = false
 
 					self.times[channel] = time
 				end
@@ -83,8 +84,9 @@ function AnimationInstance:play(time, windingDown)
 			else
 				-- We only want to stop the previous animation if it actually
 				-- played.
-				if channel.previous == j then
+				if channel.previous == j and not channel.stopped then
 					command:stop(self.animatable)
+					channel.stopped = true
 				end
 
 				if channel.current ~= #channel then

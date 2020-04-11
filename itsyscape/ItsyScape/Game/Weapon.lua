@@ -237,7 +237,7 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 
 	self.attackLevel = attackLevel
 
-	local defenceLevel
+	local defenseLevel
 	do
 		local stats = target:getBehavior(StatsBehavior)
 		if stats and stats.stats then

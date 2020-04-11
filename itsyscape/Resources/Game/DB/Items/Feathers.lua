@@ -30,3 +30,26 @@ ItsyScape.Meta.Item {
 	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "Feather"
 }
+
+ItsyScape.Resource.Item "IslandFeather" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Island feather",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IslandFeather"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What a pretty feather.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IslandFeather"
+}
+
+ItsyScape.Meta.Item {
+	Value = 10,
+	Weight = 1,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "IslandFeather"
+}

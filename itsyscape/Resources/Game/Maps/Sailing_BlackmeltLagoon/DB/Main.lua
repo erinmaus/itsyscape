@@ -34,14 +34,14 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 33,
-		ColorGreen = 33,
-		ColorBlue = 33,
+		ColorRed = 128,
+		ColorGreen = 128,
+		ColorBlue = 255,
 		Resource = M["Light_Ambient"]
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.3,
+		Ambience = 0.6,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -65,7 +65,7 @@ do
 	ItsyScape.Meta.Light {
 		ColorRed = 66,
 		ColorGreen = 66,
-		ColorBlue = 66,
+		ColorBlue = 132,
 		Resource = M["Light_Sun"]
 	}
 
@@ -112,5 +112,149 @@ do
 		Name = "Anchor_Ship",
 		Map = M._MAP,
 		Resource = M["Anchor_Ship"]
+	}
+end
+
+M["Clucker1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 5,
+		PositionZ = 47,
+		Direction = -1,
+		Name = "Clucker1",
+		Map = M._MAP,
+		Resource = M["Clucker1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker1"]
+	}
+end
+
+M["Clucker2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 5,
+		PositionZ = 35,
+		Direction = 1,
+		Name = "Clucker2",
+		Map = M._MAP,
+		Resource = M["Clucker2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker2"]
+	}
+end
+
+M["Clucker3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 5,
+		PositionZ = 41,
+		Direction = 1,
+		Name = "Clucker3",
+		Map = M._MAP,
+		Resource = M["Clucker3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker3"]
+	}
+end
+
+M["Clucker4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 6,
+		PositionZ = 43,
+		Direction = 1,
+		Name = "Clucker4",
+		Map = M._MAP,
+		Resource = M["Clucker4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker4"]
+	}
+end
+
+M["Clucker5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 95,
+		PositionY = 5,
+		PositionZ = 61,
+		Direction = 1,
+		Name = "Clucker5",
+		Map = M._MAP,
+		Resource = M["Clucker5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker5"]
+	}
+end
+
+M["Clucker6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103,
+		PositionY = 6,
+		PositionZ = 81,
+		Direction = 1,
+		Name = "Clucker6",
+		Map = M._MAP,
+		Resource = M["Clucker6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker6"]
+	}
+end
+
+M["Clucker7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 101,
+		PositionY = 7,
+		PositionZ = 89,
+		Direction = 1,
+		Name = "Clucker7",
+		Map = M._MAP,
+		Resource = M["Clucker7"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker7"]
+	}
+end
+
+M["Clucker8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 6,
+		PositionZ = 118,
+		Direction = 1,
+		Name = "Clucker8",
+		Map = M._MAP,
+		Resource = M["Clucker8"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Chicken_Island",
+		MapObject = M["Clucker8"]
 	}
 end

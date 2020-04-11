@@ -15,4 +15,4 @@ function TargetChannel:new(t)
 	Channel.new(self, t)
 end
 
-return Channel
+return TargetChannel

@@ -31,11 +31,12 @@ Equipment.AMMO_BOLT  = 2
 Equipment.AMMO_ANY   = 100
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
-Equipment.PLAYER_SLOT_LEFT_HAND = 21
+Equipment.PLAYER_SLOT_LEFT_HAND  = 21
 Equipment.PLAYER_SLOT_TWO_HANDED = 22
 
-Equipment.SKIN_PRIORITY_BASE       = 0
-Equipment.SKIN_PRIORITY_ACCENT     = 10
-Equipment.SKIN_PRIORITY_EQUIPMENT  = 100
+Equipment.SKIN_PRIORITY_BASE               = 0
+Equipment.SKIN_PRIORITY_ACCENT             = 10
+Equipment.SKIN_PRIORITY_EQUIPMENT          = 100
+Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE = 1000
 
 return Equipment

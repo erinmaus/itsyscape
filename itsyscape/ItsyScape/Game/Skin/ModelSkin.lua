@@ -12,6 +12,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Skin = require "ItsyScape.Game.Skin.Skin"
+local Color = require "ItsyScape.Graphics.Color"
+local Light = require "ItsyScape.Graphics.Light"
 
 local ModelSkin = Class(Skin)
 
@@ -26,6 +28,7 @@ function ModelSkin:new()
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
+	self.lights = {}
 end
 
 function ModelSkin:getResource()
@@ -119,6 +122,30 @@ function ModelSkin:loadFromFile(filename)
 			self.isFullLit = false
 		end
 	end
+
+	if result.lights then
+		for i = 1, #result.lights do
+			local inputLight = result.lights[i]
+			local outputLight = Light()
+
+			outputLight:setColor(Color(unpack(inputLight.color or {})))
+
+			local isLight = false
+			if inputLight.type == 'ambient' then
+				outputLight:setAmbience(inputLight.ambience or 0)
+				isLight = true
+			elseif inputLight.type == 'point' then
+				outputLight:setPosition(Vector(unpack(inputLight.position or {})))
+				outputLight:setAttenuation(inputLight.attenuation or 1)
+				outputLight:setPoint()
+				isLight = true
+			end
+
+			if isLight then
+				table.insert(self.lights, outputLight)
+			end
+		end
+	end
 end
 
 -- Gets the model CacheRef.
@@ -161,6 +188,10 @@ end
 
 function ModelSkin:getIsFullLit()
 	return self.isFullLit
+end
+
+function ModelSkin:getLights()
+	return self.lights
 end
 
 return ModelSkin

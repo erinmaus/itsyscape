@@ -66,6 +66,13 @@ function LightSceneNode:toLight(delta)
 	return result
 end
 
+function LightSceneNode:fromLight(light)
+	self.color = light:getColor()
+
+	local transform = self:getTransform()
+	transform:setLocalTranslation(light:getPosition())
+end
+
 function LightSceneNode:tick()
 	SceneNode.tick(self)
 

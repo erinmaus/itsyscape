@@ -329,6 +329,10 @@ function LocalActor:poke(action, scope)
 	end
 end
 
+function LocalActor:getBody()
+	return self.body
+end
+
 function LocalActor:setBody(body)
 	self.body = body or false
 	self.onTransmogrified(self, body)

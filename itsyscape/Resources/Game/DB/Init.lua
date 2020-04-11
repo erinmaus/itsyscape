@@ -405,6 +405,8 @@ Game "ItsyScape"
 	ActionType "Pull"
 	ActionType "Sleep"
 
+	ActionType "Dig"
+
 	Meta "Cannon" {
 		Range = Meta.TYPE_INTEGER,
 		MinDamage = Meta.TYPE_INTEGER,
@@ -664,6 +666,8 @@ include "Resources/Game/DB/Items/Fabrics.lua"
 include "Resources/Game/DB/Items/Gems.lua"
 include "Resources/Game/DB/Items/Dyes.lua"
 include "Resources/Game/DB/Items/PrideCapes.lua"
+include "Resources/Game/DB/Items/Buckets.lua"
+include "Resources/Game/DB/Items/Lanterns.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

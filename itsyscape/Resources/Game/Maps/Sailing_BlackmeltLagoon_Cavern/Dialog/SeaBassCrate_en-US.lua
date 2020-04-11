@@ -16,7 +16,6 @@ if action == YES then
 
 	AMOUNT = math.random(10, 20)
 	local roll1 = math.random(1, 3)
-	roll1 = 1
 	Log.info("Rolled a %d out of 3 when attempting to give '%s' sea bass directly to inventory (1 means failure).", roll1, _TARGET:getName())
 
 	local firstTrySuccess

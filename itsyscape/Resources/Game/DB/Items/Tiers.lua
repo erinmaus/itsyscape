@@ -36,6 +36,14 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "Sand",
+		Language = "en-US",
+		Name = "Sand",
+		Tier = 10
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Iron",
 		Language = "en-US",
 		Name = "Iron",
@@ -104,6 +112,17 @@ do
 		Value = "CottonCloth",
 		Language = "en-US",
 		Name = "Cheep Cotton",
+		Tier = 10
+	}
+end
+
+-- Glass
+do
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Glass",
+		Value = "Lense",
+		Language = "en-US",
+		Name = "Lenses",
 		Tier = 10
 	}
 end

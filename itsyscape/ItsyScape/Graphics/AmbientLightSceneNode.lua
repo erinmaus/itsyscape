@@ -39,6 +39,12 @@ function AmbientLightSceneNode:toLight(delta)
 	return result
 end
 
+function AmbientLightSceneNode:fromLight(light)
+	LightSceneNode.fromLight(self, light)
+
+	self.ambience = light:getAmbience()
+end
+
 function AmbientLightSceneNode:tick()
 	LightSceneNode.tick(self)
 
