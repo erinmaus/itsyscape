@@ -10,6 +10,7 @@
 
 include "Resources/Game/DB/Creeps/Skelementals/Copper.lua"
 include "Resources/Game/DB/Creeps/Skelementals/Tin.lua"
+include "Resources/Game/DB/Creeps/Skelementals/Iron.lua"
 
 local BARS = {
 	["Copper"] = {
@@ -26,6 +27,11 @@ local BARS = {
 		tier = 1,
 		{ name = "CopperFlake", count = 5 },
 		{ name = "TinFlake", count = 5 }
+	},
+
+	["Iron"] = {
+		tier = 10,
+		{ name = "IronFlake", count = 5 },
 	}
 }
 
@@ -203,5 +209,62 @@ do
 		Prayer = 1,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
 		Resource = ItsyScape.Resource.Item "CopperBadge"
+	}
+end
+
+-- Bone boomerang
+do
+	ItsyScape.Resource.Item "BoneBoomerang" {
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Archery",
+				Count = ItsyScape.Utility.xpForLevel(15)
+			}
+		},
+
+		ItsyScape.Action.Bury() {
+			Input {
+				Resource = ItsyScape.Resource.Item "BoneBoomerang",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Faith",
+				Count = ItsyScape.Utility.xpForResource(15)
+			}
+		},
+
+		ItsyScape.Action.Dequip()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bone boomerang",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BoneBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A rib from a stronger Skelemental. It can be used as a weapon!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BoneBoomerang"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(20),
+		Weight = 1.4,
+		Resource = ItsyScape.Resource.Item "BoneBoomerang"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/BoneBoomerang/BoneBoomerang.lua",
+		Resource = ItsyScape.Resource.Item "BoneBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForItem(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(20),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BoneBoomerang"
 	}
 end

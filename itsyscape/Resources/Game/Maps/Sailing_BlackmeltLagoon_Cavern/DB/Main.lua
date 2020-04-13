@@ -504,3 +504,122 @@ do
 		ItsyScape.Action.Collect()
 	}
 end
+
+M["IronSkelemental1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 6,
+		PositionZ = 23,
+		Name = "IronSkelemental1",
+		Map = M._MAP,
+		Resource = M["IronSkelemental1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental1"]
+	}
+end
+
+M["IronSkelemental2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 6,
+		PositionZ = 41,
+		Name = "IronSkelemental2",
+		Map = M._MAP,
+		Resource = M["IronSkelemental2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental2"]
+	}
+end
+
+M["IronSkelemental3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 8,
+		PositionZ = 57,
+		Name = "IronSkelemental3",
+		Map = M._MAP,
+		Resource = M["IronSkelemental3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental3"]
+	}
+end
+
+M["IronSkelemental4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 5,
+		PositionZ = 33,
+		Name = "IronSkelemental4",
+		Map = M._MAP,
+		Resource = M["IronSkelemental4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental4"]
+	}
+end
+
+M["IronSkelemental5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 23,
+		Name = "IronSkelemental5",
+		Map = M._MAP,
+		Resource = M["IronSkelemental5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental5"]
+	}
+end
+
+M["IronSkelemental6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 4,
+		PositionZ = 9,
+		Name = "IronSkelemental6",
+		Map = M._MAP,
+		Resource = M["IronSkelemental6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental6"]
+	}
+end
+
+M["IronSkelemental7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 41,
+		Name = "IronSkelemental7",
+		Map = M._MAP,
+		Resource = M["IronSkelemental7"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IronSkelemental",
+		MapObject = M["IronSkelemental7"]
+	}
+end
