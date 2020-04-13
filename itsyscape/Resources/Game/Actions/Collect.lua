@@ -25,7 +25,7 @@ function Collect:perform(state, player, target)
 
 	if target and self:canPerform(state, FLAGS) then
 		local i, j, k = Utility.Peep.getTile(target)
-		local walk = Utility.Peep.getWalk(player, i, j + 1, k, 1.5, { asCloseAsPossible = false })
+		local walk = Utility.Peep.getWalk(player, i, j + 1, k, 2.5, { asCloseAsPossible = true })
 
 		if walk then
 			local open = OpenInterfaceCommand("RewardChest", true, target)

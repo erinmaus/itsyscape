@@ -62,7 +62,7 @@ function BlackmeltLagoonCavern:onLoad(filename, args, layer)
 		heaviness = 0.25
 	})
 
-	self:spawnLoot("Chest_Legendary", "Sailing_BlackmeltLagoon_Cavern_Chest_Legendary", 1)
+	self:spawnLoot("Chest_Legendary", "Sailing_BlackmeltLagoon_Cavern_Chest_Legendary", 10)
 	self:spawnLoot("Chest_Gems", "Sailing_BlackmeltLagoon_Cavern_Chest_Gems", 10)
 	self:spawnLoot("Chest_Gold", "Sailing_BlackmeltLagoon_Cavern_Chest_Gold", 20)
 end
