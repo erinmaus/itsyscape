@@ -172,3 +172,84 @@ do
 		Resource = ItsyScape.Resource.Item "GhostspeakAmulet"
 	}
 end
+
+do
+	ItsyScape.Resource.Item "GoldenAmulet" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Smith() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(60)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForLevel(60)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "GoldBar",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "GoldenAmulet",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(60)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForResource(60)
+			},
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Golden amulet",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Gold",
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(60),
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+
+	ItsyScape.Resource.Item "GoldenAmulet" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip()
+	}
+
+	ItsyScape.Meta.Equipment {
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(2) / 3,
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(2) / 3,
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(2) / 3,
+		Prayer = 15,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FINGER,
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "So pretty! Maybe if it were enchanted, it could be more useful...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/Amulets/Golden.lua",
+		Resource = ItsyScape.Resource.Item "GoldenAmulet"
+	}
+end

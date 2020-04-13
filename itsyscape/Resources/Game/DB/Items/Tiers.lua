@@ -49,6 +49,14 @@ do
 		Name = "Iron",
 		Tier = 10
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
+		Value = "Gold",
+		Language = "en-US",
+		Name = "Gold",
+		Tier = 55
+	}
 end
 
 -- Woods
