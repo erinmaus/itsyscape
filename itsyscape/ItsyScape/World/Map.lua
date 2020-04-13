@@ -135,10 +135,11 @@ end
 --
 -- Returns the height.
 function Map:getInterpolatedHeight(x, z)
+	local tile = self:getTileAt(x, z)
+
 	x = x / self.cellSize
 	z = z / self.cellSize
 
-	local tile = self:getTile(x + 1, z + 1)
 	if tile then
 		return tile:getInterpolatedHeight(x - math.floor(x), z - math.floor(z))
 	end

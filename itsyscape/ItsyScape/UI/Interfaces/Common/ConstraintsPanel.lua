@@ -22,6 +22,9 @@ local ConstraintsPanel = Class(Widget)
 ConstraintsPanel.DEFAULT_WIDTH = 120
 ConstraintsPanel.DEFAULT_PADDING = 4
 ConstraintsPanel.TITLE_SIZE = 16
+ConstraintsPanel.BLACKLIST = {
+	['prop'] = true
+}
 
 function ConstraintsPanel:new(view)
 	Widget.new(self)
@@ -92,66 +95,69 @@ function ConstraintsPanel:performLayout(doLogic)
 	local rowHeight = 32
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]
+		local isBlacklisted = ConstraintsPanel.BLACKLIST[c.type:lower()]
 
-		local left
-		if c.type:lower() == 'skill' then
-			left = Icon()
-			left:setSize(leftWidth, rowHeight)
-			left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", c.resource))
-		elseif c.type:lower() == 'item' then
-			left = ItemIcon()
-			left:setSize(leftWidth, rowHeight)
-			left:setItemID(c.resource)
-		elseif c.type:lower() == 'sailingitem' then
-			left = Icon()
-			left:setSize(leftWidth, rowHeight)
-			left:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", c.resource))
-		else
-			left = Widget()
-			left:setSize(leftWidth, rowHeight)
-		end
-		self.layout:addChild(left)
+		if not isBlacklisted then
+			local left
+			if c.type:lower() == 'skill' then
+				left = Icon()
+				left:setSize(leftWidth, rowHeight)
+				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", c.resource))
+			elseif c.type:lower() == 'item' then
+				left = ItemIcon()
+				left:setSize(leftWidth, rowHeight)
+				left:setItemID(c.resource)
+			elseif c.type:lower() == 'sailingitem' then
+				left = Icon()
+				left:setSize(leftWidth, rowHeight)
+				left:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", c.resource))
+			else
+				left = Widget()
+				left:setSize(leftWidth, rowHeight)
+			end
+			self.layout:addChild(left)
 
-		local right = Label()
-		right:setStyle(LabelStyle({
-			fontSize = 16,
-			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-			width = rightWidth
-		}, self.view:getResources()))
-		if c.type:lower() == 'skill' then
-			if self:getData('skillAsLevel', false) then
-				local level = Curve.XP_CURVE:getLevel(c.count, 120)
-				local text = string.format("Lvl %d %s", level, c.name)
+			local right = Label()
+			right:setStyle(LabelStyle({
+				fontSize = 16,
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				width = rightWidth
+			}, self.view:getResources()))
+			if c.type:lower() == 'skill' then
+				if self:getData('skillAsLevel', false) then
+					local level = Curve.XP_CURVE:getLevel(c.count, 120)
+					local text = string.format("Lvl %d %s", level, c.name)
+					right:setText(text)
+				else
+					local text = string.format("+%d %s XP", math.floor(c.count), c.name)
+					right:setText(text)
+				end
+			elseif c.type:lower() == 'item' then
+				local text
+				if c.count <= 1 then
+					text = c.name
+				else
+					text = string.format("%.0fx %s", c.count, c.name)
+				end
 				right:setText(text)
+			elseif c.type:lower() == 'keyitem' then
+				right:setText(c.description or c.name)
 			else
-				local text = string.format("+%d %s XP", math.floor(c.count), c.name)
+				local text
+				if c.count <= 1 then
+					text = c.name
+				else
+					text = string.format("%d %s", c.count, c.name)
+				end
 				right:setText(text)
 			end
-		elseif c.type:lower() == 'item' then
-			local text
-			if c.count <= 1 then
-				text = c.name
-			else
-				text = string.format("%.0fx %s", c.count, c.name)
+			do
+				local _, lines = right:getStyle().font:getWrap(right:getText(), rightWidth)
+				right:setSize(rightWidth, #lines * right:getStyle().font:getHeight())
 			end
-			right:setText(text)
-		elseif c.type:lower() == 'keyitem' then
-			right:setText(c.description or c.name)
-		else
-			local text
-			if c.count <= 1 then
-				text = c.name
-			else
-				text = string.format("%d %s", c.count, c.name)
-			end
-			right:setText(text)
-		end
-		do
-			local _, lines = right:getStyle().font:getWrap(right:getText(), rightWidth)
-			right:setSize(rightWidth, #lines * right:getStyle().font:getHeight())
-		end
 
-		self.layout:addChild(right)
+			self.layout:addChild(right)
+		end
 	end
 
 	do

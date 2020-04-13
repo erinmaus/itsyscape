@@ -27,6 +27,7 @@ local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBeh
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local Map = require "ItsyScape.World.Map"
+local TileSet = require "ItsyScape.World.TileSet"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
@@ -39,6 +40,7 @@ function LocalStage:new(game)
 	self.props = {}
 	self.peeps = {}
 	self.decorations = {}
+	self.tileSets = {}
 	self.currentActorID = 1
 	self.currentPropID = 1
 	self.map = {}
@@ -380,6 +382,24 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 		self.game:getDirector():setMap(layer, map)
 
 		self:updateMap(layer)
+	end
+
+	if tileSetID then
+		local tileSetFilename = string.format(
+			"Resources/Game/TileSets/%s/Layout.lua",
+			tileSetID)
+		local tileSet = TileSet.loadFromFile(tileSetFilename, false)
+
+		local w, h = map:getWidth(), map:getHeight()
+		for j = 1, h do
+			for i = 1, w do
+				local tile = map:getTile(i, j)
+
+				for key, value in tileSet:getTileProperties(tile.flat) do
+					tile:setData("x-tileset-" .. key, value)
+				end
+			end
+		end
 	end
 end
 

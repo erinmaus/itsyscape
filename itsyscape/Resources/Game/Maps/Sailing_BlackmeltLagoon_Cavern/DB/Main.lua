@@ -356,3 +356,59 @@ do
 		TalkAction
 	}
 end
+
+M["Door_Treasury"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "Door_Treasury",
+		Map = M._MAP,
+		Resource = M["Door_Treasury"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_Treasury"]
+	}
+
+	M["Door_Treasury"] {
+		ItsyScape.Action.Open() {
+			Input {
+				Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1",
+				Count = 1
+			}
+		}
+	}
+end
+
+M["Door_Fish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 7,
+		RotationX = 0.000000,
+		RotationY = 1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		Name = "Door_Fish",
+		Map = M._MAP,
+		Resource = M["Door_Fish"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_Fish"]
+	}
+
+	M["Door_Fish"] {
+		ItsyScape.Action.Open() {
+			Input {
+				Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1",
+				Count = 1
+			}
+		}
+	}
+end

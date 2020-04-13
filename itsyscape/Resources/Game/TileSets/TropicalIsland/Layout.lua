@@ -28,7 +28,10 @@
 		y = 768,
 		width = 128,
 		height = 128,
-		name = "sand"
+		name = "sand",
+
+		['dig-resource-id'] = "BucketOfSand",
+		['dig-resource-type'] = "Item"
 	},
 
 	{
