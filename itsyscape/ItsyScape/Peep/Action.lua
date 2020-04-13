@@ -335,9 +335,11 @@ function Action:transfer(state, player, flags)
 				end
 			end
 		end
+
+		return true
 	end
 
-	return true
+	return false
 end
 
 function Action:getFailureReason(state, peep)
