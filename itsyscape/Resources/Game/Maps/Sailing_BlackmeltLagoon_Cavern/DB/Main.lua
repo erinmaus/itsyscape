@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/Sailing_BlackmeltLagoon_Cavern/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Sailing_BlackmeltLagoon_Cavern.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Pirate Cavern, Blackmelt Lagoon",
 	Language = "en-US",
@@ -11,7 +16,6 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = M._MAP
 }
-
 
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -363,6 +367,10 @@ do
 		PositionX = 53,
 		PositionY = 4,
 		PositionZ = 7,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Door_Treasury",
 		Map = M._MAP,
 		Resource = M["Door_Treasury"]
@@ -390,9 +398,9 @@ do
 		PositionY = 4,
 		PositionZ = 7,
 		RotationX = 0.000000,
-		RotationY = 1.000000,
+		RotationY = -0.707107,
 		RotationZ = 0.000000,
-		RotationW = 0.000000,
+		RotationW = -0.707107,
 		Name = "Door_Fish",
 		Map = M._MAP,
 		Resource = M["Door_Fish"]
@@ -410,5 +418,89 @@ do
 				Count = 1
 			}
 		}
+	}
+end
+
+M["Chest_Gems"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59.000000,
+		PositionY = 4.000000,
+		PositionZ = 11.000000,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Gems",
+		Map = M._MAP,
+		Resource = M["Chest_Gems"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["Chest_Gems"]
+	}
+
+	M["Chest_Gems"] {
+		ItsyScape.Action.Collect()
+	}
+end
+
+M["Chest_Gold"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59.000000,
+		PositionY = 4.000000,
+		PositionZ = 5.000000,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Gold",
+		Map = M._MAP,
+		Resource = M["Chest_Gold"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["Chest_Gold"]
+	}
+
+	M["Chest_Gold"] {
+		ItsyScape.Action.Collect()
+	}
+end
+
+M["Chest_Legendary"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59.000000,
+		PositionY = 4.000000,
+		PositionZ = 9.000000,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Legendary",
+		Map = M._MAP,
+		Resource = M["Chest_Legendary"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["Chest_Legendary"]
+	}
+
+	M["Chest_Legendary"] {
+		ItsyScape.Action.Collect()
 	}
 end

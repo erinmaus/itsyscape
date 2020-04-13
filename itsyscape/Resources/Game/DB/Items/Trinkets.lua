@@ -1,6 +1,37 @@
 ItsyScape.Resource.Item "GoldenRing" {
 	ItsyScape.Action.Equip(),
-	ItsyScape.Action.Dequip()
+	ItsyScape.Action.Dequip(),
+	ItsyScape.Action.Smith() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(56)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(56)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "GoldBar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "GoldenRing",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(56)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForResource(56)
+		},
+	}
 }
 
 ItsyScape.Meta.ResourceName {
@@ -16,7 +47,7 @@ ItsyScape.Meta.ResourceCategory {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(30),
+	Value = ItsyScape.Utility.valueForItem(56),
 	Resource = ItsyScape.Resource.Item "GoldenRing"
 }
 

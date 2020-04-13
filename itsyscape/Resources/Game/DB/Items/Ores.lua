@@ -25,6 +25,12 @@ local ORES = {
 		tier = 10,
 		weight = 11.5,
 		health = 20
+	},
+
+	["Gold"] = {
+		tier = 55,
+		weight = 20,
+		health = 200
 	}
 }
 
@@ -116,6 +122,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Needs smelting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GoldOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Contains copper ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CopperRock_Default"
@@ -131,4 +143,10 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Contains iron ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "IronRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains gold ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "GoldRock_Default"
 }

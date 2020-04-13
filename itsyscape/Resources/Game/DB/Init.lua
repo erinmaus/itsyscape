@@ -768,7 +768,7 @@ include "Resources/Game/DB/Sailing/Crew.lua"
 include "Resources/Game/DB/Sailing/FirstMates.lua"
 include "Resources/Game/DB/Sailing/MapAnchors.lua"
 include "Resources/Game/DB/Sailing/Coconut.lua"
-include "Resources/Game/DB/Sailing/Keys.lua"
+include "Resources/Game/DB/Sailing/Maps.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
