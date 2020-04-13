@@ -91,15 +91,15 @@ do
 		Weight = 10
 	}
 
-	local GoldAmuletReward = ItsyScape.Action.Reward() {
+	local GoldenAmuletReward = ItsyScape.Action.Reward() {
 		Output {
-			Resource = ItsyScape.Resource.Item "GoldAmulet",
+			Resource = ItsyScape.Resource.Item "GoldenAmulet",
 			Count = 1
 		}
 	}
 
 	ItsyScape.Meta.RewardEntry {
-		Action = GoldAmuletReward,
+		Action = GoldenAmuletReward,
 		Weight = 5
 	}
 
@@ -121,7 +121,7 @@ do
 		GoldBarReward,
 		GoldOreReward,
 		GoldenRingReward,
-		GoldAmuletReward,
+		GoldenAmuletReward,
 		CopperAmuletReward
 	}
 end
@@ -131,11 +131,6 @@ do
 		Output {
 			Resource = ItsyScape.Resource.Item "Sapphire",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
 
@@ -148,11 +143,6 @@ do
 		Output {
 			Resource = ItsyScape.Resource.Item "Emerald",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForResource(10)
 		}
 	}
 
@@ -165,11 +155,6 @@ do
 		Output {
 			Resource = ItsyScape.Resource.Item "Ruby",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForResource(15)
 		}
 	}
 
@@ -182,11 +167,6 @@ do
 		Output {
 			Resource = ItsyScape.Resource.Item "Diamond",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForResource(20)
 		}
 	}
 
@@ -207,6 +187,11 @@ do
 	local TimeTurnerReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "TimeTurner",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
 			Count = 1
 		}
 	}
