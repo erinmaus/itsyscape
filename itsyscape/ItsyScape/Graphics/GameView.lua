@@ -217,7 +217,7 @@ function GameView:addMap(map, layer, tileSetID)
 		map = map,
 		node = SceneNode(),
 		parts = {},
-		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 8, map:getHeight() + 8)
+		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16)
 	}
 	m.node:setParent(self.scene)
 	m.weatherMap:addMap(m.map)
