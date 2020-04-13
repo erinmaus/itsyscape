@@ -406,6 +406,7 @@ Game "ItsyScape"
 	ActionType "Sleep"
 
 	ActionType "Dig"
+	ActionType "DigUp"
 
 	Meta "Cannon" {
 		Range = Meta.TYPE_INTEGER,
@@ -752,6 +753,8 @@ include "Resources/Game/DB/Props/Chandelier.lua"
 include "Resources/Game/DB/Props/Azathoth.lua"
 include "Resources/Game/DB/Props/Books.lua"
 include "Resources/Game/DB/Props/Rocks.lua"
+include "Resources/Game/DB/Props/Hole.lua"
+include "Resources/Game/DB/Props/Doors.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
@@ -765,6 +768,7 @@ include "Resources/Game/DB/Sailing/Crew.lua"
 include "Resources/Game/DB/Sailing/FirstMates.lua"
 include "Resources/Game/DB/Sailing/MapAnchors.lua"
 include "Resources/Game/DB/Sailing/Coconut.lua"
+include "Resources/Game/DB/Sailing/Keys.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

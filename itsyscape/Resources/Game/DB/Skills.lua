@@ -99,6 +99,11 @@ ItsyScape.Resource.Skill "Mining"
 	}
 
 	ItsyScape.Meta.SkillAction {
+		ActionType = "DigUp",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
+	ItsyScape.Meta.SkillAction {
 		ActionType = "Equip",
 		Skill = ItsyScape.Resource.Skill "Mining"
 	}

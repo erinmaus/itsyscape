@@ -111,6 +111,11 @@ function TileSet:getTileProperty(index, key, defaultValue)
 	end
 end
 
+-- Gets all tile properties for the tile at the index.
+function TileSet:getTileProperties(index)
+	return pairs(self.tiles[index] or {})
+end
+
 -- Returns an iterator over the tiles.
 function TileSet:iterateTiles()
 	return pairs(self.tiles)

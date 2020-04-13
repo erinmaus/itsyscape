@@ -30,8 +30,35 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "Bucket"
 }
 
+local DigUpBucketOfSand = ItsyScape.Action.DigUp() {
+	Requirement {
+		Resource = ItsyScape.Resource.Skill "Mining",
+		Count = ItsyScape.Utility.xpForLevel(1)
+	},
+
+	Input {
+		Resource = ItsyScape.Resource.Item "Bucket",
+		Count = 1
+	},
+
+	Output {
+		Resource = ItsyScape.Resource.Item "BucketOfSand",
+		Count = 1
+	},
+
+	Output {
+		Resource = ItsyScape.Resource.Skill "Mining",
+		Count = ItsyScape.Utility.xpForResource(2)
+	}
+}
+
+ItsyScape.Meta.ActionSpawnProp {
+	Prop = ItsyScape.Resource.Prop "Hole_Default",
+	Action = DigUpBucketOfSand
+}
+
 ItsyScape.Resource.Item "BucketOfSand" {
-	-- Nothing.
+	DigUpBucketOfSand
 }
 
 ItsyScape.Meta.ResourceName {

@@ -112,7 +112,7 @@ function Tile:hasData(key, value)
 end
 
 function Tile:getData(key)
-	return self.flags[tostring(key)] ~= nil
+	return self.flags[tostring(key)]
 end
 
 function Tile:iterateData()
@@ -240,11 +240,10 @@ function Tile:getInterpolatedHeight(x, z)
 	local tz2 = self.bottomLeft
 	local tz3 = self.bottomRight
 
-	if x + z < 1 then
-		return tz0 + (tz1 - tz0) * x + (tz2 - tz0) * z
-	else
-		return tz3 + (tz1 - tz3) * (1 - z) + (tz2 - tz3) * (1 - x)
-	end
+	local min = math.min(self.topLeft, self.topRight, self.bottomLeft, self.bottomRight)
+	local max = math.max(self.topLeft, self.topRight, self.bottomLeft, self.bottomRight)
+
+	return (max - min) / 2 + min
 end
 
 -- Checks if the ray intersects the triangle.

@@ -16,7 +16,7 @@ ItsyScape.Resource.Shop "Standard_GeneralStore" {
 		},
 
 		Output { 
-			Resource = ItsyScape.Resource.Item "BucketOfMoltenGlass",
+			Resource = ItsyScape.Resource.Item "Bucket",
 		}
 	},
 
