@@ -266,7 +266,7 @@ do
 			
 			Output {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForLevel(15)
+				Count = ItsyScape.Utility.xpForResource(15)
 			}
 		}
 	}
@@ -405,7 +405,7 @@ do
 			
 			Output {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForLevel(15)
+				Count = ItsyScape.Utility.xpForResource(15)
 			}
 		}
 	}
@@ -424,7 +424,7 @@ do
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Enchanted",
 		Value = "Iron",
-		Resource = ItsyScape.Resource.Item "RainbowLitBullseyeLantern"
+		Resource = ItsyScape.Resource.Item "LitRainbowBullseyeLantern"
 	}
 
 	ItsyScape.Meta.Item {
