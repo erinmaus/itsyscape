@@ -75,7 +75,6 @@ ItsyScape.Meta.PeepID {
 	Resource = ItsyScape.Resource.Prop "AirObelisk"
 }
 
-
 ItsyScape.Meta.ResourceName {
 	Value = "Air Rune",
 	Language = "en-US",
@@ -136,6 +135,47 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Slimy!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "WaterRune"
+}
+
+ItsyScape.Resource.Prop "CosmicObelisk" {
+	ItsyScape.Action.Runecraft() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "UnfocusedRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CosmicRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(5) / 4
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Air obelisk",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CosmicObelisk"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Feels otherworldly...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CosmicObelisk"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "CosmicObelisk"
 }
 
 ItsyScape.Resource.Item "CosmicRune" {
