@@ -119,6 +119,7 @@ function BasicBomb:onBoom()
 	end
 
 	Log.info("BOOM!")
+	Utility.Peep.poof(self)
 end
 
 function BasicBomb:getPropState()

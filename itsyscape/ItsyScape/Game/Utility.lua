@@ -2176,8 +2176,15 @@ end
 function Utility.Peep.Attackable:onTargetFled(p)
 	local mashina = self:getBehavior(MashinaBehavior)
 	if mashina then
-		if (not mashina.currentState or not mashina.states[mashina.currentState]) and mashina.states['idle'] then
-			mashina.currentState = 'idle'
+		local isCurrentStateValid = mashina.currentState
+		if isCurrentStateValid then
+			local isCurrentStateAttack = mashina.currentState == 'attack' or
+			                             not mashina.states[mashina.currentState]
+
+			if isCurrentStateAttack and mashina.states['idle'] then
+				mashina.currentState = 'idle'
+				Log.info("Target for %s fled, returning to idle.", self:getName())
+			end
 		end
 	end
 end

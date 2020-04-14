@@ -34,13 +34,13 @@ do
 	local Coins10KReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "Coins",
-			Count = 10000
+			Count = 20000
 		}
 	}
 
 	ItsyScape.Meta.RewardEntry {
 		Action = Coins10KReward,
-		Weight = 400
+		Weight = 500
 	}
 
 	local Coins100KReward = ItsyScape.Action.Reward() {
@@ -52,13 +52,13 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = Coins100KReward,
-		Weight = 100
+		Weight = 200
 	}
 
 	local GoldBarReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "GoldBar",
-			Count = 5
+			Count = 2
 		}
 	}
 
@@ -70,7 +70,7 @@ do
 	local GoldOreReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "GoldOre",
-			Count = 10
+			Count = 4
 		}
 	}
 
@@ -88,7 +88,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = GoldenRingReward,
-		Weight = 10
+		Weight = 100
 	}
 
 	local GoldenAmuletReward = ItsyScape.Action.Reward() {
@@ -100,7 +100,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = GoldenAmuletReward,
-		Weight = 5
+		Weight = 50
 	}
 
 	local CopperAmuletReward = ItsyScape.Action.Reward() {
@@ -112,7 +112,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = CopperAmuletReward,
-		Weight = 50
+		Weight = 200
 	}
 
 	ItsyScape.Resource.DropTable "Sailing_BlackmeltLagoon_Cavern_Chest_Gold" {
@@ -222,7 +222,19 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = PiratesHatReward,
-		Weight = 800
+		Weight = 725
+	}
+
+	local KeyReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = KeyReward,
+		Weight = 75
 	}
 
 	ItsyScape.Resource.DropTable "Sailing_BlackmeltLagoon_Cavern_Chest_Legendary" {
