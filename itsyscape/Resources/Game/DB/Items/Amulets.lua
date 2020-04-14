@@ -40,12 +40,12 @@ do
 			
 			Output {
 				Resource = ItsyScape.Resource.Skill "Crafting",
-				Count = ItsyScape.Utility.xpForLevel(2)
+				Count = ItsyScape.Utility.xpForResource(2)
 			},
 			
 			Output {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForLevel(2)
+				Count = ItsyScape.Utility.xpForResource(2)
 			}
 		}
 	}
@@ -118,7 +118,7 @@ do
 			
 			Output {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForLevel(2)
+				Count = ItsyScape.Utility.xpForResource(2)
 			}
 		}
 	}
