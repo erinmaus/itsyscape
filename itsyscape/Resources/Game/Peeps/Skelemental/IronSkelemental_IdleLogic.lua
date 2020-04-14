@@ -21,7 +21,7 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
 				filter = SkelementalCommon.probeForMetal("Iron"),
-				distance = 6,
+				distance = 4,
 				[TARGET] = B.Output.RESULT
 			},
 

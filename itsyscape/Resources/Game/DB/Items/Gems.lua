@@ -25,7 +25,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(10),
+	Value = ItsyScape.Utility.valueForItem(45),
 	Resource = ItsyScape.Resource.Item "Sapphire"
 }
 
@@ -46,7 +46,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(20),
+	Value = ItsyScape.Utility.valueForItem(50),
 	Resource = ItsyScape.Resource.Item "Emerald"
 }
 
@@ -63,7 +63,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(30),
+	Value = ItsyScape.Utility.valueForItem(55),
 	Resource = ItsyScape.Resource.Item "Ruby"
 }
 
@@ -84,6 +84,6 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(50),
+	Value = ItsyScape.Utility.valueForItem(60),
 	Resource = ItsyScape.Resource.Item "Diamond"
 }
