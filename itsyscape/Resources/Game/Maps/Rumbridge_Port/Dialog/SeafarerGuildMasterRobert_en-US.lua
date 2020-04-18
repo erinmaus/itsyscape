@@ -1,3 +1,5 @@
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
+
 speaker "Robert"
 
 PLAYER_NAME = _TARGET:getName()
@@ -20,7 +22,16 @@ if hasShip then
 	}
 
 	if option == MANAGE then
-		Utility.UI.openInterface(_TARGET, "ShipCustomization", true)
+		local inProgress = Sailing.Itinerary.hasItinerary(_TARGET)
+		if inProgress then
+			speaker "Robert"
+			message {
+				"Oh, looks like yer itinary is planned.",
+				"Clear it 'en I can let ye customize yer ship, mate."
+			}
+		else
+			Utility.UI.openInterface(_TARGET, "ShipCustomization", true)
+		end
 	elseif option == SAILORS then
 		Utility.UI.openInterface(_TARGET, "RecruitSailor", true)
 	end

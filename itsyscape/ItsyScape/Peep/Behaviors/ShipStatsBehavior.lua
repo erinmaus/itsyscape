@@ -21,6 +21,7 @@ ShipStatsBehavior.BASE_STATS = {
 	"Distance",
 	"Defense",
 	"Speed",
+	"Storage"
 }
 
 -- These are optional, for example merchant ships.

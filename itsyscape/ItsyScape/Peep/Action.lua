@@ -343,34 +343,23 @@ function Action:transfer(state, player, flags)
 end
 
 function Action:getFailureReason(state, peep)
+	local game = peep:getDirector():getGameInstance()
 	local brochure = self.gameDB:getBrochure()
 
 	local requirements = {}
 	for requirement in brochure:getRequirements(self.action) do
 		local resource = brochure:getConstraintResource(requirement)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
+		local constraint = Utility.getActionConstraintResource(game, resource, requirement.count)
 
-		table.insert(requirements, {
-			type = resourceType.name,
-			resource = resource.name,
-			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
-			description = Utility.getDescription(resource, self.gameDB, nil, 1),
-			count = requirement.count
-		})
+		table.insert(requirements, constraint)
 	end
 
 	local inputs = {}
-	for requirement in brochure:getInputs(self.action) do
-		local resource = brochure:getConstraintResource(requirement)
-		local resourceType = brochure:getResourceTypeFromResource(resource)
+	for input in brochure:getInputs(self.action) do
+		local resource = brochure:getConstraintResource(input)
+		local constraint = Utility.getActionConstraintResource(game, resource, input.count)
 
-		table.insert(inputs, {
-			type = resourceType.name,
-			resource = resource.name,
-			name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
-			description = Utility.getDescription(resource, self.gameDB, nil, 1),
-			count = requirement.count
-		})
+		table.insert(inputs, constraint)
 	end
 
 	local debug = self.gameDB:getRecord("DebugAction", { Action = self.action })

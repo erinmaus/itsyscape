@@ -477,6 +477,7 @@ Game "ItsyScape"
 		Distance = Meta.TYPE_INTEGER,
 		Defense = Meta.TYPE_INTEGER,
 		Speed = Meta.TYPE_INTEGER,
+		Storage = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -769,6 +770,8 @@ include "Resources/Game/DB/Sailing/FirstMates.lua"
 include "Resources/Game/DB/Sailing/MapAnchors.lua"
 include "Resources/Game/DB/Sailing/Coconut.lua"
 include "Resources/Game/DB/Sailing/Maps.lua"
+include "Resources/Game/DB/Sailing/Rowboat.lua"
+include "Resources/Game/DB/Sailing/KeyItems.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

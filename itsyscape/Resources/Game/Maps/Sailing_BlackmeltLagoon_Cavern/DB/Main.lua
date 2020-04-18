@@ -130,6 +130,24 @@ do
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
 		MapObject = M["Ladder_ToBlackmeltLagoon"]
 	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromBlackmeltLagoonCavern",
+		Map = ItsyScape.Resource.Map "Sailing_BlackmeltLagoon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_ToBlackmeltLagoon"] {
+		TravelAction
+	}
 end
 
 M["Anchor_ToMainCavern_Top"] = ItsyScape.Resource.MapObject.Unique()

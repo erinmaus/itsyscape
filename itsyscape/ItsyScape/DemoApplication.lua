@@ -10,7 +10,10 @@
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local CameraController = require "ItsyScape.Graphics.CameraController"
+local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -29,15 +32,8 @@ DemoApplication.PROBE_TICK = 1 / 10
 function DemoApplication:new()
 	Application.new(self)
 
-	self.isCameraDragging = false
-	self.cameraVerticalRotationOffset = 0
-	self.cameraHorizontalRotationOffset = 0
-
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
-
-	self:getCamera():setHorizontalRotation(DemoApplication.CAMERA_HORIZONTAL_ROTATION)
-	self:getCamera():setVerticalRotation(DemoApplication.CAMERA_VERTICAL_ROTATION)
 
 	self.showingToolTip = false
 	self.lastToolTipObject = false
@@ -45,22 +41,19 @@ function DemoApplication:new()
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
 
-	self.cameraOffset = Vector(0)
+	self.cameraController = DefaultCameraController(self)
+	self:getGame():getPlayer().onChangeCamera:register(self.changeCamera, self)
 end
 
-function DemoApplication:getPlayerPosition(delta)
-	local position
-	do
-		local gameView = self:getGameView()
-		local actor = gameView:getActor(self:getGame():getPlayer():getActor())
-		if actor then
-			local node = actor:getSceneNode()
-			local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
-			position = Vector(transform:transformPoint(0, 1, 0))
-		end
-	end
+function DemoApplication:changeCamera(_, cameraType)
+	local typeName = string.format("ItsyScape.Graphics.%sCameraController", cameraType)
+	local s, r = pcall(require, typeName)
 
-	return position or Vector.ZERO
+	if not s then
+		Log.error("Could not load camera type '%s': %s", s, r)
+	else
+		self.cameraController = r(self)
+	end
 end
 
 function DemoApplication:initialize()
@@ -84,9 +77,7 @@ function DemoApplication:closeTitleScreen()
 	end
 
 	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
-	self:getGame():getUI():open(playerPeep, "Ribbon")
-	self:getGame():getUI():open(playerPeep, "CombatStatusHUD")
-	self:getGame():getUI():open(playerPeep, "StrategyBar")
+	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 end
 
 function DemoApplication:openTitleScreen()
@@ -129,7 +120,7 @@ function DemoApplication:mousePress(x, y, button)
 			alertWindow:open(
 				"ItsyRealm collects anonymous analytics about things like how far you progress. " ..
 				"You can opt-out any time by using the Configure ItsyRealm shortcut created by the launcher. " ..
-				"Any analytics collected, assuming you opt out, will be deleted.",
+				"Any analytics collected, assuming you opt-out, will be deleted.",
 				"A Boring Disclaimer",
 				WIDTH,
 				HEIGHT)
@@ -140,40 +131,35 @@ function DemoApplication:mousePress(x, y, button)
 			end)
 		end
 	else
-		if not Application.mousePress(self, x, y, button) then
-			if button == 1 then
-				self:probe(x, y, true)
-			elseif button == 2 then
-				self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
-			elseif button == 3 then
-				self.isCameraDragging = true
-			end
+		local isUIACtive = Application.mousePress(self, x, y, button)
+		local probeAction = self.cameraController:mousePress(isUIACtive, x, y, button)
+		if probeAction == CameraController.PROBE_SELECT_DEFAULT then
+			self:probe(x, y, true)
+		elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
+			self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
 		end
 	end
 end
 
 function DemoApplication:mouseRelease(x, y, button)
-	Application.mouseRelease(self, x, y, button)
+	local isUIActive = Application.mouseRelease(self, x, y, button)
 
-	if button == 3 then
-		self.isCameraDragging = false
+	local probeAction = self.cameraController:mouseRelease(isUIACtive, x, y, button)
+	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
+		self:probe(x, y, true)
+	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
+		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
 	end
 end
 
 function DemoApplication:mouseScroll(x, y)
-	if not Application.mouseScroll(self, x, y) then
-		local distance = self.camera:getDistance() - y * 0.5
+	local isUIACtive = Application.mouseScroll(self, x, y)
 
-		if not _DEBUG then
-			self:getCamera():setDistance(math.min(math.max(distance, 1), 40))
-		else
-			self:getCamera():setDistance(distance)
-		end
-	end
+	self.cameraController:mouseScroll(isUIACtive, x, y)
 end
 
 function DemoApplication:mouseMove(x, y, dx, dy)
-	Application.mouseMove(self, x, y, dx, dy)
+	local isUIACtive = Application.mouseMove(self, x, y, dx, dy)
 
 	self.mouseX = x
 	self.mouseY = y
@@ -189,33 +175,7 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 		end
 	end
 
-	if self.isCameraDragging then
-		local angle1 = self.cameraVerticalRotationOffset + dx / 128
-		local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
-
-		if not _DEBUG then
-			angle1 = math.max(
-				angle1,
-				-DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle1 = math.min(
-				angle1,
-				DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle2 = math.max(
-				angle2,
-				-DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-			angle2 = math.min(
-				angle2,
-				DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-		end
-
-		self:getCamera():setVerticalRotation(
-			DemoApplication.CAMERA_VERTICAL_ROTATION + angle1)
-		self:getCamera():setHorizontalRotation(
-			DemoApplication.CAMERA_HORIZONTAL_ROTATION + angle2)
-
-		self.cameraVerticalRotationOffset = angle1
-		self.cameraHorizontalRotationOffset = angle2
-	end
+	self.cameraController:mouseMove(isUIACtive, x, y, dx, dy)
 end
 
 function DemoApplication:keyDown(key, ...)
@@ -362,7 +322,6 @@ function DemoApplication:updatePlayerMovement()
 	end
 end
 
-
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
@@ -404,59 +363,15 @@ function DemoApplication:update(delta)
 			unpack(self.toolTip))
 	end
 
-	if _DEBUG then
-		local isShiftDown = love.keyboard.isDown('lshift') or
-		                    love.keyboard.isDown('rshift')
-		local isCtrlDown = love.keyboard.isDown('lctrl') or
-		                   love.keyboard.isDown('rctrl')
-		local speed
-		if isShiftDown then
-			speed = 8
-		else
-			speed = 2
-		end
-
-		do
-			if love.keyboard.isDown('up') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Z * speed * delta
-			end
-
-			if love.keyboard.isDown('down') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_Z * speed * delta
-			end
-		end
-
-		do
-			if love.keyboard.isDown('left') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_X * speed * delta
-			end
-			if love.keyboard.isDown('right') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_X * speed * delta
-			end
-		end
-
-		do
-			if love.keyboard.isDown('pageup') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
-			end
-			if love.keyboard.isDown('pagedown') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
-			end
-		end
-
-		if love.keyboard.isDown('space') then
-			self.cameraOffset = Vector(0)
-		end
-	end
-
 	if self.titleScreen then
 		self.titleScreen:update(delta)
 	end
+
+	self.cameraController:update(delta)
 end
 
 function DemoApplication:draw(delta)
-	self:getCamera():setPosition(
-		self:getPlayerPosition(self:getFrameDelta()) + self.cameraOffset)
+	self.cameraController:draw()
 
 	if self.titleScreen then
 		self.titleScreen:draw()

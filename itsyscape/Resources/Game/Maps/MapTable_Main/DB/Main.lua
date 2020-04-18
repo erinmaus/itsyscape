@@ -108,63 +108,63 @@ do
 	}
 end
 
-M["Anchor_ChartTown_Rumbridge"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Chart_Rumbridge_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 81,
 		PositionY = 5,
 		PositionZ = 79,
-		Name = "Anchor_ChartTown_Rumbridge",
+		Name = "Anchor_Chart_Rumbridge_Port",
 		Map = M._MAP,
-		Resource = M["Anchor_ChartTown_Rumbridge"]
+		Resource = M["Anchor_Chart_Rumbridge_Port"]
 	}
 end
 
-M["Anchor_ChartTown_ViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Chart_ViziersRock_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 81,
 		PositionY = 7,
 		PositionZ = 59,
-		Name = "Anchor_ChartTown_ViziersRock",
+		Name = "Anchor_Chart_ViziersRock_Port",
 		Map = M._MAP,
-		Resource = M["Anchor_ChartTown_ViziersRock"]
+		Resource = M["Anchor_Chart_ViziersRock_Port"]
 	}
 end
 
-M["Anchor_ChartTown_WhiteCastleUponTheRock"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Chart_WhiteCastleUponTheRock_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 67,
 		PositionY = 5,
 		PositionZ = 63,
-		Name = "Anchor_ChartTown_WhiteCastleUponTheRock",
+		Name = "Anchor_Chart_WhiteCastleUponTheRock_Port",
 		Map = M._MAP,
-		Resource = M["Anchor_ChartTown_WhiteCastleUponTheRock"]
+		Resource = M["Anchor_Chart_WhiteCastleUponTheRock_Port"]
 	}
 end
 
-M["Anchor_ChartTown_EmptyRuins"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Chart_EmptyRuins_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 71,
 		PositionY = 5,
 		PositionZ = 45,
-		Name = "Anchor_ChartTown_EmptyRuins",
+		Name = "Anchor_Chart_EmptyRuins_Port",
 		Map = M._MAP,
-		Resource = M["Anchor_ChartTown_EmptyRuins"]
+		Resource = M["Anchor_Chart_EmptyRuins_Port"]
 	}
 end
 
-M["Anchor_ChartTown_IsabelleIsland"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Chart_IsabelleIsland_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 55,
 		PositionY = 6,
 		PositionZ = 95,
-		Name = "Anchor_ChartTown_IsabelleIsland",
+		Name = "Anchor_Chart_IsabelleIsland_Port",
 		Map = M._MAP,
-		Resource = M["Anchor_ChartTown_IsabelleIsland"]
+		Resource = M["Anchor_Chart_IsabelleIsland_Port"]
 	}
 end
 

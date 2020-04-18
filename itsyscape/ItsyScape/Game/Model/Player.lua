@@ -8,12 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 
 local Player = Class()
 
 -- Constructs a new player.
 function Player:new()
-	-- Nothing.
+	self.onChangeCamera = Callback()
 end
 
 -- Gets the Actor this Player is represented by.

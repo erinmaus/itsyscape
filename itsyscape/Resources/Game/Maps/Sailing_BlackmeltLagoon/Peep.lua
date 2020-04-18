@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local BlackmeltLagoon = Class(Map)
 
@@ -28,6 +29,12 @@ function BlackmeltLagoon:onLoad(filename, args, layer)
 		wind = { -2, 0, 0 },
 		heaviness = 0.125
 	})
+
+	local player = Utility.Peep.getPlayer(self)
+	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
+	if not pending then
+		Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
+	end
 end
 
 return BlackmeltLagoon

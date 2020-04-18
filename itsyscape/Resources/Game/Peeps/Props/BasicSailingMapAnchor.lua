@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Props/BasicSailingMapAnchor.lua
+-- Resources/Game/Peeps/Props/BasicSailingMapAnchor.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Prop = require "Resources.Game.Peeps.Props.PassableProp"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
@@ -29,6 +30,10 @@ function BasicSailingMapAnchor:new(...)
 	self:addPoke('assignMapLocation')
 end
 
+function BasicSailingMapAnchor:getMapLocation()
+	return self.mapLocation
+end
+
 function BasicSailingMapAnchor:onAssignMapLocation(mapLocation, playerMapLocation)
 	self.mapLocation = mapLocation
 	self.playerMapLocation = playerMapLocation
@@ -45,6 +50,7 @@ end
 
 function BasicSailingMapAnchor:getPropState()
 	local gameDB = self:getDirector():getGameDB()
+	local _, lastLocation = Sailing.Itinerary.getLastDestination(Utility.Peep.getPlayer(self))
 
 	if self.mapLocation and self.playerMapLocation and self.mapAnchor then
 		return {
@@ -52,7 +58,7 @@ function BasicSailingMapAnchor:getPropState()
 			description = Utility.getDescription(self.mapAnchor, gameDB),
 			i = self.mapLocation:get("AnchorI"),
 			j = self.mapLocation:get("AnchorI"),
-			distance = Utility.Sailing.getDistanceBetweenLocations(self.playerMapLocation, self.mapLocation)
+			distance = Sailing.getDistanceBetweenLocations(lastLocation or self.playerMapLocation, self.mapLocation)
 		}
 	else
 		return {}

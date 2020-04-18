@@ -115,6 +115,98 @@ do
 	}
 end
 
+M["Rowboat"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 4.25,
+		PositionZ = 99,
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
+		Name = "Rowboat",
+		Map = M._MAP,
+		Resource = M["Rowboat"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Rowboat_Default",
+		MapObject = M["Rowboat"]
+	}
+end
+
+M["Anchor_FirstMate"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 4.5,
+		PositionZ = 103,
+		Name = "Anchor_FirstMate",
+		Map = M._MAP,
+		Resource = M["Anchor_FirstMate"]
+	}
+end
+
+M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 4.5,
+		PositionZ = 103,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Anchor_FromBlackmeltLagoonCavern"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 101,
+		PositionY = 6,
+		PositionZ = 101,
+		Name = "Anchor_FromBlackmeltLagoonCavern",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBlackmeltLagoonCavern"]
+	}
+end
+
+M["TrapDoor_Cavern"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 101,
+		PositionY = 6,
+		PositionZ = 103,
+		Name = "TrapDoor_Cavern",
+		Map = M._MAP,
+		Resource = M["TrapDoor_Cavern"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_Cavern"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromBlackmeltLagoon",
+		Map = ItsyScape.Resource.Map "Sailing_BlackmeltLagoon_Cavern",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_Cavern"] {
+		TravelAction
+	}
+end
+
 M["Clucker1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

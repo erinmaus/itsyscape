@@ -141,6 +141,30 @@ do
 	}
 end
 
+M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 27,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Anchor_MapTable"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 5,
+		PositionZ = 49,
+		Name = "Anchor_MapTable",
+		Map = M._MAP,
+		Resource = M["Anchor_MapTable"]
+	}
+end
+
 M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
