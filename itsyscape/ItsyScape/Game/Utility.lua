@@ -431,6 +431,20 @@ function Utility.getAction(game, action, scope)
 	end
 end
 
+function Utility.getActionConstraintResource(game, resource, count)
+	local gameDB = game:getGameDB()
+	local brochure = gameDB:getBrochure()
+	local resourceType = brochure:getResourceTypeFromResource(resource)
+
+	return {
+		type = resourceType.name,
+		resource = resource.name,
+		name = Utility.getName(resource, gameDB) or resource.name,
+		description = Utility.getDescription(resource, gameDB, nil, 1),
+		count = count or 1
+	}
+end
+
 function Utility.getActionConstraints(game, action)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -440,51 +454,27 @@ function Utility.getActionConstraints(game, action)
 		result.requirements = {}
 		for requirement in brochure:getRequirements(action) do
 			local resource = brochure:getConstraintResource(requirement)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+			local constraint = Utility.getActionConstraintResource(game, resource, requirement.count)
 
-			table.insert(
-				result.requirements,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = requirement.count
-				})
+			table.insert(result.requirements, constraint)
 		end
 	end
 	do
 		result.inputs = {}
 		for input in brochure:getInputs(action) do
 			local resource = brochure:getConstraintResource(input)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+			local constraint = Utility.getActionConstraintResource(game, resource, input.count)
 
-			table.insert(
-				result.inputs,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = input.count
-				})
+			table.insert(result.inputs, constraint)
 		end
 	end
 	do
 		result.outputs = {}
 		for output in brochure:getOutputs(action) do
 			local resource = brochure:getConstraintResource(output)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+			local constraint = Utility.getActionConstraintResource(game, resource, output.count)
 
-			table.insert(
-				result.outputs,
-				{
-					type = resourceType.name,
-					resource = resource.name,
-					name = Utility.getName(resource, gameDB) or resource.name,
-					description = Utility.getDescription(resource, gameDB, nil, 1),
-					count = output.count
-				})
+			table.insert(result.outputs, constraint)
 		end
 	end
 
@@ -802,13 +792,41 @@ function Utility.Text.prettyNumber(value)
 end
 
 Utility.UI = {}
+Utility.UI.Groups = {
+	WORLD = {
+		"Ribbon",
+		"CombatStatusHUD",
+		"StrategyBar"
+	}
+}
+
+function Utility.UI.openGroup(peep, group)
+	for i = 1, #group do
+		local interfaceID = group[i]
+		Utility.UI.openInterface(peep, interfaceID, false)
+	end
+end
+
+function Utility.UI.closeAll(peep)
+	local ui = peep:getDirector():getGameInstance():getUI()
+
+	local interfaces = {}
+	for interfaceID, interfaceIndex in ui:getInterfacesForPeep(peep) do
+		table.insert(interfaces, { id = interfaceID, index = interfaceIndex })
+	end
+
+	for i = 1, #interfaces do
+		ui:close(interfaces[i].id, interfaces[i].index)
+	end
+end
+
 function Utility.UI.broadcast(ui, peep, interfaceID, ...)
 	if interfaceID then
 		for interfaceIndex in ui:getInterfacesForPeep(peep, interfaceID) do
 			ui:poke(interfaceID, interfaceIndex, ...)
 		end
 	else
-		for interfaceID, interfaceIndex in ui:getInterfacesForPeep(peep, interfaceID) do
+		for interfaceID, interfaceIndex in ui:getInterfacesForPeep(peep) do
 			ui:poke(interfaceID, interfaceIndex, ...)
 		end
 	end
@@ -1158,6 +1176,10 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 end
 
 Utility.Peep = {}
+
+function Utility.Peep.getPlayerModel(peep)
+	return peep:getDirector():getGameInstance():getPlayer()
+end
 
 function Utility.Peep.getPlayerActor(peep)
 	return peep:getDirector():getGameInstance():getPlayer():getActor()
@@ -2670,20 +2692,6 @@ function Utility.Quest.build(quest, gameDB)
 	end
 
 	return result
-end
-
-Utility.Sailing = {}
-
--- This scales a distance from map units to "pseudo-kilometers".
-Utility.Sailing.DISTANCE_SCALE = 70
-
-function Utility.Sailing.getDistanceBetweenLocations(fromLocation, toLocation)
-	local fromI, fromJ = fromLocation:get("AnchorI"), fromLocation:get("AnchorI")
-	local toI, toJ = toLocation:get("AnchorI"), toLocation:get("AnchorI")
-	local realityWarpMultiplier = 1 + toLocation:get("RealityWarpDistanceMultiplier")
-
-	local distance = (math.abs(fromI - toI) + math.abs(fromJ - toJ)) * realityWarpMultiplier
-	return distance * Utility.Sailing.DISTANCE_SCALE
 end
 
 return Utility

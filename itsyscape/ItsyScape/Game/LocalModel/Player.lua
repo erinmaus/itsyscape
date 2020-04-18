@@ -26,20 +26,22 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
-local Player = Class()
-Player.MOVEMENT_STOP_THRESHOLD = 10
+local LocalPlayer = Class(Player)
+LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 
 -- Constructs a new player.
 --
 -- The Actor isn't created until Player.spawn is called.
-function Player:new(game, stage)
+function LocalPlayer:new(game, stage)
+	Player.new(self)
+
 	self.game = game
 	self.stage = stage
 	self.actor = false
 	self.direction = Vector.UNIT_X
 end
 
-function Player:spawn()
+function LocalPlayer:spawn()
 	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One")
 	if success then
 		self.actor = actor
@@ -70,7 +72,7 @@ function Player:spawn()
 	end
 end
 
-function Player:poof()
+function LocalPlayer:poof()
 	if self.actor then
 		self.stage:killActor(self.actor)
 	end
@@ -79,22 +81,22 @@ function Player:poof()
 end
 
 -- Gets the Actor this Player is represented by.
-function Player:getActor()
+function LocalPlayer:getActor()
 	return self.actor
 end
 
-function Player:flee()
+function LocalPlayer:flee()
 	local peep = self.actor:getPeep()
 	peep:removeBehavior(CombatTargetBehavior)
 	peep:getCommandQueue(CombatCortex.QUEUE):clear()
 end
 
-function Player:getIsEngaged()
+function LocalPlayer:getIsEngaged()
 	local peep = self.actor:getPeep()
 	return peep:hasBehavior(CombatTargetBehavior)
 end
 
-function Player:findPath(i, j, k)
+function LocalPlayer:findPath(i, j, k)
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = self.game:getDirector():getMap(k)
@@ -106,7 +108,7 @@ function Player:findPath(i, j, k)
 		0)
 end
 
-function Player:move(x, z)
+function LocalPlayer:move(x, z)
 	if not self.actor then
 		return
 	end
@@ -117,7 +119,7 @@ function Player:move(x, z)
 	local movement = peep:getBehavior(MovementBehavior)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		local currentAccceleration = movement.acceleration:getLength()
-		if currentAccceleration < Player.MOVEMENT_STOP_THRESHOLD then
+		if currentAccceleration < LocalPlayer.MOVEMENT_STOP_THRESHOLD then
 			movement.acceleration = Vector.ZERO
 			movement.velocity = Vector.ZERO
 			movement.isStopping = true
@@ -136,9 +138,13 @@ function Player:move(x, z)
 end
 
 -- Moves the player to the specified position on the map via walking.
-function Player:walk(i, j, k)
+function LocalPlayer:walk(i, j, k)
 	local peep = self.actor:getPeep()
 	return Utility.Peep.walk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
 end
 
-return Player
+function LocalPlayer:changeCamera(cameraType)
+	self.onChangeCamera(self, cameraType)
+end
+
+return LocalPlayer

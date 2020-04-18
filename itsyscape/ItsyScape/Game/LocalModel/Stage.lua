@@ -524,8 +524,8 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 	local playerPeep = self.game:getPlayer():getActor():getPeep()
 	if playerPeep == peep then
+		-- We want to reload if this is a new stage or if it's forced.
 		local teleportedPeep = false
-		-- We want to reload if this is a new stage, if it's forced.
 		if filename ~= self.stageName or force or filename ~= path then
 			self:loadStage(path)
 			teleportedPeep = true

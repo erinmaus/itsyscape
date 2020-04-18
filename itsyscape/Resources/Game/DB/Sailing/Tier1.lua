@@ -114,7 +114,7 @@ do
 
 	ItsyScape.Meta.SailingItemStats {
 		Health = 1000,
-		Distance = 500,
+		Distance = 800,
 		Defense = 100,
 		Speed = 50,
 		Resource = ItsyScape.Resource.SailingItem "Hull_Common"

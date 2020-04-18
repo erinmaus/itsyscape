@@ -44,7 +44,18 @@ repeat
 		speaker "_SELF"
 		message "I'm aware that's the case, yes. Uh, woof!"
 	elseif result == SAIL then
-		message "I'm afraid that's not possible right now."
+		speaker "_TARGET"
+		message "Let's set sail!"
+
+		speaker "_SELF"
+		message "Let's go the map table..."
+
+		local map = Utility.Peep.getMapResource(_TARGET)
+		local anchor = string.format("Anchor_Chart_%s", map.name)
+		local destination = string.format("MapTable_Main?playerAnchor=%s,returnAnchor=Anchor_MapTable", map.name)
+
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(_TARGET, destination, anchor)
 	elseif result == DISMISS then
 		speaker "_TARGET"
 		message "I'm afraid our adventures must diverge now."

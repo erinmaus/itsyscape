@@ -52,22 +52,23 @@ do
 	ItsyScape.Meta.SailingMapLocation {
 		AnchorI = 41,
 		AnchorJ = 40,
+		IsPort = 1,
 		Map = ItsyScape.Resource.Map "Rumbridge_Port",
 		SeaChart = CHART_MAIN,
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_Rumbridge"
+		Resource = ItsyScape.Resource.SailingMapAnchor "Rumbridge_Port"
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Rumbridge Port",
 		Language = "en-US",
 		IsPort = 1,
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_Rumbridge"
+		Resource = ItsyScape.Resource.SailingMapAnchor "Rumbridge_Port"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Home to the worst drunkards in the Realm.",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_Rumbridge"
+		Resource = ItsyScape.Resource.SailingMapAnchor "Rumbridge_Port"
 	}
 end
 
@@ -75,23 +76,23 @@ do
 	ItsyScape.Meta.SailingMapLocation {
 		AnchorI = 28,
 		AnchorJ = 48,
-		RealityWarpDistanceMultiplier = -0.7,
+		RealityWarpDistanceMultiplier = -0.9,
 		IsPort = 1,
 		Map = ItsyScape.Resource.Map "IsabelleIsland_Port",
 		SeaChart = CHART_MAIN,
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_IsabelleIsland"
+		Resource = ItsyScape.Resource.SailingMapAnchor "IsabelleIsland_Port"
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Isabelle Island Port",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_IsabelleIsland"
+		Resource = ItsyScape.Resource.SailingMapAnchor "IsabelleIsland_Port"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Home to the two-faced merchant, Isabelle.",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "Port_IsabelleIsland"
+		Resource = ItsyScape.Resource.SailingMapAnchor "IsabelleIsland_Port"
 	}
 end
 
