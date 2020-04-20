@@ -460,6 +460,7 @@ Game "ItsyScape"
 	ResourceType "SailingFirstMate"
 	ResourceType "SailingMapAnchor"
 	ResourceType "SailingSeaChart"
+	ResourceType "SailingRandomEvent"
 	ActionType "SailingBuy"
 	ActionType "SailingUnlock"
 	ActionType "Sail"
@@ -512,6 +513,12 @@ Game "ItsyScape"
 	Meta "MapSeaChart" {
 		SeaChart = Meta.TYPE_RESOURCE,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "SailingRandomEvent" {
+		Weight = Meta.TYPE_INTEGER,
+		IsPirate = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
 	}
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
@@ -772,6 +779,7 @@ include "Resources/Game/DB/Sailing/Coconut.lua"
 include "Resources/Game/DB/Sailing/Maps.lua"
 include "Resources/Game/DB/Sailing/Rowboat.lua"
 include "Resources/Game/DB/Sailing/KeyItems.lua"
+include "Resources/Game/DB/Sailing/RandomEvents.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

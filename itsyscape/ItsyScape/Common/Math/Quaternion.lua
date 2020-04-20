@@ -25,7 +25,7 @@ function Quaternion.fromAxisAngle(axis, angle)
 	return Quaternion(xyz.x, xyz.y, xyz.z, w)
 end
 
-local E = 0.01
+local E = 0.00001
 function Quaternion.lookAt(source, target)
 	local forward = (target - source):getNormal()
 

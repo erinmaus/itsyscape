@@ -36,6 +36,10 @@ function PropView:getRoot()
 	return self.sceneNode
 end
 
+function PropView:getIsStatic()
+	return true
+end
+
 function PropView:load()
 	-- Nothing.
 end
@@ -51,7 +55,10 @@ function PropView:updateTransform()
 	transform:setLocalTranslation(position)
 	transform:setLocalRotation(self.prop:getRotation())
 	transform:setLocalScale(self.prop:getScale())
-	transform:tick()
+
+	if self:getIsStatic() then
+		transform:tick()
+	end
 
 	local mapSceneNode = self.gameView:getMapSceneNode(layer)
 	if mapSceneNode ~= self.sceneNode:getParent() then

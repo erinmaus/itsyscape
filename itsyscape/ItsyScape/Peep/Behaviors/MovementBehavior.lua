@@ -47,6 +47,8 @@ MovementBehavior.FACING_RIGHT =  1
 -- * stoppingForce is the exponent of decay when stopping.
 -- * maxStepHeight: maximum step height. If this is exceeded after a step,
 --                  the old position is returned. Default value is 1.
+-- * clampToZero: clamps acceleration and velocity to zero as they near zero individually (true)
+--                or as a whole (false)
 --
 -- Defaults are 0 (or equivalent) unless otherwise specified.
 function MovementBehavior:new()
@@ -69,6 +71,7 @@ function MovementBehavior:new()
 	self.isStopping = false
 	self.stoppingForce = 2
 	self.maxStepHeight = 1
+	self.clampToZero = true
 end
 
 function MovementBehavior:clampMovement()

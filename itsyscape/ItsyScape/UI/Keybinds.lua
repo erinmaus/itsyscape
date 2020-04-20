@@ -45,4 +45,8 @@ add('STRATEGY_BAR_SLOT_14', 'rshift 5')
 -- Minigames
 add('MINIGAME_DASH', 'space')
 
+-- Sailing
+add('SAILING_ACTON_PRIMARY', 'space')
+add('SAILING_ACTON_SECONDARY', 'rshift space')
+
 return Keybinds

@@ -16,6 +16,7 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 
 local ShipMapPeep = Class(Map)
@@ -85,7 +86,7 @@ function ShipMapPeep:onLoad(filename, args, layer)
 	local map = args['map']
 	if map then
 		Log.info('Ship map: %s.', map)
-		local layer, script = stage:loadMapResource(map, {
+		local scriptLayer, script = stage:loadMapResource(map, {
 			ship = filename,
 			instance = self
 		})
@@ -94,7 +95,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 		local WATER_ELEVATION = 1.75
 
 		if script then
-			local baseMap = stage:getMap(1)
+			local baseMap = stage:getMap(scriptLayer)
+			local selfMap = stage:getMap(self:getLayer())
 
 			local x, z
 			do
@@ -104,8 +106,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 					j = tonumber(j)
 
 					if i and j then
-						i = i - baseMap:getWidth() / 2
-						j = j - baseMap:getHeight() / 2
+						i = i - selfMap:getWidth() / 2
+						j = j - selfMap:getHeight() / 2
 
 						local position = self:getBehavior(PositionBehavior)
 						local map = stage:getMap(layer)
@@ -117,11 +119,11 @@ function ShipMapPeep:onLoad(filename, args, layer)
 				end
 			end
 
-			x = (x or 0) + (baseMap:getWidth() + 0.5) * baseMap:getCellSize() / 2
-			z = (z or 0) + (baseMap:getHeight()+ 0.5) * baseMap:getCellSize() / 2
+			x = (x or 0) + selfMap:getWidth() / 2 * selfMap:getCellSize()
+			z = (z or 0) + selfMap:getHeight() / 2 * selfMap:getCellSize()
 
 			local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", self:getPrefix(), self:getSuffix())
-			local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer)
+			local _, boatFoamProp = stage:placeProp(boatFoamPropName, scriptLayer)
 			if boatFoamProp then
 				local peep = boatFoamProp:getPeep()
 				peep:listen('finalize', function()
@@ -130,10 +132,11 @@ function ShipMapPeep:onLoad(filename, args, layer)
 						position.position = Vector(x, WATER_ELEVATION, z)
 					end
 				end)
+				self.boatFoamProp = peep
 			end
 
 			local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", self:getPrefix(), self:getSuffix())
-			local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer)
+			local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, scriptLayer)
 			if boatFoamTrailProp then
 				local peep = boatFoamTrailProp:getPeep()
 				peep:listen('finalize', function()
@@ -142,6 +145,7 @@ function ShipMapPeep:onLoad(filename, args, layer)
 						position.position = Vector(x, WATER_ELEVATION, z)
 					end
 				end)
+				self.boatFoamTrailProp = peep
 			end
 		end
 
@@ -187,6 +191,44 @@ function ShipMapPeep:onLeak(p)
 	self.leaks = self.leaks + 1
 end
 
+function ShipMapPeep:updateFoam()
+	local map = self:getDirector():getMap(self:getLayer())
+
+	local x, z
+	do
+		local position = self:getBehavior(PositionBehavior)
+		x, z = position.position.x, position.position.z
+	end
+
+	x = x + map:getWidth() / 2 * map:getCellSize()
+	z = z + map:getHeight() / 2 * map:getCellSize()
+	do
+		local _, boatFoamPropPosition = self.boatFoamProp:addBehavior(PositionBehavior)
+		local _, boatFoamTrailPropPosition = self.boatFoamTrailProp:addBehavior(PositionBehavior)
+
+		boatFoamPropPosition.position = Vector(x, boatFoamPropPosition.position.y, z)
+		boatFoamTrailPropPosition.position = Vector(x, boatFoamTrailPropPosition.position.y, z)
+	end
+
+	local scale = self:getBehavior(ScaleBehavior)
+	if scale then
+		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(ScaleBehavior)
+		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(ScaleBehavior)
+
+		boatFoamPropScale.scale = scale.scale
+		boatFoamTrailPropScale.scale = scale.scale
+	end
+
+	local rotation = self:getBehavior(RotationBehavior)
+	if rotation then
+		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(RotationBehavior)
+		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(RotationBehavior)
+
+		boatFoamPropScale.rotation = rotation.rotation
+		boatFoamTrailPropScale.rotation = rotation.rotation
+	end
+end
+
 function ShipMapPeep:update(director, game)
 	Map.update(self, director, game)
 
@@ -201,11 +243,21 @@ function ShipMapPeep:update(director, game)
 		end
 	end
 
+	self:updateFoam()
+
 	local position = self:getBehavior(PositionBehavior)
+	local scale = self:getBehavior(ScaleBehavior)
 	if position then
+		local yScale
+		if scale then
+			yScale = scale.scale.y
+		else
+			yScale = 1
+		end
+
 		position.position = Vector(
 			position.position.x,
-			math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth()),
+			(math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
 			position.position.z) + (position.offset or Vector.ZERO)
 		if self.isSinking then
 			position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH

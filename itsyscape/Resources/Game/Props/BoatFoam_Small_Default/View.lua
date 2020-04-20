@@ -30,4 +30,8 @@ function BoatFoam:load(...)
 	end)
 end
 
+function BoatFoam:getIsStatic()
+	return false
+end
+
 return BoatFoam

@@ -18,7 +18,7 @@ local Behavior = require "ItsyScape.Peep.Behavior"
 local Cortex = Class()
 
 function Cortex:new()
-	self.peeps = {}
+	self.peeps = setmetatable({}, { __mode = 'k' })
 	self.requirements = {}
 end
 

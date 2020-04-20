@@ -21,9 +21,11 @@ function SceneNodeTransform:new(node)
 	self.translation = Vector.ZERO
 	self.scale = Vector.ONE
 	self.rotation = Quaternion.IDENTITY
+	self.offset = Vector.ZERO
 	self.previousTranslation = false
 	self.previousScale = false
 	self.previousRotation = false
+	self.previousOffset = Vector.ZERO
 	self.localTransform = love.math.newTransform()
 	self.localDeltaTransform = love.math.newTransform()
 	self.globalTransform = love.math.newTransform()
@@ -107,6 +109,24 @@ function SceneNodeTransform:getLocalScale()
 	return self.scale
 end
 
+-- Sets the local offset.
+--
+-- Does nothing if value is nil.
+function SceneNodeTransform:setLocalOffset(value)
+	self.offset = value or self.offset
+	self._handle:setCurrentOffset(
+		self.offset.x,
+		self.offset.y,
+		self.offset.z)
+
+	self.isTransformDirty = true
+end
+
+-- Gets the local offset.
+function SceneNodeTransform:getLocalOffset()
+	return self.offset
+end
+
 -- Sets the previous transform in the order of translation, rotation, and scale.
 --
 -- And values not provided default to the current previous value.
@@ -114,10 +134,11 @@ end
 --
 -- Generally this is only called when an instantaneous event occurs, like
 -- teleporting.
-function SceneNodeTransform:setPreviousTransform(translation, rotation, scale)
+function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, offset)
 	self.previousTranslation = translation or self.previousTranslation or false
 	self.previousRotation = rotation or self.previousRotation or false
 	self.previousScale = scale or self.previousScale or false
+	self.previousOffset = offset or self.previousOffset or false
 
 	if self.previousTranslation then
 		self._handle:setPreviousTranslation(self.previousTranslation.x, self.previousTranslation.y, self.previousTranslation.z)
@@ -129,6 +150,10 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale)
 
 	if self.previousScale then
 		self._handle:setPreviousScale(self.previousScale.x, self.previousScale.y, self.previousScale.z)
+	end
+
+	if self.previousOffset then
+		self._handle:setPreviousOffset(self.previousOffset.x, self.previousOffset.y, self.previousOffset.z)
 	end
 end
 

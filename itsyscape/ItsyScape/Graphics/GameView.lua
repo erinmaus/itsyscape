@@ -50,8 +50,8 @@ function GameView:new(game)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
-	self._onMapMoved = function(_, layer, position, rotation, scale)
-		self:moveMap(layer, position, rotation, scale)
+	self._onMapMoved = function(_, layer, position, rotation, scale, offset)
+		self:moveMap(layer, position, rotation, scale, offset)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
 
@@ -295,13 +295,14 @@ function GameView:updateMap(map, layer)
 	end
 end
 
-function GameView:moveMap(layer, position, rotation, scale)
+function GameView:moveMap(layer, position, rotation, scale, offset)
 	local node = self:getMapSceneNode(layer)
 	if node then
 		local transform = node:getTransform()
 		transform:setLocalTranslation(position)
 		transform:setLocalRotation(rotation)
 		transform:setLocalScale(scale)
+		transform:setLocalOffset(offset)
 	end
 
 	local m = self.mapMeshes[layer]
