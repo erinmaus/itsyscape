@@ -34,10 +34,12 @@ namespace nbunny
 		glm::vec3 currentScale = glm::vec3(1.0f);
 		glm::quat currentRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 		glm::vec3 currentTranslation = glm::vec3(0.0f);
+		glm::vec3 currentOffset = glm::vec3(0.0f);
 
 		glm::vec3 previousScale;
 		glm::quat previousRotation;
 		glm::vec3 previousTranslation;
+		glm::vec3 previousOffset;
 
 		bool ticked = false;
 

@@ -19,6 +19,7 @@ void nbunny::SceneNodeTransform::tick()
 	previousScale = currentScale;
 	previousRotation = currentRotation;
 	previousTranslation = currentTranslation;
+	previousOffset = currentOffset;
 	ticked = true;
 }
 
@@ -27,19 +28,24 @@ glm::mat4 nbunny::SceneNodeTransform::get_local(float delta)
 	auto pS = ticked ? previousScale : currentScale;
 	auto pR = ticked ? previousRotation : currentRotation;
 	auto pT = ticked ? previousTranslation : currentTranslation;
+	auto pO = ticked ? previousOffset : currentOffset;
 	auto cS = currentScale;
 	auto cR = currentRotation;
 	auto cT = currentTranslation;
+	auto cO = currentOffset;
 
 	auto rotation = glm::slerp(pR, cR, delta);
 	auto scale = glm::mix(pS, cS, delta);
-	auto translation = glm::mix(cT, pT, 1.0f - delta);
+	auto translation = glm::mix(pT, cT, delta);
+	auto offset = glm::mix(pO, cO, delta);
 
 	auto r = glm::toMat4(rotation);
 	auto s = glm::scale(glm::mat4(1), scale);
 	auto t = glm::translate(glm::mat4(1), translation);
+	auto oF = glm::translate(glm::mat4(1), -offset);
+	auto oT = glm::translate(glm::mat4(1), offset);
 
-	auto result = t * s * r;
+	auto result = oT * t * s * r * oF;
 	return result;
 }
 
@@ -671,6 +677,25 @@ static int nbunny_scene_node_transform_set_current_scale(lua_State* L)
 	return 0;
 }
 
+static int nbunny_scene_node_transform_get_current_offset(lua_State* L)
+{
+	auto& transform = sol::stack::get<SceneNodeTransformPointer>(L, 1);
+	lua_pushnumber(L, transform->currentOffset.x);
+	lua_pushnumber(L, transform->currentOffset.y);
+	lua_pushnumber(L, transform->currentOffset.z);
+	return 3;
+}
+
+static int nbunny_scene_node_transform_set_current_offset(lua_State* L)
+{
+	auto& transform = sol::stack::get<SceneNodeTransformPointer>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	transform->currentOffset = glm::vec3(x, y, z);
+	return 0;
+}
+
 static int nbunny_scene_node_transform_get_current_translation(lua_State* L)
 {
 	auto& transform = sol::stack::get<SceneNodeTransformPointer>(L, 1);
@@ -748,6 +773,24 @@ static int nbunny_scene_node_transform_set_previous_translation(lua_State* L)
 	transform->previousTranslation = glm::vec3(x, y, z);
 	return 0;
 }
+static int nbunny_scene_node_transform_get_previous_offset(lua_State* L)
+{
+	auto& transform = sol::stack::get<SceneNodeTransformPointer>(L, 1);
+	lua_pushnumber(L, transform->previousOffset.x);
+	lua_pushnumber(L, transform->previousOffset.y);
+	lua_pushnumber(L, transform->previousOffset.z);
+	return 3;
+}
+
+static int nbunny_scene_node_transform_set_previous_offset(lua_State* L)
+{
+	auto& transform = sol::stack::get<SceneNodeTransformPointer>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	transform->previousOffset = glm::vec3(x, y, z);
+	return 0;
+}
 
 static int nbunny_scene_node_transform_get_global_delta_transform(lua_State* L)
 {
@@ -793,12 +836,16 @@ NBUNNY_EXPORT int luaopen_nbunny_scenenodetransform(lua_State* L)
 		"setCurrentScale", &nbunny_scene_node_transform_set_current_scale,
 		"getCurrentTranslation", &nbunny_scene_node_transform_get_current_translation,
 		"setCurrentTranslation", &nbunny_scene_node_transform_set_current_translation,
+		"getCurrentOffset", &nbunny_scene_node_transform_get_current_offset,
+		"setCurrentOffset", &nbunny_scene_node_transform_set_current_offset,
 		"getPreviousRotation", &nbunny_scene_node_transform_get_previous_rotation,
 		"setPreviousRotation", &nbunny_scene_node_transform_set_previous_rotation,
 		"getPreviousScale", &nbunny_scene_node_transform_get_previous_scale,
 		"setPreviousScale", &nbunny_scene_node_transform_set_previous_scale,
 		"getPreviousTranslation", &nbunny_scene_node_transform_get_previous_translation,
 		"setPreviousTranslation", &nbunny_scene_node_transform_set_previous_translation,
+		"getPreviousOffset", &nbunny_scene_node_transform_get_previous_offset,
+		"setPreviousOffset", &nbunny_scene_node_transform_set_previous_offset,
 		"getGlobalDeltaTransform", &nbunny_scene_node_transform_get_global_delta_transform,
 		"getLocalDeltaTransform", &nbunny_scene_node_transform_get_local_delta_transform,
 		"tick", &nbunny::SceneNodeTransform::tick);

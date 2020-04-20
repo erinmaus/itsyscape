@@ -71,8 +71,10 @@ function Sailing.Orchestration.step(peep)
 end
 
 function Sailing.Orchestration.randomEvent(peep)
-	Log.info("Random events are not yet implemented; continue voyage!")
-	Sailing.Orchestration.step(peep)
+	--Log.info("Random events are not yet implemented; continue voyage!")
+	--Sailing.Orchestration.step(peep)
+	local stage = peep:getDirector():getGameInstance():getStage()
+	stage:movePeep(peep, "Ship_Player1?map=Sailing_RandomEvent_RumbridgeNavyScout,i=32,j=32", "Anchor_Spawn")
 end
 
 function Sailing.Orchestration.arriveNext(peep)

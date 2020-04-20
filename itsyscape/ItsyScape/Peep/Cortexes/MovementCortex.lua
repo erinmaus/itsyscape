@@ -13,7 +13,6 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
-local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local MovementCortex = Class(Cortex)
@@ -38,7 +37,6 @@ function MovementCortex:new()
 
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
-	self:require(SizeBehavior)
 end
 
 -- Clamps vector following rules of MovementCortex.CLAMP_EPSILON.

@@ -16,7 +16,7 @@ local ResourceManager = Class()
 function ResourceManager:new()
 	self.resources = {}
 	self.pending = {}
-	self.frameDuration = 1 / 60
+	self.frameDuration = 1 / 120
 	self.onPending = Callback()
 	self.onUpdate = Callback()
 	self.onFinish = Callback()

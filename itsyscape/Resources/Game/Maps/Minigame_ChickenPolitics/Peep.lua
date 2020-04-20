@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Rumbridge_Port/Peep.lua
+-- Resources/Game/Maps/Minigame_ChickenPolitics/Peep.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,7 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Score = require "ItsyScape.Game.Score"

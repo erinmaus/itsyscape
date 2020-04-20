@@ -30,4 +30,8 @@ function BoatFoamTrail:load(...)
 	end)
 end
 
+function BoatFoamTrail:getIsStatic()
+	return false
+end
+
 return BoatFoamTrail
