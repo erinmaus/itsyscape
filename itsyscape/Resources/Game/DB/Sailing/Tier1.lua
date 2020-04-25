@@ -134,6 +134,63 @@ do
 end
 
 do
+	ItsyScape.Resource.SailingItem "Hull_Coconut" {
+		ItsyScape.Action.SailingBuy() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Sailing",
+				Count = ItsyScape.Utility.xpForLevel(15)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coins",
+				Count = 50000
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "CoconutLogs",
+				Count = 50
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coconut",
+				Count = 50
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.SailingItem "Hull_Coconut",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.SailingItemDetails {
+		CanCustomizeColor = 1,
+		ItemGroup = "Hull",
+		Resource = ItsyScape.Resource.SailingItem "Hull_Coconut"
+	}
+
+	ItsyScape.Meta.SailingItemStats {
+		Health = 600,
+		Distance = 600,
+		Defense = 50,
+		Speed = 400,
+		Resource = ItsyScape.Resource.SailingItem "Hull_Coconut"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Coconut hull",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.SailingItem "Hull_Coconut",
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A lightweight hull made from coconut logs.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.SailingItem "Hull_Coconut",
+	}
+end
+
+do
 	ItsyScape.Resource.SailingItem "Rigging_Common" {
 		ItsyScape.Action.SailingUnlock() {
 			Requirement {

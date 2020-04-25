@@ -218,6 +218,10 @@ function ShipCustomizationController:activate(e)
 	itemStorage:set("resource", resource.name)
 
 	self:refreshCurrentItems()
+	local ship = self:getShipPeep()
+	if ship then
+		ship:poke('customize')
+	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,

@@ -103,7 +103,6 @@ function Sailing.Orchestration.arriveNext(peep)
 	stage:movePeep(peep, destinationLocation:get("Map").name, "Anchor_Spawn")
 end
 
-
 Sailing.Ship = {}
 Sailing.Ship.SLOTS = {
 	"Hull",

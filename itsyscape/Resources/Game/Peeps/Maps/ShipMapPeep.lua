@@ -192,6 +192,10 @@ function ShipMapPeep:onLeak(p)
 end
 
 function ShipMapPeep:updateFoam()
+	if not self.boatFoamProp or not self.boatFoamTrailProp then
+		return
+	end
+
 	local map = self:getDirector():getMap(self:getLayer())
 
 	local x, z

@@ -28,11 +28,12 @@ function Ship:new(resource, name, ...)
 	self:addBehavior(ShipStatsBehavior)
 end
 
-function Ship:loadDecoration(storage, item, defaultColor)
-	local group = "Resources/Game/Maps/Ship_Player1/LazyDecorations/" .. item .. ".ldeco"
-	local lazyDecoration = Decoration(group)
-
+function Ship:loadDecoration(storage, item, defaultItem, defaultColor)
 	local itemStorage = storage:getSection("Ship"):getSection(item)
+	local resourceName = itemStorage:get("resource") or defaultItem
+
+	local group = "Resources/Game/SailingItems/" .. resourceName .. "/Decoration.ldeco"
+	local lazyDecoration = Decoration(group)
 
 	local color
 	do
@@ -48,11 +49,13 @@ function Ship:loadDecoration(storage, item, defaultColor)
 	end
 
 	for feature in lazyDecoration:iterate() do
-		feature:setColor(color)
+		if not feature:getID():match("XOpaque") then
+			feature:setColor(color)
+		end
 	end
 
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:decorate(group, lazyDecoration, self:getLayer())
+	stage:decorate(item, lazyDecoration, self:getLayer())
 end
 
 function Ship:colorDeck(storage, defaultColor)
@@ -196,8 +199,8 @@ function Ship:onCustomize()
 
 	local storage = director:getPlayerStorage(self.player):getRoot()
 	self:colorDeck(storage, Color(0.57, 0.40, 0.25))
-	self:loadDecoration(storage, 'Hull', Color(0.57, 0.40, 0.25))
-	self:loadDecoration(storage, 'Rigging', Color(0.94, 0.90, 0.80))
+	self:loadDecoration(storage, 'Hull', "Hull_Common", Color(0.57, 0.40, 0.25))
+	self:loadDecoration(storage, 'Rigging', "Rigging_Common", Color(0.94, 0.90, 0.80))
 	self:loadProp(storage, 'Sail', "Sailing_Player_CommonSail", 'Sail1', 'Sail2')
 	self:loadProp(storage, 'Cannon', "Sailing_Player_IronCannon", 'Cannon1', 'Cannon2', 'Cannon3', 'Cannon4')
 	self:loadProp(storage, 'Helm', "Sailing_Player_CommonHelm", 'Helm')
