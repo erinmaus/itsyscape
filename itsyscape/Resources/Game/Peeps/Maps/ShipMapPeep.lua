@@ -193,6 +193,7 @@ end
 
 function ShipMapPeep:updateFoam()
 	if not self.boatFoamProp or not self.boatFoamTrailProp then
+		print(self.boatFoamProp, self.boatFoamTrailProp)
 		return
 	end
 

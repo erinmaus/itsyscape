@@ -1159,6 +1159,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
 			end)
+
+			shipScript.boatFoamProp = peep
 		end
 
 		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
@@ -1171,8 +1173,14 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
 			end)
-		end
+
+			shipScript.boatFoamTrailProp = peep
+		end	
+	else
+		Log.warn("Couldn't load map %s.", shipName)
 	end
+
+	return shipLayer, shipScript
 end
 
 Utility.Peep = {}

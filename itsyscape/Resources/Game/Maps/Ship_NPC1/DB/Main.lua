@@ -1,18 +1,18 @@
-local M = include "Resources/Game/Maps/Ship_Player1/DB/Default.lua"
+local M = include "Resources/Game/Maps/Ship_NPC1/DB/Default.lua"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Maps.Ship_Player1.Peep",
+	Value = "Resources.Game.Peeps.Maps.NPCShipMapPeep",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Player's Ship",
+	Value = "NPC Ship",
 	Language = "en-US",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A ship captained by none other than you.",
+	Value = "A ship captained by someone else.",
 	Language = "en-US",
 	Resource = M._MAP
 }

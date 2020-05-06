@@ -119,6 +119,8 @@ do
 		IsPirate = 1,
 		Resource = RumbridgeNavyScout
 	}
+
+	include "Resources/Game/DB/Sailing/RandomEvents/RumbridgeNavyScout.lua"
 end
 
 do

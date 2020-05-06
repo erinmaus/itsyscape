@@ -107,6 +107,10 @@ function ConstraintsPanel:performLayout(doLogic)
 				left = ItemIcon()
 				left:setSize(leftWidth, rowHeight)
 				left:setItemID(c.resource)
+			elseif c.type:lower() == 'quest' then
+				left = Icon()
+				left:setSize(leftWidth, rowHeight)
+				left:setIcon("Resources/Game/UI/Icons/Things/Compass.png")
 			elseif c.type:lower() == 'sailingitem' then
 				left = Icon()
 				left:setSize(leftWidth, rowHeight)

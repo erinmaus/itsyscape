@@ -455,6 +455,7 @@ Game "ItsyScape"
 
 	ActionType "Teleport"
 
+	ResourceType "SailingShip"
 	ResourceType "SailingItem"
 	ResourceType "SailingCrew"
 	ResourceType "SailingFirstMate"
@@ -513,6 +514,18 @@ Game "ItsyScape"
 	Meta "MapSeaChart" {
 		SeaChart = Meta.TYPE_RESOURCE,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "ShipSailingItem" {
+		Red1 = Meta.TYPE_INTEGER,
+		Green1 = Meta.TYPE_INTEGER,
+		Blue1 = Meta.TYPE_INTEGER,
+		Red2 = Meta.TYPE_INTEGER,
+		Green2 = Meta.TYPE_INTEGER,
+		Blue2 = Meta.TYPE_INTEGER,
+		IsColorCustomized = Meta.TYPE_INTEGER,
+		Ship = Meta.TYPE_RESOURCE,
+		SailingItem = Meta.TYPE_RESOURCE
 	}
 
 	Meta "SailingRandomEvent" {
@@ -789,6 +802,7 @@ include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 -- Quests
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
+include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
 
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"

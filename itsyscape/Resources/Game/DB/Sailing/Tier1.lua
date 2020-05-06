@@ -107,6 +107,7 @@ do
 	}
 
 	ItsyScape.Meta.SailingItemDetails {
+		Prop = "Hull_Common",
 		CanCustomizeColor = 1,
 		ItemGroup = "Hull",
 		Resource = ItsyScape.Resource.SailingItem "Hull_Common"
@@ -206,6 +207,7 @@ do
 	}
 
 	ItsyScape.Meta.SailingItemDetails {
+		Prop = "Rigging_Common",
 		CanCustomizeColor = 1,
 		ItemGroup = "Rigging",
 		Resource = ItsyScape.Resource.SailingItem "Rigging_Common"
@@ -502,5 +504,58 @@ do
 		Value = "Probably preferrable to getting eaten by a mimic, but only by a hair. Stores 60 items.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.SailingItem "Storage_CrudeChest",
+	}
+end
+
+do
+	ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy" {
+		ItsyScape.Action.SailingBuy() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Sailing",
+				Count = ItsyScape.Utility.xpForLevel(20)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Quest "RavensEye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coins",
+				Count = 20000
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.SailingItemDetails {
+		Prop = "Sailing_Player_RumbridgeNavySail",
+		CanCustomizeColor = 0,
+		ItemGroup = "Sail",
+		Resource = ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy"
+	}
+
+	ItsyScape.Meta.SailingItemStats {
+		Health = 0,
+		Distance = 200,
+		Defense = 0,
+		Speed = 150,
+		Resource = ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge navy sail",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy",
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Sail flown by the Rumbridge navy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.SailingItem "Sail_RumbridgeNavy",
 	}
 end
