@@ -18,6 +18,7 @@ local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStat
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
 local BankInventoryStateProvider = require "ItsyScape.Game.BankInventoryStateProvider"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
+local QuestStateProvider = require "ItsyScape.Game.QuestStateProvider"
 local SailingItemStateProvider = require "ItsyScape.Game.SailingItemStateProvider"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
@@ -290,6 +291,7 @@ function One:ready(director, game)
 	end
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
+	self:getState():addProvider("Quest", QuestStateProvider(self))
 	self:getState():addProvider("SailingItem", SailingItemStateProvider(self))
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 	self:getState():addProvider("Item", PlayerEquipmentStateProvider(self))

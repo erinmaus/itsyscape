@@ -138,6 +138,8 @@ function Ship:loadProp(storage, item, defaultItem, ...)
 					local position = p:getBehavior(PositionBehavior)
 					position.layer = self:getLayer()
 				end)
+			else
+				Log.warn("Couldn't spawn prop '%s' for slot '%s'.", propResourceName, item)
 			end	
 		end
 	end

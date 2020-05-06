@@ -97,3 +97,33 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Sailing_BasicSail_Pirate_Default"
 }
+
+ItsyScape.Resource.Prop "Sailing_Player_RumbridgeNavySail" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicPlayerSail",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_RumbridgeNavySail"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 7,
+	SizeZ = 12,
+	OffsetX = -2,
+	OffsetY = 5.5,
+	MapObject = ItsyScape.Resource.Prop "Sailing_Player_RumbridgeNavySail"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Rumbridge navy sail",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_RumbridgeNavySail"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Won't scare any pirates, but gives relief to merchants.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Sailing_Player_RumbridgeNavySail"
+}
