@@ -172,7 +172,6 @@ function RainWeather:update(delta)
 
 				local height = math.max(map:getHeightAt(i, j), 0)
 				if p.y <= height then
-
 					p.moving = false
 				else
 					p.x = p.x + velocity.x
