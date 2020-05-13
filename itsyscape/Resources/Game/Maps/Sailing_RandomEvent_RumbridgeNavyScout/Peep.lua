@@ -430,7 +430,7 @@ function RandomEvent:updateNPCShip(delta)
 		playerShipPosition)
 
 	local distance = (playerShipPosition - npcShipPosition):getLength()
-	if distance <= RandomEvent.NPC_STOP_DISTANCE or true then
+	if distance <= RandomEvent.NPC_STOP_DISTANCE then
 		self.npcShip.speed = 0
 	else
 		self.npcShip.speed = 1

@@ -199,6 +199,9 @@ function ShipMapPeep:updateFoam()
 	end
 
 	local map = self:getDirector():getMap(self:getLayer())
+	if not map then
+		return
+	end
 
 	local x, z
 	do
