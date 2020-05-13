@@ -63,7 +63,6 @@ function Ship:loadDecoration(sailingItem, defaultProp, defaultColor)
 		end
 
 		color = Color(r, g, b)
-		print('s', sailingItem:get("IsColorCustomized"))
 	end
 
 	for feature in lazyDecoration:iterate() do

@@ -21,6 +21,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -1047,14 +1048,21 @@ function LocalStage:tick()
 			scale = Vector.ONE
 		end
 
-		local offset = peep:getBehavior(OriginBehavior)
+		local origin = peep:getBehavior(OriginBehavior)
+		if origin then
+			origin = origin.origin
+		else
+			origin = Vector.ZERO
+		end
+
+		local offset = peep:getBehavior(MapOffsetBehavior)
 		if offset then
-			offset = offset.origin
+			offset = offset.offset
 		else
 			offset = Vector.ZERO
 		end
 
-		self.onMapMoved(self, map.layer, position, rotation, scale, offset)
+		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin)
 	end
 end
 

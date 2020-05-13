@@ -332,7 +332,6 @@ function Ship:update(director, game)
 		self.showedVideoTutorial = true
 	elseif self.showedVideoTutorial then
 		if not self.showedCombatHints then
-			print('player', self.player)
 			Utility.UI.openInterface(
 				self.player,
 				"TutorialHint",
@@ -343,7 +342,11 @@ function Ship:update(director, game)
 					return Utility.UI.isOpen(self.player, "PlayerInventory")
 				end,
 				{ position = 'center' })
-			Ship.showTip(Ship.COMBAT_HINT, self.player)
+
+			if not _DEBUG then
+				Ship.showTip(Ship.COMBAT_HINT, self.player)
+			end
+			
 			self.showedCombatHints = true
 		end
 	end

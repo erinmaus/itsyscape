@@ -534,6 +534,14 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "SailingRandomEventIsland" {
+		PositionX = Meta.TYPE_REAL,
+		PositionY = Meta.TYPE_REAL,
+		PositionZ = Meta.TYPE_REAL,
+		Radius = Meta.TYPE_REAL,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 

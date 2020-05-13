@@ -66,7 +66,6 @@ end
 function SailorEquipmentController:interrupt(peep, e)
 	local action = (e or {}).action
 	if not action or (not action:is("Equip") and not action:is("Dequip")) then
-		if action then print('verb', action:getVerb()) else print('no action') end
 		self:getGame():getUI():closeInstance(self)
 	end
 end
