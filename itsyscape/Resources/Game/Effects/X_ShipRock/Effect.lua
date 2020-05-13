@@ -17,6 +17,12 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ShipRock = Class(Effect)
 ShipRock.DURATION = 5
 
+function ShipRock:new(...)
+	Effect.new(self, ...)
+
+	self.rotation = Quaternion.IDENTITY
+end
+
 function ShipRock:getBuffType()
 	return Effect.BUFF_TYPE_NONE
 end
@@ -31,9 +37,11 @@ function ShipRock:update(delta)
 			local delta = self:getDuration() / self.DURATION
 			local mu = delta * math.pi * 4
 			local angle = math.sin(mu) * math.pi / 32
-			rotation.rotation = Quaternion.fromAxisAngle(
+			self.rotation = Quaternion.fromAxisAngle(
 				Vector.UNIT_X,
 				angle)
+
+			rotation.rotation = rotation.rotation * self.rotation
 		end
 	end
 end

@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -203,6 +204,12 @@ function ShipMapPeep:updateFoam()
 	do
 		local position = self:getBehavior(PositionBehavior)
 		x, z = position.position.x, position.position.z
+
+		local offset = self:getBehavior(MapOffsetBehavior)
+		if offset then
+			x = x + offset.offset.x
+			z = z + offset.offset.z
+		end
 	end
 
 	x = x + map:getWidth() / 2 * map:getCellSize()

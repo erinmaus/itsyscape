@@ -17,6 +17,43 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+do
+	ItsyScape.Meta.SailingRandomEventIsland {
+		PositionX = 43,
+		PositionZ = 45,
+		Radius = 7.5,
+		Map = M._MAP
+	}
+
+	ItsyScape.Meta.SailingRandomEventIsland {
+		PositionX = 17,
+		PositionZ = 11,
+		Radius = 6.5,
+		Map = M._MAP
+	}
+
+	ItsyScape.Meta.SailingRandomEventIsland {
+		PositionX = 95,
+		PositionZ = 29,
+		Radius = 8.5,
+		Map = M._MAP
+	}
+
+	ItsyScape.Meta.SailingRandomEventIsland {
+		PositionX = 69,
+		PositionZ = 105,
+		Radius = 8.5,
+		Map = M._MAP
+	}
+
+	ItsyScape.Meta.SailingRandomEventIsland {
+		PositionX = 21,
+		PositionZ =107,
+		Radius = 7.5,
+		Map = M._MAP
+	}
+end
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
