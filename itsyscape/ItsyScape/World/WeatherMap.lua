@@ -132,8 +132,8 @@ function WeatherMap:update()
 				transform:scale(s.x, s.y, s.z)
 			end
 
-			for j = 0, self.width - 1 do
-				for i = 0, self.height - 1 do
+			for j = 0, self.height - 1 do
+				for i = 0, self.width - 1 do
 					local center = map:getTileCenter(i + self.realI, j + self.realJ)
 					center = Vector(transform:transformPoint(center:get()))
 
