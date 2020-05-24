@@ -23,6 +23,7 @@ local SailingItemStateProvider = require "ItsyScape.Game.SailingItemStateProvide
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local PlayerInventoryProvider = require "ItsyScape.Game.PlayerInventoryProvider"
+local PlayerShipInventoryProvider = require "ItsyScape.Game.PlayerShipInventoryProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -66,6 +67,7 @@ function One:new(...)
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
 	inventory.bank = BankInventoryProvider(self)
+	inventory.ship = PlayerShipInventoryProvider(self)
 
 	local equipment = self:getBehavior(EquipmentBehavior)
 	equipment.equipment = EquipmentInventoryProvider(self)

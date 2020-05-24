@@ -149,12 +149,12 @@ ItsyScape.Resource.Prop "Sailing_Player_IronCannon" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Dexterity",
-			Count = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(2)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForResource(5)
+			Count = ItsyScape.Utility.xpForResource(2)
 		}
 	}
 }

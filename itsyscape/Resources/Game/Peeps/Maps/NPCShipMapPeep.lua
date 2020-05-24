@@ -88,6 +88,10 @@ function Ship:colorDeck(sailingItem, defaultColor)
 	end
 
 	local map = self:getDirector():getMap(self:getLayer())
+	if not map then
+		return
+	end
+
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local tile = map:getTile(i, j)
@@ -155,6 +159,8 @@ function Ship:loadProp(sailingItem, item, defaultItem, ...)
 
 					local position = p:getBehavior(PositionBehavior)
 					position.layer = self:getLayer()
+
+					Utility.Peep.setMapResource(p, Utility.Peep.getResource(self))
 				end)
 			else
 				Log.warn("Couldn't spawn prop '%s' for slot '%s'.", propResourceName, item)
@@ -213,6 +219,8 @@ function Ship:updateStats(sailingItem, defaultResource)
 			end
 		end
 	end
+
+	self:updateMaxHealth(stats["Health"])
 end
 
 Ship.PART_TYPE_DECO = 1

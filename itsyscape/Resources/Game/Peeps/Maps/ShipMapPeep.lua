@@ -36,11 +36,13 @@ function ShipMapPeep:new(resource, name, ...)
 
 	self:addPoke('hit')
 	self:addPoke('sink')
+	self:addPoke('sunk')
 
 	self:addPoke('leak')
 	self.leaks = 0
 
 	self.isSinking = false
+	self.isSunk = false
 	self.sinkTime = 0
 end
 
@@ -50,6 +52,22 @@ end
 
 function ShipMapPeep:getSuffix()
 	return "Default"
+end
+
+function ShipMapPeep:getHealthStat()
+	return self.healthStat
+end
+
+function ShipMapPeep:updateMaxHealth(newMaxHealth)
+	if self.healthStat then
+		local stat = self.healthStat:get()
+		local difference = newMaxHealth - stat.current
+
+		self.healthStat:set({
+			current = difference + stat.current,
+			max = newMaxHealth
+		})
+	end
 end
 
 function ShipMapPeep:getCurrentHealth()
@@ -194,7 +212,6 @@ end
 
 function ShipMapPeep:updateFoam()
 	if not self.boatFoamProp or not self.boatFoamTrailProp then
-		print(self.boatFoamProp, self.boatFoamTrailProp)
 		return
 	end
 
@@ -209,7 +226,7 @@ function ShipMapPeep:updateFoam()
 		x, z = position.position.x, position.position.z
 
 		local offset = self:getBehavior(MapOffsetBehavior)
-		if offset then
+		if offset and offset.offset then
 			x = x + offset.offset.x
 			z = z + offset.offset.z
 		end
@@ -291,6 +308,11 @@ function ShipMapPeep:update(director, game)
 					game:getPlayer():getActor():getPeep(),
 					previousMap,
 					previousMapAnchor)
+			end
+
+			if not self.isSunk then
+				self:poke('sunk')
+				self.isSunk = true
 			end
 		end
 	end

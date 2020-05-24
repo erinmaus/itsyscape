@@ -19,6 +19,10 @@ function KeyboardAction:new(id, index, ui)
 	local keybind = Keybinds[self:getState().keybind]
 	if keybind then
 		self.isDown = keybind:isDown()
+		
+		if self.isDown then
+			self:sendPoke("pressed", nil, {})
+		end
 	end
 end
 

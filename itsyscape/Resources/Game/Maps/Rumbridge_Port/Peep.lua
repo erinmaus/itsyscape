@@ -81,17 +81,14 @@ end
 function Port:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local stage = self:getDirector():getGameInstance():getStage()
-	stage:movePeep(Utility.Peep.getPlayer(self), "Ship_Player1?map=Sailing_RandomEvent_RumbridgeNavyScout,i=32,j=32", "Anchor_Spawn")
+	self:poke('spawnShip')
+	self:poke('rollFirstMate', false)
 
-	-- self:poke('spawnShip')
-	-- self:poke('rollFirstMate', false)
-
-	-- local playerStorage = self:getDirector():getPlayerStorage():getRoot()
-	-- local followersStorage = playerStorage:getSection("Follower"):getSection("SailingCrew")
-	-- for i = 1, followersStorage:length() do
-	-- 	self:poke('recruit', followersStorage:getSection(i):get("id"))
-	-- end
+	local playerStorage = self:getDirector():getPlayerStorage():getRoot()
+	local followersStorage = playerStorage:getSection("Follower"):getSection("SailingCrew")
+	for i = 1, followersStorage:length() do
+		self:poke('recruit', followersStorage:getSection(i):get("id"))
+	end
 end
 
 function Port:onSpawnShip(filename, args, layer)
@@ -140,7 +137,7 @@ end
 function Port:update(...)
 	Map.update(self, ...)
 
-	--self:updateTime()
+	self:updateTime()
 end
 
 return Port

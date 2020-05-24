@@ -11,8 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
-local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
-local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local Effect = require "ItsyScape.Peep.Effect"
 
 local ShipRock = Class(Effect)
@@ -31,12 +30,7 @@ end
 function ShipRock:enchant(peep)
 	Effect.enchant(self, peep)
 
-	local rotation = peep:getBehavior(RotationBehavior)
-	if rotation then
-		self.initialRotation = rotation.rotation
-	else
-		self.initialRotation = Quaternion.IDENTITY
-	end
+	peep:addBehavior(MapOffsetBehavior)
 end
 
 function ShipRock:update(delta)
@@ -44,7 +38,7 @@ function ShipRock:update(delta)
 
 	local peep = self:getPeep()
 	if peep then
-		local rotation = peep:getBehavior(RotationBehavior)
+		local rotation = peep:getBehavior(MapOffsetBehavior)
 		if rotation then
 			local delta = self:getDuration() / self.DURATION
 			local mu = delta * math.pi * 4
@@ -53,13 +47,7 @@ function ShipRock:update(delta)
 				Vector.UNIT_X,
 				angle)
 
-			local isMultiplicative = peep:hasBehavior(MovementBehavior)
-
-			if isMultiplicative then
-				rotation.rotation = rotation.rotation * self.rotation
-			else
-				rotation.rotation = self.initialRotation *  self.rotation
-			end
+			rotation.rotation = self.rotation
 		end
 	end
 end
