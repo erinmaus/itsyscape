@@ -8,8 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local PlayerShipInventoryStateProvider = require "ItsyScape.Game.PlayerShipInventoryStateProvider"
+local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
@@ -30,6 +33,10 @@ RandomEvent.PLAYER_ACCELERATION_MODIFIER = 25
 RandomEvent.NPC_ACCELERATION_MODIFIER    = 25
 
 RandomEvent.SHIP_SCALE = Vector.ONE / 5
+RandomEvent.NPC_CANNON_MAX_DISTANCE = 6
+
+RandomEvent.PLAYER_DAMAGE_MODIFIER = 10.25
+RandomEvent.NPC_DAMAGE_MODIFIER = 0.75
 
 RandomEvent.SPEED_BRAKE      = -1
 RandomEvent.SPEED_ACCELERATE = 1
@@ -41,12 +48,14 @@ RandomEvent.NPC_STOP_DISTANCE = 2
 
 RandomEvent.SHIP_PUSH_STEP    = 1 / 20
 
-local function getDirection(a, b, c)
+RandomEvent.FLEE_DISTANCE = 20
+
+local function getDirection(a, b, c, bias)
 	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
 
 	-- This bias prevents 'jittering' when result is close to zero.
 	-- Otherwise, the ship will jitter between +/-.
-	if result > 0.5 then
+	if result > 0 + (bias or 0) then
 		return 1
 	elseif result < 0 then
 		return -1
@@ -67,6 +76,9 @@ end
 
 function RandomEvent.Ship:prepare(director, layer, i, j)
 	local map = director:getMap(self.ship:getLayer())
+	if not map then
+		return
+	end
 
 	local position = self.ship:getBehavior(PositionBehavior)
 	position.position = map:getTileCenter(i, j)
@@ -142,6 +154,10 @@ function RandomEvent.Ship:handleIslandCollisions(islands)
 
 		map = director:getMap(p.layer)
 		position = p.position
+	end
+
+	if not map then
+		return
 	end
 
 	local direction
@@ -241,12 +257,159 @@ function RandomEvent.Ship:handleShipCollision(other)
 	end
 end
 
+function RandomEvent.Ship:tryFire(otherShip)
+	local director = self.ship:getDirector()
+	local gameDB = director:getGameDB()
+	local selfMapResource = Utility.Peep.getResource(self.ship)
+	local otherPosition = Utility.Peep.getPosition(otherShip.ship)
+	local selfPosition = Utility.Peep.getPosition(self.ship)
+	local selfForward = self.rotation:transformVector(-Vector.UNIT_X) + selfPosition
+
+	local hits = director:probe(
+		self.ship:getLayerName(),
+		function(peep)
+			local isCannon
+			do
+				local resource = Utility.Peep.getResource(peep)
+				if resource then
+					local cannonRecord = gameDB:getRecord("Cannon", {
+						Resource = resource
+					})
+
+					if cannonRecord then
+						isCannon = true
+					else
+						isCannon = false
+					end
+				end
+			end
+
+			local isLayer
+			do
+				local peepMapResource = Utility.Peep.getMapResource(peep)
+				isLayer = peepMapResource.id.value == selfMapResource.id.value
+			end
+
+			return isLayer and isCannon
+		end)
+
+	local cannons = {}
+	for i = 1, #hits do
+		local hit = hits[i]
+		local resource = Utility.Peep.getResource(hit)
+		cannons[i] = gameDB:getRecord("Cannon", {
+			Resource = resource
+		})
+	end
+
+	local positions = {}
+	for i = 1, #hits do
+		local map = Utility.Peep.getMapScript(hits[i])
+		local mapTransform = Utility.Peep.getMapTransform(map)
+		local position = hits[i]:getBehavior(PositionBehavior).position
+		positions[i] = Vector(mapTransform:transformPoint(position:get()))
+	end
+
+	local canFire = {}
+	local distances = {}
+	for i = 1, #hits do
+		local distance = (positions[i] * Vector.PLANE_XZ - otherPosition * Vector.PLANE_XZ):getLength()
+		local isCloseEnough = distance <= cannons[i]:get("Range")
+
+		local cannonSide = getDirection(selfPosition, selfForward, positions[i])
+		local shipSide = getDirection(selfPosition, selfForward, otherPosition)
+		local isSameSide = cannonSide == shipSide
+
+		canFire[i] = isCloseEnough and isSameSide
+		distances[i] = distance
+	end
+
+	local actions = {}
+	for i = 1, #hits do
+		actions[i] = false
+
+		local resource = Utility.Peep.getResource(hits[i])
+		local peepActions = Utility.getActions(
+			self.ship:getDirector():getGameInstance(), resource, 'world')
+		for j = 1, #peepActions do
+			if peepActions[j].instance:is('fire') then
+				actions[i] = peepActions[j].instance
+				break
+			end
+		end
+	end
+
+	local result = {}
+	for i = 1, #hits do
+		result[i] = {
+			peep = hits[i],
+			cannon = cannons[i],
+			position = positions[i],
+			canFire = canFire[i],
+			distance = distances[i],
+			action = actions[i]
+		}
+	end
+
+	return result
+end
+
+function RandomEvent.Ship:fire(otherShip, fireProbe, player)
+	fireProbe = fireProbe or self:tryFire(otherShip)
+
+	local stage = self.ship:getDirector():getGameInstance():getStage()
+	local otherPosition = Utility.Peep.getPosition(otherShip.ship) + Vector.UNIT_Y
+	local selfPosition = Utility.Peep.getPosition(self.ship) + Vector.UNIT_Y
+
+	for i = 1, #fireProbe do
+		local details = fireProbe[i]
+		if details.canFire then
+			local cannonReady = details.peep:canFire()
+
+			local canFire = cannonReady
+			if player and canFire then
+				canFire = details.action:canPerform(player:getState(), player) and
+				          details.action:transfer(player:getState(), player)
+			end
+
+			local damageMultiplier
+			if player then
+				damageMultiplier = RandomEvent.PLAYER_DAMAGE_MODIFIER
+			else
+				damageMultiplier = RandomEvent.NPC_DAMAGE_MODIFIER
+			end
+
+			if canFire and cannonReady then
+				local ray = Ray(details.position, (otherPosition - details.position):getNormal())
+				stage:fireProjectile(
+					details.cannon:get("Cannonball").name .. "_Small",
+					ray.origin,
+					ray:project(details.cannon:get("Range")))
+				
+				local attackPoke = AttackPoke({
+					weaponType = 'cannon',
+					damage = math.floor(math.random(details.cannon:get("MinDamage"), details.cannon:get("MaxDamage")) * damageMultiplier),
+					aggressor = Utility.Peep.getMapScript(self.ship)
+				})
+				otherShip.ship:poke('hit', attackPoke)
+
+				details.peep:poke('cooldown')
+
+				Log.info("BOOM! Fired a cannon, dealing %d damage.", attackPoke:getDamage())
+			else
+				Log.info("Can't fire cannon: out of supplies or requirements not met.")
+			end
+		end
+	end
+end
+
 function RandomEvent:onLoad(...)
 	Map.onLoad(self, ...)
 
 	local gameDB = self:getDirector():getGameDB()
-	local scout = gameDB:getResource("RandomEvent_RumbridgeNavyScout", "SailingShip")
+	local player = Utility.Peep.getPlayer(self)
 
+	local scout = gameDB:getResource("RandomEvent_RumbridgeNavyScout", "SailingShip") 
 	local _, ship = Utility.Map.spawnShip(
 		self,
 		"Ship_NPC1",
@@ -255,8 +418,12 @@ function RandomEvent:onLoad(...)
 		24,
 		2.25)
 	ship:pushPoke('customize', scout)
+	ship:listen('sunk', self.onEnd, self, 'ko')
+	ship:listen('sink', self.onNPCShipSink, self)
 	self.npcShip = RandomEvent.Ship(ship)
-	self:prepareNPCShip(Utility.Peep.getPlayer(self), ship, 32, 24)
+	self:prepareNPCShip(player, ship, 32, 24)
+
+	Utility.UI.openInterface(player, "BossHUD", false)
 
 	self:onStart()
 	self:pullIslands()
@@ -288,9 +455,13 @@ function RandomEvent:onStart()
 	local player = Utility.Peep.getPlayer(self)
 	local playerShip = Utility.Peep.getMapScript(player)
 	self.playerShip = RandomEvent.Ship(playerShip)
+	playerShip:listen('sink', self.onEnd, 'sunk')
 
 	self:preparePlayerShip(player, playerShip, 32, 32)
 	player:addBehavior(DisabledBehavior)
+
+	self.shipProvider = PlayerShipInventoryStateProvider(player)
+	player:getState():addProvider("Item", self.shipProvider)
 
 	local function directionCallback(direction)
 		return function(action)
@@ -351,6 +522,36 @@ function RandomEvent:onStart()
 		"SAILING_ACTION_PRIMARY", fireCallback, openCallback)
 end
 
+function RandomEvent:onEnd(action)
+	local player = Utility.Peep.getPlayer(self)
+	local sailingLevel = player:getState():count("Skill", "Sailing", { ['skill-as-level'] = true, ['skill-unboosted'] = true })
+
+	local xp
+	if action == 'flee' then
+		Log.info("Fleed!")
+		xp = Curve.xpForResource(Curve.NORMAL_RESOURCE_CURVE, sailingLevel)
+	elseif action == 'ko' then
+		Log.info("It's a KO!")
+		xp = Curve.xpForResource(Curve.ELITE_RESOURCE_CURVE, sailingLevel)
+	elseif action == 'sunk' then
+		Log.info("YOU SUNK!")
+		xp = Curve.xpForResource(Curve.NORMAL_RESOURCE_CURVE, math.max(sailingLevel - 20, 1))
+	else
+		Log.warn("Unknown end condition.")
+		xp = 1
+	end
+
+	Log.info("Got %d Sailing XP.", xp)
+	player:getState():give("Skill", "Sailing", xp)
+	player:removeBehavior(DisabledBehavior)
+
+	Sailing.Orchestration.step(player)
+end
+
+function RandomEvent:onNPCShipSink()
+	self.isNPCSunk = true
+end
+
 function RandomEvent:preparePlayerShip(player, ship, i, j)
 	self.playerShip:prepare(self:getDirector(), self:getLayer(), i, j)
 
@@ -387,6 +588,12 @@ function RandomEvent:onPlayerShipChangeSpeed(player, ship, direction)
 	self.playerShip.speed = self.playerShip.speed + direction
 end
 
+function RandomEvent:onPlayerShipFire(action)
+	if action == 'pressed' then
+		self.playerShip:fire(self.npcShip, nil, Utility.Peep.getPlayer(self))
+	end
+end
+
 function RandomEvent:updatePlayerShip(delta)
 	self.playerShip:update(delta)
 	self.playerShip:handleIslandCollisions(self.islands)
@@ -395,6 +602,16 @@ end
 function RandomEvent:updateNPCShip(delta)
 	self.npcShip:update(delta)
 	self.npcShip:handleIslandCollisions(self.islands)
+
+	local isReady = self.npcShip.ship:getDirector()
+	if not isReady then
+		return
+	end
+
+	if self.isNPCSunk then
+		self.npcShip.speed = 0
+		return
+	end
 
 	local npcShipPosition
 	do
@@ -427,13 +644,28 @@ function RandomEvent:updateNPCShip(delta)
 	self.npcShip.direction = -getDirection(
 		npcShipPosition,
 		npcShipForward + npcShipPosition,
-		playerShipPosition)
+		playerShipPosition,
+		1)
 
 	local distance = (playerShipPosition - npcShipPosition):getLength()
 	if distance <= RandomEvent.NPC_STOP_DISTANCE then
 		self.npcShip.speed = 0
 	else
 		self.npcShip.speed = 1
+	end
+
+	local fireProbe = self.npcShip:tryFire(self.playerShip)
+	local canFire
+	do
+		for i = 1, #fireProbe do
+			canFire	= canFire or (fireProbe[i].canFire and fireProbe[i].distance < RandomEvent.NPC_CANNON_MAX_DISTANCE)
+		end
+
+		canFire	= canFire and math.random(100) > 90
+	end
+
+	if canFire then
+		self.npcShip:fire(self.playerShip, fireProbe)
 	end
 end
 
@@ -443,6 +675,13 @@ function RandomEvent:update(director, game)
 	self:updatePlayerShip(game:getDelta())
 	self:updateNPCShip(game:getDelta())
 	self.playerShip:handleShipCollision(self.npcShip)
+
+	local playerShipPosition = Utility.Peep.getPosition(self.playerShip.ship)
+	local npcShipPosition = Utility.Peep.getPosition(self.npcShip.ship)
+	local distance = (playerShipPosition - npcShipPosition):getLength()
+	if distance > RandomEvent.FLEE_DISTANCE then
+		self:onEnd('flee')
+	end
 end
 
 return RandomEvent

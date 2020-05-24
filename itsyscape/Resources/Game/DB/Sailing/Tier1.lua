@@ -114,9 +114,9 @@ do
 	}
 
 	ItsyScape.Meta.SailingItemStats {
-		Health = 1000,
+		Health = 150,
 		Distance = 800,
-		Defense = 100,
+		Defense = 50,
 		Speed = 50,
 		Resource = ItsyScape.Resource.SailingItem "Hull_Common"
 	}
@@ -171,7 +171,7 @@ do
 	}
 
 	ItsyScape.Meta.SailingItemStats {
-		Health = 600,
+		Health = 200,
 		Distance = 600,
 		Defense = 50,
 		Speed = 400,
@@ -214,7 +214,7 @@ do
 	}
 
 	ItsyScape.Meta.SailingItemStats {
-		Health = 100,
+		Health = 50,
 		Distance = 0,
 		Defense = 50,
 		Speed = 50,
@@ -433,6 +433,7 @@ do
 		Distance = 0,
 		Defense = 0,
 		Speed = 0,
+		Storage = 30,
 		Resource = ItsyScape.Resource.SailingItem "Storage_Crate"
 	}
 
@@ -491,6 +492,7 @@ do
 		Distance = 0,
 		Defense = 0,
 		Speed = 0,
+		Storage = 60,
 		Resource = ItsyScape.Resource.SailingItem "Storage_CrudeChest"
 	}
 

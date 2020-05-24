@@ -120,5 +120,13 @@ Curve.VALUE_CURVE = Curve(
 	5.1,
 	2,
 	function(N) return math.max(1.07 ^ (-N / 10) * 20, 1) end)
+Curve.NORMAL_RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+Curve.ELITE_RESOURCE_CURVE = Curve(nil, nil, nil, 2)
+
+Curve.xpForResource = function(curve, a)
+	local point1 = curve(a)
+	local point2 = curve(a + 1)
+	return math.floor((point2 - point1) / 4)
+end
 
 return Curve

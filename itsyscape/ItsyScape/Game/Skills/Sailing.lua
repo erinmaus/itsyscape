@@ -30,7 +30,10 @@ Sailing.Orchestration.START_INDEX = 1
 function Sailing.Orchestration.isInProgress(peep)
 	local storage = Sailing.Itinerary.getStorage(peep)
 	local statusStorage = storage:getSection("Status")
-	return statusStorage:get("started") or false
+	local isStarted = statusStorage:get("started") and statusStorage:get("index")
+	local isPending = (statusStorage:get("index") or math.huge) < storage:length()
+
+	return isStarted and isPending
 end
 
 function Sailing.Orchestration.start(peep)
@@ -62,7 +65,6 @@ function Sailing.Orchestration.step(peep)
 	local _, targetLocation = Sailing.Itinerary.getDestination(peep, currentIndex + 1)
 	local targetDistance = Sailing.getDistanceBetweenLocations(currentLocation, targetLocation)
 
-
 	if currentDistance > targetDistance then
 		Sailing.Orchestration.arriveNext(peep)
 	else
@@ -71,10 +73,16 @@ function Sailing.Orchestration.step(peep)
 end
 
 function Sailing.Orchestration.randomEvent(peep)
-	--Log.info("Random events are not yet implemented; continue voyage!")
-	--Sailing.Orchestration.step(peep)
+	local _, lastDestination = Sailing.Itinerary.getLastDestination(peep)
+
 	local stage = peep:getDirector():getGameInstance():getStage()
-	stage:movePeep(peep, "Ship_Player1?map=Sailing_RandomEvent_RumbridgeNavyScout,i=32,j=32", "Anchor_Spawn")
+
+	local path = string.format(
+		"Ship_Player1?map=%s,i=32,j=32,shore=%s,shoreAnchor=Anchor_Spawn",
+		"Sailing_RandomEvent_RumbridgeNavyScout",
+		lastDestination:get("Map").name)
+
+	stage:movePeep(peep, path, "Anchor_Spawn")
 end
 
 function Sailing.Orchestration.arriveNext(peep)
@@ -123,35 +131,32 @@ function Sailing.Ship.getStats(peep)
 		local itemStorage = storage:getSection("Ship"):getSection(item)
 		local resourceName = itemStorage:get("resource")
 
-		if not resourceName then
-			itemStorage:set("resource", defaultResource)
-			resourceName = defaultResource
-		end
+		if resourceName then
+			local gameDB = peep:getDirector():getGameDB()
+			local resource = gameDB:getResource(resourceName, "SailingItem")
+			if resource then
+				local record = gameDB:getRecord("SailingItemStats", { Resource = resource })
+				if record then
+					for i = 1, #ShipStatsBehavior.BASE_STATS do
+						local stat = ShipStatsBehavior.BASE_STATS[i]
+						local value = record:get(stat)
 
-		local gameDB = peep:getDirector():getGameDB()
-		local resource = gameDB:getResource(resourceName, "SailingItem")
-		if resource then
-			local record = gameDB:getRecord("SailingItemStats", { Resource = resource })
-			if record then
-				for i = 1, #ShipStatsBehavior.BASE_STATS do
-					local stat = ShipStatsBehavior.BASE_STATS[i]
-					local value = record:get(stat)
-
-					stats[stat] = (stats[stat] or 0) + value
+						stats[stat] = (stats[stat] or 0) + value
+					end
 				end
 			end
-		end
 
-		local propResourceName = itemStorage:get("prop")
-		if propResourceName then
-			local propResource = gameDB:getResource(propResourceName, "Prop")
-			if propResource then
-				local cannonRecord = gameDB:getRecord("Cannon", { Resource = propResource })
+			local propResourceName = itemStorage:get("prop")
+			if propResourceName then
+				local propResource = gameDB:getResource(propResourceName, "Prop")
+				if propResource then
+					local cannonRecord = gameDB:getRecord("Cannon", { Resource = propResource })
 
-				if cannonRecord then
-					stats["OffenseRange"] = cannonRecord:get("Range")
-					stats["OffenseMinDamage"] = cannonRecord:get("MinDamage")
-					stats["OffenseMaxDamage"] = cannonRecord:get("MaxDamage")
+					if cannonRecord then
+						stats["OffenseRange"] = cannonRecord:get("Range")
+						stats["OffenseMinDamage"] = cannonRecord:get("MinDamage")
+						stats["OffenseMaxDamage"] = cannonRecord:get("MaxDamage")
+					end
 				end
 			end
 		end
@@ -159,6 +164,28 @@ function Sailing.Ship.getStats(peep)
 
 	return stats
 end
+
+function Sailing.Ship.getInventorySpace(peep)
+	-- Haha, because it's PlayerStorage for the Storage ship slot!
+	local storageStorage
+	do
+		local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+		storageStorage = rootStorage:getSection("Ship"):getSection("Storage")
+	end
+	
+	local gameDB = peep:getDirector():getGameDB()
+	local resourceName = storageStorage:get("resource")
+	if not resourceName then
+		return 0
+	end
+
+	local resource = gameDB:getResource(resourceName, "SailingItem")
+	local record = gameDB:getRecord("SailingItemStats", { Resource = resource })
+	if record then
+		return record:get("Storage")
+	end
+end
+
 
 Sailing.Itinerary = {}
 function Sailing.Itinerary.hasItinerary(peep)

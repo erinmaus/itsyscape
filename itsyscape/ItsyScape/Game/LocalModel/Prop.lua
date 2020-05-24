@@ -128,8 +128,11 @@ function LocalProp:getTile()
 	local position = self.peep:getBehavior(PositionBehavior)
 	if position then
 		local map = self.game:getDirector():getMap(position.layer or 1)
-		local i, j = map:getTileAt(position.position.x, position.position.z)
+		if not map then
+			return 0, 0, 0
+		end
 
+		local i, j = map:getTileAt(position.position.x, position.position.z)
 		return i, j, position.layer or 1
 	else
 		return 0, 0, 0

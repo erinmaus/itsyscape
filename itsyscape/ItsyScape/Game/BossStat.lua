@@ -14,13 +14,16 @@ local Color = require "ItsyScape.Graphics.Color"
 local BossStat = Class()
 
 function BossStat:new(t)
+	self.inColor = Color(0, 1, 0, 1)
+	self.outColor = Color(1, 0, 0, 1)
+
 	self:set(t)
 end
 
 function BossStat:set(t)
 	t = t or {}
-	self.inColor = Color(unpack(t.inColor or { 0, 1, 0, 1 })) or self.inColor or Color(0, 1, 0, 1)
-	self.outColor = Color(unpack(t.outColor or { 1, 0, 0, 1 })) or self.outColor or Color(1, 0, 0, 1)
+	self.inColor = Color(unpack(t.inColor or { self.inColor:get() }))
+	self.outColor = Color(unpack(t.outColor or { self.outColor:get() }))
 	self.text = t.text or self.text or false
 	self.icon = t.icon or self.icon or false
 	self.currentValue = t.current or self.currentValue or 0

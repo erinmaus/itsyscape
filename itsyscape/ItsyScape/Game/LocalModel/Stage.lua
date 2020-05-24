@@ -1057,6 +1057,9 @@ function LocalStage:tick()
 
 		local offset = peep:getBehavior(MapOffsetBehavior)
 		if offset then
+			rotation = rotation * offset.rotation
+			scale = scale * offset.scale
+
 			offset = offset.offset
 		else
 			offset = Vector.ZERO

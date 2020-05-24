@@ -1260,6 +1260,55 @@ function Utility.Peep.getTransform(peep)
 	return transform
 end
 
+function Utility.Peep.getMapTransform(peep)
+	local transform = love.math.newTransform()
+	do
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			position = position.position
+		else
+			position = Vector.ZERO
+		end
+
+		local rotation = peep:getBehavior(RotationBehavior)
+		if rotation then
+			rotation = rotation.rotation
+		else
+			rotation = Quaternion.IDENTITY
+		end
+
+		local scale = peep:getBehavior(ScaleBehavior)
+		if scale then
+			scale = scale.scale
+		else
+			scale = Vector.ONE
+		end
+
+		local origin = peep:getBehavior(OriginBehavior)
+		if origin then
+			origin = origin.origin
+		else
+			origin = Vector.ZERO
+		end
+
+		local mapOffset = peep:getBehavior(MapOffsetBehavior)
+		if mapOffset then
+			origin = origin + mapOffset.origin
+			position = position + mapOffset.offset
+			rotation = rotation * mapOffset.rotation
+			scale = scale * mapOffset.scale
+		end
+
+		transform:translate(origin:get())
+		transform:translate(position:get())
+		transform:scale(scale:get())
+		transform:applyQuaternion(rotation:get())
+		transform:translate((-origin):get())
+	end
+
+	return transform
+end
+
 function Utility.Peep.getParentTransform(peep)
 	local director = peep:getDirector()
 	local stage = director:getGameInstance():getStage()
@@ -1274,25 +1323,23 @@ function Utility.Peep.getParentTransform(peep)
 	return nil
 end
 
+function Utility.Peep.getPosition(peep)
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		return position.position
+	else
+		return Vector.ZERO
+	end
+end
+
 function Utility.Peep.getAbsolutePosition(peep)
+	local position = Utility.Peep.getPosition(peep)
 	local transform = Utility.Peep.getParentTransform(peep)
 	if transform then
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position = position.position
-		else
-			position = Vector.ZERO
-		end
-
 		local tx, ty, tz = transform:transformPoint(position:get())
 		return Vector(tx, ty, tz)
 	else
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			return position.position
-		else
-			return Vector.ZERO
-		end
+		return position
 	end
 end
 
@@ -1868,6 +1915,18 @@ function Utility.Peep.getMapResource(peep)
 		if mapPeep then
 			return Utility.Peep.getResource(mapPeep)
 		end
+	end
+end
+
+function Utility.Peep.setMapResource(peep, map)
+	local _, mapResourceReference = peep:addBehavior(MapResourceReferenceBehavior)
+
+	if type(map) == 'string' then
+		local stage = peep:getDirector():getGameInstance():getStage()
+		local mapPeep = stage:getMapScript(map)
+		mapResourceReference.map = Utility.Peep.getResource(mapPeep)
+	else
+		mapResourceReference.map = map
 	end
 end
 

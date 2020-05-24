@@ -31,6 +31,7 @@ function BasicCannon:new(...)
 	self:addBehavior(PropResourceHealthBehavior)
 
 	self:addPoke('fire')
+	self:addPoke('cooldown')
 end
 
 function BasicCannon:ready(director, game)
@@ -57,6 +58,23 @@ function BasicCannon:ready(director, game)
 	end
 end
 
+function BasicCannon:onCooldown()
+	local gameDB = self:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	if resource then
+		local gatherable = gameDB:getRecord("GatherableProp", {
+			Resource = resource
+		})
+
+		self.spawnCooldown = gatherable:get("SpawnTime") or 10
+		self.currentSpawnCooldown = self.spawnCooldown
+	end
+end
+
+function BasicCannon:canFire()
+	return (self.currentSpawnCooldown or 0) == 0
+end
+
 function BasicCannon:onFire(peep)
 	local health = self:getBehavior(PropResourceHealthBehavior)
 	health.currentProgress = health.maxProgress
@@ -76,14 +94,7 @@ function BasicCannon:onFire(peep)
 	if resource then
 		local gameDB = self:getDirector():getGameDB()
 
-		do
-			local p = gameDB:getRecord("GatherableProp", {
-				Resource = resource
-			})
-
-			self.spawnCooldown = p:get("SpawnTime") or 10
-			self.currentSpawnCooldown = self.spawnCooldown
-		end
+		self:onCooldown()
 
 		do
 			local cannon = gameDB:getRecord("Cannon", {
@@ -144,7 +155,7 @@ function BasicCannon:onFire(peep)
 			director:broadcast(hits, 'receiveAttack', poke)
 
 			local stage = director:getGameInstance():getStage()
-			stage:fireProjectile(cannon:get("Cannonball").name, ray.origin, ray:project(range))
+			stage:fireProjectile(cannon:get("Cannonball").name .. "_Small", ray.origin, ray:project(range))
 		end
 	end
 end
