@@ -54,7 +54,7 @@ end
 function StrategyBar:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 
 	self:setSize(StrategyBar.WIDTH, StrategyBar.HEIGHT)
 	self:setPosition(w / 2 - StrategyBar.WIDTH / 2, 0)

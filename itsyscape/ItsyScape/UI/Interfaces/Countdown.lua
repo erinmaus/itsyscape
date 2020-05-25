@@ -102,7 +102,7 @@ end
 function Countdown:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	local number = Countdown.Number(self)
 	number:setPosition(w / 2, h / 2)
 	self:addChild(number)

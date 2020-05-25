@@ -64,7 +64,7 @@ SailingItinerary.PADDING = 8
 function SailingItinerary:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setPosition(w - SailingItinerary.WIDTH, 0)
 	self:setSize(SailingItinerary.WIDTH, h)
 

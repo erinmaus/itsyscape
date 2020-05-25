@@ -65,7 +65,7 @@ end
 function RecruitSailor:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(RecruitSailor.WIDTH, RecruitSailor.HEIGHT)
 	self:setPosition(
 		(w - RecruitSailor.WIDTH) / 2,

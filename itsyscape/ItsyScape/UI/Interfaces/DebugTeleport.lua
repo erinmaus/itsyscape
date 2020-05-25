@@ -26,7 +26,7 @@ DebugTeleport.PADDING = 8
 function DebugTeleport:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(DebugTeleport.WIDTH, DebugTeleport.HEIGHT)
 	self:setPosition(
 		(w - DebugTeleport.WIDTH) / 2,

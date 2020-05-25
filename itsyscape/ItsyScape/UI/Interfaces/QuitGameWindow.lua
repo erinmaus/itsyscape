@@ -23,7 +23,7 @@ QuitGameWindow.PADDING = 8
 function QuitGameWindow:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local width, height = love.window.getMode()
+	local width, height = love.graphics.getScaledMode()
 
 	self:setPosition(
 		width / 2 - QuitGameWindow.DEFAULT_WIDTH / 2,

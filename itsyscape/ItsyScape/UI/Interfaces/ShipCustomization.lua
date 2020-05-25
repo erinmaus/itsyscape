@@ -101,7 +101,7 @@ end
 function ShipCustomization:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(ShipCustomization.WIDTH, ShipCustomization.HEIGHT)
 	self:setPosition(
 		(w - ShipCustomization.WIDTH) / 2,

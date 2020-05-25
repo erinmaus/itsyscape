@@ -28,7 +28,7 @@ ExpensiveBuy.BUTTON_SIZE = 48
 function ExpensiveBuy:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(ExpensiveBuy.WIDTH, ExpensiveBuy.HEIGHT)
 	self:setPosition(
 		(w - ExpensiveBuy.WIDTH) / 2,

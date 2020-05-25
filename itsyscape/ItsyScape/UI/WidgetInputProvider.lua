@@ -91,6 +91,8 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow
 end
 
 function WidgetInputProvider:isBlocking(x, y, overflow)
+	x, y = love.graphics.getScaledPoint(x, y)
+
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, overflow)
 	return widget ~= self.root and widget
 end
@@ -125,6 +127,7 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, o
 end
 
 function WidgetInputProvider:mousePress(x, y, button)
+	x, y = love.graphics.getScaledPoint(x, y)
 	local function f(w)
 		return w:getIsFocusable()
 	end
@@ -151,6 +154,7 @@ function WidgetInputProvider:mousePress(x, y, button)
 end
 
 function WidgetInputProvider:mouseRelease(x, y, button)
+	x, y = love.graphics.getScaledPoint(x, y)
 	local widget = self:getWidgetUnderPoint(x, y)
 	if widget then
 		widget:mouseRelease(x, y, button)
@@ -163,6 +167,7 @@ function WidgetInputProvider:mouseRelease(x, y, button)
 end
 
 function WidgetInputProvider:mouseMove(x, y, dx, dy)
+	x, y = love.graphics.getScaledPoint(x, y)
 	local function f(w)
 		return w:getIsFocusable()
 	end

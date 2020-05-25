@@ -22,7 +22,7 @@ function PlayerTab:new(id, index, ui)
 
 	self:setSize(PlayerTab.WIDTH, PlayerTab.HEIGHT)
 
-	local width, height = love.window.getMode()
+	local width, height = love.graphics.getScaledMode()
 	self:setPosition(
 		width - PlayerTab.WIDTH,
 		height - PlayerTab.HEIGHT - Ribbon.BUTTON_SIZE - Ribbon.PADDING * 2)

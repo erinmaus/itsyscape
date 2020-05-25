@@ -26,7 +26,7 @@ LevelUpNotification.ICON_SIZE = 46
 function LevelUpNotification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	local x, y = w / 2 - LevelUpNotification.WIDTH / 2, 0
 	do
 		for _, interface in self:getView():getInterfaces(id) do

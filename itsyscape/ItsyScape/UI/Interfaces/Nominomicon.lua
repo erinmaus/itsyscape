@@ -49,7 +49,7 @@ Nominomicon.ACTIVE_BUTTON_STYLE = {
 function Nominomicon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	local WIDTH = math.max(math.floor(w / 2), Nominomicon.WIDTH)
 	local HEIGHT = math.max(math.floor(h / 2), Nominomicon.HEIGHT)
 

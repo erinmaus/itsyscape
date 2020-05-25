@@ -122,7 +122,7 @@ function BossHUD:populateStats()
 	local y = BossHUD.BIG_STAT_PADDING * 4 + BossHUD.TOP
 	do
 		local big = state.bigStats
-		local w, h = love.window.getMode()
+		local w, h = love.graphics.getScaledMode()
 
 		for i = 1, #big do
 			local panel = Panel()

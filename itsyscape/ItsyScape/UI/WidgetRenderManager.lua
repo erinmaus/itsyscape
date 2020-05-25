@@ -43,7 +43,7 @@ function WidgetRenderManager:setCursor(widget)
 			p = p:getParent()
 		end
 
-		local mouseX, mouseY = love.mouse.getPosition()
+		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
 		self.cursor.x = x - mouseX
 		self.cursor.y = y - mouseY
 	end
@@ -52,7 +52,7 @@ end
 function WidgetRenderManager:setToolTip(duration, ...)
 	self.toolTip = ToolTip(...)
 	self.toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
-	self.toolTip:setPosition(love.mouse.getPosition())
+	self.toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
 
 	return self.toolTip
 end
@@ -108,13 +108,19 @@ function WidgetRenderManager:start()
 	self.hovered = {}
 
 	do
-		local mx, my = love.mouse.getPosition()
+		local mx, my = love.graphics.getScaledPoint(love.mouse.getPosition())
+
 		self.topHovered = self.input:getWidgetUnderPoint(
 			mx, my,
 			0, 0, nil,
 			function(w)
 				return w:getIsFocusable() or w:getToolTip()
 			end)
+	end
+
+	do
+		local _, _, sx, sy = love.graphics.getScaledMode()
+		love.graphics.scale(sx, sy)
 	end
 
 	local currentTime = love.timer.getTime()
@@ -130,7 +136,7 @@ function WidgetRenderManager:stop()
 	if self.cursor.widget then
 		love.graphics.push('all')
 		love.graphics.translate(self.cursor.x, self.cursor.y)
-		love.graphics.translate(love.mouse.getPosition())
+		love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 		self:draw(self.cursor.widget, self.cursor.state, true)
 		love.graphics.pop()
 	end
@@ -148,7 +154,7 @@ function WidgetRenderManager:stop()
 	for widget, toolTip in pairs(self.hovered) do
 		if toolTip then
 			love.graphics.push('all')
-			love.graphics.translate(love.mouse.getPosition())
+			love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 			self:draw(toolTip.w, toolTip.s, true)
 			love.graphics.pop()
 		end
@@ -188,7 +194,8 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
-			love.graphics.intersectScissor(cornerX, cornerY, w, h)
+			local _, _, scaleX, scaleY = love.graphics.getScaledMode()
+			love.graphics.intersectScissor(cornerX, cornerY, w * scaleX, h * scaleY)
 		end
 	end
 

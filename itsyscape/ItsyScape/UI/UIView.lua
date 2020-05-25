@@ -44,6 +44,34 @@ local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 
 local UIView = Class()
 
+UIView.WIDTH  = 1920
+UIView.HEIGHT = 1080
+
+function love.graphics.getScaledMode()
+	local currentWidth, currentHeight = love.window.getMode()
+	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
+
+	local scale
+	if currentWidth > desiredWidth then
+		scale = math.floor(currentWidth / desiredWidth + 0.5)
+	else
+		scale = 1
+	end
+
+	local realWidth = currentWidth / scale
+	local realHeight = currentHeight / scale
+
+	return math.floor(realWidth), math.floor(realHeight), scale, scale
+end
+
+function love.graphics.getScaledPoint(x, y)
+	local _, _, sx, sy = love.graphics.getScaledMode()
+	x = x / sx
+	y = y / sy
+
+	return x, y
+end
+
 function UIView:new(gameView)
 	self.game = gameView:getGame()
 	self.gameView = gameView
@@ -245,16 +273,20 @@ function UIView:update(delta)
 end
 
 function UIView:draw()
-	local width, height = love.window.getMode()
+	local width, height = self:getMode()
 	self.root:setSize(width, height)
 
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
-	love.graphics.ortho(width, height)
+	love.graphics.ortho(love.window.getMode())
 
 	self.renderManager:start()
 	self.renderManager:draw(self.root)
 	self.renderManager:stop()
+end
+
+function UIView:getMode()
+	return love.graphics.getScaledMode()
 end
 
 return UIView
