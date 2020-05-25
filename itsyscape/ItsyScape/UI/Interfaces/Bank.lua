@@ -53,7 +53,7 @@ end
 function Bank:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(Bank.WIDTH, Bank.HEIGHT)
 	self:setPosition(
 		(w - Bank.WIDTH) / 2,

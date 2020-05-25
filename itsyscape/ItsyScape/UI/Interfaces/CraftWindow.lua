@@ -40,7 +40,7 @@ CraftWindow.PADDING = 4
 function CraftWindow:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(CraftWindow.WIDTH, CraftWindow.HEIGHT)
 	self:setPosition(
 		(w - CraftWindow.WIDTH) / 2,

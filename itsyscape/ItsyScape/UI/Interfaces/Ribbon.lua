@@ -116,7 +116,7 @@ function Ribbon:addButton(tab, icon)
 	self:setSize(newWidth, Ribbon.PADDING * 2 + Ribbon.BUTTON_SIZE)
 	self.panel:setSize(self:getSize())
 
-	local windowWidth, windowHeight = love.window.getMode()
+	local windowWidth, windowHeight = love.graphics.getScaledMode()
 	self:setPosition(
 		windowWidth - newWidth,
 		windowHeight - Ribbon.PADDING * 2 - Ribbon.BUTTON_SIZE)

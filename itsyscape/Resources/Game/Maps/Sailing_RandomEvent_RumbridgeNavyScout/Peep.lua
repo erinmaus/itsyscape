@@ -393,7 +393,7 @@ function RandomEvent.Ship:fire(otherShip, fireProbe, player)
 				})
 				otherShip.ship:poke('hit', attackPoke)
 
-				details.peep:poke('cooldown')
+				details.peep:poke('cooldown', Utility.Peep.getPlayer(self.ship))
 
 				Log.info("BOOM! Fired a cannon, dealing %d damage.", attackPoke:getDamage())
 			else

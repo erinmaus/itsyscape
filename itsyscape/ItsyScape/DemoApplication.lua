@@ -104,7 +104,7 @@ end
 function DemoApplication:mousePress(x, y, button)
 	if self.titleScreen and not self.mainMenu then
 		local mainMenu = Widget()
-		mainMenu:setSize(love.window.getMode())
+		mainMenu:setSize(love.graphics.getScaledMode())
 
 		self.mainMenu = mainMenu
 		self.mainMenu:addChild(PlayerSelect(self))

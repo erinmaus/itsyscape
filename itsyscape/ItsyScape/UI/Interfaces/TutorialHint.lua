@@ -125,7 +125,7 @@ function TutorialHint:place(widget)
 			y = (targetY + targetHeight / 2) + textHeight / 2
 		end
 
-		local screenWidth, screenHeight = love.window.getMode()
+		local screenWidth, screenHeight = love.graphics.getScaledMode()
 
 		x = math.min(math.max(x, 0), screenWidth - textWidth / 2)
 		y = math.min(math.max(y, 0), screenHeight - textHeight / 2)

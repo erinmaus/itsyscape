@@ -331,7 +331,7 @@ function CombatStatusHUD:update(...)
 			ToolTip.Text(state.effects[i].description))
 	end
 
-	local screenWidth, screenHeight = love.window.getMode()
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
 	local width, height = self.effectsPanel:getSize()
 	self.effectsPanel:setPosition(
 		CombatStatusHUD.PADDING,

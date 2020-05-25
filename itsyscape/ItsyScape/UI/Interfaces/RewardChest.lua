@@ -40,7 +40,7 @@ RewardChest.ICON_SIZE = 48
 function RewardChest:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	self:setSize(RewardChest.WIDTH, RewardChest.HEIGHT)
 	self:setPosition(
 		(w - RewardChest.WIDTH) / 2,

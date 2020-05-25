@@ -25,7 +25,7 @@ Notification.BOTTOM = 16
 function Notification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getScaledMode()
 	local x, y = 0, 0
 	do
 		for _, interface in self:getView():getInterfaces(id) do

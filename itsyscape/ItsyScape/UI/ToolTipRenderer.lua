@@ -95,8 +95,11 @@ function ToolTipRenderer:draw(widget, state)
 	width = width + self.padding * 2
 	height = height + self.padding * 2
 
-	local screenWidth, screenHeight = love.window.getMode()
+	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()
 	local sx, sy = love.graphics.transformPoint(16, 16)
+	sx = sx / scale
+	sy = sy / scale
+
 	if sx + width > screenWidth then
 		love.graphics.translate(screenWidth - (sx + width), 0)
 	end

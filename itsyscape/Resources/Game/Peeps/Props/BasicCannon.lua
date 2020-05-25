@@ -58,7 +58,21 @@ function BasicCannon:ready(director, game)
 	end
 end
 
-function BasicCannon:onCooldown()
+function BasicCannon:onCooldown(peep)
+	local health = self:getBehavior(PropResourceHealthBehavior)
+	health.currentProgress = health.maxProgress
+
+	if peep then
+		local fireAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Action_FireCannon/Script.lua")
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:playAnimation('x-cannon-fire', 1, fireAnimation, true)
+		end
+	end
+
 	local gameDB = self:getDirector():getGameDB()
 	local resource = Utility.Peep.getResource(self)
 	if resource then
@@ -76,25 +90,11 @@ function BasicCannon:canFire()
 end
 
 function BasicCannon:onFire(peep)
-	local health = self:getBehavior(PropResourceHealthBehavior)
-	health.currentProgress = health.maxProgress
-
-	do
-		local fireAnimation = CacheRef(
-			"ItsyScape.Graphics.AnimationResource",
-			"Resources/Game/Animations/Action_FireCannon/Script.lua")
-		local actor = peep:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor = actor.actor
-			actor:playAnimation('x-cannon-fire', 1, fireAnimation, true)
-		end
-	end
-
 	local resource = Utility.Peep.getResource(self)
 	if resource then
 		local gameDB = self:getDirector():getGameDB()
 
-		self:onCooldown()
+		self:onCooldown(peep)
 
 		do
 			local cannon = gameDB:getRecord("Cannon", {
