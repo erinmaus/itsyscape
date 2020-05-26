@@ -87,7 +87,7 @@ function GBuffer:release()
 
 	if self.depthStencil then
 		self.depthStencil:release()
-		self.normalSpecular:clear()
+		self.depthStencil = false
 	end
 
 	self.width = 0
