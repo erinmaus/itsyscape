@@ -17,9 +17,12 @@ local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraControl
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
+local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
 local DemoApplication = Class(Application)
@@ -67,10 +70,7 @@ end
 function DemoApplication:closeTitleScreen()
 	self:setIsPaused(false)
 
-	if self.mainMenu then
-		self.mainMenu:getParent():removeChild(self.mainMenu)
-		self.mainMenu = nil
-	end
+	self:closeMainMenu()
 
 	if self.titleScreen then
 		self.titleScreen = nil
@@ -101,17 +101,80 @@ function DemoApplication:quitGame()
 	self:openTitleScreen()
 end
 
+function DemoApplication:closeMainMenu()
+	if self.mainMenu then
+		self.mainMenu:getParent():removeChild(self.mainMenu)
+		self.mainMenu = nil
+	end
+end
+
+function DemoApplication:openMainMenu()
+	local mainMenu = Widget()
+	mainMenu:setSize(love.graphics.getScaledMode())
+
+	self.mainMenu = mainMenu
+	self.mainMenu:addChild(PlayerSelect(self))
+
+	local function BUTTON_STYLE(icon)
+		return {
+			pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+			icon = {
+				filename = icon,
+				x = 0.5,
+				y = 0.5
+			}
+		}
+	end
+
+	local BUTTON_SIZE = 64
+	local PADDING = 8
+
+	local w, h = love.graphics.getScaledMode()
+
+	local graphicsOptionsButton = Button()
+	graphicsOptionsButton:setStyle(ButtonStyle(
+		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Settings.png"),
+		self:getUIView():getResources()))
+	graphicsOptionsButton.onClick:register(function()
+		self:openOptionsScreen(GraphicsOptions, function(value)
+			if value then
+				love.window.setMode(_CONF.width, _CONF.height, {
+					fullscreen = _CONF.fullscreen,
+					vsync = _CONF.vsync,
+					display = _CONF.display
+				})
+			end
+
+			self:closeMainMenu()
+			self:openMainMenu()
+		end)
+	end)
+	graphicsOptionsButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		h - BUTTON_SIZE - PADDING)
+	graphicsOptionsButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	self.mainMenu:addChild(graphicsOptionsButton)
+
+	self:getUIView():getRoot():addChild(self.mainMenu)
+end
+
+function DemoApplication:openOptionsScreen(Type, callback)
+	if self.optionsScreen then
+		self.mainMenu:removeChild(self.optionsScreen)
+	end
+
+	self.optionsScreen = Type(self)
+	self.optionsScreen.onClose:register(callback)
+	self.mainMenu:addChild(self.optionsScreen)
+end
+
 function DemoApplication:mousePress(x, y, button)
 	if self.titleScreen and not self.mainMenu then
-		local mainMenu = Widget()
-		mainMenu:setSize(love.graphics.getScaledMode())
-
-		self.mainMenu = mainMenu
-		self.mainMenu:addChild(PlayerSelect(self))
+		self:openMainMenu()
 
 		self.titleScreen:suppressTitle()
-
-		self:getUIView():getRoot():addChild(self.mainMenu)
 
 		if _ANALYTICS and not _ANALYTICS:getAcked() then
 			local WIDTH = 480
