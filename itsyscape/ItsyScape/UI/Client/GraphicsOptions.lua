@@ -88,14 +88,21 @@ function GraphicsOptions:new(application)
 
 	self.application = application
 
+	-- So by:
+	--  1. Setting the size to the full screen resolution
+	--  2. Setting the screen to the center of screen (adjusted by window size)
+	-- ...we prevent the user clicking anything underneath the settings screen
+	-- and can position things relative to the top left corner of the window,
+	-- rather than the top left corner of the screen.
 	local w, h = love.graphics.getScaledMode()
-	self:setSize(GraphicsOptions.WIDTH, GraphicsOptions.HEIGHT)
-	self:setPosition(
-		(w - GraphicsOptions.WIDTH) / 2,
-		(h - GraphicsOptions.HEIGHT) / 2)
+	self:setSize(w, h)
+	self:setScroll(
+		-(w - GraphicsOptions.WIDTH) / 2,
+		-(h - GraphicsOptions.HEIGHT) / 2)
 
 	local panel = Panel()
-	panel:setSize(self:getSize())
+	panel:setSize(GraphicsOptions.WIDTH, GraphicsOptions.HEIGHT)
+	panel:setPosition(0, 0)
 	self:addChild(panel)
 
 	do
@@ -340,7 +347,7 @@ end
 
 function GraphicsOptions:setResolution(width, height, button)
 	if self.activeResolutionButton then
-		button:setStyle(
+		self.activeResolutionButton:setStyle(
 			ButtonStyle(
 				GraphicsOptions.SELECT_INACTIVE_BOX_BUTTON_STYLE,
 				self.application:getUIView():getResources()))
