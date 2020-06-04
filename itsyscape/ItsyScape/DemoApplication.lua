@@ -156,6 +156,7 @@ function DemoApplication:openMainMenu()
 		w - BUTTON_SIZE - PADDING,
 		h - BUTTON_SIZE - PADDING)
 	graphicsOptionsButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	graphicsOptionsButton:setToolTip(ToolTip.Text("Configure graphics options."))
 	self.mainMenu:addChild(graphicsOptionsButton)
 
 	local controlsButton = Button()
@@ -172,6 +173,7 @@ function DemoApplication:openMainMenu()
 		w - BUTTON_SIZE - PADDING,
 		h - BUTTON_SIZE * 2 - PADDING * 3)
 	controlsButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	controlsButton:setToolTip(ToolTip.Text("Configure controls."))
 	self.mainMenu:addChild(controlsButton)
 
 	local soundButton = Button()
@@ -204,6 +206,7 @@ function DemoApplication:openMainMenu()
 		w - BUTTON_SIZE - PADDING,
 		h - BUTTON_SIZE * 3 - PADDING * 5)
 	soundButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	self.mainMenu:addChild(soundButton)
 
 	self:getUIView():getRoot():addChild(self.mainMenu)
