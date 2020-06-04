@@ -21,8 +21,9 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
-local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
+local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
 local DemoApplication = Class(Application)
@@ -156,6 +157,54 @@ function DemoApplication:openMainMenu()
 		h - BUTTON_SIZE - PADDING)
 	graphicsOptionsButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
 	self.mainMenu:addChild(graphicsOptionsButton)
+
+	local controlsButton = Button()
+	controlsButton:setStyle(ButtonStyle(
+		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
+		self:getUIView():getResources()))
+	controlsButton.onClick:register(function()
+		self:openOptionsScreen(Controls, function(value)
+			self:closeMainMenu()
+			self:openMainMenu()
+		end)
+	end)
+	controlsButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		h - BUTTON_SIZE * 2 - PADDING * 3)
+	controlsButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	self.mainMenu:addChild(controlsButton)
+
+	local soundButton = Button()
+	if _CONF.volume == 0 then
+		soundButton:setStyle(ButtonStyle(
+			BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Mute.png"),
+			self:getUIView():getResources()))
+	else
+		soundButton:setStyle(ButtonStyle(
+			BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Music.png"),
+			self:getUIView():getResources()))
+	end
+
+	soundButton.onClick:register(function()
+		if _CONF.volume == 0 then
+			_CONF.volume = 1
+			soundButton:setStyle(ButtonStyle(
+				BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Music.png"),
+				self:getUIView():getResources()))
+		else
+			_CONF.volume = 0
+			soundButton:setStyle(ButtonStyle(
+				BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Mute.png"),
+				self:getUIView():getResources()))
+		end
+
+		love.audio.setVolume(_CONF.volume)
+	end)
+	soundButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		h - BUTTON_SIZE * 3 - PADDING * 5)
+	soundButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	self.mainMenu:addChild(soundButton)
 
 	self:getUIView():getRoot():addChild(self.mainMenu)
 end

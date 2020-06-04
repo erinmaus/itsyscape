@@ -90,7 +90,7 @@ function GraphicsOptions:new(application)
 
 	-- So by:
 	--  1. Setting the size to the full screen resolution
-	--  2. Setting the screen to the center of screen (adjusted by window size)
+	--  2. Setting the scroll to the center of screen (adjusted by window size)
 	-- ...we prevent the user clicking anything underneath the settings screen
 	-- and can position things relative to the top left corner of the window,
 	-- rather than the top left corner of the screen.

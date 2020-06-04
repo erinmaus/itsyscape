@@ -571,7 +571,7 @@ function GameView:fireProjectile(projectileID, source, destination, time)
 end
 
 function GameView:playMusic(track, song)
-	if not song then
+	if not song or _CONF.musicVolume == 0 then
 		local t = self.music[track]
 		if t then
 			table.insert(t, false)
