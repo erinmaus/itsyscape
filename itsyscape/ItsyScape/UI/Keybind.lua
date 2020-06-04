@@ -30,10 +30,14 @@ function Keybind:bind(binding)
 	self.keys = keys
 end
 
+function Keybind:getBinding()
+	return table.concat(self.keys, ' ')
+end
+
 function Keybind:save()
 	local keybinds = _CONF.keybinds or {}
 
-	keybinds[self.name] = table.concat(self.keys, ' ')
+	keybinds[self.name] = self:getBinding()
 
 	_CONF.keybinds = keybinds 
 end

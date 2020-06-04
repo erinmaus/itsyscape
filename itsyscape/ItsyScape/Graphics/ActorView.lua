@@ -44,6 +44,7 @@ function ActorView.Animatable:playSound(filename)
 	if not sound then
 		sound = love.audio.newSource(filename, 'static')
 		self.sounds[filename] = sound
+		sound:setVolume((_CONF.soundEffectsVolume or 1))
 	end
 
 	sound:seek(0)
