@@ -741,6 +741,7 @@ include "Resources/Game/DB/Peeps/FishingStoreOwner.lua"
 include "Resources/Game/DB/Peeps/Sailor.lua"
 include "Resources/Game/DB/Peeps/Tutors.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
+include "Resources/Game/DB/Peeps/Tinkerer.lua"
 
 -- Shops
 include "Resources/Game/DB/Shops/GeneralStore.lua"
