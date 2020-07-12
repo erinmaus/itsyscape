@@ -32,7 +32,8 @@ local SKINS = {
 		{ name = "Slick pokey", t = MODEL_SKIN, filename = "PlayerKit1/Hair/SlickPokey.lua" },
 		{ name = "Black braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/BlackBraid.lua" },
 		{ name = "Dark red braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DarkRedBraid.lua" },
-		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" }
+		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" },
+		{ name = "Dragon horns (black)", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Haru.lua", player = "Haru" }
 	},
 
 	eyes = {
@@ -91,6 +92,7 @@ local SKINS = {
 		{ name = "Navigator (green)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Green.lua" },
 		{ name = "Navigator (purple)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Purple.lua" },
 		{ name = "Navigator (red)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Red.lua" },
+		{ name = "Dragon wings (black)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Haru.lua", player = "Haru" },
 	},
 
 	hands = {
@@ -204,8 +206,14 @@ function CharacterCustomizationController:previousWardrobe(e)
 	end
 
 	index = (index - 1) % #SKINS[e.slot] + 1
-
 	self:changeWardrobe(e.slot, index)
+
+	local playerName = self:pull().name or "Player"
+	local slotName = SKINS[e.slot][index].player
+	if slotName and slotName:lower() ~= playerName:lower() then
+		print('slot', slotName, 'player', playerName)
+		self:previousWardrobe(e)
+	end
 end
 
 function CharacterCustomizationController:nextWardrobe(e)
@@ -216,6 +224,12 @@ function CharacterCustomizationController:nextWardrobe(e)
 	end
 
 	self:changeWardrobe(e.slot, index)
+
+	local playerName = self:pull().name or "Player"
+	local slotName = SKINS[e.slot][index].player
+	if slotName and slotName:lower() ~= playerName:lower() then
+		self:nextWardrobe(e)
+	end
 end
 
 function CharacterCustomizationController:changeName(e)
