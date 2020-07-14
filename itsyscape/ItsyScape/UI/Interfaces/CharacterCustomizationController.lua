@@ -211,7 +211,6 @@ function CharacterCustomizationController:previousWardrobe(e)
 	local playerName = self:pull().name or "Player"
 	local slotName = SKINS[e.slot][index].player
 	if slotName and slotName:lower() ~= playerName:lower() then
-		print('slot', slotName, 'player', playerName)
 		self:previousWardrobe(e)
 	end
 end
