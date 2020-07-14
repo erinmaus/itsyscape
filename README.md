@@ -8,7 +8,7 @@ Build instructions Coming Soon(tm).
 
 # License & Copyright
 
-Copyright (c) Aaron Bolyard
+Copyright (c) Erin Maus
 
 This project is licensed under the MPL. View LICENSE in the root directory or
 visit http://mozilla.org/MPL/2.0/ for the terms.
