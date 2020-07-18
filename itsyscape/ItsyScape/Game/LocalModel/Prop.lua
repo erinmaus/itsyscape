@@ -154,7 +154,7 @@ function LocalProp:getBounds()
 		local min = position - xzSize
 		local max = position + xzSize + ySize
 
-		return min + size.offset, max + size.offset
+		return min + size.offset, max + size.offset, size.zoom, size.pan
 	else
 		return position, position
 	end
