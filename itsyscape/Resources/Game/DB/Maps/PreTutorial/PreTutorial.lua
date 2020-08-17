@@ -217,39 +217,6 @@ do
 		}
 	}
 
-	local FailAction = ItsyScape.Action.Cook() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "Larry",
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Item "BurntLarry",
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = 1
-		}
-	}
-
-	ItsyScape.Meta.HiddenFromSkillGuide {
-		Action = FailAction
-	}
-
-	ItsyScape.Meta.CookingFailedAction {
-		Output = FailAction,
-		Start = 1,
-		Stop = 6,
-		Action = CookAction
-	}
-
 	ItsyScape.Resource.Item "CookedLarry" {
 		CookAction,
 		EatAction
