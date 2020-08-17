@@ -38,7 +38,7 @@ ItsyScape.Meta.Equipment {
 
 ItsyScape.Meta.EquipmentModel {
 	Type = "ItsyScape.Game.Skin.ModelSkin",
-	Filename = "Resources/Game/Skins/BrownApron/BrownApron.lua",
+	Filename = "Resources/Game/Skins/Apron/Apron_Brown.lua",
 	Resource = ItsyScape.Resource.Item "BrownApron"
 }
 
@@ -72,8 +72,42 @@ ItsyScape.Meta.Equipment {
 
 ItsyScape.Meta.EquipmentModel {
 	Type = "ItsyScape.Game.Skin.ModelSkin",
-	Filename = "Resources/Game/Skins/WhiteApron/WhiteApron.lua",
+	Filename = "Resources/Game/Skins/Apron/Apron_White.lua",
 	Resource = ItsyScape.Resource.Item "WhiteApron"
+}
+
+ItsyScape.Resource.Item "GreenApron" {
+	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green apron",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GreenApron"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smells like coffee...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GreenApron"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(2) / 2,
+	Weight = 2,
+	Resource = ItsyScape.Resource.Item "GreenApron"
+}
+
+ItsyScape.Meta.Equipment {
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+	Resource = ItsyScape.Resource.Item "GreenApron"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/Apron/Apron_Green.lua",
+	Resource = ItsyScape.Resource.Item "GreenApron"
 }
 
 ItsyScape.Resource.Item "ChefsHat" {
