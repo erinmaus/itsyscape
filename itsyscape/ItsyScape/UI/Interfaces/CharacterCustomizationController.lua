@@ -32,6 +32,7 @@ local SKINS = {
 		{ name = "Slick pokey", t = MODEL_SKIN, filename = "PlayerKit1/Hair/SlickPokey.lua" },
 		{ name = "Black braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/BlackBraid.lua" },
 		{ name = "Dark red braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DarkRedBraid.lua" },
+		{ name = "Curly", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Curly.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" },
 		{ name = "Dragon horns (black)", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Haru.lua", player = "Haru" }
 	},
