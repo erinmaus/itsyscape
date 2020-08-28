@@ -88,6 +88,10 @@ function GraphicsOptions:new(application)
 
 	self.application = application
 
+	local currentResWidth, currentResHeight = love.window.getMode()
+	_CONF.width = _CONF.width or currentResWidth
+	_CONF.height = _CONF.height or currentResHeight
+
 	-- So by:
 	--  1. Setting the size to the full screen resolution
 	--  2. Setting the scroll to the center of screen (adjusted by window size)
