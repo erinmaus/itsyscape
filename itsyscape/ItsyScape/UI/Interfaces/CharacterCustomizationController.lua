@@ -58,7 +58,9 @@ local SKINS = {
 		{ name = "Dark", t = MODEL_SKIN, filename = "PlayerKit1/Head/Dark.lua" },
 		{ name = "Fig", t = MODEL_SKIN, filename = "PlayerKit1/Head/Minifig.lua" },
 		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Head/Zombi.lua" },
-		{ name = "Undead (Fungal)", t = MODEL_SKIN, filename = "PlayerKit1/Head/Fungal.lua" }
+		{ name = "Undead (Fungal)", t = MODEL_SKIN, filename = "PlayerKit1/Head/Fungal.lua" },
+		{ name = "Undead (Nymph)", t = MODEL_SKIN, filename = "PlayerKit1/Head/Nymph.lua" },
+		{ name = "Unreal", t = MODEL_SKIN, filename = "PlayerKit1/Head/Unreal.lua" }
 	},
 
 	body = {
@@ -93,6 +95,7 @@ local SKINS = {
 		{ name = "Navigator (green)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Green.lua" },
 		{ name = "Navigator (purple)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Purple.lua" },
 		{ name = "Navigator (red)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Red.lua" },
+		{ name = "Lab coat", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/LabCoat.lua" },
 		{ name = "Dragon wings (black)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Haru.lua", player = "Haru" },
 	},
 
@@ -112,7 +115,8 @@ local SKINS = {
 		{ name = "Dark", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Dark.lua" },
 		{ name = "Fig", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Minifig.lua" },
 		{ name = "Undead", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Zombi.lua" },
-		{ name = "Undead (Fungal)", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Fungal.lua" }
+		{ name = "Undead (Fungal)", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Fungal.lua" },
+		{ name = "Unreal", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Unreal.lua" }
 	},
 
 	feet = {
