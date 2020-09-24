@@ -37,6 +37,7 @@ local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBeh
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
 -- Contains utility methods for a variety of purposes.
@@ -1773,6 +1774,39 @@ function Utility.Peep.face(peep, target)
 			movement.targetFacing = MovementBehavior.FACING_RIGHT
 		end
 	end
+end
+
+function Utility.Peep.face3D(self)
+	local rotation = self:getBehavior(RotationBehavior)
+	local combatTarget = self:getBehavior(CombatTargetBehavior)
+	if combatTarget and combatTarget.actor then
+		local actor = combatTarget.actor
+		local peep = actor:getPeep()
+
+		if peep then
+			local selfPosition = Utility.Peep.getAbsolutePosition(self)
+			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+
+			rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
+		end
+	else
+		local targetTile = self:getBehavior(TargetTileBehavior)
+		if targetTile and targetTile.pathNode then
+			local position = self:getBehavior(PositionBehavior)
+			local map = self:getDirector():getMap(position.layer)
+
+			local selfPosition = Utility.Peep.getAbsolutePosition(self)
+			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+
+			rotation.rotation = Quaternion.lookAt(tilePosition, selfPosition):getNormal()
+		else
+			rotation.rotation = Quaternion.IDENTITY
+		end
+	end
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.facing = MovementBehavior.FACING_RIGHT
+	movement.targetFacing = MovementBehavior.FACING_LEFT
 end
 
 function Utility.Peep.attack(peep, other, distance)
