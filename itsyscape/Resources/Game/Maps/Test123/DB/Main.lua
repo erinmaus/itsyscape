@@ -126,3 +126,20 @@ do
 		MapObject = M["Hex"]
 	}
 end
+
+M["Emily"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 5,
+		PositionZ = 31,
+		Name = "Emily",
+		Map = M._MAP,
+		Resource = M["Emily"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Emily_Default",
+		MapObject = M["Emily"]
+	}
+end
