@@ -96,6 +96,7 @@ function QuadSceneNode:draw(renderer, delta)
 		love.graphics.applyTransform(view)
 	end
 
+	love.graphics.setMeshCullMode('none')
 	love.graphics.draw(self.mesh)
 end
 
