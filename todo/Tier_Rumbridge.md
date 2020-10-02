@@ -115,11 +115,17 @@ Someone wants to sabotage a dinner with the Earl! What will you do: help the sab
 
 ## Castle
 * Tall-ish castle, 3-4 floors
-* Courtyard (dandelion enemies, non-aggressive)
+* Courtyard (dandelion guards, non-aggressive)
 * Lower floors:
     1. Basement (cockroaches, drops chitin)
     2. Dungeon (spider cocoons, drops silk)
     3. Cave (iron; lava)
+
+## Farmlands
+* Abandoned farm (forest dungeon with chance of better materials than regular farms) w/ haunted farmhouse
+* Some regular farms with basic materials
+	* Crops: potatoes, onions, beets
+	* Livestock: pigs, cows, and chickens
 
 ## Leafy Lake
 * Leaky Caverns (iron; fish)
@@ -132,3 +138,14 @@ Someone wants to sabotage a dinner with the Earl! What will you do: help the sab
 * Basement w/ Saccharomytes (Yeast Mites) and the Saccharobyte (Yeast Beast) boss
 * Cemetery
 * Crypt w/ Rumbugs
+
+## Hex Labs, Inc.
+* Grand entrance near Leafy Lake
+* Elaborate lab
+	* Jakkenstone shard analyzer
+	* Interdimensional telematrix configuration
+	* Long-wave two-way tele-pager
+	* High frequency energy chisel
+	* Vats with draconic creatures
+	* Humanoid robot servants
+	* Emily
