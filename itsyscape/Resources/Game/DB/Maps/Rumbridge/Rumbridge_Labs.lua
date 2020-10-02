@@ -125,3 +125,63 @@ do
 		Resource = ItsyScape.Resource.Peep "Emily_Default"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer_Pillar" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 12,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer_Pillar"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer_Pillar"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Jakkenstone shard analyzer pillar",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer_Pillar"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The energy from that pillar tingles the spine...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer_Pillar"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 7.5,
+		SizeY = 4,
+		SizeZ = 7.5,
+		MapObject = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Jakkenstone shard analyzer",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A mysterious artifact.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer"
+	}
+end
