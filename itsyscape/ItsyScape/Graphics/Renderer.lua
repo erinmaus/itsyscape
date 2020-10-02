@@ -34,6 +34,7 @@ function Renderer:new(isMobile)
 	self.clearColor = Color(0.39, 0.58, 0.93, 1)
 
 	self.cull = true
+	self.startTime = love.timer.getTime()
 end
 
 function Renderer:getCullEnabled()
@@ -149,7 +150,7 @@ function Renderer:setCurrentShader(shader)
 			love.graphics.setShader(shader)
 
 			if shader:hasUniform("scape_Time") then
-				shader:send("scape_Time", love.timer.getTime())
+				shader:send("scape_Time", love.timer.getTime() - self.startTime)
 			end
 		end
 	end
