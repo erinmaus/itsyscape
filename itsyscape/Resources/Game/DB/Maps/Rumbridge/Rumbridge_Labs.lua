@@ -185,3 +185,61 @@ do
 		Resource = ItsyScape.Resource.Prop "HexLabs_JakkenstoneShardAnalyzer"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "HexLabs_Vat" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "HexLabs_Vat"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = ItsyScape.Resource.Prop "HexLabs_Vat"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Life support vat",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_Vat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Rather be out here than in there...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "HexLabs_Vat"
+	}
+end
+
+do
+	ItsyScape.Resource.Peep "Draconic_Sleeping" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Draconic",
+		Resource = ItsyScape.Resource.Peep "Draconic_Sleeping"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Draconic.SleepingDraconic",
+		Resource = ItsyScape.Resource.Peep "Draconic_Sleeping"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Draconic monstrosity",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Draconic_Sleeping"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What horrible experiment produced this monster?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Draconic_Sleeping"
+	}
+end
