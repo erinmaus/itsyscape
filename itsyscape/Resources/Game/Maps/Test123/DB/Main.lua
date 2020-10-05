@@ -109,37 +109,3 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
-
-M["Draconic_Sleeping"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
-		PositionY = 5,
-		PositionZ = 31,
-		Name = "Draconic_Sleeping",
-		Map = M._MAP,
-		Resource = M["Draconic_Sleeping"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
-		MapObject = M["Draconic_Sleeping"]
-	}
-end
-
-M["Vat"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
-		PositionY = 5,
-		PositionZ = 31,
-		Name = "Vat",
-		Map = M._MAP,
-		Resource = M["Vat"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HexLabs_Vat",
-		MapObject = M["Vat"]
-	}
-end
