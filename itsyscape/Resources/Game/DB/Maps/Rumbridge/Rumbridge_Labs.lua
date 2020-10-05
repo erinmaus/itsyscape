@@ -243,3 +243,95 @@ do
 		Resource = ItsyScape.Resource.Peep "Draconic_Sleeping"
 	}
 end
+
+do
+	ItsyScape.Resource.Peep "Robot_MkII" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Robot_MkII_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Robot_MkII",
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Robot.MkIIRobot",
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Robot, Mk. II",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An example of sufficiently advanced technology being indistinguishable from magic.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(30),
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IronBar",
+		Weight = 10,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "Robot_MkII_Primary"	
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IronBar",
+		Weight = 5,
+		Count = 2,
+		Resource = ItsyScape.Resource.DropTable "Robot_MkII_Primary"	
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IronBar",
+		Weight = 1,
+		Count = 4,
+		Resource = ItsyScape.Resource.DropTable "Robot_MkII_Primary"	
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(20, 0.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5, 1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 1.5),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = ItsyScape.Resource.Peep "Robot_MkII"
+	}
+end
