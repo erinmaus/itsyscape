@@ -89,7 +89,7 @@ ItsyScape.Resource.Peep "Chicken_Island" {
 
 	ItsyScape.Action.Loot() {
 		Output {
-			Resource = ItsyScape.Resource.DropTable "Chicken_Secondary",
+			Resource = ItsyScape.Resource.DropTable "Chicken_Island_Secondary",
 			Count = 1
 		}
 	}
@@ -148,7 +148,7 @@ ItsyScape.Meta.DropTableEntry {
 	Weight = 1,
 	Count = 40,
 	Range = 10,
-	Resource = ItsyScape.Resource.DropTable "Chicken_Secondary"	
+	Resource = ItsyScape.Resource.DropTable "Chicken_Island_Secondary"	
 }
 
 ItsyScape.Meta.Equipment {
