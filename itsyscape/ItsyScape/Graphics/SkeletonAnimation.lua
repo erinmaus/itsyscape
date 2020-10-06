@@ -147,7 +147,8 @@ function SkeletonAnimation:computeTransform(time, transforms, index, localOnly)
 		transform:apply(transforms[parentIndex])
 	end
 
-	local duration = boneFrame[#boneFrame].time
+	--local duration = boneFrame[#boneFrame].time
+	local duration = self:getDuration()
 	local wrappedTime
 	if duration ~= 0 then
 		if time > duration then

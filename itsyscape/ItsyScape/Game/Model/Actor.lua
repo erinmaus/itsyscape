@@ -158,11 +158,13 @@ end
 --
 -- If 'force' is set, then the animation always plays.
 --
+-- If 'time' is provided, starts the animation at that time.
+--
 -- Should invoke Actor.onAnimationPlayed with the slot and animation if
 -- successful.
 --
 -- Returns true if the animation was played, false otherwise.
-function Actor:playAnimation(slot, priority, animation, force)
+function Actor:playAnimation(slot, priority, animation, force, time)
 	return Class.ABSTRACT()
 end
 

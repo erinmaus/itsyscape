@@ -159,8 +159,8 @@ function ActorView:new(actor, actorID)
 	self.layer = false
 
 	self.animations = {}
-	self._onAnimationPlayed = function(_, slot, priority, animation)
-		self:playAnimation(slot, animation, priority, 0)
+	self._onAnimationPlayed = function(_, slot, priority, animation, time)
+		self:playAnimation(slot, animation, priority, time or 0)
 	end
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
 
@@ -247,6 +247,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			then
 				Log.info("Queueing animation.")
 				a.next = {
+					cacheRef = animation,
 					definition = definition:getResource(),
 					priority = priority,
 					time = time
@@ -256,6 +257,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 					a.instance:stop()
 				end
 
+				a.cacheRef = cacheRef
 				a.definition = definition:getResource()
 				a.instance = a.definition:play(self.animatable)
 				a.time = time or 0
