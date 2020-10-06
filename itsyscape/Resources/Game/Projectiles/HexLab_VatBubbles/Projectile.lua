@@ -19,8 +19,8 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local Bubbles = Class(Projectile)
 Bubbles.MIN_BUBBLES = 1
 Bubbles.MAX_BUBBLES = 3
-Bubbles.MIN_DURATION = 1
-Bubbles.MAX_DURATION = 1.5
+Bubbles.MIN_DURATION = 2 
+Bubbles.MAX_DURATION = 3
 Bubbles.MIN_SPEED = 0.5
 Bubbles.MAX_SPEED = 1
 Bubbles.MIN_SCALE = 2 / 16
@@ -41,7 +41,6 @@ function Bubbles:load()
 	Projectile.load(self)
 
 	local resources = self:getResources()
-	local root = self:getRoot()
 
 	self.bubbles = {}
 	local numBubbles = math.random(self.MIN_BUBBLES, self.MAX_BUBBLES)
@@ -56,13 +55,11 @@ function Bubbles:load()
 		}
 
 		local scale = math.random() * (self.MAX_SCALE - self.MIN_SCALE) + self.MIN_SCALE
-		bubble.node:setParent(root)
 		bubble.node:getMaterial():setIsTranslucent(true)
 		bubble.node:getMaterial():setIsFullLit(true)
 		bubble.node:getMaterial():setIsZWriteDisabled(true)
 		bubble.node:getTransform():setLocalScale(Vector.ONE * scale)
 
-		bubble.light:setParent(bubble.node)
 		bubble.light:setAttenuation(math.random() * self.MAX_LIGHT_RADIUS)
 		bubble.light:setColor(self.COLOR)
 
@@ -88,6 +85,11 @@ function Bubbles:tick()
 		local source = self:getTargetPosition(self:getSource())
 		local offset = self:getTargetPosition(self:getDestination())
 		self.spawnPosition = source + offset
+
+		for i = 1, #self.bubbles do
+			self.bubbles[i].node:setParent(self:getRoot())
+			self.bubbles[i].light:setParent(self.bubbles[i].node)
+		end
 	end
 end
 
@@ -110,6 +112,7 @@ function Bubbles:update(elapsed)
 		end
 
 		self:getRoot():getTransform():setLocalTranslation(self.spawnPosition)
+		self:getRoot():getTransform():setPreviousTransform(self.spawnPosition)
 	end
 end
 
