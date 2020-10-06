@@ -52,8 +52,8 @@ function AnimationInstance:play(time, windingDown)
 		local channel = self.channels[i]
 		local relativeTime = self.times[channel]
 		if not relativeTime then
-			relativeTime = 0
-			self.times[channel] = time
+			relativeTime = time
+			self.times[channel] = 0
 		else
 			relativeTime = time - relativeTime
 		end
@@ -74,7 +74,7 @@ function AnimationInstance:play(time, windingDown)
 					channel.previous = j
 					channel.stopped = false
 
-					self.times[channel] = time
+					self.times[channel] = 0
 				end
 
 				command:play(self.animatable, relativeTime, windingDown)
