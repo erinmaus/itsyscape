@@ -320,6 +320,11 @@ function CombatCortex:update(delta)
 									logic = power:getXWeapon(peep)
 
 									coolDowns.powers[id] = time + power:getCoolDown(peep)
+
+									local actor = peep:getBehavior(ActorReferenceBehavior)
+									if actor and actor.actor then
+										actor.actor:flash("Power", 0.5, power:getResource().name, power:getName())
+									end
 								end
 
 								peep:removeBehavior(PendingPowerBehavior)
