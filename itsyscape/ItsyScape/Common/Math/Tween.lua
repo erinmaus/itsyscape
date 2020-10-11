@@ -91,19 +91,19 @@ Tween.expEaseOut = out(Tween.expEaseIn)
 Tween.expEaseInOut = inOut(Tween.expEaseIn)
 
 function Tween.bounceIn(t)
-	local bounceConst1 = 2.75
-	local bounceConst2 = bounceConst1 ^ 2
+	local bounceConst1 = 7.5625
+	local bounceConst2 = 2.75
 
 	t = 1 - t
 
-	if t < 1 / bounceConst1 then
-		return 1 - bounceConst2 * t * t
-	elseif t < 2 / bounceConst1 then
-		return 1 - bounceConst2 * (t - 1.5 / bounceConst1) ^ 2 + 0.75
-	elseif t < 2.5 / bounceConst1 then
-		return 1 - bounceConst2 * (t - 2.225 / bounceConst2) ^ 2 + 0.9375
+	if t < 1 / bounceConst2 then
+		return 1 - (bounceConst1 * t * t)
+	elseif t < 2 / bounceConst2 then
+		return 1 - (bounceConst1 * (t - 1.5 / bounceConst2) ^ 2 + 0.75)
+	elseif t < 2.5 / bounceConst2 then
+		return 1 - (bounceConst1 * (t - 2.225 / bounceConst2) ^ 2 + 0.9375)
 	else
-		return 1 - bounceConst2 * (t - 2.625 / bounceConst1) ^ 2 + 0.984375
+		return 1 - (bounceConst1 * (t - 2.625 / bounceConst2) ^ 2 + 0.984375)
 	end
 end
 
