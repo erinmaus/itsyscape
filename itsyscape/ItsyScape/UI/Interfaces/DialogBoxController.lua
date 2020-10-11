@@ -27,7 +27,9 @@ function DialogBoxController:new(peep, director, action, target)
 	self.action = action
 	self.target = target
 
-	target:poke('talkingStart')
+	if target then
+		target:poke('talkingStart')
+	end
 
 	self.state = {}
 	do
@@ -207,7 +209,10 @@ function DialogBoxController:pull()
 end
 
 function DialogBoxController:close()
-	self.target:poke('talkingStop')
+	if self.target then
+		self.target:poke('talkingStop')
+	end
+
 	Utility.UI.broadcast(
 		self:getDirector():getGameInstance():getUI(),
 		self:getPeep(),
