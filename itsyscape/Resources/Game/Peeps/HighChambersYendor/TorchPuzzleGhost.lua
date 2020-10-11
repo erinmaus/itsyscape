@@ -26,23 +26,27 @@ function TorchPuzzleGhost:onTorchLit(p)
 	table.insert(self.torches, p.torch)
 
 	if #self.torches == 1 then
-		Utility.performAction(
-			self:getDirector():getGameInstance(),
-			Utility.Peep.getResource(self.torches[1]),
-			'snuff',
-			'world',
-			self:getState(),
-			self,
-			self.torches[1])
-
-		local actor = self:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor.actor:flash('Message', 1, "No light, no light.")
-		end
-
-		local callback = CallbackCommand(self.nextTorch, self)
-		self:getCommandQueue():push(callback)
+		self:pushPoke('startBeingMean')
 	end
+end
+
+function TorchPuzzleGhost:onStartBeingMean()
+	Utility.performAction(
+		self:getDirector():getGameInstance(),
+		Utility.Peep.getResource(self.torches[1]),
+		'snuff',
+		'world',
+		self:getState(),
+		self,
+		self.torches[1])
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor.actor:flash('Message', 1, "No light, no light.")
+	end
+
+	local callback = CallbackCommand(self.nextTorch, self)
+	self:getCommandQueue():push(callback)
 end
 
 function TorchPuzzleGhost:nextTorch()
