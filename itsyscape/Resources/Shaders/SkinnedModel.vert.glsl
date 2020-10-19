@@ -1,4 +1,4 @@
-#define MAX_BONES 32
+#define MAX_BONES 64
 uniform mat4 scape_Bones[MAX_BONES];
 
 attribute vec4 VertexBoneIndex;
