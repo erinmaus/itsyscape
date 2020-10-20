@@ -17,6 +17,7 @@ function BasicPointLight:new(...)
 	BasicLight.new(self, ...)
 
 	self.attenuation = 2
+	self.global = false
 end 
 
 function BasicPointLight:ready(director, game)

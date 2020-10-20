@@ -15,7 +15,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define SCAPE_MAX_LIGHTS 4
+#define SCAPE_MAX_LIGHTS 16
 #define SCAPE_MAX_FOG    4
 
 varying vec3 frag_Position;
@@ -72,7 +72,7 @@ vec3 scapeApplyLight(
 	float diffuseCoefficient = max(0.0, dot(normal, direction));
 	vec3 diffuse = diffuseCoefficient * color * light.color;
 
-	return attenuation * diffuse + ambient;
+	return (attenuation * 0.25) * diffuse + ambient;
 }
 
 vec3 scapeApplyFog(
@@ -80,7 +80,7 @@ vec3 scapeApplyFog(
 	vec3 position,
 	vec3 color)
 {
-	vec3 relativePosition = position.xyz - fog.position;
+	vec3 relativePosition = fog.position - position.xyz;
 	float length = length(relativePosition);
 	float factor = 1.0 - clamp((fog.far - length) / (fog.far - fog.near), 0.0, 1.0);
 

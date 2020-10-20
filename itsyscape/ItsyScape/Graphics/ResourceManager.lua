@@ -12,11 +12,19 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
+ResourceManager.DESKTOP_FRAME_DURATION = 1 / 120
+ResourceManager.MOBILE_FRAME_DURATION  = 1
 
 function ResourceManager:new()
 	self.resources = {}
 	self.pending = {}
-	self.frameDuration = 1 / 120
+
+	if _MOBILE then
+		self.frameDuration = Resource.MOBILE_FRAME_DURATION
+	else
+		self.frameDuration = ResourceManager.DESKTOP_FRAME_DURATION
+	end
+
 	self.onPending = Callback()
 	self.onUpdate = Callback()
 	self.onFinish = Callback()
