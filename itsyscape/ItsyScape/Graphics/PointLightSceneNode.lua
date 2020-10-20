@@ -35,6 +35,7 @@ function PointLightSceneNode:toLight(delta)
 	local attenuation = self.attenuation * (1 - delta) + previousAttenutation * delta
 	result:setAttenuation(attenuation)
 	result:setPosition(Vector(x, y, z))
+	result:setPoint()
 
 	return result
 end

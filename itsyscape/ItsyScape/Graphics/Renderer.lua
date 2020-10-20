@@ -20,7 +20,7 @@ function Renderer:new(isMobile)
 	self.cachedShaders = {}
 	self.currentShader = false
 
-	self.isMobile = isMobile or false
+	self.isMobile = isMobile
 	if self.isMobile then
 		self.mobilePass = MobileRendererPass(self)
 	else

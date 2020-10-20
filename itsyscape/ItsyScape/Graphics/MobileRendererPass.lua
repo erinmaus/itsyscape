@@ -19,7 +19,7 @@ local MBuffer = require "ItsyScape.Graphics.MBuffer"
 local MobileRendererPass = Class(RendererPass)
 
 -- Maximum number of lights that can be rendered at once.
-MobileRendererPass.MAX_LIGHTS = 4
+MobileRendererPass.MAX_LIGHTS = 16
 
 -- Maximum number of fog that can be rendered at once.
 MobileRendererPass.MAX_FOG = 4
@@ -96,6 +96,25 @@ function MobileRendererPass:beginDraw(scene, delta)
 
 	self:walk(scene, delta)
 	self:walkLights(scene, delta)
+
+	local nodeX, nodeY, nodeZ = self:getRenderer():getCamera():getPosition():get()
+	table.sort(self.lights, function(a, b)
+		local distanceA
+		do
+			local transform = a:getTransform():getGlobalDeltaTransform(delta)
+			local x, y, z = transform:transformPoint(0, 0, 0)
+			distanceA = (x - nodeX) ^ 2 + (y - nodeY) ^ 2 + (z - nodeZ) ^ 2
+		end
+
+		local distanceB
+		do
+			local transform = b:getTransform():getGlobalDeltaTransform(delta)
+			local x, y, z = transform:transformPoint(0, 0, 0)
+			distanceB = (x - nodeX) ^ 2 + (y - nodeY) ^ 2 + (z - nodeZ) ^ 2
+		end
+
+		return distanceA < distanceB
+	end)
 end
 
 function MobileRendererPass:endDraw(scene, delta)
@@ -141,6 +160,7 @@ function MobileRendererPass:drawNodes(nodes, delta)
 
 	for i = 1, #nodes do
 		local node = nodes[i]
+		local deltaTransform = node:getTransform():getGlobalDeltaTransform(delta)
 
 		local material = node:getMaterial()
 		local shader = material:getShader()
@@ -157,14 +177,25 @@ function MobileRendererPass:drawNodes(nodes, delta)
 
 					numLights = 1
 				else
-					for i = 1, numGlobalLights do
-						local p = self.globalLights[i]
+					for j = 1, numGlobalLights do
+						local p = self.globalLights[j]
 						local light = p:toLight(delta)
 
-						setLightProperties(currentShaderProgram, i, light)
+						setLightProperties(currentShaderProgram, j, light)
 					end
 
-					numLights = numGlobalLights
+					local remainingLights = math.min(math.max(#self.lights - numGlobalLights, 0), MobileRendererPass.MAX_LIGHTS)
+					for j = 1, remainingLights do
+						local p = self.lights[j]
+						local light = p:toLight(delta)
+
+						setLightProperties(
+							currentShaderProgram,
+							numGlobalLights - 1 + j,
+							light)
+					end
+
+					numLights = numGlobalLights + math.max(remainingLights, 1) - 1
 				end
 
 				currentShaderProgram:send("scape_NumLights", numLights)
@@ -172,19 +203,22 @@ function MobileRendererPass:drawNodes(nodes, delta)
 				for i = 1, numFog do
 					local f = self.fog[i]
 
-					setFogProperties(currentShaderProgram, i, f, camera:getEye())
+					setFogProperties(
+						currentShaderProgram,
+						i,
+						f,
+						camera:getEye())
 				end
 
 				currentShaderProgram:send("scape_NumFogs", numFog)
 			end
 
-			local d = node:getTransform():getGlobalDeltaTransform(delta)
 			if currentShaderProgram:hasUniform("scape_WorldMatrix") then
-				currentShaderProgram:send("scape_WorldMatrix", d)
+				currentShaderProgram:send("scape_WorldMatrix", deltaTransform)
 			end
 
 			if currentShaderProgram:hasUniform("scape_NormalMatrix") then
-				currentShaderProgram:send("scape_NormalMatrix", d:inverseTranspose())
+				currentShaderProgram:send("scape_NormalMatrix", deltaTransform:inverseTranspose())
 			end
 
 			node:beforeDraw(self:getRenderer(), delta)

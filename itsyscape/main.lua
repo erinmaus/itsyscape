@@ -77,6 +77,11 @@ function love.load(args)
 		end
 
 		local function printAnalytic(key, value)
+			if not _ANALYTICS then
+				Log.warn("Analytics not installed.")
+				return
+			end
+
 			key = _ANALYTICS.EVENTS[key]
 			if key and type(key) == 'string' then
 				if not value then
