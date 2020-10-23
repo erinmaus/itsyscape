@@ -27,7 +27,9 @@ function BaseEmily:new(resource, name, ...)
 	self:addBehavior(RotationBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4.5, 8, 4.5)
+	size.size = Vector(4.5, 4, 4.5)
+	size.zoom = 2
+	size.pan = Vector(0, 4, 0)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = 1000
