@@ -36,6 +36,11 @@ function PlayerEquipmentController:pull()
 	local result = { items = {}, stats = {} }
 	if equipment and equipment.equipment then
 		local broker = equipment.equipment:getBroker()
+		if not broker then
+			Log.error("Broker not found.")
+			return result
+		end
+
 		for key in broker:keys(equipment.equipment) do
 			for item in broker:iterateItemsByKey(equipment.equipment, key) do
 				local resultItem = self:pullItem(item)
