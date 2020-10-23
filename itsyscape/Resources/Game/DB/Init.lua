@@ -335,6 +335,7 @@ Game "ItsyScape"
 
 	ResourceType "Quest"
 		ActionType "QuestStep"
+		ActionType "QuestStart"
 		ActionType "QuestComplete"
 
 	ResourceType "KeyItem"
@@ -813,6 +814,7 @@ include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
+include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
 
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"

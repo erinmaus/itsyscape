@@ -2797,4 +2797,46 @@ function Utility.Quest.build(quest, gameDB)
 	return result
 end
 
+function Utility.Quest.getStartAction(quest, game)
+	local gameDB = game:getGameDB()
+
+	if type(quest) == 'string' then
+		quest = gameDB:getResource("Quest", quest)
+	end
+
+	local action
+	do
+		local actions = Utility.getActions(game, quest, 'quest')
+		for i = 1, #actions do
+			if actions[i]:is('QuestStart') then
+				action = actions[i]
+			end
+		end
+	end
+
+	if not action then
+		Log.warn("No quest start found for %s.", quest.name)
+		return nil
+	end
+
+	return action
+end
+
+function Utility.Quest.start(quest, peep)
+	local game = peep:getDirector():getGameInstance()
+	local action = Utility.Quest.getStartAction(quest, game)
+
+	return action:perform(peep:getState(), peep)
+end
+
+function Utility.Quest.canStart(quest, peep)
+	local game = peep:getDirector():getGameInstance()
+	local action = Utility.Quest.getStartAction(quest, game)
+	if action then
+		return action:canPerform(peep:getState())
+	end
+
+	return false
+end
+
 return Utility

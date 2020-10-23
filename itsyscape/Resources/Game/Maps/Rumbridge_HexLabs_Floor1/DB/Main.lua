@@ -79,6 +79,65 @@ do
 	}
 end
 
+M["Emily"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 2,
+		PositionZ = 19,
+		Name = "Emily",
+		Map = M._MAP,
+		Resource = M["Emily"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Emily_Default",
+		MapObject = M["Emily"]
+	}
+end
+
+M["Hex"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 2,
+		PositionZ = 25,
+		Direction = 1,
+		Name = "Hex",
+		Map = M._MAP,
+		Resource = M["Hex"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Hex",
+		MapObject = M["Hex"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Hex"],
+		Name = "Hex",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Emily_Default",
+		Name = "Emily",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_HexLabs_Floor1/Dialog/HexStart_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Hex"] {
+		TalkAction
+	}
+end
+
 M["Drakkenson1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
