@@ -16,7 +16,9 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local Hex = Class(Player)
 
 function Hex:new(resource, name, ...)
-	Player.new(self, resource, name or 'Isabelle', ...)
+	Player.new(self, resource, name or 'Hex', ...)
+
+	self:addPoke('acceptQuest')
 end
 
 function Hex:ready(director, game)

@@ -2801,15 +2801,15 @@ function Utility.Quest.getStartAction(quest, game)
 	local gameDB = game:getGameDB()
 
 	if type(quest) == 'string' then
-		quest = gameDB:getResource("Quest", quest)
+		quest = gameDB:getResource(quest, "Quest")
 	end
 
 	local action
 	do
 		local actions = Utility.getActions(game, quest, 'quest')
 		for i = 1, #actions do
-			if actions[i]:is('QuestStart') then
-				action = actions[i]
+			if actions[i].instance:is('QuestStart') then
+				action = actions[i].instance
 			end
 		end
 	end
@@ -2822,11 +2822,23 @@ function Utility.Quest.getStartAction(quest, game)
 	return action
 end
 
-function Utility.Quest.start(quest, peep)
-	local game = peep:getDirector():getGameInstance()
+function Utility.Quest.promptToStart(quest, peep, questGiver)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+	local game = director:getGameInstance()
 	local action = Utility.Quest.getStartAction(quest, game)
 
-	return action:perform(peep:getState(), peep)
+	if type(quest) == 'string' then
+		quest = gameDB:getResource(quest, "Quest")
+	end
+
+	Utility.UI.openInterface(
+		peep,
+		"QuestAccept",
+		true,
+		quest,
+		action,
+		questGiver)
 end
 
 function Utility.Quest.canStart(quest, peep)
