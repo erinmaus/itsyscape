@@ -10,9 +10,19 @@
 
 ItsyScape.Resource.Prop "Flax" {
 	ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(1),
+		},
+
 		Output {
 			Resource = ItsyScape.Resource.Item "Flax",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForResource(2)
 		}
 	}
 }

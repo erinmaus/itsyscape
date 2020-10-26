@@ -43,7 +43,10 @@ PlayerStats.SORT_ORDER = {
 	["Fletching"] = 15,
 	["Fishing"] = 16,
 	["Cooking"] = 17,
-	["Sailing"] = 18
+	["Foraging"] = 18,
+	["Sailing"] = 19,
+	["Antilogika"] = 20,
+	["Necromancy"] = 21
 }
 
 function PlayerStats:new(id, index, ui)
