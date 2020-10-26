@@ -129,6 +129,12 @@ Game "ItsyScape"
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
+	Meta "NamedMapAction" {
+		Name = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Travel"
 
 	Meta "TravelDestination" {

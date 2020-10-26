@@ -18,6 +18,16 @@ ItsyScape.Resource.Quest "MysteriousMachinations" {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Wisdom",
 			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_Start",
+			Count = 1
 		}
 	},
 

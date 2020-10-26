@@ -178,14 +178,10 @@ repeat
 			speaker "_TARGET"
 			message "Of course I can!"
 
-			local started = Utility.Quest.start("MysteriousMachinations", _TARGET)
-			if not started then
-				speaker "Hex"
-				message "WAIT! LIAR! You can't! Try again when you're more skilled."
-			else
-				speaker "Hex"
-				message "Great!"
-			end
+			Utility.Quest.promptToStart(
+				"MysteriousMachinations",
+				_TARGET,
+				_SPEAKERS["Hex"])
 		elseif result == NO then
 			speaker "_TARGET"
 			message "I'm not in the mood for a quest anymore."
