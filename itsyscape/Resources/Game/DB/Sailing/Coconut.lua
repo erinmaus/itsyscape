@@ -11,6 +11,11 @@
 ItsyScape.Resource.Prop "Coconut_Default" {
 	ItsyScape.Action.Pick() {
 		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(1),
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Sailing",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
@@ -18,6 +23,11 @@ ItsyScape.Resource.Prop "Coconut_Default" {
 		Output {
 			Resource = ItsyScape.Resource.Item "Coconut",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForResource(2)
 		},
 
 		Output {

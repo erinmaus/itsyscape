@@ -216,11 +216,15 @@ ItsyScape.Resource.Skill "Sailing"
 		Skill = ItsyScape.Resource.Skill "Sailing"
 	}
 
-	-- 'Cause of coconuts! NUTS!
+ItsyScape.Resource.Skill "Foraging"
+
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Pick",
-		Skill = ItsyScape.Resource.Skill "Sailing"
+		Skill = ItsyScape.Resource.Skill "Foraging"
 	}
+
+ItsyScape.Resource.Skill "Antilogika"
+ItsyScape.Resource.Skill "Necromancy"
 
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"
@@ -372,6 +376,24 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Skill "Sailing"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Foraging",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Foraging"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Antilogika",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Antilogika"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Necromancy",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Necromancy"
+}
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "Increases your accuracy, lets you use spells, and enables you to use magic items.",
 	Language = "en-US",
@@ -478,4 +500,22 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Helps you navigate and manage a crew in order to sail the five seas.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Skill "Sailing"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lets you safely scavenge higher quality ingredients.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Foraging"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Empowers you with the magick of the Old Ones to create portals, enchantments, illusions, and other awesome things.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Antilogika"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Channel the divinity of The Empty King to bend the undead to your will.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Skill "Necromancy"
 }
