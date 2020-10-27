@@ -29,9 +29,29 @@ function HexLabs:initMysteriousMachinations()
 		self:getLayerName(),
 		Probe.namedMapObject("Hex"))[1]
 	if hex then
-		hex:listen('acceptQuest', self.onAcceptMysteriousMachinations, self)
+		hex:listen('acceptQuest', self.onAcceptMysteriousMachinations, self, hex)
 	else
 		Log.warn("Hex not found; cannot init quest Mysterious Machinations.")
+	end
+end
+
+function HexLabs:onAcceptMysteriousMachinations(hex)
+	local director = self:getDirector()
+	local game = director:getGameInstance()
+	local gameDB = director:getGameDB()
+	local map = Utility.Peep.getMapResource(self)
+
+	local namedMapAction = gameDB:getRecord("NamedMapAction", {
+		Name = "StartMysteriousMachinations",
+		Map = map
+	})
+
+	if not namedMapAction then
+		Log.warn("Couldn't talk to Hex after starting quest: named map action not found.")
+	else
+		local player = Utility.Peep.getPlayer(self)
+		local action = Utility.getAction(game, namedMapAction:get("Action"))
+		action.instance:perform(player:getState(), player, hex)
 	end
 end
 

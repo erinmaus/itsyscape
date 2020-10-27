@@ -226,3 +226,25 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "You reported your findings to Hex.",
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedDrakkensonToHex"
 }
+
+ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Untradeable = 1,
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Time Tug spell scroll",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A spell scroll given to you by Hex to pull the eldritch ruins near Leafy Lake out of the past.",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+}

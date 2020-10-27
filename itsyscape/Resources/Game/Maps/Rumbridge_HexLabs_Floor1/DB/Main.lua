@@ -1,5 +1,9 @@
 local M = include "Resources/Game/Maps/Rumbridge_HexLabs_Floor1/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Rumbridge_HexLabs_Floor1.Peep",
+	Resource = M._MAP
+}
 ItsyScape.Meta.ResourceName {
 	Value = "Hex Labs, Inc., Floor 1",
 	Language = "en-US",
@@ -271,5 +275,33 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
 		MapObject = M["Drakkenson8"]
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Hex"],
+		Name = "Hex",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Emily"],
+		Name = "Emily",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_HexLabs_Floor1/Dialog/HexMysteriousMachinationsInProgress_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "StartMysteriousMachinations",
+		Action = TalkAction,
+		Map = M._MAP
 	}
 end
