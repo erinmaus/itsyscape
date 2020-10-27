@@ -221,3 +221,43 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "FireRune"
 }
+
+ItsyScape.Resource.Item "PrimordialTimeRune" {
+	-- Nothing
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(10),
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "PrimordialTimeRune"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Primordial time rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PrimordialTimeRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "From a time before history...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PrimordialTimeRune"
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(10),
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "AzathothianSpacialRune"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Azathothian spacial rune",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AzathothianSpacialRune"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "If you smash two of 'em together at high enough speed, you'll create a black hole!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AzathothianSpacialRune"
+}

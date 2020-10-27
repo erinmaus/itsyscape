@@ -1,11 +1,17 @@
 PLAYER_NAME = _TARGET:getName()
 
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "MysteriousMachinations_Started")
-local hasCompletedQuest = _TARGET:getState():has("Quest", "MysteriousMachinations")
 
 local WHAT_R_U_DOING = option "What are you doing?"
 local WHO_R_U        = option "Who are you?"
-local CAN_I_HELP     = option "Can I help?"
+local QUEST
+do
+	if hasStartedQuest then
+		QUEST        = option "What's next?"
+	else
+		QUEST        = option "Can I help?"
+	end
+end
 local NOPE_IM_GOOD   = option "Nope, I'm good!"
 
 local result
@@ -13,7 +19,7 @@ repeat
 	result = select {
 		WHAT_R_U_DOING,
 		WHO_R_U,
-		CAN_I_HELP,
+		QUEST,
 		NOPE_IM_GOOD
 	}
 
@@ -146,48 +152,10 @@ repeat
 			speaker "Hex"
 			message "Oh, the fourth-wall. Who cares. TUH-ME FOR SCIENCE!"
 		end
-	elseif result == CAN_I_HELP then
-		speaker "_TARGET"
-		message "Can I help you with anything? I'm always looking for a quest!"
-
-		speaker "Hex"
-		message "You are exactly the person I need!"
-		message {
-			"You might have noticed those %hint{mysterious draconic creatures} in the life support vats.",
-			"They are based off a race of sapient creatures of legend called the Drakkenson, who jump through time like we walk through a field.",
-			"Few have lived to speak of their encounters."
-		}
-		message {
-			"My hunch is these creatures reside in a split timeline called Azathoth...",
-			"...but I've not been able to build a stable portal to Azathoth.",
-			"The Old Ones built world gates connecting the two realities eons ago, before they were banished from the Realm."
-		}
-		message {
-			"I need you to help me reverse engineer their tech to build a portal to Azathoth. Can you help me?"
-		}
-
-		-- TODO QUEST ACCEPT SCREEN
-		local YES = option "Yes"
-		local NO  = option "No"
-		result = select {
-			YES,
-			NO
-		}
-
-		if result == YES then
-			speaker "_TARGET"
-			message "Of course I can!"
-
-			Utility.Quest.promptToStart(
-				"MysteriousMachinations",
-				_TARGET,
-				_SPEAKERS["Hex"])
-		elseif result == NO then
-			speaker "_TARGET"
-			message "I'm not in the mood for a quest anymore."
-		end
+	elseif result == QUEST then
+		defer "Resources/Game/Maps/Rumbridge_HexLabs_Floor1/Dialog/HexMysteriousMachinationsInProgress_en-US.lua"
 	end
-until option == NOPE_IM_GOOD
+until result == NOPE_IM_GOOD
 
 speaker "_TARGET"
 message "Nope! I'm good as a goober!"

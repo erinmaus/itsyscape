@@ -51,7 +51,7 @@ function QuestAcceptController:accept(e)
 
 	if success then
 		if self.questGiver then
-			self.questGiver:poke('acceptedQuest', self:getPeep(), self.resource, self.action)
+			self.questGiver:poke('acceptQuest', self:getPeep(), self.resource, self.action)
 		end
 
 		self:getGame():getUI():closeInstance(self)

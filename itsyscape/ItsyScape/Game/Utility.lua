@@ -2743,7 +2743,90 @@ end
 
 Utility.Quest = {}
 
+function Utility.Quest.isNextStep(quest, step, peep)
+	if type(quest) ~= 'table' then
+		local gameDB = peep:getDirector():getGameDB()
+
+		if type(quest) == 'string' then
+			local resource = gameDB:getResource(quest, "Quest")
+			if not resource then
+				Log.error("Could not find quest: '%s'", quest)
+				return false
+			end
+
+			quest = resource
+		end
+
+		quest = Utility.Quest.build(quest, gameDB)
+	end
+
+	local index = #quest
+	while index > 0 do
+		local currentSteps = quest[index]
+
+		-- We check to see if this key item is in this current step.
+		local currentStepsMatch = false
+		for i = 1, #currentSteps do
+			if currentSteps[i].name == step then
+				currentStepsMatch = true
+			end
+		end
+
+		-- The logic is:
+		-- We have the target step ('step').
+		-- We have the previous steps ('previousSteps').
+		-- If the peep DOES NOT have the CURRENT step, but DOES have the
+		-- PREVIOUS step, this means this step is the NEXT step.
+		--
+		-- For example, imagine the quest line:
+		-- [1] -> Talk to Bob about chicken
+		-- [2] -> Find chicken
+		-- [3] -> Return chicken to Bob
+		--
+		-- And the state is:
+		-- [1] -> TRUE
+		-- [2] -> FALSE
+		-- [3] -> FALSE
+		--
+		-- And we do isNextStep(1), then it should return FALSE since STEP 1 was
+		-- completed.
+		--
+		-- If we do isNextStep(2) then it should return TRUE since STEP 1 was
+		-- completed but STEP 2 was not.
+		--
+		-- If we do isNextStep(3) then it should return FALSE since STEP 2 and
+		-- STEP 3 are both not completed.
+		if currentStepsMatch then
+			local previousSteps = quest[index - 1]
+			if previousSteps ~= nil then
+				for j = 1, #previousSteps do
+					if not peep:getState():has("KeyItem", previousSteps[j].name) then
+						print('NOT', previousSteps[j].name)
+						return false
+					end
+				end
+			end
+
+			return not peep:getState():has("KeyItem", step)
+		end
+
+		index = index - 1
+	end
+
+	return false
+end
+
 function Utility.Quest.build(quest, gameDB)
+	if type(quest) == 'string' then
+		local resource = gameDB:getResource(quest, "Quest")
+		if not resource then
+			Log.error("Could not find quest: '%s'", quest)
+			return {}
+		end
+
+		quest = resource
+	end
+
 	local brochure = gameDB:getBrochure()
 
 	local finalStep
