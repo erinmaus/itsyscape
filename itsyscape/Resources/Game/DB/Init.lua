@@ -721,6 +721,7 @@ include "Resources/Game/DB/Items/Rusty.lua"
 include "Resources/Game/DB/Items/ToyWeapons.lua"
 include "Resources/Game/DB/Items/Trinkets.lua"
 include "Resources/Game/DB/Items/PartyHats.lua"
+include "Resources/Game/DB/Items/CreepyDoll.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -728,6 +729,7 @@ include "Resources/Game/DB/Items/MiscFood.lua"
 
 -- Legendaries
 include "Resources/Game/DB/Items/Legendaries/TimeTurner.lua"
+include "Resources/Game/DB/Items/Legendaries/UnholySacrificialKnife.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Cow.lua"
