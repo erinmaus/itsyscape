@@ -19,8 +19,15 @@ local LOGS = {
 	["Shadow"] = {
 		tier = 0,
 		weight = -2,
-		health = 10,
+		health = 3,
 		tinderbox = "Tinderbox"
+	},
+
+	["Rotten"] = {
+		tier = 5,
+		weight = 7,
+		health = 1,
+		tinderbox = false
 	},
 
 	["Willow"] = {
@@ -155,80 +162,83 @@ for name, log in pairs(LOGS) do
 		Resource = Tree
 	}
 
-	local FireName = string.format("%sFire", name)
-	local Fire = ItsyScape.Resource.Prop(FireName)
+	local LightAction
+	if log.tinderbox then
+		local FireName = string.format("%sFire", name)
+		local Fire = ItsyScape.Resource.Prop(FireName)
 
-	local CookAction = ItsyScape.Action.OpenCraftWindow()
-	ItsyScape.Meta.DelegatedActionTarget {
-		CategoryKey = "CookingMethod",
-		CategoryValue = "Fire",
-		Action = CookAction
-	}
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Cook",
-		Language = "en-US",
-		Action = CookAction
-	}
-
-	ItsyScape.Meta.Tier {
-		Tier = math.max(log.tier, 1),
-		Resource = Fire
-	}
-
-	local LightAction = ItsyScape.Action.Light()
-
-	LightAction {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
-			Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
-		},
-
-		Requirement {
-			Resource = ItsyScape.Resource.Item(log.tinderbox),
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
-			Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1)) * 4
-		},
-
-		Input {
-			Resource = Log,
-			Count = 1
+		local CookAction = ItsyScape.Action.OpenCraftWindow()
+		ItsyScape.Meta.DelegatedActionTarget {
+			CategoryKey = "CookingMethod",
+			CategoryValue = "Fire",
+			Action = CookAction
 		}
-	}
 
-	ItsyScape.Meta.ActionSpawnProp {
-		Prop = Fire,
-		Action = LightAction
-	}
+		ItsyScape.Meta.ActionVerb {
+			Value = "Cook",
+			Language = "en-US",
+			Action = CookAction
+		}
 
-	ItsyScape.Meta.GatherableProp {
-		SpawnTime = 15,
-		Resource = Fire
-	}
+		ItsyScape.Meta.Tier {
+			Tier = math.max(log.tier, 1),
+			Resource = Fire
+		}
 
-	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s fire", name),
-		Language = "en-US",
-		Resource = Fire
-	}
+		LightAction = ItsyScape.Action.Light()
+
+		LightAction {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item(log.tinderbox),
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1)) * 4
+			},
+
+			Input {
+				Resource = Log,
+				Count = 1
+			}
+		}
+
+		ItsyScape.Meta.ActionSpawnProp {
+			Prop = Fire,
+			Action = LightAction
+		}
+
+		ItsyScape.Meta.GatherableProp {
+			SpawnTime = 15,
+			Resource = Fire
+		}
+
+		ItsyScape.Meta.ResourceName {
+			Value = string.format("%s fire", name),
+			Language = "en-US",
+			Resource = Fire
+		}
+
+		ItsyScape.Meta.PeepID {
+			Value = "Resources.Game.Peeps.Props.BasicFire",
+			Resource = Fire
+		}
+
+		Fire {
+			CookAction
+		}
+	end
 
 	Log {
 		CraftAction,
 		FletchAction,
 		LightAction
-	}
-
-	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicFire",
-		Resource = Fire
-	}
-
-	Fire {
-		CookAction
 	}
 end
 
@@ -320,4 +330,16 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "What a crazy fire!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CoconutFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "These logs are rotten and damp; they won't light.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "RottenLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A dead, rotten tree; not even good for firewood.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "RottenTree_Default"
 }

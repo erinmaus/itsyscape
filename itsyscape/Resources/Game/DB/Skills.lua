@@ -224,7 +224,18 @@ ItsyScape.Resource.Skill "Foraging"
 	}
 
 ItsyScape.Resource.Skill "Antilogika"
+
 ItsyScape.Resource.Skill "Necromancy"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Craft",
+		Skill = ItsyScape.Resource.Skill "Necromancy"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Necromancy"
+	}
 
 --ItsyScape.Resource.Skill "Thieving"
 	ActionType "Pickpocket"

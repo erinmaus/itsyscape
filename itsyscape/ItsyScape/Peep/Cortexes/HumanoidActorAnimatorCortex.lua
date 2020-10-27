@@ -112,6 +112,8 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 			break
+		else
+			Log.info("Missing '%s' animation.", animations[i])
 		end
 	end
 end
