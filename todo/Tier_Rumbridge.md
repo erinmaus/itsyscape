@@ -11,6 +11,9 @@ These are critical things that will make adding diverse content out-of-the-door 
 	2. Earth: Slows NPC down
 	3. Water: DoT drowning damage
 	4. Fire: chance to speed up attacks
+* Retroactive changes:
+	* Add skyboxes
+	* Add cave potatoes to Abandoned Mine
 
 ## Equipment
 Note: Tier 50 armor has a 'superior' version that is DPS
