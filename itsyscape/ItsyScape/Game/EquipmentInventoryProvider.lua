@@ -65,8 +65,15 @@ function EquipmentInventoryProvider:getEquipped(slot)
 end
 
 function EquipmentInventoryProvider:assignKey(item)
+	local itemManager = self.peep:getDirector():getItemManager()
+	local logic = itemManager:getLogic(item:getID())
+	if logic:isCompatibleType(Equipment) then
+		logic:onEquip(self.peep)
+	end
+
 	local gameDB = self.peep:getDirector():getGameDB()
 	local resource = gameDB:getResource(item:getID(), "Item")
+
 	local equipmentRecord = gameDB:getRecords(
 		"Equipment", { Resource = resource }, 1)[1]
 	if equipmentRecord then
@@ -117,6 +124,12 @@ function EquipmentInventoryProvider:onTransferTo(item, source, count, purpose)
 end
 
 function EquipmentInventoryProvider:onTransferFrom(destination, item, count, purpose)
+	local itemManager = self.peep:getDirector():getItemManager()
+	local logic = itemManager:getLogic(item:getID())
+	if logic:isCompatibleType(Equipment) then
+		logic:onEquip(self.peep)
+	end
+
 	local equipStatsTag = self:getBroker():getItemTag(item, 'equip-record')
 	if equipStatsTag then
 		for i = 1, #EquipmentInventoryProvider.STATS do

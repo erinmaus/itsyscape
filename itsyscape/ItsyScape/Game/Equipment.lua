@@ -39,4 +39,12 @@ Equipment.SKIN_PRIORITY_ACCENT             = 10
 Equipment.SKIN_PRIORITY_EQUIPMENT          = 100
 Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE = 1000
 
+function Equipment:onEquip(peep)
+	-- Nothing.
+end
+
+function Equipment:onDequip(peep)
+	-- Nothing.
+end
+
 return Equipment
