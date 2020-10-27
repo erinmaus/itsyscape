@@ -128,7 +128,13 @@ end
 --
 -- Any extra arguments ('...') are passed on to the method and/or pokes.
 function Peep:poke(name, ...)
-	local callback = "on" .. name:sub(1, 1):upper() .. name:sub(2)
+	local base = name:sub(1, 1):upper() .. name:sub(2)
+	local callback = "on" .. base
+	local preview = "preview" .. base
+
+	if self[preview] then
+		self[preview](self, ...)
+	end
 
 	if self.pokes[name] then
 		self.pokes[name](self, ...)

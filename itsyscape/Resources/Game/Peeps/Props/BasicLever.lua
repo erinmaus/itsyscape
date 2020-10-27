@@ -33,7 +33,7 @@ function BasicLever:canPull()
 	return true
 end
 
-function BasicLever:onPull(force)
+function BasicLever:previewPull(force)
 	if self:canPull() or force then
 		self.isPulled = not self.isPulled
 	end

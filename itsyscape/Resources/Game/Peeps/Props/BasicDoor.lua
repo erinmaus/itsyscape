@@ -35,7 +35,7 @@ function BasicDoor:canOpen()
 	return true
 end
 
-function BasicDoor:onOpen(peep, force)
+function BasicDoor:previewOpen(peep, force)
 	if self:canOpen() or force then
 		self.isOpen = true
 
@@ -43,7 +43,7 @@ function BasicDoor:onOpen(peep, force)
 	end
 end
 
-function BasicDoor:onClose(...)
+function BasicDoor:previewClose(...)
 	self.isOpen = false
 
 	self:spawnOrPoof('spawn')

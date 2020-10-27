@@ -34,13 +34,13 @@ function BasicTorch:canLight()
 	return true
 end
 
-function BasicTorch:onLight(...)
+function BasicTorch:previewLight(...)
 	if self:canLight() then
 		self.isLit = true
 	end
 end
 
-function BasicTorch:onSnuff(...)
+function BasicTorch:previewSnuff(...)
 	self.isLit = false
 end
 
