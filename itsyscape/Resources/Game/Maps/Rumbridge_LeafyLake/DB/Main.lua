@@ -97,3 +97,144 @@ do
 		Resource = M["Light_Fog"]
 	}
 end
+
+M["Anchor_IslandFromCavern"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 5,
+		PositionZ = 51,
+		Name = "Anchor_IslandFromCavern",
+		Map = M._MAP,
+		Resource = M["Anchor_IslandFromCavern"]
+	}
+end
+
+M["Ladder_Island"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 3,
+		PositionZ = 49,
+		Name = "Ladder_Island",
+		Map = M._MAP,
+		Resource = M["Ladder_Island"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_Island"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_IslandLadder",
+		Map = ItsyScape.Resource.Map "Rumbridge_LeafyLake_Cavern",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Island"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromCavernSW"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 5,
+		PositionZ = 87,
+		Name = "Anchor_FromCavernSW",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCavernSW"]
+	}
+end
+
+M["Ladder_CavernEntrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 2,
+		PositionZ = 87,
+		Name = "Ladder_CavernEntrance",
+		Map = M._MAP,
+		Resource = M["Ladder_CavernEntrance"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_CavernEntrance"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_SWLadder",
+		Map = ItsyScape.Resource.Map "Rumbridge_LeafyLake_Cavern",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_CavernEntrance"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromCavernSE"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 91,
+		PositionY = 6,
+		PositionZ = 73,
+		Name = "Anchor_FromCavernSE",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCavernSE"]
+	}
+end
+
+M["Ladder_SecretCorner"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 89,
+		PositionY = 3,
+		PositionZ = 73,
+		Name = "Ladder_SecretCorner",
+		Map = M._MAP,
+		Resource = M["Ladder_SecretCorner"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_SecretCorner"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_SELadder",
+		Map = ItsyScape.Resource.Map "Rumbridge_LeafyLake_Cavern",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_SecretCorner"] {
+		TravelAction
+	}
+end
