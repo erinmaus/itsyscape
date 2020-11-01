@@ -441,7 +441,7 @@ function GameView:poofItem(item)
 end
 
 function GameView:decorate(group, decoration, layer)
-	local groupName = group .. tostring(layer)
+	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] then
 		self.decorations[groupName].node:setParent(nil)
 		self.decorations[groupName] = nil
@@ -473,7 +473,7 @@ function GameView:decorate(group, decoration, layer)
 
 		sceneNode:setParent(map)
 
-		self.decorations[groupName] = { node = sceneNode, decoration = decoration }
+		self.decorations[groupName] = { node = sceneNode, decoration = decoration, name = group }
 	end
 end
 
@@ -598,7 +598,7 @@ function GameView:getDecorations()
 	local result = {}
 	local count = 0
 	for k, v in pairs(self.decorations) do
-		result[k] = v.decoration
+		result[v.name] = v.decoration
 		count = count + 1
 	end
 
