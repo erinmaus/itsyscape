@@ -48,9 +48,15 @@ function ItemIconRenderer:draw(widget, state)
 	local itemID = widget:get("itemID", state)
 	if itemID then
 		if not self.icons[itemID] then
-			-- TODO async load
 			local filename = string.format("Resources/Game/Items/%s/Icon.png", itemID)
-			self.icons[itemID] = love.graphics.newImage(filename)
+
+			local s, r = pcall(love.graphics.newImage, filename)
+			if not s then
+				Log.warn("Couldn't load item icon for '%s'; using Null.", filename)
+				r = love.graphics.newImage("Resources/Game/Items/Null/Icon.png")
+			end
+
+			self.icons[itemID] = r
 		end
 		self.unvisitedIcons[itemID] = nil
 
