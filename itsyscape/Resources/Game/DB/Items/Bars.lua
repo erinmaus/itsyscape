@@ -34,6 +34,12 @@ local BARS = {
 		{ name = "IronOre", count = 1 }
 	},
 
+	["Adamant"] = {
+		tier = 40,
+		weight = 25,
+		{ name = "AdamantOre", count = 1 }
+	},
+
 	["Gold"] = {
 		tier = 55,
 		weight = 12,
@@ -117,6 +123,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Useful for making iron weapons and armor.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Useful for making adamant weapons and armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantBar"
 }
 
 ItsyScape.Meta.ResourceDescription {

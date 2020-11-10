@@ -13,6 +13,12 @@ local METALS = {
 		tier = 1,
 		weight = 12.5,
 		hammer = "Hammer"
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 25,
+		hammer = "Hammer"
 	}
 }
 
@@ -303,5 +309,138 @@ do
 		Value = "Heavy and unwieldy, but with enough skill, can do some serious damage.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzeZweihander"
+	}
+end
+
+-- Adamant
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(42, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(42, 0.9),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "AdamantGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Now you definitely won't get a papercut.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(44, 0.5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "AdamantBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Makes it hard to run but nearly impossible to stub your toe.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(44, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(44, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(44, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "AdamantHelmet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What did you say?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantHelmet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(46, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(47, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(46, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(48, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "AdamantPlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Provides great defense against many types of foes but will fry the user if hit with a spell.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantPlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(47, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(47, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(47, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(48, 0.7),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "99% adamant, 1% wooden handle.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantShield"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForItem(45, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(43),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantDagger"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dagger of amazing craftspersonship.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantDagger"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(47, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(47),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantMace"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Can cave in a skull or three with ease.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantMace"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForItem(48, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(48),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantLongsword"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slashes through skin, muscle, and bone like butter.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantLongsword"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForItem(51, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.6),
+		DefenseRanged = 1,
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(53),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "AdamantZweihander"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A formidable weapon that deals heavy damage to foes far away.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantZweihander"
 	}
 end

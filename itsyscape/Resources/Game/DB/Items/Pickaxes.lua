@@ -20,6 +20,12 @@ local METALS = {
 		tier = 10,
 		weight = 14.5,
 		hammer = "Hammer"
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 25,
+		hammer = "Hammer"
 	}
 }
 
@@ -123,4 +129,10 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Helps you mine a little bit better.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronPickaxe"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smashes rocks.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantPickaxe"
 }

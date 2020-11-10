@@ -12,7 +12,12 @@ local METALS = {
 	["Bronze"] = {
 		tier = 1,
 		weight = 12.5,
-		health = 8,
+		hammer = "Hammer"
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 12.5,
 		hammer = "Hammer"
 	}
 }
@@ -116,5 +121,11 @@ ItsyScape.Meta.ResourceDescription {
 -- ...Nny! (Iron)
 -- Lizzie Borden had an axe... (Steel)
 -- ...gave her mother forty whacks... (Mithril)
--- ...when she had seen what she had done... (Adamant)
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "...when she had seen what she had done...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantHatchet"
+}
+
 -- ...she gave her father forty-one. (Itsy)

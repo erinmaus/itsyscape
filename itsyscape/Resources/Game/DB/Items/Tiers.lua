@@ -52,6 +52,14 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "Adamant",
+		Language = "en-US",
+		Name = "Adamant",
+		Tier = 40
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Gold",
 		Language = "en-US",
 		Name = "Gold",
