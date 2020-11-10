@@ -127,7 +127,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You pulled the mysterious ruins into existence using the primordial temporal ruin.",
+	Value = "You pulled the mysterious ruins into existence using the primordial temporal rune and time tug spell scroll.",
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_PulledRuinsIntoExistence"
 }
 
@@ -248,3 +248,115 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A spell scroll given to you by Hex to pull the eldritch ruins near Leafy Lake out of the past.",
 	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
 }
+
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Mysterious ruins pillar",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+}
+
+-- ItsyScape.Meta.ResourceDescription {
+-- 	Value = "",
+-- 	Language = "en-US",
+-- 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+-- }
+
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 2,
+	SizeZ = 3.5,
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Mysterious ruins table",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "There's dried blood on it...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+}
+
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Mysterious ruins matrix",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "It's an ancient matrix...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix"
+}
+
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 0.5,
+	SizeY = 6,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Mysterious ruins antenna",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
+}
+
+-- ItsyScape.Meta.ResourceDescription {
+-- 	Value = "",
+-- 	Language = "en-US",
+-- 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
+-- }
