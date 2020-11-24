@@ -722,6 +722,7 @@ include "Resources/Game/DB/Items/ToyWeapons.lua"
 include "Resources/Game/DB/Items/Trinkets.lua"
 include "Resources/Game/DB/Items/PartyHats.lua"
 include "Resources/Game/DB/Items/CreepyDoll.lua"
+include "Resources/Game/DB/Items/SuperiorTier50.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -830,6 +831,7 @@ include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
+	ActionType "Debug_Save"
 
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
@@ -840,6 +842,7 @@ do
 
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
+	local saveAction = ItsyScape.Action.Debug_Save()
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Ascend",
@@ -853,11 +856,18 @@ do
 		Action = teleportAction
 	}
 
+	ItsyScape.Meta.ActionVerb {
+		Value = "Save",
+		Language = "en-US",
+		Action = saveAction
+	}
+
 	ItsyScape.Resource.Item "AmuletOfYendor" {
 		equipAction,
 		ItsyScape.Action.Dequip(),
 		ascendAction,
-		teleportAction
+		teleportAction,
+		saveAction
 	}
 
 	ItsyScape.Meta.Equipment {
