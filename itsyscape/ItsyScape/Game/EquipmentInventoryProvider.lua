@@ -66,8 +66,11 @@ end
 
 function EquipmentInventoryProvider:assignKey(item)
 	local itemManager = self.peep:getDirector():getItemManager()
+
 	local logic = itemManager:getLogic(item:getID())
-	if logic:isCompatibleType(Equipment) then
+	if not logic then
+		Log.error("Logic for item '%s' not found.", item:getID())
+	elseif logic:isCompatibleType(Equipment) then
 		logic:onEquip(self.peep)
 	end
 
