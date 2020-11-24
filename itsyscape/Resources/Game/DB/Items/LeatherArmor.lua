@@ -334,7 +334,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Those beady eyes... Blegh!",
+		Value = "Made 100% out of organic bug slime.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BugGutsGloves"
 	}
@@ -395,7 +395,7 @@ do
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 0.3),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(15, 0.3),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.4),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(121, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
 	}
