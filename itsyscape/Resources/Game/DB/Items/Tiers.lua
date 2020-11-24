@@ -119,6 +119,14 @@ do
 		Name = "Mooish",
 		Tier = 1
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Leather",
+		Value = "BugGuts",
+		Language = "en-US",
+		Name = "Chocoroach chitin",
+		Tier = 10
+	}
 end
 
 -- Fabrics
