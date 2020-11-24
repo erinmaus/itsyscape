@@ -31,39 +31,80 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "PlainThread"
 }
 
-local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
 
-ItsyScape.Meta.ActionVerb {
-	Value = "Craft",
-	Language = "en-US",
-	Action = CraftAction
-}
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		Language = "en-US",
+		Action = CraftAction
+	}
 
-ItsyScape.Meta.DelegatedActionTarget {
-	CategoryKey = "Leather",
-	CategoryValue = "MooishLeather",
-	ActionType = "Craft",
-	Action = CraftAction
-}
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Leather",
+		CategoryValue = "MooishLeather",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
 
-ItsyScape.Resource.Item "MooishLeatherHide" {
-	CraftAction
-}
+	ItsyScape.Resource.Item "MooishLeatherHide" {
+		CraftAction
+	}
 
-ItsyScape.Meta.ResourceName {
-	Value = "Mooish leather",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "MooishLeatherHide"
-}
+	ItsyScape.Meta.ResourceName {
+		Value = "Mooish leather",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherHide"
+	}
 
-ItsyScape.Meta.ResourceDescription {
-	Value = "Who doesn't love cow print?",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "MooishLeatherHide"
-}
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Who doesn't love cow print?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MooishLeatherHide"
+	}
 
-ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(2),
-	Weight = 2,
-	Resource = ItsyScape.Resource.Item "MooishLeatherHide"
-}
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(2),
+		Weight = 2,
+		Resource = ItsyScape.Resource.Item "MooishLeatherHide"
+	}
+end
+
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Leather",
+		CategoryValue = "BugGuts",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "BugGutsHide" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chocoroach bug guts",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsHide"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The leg! It's still twitching! Blegh!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsHide"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(12),
+		Weight = 1.5,
+		Resource = ItsyScape.Resource.Item "BugGutsHide"
+	}
+end

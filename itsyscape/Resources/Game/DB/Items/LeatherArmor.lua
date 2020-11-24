@@ -14,6 +14,13 @@ local LEATHERS = {
 		tier = 1,
 		weight = 2,
 		thread = "PlainThread"
+	},
+
+	["BugGuts"] = {
+		name = "Chocoroach chitin",
+		tier = 10,
+		weight = 1.5,
+		thread = "PlainThread"
 	}
 }
 
@@ -48,6 +55,12 @@ local SHIELDS = {
 		name = "Mooish buckler",
 		hides = 3,
 		logs = "CommonLogs"
+	},
+
+	["BugGuts"] = {
+		name = "Chocoroach chitin",
+		hides = 3,
+		logs = "WillowLogs"
 	}
 }
 
@@ -304,5 +317,92 @@ do
 		Value = "Passive aggressive moo.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+	}
+end
+
+-- Chocoroach chitin
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(11, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(11, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "BugGutsGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Those beady eyes... Blegh!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(11, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(11, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(11, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "BugGutsBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Sounds like stepping on chocoroaches! *shiver*",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(12, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(16, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "BugGutsCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lets you see your opponents a dozen ways to Tuesday.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
+		AccuracySlash =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(17, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "BugGutsBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Comes with wings, but won't let you fly.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.4),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(121, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "At least the leg doesn't twitch anymore...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
 	}
 end
