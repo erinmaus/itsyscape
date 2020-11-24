@@ -19,6 +19,12 @@ local METALS = {
 		tier = 40,
 		weight = 12.5,
 		hammer = "Hammer"
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		weight = 5,
+		hammer = "Hammer"
 	}
 }
 
@@ -128,4 +134,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "AdamantHatchet"
 }
 
--- ...she gave her father forty-one. (Itsy)
+ItsyScape.Meta.ResourceDescription {
+	Value = "...she gave her father fourty-one.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ItsyHatchet"
+}

@@ -60,6 +60,14 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "Itsy",
+		Language = "en-US",
+		Name = "Itsy",
+		Tier = 50
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Gold",
 		Language = "en-US",
 		Name = "Gold",

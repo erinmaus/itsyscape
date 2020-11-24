@@ -19,6 +19,12 @@ local METALS = {
 		tier = 40,
 		weight = 25,
 		hammer = "Hammer"
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		weight = 5,
+		hammer = "Hammer"
 	}
 }
 
@@ -257,7 +263,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(5, 1.0),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(5, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(3),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "BronzeDagger"
@@ -270,7 +276,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(7, 1.0),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(7, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(7),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "BronzeMace"
@@ -283,7 +289,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(8, 1.0),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(8, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(8),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "BronzeLongsword"
@@ -296,7 +302,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(10, 1.0),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10, 1.0),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.5),
 		DefenseRanged = 1,
 		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(6, 0.1),
@@ -391,7 +397,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(45, 1.0),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(45, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(43),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "AdamantDagger"
@@ -404,7 +410,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(47, 1.0),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(47, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(47),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "AdamantMace"
@@ -417,7 +423,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(48, 1.0),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(48, 1.0),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(48),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "AdamantLongsword"
@@ -430,7 +436,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(51, 1.0),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(51, 1.0),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.6),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(53),
@@ -442,5 +448,139 @@ do
 		Value = "A formidable weapon that deals heavy damage to foes far away.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "AdamantZweihander"
+	}
+end
+
+-- Itsy
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(54, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 1.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "ItsyGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The ultimate protection against animated nail clippers.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(53, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.4),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 0.8),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "ItsyBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "And there's more! These boots are waterproof!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(60, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(60, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(60, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(60, 0.9),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "ItsyHelmet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A classic style of helm made of the strongest natural metal.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyHelmet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(61, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(62, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(61, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(58, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "ItsyPlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The only weaknesses? Magic...! And ants.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyPlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(60, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(60, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(60, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(65, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "No realmly arrow can pierce this shield.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyShield"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(55, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(53),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyDagger"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Unlike most daggers, the antibacterial properties make it safe for cooking... just clean any blood!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyDagger"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(57, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(57),
+		Prayer = 12,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyMace"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A weapon perfect for those who are both pious and strong!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyMace"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(58, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(58),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyLongsword"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slashes through lesser metals like butter.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyLongsword"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(51, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.6),
+		DefenseRanged = 1,
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ItsyZweihander"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Behead your foes in a single cleave or your money back!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyZweihander"
 	}
 end
