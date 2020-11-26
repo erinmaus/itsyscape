@@ -32,7 +32,7 @@ Bank.ITEM_TAB_SIZE = 48
 Bank.ITEM_SIZE = 48
 Bank.ITEM_ICON_PADDING = 2
 Bank.ITEM_PADDING = 12
-Bank.MIN_ITEM_TAB_COLUMNS = 2
+Bank.MIN_ITEM_TAB_COLUMNS = 4
 Bank.MAX_ITEM_TAB_COLUMNS = 6
 Bank.INVENTORY_COLUMNS = 4
 Bank.SECTION_TITLE_BUTTON_SIZE = 48
@@ -61,11 +61,22 @@ Bank.BUTTON_STYLE = {
 	pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png"
 }
 
+Bank.ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png"
+}
+
 Bank.TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 	fontSize = 32,
-	textShadow = true,
-	width = width,
+	textShadow = true
+}
+
+Bank.LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	fontSize = 24,
+	textShadow = true
 }
 
 Bank.SECTION_TITLE_STYLE = {
@@ -77,6 +88,17 @@ Bank.SECTION_TITLE_STYLE = {
 	color = Color(1, 1, 1, 1),
 	textShadow = true,
 	padding = 2
+}
+
+Bank.TEXT_INPUT_STYLE = {
+	inactive = "Resources/Renderers/Widget/TextInput/Purple-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/TextInput/Purple-Hover.9.png",
+	active = "Resources/Renderers/Widget/TextInput/Purple-Active.9.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	color = Color(1, 1, 1, 1),
+	textShadow = true,
+	padding = 4
 }
 
 function Bank:new(id, index, ui)
@@ -97,7 +119,7 @@ function Bank:new(id, index, ui)
 	self.tabsLayout:getInnerPanel():setPadding(Bank.SECTION_PADDING, Bank.SECTION_PADDING)
 	do
 		local estimatedWidth = math.floor(w / 4)
-		local estimatedNumRows = estimatedWidth % (Bank.ITEM_TAB_SIZE + Bank.SECTION_PADDING)
+		local estimatedNumRows = math.floor(estimatedWidth / (Bank.ITEM_TAB_SIZE + Bank.SECTION_PADDING))
 		local clampedNumRows = math.max(math.min(estimatedNumRows, Bank.MAX_ITEM_TAB_COLUMNS), Bank.MIN_ITEM_TAB_COLUMNS)
 		local realWidth = clampedNumRows * (Bank.ITEM_TAB_SIZE + Bank.SECTION_PADDING) + Bank.SECTION_PADDING
 
@@ -107,7 +129,6 @@ function Bank:new(id, index, ui)
 	self:addChild(self.tabsLayout)
 
 	local tabsBackground = Panel()
-	tabsBackground:setZDepth(-1)
 	tabsBackground:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/FullscreenGroup.9.png"
 	}, ui:getResources()))
@@ -125,8 +146,12 @@ function Bank:new(id, index, ui)
 	self.bankLayout:getInnerPanel():setWrapContents(true)
 	self.bankLayout:getInnerPanel():setUniformSize(true, Bank.ITEM_SIZE, Bank.ITEM_SIZE)
 	self.bankLayout:getInnerPanel():setPadding(Bank.ITEM_PADDING, Bank.ITEM_PADDING)
-	self.bankLayout:setPosition(Bank.ITEM_PADDING, Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
-	self.bankLayout:setSize(w / 2 - Bank.ITEM_PADDING * 2, h - Bank.ITEM_PADDING * 2 - Bank.TITLE_LABEL_HEIGHT)
+	self.bankLayout:setPosition(
+		Bank.ITEM_PADDING,
+		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT + Bank.ITEM_TAB_SIZE + Bank.ITEM_PADDING * 2)
+	self.bankLayout:setSize(
+		w / 2 - Bank.ITEM_PADDING * 2,
+		h - Bank.ITEM_PADDING * 2 - Bank.TITLE_LABEL_HEIGHT - Bank.ITEM_TAB_SIZE - Bank.ITEM_PADDING * 2)
 	self:addChild(self.bankLayout)
 
 	local bankBackground = Panel()
@@ -137,11 +162,50 @@ function Bank:new(id, index, ui)
 	bankBackground:setSize(self.bankLayout:getSize())
 	self.panel:addChild(bankBackground)
 
+	local noteButton = Button()
+	noteButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, ui:getResources()))
+	noteButton:setPosition(Bank.ITEM_PADDING, Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
+	noteButton:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
+	noteButton.onClick:register(self.toggleNote, self)
+	noteButton:setToolTip(
+		"Withdraw items as notes.",
+		"Noted items are stackable but are only useful for trading.")
+
+	local noteIcon = Icon()
+	noteIcon:setIcon("Resources/Game/Items/Note.png")
+	noteIcon:setSize(32, 32)
+	noteIcon:setPosition(8, 8)
+	noteButton:addChild(noteIcon)
+	self:addChild(noteButton)
+
+	self.noted = false
+
 	local bankLabel = Label()
 	bankLabel:setText("Bank")
 	bankLabel:setStyle(LabelStyle(Bank.TITLE_LABEL_STYLE, ui:getResources()))
 	bankLabel:setPosition(self.bankLayout:getPosition(), Bank.ITEM_PADDING)
 	self:addChild(bankLabel)
+
+	local withdrawXTextInput = TextInput()
+	withdrawXTextInput:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
+	withdrawXTextInput:setText('1000')
+	withdrawXTextInput:setPosition(
+		self.bankLayout:getPosition() + self.bankLayout:getSize() * (2 / 3),
+		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
+	withdrawXTextInput:setSize(self.bankLayout:getSize() / 3, Bank.SECTION_TITLE_BUTTON_SIZE)
+	withdrawXTextInput.onFocus:register(function()
+		withdrawXTextInput:setCursor(0, #withdrawXTextInput:getText() + 1)
+	end)
+	withdrawXTextInput.onValueChanged:register(self.changeWithdrawXAmount, self)
+	self:addChild(withdrawXTextInput)
+
+	local withdrawXLabel = Label()
+	withdrawXLabel:setStyle(LabelStyle(Bank.LABEL_STYLE, ui:getResources()))
+	withdrawXLabel:setText("Withdraw-X Quantity:")
+	withdrawXLabel:setPosition(
+		withdrawXTextInput:getPosition() - 250,
+		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT + 12)
+	self:addChild(withdrawXLabel)
 
 	self.inventoryLayout = ScrollablePanel(GridLayout)
 	self.inventoryLayout:getInnerPanel():setWrapContents(true)
@@ -179,8 +243,16 @@ function Bank:new(id, index, ui)
 	self:generateTabs()
 	self.tabsLayout:performLayout()
 
-	self.numInventorySpaces = 0
 	self.numBankSpaces = 0
+	self.withdrawXCount = 1000
+end
+
+function Bank:changeWithdrawXAmount(textInput)
+	-- Remove all non-number values
+	value = string.gsub(textInput:getText(), "[^%d]", "")
+	textInput:setText(value)
+
+	self.withdrawXCount = tonumber(value) or 1
 end
 
 function Bank:generateFilterSection(stateSection, index)
@@ -191,20 +263,21 @@ function Bank:generateFilterSection(stateSection, index)
 	gridLayout:setPadding(Bank.SECTION_PADDING, Bank.SECTION_PADDING)
 	gridLayout:setSize(w, Bank.SECTION_TITLE_BUTTON_SIZE)
 
-	local sectionTextBox = TextInput()
-	sectionTextBox:setStyle(TextInputStyle(Bank.SECTION_TITLE_STYLE, self:getView():getResources()))
-	sectionTextBox:setText(stateSection.name)
-	sectionTextBox:setSize(
+	local sectionTextInput = TextInput()
+	sectionTextInput:setStyle(TextInputStyle(Bank.SECTION_TITLE_STYLE, self:getView():getResources()))
+	sectionTextInput:setText(stateSection.name)
+	sectionTextInput:setSize(
 		w - Bank.SECTION_TITLE_BUTTON_SIZE - Bank.SECTION_PADDING * 5,
 		Bank.SECTION_TITLE_BUTTON_SIZE)
-	sectionTextBox.onBlur:register(self.renameSection, self, i)
-	sectionTextBox.onSubmit:register(self.renameSection, self, i)
-	gridLayout:addChild(sectionTextBox)
+	sectionTextInput.onBlur:register(self.renameSection, self, i)
+	sectionTextInput.onSubmit:register(self.renameSection, self, i)
+	sectionTextInput.onSubmit:register(self.blurTextInput, self)
+	gridLayout:addChild(sectionTextInput)
 
 	local deleteButton = Button()
 	deleteButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
 	deleteButton:setText("X")
-	deleteButton.onClick:register(self, self.deleteSection, sectionIndex)
+	deleteButton.onClick:register(self.deleteSection, self, sectionIndex)
 	deleteButton:setSize(Bank.SECTION_TITLE_BUTTON_SIZE, Bank.SECTION_TITLE_BUTTON_SIZE)
 	gridLayout:addChild(deleteButton)
 
@@ -215,12 +288,17 @@ function Bank:generateFilterSection(stateSection, index)
 	self.tabsLayout:addChild(gridLayout)
 end
 
-function Bank:renameSection(index, textBox)
+function Bank:renameSection(index, textInput)
 	-- TODO
+	textInput:setCursor(0)
 end
 
 function Bank:deleteSection(index)
 	-- TODO
+end
+
+function Bank:blurTextInput()
+	self:getView():getInputProvider():setFocusedWidget(nil)
 end
 
 function Bank:generateFilterSections()
@@ -234,7 +312,6 @@ function Bank:addFilterButton(itemID, sectionIndex, queryIndex)
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = ItemIcon()
-	icon:setPosition(Bank.ITEM_ICON_PADDING, Bank.ITEM_ICON_PADDING)
 	icon:setItemID(itemID)
 	button:addChild(icon)
 
@@ -250,7 +327,6 @@ function Bank:addAllButton()
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = Icon()
-	icon:setPosition(Bank.ITEM_ICON_PADDING, Bank.ITEM_ICON_PADDING)
 	icon:setIcon("Resources/Game/UI/Icons/Things/Chest.png")
 	button:addChild(icon)
 
@@ -275,13 +351,23 @@ function Bank:generateTabs()
 	self:addFilterButton("UnholySacrificialKnife", 2, 1)
 end
 
+function Bank:toggleNote(button)
+	self.noted = not self.noted
+
+	if self.noted then
+		button:setStyle(ButtonStyle(Bank.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
+	else
+		button:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
+	end
+end
+
 function Bank:update(...)
 	Interface.update(self, ...)
 
 	local state = self:getState()
 	if self.numBankSpaces ~= state.items.max then
 		local children = {}
-		for index, child in self.bankLayout:iterate() do
+		for index, child in self.bankLayout:getInnerPanel():iterate() do
 			table.insert(children, child)
 		end
 
@@ -319,15 +405,17 @@ function Bank:updateItemLayout(layout, items, source)
 		button:addChild(icon)
 		button:setData('icon', icon)
 		button:setData('bank-droppable-target', true)
+		button:setData('source', source)
 		button.onDrop:register(self.swap, self)
-		button.onDrag:register(self.drag, self, source)
-		button.onLeftClick:register(self.activate, self)
+		button.onDrag:register(self.drag, self, source, layout)
+		button.onLeftClick:register(self.activate, self, source)
 		button.onRightClick:register(self.probe, self, source)
 
 		layout:addChild(button)
 	end
 
 	layout:setScrollSize(layout:getInnerPanel():getSize())
+	layout:setData('source', source)
 end
 
 function Bank:getRightHandItem(layout, source, x, y)
@@ -335,46 +423,119 @@ function Bank:getRightHandItem(layout, source, x, y)
 		return nil
 	end
 
-	for i, widget in layout:iterate() do
-		local buttonX, buttonY = widget:getPosition()
-		local buttonWidth, buttonHeight = widget:getSize()
+	for i, widget in layout:getInnerPanel():iterate() do
+		local widgetX, widgetY = widget:getPosition()
+		local widgetWidth, widgetHeight = widget:getSize()
 
-		if x >= buttonX + buttonWidth and y >= buttonY and
-		   x <= buttonX + buttonWidth + Bank.ITEM_PADDING and y <= buttonY + buttonHeight
+		if x >= widgetX + widgetWidth and y >= widgetY and
+		   x <= widgetX + widgetWidth + Bank.ITEM_PADDING and y <= widgetY + widgetHeight
 		then
 			return widget:getData('icon'):getData('index')
 		elseif i == 1 and
-		       x >= buttonX - Bank.ITEM_PADDING and y >= buttonY and
-		       x <= buttonX and y <= buttonY + buttonHeight
+		       x >= widgetX - Bank.ITEM_PADDING and y >= widgetY and
+		       x <= widgetX and y <= widgetY + widgetHeight
 		then
 			return 0
 		end
 	end
+
+	return nil
 end
 
-function Bank:drag(source, button, x, y, absoluteX, absoluteY)
+function Bank:drag(source, layout, button, x, y, absoluteX, absoluteY)
 	local icon = button:getData('icon')
-	local rightHandItem = self:getRightHandItem(source, absoluteX, absoluteY)
+	local rightHandItem = self:getRightHandItem(layout, source, absoluteX, absoluteY)
 	if rightHandItem then
 		local SHRINKAGE = 0.5
 		icon:setSize(self.ITEM_SIZE * SHRINKAGE, self.ITEM_SIZE * SHRINKAGE)
 		icon:setPosition(
-			self.ICON_PADDING + (self.ITEM_SIZE * SHRINKAGE / 2),
-			self.ICON_PADDING + (self.ITEM_SIZE * SHRINKAGE / 2))
+			Bank.ITEM_ICON_PADDING + (Bank.ITEM_SIZE * SHRINKAGE / 2),
+			Bank.ITEM_ICON_PADDING + (Bank.ITEM_SIZE * SHRINKAGE / 2))
 	else
-		icon:setSize(self.ITEM_SIZE, self.ITEM_SIZE)
-		icon:setPosition(self.ICON_PADDING, self.ICON_PADDING)
+		icon:setSize(Bank.ITEM_SIZE, Bank.ITEM_SIZE)
+		icon:setPosition(Bank.ITEM_ICON_PADDING, Bank.ITEM_ICON_PADDING)
 	end
 	if self:getView():getRenderManager():getCursor() ~= icon then
 		self:getView():getRenderManager():setCursor(icon)
 	end
 end
 
-function Bank:swap(button, x, y)
+local function isInside(x, y, widget)
+	local widgetX, widgetY = widget:getAbsolutePosition()
+	local widgetWidth, widgetHeight = widget:getSize()
+
+	if x >= widgetX and y >= widgetY and
+	   x <= widgetX + widgetWidth and y <= widgetY + widgetHeight
+	then
+		return widget
+	end
+end
+
+function Bank:findButton(layout, x, y)
+	for _, button in layout:getInnerPanel():iterate() do
+		if isInside(x, y, button) then
+			return button
+		end
+	end
+
+	if isInside(x, y, layout) then
+		return layout
+	end
+end
+
+function Bank:swap(button, x, y, absoluteX, absoluteY)
 	local icon = button:getData('icon')
+	local index = icon:getData('index')
+
+	local sourceInventory = button:getData('source')
+
+	if index then
+		local inputProvider = self:getView():getInputProvider()
+		local destination = self:findButton(self.bankLayout, absoluteX, absoluteY) or
+		                    self:findButton(self.inventoryLayout, absoluteX, absoluteY)
+
+		if destination then
+			local destinationInventory = destination:getData('source')
+			local newIndex
+			if destination:isCompatibleType(DraggableButton) then
+				newIndex = destination:getData('icon'):getData('index')
+			end
+
+			if destinationInventory == 'items' then
+				if sourceInventory == 'inventory' then
+					local state = self:getState()
+					local numItems = state.inventory[index].count
+					self:sendPoke("deposit", nil, { index = index, count = numItems })
+				else
+					if newIndex == nil then
+						local rightHandItem = self:getRightHandItem(self.bankLayout, 'items', x, y)
+						if rightHandItem then
+							if rightHandItem <= index then
+								rightHandItem = rightHandItem + 1
+							end
+
+							self:sendPoke("insertBank", nil, { tab = 0, a = index, b = rightHandItem })
+						end
+					else
+						self:sendPoke("swapBank", nil, { tab = 0, a = index, b = newIndex })
+					end
+				end
+			elseif destinationInventory == 'inventory' then
+				if sourceInventory == 'items' then
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 1 })
+				else
+					self:sendPoke("swapInventory", nil, { a = index, b = newIndex })
+				end
+			end
+		end
+	end
+
 	if self:getView():getRenderManager():getCursor() == icon then
 		self:getView():getRenderManager():setCursor(nil)
 	end
+
+	icon:setSize(Bank.ITEM_SIZE, Bank.ITEM_SIZE)
+	icon:setPosition(Bank.ITEM_ICON_PADDING, Bank.ITEM_ICON_PADDING)
 end
 
 function Bank:probe(source, button)
@@ -459,6 +620,15 @@ function Bank:probe(source, button)
 			})
 
 			table.insert(actions, {
+				id = "Withdraw-X",
+				verb = "Withdraw-X", -- TODO: [LANG]
+				object = object,
+				callback = function()
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+				end
+			})
+
+			table.insert(actions, {
 				id = "Withdraw-All",
 				verb = "Withdraw-All", -- TODO: [LANG]
 				object = object,
@@ -489,6 +659,19 @@ function Bank:probe(source, button)
 		})
 
 		self:getView():probe(actions)
+	end
+end
+
+function Bank:activate(source, button)
+	local index = button:getData('icon'):getData('index')
+	local items = self:getState()[source] or {}
+	local item = items[index]
+	if item then
+		if source == 'inventory' then
+			self:sendPoke("deposit", nil, { index = index, count = 1 })
+		elseif source == 'items' then
+			self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 1 })
+		end
 	end
 end
 
