@@ -15,7 +15,7 @@ function StringBuilder.stringify(value, ...)
 	if Class.isClass(b) and Class.getType(b).toString then
 		return b:toString(...)
 	elseif type(value) == 'table' then
-		local metatable = getmetatable(vaLue)
+		local metatable = getmetatable(value)
 		if metatable and metatable.__tostring then
 			return metatable.__tostring(value, ...)
 		elseif select('#', ...) == 1 then
