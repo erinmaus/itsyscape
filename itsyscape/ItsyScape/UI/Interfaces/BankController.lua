@@ -27,19 +27,28 @@ function BankController:new(peep, director)
 		"hide",
 		nil,
 		{})
+
+	self.meta = {}
+end
+
+function BankController:getBankStorage()
+	local playerStorage = Utility.Peep.getStorage(self:getPeep())
+	local filterStorage = playerStorage:getSection("Bank")
+	return filterStorage
 end
 
 function BankController:refresh()
 	self.state = {
 		items = {},
 		tabs = {},
-		inventory = {}
+		inventory = {},
+		filters = {}
 	}
-
 
 	self.items = {
 		inventory = {},
-		bank = {}
+		bank = {},
+		filters = {}
 	}
 
 	local tabs = {}
@@ -75,9 +84,148 @@ function BankController:refresh()
 			self.state.inventory.max = storage:getMaxInventorySpace()
 		end
 	end
+
+	self:refreshFilters()
+	self:refreshQueries()
+end
+
+function BankController:refreshFilters()
+	self.state.filters = self:getBankStorage():getSection("filters"):get()
+	print(require("ItsyScape.Common.StringBuilder").stringifyTable(self.state.filters))
+end
+
+function BankController:addFilterQueryResult(sectionIndex, filterIndex, items)
+	local item = "Null"
+	if #items >= 0 then
+		item = items[1]:getID()
+	end
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local filter = filterStorage:getSection(sectionIndex):getSection(filterStorage)
+	filter:set("item", item)
+end
+
+function BankController:refreshQueries()
+	for i = 1, #self.state.filters do
+		for j = 1, #self.state.filters[j] do
+			local items = self:performQuery(i, j)
+			self:addFilterQueryResult(i, j, items)
+		end
+	end
+
+	self:refreshFilters()
+end
+
+function BankController:pullItemMeta(itemID)
+	local gameDB = self:getDirector():getGameDB()
+	local itemResource = gameDB:getResource(itemID, "Item")
+
+	local meta = {
+		tags = {},
+		actions = {}
+	}
+
+	if not itemResource then
+		return meta
+	end
+
+	meta.actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource)
+
+	local categories = gameDB:getRecords("ResourceCategory", { Resource = itemResource })
+	for i = 1, #categories do
+		table.insert(meta.tags, categories[i]:get("Value"))
+	end
+
+	local tags = gameDB:getRecords("ResourceCategory", { Resource = itemResource })
+	for i = 1, #tags do
+		table.insert(meta.tags, tags[i]:get("Value"))
+	end
+
+	meta.name = Utility.getName(itemResource, gameDB)
+	meta.description = Utility.getDescription(itemResource, itemResource, gameDB)
+
+	self.meta[itemID] = meta
+	return meta
+end
+
+function BankController:performQueryOnItemDetail(perform, pattern, itemDetail)
+	if not perform then
+		return true
+	end
+
+	pattern = pattern:lower()
+	itemDetail = itemDetail:lower()
+
+	local s, m1 = pcall(string.match, itemDetail, pattern)
+	local m2 = string.find(itemDetail, pattern)
+
+	return m1 or m2
+end
+
+function BankController:performQueryOnItem(queryOps, itemID)
+	local itemDetails = self.meta[itemID] or self:pullItemMeta(itemID)
+
+	for i = 1, #queryOps do
+		local query = queryOps[i]
+		local term = query.term
+
+		local n = self:performQueryOnItemDetail(query.name, term, itemDetails.name)
+		local d = self:performQueryOnItemDetail(query.description, term, itemDetails.description)
+		local k, a = nil, nil
+
+		if n or d then
+			if query.keyword then
+				for i = 1, #itemDetails.tags do
+					k = k or self:performQueryOnItemDetail(true, term, itemDetails.tags[i])
+					if k then
+						break
+					end
+				end
+			end
+
+			if query.action then
+				for i = 1, #itemDetails.actions do
+					local action = itemDetails.actions[i].verb
+					a = a or self:performQueryOnItemDetail(true, term, action)
+					if a then
+						break
+					end
+				end
+			end
+		end
+
+		local isMatch = n and d and (k == nil or k) and (a == nil or a)
+		if query.flip then
+			isMatch = not isMatch
+		end
+
+		if not isMatch then
+			return false
+		end
+	end
+
+	return true
+end
+
+function BankController:performQuery(sectionIndex, queryIndex)
+	local query = self.state.filters[sectionIndex][queryIndex]
+
+	local items = {}
+	for queryIndex = 1, #query do
+		for itemIndex, #self.items.bank do
+			local item = self.items.bank[itemIndex]
+			if self:performQueryOnItem(query[queryIndex], item:getID()) then
+				table.insert(items, item)
+			end
+		end
+	end
+
+	return items
 end
 
 function BankController:poke(actionID, actionIndex, e)
+	print('action', actionID)
+
 	if actionID == "swapInventory" then
 		self:swapInventory(e)
 	elseif actionID == "swapBank" then
@@ -88,6 +236,20 @@ function BankController:poke(actionID, actionIndex, e)
 		self:withdraw(e)
 	elseif actionID == "deposit" then
 		self:deposit(e)
+	elseif actionID == "addSection" then
+		self:addSection(e)
+	elseif actionID == "deleteSection" then
+		self:deleteSection(e)
+	elseif actionID == "addSectionQuery" then
+		self:addSectionQuery(e)
+	elseif actionID == "renameSection" then
+		self:renameSection(e)
+	elseif actionID == "swapSection" then
+		self:swapSection(e)
+	elseif actionID == "editFilter" then
+		self:editFilter(e)
+	elseif actionID == "removeFilter" then
+		self:removeFilter(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -292,6 +454,120 @@ function BankController:withdraw(e)
 		end
 	end
 end
+
+function BankController:addSection(e)
+	assert(type(e.name) == "string", "name is not a string")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local length = filterStorage:length()
+
+	filterStorage:set(length + 1, { name = e.name })
+	self:refreshFilters()
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+end
+
+function BankController:addSectionQuery(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local queriesStorage = filterStorage:getSection(e.sectionIndex)
+	local queryIndex = queriesStorage:length() + 1
+
+	queriesStorage:set(queryIndex, {
+		item = "Null",
+		{
+			term = "Potato",
+			name = false,
+			keyword = false,
+			description = false,
+			action = false,
+			flip = false
+		}
+	})
+	self:refreshFilters()
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"openFilterEdit",
+		nil,
+		{ e.sectionIndex, queryIndex })
+end
+
+function BankController:renameSection(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(type(e.name) == "string", "name is not a string")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local sectionStorage = filterStorage:getSection(e.sectionIndex)
+
+	sectionStorage:set('name', e.name)
+	self:refreshFilters()
+end
+
+function BankController:deleteSection(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	filterStorage:removeSection(e.sectionIndex)
+	self:refreshFilters()
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+end
+
+function BankController:editFilter(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(type(e.queryIndex) == "number", "queryIndex is not a number")
+	assert(e.queryIndex >= 1, "queryIndex is less than or equal to zero")
+	assert(type(e.query) == "table", "query is not a table")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local sectionStorage = filterStorage:getSection(e.sectionIndex)
+	sectionStorage:set(e.queryIndex, e.query)
+	self:refreshFilters()
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"openFilterEdit",
+		nil,
+		{ e.sectionIndex, e.queryIndex })
+end
+
+function BankController:removeFilter(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(type(e.queryIndex) == "number", "queryIndex is not a number")
+	assert(e.queryIndex >= 1, "queryIndex is less than or equal to zero")
+
+	local filterStorage = self:getBankStorage():getSection("filters")
+	local sectionStorage = filterStorage:getSection(e.sectionIndex)
+	sectionStorage:removeSection(e.queryIndex)
+	self:refreshFilters()
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+end
+
 
 function BankController:update(delta)
 	Controller.update(delta)
