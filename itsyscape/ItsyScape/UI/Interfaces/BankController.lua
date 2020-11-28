@@ -596,6 +596,12 @@ function BankController:removeFilter(e)
 	assert(type(e.queryIndex) == "number", "queryIndex is not a number")
 	assert(e.queryIndex >= 1, "queryIndex is less than or equal to zero")
 
+	if self.currentSectionIndex == e.sectionIndex and
+	   self.currentQueryIndex >= e.sectionIndex
+	then
+		self.currentQueryIndex = self.currentQueryIndex - 1
+	end
+
 	local filterStorage = self:getBankStorage():getSection("filters")
 	local sectionStorage = filterStorage:getSection(e.sectionIndex)
 	sectionStorage:removeSection(e.queryIndex)
