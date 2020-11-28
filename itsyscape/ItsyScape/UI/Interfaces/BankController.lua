@@ -158,7 +158,7 @@ function BankController:pullItemMeta(itemID)
 		table.insert(meta.tags, categories[i]:get("Value"))
 	end
 
-	local tags = gameDB:getRecords("ResourceCategory", { Resource = itemResource })
+	local tags = gameDB:getRecords("ResourceTag", { Resource = itemResource })
 	for i = 1, #tags do
 		table.insert(meta.tags, tags[i]:get("Value"))
 	end
