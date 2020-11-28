@@ -272,7 +272,7 @@ function Bank:new(id, index, ui)
 
 	self.filterSections = {}
 	self.activeSection = Bank.SECTION_NONE
-	self.activeQuery = Bank.QUERY_NONE
+	self.activeFilter = Bank.QUERY_NONE
 	self:generateFilterSections()
 	self:generateTabs()
 	self.tabsLayout:performLayout()
@@ -349,19 +349,21 @@ function Bank:generateFilterSections()
 	end
 end
 
-function Bank:addFilterButton(sectionIndex, queryIndex)
-	local itemID = self:getState().filters[sectionIndex][queryIndex].item or "Null"
-
+function Bank:addFilterButton(sectionIndex, filterIndex)
 	local button = DraggableButton()
-	button:setData('query-index', queryIndex)
+	button:setData('sectionIndex', sectionIndex)
+	button:setData('filterIndex', filterIndex)
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = ItemIcon()
-	icon:setItemID(itemID)
+	icon:setData('sectionIndex', sectionIndex)
+	icon:setData('filterIndex', filterIndex)
+	icon:setText('yewp filter button')
+	icon:bind('itemID', "filters[{sectionIndex}][{filterIndex}].item")
 	button:addChild(icon)
 
-	button.onLeftClick:register(self.onPerformQuery, self, sectionIndex, queryIndex)
-	button.onRightClick:register(self.probeFilter, self, sectionIndex, queryIndex)
+	button.onLeftClick:register(self.onPerformQuery, self, sectionIndex, filterIndex)
+	button.onRightClick:register(self.probeFilter, self, sectionIndex, filterIndex)
 
 	self.filterSections[sectionIndex].layout:addChild(button)
 	self:tryMakeButtonActiveStyle(button)
@@ -369,7 +371,8 @@ end
 
 function Bank:addAllButton()
 	local button = Button()
-	button:setData('query-index', Bank.QUERY_NONE)
+	button:setData('sectionIndex', Bank.SECTION_NONE)
+	button:setData('filterIndex', Bank.QUERY_NONE)
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = Icon()
@@ -383,9 +386,10 @@ function Bank:addAllButton()
 end
 
 function Bank:tryMakeButtonActiveStyle(button)
-	local queryIndex = button:getData('query-index')
+	local sectionIndex = button:getData('sectionIndex')
+	local filterIndex = button:getData('filterIndex')
 
-	if self.activeQuery == queryIndex then
+	if self.activeSection == sectionIndex and self.activeFilter == filterIndex then
 		button:setStyle(ButtonStyle(Bank.ACTIVE_TAB_STYLE, self:getView():getResources()))
 	else
 		button:setStyle(ButtonStyle(Bank.INACTIVE_TAB_STYLE, self:getView():getResources()))
@@ -482,6 +486,20 @@ function Bank:onPerformQuery(sectionIndex, queryIndex)
 	self:removeChild(self.filterEditPanel)
 	self:addChild(self.addSectionButton)
 	self:addChild(self.tabsLayout)
+
+	self.activeSection = sectionIndex
+	self.activeFilter = queryIndex
+	self:sendPoke("applyFilter", nil, { sectionIndex = sectionIndex, queryIndex = queryIndex })
+end
+
+function Bank:onClearQuery()
+	self:removeChild(self.filterEditPanel)
+	self:addChild(self.addSectionButton)
+	self:addChild(self.tabsLayout)
+
+	self.activeSection = Bank.SECTION_NONE
+	self.activeFilter = Bank.QUERY_NONE
+	self:sendPoke("clearFilter", nil, {})
 end
 
 function Bank:generateFilterOperation(sectionIndex, queryIndex, operationIndex)
@@ -567,6 +585,10 @@ function Bank:generateFilterOperation(sectionIndex, queryIndex, operationIndex)
 end
 
 function Bank:deleteFilter(sectionIndex, queryIndex)
+	if self.activeSection == sectionIndex and self.activeFilter == queryIndex then
+		self:sendPoke("clearFilter", nil, {})
+	end
+
 	self:sendPoke("removeFilter", nil, { sectionIndex = sectionIndex, queryIndex = queryIndex })
 end
 
@@ -818,7 +840,7 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 			elseif destinationInventory == 'inventory' then
 				if sourceInventory == 'items' then
 					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 1 })
-				else
+				elseif index and newIndex then
 					self:sendPoke("swapInventory", nil, { a = index, b = newIndex })
 				end
 			end

@@ -61,9 +61,10 @@ end
 function PlayerStorage.Section:removeSection(key)
 	if type(key) == 'number' then
 		table.remove(self.array, key)
+		table.remove(self.sections, key)
+	else
+		self.sections[key] = nil
 	end
-
-	self.sections[key] = nil
 end
 
 function PlayerStorage.Section:reset()
