@@ -145,6 +145,8 @@ for name, leather in pairs(LEATHERS) do
 			DequipAction,
 			CraftAction
 		}
+
+		ItsyScape.Utility.tag(Item, "archery armor")
 	end
 end
 

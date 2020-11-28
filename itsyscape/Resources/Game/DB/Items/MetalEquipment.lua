@@ -176,6 +176,8 @@ for name, metal in pairs(METALS) do
 			DequipAction,
 			SmithAction
 		}
+
+		ItsyScape.Utility.tag(Item, "melee")
 	end
 end
 

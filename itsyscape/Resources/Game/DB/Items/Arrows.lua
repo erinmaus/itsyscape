@@ -188,6 +188,8 @@ for name, metal in pairs(METALS) do
 	ArrowheadItem {
 		SmithAction
 	}
+
+	ItsyScape.Utility.tag(Item, "archery")
 end
 
 ItsyScape.Meta.ResourceDescription {
