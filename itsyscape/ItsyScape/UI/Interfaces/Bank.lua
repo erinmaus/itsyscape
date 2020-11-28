@@ -270,6 +270,16 @@ function Bank:new(id, index, ui)
 	inventoryLabel:setPosition(self.inventoryLayout:getPosition(), Bank.ITEM_PADDING)
 	self:addChild(inventoryLabel)
 
+	self.closeButton = Button()
+	self.closeButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, ui:getResources()))
+	self.closeButton:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
+	self.closeButton:setPosition(w - Bank.ITEM_TAB_SIZE, 0)
+	self.closeButton:setText("X")
+	self.closeButton.onClick:register(function()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(self.closeButton)
+
 	self.filterSections = {}
 	self.activeSection = Bank.SECTION_NONE
 	self.activeFilter = Bank.QUERY_NONE
