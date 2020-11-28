@@ -55,7 +55,13 @@ function TextButtonStyle:new(t, resources)
 	end
 
 	self.textShadow = t.textShadow or false
-	self.selectionColor = Color(unpack(t.selectionColor)) or Color(0.5, 0.5, 0.5, 0.5)
+
+	if t.selectionColor then
+		self.selectionColor = Color(unpack(t.selectionColor))
+	else
+		self.selectionColor = Color(0.5, 0.5, 0.5, 0.5)
+	end
+
 	self.padding = t.padding or 4
 end
 

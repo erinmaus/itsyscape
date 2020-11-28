@@ -13,6 +13,7 @@ local ARMOR = {
 		name = "SuperiorItsy",
 		niceName = "Superior itsy",
 		category = "Metal",
+		tags = { "melee" },
 		action = "Smith",
 		tier = 55,
 		weight = 5,
@@ -148,6 +149,10 @@ for name, armor in pairs(ARMOR) do
 			DequipAction,
 			MakeAction
 		}
+
+		for i = 1, #armor.tags do
+			ItsyScape.Utility.tag(Item, armor.tags[i])
+		end
 	end
 end
 

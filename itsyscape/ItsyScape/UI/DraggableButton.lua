@@ -79,8 +79,14 @@ function DraggableButton:mouseRelease(x, y, button, ...)
 		if self.button == 1 then
 			if self.isDragging then
 				local s, t = self:getPosition()
+				local z, w = self:getAbsolutePosition()
 				local u, v = self.dragX, self.dragY
-				self.onDrop(self, s + u + self.offsetX, t + v + self.offsetY)
+				self.onDrop(
+					self,
+					s + u + self.offsetX,
+					t + v + self.offsetY,
+					z + u + self.offsetX,
+					w + v + self.offsetY)
 			elseif self.isMouseOver then
 				self.onLeftClick(self)
 			end
