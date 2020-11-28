@@ -148,6 +148,8 @@ for name, fabric in pairs(FABRICS) do
 			DequipAction,
 			CraftAction
 		}
+
+		ItsyScape.Utility.tag(Item, "magic")
 	end
 end
 

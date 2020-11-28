@@ -111,6 +111,8 @@ for name, log in pairs(LOGS) do
 			Resource = Item
 		}
 
+		ItsyScape.Utility.tag(Item, "archery")
+
 		ItsyScape.Meta.EquipmentModel {
 			Type = "ItsyScape.Game.Skin.ModelSkin",
 			Filename = string.format("Resources/Game/Skins/%s/%s.lua", log.style, itemName),

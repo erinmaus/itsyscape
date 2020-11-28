@@ -157,6 +157,8 @@ for name, tier in pairs(TIERS) do
 			DequipAction,
 			CraftAction
 		}
+
+		ItsyScape.Utility.tag(Item, "magic")
 	end
 end
 

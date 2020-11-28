@@ -30,6 +30,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "Tinderbox"
 }
 
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "Tinderbox", "tool")
+
 ItsyScape.Resource.Item "Hammer" {
 	-- Nothing.
 }
@@ -51,6 +53,8 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Hammer"
 }
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "Hammer", "tool")
 
 ItsyScape.Resource.Item "Needle" {
 	-- Nothing.
@@ -74,6 +78,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "Needle"
 }
 
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "Needle", "tool")
+
 ItsyScape.Resource.Item "Knife" {
 	-- Nothing.
 }
@@ -96,6 +102,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "Knife"
 }
 
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "Knife", "tool")
+
 ItsyScape.Resource.Item "WimpyFishingRod" {
 	ItsyScape.Action.Equip() {
 		Requirement {
@@ -111,6 +119,8 @@ ItsyScape.Resource.Item "WimpyFishingRod" {
 
 	ItsyScape.Action.Dequip()
 }
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "WimpyFishingRod", "tool")
 
 ItsyScape.Meta.ResourceCategory {
 	Key = "WeaponType",
@@ -235,6 +245,8 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "IronBlowpipe"
 }
 
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "IronBlowpipe", "tool")
+
 ItsyScape.Resource.Item "IronShovel" {
 	ItsyScape.Action.Dig(),
 
@@ -289,3 +301,5 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronShovel"
 }
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "IronShovelf", "tool")
