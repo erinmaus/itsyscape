@@ -552,6 +552,14 @@ function BankController:deleteSection(e)
 	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
 	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
 
+	if e.sectionIndex == self.currentSectionIndex then
+		self:getDirector():getGameInstance():getUI():sendPoke(
+			self,
+			"onClearQuery",
+			nil,
+			{})
+	end
+
 	local filterStorage = self:getBankStorage():getSection("filters")
 	filterStorage:removeSection(e.sectionIndex)
 	self:refreshFilters()

@@ -500,6 +500,8 @@ function Bank:onPerformQuery(sectionIndex, queryIndex)
 	self.activeSection = sectionIndex
 	self.activeFilter = queryIndex
 	self:sendPoke("applyFilter", nil, { sectionIndex = sectionIndex, queryIndex = queryIndex })
+
+	self.bankLayout:getInnerPanel():setScroll(0, 0)
 end
 
 function Bank:onClearQuery()
