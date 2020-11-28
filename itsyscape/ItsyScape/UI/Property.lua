@@ -52,7 +52,7 @@ function Property:fromPath(path)
 
 		local remainder = path:sub(j + 1)
 		local s, t = remainder:find(ARRAY)
-		if s and t then
+		while s and t do
 			local u, v = remainder:find(REF)
 			if u and v then
 				local ref = remainder:sub(u + 1, v - 1)
@@ -75,6 +75,11 @@ function Property:fromPath(path)
 					error(string.format("unexpected value at %d", j + 1))
 				end
 			end
+
+			j = j + t
+
+			remainder = path:sub(j + 1)
+			s, t = remainder:find(ARRAY)
 		end
 		
 		i, j = path:find(IDENTIFIER, j + (t or 0) + 1)

@@ -18,6 +18,7 @@ local BankController = Class(Controller)
 function BankController:new(peep, director)
 	Controller.new(self, peep, director)
 
+	self.meta = {}
 	self:refresh()
 
 	Utility.UI.broadcast(
@@ -27,8 +28,6 @@ function BankController:new(peep, director)
 		"hide",
 		nil,
 		{})
-
-	self.meta = {}
 end
 
 function BankController:getBankStorage()
@@ -40,7 +39,6 @@ end
 function BankController:refresh()
 	self.state = {
 		items = {},
-		tabs = {},
 		inventory = {},
 		filters = {}
 	}
@@ -51,17 +49,19 @@ function BankController:refresh()
 		filters = {}
 	}
 
-	local tabs = {}
+	self:refreshInventories()
+	self:refreshFilters()
+	self:refreshQueries()
+	self:populateStateWithItems()
+end
 
+function BankController:refreshInventories()
+	local broker = self:getDirector():getItemBroker() 
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory then
-		local broker = self:getDirector():getItemBroker() 
 		if inventory.bank then
 			local storage = inventory.bank
 			for item in broker:iterateItems(storage) do
-				local serializedItem = self:pullItem(item, false)
-				self:pullActions(item, serializedItem)
-				table.insert(self.state.items, serializedItem)
 				table.insert(self.items.bank, item)
 			end
 
@@ -84,30 +84,52 @@ function BankController:refresh()
 			self.state.inventory.max = storage:getMaxInventorySpace()
 		end
 	end
-
-	self:refreshFilters()
-	self:refreshQueries()
 end
 
 function BankController:refreshFilters()
 	self.state.filters = self:getBankStorage():getSection("filters"):get()
-	print(require("ItsyScape.Common.StringBuilder").stringifyTable(self.state.filters))
+end
+
+function BankController:populateStateWithItems()
+	local broker = self:getDirector():getItemBroker() 
+	if self.currentSectionIndex and self.currentQueryIndex then
+		local items = self:performQuery(self.currentSectionIndex, self.currentQueryIndex)
+
+		self.state.items = {}
+		for i = 1, #items do
+			local item = items[i]
+			local serializedItem = self:pullItem(item, false)
+			self:pullActions(item, serializedItem)
+			serializedItem.physicalIndex = broker:getItemKey(item)
+			table.insert(self.state.items, serializedItem)
+		end
+	else
+		for i = 1, #self.items.bank do
+			local item = self.items.bank[i]
+			local serializedItem = self:pullItem(item, false)
+			self:pullActions(item, serializedItem)
+			serializedItem.physicalIndex = i
+			table.insert(self.state.items, serializedItem)
+		end
+	end
+
+	self.state.items.max = #self.state.items
 end
 
 function BankController:addFilterQueryResult(sectionIndex, filterIndex, items)
 	local item = "Null"
-	if #items >= 0 then
+	if #items >= 1 then
 		item = items[1]:getID()
 	end
 
 	local filterStorage = self:getBankStorage():getSection("filters")
-	local filter = filterStorage:getSection(sectionIndex):getSection(filterStorage)
+	local filter = filterStorage:getSection(sectionIndex):getSection(filterIndex)
 	filter:set("item", item)
 end
 
 function BankController:refreshQueries()
 	for i = 1, #self.state.filters do
-		for j = 1, #self.state.filters[j] do
+		for j = 1, #self.state.filters[i] do
 			local items = self:performQuery(i, j)
 			self:addFilterQueryResult(i, j, items)
 		end
@@ -142,7 +164,7 @@ function BankController:pullItemMeta(itemID)
 	end
 
 	meta.name = Utility.getName(itemResource, gameDB)
-	meta.description = Utility.getDescription(itemResource, itemResource, gameDB)
+	meta.description = Utility.getDescription(itemResource, gameDB)
 
 	self.meta[itemID] = meta
 	return meta
@@ -159,7 +181,7 @@ function BankController:performQueryOnItemDetail(perform, pattern, itemDetail)
 	local s, m1 = pcall(string.match, itemDetail, pattern)
 	local m2 = string.find(itemDetail, pattern)
 
-	return m1 or m2
+	return m1 or m2 or false
 end
 
 function BankController:performQueryOnItem(queryOps, itemID)
@@ -173,25 +195,27 @@ function BankController:performQueryOnItem(queryOps, itemID)
 		local d = self:performQueryOnItemDetail(query.description, term, itemDetails.description)
 		local k, a = nil, nil
 
-		if n or d then
-			if query.keyword then
-				for i = 1, #itemDetails.tags do
-					k = k or self:performQueryOnItemDetail(true, term, itemDetails.tags[i])
-					if k then
-						break
-					end
+		if query.keyword then
+			for j = 1, #itemDetails.tags do
+				k = k or self:performQueryOnItemDetail(true, term, itemDetails.tags[j])
+				if k then
+					break
 				end
 			end
 
-			if query.action then
-				for i = 1, #itemDetails.actions do
-					local action = itemDetails.actions[i].verb
-					a = a or self:performQueryOnItemDetail(true, term, action)
-					if a then
-						break
-					end
+			k = k or false
+		end
+
+		if query.action then
+			for j = 1, #itemDetails.actions do
+				local action = itemDetails.actions[j].verb
+				a = a or self:performQueryOnItemDetail(true, term, action)
+				if a then
+					break
 				end
 			end
+
+			a = a or false
 		end
 
 		local isMatch = n and d and (k == nil or k) and (a == nil or a)
@@ -207,16 +231,14 @@ function BankController:performQueryOnItem(queryOps, itemID)
 	return true
 end
 
-function BankController:performQuery(sectionIndex, queryIndex)
-	local query = self.state.filters[sectionIndex][queryIndex]
+function BankController:performQuery(sectionIndex, filterIndex)
+	local query = self.state.filters[sectionIndex][filterIndex]
 
 	local items = {}
-	for queryIndex = 1, #query do
-		for itemIndex, #self.items.bank do
-			local item = self.items.bank[itemIndex]
-			if self:performQueryOnItem(query[queryIndex], item:getID()) then
-				table.insert(items, item)
-			end
+	for itemIndex = 1, #self.items.bank do
+		local item = self.items.bank[itemIndex]
+		if self:performQueryOnItem(query, item:getID()) then
+			table.insert(items, item)
 		end
 	end
 
@@ -224,8 +246,6 @@ function BankController:performQuery(sectionIndex, queryIndex)
 end
 
 function BankController:poke(actionID, actionIndex, e)
-	print('action', actionID)
-
 	if actionID == "swapInventory" then
 		self:swapInventory(e)
 	elseif actionID == "swapBank" then
@@ -250,6 +270,10 @@ function BankController:poke(actionID, actionIndex, e)
 		self:editFilter(e)
 	elseif actionID == "removeFilter" then
 		self:removeFilter(e)
+	elseif actionID == "applyFilter" then
+		self:applyFilter(e)
+	elseif actionID == "clearFilter" then
+		self:clearFilter(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -337,31 +361,34 @@ function BankController:swapBank(e)
 	assert(type(e.a) == "number", "a is not a number")
 	assert(type(e.b) == "number", "b is not a number")
 
+	local physicalIndexA = self.state.items[e.a].physicalIndex
+	local physicalIndexB = self.state.items[e.b].physicalIndex
+
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank then
 		if e.tab < 1 then
 			local broker = inventory.bank:getBroker()
 
 			local item1
-			for item in broker:iterateItemsByKey(inventory.bank, e.a) do
+			for item in broker:iterateItemsByKey(inventory.bank, physicalIndexA) do
 				item1 = item
 				break
 			end
 
 			local item2
-			for item in broker:iterateItemsByKey(inventory.bank, e.b) do
+			for item in broker:iterateItemsByKey(inventory.bank, physicalIndexB) do
 				item2 = item
 				break
 			end
 
 			if item1 then
-				broker:setItemKey(item1, e.b)
-				broker:setItemZ(item1, e.b)
+				broker:setItemKey(item1, physicalIndexB)
+				broker:setItemZ(item1, physicalIndexB)
 			end
 
 			if item2 then
-				broker:setItemKey(item2, e.a)
-				broker:setItemZ(item2, e.a)
+				broker:setItemKey(item2, physicalIndexA)
+				broker:setItemZ(item2, physicalIndexA)
 			end
 		end
 	end
@@ -372,13 +399,16 @@ function BankController:insert(e)
 	assert(type(e.a) == "number", "a is not a number")
 	assert(type(e.b) == "number", "b is not a number")
 
+	local physicalIndexA = self.state.items[e.a].physicalIndex
+	local physicalIndexB = self.state.items[e.b].physicalIndex
+
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank then
 		if e.tab < 1 then
 			local broker = inventory.bank:getBroker()
 
 			local item1
-			for item in broker:iterateItemsByKey(inventory.bank, e.a) do
+			for item in broker:iterateItemsByKey(inventory.bank, physicalIndexA) do
 				item1 = item
 				break
 			end
@@ -391,7 +421,7 @@ function BankController:insert(e)
 			do
 				local items = {}
 				for key in broker:keys(inventory.bank) do
-					if key >= e.a then
+					if key >= physicalIndexA then
 						for item in broker:iterateItemsByKey(inventory.bank, key) do
 							table.insert(items, { item = item, key = key })
 						end
@@ -407,7 +437,7 @@ function BankController:insert(e)
 			do
 				local items = {}
 				for key in broker:keys(inventory.bank) do
-					if key >= e.b then
+					if key >= physicalIndexB then
 						for item in broker:iterateItemsByKey(inventory.bank, key) do
 							table.insert(items, { item = item, key = key })
 						end
@@ -421,8 +451,8 @@ function BankController:insert(e)
 			end
 
 			if item1 then
-				broker:setItemKey(item1, e.b)
-				broker:setItemZ(item1, e.b)
+				broker:setItemKey(item1, physicalIndexB)
+				broker:setItemZ(item1, physicalIndexB)
 			end
 		end
 	end
@@ -446,9 +476,11 @@ function BankController:withdraw(e)
 	assert(type(e.count) == "number", "count is not a number")
 	assert(type(e.noted) == "boolean", "noted is not a boolean")
 
+	local physicalIndex = self.state.items[e.index].physicalIndex
+
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank and inventory.inventory then
-		local item = self.items.bank[e.index]
+		local item = self.items.bank[physicalIndex]
 		if item then
 			inventory.bank:withdraw(inventory.inventory, item:getID(), e.count, e.noted, true)
 		end
@@ -568,6 +600,32 @@ function BankController:removeFilter(e)
 		{})
 end
 
+function BankController:applyFilter(e)
+	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
+	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(type(e.queryIndex) == "number", "queryIndex is not a number")
+	assert(e.queryIndex >= 1, "queryIndex is less than or equal to zero")
+
+	self.currentSectionIndex = e.sectionIndex
+	self.currentQueryIndex = e.queryIndex
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+end
+
+function BankController:clearFilter(e)
+	self.currentSectionIndex = nil
+	self.currentQueryIndex = nil
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateFilters",
+		nil,
+		{})
+end
 
 function BankController:update(delta)
 	Controller.update(delta)
