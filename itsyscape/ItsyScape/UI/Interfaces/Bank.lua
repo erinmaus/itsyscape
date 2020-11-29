@@ -593,6 +593,24 @@ function Bank:generateFilterOperation(sectionIndex, queryIndex, operationIndex)
 	addOperationValue("action", "Action", "Search for an action that can be performed with the item.")
 	addOperationValue("flip", "Flip", "Exclude items matching this query.")
 
+	do
+		local deleteButton = Button()
+		deleteButton:setText("Delete")
+		deleteButton:setToolTip("Delete this query section.")
+		deleteButton:setSize(
+			(width - Bank.SECTION_PADDING * 3) / 2 - Bank.SECTION_PADDING,
+			Bank.SECTION_TITLE_BUTTON_SIZE)
+
+		deleteButton.onClick:register(function()
+			local query = self:getState().filters[sectionIndex][queryIndex]
+			table.remove(query, operationIndex)
+			applyFilter()
+		end)
+
+		deleteButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
+		childLayout:addChild(deleteButton)
+	end
+
 	self.filterEditPanel:addChild(childLayout)
 end
 
