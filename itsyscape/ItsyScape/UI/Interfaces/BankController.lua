@@ -580,6 +580,7 @@ function BankController:editFilter(e)
 
 	local filterStorage = self:getBankStorage():getSection("filters")
 	local sectionStorage = filterStorage:getSection(e.sectionIndex)
+	sectionStorage:getSection(e.queryIndex):reset()
 	sectionStorage:set(e.queryIndex, e.query)
 	self:refreshFilters()
 
