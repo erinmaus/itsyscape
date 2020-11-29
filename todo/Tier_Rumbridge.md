@@ -23,12 +23,12 @@ Note: Tier 50 armor has a 'superior' version that is DPS
 * Iron
 * Steel
 * Mithril
-* Adamant
-* Itsy & Superior Itsy
+* Adamant (done)
+* Itsy & Superior Itsy (done)
 
 ### Archery
 * Cowhide (done)
-* Cockroach chitin
+* Cockroach chitin (done)
 * Robin feather
 * White wolf hide
 * Ancient karadon (fish)
