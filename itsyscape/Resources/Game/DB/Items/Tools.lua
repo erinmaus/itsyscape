@@ -302,4 +302,4 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "IronShovel"
 }
 
-ItsyScape.Utility.tag(ItsyScape.Resource.Item "IronShovelf", "tool")
+ItsyScape.Utility.tag(ItsyScape.Resource.Item "IronShovel", "tool")
