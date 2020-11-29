@@ -671,7 +671,7 @@ function Bank:openFilterEdit(sectionIndex, queryIndex)
 	local scrollSizeX, scrollSizeY = self.filterEditPanel:getScrollSize()
 	local scrollX, scrollY = self.filterEditPanel:getScroll()
 
-	self.filterEditPanel:setScroll(
+	self.filterEditPanel:getInnerPanel():setScroll(
 		math.min(scrollX, scrollSizeX),
 		math.min(scrollY, scrollSizeY))
 
