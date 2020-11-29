@@ -44,11 +44,14 @@ local function inspectGameDB(gameDB)
 		"Item",
 		"Peep",
 		"Prop",
-		"Map"
+		"Map",
+		"Spell"
 	}
 
 	for i = 1, #VISIBLE_RESOURCES do
 		local resourceType = VISIBLE_RESOURCES[i]
+
+		local count = 0
 		for resource in gameDB:getResources(resourceType) do
 			local name = gameDB:getRecord("ResourceName", {
 				Resource = resource
@@ -65,7 +68,11 @@ local function inspectGameDB(gameDB)
 			if not description then
 				Log.warn("Resource '%s' (%s) doesn't have description.", resource.name, resourceType)
 			end
+
+			count = count + 1
 		end
+
+		Log.info("There are %d '%s' resources.", count, resourceType)
 	end
 end
 
