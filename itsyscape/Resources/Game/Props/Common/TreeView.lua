@@ -27,6 +27,7 @@ function TreeView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.previousProgress = 0
+	self.shaken = 0
 	self.spawned = false
 	self.depleted = false
 	self.time = false
@@ -183,16 +184,16 @@ function TreeView:tick()
 			self.previousProgress = r.progress
 			self.shaken = r.shaken
 
-			if self.shaken and self.depletedTexture then
+			if self.shaken > 0 and self.depletedTexture then
 				self.node:getMaterial():setTextures(self.depletedTexture)
-			elseif not self.shaken and self.texture then
+			elseif self.shaken <= 0 and self.texture then
 				self.node:getMaterial():setTextures(self.texture)
 			end
 		end
 
 		if r.depleted ~= self.depleted then
 			self:getResources():queueEvent(function()
-				if r.depleted ~= 0 then
+				if r.depleted then
 					self.currentAnimation = TreeView.ANIMATION_FELLED
 				else
 					self.currentAnimation = TreeView.ANIMATION_SPAWNED
