@@ -11,8 +11,9 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
-local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local GatheredResourceBehavior = require "ItsyScape.Peep.Behaviors.GatheredResourceBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BasicTree = Class(Prop)
 
@@ -25,7 +26,10 @@ function BasicTree:new(...)
 	self:addBehavior(PropResourceHealthBehavior)
 
 	self:addPoke('chopped')
+	self:addPoke('shake')
 	self:addPoke('resourceObtained')
+
+	self.shaken = false
 end
 
 function BasicTree:ready(director, game)
@@ -75,6 +79,10 @@ function BasicTree:onResourceHit(e)
 	end
 end
 
+function BasicTree:previewShake()
+	self:addBehavior(GatheredResourceBehavior)
+end
+
 function BasicTree:getPropState()
 	local result = {}
 
@@ -82,7 +90,8 @@ function BasicTree:getPropState()
 	local progress = math.floor(health.currentProgress / health.maxProgress * 100)
 	result.resource = {
 		progress = progress,
-		depleted = progress >= 100
+		depleted = progress >= 100,
+		shaken = self:hasBehavior(GatheredResourceBehavior)
 	}
 
 	return result
@@ -99,6 +108,8 @@ function BasicTree:update(director, game)
 			end
 
 			self.spawnCooldown = nil
+			
+			self:removeBehavior(GatheredResourceBehavior)
 		else
 			self.spawnCooldown = self.spawnCooldown - game:getDelta()
 		end

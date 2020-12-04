@@ -14,7 +14,8 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
-local TextureResource = require "ItsyScape.Graphics.TextureResource"local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 
 local TreeView = Class(PropView)
 TreeView.ANIMATION_SPAWNED = 1
@@ -109,15 +110,19 @@ function TreeView:load()
 				self.animations[TreeView.ANIMATION_IDLE]:computeTransforms(offset, self.transforms)
 				self.node:setTransforms(self.transforms)
 
-				local state = self:getProp():getState()
-				if state.depleted then
-					self.currentAnimation = TreeView.ANIMATION_FELLED
-					self.time = self.animations[TreeView.ANIMATION_FELLED]:getDuration()
-					self.depleted = true
-				else
-					self.currentAnimation = TreeView.ANIMATION_IDLE
-					self.time = 0
-					self.depleted = false
+				local state = self:getProp():getState().resource
+				if state then
+					if state.depleted then
+						self.currentAnimation = TreeView.ANIMATION_FELLED
+						self.time = self.animations[TreeView.ANIMATION_FELLED]:getDuration()
+						self.depleted = true
+					else
+						self.currentAnimation = TreeView.ANIMATION_IDLE
+						self.time = 0
+						self.depleted = false
+					end
+
+					self.shaken = state.shaken
 				end
 
 				self.time = self:getCurrentAnimation():getDuration()
@@ -137,6 +142,14 @@ function TreeView:load()
 		function(texture)
 			self.texture = texture
 		end)
+	if love.filesystem.getInfo(self:getResourcePath("Depleted.png")) then
+		resources:queue(
+			TextureResource,
+			self:getResourcePath("Depleted.png"),
+			function(depletedTexture)
+				self.depletedTexture = depletedTexture
+			end)
+	end
 end
 
 function TreeView:remove()
@@ -161,13 +174,20 @@ function TreeView:tick()
 				self:getProp())
 		end
 
-		if self.previousProgress ~= r.progress then
+		if self.previousProgress ~= r.progress or self.shaken ~= r.shaken then
 			self:getResources():queueEvent(function()
 				self.currentAnimation = TreeView.ANIMATION_CHOPPED
 				self.time = 0
 			end)
 
 			self.previousProgress = r.progress
+			self.shaken = r.shaken
+
+			if self.shaken and self.depletedTexture then
+				self.node:getMaterial():setTextures(self.depletedTexture)
+			elseif not self.shaken and self.texture then
+				self.node:getMaterial():setTextures(self.texture)
+			end
 		end
 
 		if r.depleted ~= self.depleted then
