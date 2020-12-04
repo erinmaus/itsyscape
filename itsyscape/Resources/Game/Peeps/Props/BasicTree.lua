@@ -28,8 +28,6 @@ function BasicTree:new(...)
 	self:addPoke('chopped')
 	self:addPoke('shake')
 	self:addPoke('resourceObtained')
-
-	self.shaken = false
 end
 
 function BasicTree:ready(director, game)
