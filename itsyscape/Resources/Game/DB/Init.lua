@@ -408,7 +408,12 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
-	ActionType "Pick"
+	Meta "ForagingAction" {
+		Tier = Meta.TYPE_INTEGER,
+		Factor = Meta.TYPE_REAL,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Pull"
 	ActionType "Sleep"
 
@@ -796,6 +801,7 @@ include "Resources/Game/DB/Props/Books.lua"
 include "Resources/Game/DB/Props/Rocks.lua"
 include "Resources/Game/DB/Props/Hole.lua"
 include "Resources/Game/DB/Props/Doors.lua"
+include "Resources/Game/DB/Props/FruitTrees.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
