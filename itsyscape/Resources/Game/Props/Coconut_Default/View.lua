@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Power_Bomb_Default/View.lua
+-- Resources/Game/Props/Coconut_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,18 +16,18 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local BombView = Class(PropView)
-BombView.FALL_DURATION = 0.5
-BombView.FALL_HEIGHT   = 4
-BombView.FADE_DURATION = 0.5
+local CoconutView = Class(PropView)
+CoconutView.FALL_DURATION = 0.5
+CoconutView.FALL_HEIGHT   = 4
+CoconutView.FADE_DURATION = 0.5
 
-function BombView:new(prop, gameView)
+function CoconutView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.duration = 0
 end
 
-function BombView:load()
+function CoconutView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
@@ -53,7 +53,7 @@ function BombView:load()
 	end)
 end
 
-function BombView:remove()
+function CoconutView:remove()
 	PropView.remove(self)
 
 	if self.progressBar then
@@ -61,25 +61,25 @@ function BombView:remove()
 	end
 end
 
-function BombView:tick()
+function CoconutView:tick()
 	PropView.tick(self)
 
-	local fallDelta = math.min(self.duration / BombView.FALL_DURATION, 1)
+	local fallDelta = math.min(self.duration / CoconutView.FALL_DURATION, 1)
 	local fallMu = Tween.sineEaseIn(1 - fallDelta)
-	local position = Vector(0, BombView.FALL_HEIGHT * fallMu, 0)
+	local position = Vector(0, CoconutView.FALL_HEIGHT * fallMu, 0)
 	if self.decoration then
 		self.decoration:getTransform():setLocalTranslation(position)
 	end
 
-	local fadeDelta = math.min(self.duration / BombView.FADE_DURATION, 1)
+	local fadeDelta = math.min(self.duration / CoconutView.FADE_DURATION, 1)
 	local fadeMu = Tween.sineEaseIn(fadeDelta)
 	if self.decoration then
 		self.decoration:getMaterial():setColor(Color(1, 1, 1, fadeMu))
 	end
 end
 
-function BombView:update(delta)
+function CoconutView:update(delta)
 	self.duration = self.duration + delta
 end
 
-return BombView
+return CoconutView
