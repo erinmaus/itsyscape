@@ -50,7 +50,7 @@ function Eat:perform(state, peep, item)
 					damage = math.abs(hitPoints)
 				}))
 			else
-				peep:poke('heal', { item = item, hitPoints = hitPoints or 1 })
+				peep:poke('heal', { item = item, hitPoints = hitPoints })
 			end
 		end
 	end
