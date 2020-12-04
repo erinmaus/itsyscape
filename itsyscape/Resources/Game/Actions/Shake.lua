@@ -13,6 +13,8 @@ local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local Action = require "ItsyScape.Peep.Action"
+local GatheredResourceBehavior = require "ItsyScape.Peep.Behaviors.GatheredResourceBehavior"
+local ForagingSkill = require "ItsyScape.Game.Skills.Foraging"
 
 local Shake = Class(Action)
 Shake.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -51,8 +53,46 @@ function Shake:perform(state, player, target)
 end
 
 function Shake:drop(state, player, target)
+	if not target:hasBehavior(GatheredResourceBehavior) then
+		local gatherActionTable, totalWeight = ForagingSkill.materializeGatherActionTable(player, target)
+		Log.info(
+			"Number of gather actions & loot: %d (total weight: %d).",
+			#gatherActionTable, totalWeight)
+
+		for i = 1, #gatherActionTable do
+			Log.info("Gather action %d weight: %d.", i, gatherActionTable[i].weight)
+		end
+
+		for i = 1, #gatherActionTable do
+			local weight = math.random(0, totalWeight)
+
+			local action = gatherActionTable[1].instance
+			local actionIndex = 1
+			do
+				local currentWeight = gatherActionTable[1].weight
+				for j = 2, #gatherActionTable do
+					if currentWeight > weight then
+						break
+					end
+
+					local nextAction = gatherActionTable[j]
+					local nextActionWeight = nextAction.weight
+					local nextWeight = currentWeight + nextActionWeight
+
+					action = nextAction.instance
+					actionIndex = j
+					currentWeight = nextWeight
+				end
+			end
+
+			Log.info("Selected action %d (weight: %d).", actionIndex, weight)
+			action:perform(state, player, target)
+		end
+	else
+		Log.info("Tree already shook.")
+	end
+
 	target:poke("shake")
-	Log.info("TODO! Add drops.")
 end
 
 return Shake
