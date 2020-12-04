@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
@@ -42,7 +43,15 @@ function Eat:perform(state, peep, item)
 		local healingPower = gameDB:getRecord("HealingPower", { Action = self:getAction() })
 		if healingPower then
 			local hitPoints = healingPower:get("HitPoints")
-			peep:poke('heal', { item = item, hitPoints = hitPoints or 1 })
+
+			if hitPoints < 0 then
+				peep:poke('hit', AttackPoke({
+					weaponType = 'item',
+					damage = math.abs(hitPoints)
+				}))
+			else
+				peep:poke('heal', { item = item, hitPoints = hitPoints })
+			end
 		end
 	end
 
