@@ -63,7 +63,7 @@ for name, tree in pairs(TREES) do
 		}
 
 		ItsyScape.Meta.Item {
-			Value = ItsyScape.Utility.valueForItem(fruit.tier + 1) * math.max((fruit.factor - DEFAULT_FACTOR), 0),
+			Value = ItsyScape.Utility.valueForItem(fruit.tier + 1) / #tree.fruit,
 			Stackable = 1,
 			Resource = Item
 		}
