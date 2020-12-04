@@ -217,9 +217,22 @@ ItsyScape.Resource.Skill "Sailing"
 	}
 
 ItsyScape.Resource.Skill "Foraging"
+	ActionType "Pick"
+	ActionType "Shake"
+	ActionType "Gather"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Pick",
+		Skill = ItsyScape.Resource.Skill "Foraging"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Shake",
+		Skill = ItsyScape.Resource.Skill "Foraging"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Gather",
 		Skill = ItsyScape.Resource.Skill "Foraging"
 	}
 

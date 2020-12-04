@@ -408,7 +408,12 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
-	ActionType "Pick"
+	Meta "ForagingAction" {
+		Tier = Meta.TYPE_INTEGER,
+		Factor = Meta.TYPE_REAL,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Pull"
 	ActionType "Sleep"
 
@@ -705,6 +710,7 @@ include "Resources/Game/DB/Items/Dyes.lua"
 include "Resources/Game/DB/Items/PrideCapes.lua"
 include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
+include "Resources/Game/DB/Items/FruitTrees.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

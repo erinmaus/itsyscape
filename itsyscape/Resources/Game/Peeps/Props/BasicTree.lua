@@ -28,8 +28,6 @@ function BasicTree:new(...)
 	self:addPoke('chopped')
 	self:addPoke('shake')
 	self:addPoke('resourceObtained')
-
-	self.shaken = false
 end
 
 function BasicTree:ready(director, game)
@@ -80,18 +78,27 @@ function BasicTree:onResourceHit(e)
 end
 
 function BasicTree:previewShake()
-	self:addBehavior(GatheredResourceBehavior)
+	local _, g = self:addBehavior(GatheredResourceBehavior)
+	g.count = g.count + 1
 end
 
 function BasicTree:getPropState()
 	local result = {}
 
 	local health = self:getBehavior(PropResourceHealthBehavior)
+	local shakeCount
+	do
+		local shaken = self:getBehavior(GatheredResourceBehavior)
+		if shaken then
+			shakeCount = shaken.count
+		end
+	end
+
 	local progress = math.floor(health.currentProgress / health.maxProgress * 100)
 	result.resource = {
 		progress = progress,
 		depleted = progress >= 100,
-		shaken = self:hasBehavior(GatheredResourceBehavior)
+		shaken = shakeCount or 0
 	}
 
 	return result
