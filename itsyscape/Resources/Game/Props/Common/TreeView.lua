@@ -192,7 +192,7 @@ function TreeView:tick()
 
 		if r.depleted ~= self.depleted then
 			self:getResources():queueEvent(function()
-				if r.depleted then
+				if r.depleted ~= 0 then
 					self.currentAnimation = TreeView.ANIMATION_FELLED
 				else
 					self.currentAnimation = TreeView.ANIMATION_SPAWNED
