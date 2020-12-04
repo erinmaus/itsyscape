@@ -710,6 +710,7 @@ include "Resources/Game/DB/Items/Dyes.lua"
 include "Resources/Game/DB/Items/PrideCapes.lua"
 include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
+include "Resources/Game/DB/Items/FruitTrees.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -801,7 +802,6 @@ include "Resources/Game/DB/Props/Books.lua"
 include "Resources/Game/DB/Props/Rocks.lua"
 include "Resources/Game/DB/Props/Hole.lua"
 include "Resources/Game/DB/Props/Doors.lua"
-include "Resources/Game/DB/Props/FruitTrees.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
