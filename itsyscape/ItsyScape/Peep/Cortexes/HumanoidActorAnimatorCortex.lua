@@ -48,6 +48,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
 	peep:listen('resourceObtained', self.onResourceObtained, self)
+	peep:listen('actionPerformed', self.onActionPerformed, self)
 	peep:listen('transferItemFrom', self.peekEquip, self)
 	peep:listen('transferItemTo', self.peekEquip, self)
 	peep:listen('spawnEquipment', self.peekEquip, self)
@@ -68,6 +69,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('resurrect', self.onResurrect)
 	peep:silence('resourceHit', self.onResourceHit)
 	peep:silence('resourceObtained', self.onResourceObtained)
+	peep:silence('actionPerformed', self.onActionPerformed)
 	peep:silence('transferItemFrom', self.peekEquip)
 	peep:silence('transferItemTo', self.peekEquip)
 	peep:silence('spawnEquipment', self.peekEquip)
@@ -267,6 +269,19 @@ function HumanoidActorAnimatorCortex:onResourceObtained(peep)
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	if actor then
 		actor:playAnimation('skill', false)
+	end
+end
+
+function HumanoidActorAnimatorCortex:onActionPerformed(peep, p)
+	local actionName = p.action:getName():lower()
+	local resource = peep:getResource(
+		string.format("animation-action-%s", actionName),
+		"ItsyScape.Graphics.AnimationResource")
+	if resource then
+		self:playSkillAnimation(
+			peep,
+			HumanoidActorAnimatorCortex.SKILL_PRIORITY,
+			resource)
 	end
 end
 

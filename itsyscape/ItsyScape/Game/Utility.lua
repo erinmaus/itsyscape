@@ -2637,6 +2637,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
 	peep:addResource("animation-idle-fishing-rod", idleFishingRodAnimation)
+	local actionShake = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
+	peep:addResource("animation-action-shake", actionShake)
 	local defendShieldRightAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Defend_Shield_Right_1/Script.lua")
