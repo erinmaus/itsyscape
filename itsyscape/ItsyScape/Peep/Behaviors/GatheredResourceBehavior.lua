@@ -15,6 +15,8 @@ local GatheredResourceBehavior = Behavior("GatheredResourceBehavior")
 
 function GatheredResourceBehavior:new()
 	Behavior.Type.new(self)
+
+	self.count = 0
 end
 
 return GatheredResourceBehavior
