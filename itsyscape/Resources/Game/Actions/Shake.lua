@@ -60,7 +60,11 @@ function Shake:drop(state, player, target)
 			#gatherActionTable, totalWeight)
 
 		for i = 1, #gatherActionTable do
-			Log.info("Gather action %d weight: %d.", i, gatherActionTable[i].weight)
+			Log.info(
+				"Gather action %d weight: %d (%.2f%%).",
+				i,
+				gatherActionTable[i].weight,
+				gatherActionTable[i].weight / totalWeight * 100)
 		end
 
 		for i = 1, #gatherActionTable do

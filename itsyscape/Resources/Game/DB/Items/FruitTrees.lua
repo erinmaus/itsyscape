@@ -16,6 +16,16 @@ local TREES = {
 			{ name = "RegalPecan", tier = 30, factor = 1.5, health = -1 },
 			{ name = "GoldenPecan", tier = 60, factor = 3, health = -1 },
 		}
+	},
+	["Apple"] = {
+		niceName = "Apple",
+		fruit = {
+			{ name = "RedApple", tier = 1, factor = 1.5, health = 1 },
+			{ name = "GreenApple", tier = 15, factor = 1.5, health = 1 },
+			{ name = "SiliconApple", tier = 45, factor = 1.5, health = 2 },
+			{ name = "GoldenApple", tier = 65, factor = 5, health = 2 },
+			{ name = "WormyApple", tier = 130, factor = 15, health = -1 },
+		}
 	}
 }
 
@@ -63,7 +73,7 @@ for name, tree in pairs(TREES) do
 		}
 
 		ItsyScape.Meta.Item {
-			Value = ItsyScape.Utility.valueForItem(fruit.tier + 1) / #tree.fruit,
+			Value = ItsyScape.Utility.valueForItem(math.min(fruit.tier + 1, 99)) / #tree.fruit,
 			Stackable = 1,
 			Resource = Item
 		}
@@ -131,4 +141,70 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Get a load of these nuts.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "PecanTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Red apple",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "RedApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A basic, boring apple.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "RedApple"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green apple",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GreenApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Green apples are the best!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GreenApple"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Silicon apple",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SiliconApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Tastes like the future.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SiliconApple"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Golden apple",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GoldenApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Maybe not as cool as a golden globe.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GoldenApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That's one fine apple tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AppleTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Wormy apple",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WormyApple"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Ew, there's a worm in this apple!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WormyApple"
 }
