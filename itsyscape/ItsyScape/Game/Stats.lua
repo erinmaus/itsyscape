@@ -47,7 +47,7 @@ function Stats.Skill:addXP(amount)
 
 	self.onXPGain(self, amount)
 
-	if self.xp > self.nextLevelXP then
+	if self.xp > self.nextLevelXP and self.level ~= self.max then
 		self.onLevelUp(self, self.level)
 		self.nextLevelXP = Curve.XP_CURVE:compute(self:getBaseLevel() + 1)
 	end
