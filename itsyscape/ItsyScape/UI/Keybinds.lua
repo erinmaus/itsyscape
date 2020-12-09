@@ -36,11 +36,7 @@ add('STRATEGY_BAR_SLOT_6',  '6')
 add('STRATEGY_BAR_SLOT_7',  '7')
 add('STRATEGY_BAR_SLOT_8',  '8')
 add('STRATEGY_BAR_SLOT_9',  '9')
-add('STRATEGY_BAR_SLOT_10', 'rshift 1')
-add('STRATEGY_BAR_SLOT_11', 'rshift 2')
-add('STRATEGY_BAR_SLOT_12', 'rshift 3')
-add('STRATEGY_BAR_SLOT_13', 'rshift 4')
-add('STRATEGY_BAR_SLOT_14', 'rshift 5')
+add('STRATEGY_BAR_SLOT_10', '0')
 
 -- Minigames
 add('MINIGAME_DASH', 'space')
