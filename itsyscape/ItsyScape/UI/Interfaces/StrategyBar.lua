@@ -14,6 +14,7 @@ local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
+local Keybinds = require "ItsyScape.UI.Keybinds"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
@@ -23,9 +24,10 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local StrategyBar = Class(Interface)
 StrategyBar.BUTTON_SIZE = 48
 StrategyBar.PADDING = 8
-StrategyBar.NUM_BUTTONS = 14
+StrategyBar.NUM_BUTTONS = 10
 StrategyBar.WIDTH = (StrategyBar.NUM_BUTTONS + 1) * (StrategyBar.BUTTON_SIZE + StrategyBar.PADDING) + StrategyBar.PADDING
 StrategyBar.HEIGHT = StrategyBar.BUTTON_SIZE + StrategyBar.PADDING * 2
+StrategyBar.KEY_BIND_PREFIX = "STRATEGY_BAR_SLOT"
 
 StrategyBar.Pending = Class(Drawable)
 function StrategyBar.Pending:draw(resources, state)
@@ -113,6 +115,9 @@ function StrategyBar:new(id, index, ui)
 
 	self.pending = StrategyBar.Pending()
 	self.pending:setSize(StrategyBar.BUTTON_SIZE, StrategyBar.BUTTON_SIZE)
+
+	self.keybinds = {}
+	self:updateKeybindState()
 end
 
 function StrategyBar:getOverflow()
@@ -156,11 +161,51 @@ function StrategyBar:bindAbility(index, ...)
 	self:getView():probe(poke)
 end
 
+function StrategyBar:updateKeybindState()
+	for i = 1, StrategyBar.NUM_BUTTONS do
+		local keybindName = string.format(
+			"%s_%d", StrategyBar.KEY_BIND_PREFIX, i)
+		local keybind = Keybinds[keybindName]
+		if keybind then
+			self.keybinds[i] = keybind:isDown()
+		end
+	end
+end
+
+function StrategyBar:activatePendingKeybinds()
+	for i = 1, StrategyBar.NUM_BUTTONS do
+		local keybindName = string.format(
+			"%s_%d", StrategyBar.KEY_BIND_PREFIX, i)
+		local keybind = Keybinds[keybindName]
+		if keybind then
+			local isPreviousDown = self.keybinds[i]
+			local isCurrentDown = keybind:isDown()
+
+			if isCurrentDown and not isPreviousDown then
+				Log.info("Activated keybind '%s'.", keybindName)
+				self:activate(i, nil)
+			end
+		end
+	end
+end
+
 function StrategyBar:update(...)
 	Interface.update(self, ...)
 
+	self:activatePendingKeybinds()
+	self:updateKeybindState()
+
 	local state = self:getState()
 	for i = 1, StrategyBar.NUM_BUTTONS do
+		local keybindKeys
+		do
+			local keybindName = string.format(
+				"%s_%d", StrategyBar.KEY_BIND_PREFIX, i)
+			local keybind = Keybinds[keybindName]
+
+			keybindKeys = keybind:getBinding()
+		end
+
 		local power = state.powers[i]
 
 		local coolDown = self.buttons[i]:getData('coolDown')
@@ -183,9 +228,15 @@ function StrategyBar:update(...)
 				table.insert(description, ToolTip.Text(power.description[i]))
 			end
 
-			self.buttons[i]:setToolTip(
+			local toolTip = {
 				ToolTip.Header(power.name),
-				unpack(power.description))
+				unpack(power.description)
+			}
+
+			table.insert(toolTip, ToolTip.Header("Keybind"))
+			table.insert(toolTip, ToolTip.Text("Press: " .. keybindKeys))
+
+			self.buttons[i]:setToolTip(unpack(toolTip))
 
 			if power.coolDown then
 				coolDown:setText(tostring(power.coolDown))

@@ -71,10 +71,6 @@ Controls.NAMES = {
 	['STRATEGY_BAR_SLOT_8'] = 'Strategy Bar Slot 8',
 	['STRATEGY_BAR_SLOT_9'] = 'Strategy Bar Slot 9',
 	['STRATEGY_BAR_SLOT_10'] = 'Strategy Bar Slot 10',
-	['STRATEGY_BAR_SLOT_11'] = 'Strategy Bar Slot 11',
-	['STRATEGY_BAR_SLOT_12'] = 'Strategy Bar Slot 12',
-	['STRATEGY_BAR_SLOT_13'] = 'Strategy Bar Slot 13',
-	['STRATEGY_BAR_SLOT_14'] = 'Strategy Bar Slot 14',
 	['MINIGAME_DASH'] = 'Dash (Minigame)',
 	['SAILING_ACTION_PRIMARY'] = 'Primary Sailing Action',
 	['SAILING_ACTION_SECONDARY'] = 'Secondary Sailing Action',
@@ -134,7 +130,7 @@ function Controls.SetKeybind:keyDown(key, ...)
 		self.keys[key] = true
 	end
 
-	self.keysLabel:setText(table.concat(self.keys), ', ')
+	self.keysLabel:setText(table.concat(self.keys, ', '))
 
 	self.currentKeys[key] = true
 end
@@ -145,7 +141,7 @@ function Controls.SetKeybind:keyUp(key, ...)
 	self.currentKeys[key] = nil
 
 	if not next(self.currentKeys, nil) then
-		self:onSet(table.concat(self.keys), ' ')
+		self:onSet(table.concat(self.keys, ' '))
 	end
 end
 

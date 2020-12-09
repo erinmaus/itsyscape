@@ -21,7 +21,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local StrategyBarController = Class(Controller)
 StrategyBarController.VIEW_SELF = 1
 StrategyBarController.VIEW_TARGET = 2
-StrategyBarController.MAX_STRIP_SIZE = 14
+StrategyBarController.MAX_STRIP_SIZE = 10
 
 function StrategyBarController:new(peep, director)
 	Controller.new(self, peep, director)
@@ -151,7 +151,7 @@ function StrategyBarController:activate(e)
 	local gameDB = self:getDirector():getGameDB()
 
 	local p = self.state.powers[e.index]
-	if p and not e.bind then
+	if p and not e.bind == true then
 		local peep = self:getPeep()
 
 		if e.index == self.state.pending then
@@ -168,7 +168,7 @@ function StrategyBarController:activate(e)
 				end
 			end
 		end
-	else
+	elseif not p and e.bind == false then
 		self:bindAbility(e.index)
 	end
 end
