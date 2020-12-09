@@ -26,6 +26,14 @@ local TREES = {
 			{ name = "GoldenApple", tier = 65, factor = 5, health = 2 },
 			{ name = "WormyApple", tier = 130, factor = 15, health = -1 },
 		}
+	},
+	["Pear"] = {
+		niceName = "Pear",
+		fruit = {
+			{ name = "Pear", tier = 1, factor = 1.5, health = 1 },
+			{ name = "DisgustingPear", tier = 30, factor = 1.5, health = -2 },
+			{ name = "RottenPear", tier = 65, factor = 1.5, health = -4 },
+			{ name = "JustMush", tier = 70, factor = 5, health = -8 },		}
 	}
 }
 
@@ -61,7 +69,7 @@ for name, tree in pairs(TREES) do
 			},
 
 			Output {
-				Count = ItsyScape.Utility.xpForResource(fruit.tier + 1) / #tree.fruit,
+				Count = ItsyScape.Utility.xpForResource(math.min(fruit.tier + 1, 99)) / #tree.fruit,
 				Resource = ItsyScape.Resource.Skill "Foraging"
 			}
 		}
@@ -207,4 +215,58 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Ew, there's a worm in this apple!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "WormyApple"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pear",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Pear"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deceivingly good looking.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Pear"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Disgusting pear",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "DisgustingPear"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This pear shows its true colors.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "DisgustingPear"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Rotten pear",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "RottenPear"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A rotten pear, prone to attracting flies.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "RottenPear"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Just mush",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "JustMush"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Was this ever even a pear?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "JustMush"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The worst of fruit trees.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "PearTree_Default"
 }
