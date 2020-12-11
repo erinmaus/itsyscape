@@ -34,6 +34,14 @@ local TREES = {
 			{ name = "DisgustingPear", tier = 30, factor = 1.5, health = -2 },
 			{ name = "RottenPear", tier = 65, factor = 1.5, health = -4 },
 			{ name = "JustMush", tier = 70, factor = 5, health = -8 },		}
+	},
+	["Peach"] = {
+		niceName = "Peach",
+		fruit = {
+			{ name = "Peach", tier = 1, factor = 1.5, health = 1 },
+			{ name = "JuicyPeach", tier = 30, factor = 1.5, health = 2 },
+			{ name = "DonutPeach", tier = 45, factor = 4, health = 1 },
+		}
 	}
 }
 
@@ -267,6 +275,48 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "The worst of fruit trees.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "PearTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Peach",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Peach"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pretty as a peach!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Peach"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Juicy peach",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "JuicyPeach"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Why isn't this an emoji yet?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "JuicyPeach"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Donut peach",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "DonutPeach"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Donut peach or peach donut?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "DonutPeach"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "From top to bottom, what a good looking tree!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "PearTree_Default"
 }
