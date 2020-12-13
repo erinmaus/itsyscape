@@ -42,6 +42,14 @@ local TREES = {
 			{ name = "JuicyPeach", tier = 30, factor = 1.5, health = 2 },
 			{ name = "DonutPeach", tier = 45, factor = 4, health = 1 },
 		}
+	},
+	["Orange"] = {
+		niceName = "Orange",
+		fruit = {
+			{ name = "Orange", tier = 1, factor = 1.5, health = 1 },
+			{ name = "SunnyOrange", tier = 30, factor = 3, health = 2 },
+			{ name = "FireOrange", tier = 75, factor = 10, health = -4 },
+		}
 	}
 }
 
@@ -319,4 +327,45 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "From top to bottom, what a good looking tree!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "PearTree_Default"
+}
+ItsyScape.Meta.ResourceName {
+	Value = "Orange",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Orange"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Orange you glad I didn't say banana?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Orange"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sunny orange",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SunnyOrange"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "They're warm to the touch.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "SunnyOrange"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fire orange",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FireOrange"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "So spicy it will damage your mouth!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FireOrange"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Knock knock!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "OrangeTree_Default"
 }
