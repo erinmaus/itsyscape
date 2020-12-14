@@ -49,7 +49,7 @@ function LocalStage:new(game)
 	self.numMaps = 0
 	self.mapScripts = {}
 	self.water = {}
-	self.gravity = Vector(0, -9.8, 0)
+	self.gravity = Vector(0, -18, 0)
 	self.stageName = "::orphan"
 	self.tests = { id = 1 }
 	self.weathers = {}
