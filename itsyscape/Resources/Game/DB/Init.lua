@@ -737,6 +737,7 @@ include "Resources/Game/DB/Items/MiscFood.lua"
 -- Legendaries
 include "Resources/Game/DB/Items/Legendaries/TimeTurner.lua"
 include "Resources/Game/DB/Items/Legendaries/UnholySacrificialKnife.lua"
+include "Resources/Game/DB/Items/Legendaries/Ganymede.lua"
 
 -- Creeps
 include "Resources/Game/DB/Creeps/Cow.lua"
