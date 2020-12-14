@@ -110,7 +110,7 @@ function MovementCortex:update(delta)
 			   not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ)
 			then
 				local difference = (oldPosition - position.position):getNormal()
-				position.position = oldPosition
+				position.position = Vector(oldPosition.x, position.position.y, oldPosition.z)
 				Log.info("Peep '%s' entered an impassable region.", peep:getName())
 				movement.acceleration = Vector.ZERO
 				movement.velocity = difference * movement.maxSpeed / 4
