@@ -120,8 +120,8 @@ function LocalPlayer:move(x, z)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		local currentAccceleration = movement.acceleration:getLength()
 		if currentAccceleration < LocalPlayer.MOVEMENT_STOP_THRESHOLD then
-			movement.acceleration = Vector.ZERO
-			movement.velocity = Vector.ZERO
+			movement.acceleration = Vector(0, movement.acceleration.y, 0)
+			movement.velocity = Vector(0, movement.velocity.y, 0)
 			movement.isStopping = true
 		end
 	else
