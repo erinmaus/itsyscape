@@ -212,6 +212,47 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "GanymedesTunic"
 }
 
+ItsyScape.Resource.Item "GanymedesBow" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(99)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForLevel(99)
+		}
+	},
+
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(120),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(90),
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+	Resource = ItsyScape.Resource.Item "GanymedesBow"
+}
+
+ItsyScape.Meta.EquipmentModel {
+	Type = "ItsyScape.Game.Skin.ModelSkin",
+	Filename = "Resources/Game/Skins/Ganymede/Longbow.lua",
+	Resource = ItsyScape.Resource.Item "GanymedesBow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ganymede's dragon-horn composite bow",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GanymedesBow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Made from the horns of Svalbard, the undead dragon that razed Ganymede's home city.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GanymedesBow"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Ganymede's Waltz",
 	Language = "en-US",
@@ -222,4 +263,63 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Allows you to jump by pressing the minigame dash button.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "GanymedesWaltz"
+}
+
+ItsyScape.Resource.Item "GanymedesStunningStrikeArrow" {
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForLevel(99),
+		}
+	},
+
+	ItsyScape.Action.Dequip()
+}
+
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(95) / 50,
+	Weight = 0,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.ResourceCategory {
+	Key = "Arrow",
+	Value = "Ganymede",
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.RangedAmmo {
+	Type = ItsyScape.Utility.Equipment.AMMO_ARROW,
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ganymede's stunning strike arrow",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "When used with Ganymede's dragon-horn composite bow, applies a small cooldown to the opponent upon hitting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.Equipment {
+	StrengthRanged = 0, 
+	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_QUIVER,
+	Resource = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ganymede's Stunning Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GanymedesStunningStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Stuns the opponent for 0.2 seconds, plus an additional 1% of damage in seconds, upon a successful hit.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GanymedesStunningStrike"
 }
