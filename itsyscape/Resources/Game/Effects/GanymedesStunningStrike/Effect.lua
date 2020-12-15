@@ -16,9 +16,9 @@ local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownB
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
--- Stuns the opponent by 0.1 seconds.
+-- Stuns the opponent by 0.2 seconds.
 --
--- As well, 0.25% of damage is applied as an additional cooldown, in seconds.
+-- As well, 1% of damage is applied as an additional cooldown, in seconds.
 local GanymedesStunningStrike = Class(Effect)
 GanymedesStunningStrike.STUN = 0.2
 GanymedesStunningStrike.STUN_DIVISOR = 100
