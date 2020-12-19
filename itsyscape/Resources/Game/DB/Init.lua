@@ -760,6 +760,7 @@ include "Resources/Game/DB/Peeps/Tutors.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
 include "Resources/Game/DB/Peeps/Tinkerer.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
+include "Resources/Game/DB/Peeps/Svalbard.lua"
 
 -- Shops
 include "Resources/Game/DB/Shops/GeneralStore.lua"
