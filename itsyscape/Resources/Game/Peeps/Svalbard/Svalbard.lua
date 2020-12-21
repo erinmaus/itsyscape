@@ -33,8 +33,9 @@ function Svalbard:new(resource, name, ...)
 	scale.scale = Vector(1.5, 1.5, 1.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 5000
-	status.maximumHitpoints = 5000
+	status.currentHitpoints = 10000
+	status.maximumHitpoints = 10000
+	status.maxChaseDistance = math.huge
 end
 
 function Svalbard:ready(director, game)
@@ -57,6 +58,16 @@ function Svalbard:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Svalbard_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_Walk/Script.lua")
+	self:addResource("animation-walk", walkAnimation)
+
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
