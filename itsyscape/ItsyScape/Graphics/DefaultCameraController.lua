@@ -17,6 +17,8 @@ DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DefaultCameraController.SCROLL_MULTIPLIER = 4
+DefaultCameraController.MIN_DISTANCE = 1
+DefaultCameraController.MAX_DISTANCE = 60
 
 DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
@@ -80,7 +82,7 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 	if not uiActive then
 		local distance = self.targetDistance - y * 0.5
 		if not _DEBUG then
-			self.targetDistance = math.min(math.max(distance, 1), 40)
+			self.targetDistance = math.min(math.max(distance, DefaultCameraController.MIN_DISTANCE), DefaultCameraController.MAX_DISTANCE)
 		else
 			self.targetDistance = distance
 		end
