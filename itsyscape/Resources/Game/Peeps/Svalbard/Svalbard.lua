@@ -11,16 +11,47 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
+local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Svalbard = Class(Creep)
+Svalbard.WEAPONS = {
+	{
+		weapon = "Svalbard_Attack_Melee",
+		animation = "Resources/Game/Animations/Svalbard_Attack_Melee/Script.lua",
+		bonuses = "Attack (Melee)"
+	},
+	{
+		weapon = "Svalbard_Attack_Magic",
+		animation = "Resources/Game/Animations/Svalbard_Attack_Magic/Script.lua",
+		bonuses = "Attack (Magic)"
+	},
+	{
+		weapon = "Svalbard_Attack_Archery",
+		animation = "Resources/Game/Animations/Svalbard_Attack_Archery/Script.lua",
+		bonuses = "Attack (Archery)"
+	}
+}
+
+Svalbard.SPECIALS = {
+	-- {
+	-- 	weapon = require("Resources.Game.Items.X_Svalbard_Special_Magic.Logic"),
+	-- 	animation = "Resources/Game/Animations/Svalbard_Attack_Archery/Script.lua"
+	-- },
+	-- {
+	-- 	weapon = require("Resources.Game.Items.X_Svalbard_Special_Melee.Logic"),
+	-- 	animation = "Resources/Game/Animations/Svalbard_Special_Melee/Script.lua"
+	-- }
+}
 
 function Svalbard:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Svalbard', ...)
@@ -36,6 +67,8 @@ function Svalbard:new(resource, name, ...)
 	status.currentHitpoints = 10000
 	status.maximumHitpoints = 10000
 	status.maxChaseDistance = math.huge
+
+	self:addPoke('equipXWeapon')
 end
 
 function Svalbard:ready(director, game)
@@ -90,6 +123,110 @@ function Svalbard:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BACK, 0, wings)
 
 	Creep.ready(self, director, game)
+
+	self:onEquipArmor("Base")
+	self:onEquipRandomWeapon()
+end
+
+function Svalbard:recalculateEquipmentBonuses()
+	local gameDB = self:getDirector():getGameDB()
+	
+	self:addBehavior(EquipmentBonusesBehavior)
+
+	local bonuses = self:getBehavior(EquipmentBonusesBehavior).bonuses
+
+	if self.armorName then
+		local record = gameDB:getRecord("Equipment", {
+			Resource = Utility.Peep.getResource(self),
+			Name = self.armorName
+		})
+
+		if not record then
+			Log.warn("Can't find '%s' armor for Svalbard.", self.armorName)
+		else
+			for i = 1, #EquipmentInventoryProvider.STATS do
+				local stat = EquipmentInventoryProvider.STATS[i]
+				bonuses[stat] = record:get(stat) or 0
+			end
+		end
+	end
+
+	if self.weaponName then
+		local record = gameDB:getRecord("Equipment", {
+			Resource = Utility.Peep.getResource(self),
+			Name = self.weaponName
+		})
+
+		if not record then
+			Log.warn("Can't find '%s' weapon for Svalbard.", self.weaponName)
+		else
+			for i = 1, #EquipmentInventoryProvider.STATS do
+				local stat = EquipmentInventoryProvider.STATS[i]
+				bonuses[stat] = bonuses[stat] + (record:get(stat) or 0)
+			end
+		end
+	end
+
+	Log.info("Svalbard's equipment bonuses updated.")
+end
+
+function Svalbard:onEquipArmor(armorName)
+	self.armorName = armorName
+	self:recalculateEquipmentBonuses()
+end
+
+function Svalbard:onEquipRandomWeapon()
+	local weaponIndex = math.random(1, #Svalbard.WEAPONS)
+	local weapon = Svalbard.WEAPONS[weaponIndex].weapon
+
+	Utility.Peep.equipXWeapon(self, weapon)
+	Log.info("Equipped weapon '%s'.", weapon)
+end
+
+function Svalbard:setXWeaponAnimation(xWeapon, weapons)
+	local xWeaponType = Class.getType(xWeapon)
+	for i = 1, #weapons do
+		local weapon = weapons[i]
+		local weaponID = weapon.weapon
+		local weaponType = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), weaponID)
+		if Class.isType(weaponType, xWeaponType) then
+			local attackAnimation = CacheRef("ItsyScape.Graphics.AnimationResource", weapon.animation)
+			self:addResource("animation-attack", attackAnimation)
+
+			Log.info("Set attack animation to '%s'.", weapon.animation)
+			return
+		end
+	end
+
+	if Class.isCompatibleType(xWeapon, Weapon) then
+		Log.warn("Couldn't switch Svalbard's attack animation; XWeapon '%s' not found.", xWeapon:getID())
+	else
+		Log.error("XWeapon not provided.")
+	end
+end
+
+function Svalbard:setXWeapon(xWeapon, weapons)
+	local xWeaponType = Class.getType(xWeapon)
+	for i = 1, #weapons do
+		local weaponID = weapons[i].weapon
+		local weaponType = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), weaponID)
+		if Class.isType(weaponType, xWeaponType) then
+			self.weaponName = weapons[i].bonuses
+			return
+		end
+	end
+
+	if Class.isCompatibleType(xWeapon, Weapon) then
+		Log.warn("Couldn't update Svalbard's weapon bonuses; XWeapon '%s' not found.", xWeapon:getID())
+	else
+		Log.error("XWeapon not provided.")
+	end
+end
+
+function Svalbard:onEquipXWeapon(xWeapon)
+	self:setXWeapon(xWeapon, Svalbard.WEAPONS)
+	self:setXWeaponAnimation(xWeapon, Svalbard.WEAPONS)
+	self:recalculateEquipmentBonuses()
 end
 
 function Svalbard:update(...)
