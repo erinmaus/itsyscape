@@ -160,3 +160,15 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/Svalbard/AttackLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Svalbard"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "special",
+	Tree = "Resources/Game/Peeps/Svalbard/SpecialLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Svalbard"
+}

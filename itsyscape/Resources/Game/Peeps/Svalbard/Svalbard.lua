@@ -16,11 +16,13 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
-local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Svalbard = Class(Creep)
@@ -52,6 +54,9 @@ Svalbard.SPECIALS = {
 	-- 	animation = "Resources/Game/Animations/Svalbard_Special_Melee/Script.lua"
 	-- }
 }
+
+Svalbard.ROAR_COOLDOWN = 3
+Svalbard.FLY_COOLDOWN  = 3
 
 function Svalbard:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Svalbard', ...)
@@ -128,6 +133,37 @@ function Svalbard:ready(director, game)
 	self:onEquipRandomWeapon()
 end
 
+function Svalbard:onBoss()
+	if not self.fightStarted then
+		Utility.UI.openInterface(
+			Utility.Peep.getPlayer(self),
+			"BossHUD",
+			false,
+			self)
+		self.fightStarted = true
+	end
+end
+
+function Svalbard:onDie()
+	self.fightStarted = false
+end
+
+function Svalbard:onPreSpecial()
+	local animation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_PreSpecial/Script.lua")
+
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+	actor:playAnimation('x-svalbard-pre-special', 0, animation)
+end
+
+function Svalbard:onSpecial()
+	local mashina = self:getBehavior(MashinaBehavior)
+	mashina.currentState = 'special'
+
+	Log.info("SPECIAL ATTACK uwu! >:3")
+end
+
 function Svalbard:recalculateEquipmentBonuses()
 	local gameDB = self:getDirector():getGameDB()
 	
@@ -181,6 +217,25 @@ function Svalbard:onEquipRandomWeapon()
 
 	Utility.Peep.equipXWeapon(self, weapon)
 	Log.info("Equipped weapon '%s'.", weapon)
+
+	self:playRoarAnimation()
+	self:applyCooldown(Svalbard.ROAR_COOLDOWN)
+end
+
+function Svalbard:playRoarAnimation()
+	local animation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_Roar/Script.lua")
+
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+	actor:playAnimation('combat', math.huge, animation, true)
+end
+
+function Svalbard:applyCooldown(duration)
+	local _, cooldown = self:addBehavior(AttackCooldownBehavior)
+
+	cooldown.cooldown = duration
+	cooldown.ticks = self:getDirector():getGameInstance():getCurrentTick()
 end
 
 function Svalbard:setXWeaponAnimation(xWeapon, weapons)
