@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
@@ -1540,12 +1541,16 @@ function Utility.Peep.getXWeapon(game, id, proxyID, ...)
 end
 
 function Utility.Peep.equipXWeapon(peep, id)
+	local Equipment = require "ItsyScape.Game.Equipment"
 	local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 
 	local xWeapon = Utility.Peep.getXWeapon(peep:getDirector():getGameInstance(), id)
 	local s, weapon = peep:addBehavior(WeaponBehavior)
 	if s then
 		weapon.weapon = xWeapon
+		if Class.isDerived(xWeapon:getType(), Equipment) then
+			xWeapon:onEquip(peep)
+		end
 	end
 end
 
@@ -2484,11 +2489,11 @@ function Utility.Peep.Attackable:onReady(director)
 
 	local success = false
 	if mapObject then
-		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = mapObject }))
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = mapObject, Name = "" }))
 	end
 
 	if not success and resource then
-		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = resource }))
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = resource, Name = "" }))
 	end
 
 	if success then
