@@ -186,7 +186,7 @@ Game "ItsyScape"
 	}
 
 	Meta "Equipment" {
-		Name = Meta.TYPE_STRING,
+		Name = Meta.TYPE_TEXT,
 
 		-- Various stats.
 		AccuracyStab = Meta.TYPE_INTEGER,
