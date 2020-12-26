@@ -1791,8 +1791,10 @@ function Utility.Peep.face3D(self)
 		if peep then
 			local selfPosition = Utility.Peep.getAbsolutePosition(self)
 			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+			local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-			rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
+			rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
 		end
 	else
 		local targetTile = self:getBehavior(TargetTileBehavior)
@@ -1802,8 +1804,10 @@ function Utility.Peep.face3D(self)
 
 			local selfPosition = Utility.Peep.getAbsolutePosition(self)
 			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+			local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
-			rotation.rotation = Quaternion.lookAt(tilePosition, selfPosition):getNormal()
+			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
 		else
 			rotation.rotation = Quaternion.IDENTITY
 		end
