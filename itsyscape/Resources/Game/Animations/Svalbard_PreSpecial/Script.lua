@@ -16,7 +16,7 @@ Animation "Svalbard Pre-Special" {
 			0.7, 0.2, 0.8, 1.0,
 			duration = 0.5,
 			reverse = true,
-			tween = 'sineOut'
+			tween = 'sineIn'
 		}
 	}
 }

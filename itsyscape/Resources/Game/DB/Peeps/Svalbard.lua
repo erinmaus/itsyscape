@@ -140,27 +140,6 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
 
-ItsyScape.Resource.Peep "Svalbard's organs" {
-	-- Nothing.
-}
-
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Svalbard.SvalbardOrgans",
-	Resource = ItsyScape.Resource.Peep "Svalbard"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Svalbard's organs",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Svalbard"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Svalbard's organs, protected by his ribs and scales.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Svalbard"
-}
-
 ItsyScape.Meta.PeepMashinaState {
 	State = "attack",
 	Tree = "Resources/Game/Peeps/Svalbard/AttackLogic.lua",
@@ -171,4 +150,25 @@ ItsyScape.Meta.PeepMashinaState {
 	State = "special",
 	Tree = "Resources/Game/Peeps/Svalbard/SpecialLogic.lua",
 	Resource = ItsyScape.Resource.Peep "Svalbard"
+}
+
+ItsyScape.Resource.Peep "SvalbardsOrgans" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Svalbard.SvalbardOrgans",
+	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Svalbard's organs",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Svalbard's organs, protected by his ribs and scales.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
 }

@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
@@ -21,6 +22,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -55,8 +57,45 @@ Svalbard.SPECIALS = {
 	-- }
 }
 
+Svalbard.ORGAN_TRANSITION = {
+	{
+		threshold = 0,
+		skins = {
+			[Equipment.PLAYER_SLOT_SELF] = "Body",
+			[Equipment.PLAYER_SLOT_BODY] = "Flesh",
+			[Equipment.PLAYER_SLOT_HEAD] = "Head",
+		}
+	},
+	{
+		threshold = 500,
+		skins = {
+			[Equipment.PLAYER_SLOT_SELF] = "Body_Organless1",
+			[Equipment.PLAYER_SLOT_BODY] = "Flesh",
+			[Equipment.PLAYER_SLOT_HEAD] = "Head",
+		}
+	},
+	{
+		threshold = 1000,
+		skins = {
+			[Equipment.PLAYER_SLOT_SELF] = "Body_Organless2",
+			[Equipment.PLAYER_SLOT_BODY] = false,
+			[Equipment.PLAYER_SLOT_HEAD] = "Head",
+		}
+	},
+	{
+		threshold = 2000,
+		skins = {
+			[Equipment.PLAYER_SLOT_SELF] = "Body_Organless2",
+			[Equipment.PLAYER_SLOT_BODY] = false,
+			[Equipment.PLAYER_SLOT_HEAD] = "Head_Skinless",
+		}
+	}
+}
+
 Svalbard.ROAR_COOLDOWN = 3
 Svalbard.FLY_COOLDOWN  = 3
+
+Svalbard.ORGAN_DAMAGE = 1000
 
 function Svalbard:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Svalbard', ...)
@@ -140,6 +179,20 @@ function Svalbard:onBoss()
 			"BossHUD",
 			false,
 			self)
+
+		local position = self:getBehavior(PositionBehavior).position
+		local organs = Utility.spawnActorAtPosition(
+			self,
+			"SvalbardsOrgans",
+			position.x, position.y, position.z, 0)
+
+		if organs then
+			organs:getPeep():poke('boss', self)
+		else
+			Log.warn("Couldn't spawn organs!")
+		end
+
+		Log.info("Boss fight started.")
 		self.fightStarted = true
 	end
 end
@@ -165,6 +218,8 @@ function Svalbard:onSpecial()
 end
 
 function Svalbard:recalculateEquipmentBonuses()
+	if true then return end
+
 	local gameDB = self:getDirector():getGameDB()
 	
 	self:addBehavior(EquipmentBonusesBehavior)
@@ -282,6 +337,46 @@ function Svalbard:onEquipXWeapon(xWeapon)
 	self:setXWeapon(xWeapon, Svalbard.WEAPONS)
 	self:setXWeaponAnimation(xWeapon, Svalbard.WEAPONS)
 	self:recalculateEquipmentBonuses()
+end
+
+function Svalbard:damageSkin(damage, skins)
+	for i = #skins, 1, -1 do
+		local skin = skins[i]
+		if damage >= skin.threshold then
+			Log.info("threshold", damage)
+			self:applyDamagedSkin(skin.skins)
+			break
+		end
+	end
+end
+
+function Svalbard:applyDamagedSkin(skins)
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+
+	for slot, skin in pairs(skins) do
+		if skin == false then
+			local existingSkin = actor:getSkin(slot)
+			if existingSkin then
+				actor:setSkin(slot, false, existingSkin.skin)
+				Log.info("Cleared skin slot %d ('%s').", slot, existingSkin.skin:getFilename())
+			end
+		else
+			local filename = string.format("Resources/Game/Skins/Svalbard/%s.lua", skin)
+			local cacheRef = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
+			actor:setSkin(slot, 0, cacheRef)
+			Log.info("Set skin slot %d to %s.", slot, skin)
+		end
+	end
+end
+
+function Svalbard:onOrgansHit(damage)
+	self:damageSkin(damage, Svalbard.ORGAN_TRANSITION)
+end
+
+function Svalbard:onOrgansDie()
+	self:poke('hit', AttackPoke {
+		damage = Svalbard.ORGAN_DAMAGE
+	})
 end
 
 function Svalbard:update(...)
