@@ -33,6 +33,11 @@ function CombatXPCortex:removePeep(peep)
 end
 
 function CombatXPCortex:onHit(peep, p)
+	if not p:getAggressor() then
+		Log.info("'%s' hit %d damage without aggressor.", peep:getName(), p:getDamage())
+		return
+	end
+
 	if not peep:hasBehavior(PlayerBehavior) then
 		local status = peep:getBehavior(CombatStatusBehavior)
 		if status then
