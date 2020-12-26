@@ -1,0 +1,150 @@
+--------------------------------------------------------------------------------
+-- ItsyScape/Graphics/ParticleSceneNode.lua
+--
+-- This file is a part of ItsyScape.
+--
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+--------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+
+local ParticleSceneNode = Class(SceneNode)
+ParticleSceneNode.DEFAULT_SHADER = ShaderResource()
+do
+	ParticleSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/StaticModel")
+end
+
+ParticleSceneNode.MESH_FORMAT = {
+	{ "VertexPosition", 'float', 3 },
+	{ "VertexNormal", 'float', 3 },
+	{ "VertexColor", 'float', 4 },
+	{ "VertexTexture", 'float', 2 }
+}
+
+ParticleSceneNode.MESH_DATA = {
+	{ -1, -1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0 },
+	{  1, -1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0 },
+	{  1,  1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
+	{ -1, -1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0 },
+	{  1,  1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
+	{ -1,  1, -1, 0, 0, 1, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0 }
+}
+
+function ParticleSceneNode:new()
+	SceneNode.new(self)
+
+	self:getMaterial():setShader(ParticleSceneNode.DEFAULT_SHADER)
+
+	self.mesh = false
+
+	self.vertexData = {}
+end
+
+function ParticleSceneNode:setParticleSystem(particleSystem)
+	self.particleSystem = particleSystem
+end
+
+function ParticleSceneNode:getParticleSystem()
+	return self.particleSystem
+end
+
+function ParticleSceneNode:frame(delta)
+	if not self.particleSystem then
+		return
+	end
+
+	local previousTime = self.previousTime or love.timer.getTime()
+	local currentTime = love.timer.getTime()
+	self.previousTime = currentTime
+
+	self.particleSystem:update(currentTime - previousTime)
+
+	self.min = Vector(math.huge)
+	self.max = Vector(-math.huge)
+
+	local index = 1
+	local numParticles = self.particleSystem:length()
+	for i = 1, numParticles do
+		local particle = self.particleSystem:get(i)
+
+		local isAlive = particle.age < particle.lifetime
+		if isAlive then
+			if index + #ParticleSceneNode.MESH_DATA > #self.vertexData then
+				self:pushNewQuad()
+			end
+
+			self:updateQuad(index, particle)
+			index = index + #ParticleSceneNode.MESH_DATA
+
+			local particlePosition = Vector(particle.positionX, particle.positionY, particle.positionZ)
+			self.min:min(particlePosition)
+			self.max:max(particlePosition)
+		end
+	end
+
+	while #self.vertexData >= index do
+		table.remove(self.vertexData)
+	end
+
+	self.numVertices = index - 1
+
+	if not self.mesh or #self.vertexData > self.mesh:getVertexCount() then
+		self.mesh = love.graphics.newMesh(
+			ParticleSceneNode.MESH_FORMAT,
+			self.vertexData,
+			'triangles',
+			'dynamic')
+		self.mesh:setAttributeEnabled("VertexPosition", true)
+		self.mesh:setAttributeEnabled("VertexNormal", true)
+		self.mesh:setAttributeEnabled("VertexColor", true)
+		self.mesh:setAttributeEnabled("VertexTexture", true)
+	else
+		self.mesh:setVertices(self.vertexData, 1, self.numVertices)
+	end
+end
+
+function ParticleSceneNode:pushNewQuad()
+	for i = 1, #ParticleSceneNode.MESH_DATA do
+		table.insert(self.vertexData, { unpack(ParticleSceneNode.MESH_DATA[i]) })
+	end
+end
+
+function ParticleSceneNode:updateQuad(index, particle)
+	for i = 0, #ParticleSceneNode.MESH_DATA - 1 do
+		local localIndex = i + 1
+		local vertex = self.vertexData[index + i]
+		local templateVertex = ParticleSceneNode.MESH_DATA[localIndex]
+
+		vertex[1], vertex[2], vertex[3] =
+			templateVertex[1] * particle.scaleX,
+			templateVertex[2] * particle.scaleY,
+			templateVertex[3]
+		vertex[1], vertex[2], vertex[3] =
+			vertex[1] + particle.positionX,
+			vertex[2] + particle.positionY,
+			vertex[3] + particle.positionZ
+		vertex[7], vertex[8], vertex[9], vertex[10] =
+			particle.colorRed, particle.colorGreen, particle.colorBlue, particle.colorAlpha
+	end
+end
+
+function ParticleSceneNode:draw(renderer, delta)
+	local shader = renderer:getCurrentShader()
+	local diffuseTexture = self:getMaterial():getTexture(1)
+	if shader:hasUniform("scape_DiffuseTexture") and
+	   diffuseTexture and diffuseTexture:getIsReady()
+	then
+		shader:send("scape_DiffuseTexture", diffuseTexture:getResource())
+	end
+
+	if self.mesh and self.numVertices > 0 then
+		self.mesh:setDrawRange(1, self.numVertices)
+		love.graphics.draw(self.mesh)
+	end
+end
+
+return ParticleSceneNode
