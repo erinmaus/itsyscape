@@ -10,30 +10,50 @@
 local Class = require "ItsyScape.Common.Class"
 
 local ParticleSystem = Class()
+ParticleSystem.DEFAULT_PARTICLES = 50
 
 function ParticleSystem:new(numParticles)
 	self.freeParticles = {}
 	self.particles = {}
-	self:resize(numParticles)
+	self:resize(numParticles or ParticleSystem.DEFAULT_PARTICLES)
 
 	self.paths = {}
+	self.emitters = {}
+	self.emissionStrategy = false
 end
 
 function ParticleSystem:addPath(path)
 	table.insert(self.paths, path)
 end
 
-function ParticleSystem:emit(emitter, count)
+function ParticleSystem:addEmitter(emitter)
+	table.insert(self.emitters, emitter)
+end
+
+function ParticleSystem:setEmissionStrategy(strategy)
+	self.emissionStrategy = strategy or false
+end
+
+function ParticleSystem:emit(count)
 	count = math.min(count, #self.freeParticles)
 
 	while count > 0 do
 		local particleIndex = table.remove(self.freeParticles)
-		emitter:emitSingleParticle(self.particles[particleIndex])
+		local particle = self.particles[particleIndex]
+
+		for i = 1, #self.emitters do
+			self.emitters[i]:emitSingleParticle(particle)
+		end
+
 		count = count - 1
 	end
 end
 
 function ParticleSystem:update(delta)
+	if self.emissionStrategy then
+		self.emissionStrategy:update(delta, self)
+	end
+
 	for i = 1, #self.particles do
 		local p = self.particles[i]
 		local isAlive = p.age < p.lifetime
