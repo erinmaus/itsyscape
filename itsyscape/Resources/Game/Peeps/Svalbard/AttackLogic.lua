@@ -17,8 +17,8 @@ local CURRENT_HITS = B.Reference("Svalbard_AttackLogic", "CURRENT_HITS")
 local TARGET_HITS = B.Reference("Svalbard_AttackLogic", "TARGET_HITS")
 local REACHED_TARGET = B.Reference("Svalbard_AttackLogic", "REACHED_TARGET")
 
-local MIN_HITS = 4
-local MAX_HITS = 6
+local MIN_HITS = 1
+local MAX_HITS = 2
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {

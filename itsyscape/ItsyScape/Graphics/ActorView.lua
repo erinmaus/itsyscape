@@ -85,6 +85,10 @@ function ActorView.Animatable:removeSceneNode(sceneNode)
 	end
 end
 
+function ActorView.Animatable:getResourceManager()
+	return self.actor.game:getResourceManager()
+end
+
 function ActorView.Animatable:getTransforms()
 	local skeleton = self:getSkeleton()
 	local numBones = skeleton:getNumBones()

@@ -9,8 +9,10 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local ParticleSystem = require "ItsyScape.Graphics.ParticleSystem"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local ParticleSceneNode = Class(SceneNode)
 ParticleSceneNode.DEFAULT_SHADER = ShaderResource()
@@ -38,6 +40,7 @@ function ParticleSceneNode:new()
 	SceneNode.new(self)
 
 	self:getMaterial():setShader(ParticleSceneNode.DEFAULT_SHADER)
+	self:getMaterial():setIsTranslucent(true)
 
 	self.mesh = false
 
@@ -50,6 +53,66 @@ end
 
 function ParticleSceneNode:getParticleSystem()
 	return self.particleSystem
+end
+
+function ParticleSceneNode:initParticleSystemFromDef(def, resources)
+	self.particleSystem = ParticleSystem(def.numParticles)
+
+	if def.texture then
+		resources:queue(TextureResource, def.texture, function(texture)
+			self:getMaterial():setTextures(texture)
+		end)
+	end
+
+	local emitters = def.emitters or {}
+	self:initParticleEmittersFromDef(emitters)
+
+	local paths = def.paths or {}
+	self:initParticlePathsFromDef(paths)
+
+	local emissionStrategy = def.emissionStrategy
+	self:initParticleEmissionStrategyFromDef(emissionStrategy)
+end
+
+local function instantiate(def)
+	local TypeName = string.format("ItsyScape.Graphics.Particles.%s", def.type)
+	local Type = require(TypeName)
+
+	local instance = Type()
+	for key, value in pairs(def) do
+		if key ~= "type" then
+			local base = key:sub(1, 1):upper() .. key:sub(2)
+			local setFuncName = "set" .. base
+			local setFunc = instance[setFuncName]
+
+			if setFunc then
+				setFunc(instance, unpack(value))
+			end
+		end
+	end
+
+	return instance
+end
+
+function ParticleSceneNode:initParticleEmittersFromDef(defs)
+	for i = 1, #defs do
+		local emitter = instantiate(defs[i])
+		self.particleSystem:addEmitter(emitter)
+	end
+end
+
+function ParticleSceneNode:initParticlePathsFromDef(defs)
+	for i = 1, #defs do
+		local path = instantiate(defs[i])
+		self.particleSystem:addPath(path)
+	end
+end
+
+function ParticleSceneNode:initParticleEmissionStrategyFromDef(def)
+	if def then
+		local path = instantiate(def)
+		self.particleSystem:setEmissionStrategy(path)
+	end
 end
 
 function ParticleSceneNode:frame(delta)
@@ -92,7 +155,9 @@ function ParticleSceneNode:frame(delta)
 
 	self.numVertices = index - 1
 
-	if not self.mesh or #self.vertexData > self.mesh:getVertexCount() then
+	if (not self.mesh or #self.vertexData > self.mesh:getVertexCount())
+	   and #self.vertexData > 0
+	then
 		self.mesh = love.graphics.newMesh(
 			ParticleSceneNode.MESH_FORMAT,
 			self.vertexData,
@@ -102,7 +167,7 @@ function ParticleSceneNode:frame(delta)
 		self.mesh:setAttributeEnabled("VertexNormal", true)
 		self.mesh:setAttributeEnabled("VertexColor", true)
 		self.mesh:setAttributeEnabled("VertexTexture", true)
-	else
+	elseif self.mesh then
 		self.mesh:setVertices(self.vertexData, 1, self.numVertices)
 	end
 end

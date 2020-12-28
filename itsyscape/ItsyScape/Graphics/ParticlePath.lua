@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Graphics/ParticleShape.lua
+-- ItsyScape/Graphics/ParticlePath.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,16 +8,15 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Vector = require "ItsyScape.Common.Math.Vector"
 
-local ParticleShape = Class()
+local ParticlePath = Class()
 
-function ParticleShape:new()
+function ParticlePath:new()
 	-- Nothing.
 end
 
-function ParticleShape:getPosition()
-	return Vector.ZERO
+function ParticlePath:update(particle, delta)
+	-- Nothing.
 end
 
-return ParticleShape
+return ParticlePath
