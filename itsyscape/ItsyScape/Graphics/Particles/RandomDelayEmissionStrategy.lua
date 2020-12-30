@@ -22,7 +22,8 @@ end
 
 function RandomDelayEmissionStrategy:setDelay(min, max)
 	self.minDelay = min or 0
-	self.maxDelay = max or min
+	self.maxDelay = max or self.minDelay
+	self.currentDelay = math.random() * (self.maxDelay - self.minDelay) + self.minDelay
 end
 
 function RandomDelayEmissionStrategy:update(delta, particleSystem)

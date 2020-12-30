@@ -115,6 +115,7 @@ function ParticleSystem:_newParticle()
 		rotation = 0, rotationAcceleration = 0, rotationVelocity = 0,
 		scaleX = 1, scaleY = 1,
 		lifetime = 0, age = 0,
+		textureIndex = 1,
 		colorRed = 1, colorGreen = 1, colorBlue = 1, colorAlpha = 1
 	}
 end
