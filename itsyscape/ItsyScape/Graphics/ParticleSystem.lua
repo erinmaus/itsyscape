@@ -30,6 +30,12 @@ function ParticleSystem:addEmitter(emitter)
 	table.insert(self.emitters, emitter)
 end
 
+function ParticleSystem:updateEmittersLocalPosition(localPosition)
+	for i = 1, #self.emitters do
+		self.emitters[i]:updateLocalPosition(localPosition)
+	end
+end
+
 function ParticleSystem:setEmissionStrategy(strategy)
 	self.emissionStrategy = strategy or false
 end
