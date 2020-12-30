@@ -243,7 +243,8 @@ function ParticleSceneNode:updateQuad(index, particle, rotation)
 		do
 			-- TODO: Optimize
 			local v = Vector(vertex[1], vertex[2], vertex[3])
-			vertex[1], vertex[2], vertex[3] = rotation:transformVector(v):get()
+			local r = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, particle.rotation)
+			vertex[1], vertex[2], vertex[3] = r:transformVector(v):get()
 		end
 
 		vertex[1], vertex[2], vertex[3] =
