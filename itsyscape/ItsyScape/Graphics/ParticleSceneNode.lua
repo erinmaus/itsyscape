@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local ParticleSystem = require "ItsyScape.Graphics.ParticleSystem"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -115,6 +116,23 @@ function ParticleSceneNode:initParticleEmissionStrategyFromDef(def)
 	end
 end
 
+function ParticleSceneNode:getGlobalRotation(delta)
+	local parent = self
+	local currentRotation, previousRotation = Quaternion.IDENTITY, Quaternion.IDENTITY
+	repeat
+		local transform = parent:getTransform()
+		local parentCurrentRotation = transform:getLocalRotation()
+		local _, parentPreviousRotation = transform:getPreviousTransform()
+
+		currentRotation = parentCurrentRotation * currentRotation
+		previousRotation = parentPreviousRotation * previousRotation
+
+		parent = parent:getParent()
+	until not parent
+
+	return previousRotation:slerp(currentRotation, delta)
+end
+
 function ParticleSceneNode:frame(delta)
 	if not self.particleSystem then
 		return
@@ -125,6 +143,8 @@ function ParticleSceneNode:frame(delta)
 	self.previousTime = currentTime
 
 	self.particleSystem:update(currentTime - previousTime)
+
+	local inverseRotation = -self:getGlobalRotation(delta)
 
 	self.min = Vector(math.huge)
 	self.max = Vector(-math.huge)
@@ -140,7 +160,7 @@ function ParticleSceneNode:frame(delta)
 				self:pushNewQuad()
 			end
 
-			self:updateQuad(index, particle)
+			self:updateQuad(index, particle, inverseRotation)
 			index = index + #ParticleSceneNode.MESH_DATA
 
 			local particlePosition = Vector(particle.positionX, particle.positionY, particle.positionZ)
@@ -178,7 +198,7 @@ function ParticleSceneNode:pushNewQuad()
 	end
 end
 
-function ParticleSceneNode:updateQuad(index, particle)
+function ParticleSceneNode:updateQuad(index, particle, rotation)
 	for i = 0, #ParticleSceneNode.MESH_DATA - 1 do
 		local localIndex = i + 1
 		local vertex = self.vertexData[index + i]
@@ -188,6 +208,13 @@ function ParticleSceneNode:updateQuad(index, particle)
 			templateVertex[1] * particle.scaleX,
 			templateVertex[2] * particle.scaleY,
 			templateVertex[3]
+
+		do
+			-- TODO: Optimize
+			local v = Vector(vertex[1], vertex[2], vertex[3])
+			vertex[1], vertex[2], vertex[3] = rotation:transformVector(v):get()
+		end
+
 		vertex[1], vertex[2], vertex[3] =
 			vertex[1] + particle.positionX,
 			vertex[2] + particle.positionY,
