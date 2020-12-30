@@ -44,4 +44,8 @@ function ParticleEmitter:emitSingleParticle(particle)
 	particle.colorAlpha = 1
 end
 
+function ParticleEmitter:updateLocalPosition(localPosition)
+	-- Nothing.
+end
+
 return ParticleEmitter

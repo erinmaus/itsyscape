@@ -24,6 +24,7 @@ local Particles, Metatable = Class(Command)
 function Particles:new(t)
 	self.duration = t.duration or 0
 	self.particleSystem = t.system or {}
+	self.attach = t.attach or false
 end
 
 function Particles:getDuration()
@@ -40,6 +41,14 @@ end
 
 function Particles:setParticleSystem(value)
 	self.particleSystem = value or self.particleSystem
+end
+
+function Particles:getAttach()
+	return self.attach
+end
+
+function Particles:setAttach(value)
+	self.attach = value or self.attach
 end
 
 function Particles:instantiate()

@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CommandInstance = require "ItsyScape.Game.Animation.Commands.CommandInstance"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 
@@ -37,7 +38,39 @@ function ParticlesInstance:getDuration(windingDown)
 end
 
 function ParticlesInstance:play(animatable, time)
-	-- Nothing.
+	if self.command then
+		local attach = self.command:getAttach()
+		if attach then
+			local transform = love.math.newTransform()
+
+			do
+				local transforms = animatable:getTransforms()
+				local skeleton = animatable:getSkeleton()
+				local boneIndex = skeleton:getBoneIndex(attach)
+
+				local parents = {}
+				local bone
+				repeat
+					bone = skeleton:getBoneByIndex(boneIndex)
+					if bone then
+						table.insert(parents, 1, boneIndex)
+
+						local parentBoneIndex = skeleton:getBoneIndex(bone:getParent())
+
+						boneIndex = parentBoneIndex
+						bone = skeleton:getBoneByIndex(parentBoneIndex)
+					end
+				until not bone
+
+				for i = 1, #parents do
+					transform:apply(transforms[parents[i]])
+				end
+			end
+
+			local localPosition = Vector(transform:transformPoint(0, 0, 0))
+			self.sceneNode:getParticleSystem():updateEmittersLocalPosition(localPosition)
+		end
+	end
 end
 
 function ParticlesInstance:stop(animatable)
