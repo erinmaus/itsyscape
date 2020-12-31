@@ -9,11 +9,13 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Game = require "ItsyScape.Game.Model.Game"
 local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
 local LocalStage = require "ItsyScape.Game.LocalModel.Stage"
 local LocalUI = require "ItsyScape.Game.LocalModel.UI"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
+local Discord = require "ItsyScape.Discord"
 
 local LocalGame = Class(Game)
 LocalGame.TICKS_PER_SECOND = 10
@@ -30,6 +32,7 @@ function LocalGame:new(gameDB, playerSlot)
 	self.playerSpawned = false
 	self.ui = LocalUI(self)
 	self.ticks = 0
+	self.discord = Discord()
 end
 
 function LocalGame:getGameDB()
@@ -76,8 +79,28 @@ function LocalGame:tick()
 	self.ui:update(self:getDelta())
 end
 
+function LocalGame:updateDiscord()
+	local playerActor = self.player:getActor()
+	if playerActor then
+		local playerPeep = playerActor:getPeep()
+		if playerPeep then
+			local playerMap = Utility.Peep.getMapResource(playerPeep)
+			if playerMap and playerMap.name ~= self.currentPlayerMap then
+				self.currentPlayerMap = playerMap.name
+
+				local name = Utility.getName(playerMap, self.gameDB)
+				local description = Utility.getDescription(playerMap, self.gameDB)
+				self.discord:updateActivity(name, description)
+			end
+		end
+	end
+
+	self.discord:tick()
+end
+
 function LocalGame:update(delta)
 	self.stage:update(delta)
+	self:updateDiscord()
 end
 
 function LocalGame:quit()
