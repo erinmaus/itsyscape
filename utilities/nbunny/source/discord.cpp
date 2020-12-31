@@ -60,6 +60,8 @@ void nbunny::Discord::update_activity(const std::string& details, const std::str
 
 	trim_copy(details, activity.details);
 	trim_copy(state, activity.state);
+	trim_copy("logo", activity.assets.large_image);
+	trim_copy("ItsyRealm", activity.assets.large_text);
 
 	auto activity_manager = core->get_activity_manager(core);
 	activity_manager->update_activity(activity_manager, &activity, nullptr, &update_activity_callback);

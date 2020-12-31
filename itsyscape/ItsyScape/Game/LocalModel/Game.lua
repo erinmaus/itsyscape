@@ -88,7 +88,7 @@ function LocalGame:updateDiscord()
 			if playerMap and playerMap.name ~= self.currentPlayerMap then
 				self.currentPlayerMap = playerMap.name
 
-				local name = Utility.getName(playerMap, self.gameDB)
+				local name = "Location: " .. Utility.getName(playerMap, self.gameDB)
 				local description = Utility.getDescription(playerMap, self.gameDB)
 				self.discord:updateActivity(name, description)
 			end
