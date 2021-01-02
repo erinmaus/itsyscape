@@ -20,8 +20,7 @@ namespace nbunny
 {
 	struct Discord
 	{
-		struct IDiscordCore* core;
-		struct IDiscordActivityManager* activities;
+		struct IDiscordCore* core = nullptr;
 
 		~Discord();
 

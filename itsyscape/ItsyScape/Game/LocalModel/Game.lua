@@ -15,6 +15,7 @@ local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
 local LocalStage = require "ItsyScape.Game.LocalModel.Stage"
 local LocalUI = require "ItsyScape.Game.LocalModel.UI"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local Discord = require "ItsyScape.Discord"
 
 local LocalGame = Class(Game)
@@ -77,30 +78,13 @@ function LocalGame:tick()
 	self.stage:tick()
 	self.director:update(self:getDelta())
 	self.ui:update(self:getDelta())
-end
 
-function LocalGame:updateDiscord()
-	local playerActor = self.player:getActor()
-	if playerActor then
-		local playerPeep = playerActor:getPeep()
-		if playerPeep then
-			local playerMap = Utility.Peep.getMapResource(playerPeep)
-			if playerMap and playerMap.name ~= self.currentPlayerMap then
-				self.currentPlayerMap = playerMap.name
-
-				local name = "Location: " .. Utility.getName(playerMap, self.gameDB)
-				local description = Utility.getDescription(playerMap, self.gameDB)
-				self.discord:updateActivity(name, description)
-			end
-		end
-	end
-
+	self.player:updateDiscord()
 	self.discord:tick()
 end
 
 function LocalGame:update(delta)
 	self.stage:update(delta)
-	self:updateDiscord()
 end
 
 function LocalGame:quit()
