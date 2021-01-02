@@ -67,11 +67,12 @@ void nbunny::Discord::update_activity(const std::string& details, const std::str
 	activity_manager->update_activity(activity_manager, &activity, nullptr, &update_activity_callback);
 }
 
-static std::shared_ptr<nbunny::Discord> nbunny_discord_create()
+static void nbunny_discord_create(sol::this_state S)
 {
+	lua_State* L = S;
 	auto discord = std::make_shared<nbunny::Discord>();
 
-	struct DiscordCreateParams params;
+	DiscordCreateParams params;
 	DiscordCreateParamsSetDefault(&params);
 	params.client_id = 792801411699703818;
 	params.flags = DiscordCreateFlags_NoRequireDiscord;
@@ -79,10 +80,10 @@ static std::shared_ptr<nbunny::Discord> nbunny_discord_create()
 	auto result = DiscordCreate(DISCORD_VERSION, &params, &discord->core);
 	if (result != DiscordResult_Ok)
 	{
-		throw std::exception("could not initialize Discord");
+		luaL_error(L, "Could not intialize Discord: error code %d.", result);
 	}
 
-	return discord;
+	sol::stack::push(L, discord);
 }
 
 extern "C"

@@ -12,16 +12,26 @@ local NDiscord = require "nbunny.discord"
 
 local Discord = Class()
 
-function NDiscord:new()
-	self._handle = NDiscord()
+function Discord:new()
+	local s, r = pcall(NDiscord)
+	if not s then
+		Log.warn("%s", r)
+		self._handle = false
+	else
+		self._handle = r
+	end
 end
 
-function NDiscord:updateActivity(details, state)
-	self._handle:updateActivity(details, state)
+function Discord:updateActivity(details, state)
+	if self._handle then
+		self._handle:updateActivity(details, state)
+	end
 end
 
-function NDiscord:tick()
-	self._handle:tick()
+function Discord:tick()
+	if self._handle then
+		self._handle:tick()
+	end
 end
 
-return NDiscord
+return Discord
