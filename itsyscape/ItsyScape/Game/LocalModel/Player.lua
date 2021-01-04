@@ -192,6 +192,7 @@ function LocalPlayer:updateDiscord()
 
 	if self.line1 ~= line1 or self.line2 ~= line2 then
 		discord:updateActivity(line1, line2)
+		Log.info("Updated activity ('%s', '%s')", line1, line2)
 	end
 
 	self.line1 = line1
