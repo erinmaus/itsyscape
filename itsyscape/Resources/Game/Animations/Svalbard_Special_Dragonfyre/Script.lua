@@ -101,7 +101,7 @@ Animation "Svalbard Special (Dragonfyre)" {
 					},
 					{
 						type = "RandomScaleEmitter",
-						scale = { 0.5, 1 }
+						scale = { 0.25, 0.3 }
 					},
 					{
 						type = "RandomRotationEmitter",
