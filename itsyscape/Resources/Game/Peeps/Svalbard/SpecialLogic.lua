@@ -23,8 +23,6 @@ local Tree = BTreeBuilder.Node() {
 			}
 		},
 
-		Mashina.Peep.Talk { message = "Hit!" },
-
 		Mashina.Peep.TimeOut {
 			duration = 2
 		},

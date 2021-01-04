@@ -217,8 +217,6 @@ end
 function Svalbard:onSpecial()
 	local mashina = self:getBehavior(MashinaBehavior)
 	mashina.currentState = 'special'
-
-	Log.info("SPECIAL ATTACK uwu! >:3")
 end
 
 function Svalbard:recalculateEquipmentBonuses()
@@ -301,8 +299,6 @@ end
 
 function Svalbard:onEquipRandomWeapon()
 	local weaponIndex = math.random(1, #Svalbard.WEAPONS)
-	weaponIndex = 2
-
 	local weapon = Svalbard.WEAPONS[weaponIndex].weapon
 
 	Utility.Peep.equipXWeapon(self, weapon)
