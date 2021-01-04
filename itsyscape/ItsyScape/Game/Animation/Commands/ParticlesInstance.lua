@@ -18,7 +18,7 @@ function ParticlesInstance:new(command)
 	self.command = command or false
 end
 
-function ParticlesInstance:bind(animatable)
+function ParticlesInstance:start(animatable)
 	if self.command then
 		local resources = animatable:getResourceManager()
 

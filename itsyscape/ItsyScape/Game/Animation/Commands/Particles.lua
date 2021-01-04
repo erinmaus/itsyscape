@@ -48,7 +48,7 @@ function Particles:getAttach()
 end
 
 function Particles:setAttach(value)
-	self.attach = value or self.attach
+	self.attach = value
 end
 
 function Particles:instantiate()

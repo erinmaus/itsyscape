@@ -12,7 +12,23 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Sequence {
+	Mashina.Step {
+		Mashina.Peep.PokeSelf {
+			event = "equipRandomSpecialWeapon"
+		},
+
+		Mashina.Repeat {
+			Mashina.Invert {
+				Mashina.Peep.DidAttack
+			}
+		},
+
+		Mashina.Peep.Talk { message = "Hit!" },
+
+		Mashina.Peep.TimeOut {
+			duration = 2
+		},
+
 		Mashina.Peep.PokeSelf {
 			event = "equipRandomWeapon"
 		},
