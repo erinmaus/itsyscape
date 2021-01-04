@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Power_Shockwave/Logic.lua
+-- Resources/Game/Items/X_Power_Snipe/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,10 +14,10 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 
--- Alwys hits, dealing 90%-180% damage, capping at level 50 dexterity.
-local Shockwave = Class(ProxyXWeapon)
+-- Always hits, dealing 90%-180% damage, capping at level 50 dexterity.
+local Snipe = Class(ProxyXWeapon)
 
-function Shockwave:perform(peep, target)
+function Snipe:perform(peep, target)
 	local logic = self:getLogic()
 	if logic then
 		local roll = logic:rollDamage(peep, Weapon.PURPOSE_KILL, target)
@@ -45,4 +45,4 @@ function Shockwave:perform(peep, target)
 	end
 end
 
-return Shockwave
+return Snipe
