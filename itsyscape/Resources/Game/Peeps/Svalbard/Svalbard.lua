@@ -32,29 +32,32 @@ Svalbard.WEAPONS = {
 	{
 		weapon = "Svalbard_Attack_Melee",
 		animation = "Resources/Game/Animations/Svalbard_Attack_Melee/Script.lua",
-		bonuses = "Attack (Melee)"
+		bonuses = "Attack (Melee)",
+		specials = {}
 	},
 	{
 		weapon = "Svalbard_Attack_Magic",
 		animation = "Resources/Game/Animations/Svalbard_Attack_Magic/Script.lua",
-		bonuses = "Attack (Magic)"
+		bonuses = "Attack (Magic)",
+		specials = {
+			{
+				weapon = "Svalbard_Special_Dragonfyre",
+				animation = "Resources/Game/Animations/Svalbard_Special_Dragonfyre/Script.lua",
+				bonuses = "Special Attack (Dragonfyre)"
+			},
+			{
+				weapon = "Svalbard_Special_Magic",
+				animation = "Resources/Game/Animations/Svalbard_Special_Magic/Script.lua",
+				bonuses = "Special Attack (Magic)"
+			}
+		}
 	},
 	{
 		weapon = "Svalbard_Attack_Archery",
 		animation = "Resources/Game/Animations/Svalbard_Attack_Archery/Script.lua",
-		bonuses = "Attack (Archery)"
+		bonuses = "Attack (Archery)",
+		specials = {}
 	}
-}
-
-Svalbard.SPECIALS = {
-	-- {
-	-- 	weapon = require("Resources.Game.Items.X_Svalbard_Special_Magic.Logic"),
-	-- 	animation = "Resources/Game/Animations/Svalbard_Attack_Archery/Script.lua"
-	-- },
-	-- {
-	-- 	weapon = require("Resources.Game.Items.X_Svalbard_Special_Melee.Logic"),
-	-- 	animation = "Resources/Game/Animations/Svalbard_Special_Melee/Script.lua"
-	-- }
 }
 
 Svalbard.ORGAN_TRANSITION = {
@@ -92,7 +95,7 @@ Svalbard.ORGAN_TRANSITION = {
 	}
 }
 
-Svalbard.ROAR_COOLDOWN = 3
+Svalbard.ROAR_COOLDOWN = 1
 Svalbard.FLY_COOLDOWN  = 3
 
 Svalbard.ORGAN_DAMAGE = 1000
@@ -113,6 +116,7 @@ function Svalbard:new(resource, name, ...)
 	status.maxChaseDistance = math.huge
 
 	self:addPoke('equipXWeapon')
+	self:addPoke('equipSpecialWeapon')
 end
 
 function Svalbard:ready(director, game)
@@ -218,8 +222,6 @@ function Svalbard:onSpecial()
 end
 
 function Svalbard:recalculateEquipmentBonuses()
-	if true then return end
-
 	local gameDB = self:getDirector():getGameDB()
 	
 	self:addBehavior(EquipmentBonusesBehavior)
@@ -240,6 +242,8 @@ function Svalbard:recalculateEquipmentBonuses()
 				bonuses[stat] = record:get(stat) or 0
 			end
 		end
+	else
+		Log.warn("Svalbard has no armor equipped.")
 	end
 
 	if self.weaponName then
@@ -256,6 +260,8 @@ function Svalbard:recalculateEquipmentBonuses()
 				bonuses[stat] = bonuses[stat] + (record:get(stat) or 0)
 			end
 		end
+	else
+		Log.warn("Svalbard has no weapon equipped.")
 	end
 
 	Log.info("Svalbard's equipment bonuses updated.")
@@ -266,8 +272,37 @@ function Svalbard:onEquipArmor(armorName)
 	self:recalculateEquipmentBonuses()
 end
 
+function Svalbard:onEquipRandomSpecialWeapon()
+	local specials
+	for i = 1, #Svalbard.WEAPONS do
+		local weapon = Svalbard.WEAPONS[i]
+		if weapon.weapon == self.weaponID then
+			specials = weapon.specials
+			break
+		end
+	end
+
+	if not specials then
+		Log.warn("Can't equip random special weapon; current weapon '%s' not in weapon list.", self.weaponID)
+		return
+	elseif #specials == 0 then
+		Log.warn("Can't equip random special weapon; current weapon '%s' has no specials.", self.weaponID)
+		return
+	end
+
+	local weaponIndex = math.random(1, #specials)
+	local weapon = specials[weaponIndex].weapon
+
+	Utility.Peep.equipXWeapon(self, weapon)
+	Log.info("Equipped special weapon '%s'.", weapon)
+
+	self:applyCooldown(Svalbard.ROAR_COOLDOWN)
+end
+
 function Svalbard:onEquipRandomWeapon()
 	local weaponIndex = math.random(1, #Svalbard.WEAPONS)
+	weaponIndex = 2
+
 	local weapon = Svalbard.WEAPONS[weaponIndex].weapon
 
 	Utility.Peep.equipXWeapon(self, weapon)
@@ -322,6 +357,7 @@ function Svalbard:setXWeapon(xWeapon, weapons)
 		local weaponType = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), weaponID)
 		if Class.isType(weaponType, xWeaponType) then
 			self.weaponName = weapons[i].bonuses
+			self.weaponID = xWeapon:getID()
 			return
 		end
 	end
@@ -333,10 +369,38 @@ function Svalbard:setXWeapon(xWeapon, weapons)
 	end
 end
 
-function Svalbard:onEquipXWeapon(xWeapon)
-	self:setXWeapon(xWeapon, Svalbard.WEAPONS)
-	self:setXWeaponAnimation(xWeapon, Svalbard.WEAPONS)
+function Svalbard:equip(xWeapon, weapons)
+	self:setXWeapon(xWeapon, weapons)
+	self:setXWeaponAnimation(xWeapon, weapons)
 	self:recalculateEquipmentBonuses()
+end
+
+function Svalbard:onEquipXWeapon(xWeapon)
+	self:equip(xWeapon, Svalbard.WEAPONS)
+end
+
+function Svalbard:onEquipSpecialWeapon(xWeapon)
+	local specials
+	if Class.isCompatibleType(xWeapon, Weapon) then
+		for i = 1, #Svalbard.WEAPONS do
+			local weapon = Svalbard.WEAPONS[i]
+			for j = 1, #weapon.specials do
+				if weapon.specials[j].weapon == xWeapon:getID() then
+					specials = weapon.specials
+					break
+				end
+			end
+		end
+
+		if not specials then
+			Log.warn("Special XWeapon '%s' not found.", xWeapon:getID())
+		else
+			self:equip(xWeapon, specials)
+		end
+	else
+		Log.error("XWeapon not provided.")
+	end
+
 end
 
 function Svalbard:damageSkin(damage, skins)

@@ -7,7 +7,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Resting place of Svalbard.",
+	Value = "High in the mountains surrounding the Empty Ruins, resting place of Svalbard.",
 	Language = "en-US",
 	Resource = M._MAP
 }

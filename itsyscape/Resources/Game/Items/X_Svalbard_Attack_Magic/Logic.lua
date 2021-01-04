@@ -22,7 +22,7 @@ function SvalbardMagicAttack:getAttackRange()
 end
 
 function SvalbardMagicAttack:onEquip(peep)
-	peep:poke('equipXWeapon', self, "Attack (Melee)")
+	peep:poke('equipXWeapon', self, "Attack (Magic)")
 end
 
 function SvalbardMagicAttack:getWeaponType()
