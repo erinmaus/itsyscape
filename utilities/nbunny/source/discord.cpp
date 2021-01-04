@@ -67,7 +67,7 @@ void nbunny::Discord::update_activity(const std::string& details, const std::str
 	activity_manager->update_activity(activity_manager, &activity, nullptr, &update_activity_callback);
 }
 
-static void nbunny_discord_create(sol::this_state S)
+static std::shared_ptr<nbunny::Discord> nbunny_discord_create(sol::this_state S)
 {
 	lua_State* L = S;
 	auto discord = std::make_shared<nbunny::Discord>();
@@ -83,7 +83,7 @@ static void nbunny_discord_create(sol::this_state S)
 		luaL_error(L, "Could not intialize Discord: error code %d.", result);
 	}
 
-	sol::stack::push(L, discord);
+	return discord;
 }
 
 extern "C"
