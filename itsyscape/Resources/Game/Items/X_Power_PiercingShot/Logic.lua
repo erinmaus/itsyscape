@@ -16,7 +16,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
--- Shoots two arrows. If the first attack hits, so does the second.
+-- Shoots all targets along the path.
 local PiercingShot = Class(ProxyXWeapon)
 
 function PiercingShot:onAttackHit(peep, target, ...)
@@ -50,44 +50,23 @@ function PiercingShot:onAttackHit(peep, target, ...)
 end
 
 function PiercingShot:hitOnPath(peep, target)
-	local difference = Utility.Peep.getAbsolutePosition(peep) - Utility.Peep.getAbsolutePosition(target)
-	local range = difference:getLength()
-	local direction = difference / range
-
-	local ray = Ray(
-		Utility.Peep.getAbsolutePosition(peep) + Vector.UNIT_Y,
-		-direction)
-
-	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
-		if peep == p or target == p then
-			return false
-		end
-
-		local position = Utility.Peep.getAbsolutePosition(p)
-		local size = p:getBehavior(SizeBehavior)
-		if not size then
-			return false
-		else
-			size = size.size
-		end
-	
-		local min = position - Vector(size.x / 2, 0, size.z / 2)
-		local max = position + Vector(size.x / 2, size.y, size.z / 2)
-
-		local s, hitPosition = ray:hitBounds(min, max)
-		return s and (hitPosition - ray.origin):getLength() <= range
-	end)
+	local ray, range = Utility.Peep.getTargetLineOfSight(peep, target)
+	local hits = Utility.Peep.getPeepsAlongRay(peep, ray, range)
 
 	for i = 1, #hits do
-		local damage = self:rollDamage(peep, Weapon.PURPOSE_KILL, hits[i]):roll()
-		local attack = AttackPoke({
-			attackType = self:getBonusForStance(peep):lower(),
-			weaponType = self:getWeaponType(),
-			damage = damage,
-			aggressor = peep
-		})
+		if hits[i] ~= peep and hits[i] ~= target then
+			local damage = self:rollDamage(peep, Weapon.PURPOSE_KILL, hits[i]):roll()
+			local attack = AttackPoke({
+				attackType = self:getBonusForStance(peep):lower(),
+				weaponType = self:getWeaponType(),
+				damage = damage,
+				aggressor = peep
+			})
 
-		hits[i]:poke('receiveAttack', attack)
+			Log.info("Hit '%s' for %d damage.", hits[i]:getName(), damage)
+
+			hits[i]:poke('receiveAttack', attack)
+		end
 	end
 end
 
