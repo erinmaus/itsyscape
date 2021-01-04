@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
@@ -36,6 +37,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -1345,6 +1347,46 @@ function Utility.Peep.getAbsolutePosition(peep)
 	end
 end
 
+function Utility.Peep.getTargetLineOfSight(peep, target, offset)
+	offset = offset or Vector.UNIT_Y
+
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
+	local difference = peepPosition - targetPosition
+	local range = difference:getLength()
+	local direction = difference / range
+
+	return Ray(peepPosition + offset, -direction), range
+end
+
+function Utility.Peep.getPeepsAlongRay(peep, ray, range)
+	local peepsDistance = {}
+	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
+		local position = Utility.Peep.getAbsolutePosition(p)
+		local size = p:getBehavior(SizeBehavior)
+		if not size then
+			return false
+		else
+			size = size.size
+		end
+
+		local min = position - Vector(size.x / 2, 0, size.z / 2)
+		local max = position + Vector(size.x / 2, size.y, size.z / 2)
+
+		local s, hitPosition = ray:hitBounds(min, max)
+		local peepDistance = s and (hitPosition - ray.origin):getLength()
+		peepsDistance[p] = peepDistance
+
+		return s and peepDistance <= range
+	end)
+
+	table.sort(hits, function(a, b)
+		return peepsDistance[a] < peepsDistance[b]
+	end)
+
+	return hits
+end
+
 function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"
 
@@ -1537,7 +1579,7 @@ function Utility.Peep.getXWeapon(game, id, proxyID, ...)
 	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
 	local XType = require(XName)
 
-	return XType(proxyID or nil, game:getDirector():getItemManager(), ...)
+	return XType(proxyID or id, game:getDirector():getItemManager(), ...)
 end
 
 function Utility.Peep.equipXWeapon(peep, id)
