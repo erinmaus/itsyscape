@@ -384,6 +384,8 @@ function Weapon:onAttackHit(peep, target)
 	peep:poke('initiateAttack', attack)
 
 	self:applyCooldown(peep)
+
+	return attack
 end
 
 function Weapon:onAttackMiss(peep, target)
@@ -398,6 +400,8 @@ function Weapon:onAttackMiss(peep, target)
 	peep:poke('initiateAttack', attack)
 
 	self:applyCooldown(peep)
+
+	return attack
 end
 
 function Weapon:applyCooldown(peep)
