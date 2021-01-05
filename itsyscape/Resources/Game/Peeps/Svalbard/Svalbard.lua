@@ -26,6 +26,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local CreepActorAnimatorCortex = require "ItsyScape.Peep.Cortexes.CreepActorAnimatorCortex"
 
 local Svalbard = Class(Creep)
 Svalbard.WEAPONS = {
@@ -33,7 +34,13 @@ Svalbard.WEAPONS = {
 		weapon = "Svalbard_Attack_Melee",
 		animation = "Resources/Game/Animations/Svalbard_Attack_Melee/Script.lua",
 		bonuses = "Attack (Melee)",
-		specials = {}
+		specials = {
+			{
+				weapon = "Svalbard_Special_Melee",
+				animation = "Resources/Game/Animations/Svalbard_Special_Melee/Script.lua",
+				bonuses = "Special Attack (Melee)"
+			}
+		}
 	},
 	{
 		weapon = "Svalbard_Attack_Magic",
@@ -56,7 +63,13 @@ Svalbard.WEAPONS = {
 		weapon = "Svalbard_Attack_Archery",
 		animation = "Resources/Game/Animations/Svalbard_Attack_Archery/Script.lua",
 		bonuses = "Attack (Archery)",
-		specials = {}
+		specials = {
+			{
+				weapon = "Svalbard_Special_Archery",
+				animation = "Resources/Game/Animations/Svalbard_Special_Archery/Script.lua",
+				bonuses = "Special Attack (Archery)"
+			}
+		}
 	}
 }
 
@@ -96,7 +109,7 @@ Svalbard.ORGAN_TRANSITION = {
 }
 
 Svalbard.ROAR_COOLDOWN = 1
-Svalbard.FLY_COOLDOWN  = 3
+Svalbard.LAND_COOLDOWN = 3
 
 Svalbard.ORGAN_DAMAGE = 1000
 
@@ -403,7 +416,6 @@ function Svalbard:damageSkin(damage, skins)
 	for i = #skins, 1, -1 do
 		local skin = skins[i]
 		if damage >= skin.threshold then
-			Log.info("threshold", damage)
 			self:applyDamagedSkin(skin.skins)
 			break
 		end
@@ -437,6 +449,32 @@ function Svalbard:onOrgansDie()
 	self:poke('hit', AttackPoke {
 		damage = Svalbard.ORGAN_DAMAGE
 	})
+end
+
+function Svalbard:onFly()
+	local animation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_Fly/Script.lua")
+
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+	actor:playAnimation(
+		'x-svalbard-fly',
+		CreepActorAnimatorCortex.WALK_PRIORITY + 1,
+		animation)
+end
+
+function Svalbard:onLand()
+	local animation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Svalbard_Idle/Script.lua")
+
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+	actor:playAnimation(
+		'x-svalbard-fly',
+		CreepActorAnimatorCortex.WALK_PRIORITY + 1,
+		animation)
+
+	self:applyCooldown(Svalbard.LAND_COOLDOWN)
 end
 
 function Svalbard:update(...)
