@@ -23,6 +23,7 @@ function SvalbardArcheryAttack:getAttackRange()
 end
 
 function SvalbardArcheryAttack:onEquip(peep)
+	peep:poke('fly')
 	peep:poke('equipXWeapon', self, "Attack (Archery)")
 end
 
