@@ -26,6 +26,8 @@ function SvalbardsOrgans:new(resource, name, ...)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = 2000
 	status.maximumHitpoints = 2000
+
+	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 end
 
 function SvalbardsOrgans:onHit()
@@ -38,6 +40,14 @@ end
 
 function SvalbardsOrgans:onSvalbardDead()
 	Utility.Peep.poof(self)
+end
+
+function SvalbardsOrgans:onReceiveAttack(p)
+	if self.svalbard and p:getAggressor() == self.svalbard then
+		Log.info("Deflecting area-of-effect attack from Svalbard.")
+	else
+		Utility.Peep.Attackable.onReceiveAttack(self, p)
+	end
 end
 
 function SvalbardsOrgans:onDie()
