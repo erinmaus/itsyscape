@@ -561,7 +561,7 @@ function ActorView:updateAnimations()
 
 				animation.done = false
 			else
-				animation.done = animation.instance:play(animation.time, animation.next ~= nil, animations)
+				animation.done = animation.instance:play(animation.time, animation.next ~= nil)
 			end
 		end
 
