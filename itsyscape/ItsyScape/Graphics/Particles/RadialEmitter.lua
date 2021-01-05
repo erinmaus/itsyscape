@@ -59,7 +59,7 @@ function RadialEmitter:emitSingleParticle(particle)
 	local normal = Vector(
 		(math.random() * 2 - 1) * self.xRangeWidth + self.xRangeCenter,
 		(math.random() * 2 - 1) * self.yRangeWidth + self.yRangeCenter,
-		(math.random() * 2 - 1) * self.zRangeWidth + self.zRangeCenter)
+		(math.random() * 2 - 1) * self.zRangeWidth + self.zRangeCenter):getNormal()
 	local radius = math.random() * (self.maxRadius - self.minRadius) + self.minRadius
 	local velocity = math.random() * (self.maxSpeed - self.minSpeed) + self.minSpeed
 	local acceleration = math.random() * (self.maxAcceleration - self.minAcceleration) + self.minAcceleration
