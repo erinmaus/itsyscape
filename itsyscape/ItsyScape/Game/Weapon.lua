@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -98,6 +99,40 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
 	self.bonus = (bonuses[bonus] or 0)
+
+	if target:hasBehavior(PlayerBehavior) then
+		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
+		local targetStats
+		do
+			targetStats = peep:getBehavior(StatsBehavior)
+			if targetStats then
+				targetStats = targetStats.stats
+			end
+		end
+
+		local styleBonus = weapon:getBonusForStance(peep)
+
+		local accuracyBonusName = "Accuracy" .. styleBonus
+		local accuracyBonus = bonuses[accuracyBonusName]
+
+		local defenseBonusName = "Defense" .. styleBonus
+		local defenseBonus = targetBonuses[defenseBonusName]
+
+		local defenseLevel
+		if stats then
+			defenseLevel = targetStats:getSkill("Defense"):getBaseLevel()
+		else
+			defenseLevel = 1
+		end
+
+		local defenseMultiplier = (defenseLevel / 150) ^ 0.5
+		local multiplier = ((defenseMultiplier * defenseBonus - accuracyBonus * 2) / 150)
+		local clampedMultiplier = math.min(math.max(multiplier, 0), 1)
+
+		self.damageMultiplier = 1 - clampedMultiplier
+	else
+		self.damageMultiplier = 1
+	end
 end
 
 function Weapon.DamageRoll:getWeapon()
@@ -164,6 +199,18 @@ function Weapon.DamageRoll:setMinHit(value)
 	end
 end
 
+function Weapon.DamageRoll:getDamageMultiplier()
+	return self.damageMultiplier
+end
+
+function Weapon.DamageRoll:setDamageMultiplier(value)
+	if not value then
+		self.damageMultiplier = 0
+	else
+		self.damageMultiplier = value
+	end
+end
+
 function Weapon.DamageRoll:roll()
 	local minHit = self:getMinHit()
 	local maxHit = self:getMaxHit()
@@ -171,7 +218,7 @@ function Weapon.DamageRoll:roll()
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
 
-	return math.random(minHit, maxHit)
+	return math.floor(math.random(minHit, maxHit) * self.damageMultiplier)
 end
 
 Weapon.AttackRoll = Class()
