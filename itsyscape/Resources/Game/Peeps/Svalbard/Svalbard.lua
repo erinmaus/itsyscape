@@ -471,8 +471,9 @@ function Svalbard:onLand()
 	local actor = self:getBehavior(ActorReferenceBehavior).actor
 	actor:playAnimation(
 		'x-svalbard-fly',
-		CreepActorAnimatorCortex.WALK_PRIORITY + 1,
-		animation)
+		0,
+		animation,
+		true)
 
 	self:applyCooldown(Svalbard.LAND_COOLDOWN)
 end
