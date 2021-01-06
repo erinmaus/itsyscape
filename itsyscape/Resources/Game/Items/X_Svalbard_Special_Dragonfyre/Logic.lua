@@ -22,6 +22,7 @@ function SvalbardDragonfyreSpecial:perform(peep, target)
 	local ray, range = Utility.Peep.getTargetLineOfSight(peep, target)
 	local hits = Utility.Peep.getPeepsAlongRay(peep, ray, range)
 
+	local hitTarget = false
 	for i = 1, #hits do
 		local _, _, _, tile = Utility.Peep.getTile(hits[i])
 		if tile:hasFlag('impassable') then
@@ -42,7 +43,21 @@ function SvalbardDragonfyreSpecial:perform(peep, target)
 		end
 	end
 
-	Log.info("All targets hit by Dragonfyre.")
+	if not hitTarget then
+		local attack = AttackPoke({
+			attackType = self:getBonusForStance(peep):lower(),
+			weaponType = self:getWeaponType(),
+			damage = 0,
+			aggressor = peep
+		})
+
+		target:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+
+		Log.info("Missed primary target.")
+	end
+
+	Log.info("All secondary targets hit by Dragonfyre.")
 	self:applyCooldown(peep)
 end
 

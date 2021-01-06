@@ -23,6 +23,7 @@ function SvalbardMagicSpecial:perform(peep, target)
 	local ray, range = Utility.Peep.getTargetLineOfSight(peep, target)
 	local hits = Utility.Peep.getPeepsAlongRay(peep, ray, range)
 
+	local hitTarget = false
 	for i = 1, #hits do
 		local _, _, _, tile = Utility.Peep.getTile(hits[i])
 		if tile:hasFlag('impassable') then
@@ -44,10 +45,28 @@ function SvalbardMagicSpecial:perform(peep, target)
 			Log.info("'%s' was stunned for %.2f seconds by by bloody vomit!", hits[i]:getName(), cooldown.cooldown)
 			hits[i]:poke('receiveAttack', attack)
 			peep:poke('initiateAttack', attack)
+
+			if target == hits[i] then
+				hitTarget = true
+			end
 		end
 	end
 
-	Log.info("All targets hit by bloody vomit.")
+	if not hitTarget then
+		local attack = AttackPoke({
+			attackType = self:getBonusForStance(peep):lower(),
+			weaponType = self:getWeaponType(),
+			damage = 0,
+			aggressor = peep
+		})
+
+		target:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+
+		Log.info("Missed primary target.")
+	end
+
+	Log.info("All secondary targets hit by bloody vomit.")
 	self:applyCooldown(peep)
 end
 
