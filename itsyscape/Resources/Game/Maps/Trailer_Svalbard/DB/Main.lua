@@ -15,9 +15,9 @@ ItsyScape.Meta.ResourceDescription {
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
-		PositionY = 0,
-		PositionZ = 0,
+		PositionX = 224,
+		PositionY = 244,
+		PositionZ = 242,
 		Name = "Light_Ambient",
 		Map = M._MAP,
 		Resource = M["Light_Ambient"]
@@ -29,14 +29,14 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 255,
-		ColorGreen = 255,
-		ColorBlue = 255,
+		ColorRed = 231,
+		ColorGreen = 168,
+		ColorBlue = 194,
 		Resource = M["Light_Ambient"]
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 1,
+		Ambience = 0.8,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -58,9 +58,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 255,
-		ColorGreen = 255,
-		ColorBlue = 255,
+		ColorRed = 206,
+		ColorGreen = 232,
+		ColorBlue = 233,
 		Resource = M["Light_Sun"]
 	}
 
@@ -69,6 +69,32 @@ do
 		DirectionY = 3,
 		DirectionZ = 4,
 		Resource = M["Light_Sun"]
+	}
+end
+
+M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog",
+		Map = M._MAP,
+		Resource = M["Light_Fog"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog"]
+	}
+
+	ItsyScape.Meta.Fog {
+		ColorRed = 206,
+		ColorGreen = 232,
+		ColorBlue = 233,
+		NearDistance = 30,
+		FarDistance = 60,
+		Resource = M["Light_Fog"]
 	}
 end
 
