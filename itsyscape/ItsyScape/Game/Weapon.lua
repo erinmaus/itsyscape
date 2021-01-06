@@ -100,7 +100,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
 	self.bonus = (bonuses[bonus] or 0)
 
-	if target:hasBehavior(PlayerBehavior) then
+	if target and target:hasBehavior(PlayerBehavior) then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
 		local targetStats
 		do
