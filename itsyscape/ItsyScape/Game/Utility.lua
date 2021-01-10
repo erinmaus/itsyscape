@@ -704,7 +704,7 @@ function Utility.Combat.calcMaxHit(level, multiplier, bonus)
 end
 
 function Utility.Combat.calcAccuracyRoll(level, bonus)
-	return (level + 16) * (bonus + 64) * 3
+	return (level + 16) * (bonus + 64) * 4
 end
 
 function Utility.Combat.calcDefenseRoll(level, bonus)
