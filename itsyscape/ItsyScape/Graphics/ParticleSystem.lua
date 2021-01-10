@@ -14,6 +14,7 @@ ParticleSystem.DEFAULT_PARTICLES = 50
 
 function ParticleSystem:new(numParticles)
 	self.freeParticles = {}
+	self.freeParticlesByIndex = {}
 	self.particles = {}
 	self:resize(numParticles or ParticleSystem.DEFAULT_PARTICLES)
 
@@ -45,6 +46,8 @@ function ParticleSystem:emit(count)
 
 	while count > 0 do
 		local particleIndex = table.remove(self.freeParticles)
+		self.freeParticlesByIndex[particleIndex] = false
+
 		local particle = self.particles[particleIndex]
 
 		for i = 1, #self.emitters do
@@ -82,6 +85,11 @@ function ParticleSystem:update(delta)
 			for j = 1, #self.paths do
 				self.paths[j]:update(p, delta)
 			end
+		else
+			if not self.freeParticlesByIndex[i] then
+				table.insert(self.freeParticles, i)
+				self.freeParticlesByIndex[i] = true
+			end
 		end
 	end
 end
@@ -101,6 +109,7 @@ function ParticleSystem:resize(numParticles)
 		for i = 1, numNewParticles do
 			table.insert(self.particles, self:_newParticle())
 			table.insert(self.freeParticles, #self.particles)
+			self.freeParticlesByIndex[i] = true
 		end
 	else
 		Log.error("Can't resize particles to a smaller size.")
