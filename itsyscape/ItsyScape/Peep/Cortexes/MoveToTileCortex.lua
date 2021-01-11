@@ -32,7 +32,11 @@ function MoveToTileCortex:update(delta)
 		local position = peep:getBehavior(PositionBehavior).position
 		local targetTile = peep:getBehavior(TargetTileBehavior)
 		local movement = peep:getBehavior(MovementBehavior)
-		if targetTile and movement and position then
+		if movement.maxSpeed == 0 or movement.maxAcceleration == 0 or
+		   movement.velocityMultiplier == 0 or movement.accelerationMultiplier == 0
+		then
+			peep:removeBehavior(TargetTileBehavior)
+		elseif targetTile and movement and position then
 			local map = game:getDirector():getMap(peep:getBehavior(PositionBehavior).layer or 1)
 			if map then
 				movement.isStopping = false
