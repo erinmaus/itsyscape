@@ -45,7 +45,6 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurrect, self)
-	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
 	peep:listen('resourceObtained', self.onResourceObtained, self)
 	peep:listen('actionPerformed', self.onActionPerformed, self)
@@ -328,11 +327,14 @@ function HumanoidActorAnimatorCortex:update(delta)
 	local finished = {}
 
 	for peep in self:iterate() do
-		local velocity = peep:getBehavior(MovementBehavior).velocity
+		local movement = peep:getBehavior(MovementBehavior)
+		local velocity = movement.velocity
+		local canMove = movement.maxSpeed > 0 and movement.maxAcceleration > 0
+		                and movement.velocityMultiplier > 0 and movement.accelerationMultiplier > 0
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior) then
+		if (velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior)) and canMove then
 			if not self.walking[actor] then
 				local resource = self:getWalkAnimation(peep)
 				if resource then
