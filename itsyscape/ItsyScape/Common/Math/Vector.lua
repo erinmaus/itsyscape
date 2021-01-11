@@ -103,7 +103,12 @@ end
 
 -- Gets the length (i.e., magnitude) of the vector.
 function Vector:getLength()
-	return math.sqrt(self:getLengthSquared())
+	local lengthSquared = self:getLengthSquared()
+	if lengthSquared == 0 then
+		return 0
+	else
+		return math.sqrt(self:getLengthSquared())
+	end
 end
 
 -- Returns a normal of the vector.
