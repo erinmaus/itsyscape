@@ -20,7 +20,7 @@ end
 
 function WaitInstance:pending(time, windingDown)
 	if self.command then
-		return self.command:getDuration() <= time and not windingDown
+		return time <= self.command:getDuration() and not windingDown
 	end
 end
 
