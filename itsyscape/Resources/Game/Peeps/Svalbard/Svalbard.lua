@@ -200,7 +200,7 @@ function Svalbard:onBoss()
 		local position = self:getBehavior(PositionBehavior).position
 		local organs = Utility.spawnActorAtPosition(
 			self,
-			"SvalbardsOrgans",
+			"Svalbard_Organs",
 			position.x, position.y, position.z, 0)
 
 		if organs then
@@ -211,6 +211,21 @@ function Svalbard:onBoss()
 
 		Log.info("Boss fight started.")
 		self.fightStarted = true
+	end
+end
+
+function Svalbard:onVomitAdventurer(attack)
+	local target = attack:getAggressor()
+	if target then
+		local position = Utility.Peep.getPosition(target)
+
+		local actor = Utility.spawnActorAtPosition(
+			self,
+			"Svalbard_PartiallyDigestedAdventurer",
+			position.x, position.y, position.z, 2)
+		if actor then
+			Utility.Peep.attack(actor:getPeep(), target)
+		end
 	end
 end
 

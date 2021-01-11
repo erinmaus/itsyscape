@@ -152,23 +152,68 @@ ItsyScape.Meta.PeepMashinaState {
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
 
-ItsyScape.Resource.Peep "SvalbardsOrgans" {
+ItsyScape.Resource.Peep "Svalbard_Organs" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Svalbard.SvalbardOrgans",
-	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
+	Resource = ItsyScape.Resource.Peep "Svalbard_Organs"
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Svalbard's organs",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
+	Resource = ItsyScape.Resource.Peep "Svalbard_Organs"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Svalbard's organs, protected by his ribs and scales.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "SvalbardsOrgans"
+	Resource = ItsyScape.Resource.Peep "Svalbard_Organs"
+}
+
+ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Svalbard.PartiallyDigestedAdventurer",
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Partially digested adventurer",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Summoned by Svalbard, they suffer and yearn for death.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(100),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(100),
+	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
 }

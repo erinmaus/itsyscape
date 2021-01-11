@@ -16,6 +16,7 @@ local Svalbard = require "Resources.Game.Peeps.Svalbard.Svalbard"
 local CURRENT_HITS = B.Reference("Svalbard_AttackLogic", "CURRENT_HITS")
 local TARGET_HITS = B.Reference("Svalbard_AttackLogic", "TARGET_HITS")
 local REACHED_TARGET = B.Reference("Svalbard_AttackLogic", "REACHED_TARGET")
+local ATTACK_POKE = B.Reference("Svalbard_AttackLogic", "ATTACK_POKE")
 
 local MIN_HITS = 1
 local MAX_HITS = 2
@@ -65,6 +66,24 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Set {
 						value = true,
 						[REACHED_TARGET] = B.Output.result
+					}
+				}
+			},
+
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Peep.WasAttacked {
+						took_damage = true,
+						[ATTACK_POKE] = B.Output.attack_poke
+					},
+
+					Mashina.RandomCheck {
+						chance = 2 / 3
+					},
+
+					Mashina.Peep.PokeSelf {
+						event = "vomitAdventurer",
+						poke = ATTACK_POKE
 					}
 				}
 			},
