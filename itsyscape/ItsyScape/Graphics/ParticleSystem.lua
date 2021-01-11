@@ -49,6 +49,7 @@ function ParticleSystem:emit(count)
 		self.freeParticlesByIndex[particleIndex] = false
 
 		local particle = self.particles[particleIndex]
+		self:_initParticle(particle)
 
 		for i = 1, #self.emitters do
 			self.emitters[i]:emitSingleParticle(particle)
@@ -117,16 +118,33 @@ function ParticleSystem:resize(numParticles)
 end
 
 function ParticleSystem:_newParticle()
-	return {
-		positionX = 0, positionY = 0, positionZ = 0,
-		velocityX = 0, velocityY = 0, velocityZ = 0,
-		accelerationX = 0, accelerationY = 0, accelerationZ = 0,
-		rotation = 0, rotationAcceleration = 0, rotationVelocity = 0,
-		scaleX = 1, scaleY = 1,
-		lifetime = 0, age = 0,
-		textureIndex = 1,
-		colorRed = 1, colorGreen = 1, colorBlue = 1, colorAlpha = 1
-	}
+	return self:_initParticle({})
+end
+
+function ParticleSystem:_initParticle(p)
+	p.positionX = 0
+	p.positionY = 0
+	p.positionZ = 0
+	p.velocityX = 0
+	p.velocityY = 0
+	p.velocityZ = 0
+	p.accelerationX = 0
+	p.accelerationY = 0
+	p.accelerationZ = 0
+	p.rotation = 0
+	p.rotationAcceleration = 0
+	p.rotationVelocity = 0
+	p.scaleX = 1
+	p.scaleY = 1
+	p.lifetime = 0
+	p.age = 0
+	p.textureIndex = 1
+	p.colorRed = 1
+	p.colorGreen = 1
+	p.colorBlue = 1
+	p.colorAlpha = 1
+
+	return p
 end
 
 return ParticleSystem
