@@ -74,6 +74,8 @@ local function serializeObject(value, isStructure, isArray)
 				return "1 / 0", true
 			elseif value == -math.huge then
 				return "-(1 / 0)", true
+			elseif value ~= value then -- nan (not a number)
+				return "0 / 0", true
 			elseif value - math.floor(value) > 0 then
 				return StringBuilder.stringify(value, "%f"), true
 			else
@@ -94,6 +96,8 @@ local function serializeObject(value, isStructure, isArray)
 		end
 	elseif type(value) == 'nil' then
 		return "nil", true
+	elseif type(value) == 'function' then
+		return "function() end"
 	else
 		error(string.format("unhandled type %s", type(value)))
 	end
