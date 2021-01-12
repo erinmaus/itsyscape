@@ -51,7 +51,7 @@ function PartiallyDigestedAdventurer:ready(director, game)
 	movement.velocityMultiplier = 0
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = 6
+	status.maxChaseDistance = 3
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",
