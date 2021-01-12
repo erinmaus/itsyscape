@@ -76,9 +76,11 @@ function WasAttacked:deactivated(mashina, state, executor)
 end
 
 function WasAttacked:removed()
-	self.mashina:silence('receiveAttack', self.callback)
-	self.callback = nil
-	self.mashina = nil
+	if self.mashina then
+		self.mashina:silence('receiveAttack', self.callback)
+		self.callback = nil
+		self.mashina = nil
+	end
 end
 
 return WasAttacked
