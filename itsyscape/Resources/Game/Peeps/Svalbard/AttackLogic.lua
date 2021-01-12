@@ -30,6 +30,11 @@ local Tree = BTreeBuilder.Node() {
 		},
 
 		Mashina.Set {
+			value = 0,
+			[CURRENT_HITS] = B.Output.result
+		},
+
+		Mashina.Set {
 			value = false,
 			[REACHED_TARGET] = B.Output.result
 		},
@@ -70,32 +75,34 @@ local Tree = BTreeBuilder.Node() {
 				}
 			},
 
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Peep.WasAttacked {
-						took_damage = true,
-						[ATTACK_POKE] = B.Output.attack_poke
-					},
+			Mashina.ParallelSequence {
+				Mashina.Success {
+					Mashina.Sequence {
+						Mashina.Peep.WasAttacked {
+							took_damage = true,
+							[ATTACK_POKE] = B.Output.attack_poke
+						},
 
-					Mashina.RandomCheck {
-						chance = 2 / 3
-					},
+						Mashina.RandomCheck {
+							chance = 2 / 3
+						},
 
-					Mashina.Peep.PokeSelf {
-						event = "vomitAdventurer",
-						poke = ATTACK_POKE
+						Mashina.Peep.PokeSelf {
+							event = "vomitAdventurer",
+							poke = ATTACK_POKE
+						}
 					}
-				}
-			},
+				},
 
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Peep.DidAttack,
+				Mashina.Success {
+					Mashina.Sequence {
+						Mashina.Peep.DidAttack,
 
-					Mashina.Add {
-						left = CURRENT_HITS,
-						right = 1,
-						[CURRENT_HITS] = B.Output.result
+						Mashina.Add {
+							left = CURRENT_HITS,
+							right = 1,
+							[CURRENT_HITS] = B.Output.result
+						}
 					}
 				}
 			}
