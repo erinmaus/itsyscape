@@ -38,7 +38,11 @@ function EmissionStrategy:setDuration(min, max)
 	min = min or 1
 	max = max or min
 
-	self.duration = math.random() * (max - min) + min
+	if min == math.huge or max == math.huge then
+		self.duration = math.huge
+	else
+		self.duration = math.random() * (max - min) + min
+	end
 end
 
 function EmissionStrategy:update(delta, particleSystem)
@@ -50,7 +54,7 @@ function EmissionStrategy:getTime()
 end
 
 function EmissionStrategy:running()
-	return self.time < self.duration
+	return self.time <= self.duration
 end
 
 return EmissionStrategy

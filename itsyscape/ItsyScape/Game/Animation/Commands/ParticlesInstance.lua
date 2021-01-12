@@ -29,7 +29,7 @@ end
 
 function ParticlesInstance:pending(time, windingDown)
 	if self.command then
-		return time < self.command:getDuration()
+		return time <= self.command:getDuration() and not windingDown
 	end
 end
 
