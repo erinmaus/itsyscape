@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/Trailer_Svalbard/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Trailer_Svalbard.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Svalbard",
 	Language = "en-US",
