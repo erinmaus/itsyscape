@@ -36,10 +36,13 @@ function SvalbardDragonfyreSpecial:perform(peep, target)
 				aggressor = peep
 			})
 
-
 			Log.info("'%s' was incinerated by Dragonfyre!", hits[i]:getName())
 			hits[i]:poke('receiveAttack', attack)
 			peep:poke('initiateAttack', attack)
+
+			if target == hits[i] then
+				hitTarget = true
+			end
 		end
 	end
 
