@@ -19,6 +19,9 @@ local ATTACK_POKE = B.Reference("Svalbard_AttackLogic", "ATTACK_POKE")
 local MIN_HITS = 1
 local MAX_HITS = 2
 
+local CHANCE_VOMIT_ADVENTURER = 2 / 3
+local CHANCE_SUMMON_STORM     = 1 / 4
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Random {
@@ -82,7 +85,7 @@ local Tree = BTreeBuilder.Node() {
 						},
 
 						Mashina.RandomCheck {
-							chance = 2 / 3
+							chance = CHANCE_VOMIT_ADVENTURER
 						},
 
 						Mashina.Peep.PokeSelf {
@@ -108,9 +111,9 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Try {
 			Mashina.Sequence {
-				-- Mashina.RandomCheck {
-				-- 	chance = 1 / 4
-				-- },
+				Mashina.RandomCheck {
+					chance = CHANCE_SUMMON_STORM
+				},
 
 				Mashina.Peep.SetState {
 					state = "summon"
