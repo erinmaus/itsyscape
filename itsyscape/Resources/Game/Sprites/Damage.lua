@@ -97,6 +97,27 @@ Damage.PARTICLES = {
 		},
 		x = 8,
 		y = 16
+	},
+	['block'] = {
+		{
+			EmissionArea = { 'ellipse', 8, 1 },
+			Spread = { math.rad(360) },
+			RadialAcceleration = { math.rad(0), math.rad(360) },
+			ParticleLifetime = { 0.5, 1 },
+			Sizes = { 0, 1 },
+			Speed = { -16, -32 },
+			Colors = {
+				{ 1, 1, 1, 0 },
+				{ 1, 1, 1, 1 },
+				{ 1, 1, 1, 1 },
+				{ 1, 1, 1, 0 }
+			},
+
+			min = 20,
+			max = 20
+		},
+		x = 8,
+		y = 16
 	}
 }
 
