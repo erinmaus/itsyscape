@@ -107,8 +107,8 @@ ItsyScape.Meta.Equipment {
 
 ItsyScape.Meta.Equipment {
 	Name = "Attack (Archery)",
-	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(85),
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(80),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(85),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(80),
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
 
@@ -128,8 +128,8 @@ ItsyScape.Meta.Equipment {
 
 ItsyScape.Meta.Equipment {
 	Name = "Special Attack (Archery)",
-	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(100),
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(100),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(100),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(100),
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
 
