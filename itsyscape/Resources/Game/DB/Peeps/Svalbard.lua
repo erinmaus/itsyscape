@@ -152,6 +152,12 @@ ItsyScape.Meta.PeepMashinaState {
 	Resource = ItsyScape.Resource.Peep "Svalbard"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "summon",
+	Tree = "Resources/Game/Peeps/Svalbard/SummonLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Svalbard"
+}
+
 ItsyScape.Resource.Peep "Svalbard_Organs" {
 	-- Nothing.
 }

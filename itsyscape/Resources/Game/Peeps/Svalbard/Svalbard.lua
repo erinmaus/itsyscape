@@ -493,6 +493,22 @@ function Svalbard:onLand()
 	self:applyCooldown(Svalbard.LAND_COOLDOWN)
 end
 
+function Svalbard:onSummonStorm()
+	local _, _, layer = Utility.Peep.getTile(self)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:forecast(layer, 'Trailer_Svalbard_Storm', 'Fungal', {
+		gravity = { 0, -10, 0 },
+		wind = { -10, 0, 0 },
+		colors = {
+			{ 1, 1, 1, 1 }
+		},
+		minHeight = 20,
+		maxHeight = 25,
+		heaviness = 2,
+		init = false
+	})
+end
+
 function Svalbard:update(...)
 	Creep.update(self, ...)
 	Utility.Peep.face3D(self)
