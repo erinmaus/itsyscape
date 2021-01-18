@@ -19,26 +19,62 @@ local SvalbardArcherySpecial = Class(RangedWeapon)
 SvalbardArcherySpecial.AMMO = Equipment.AMMO_NONE
 
 function SvalbardArcherySpecial:perform(peep, target)
-	RangedWeapon.perform(self, peep, target)
 	self:hitSurroundingPeeps(peep, target)
 end
 
 function SvalbardArcherySpecial:hitSurroundingPeeps(peep, target)
+	local roll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
+	roll:setMinHit(math.floor(roll:getMaxHit() / 2 + 0.5))
+	roll:setDamageMultiplier(1)
+
 	local range = self:getAttackRange(peep) / 2
 	local sourcePosition = Utility.Peep.getAbsolutePosition(peep)
 
 	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
-		if peep == p or target == p then
+		if peep == p then
 			return false
 		end
 
 		local targetPosition = Utility.Peep.getAbsolutePosition(p)
-		return (targetPosition - sourcePosition):getLength() <= range
+		local isInRange = (targetPosition - sourcePosition):getLength() <= range
+		local isAtOrBelow = (sourcePosition.y - targetPosition.y) <= 1
+		return isInRange and isAtOrBelow
 	end)
 
+	local hitTarget = false
 	for i = 1, #hits do
-		RangedWeapon.perform(self, peep, hits[i])
+		local attack = AttackPoke({
+			attackType = self:getBonusForStance(peep):lower(),
+			weaponType = self:getWeaponType(),
+			damage = roll:roll(),
+			aggressor = peep
+		})
+
+
+		Log.info("'%s' was hit by the shock wave!", hits[i]:getName())
+		hits[i]:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+
+		if target == hits[i] then
+			hitTarget = true
+		end
 	end
+
+	if not hitTarget then
+		local attack = AttackPoke({
+			attackType = self:getBonusForStance(peep):lower(),
+			weaponType = self:getWeaponType(),
+			damage = 0,
+			aggressor = peep
+		})
+
+		target:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+
+		Log.info("Missed primary target.")
+	end
+
+	self:applyCooldown(peep)
 end
 
 function SvalbardArcherySpecial:getBonusForStance(peep)
@@ -51,7 +87,7 @@ end
 
 function SvalbardArcherySpecial:onEquip(peep)
 	peep:poke('land')
-	peep:poke('equipSpecialWeapon', self, "Special (Archery)")
+	peep:poke('equipSpecialWeapon', self, "Special Attack (Archery)")
 end
 
 function SvalbardArcherySpecial:getWeaponType()
