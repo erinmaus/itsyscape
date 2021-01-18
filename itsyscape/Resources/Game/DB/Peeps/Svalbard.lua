@@ -223,3 +223,15 @@ ItsyScape.Meta.Equipment {
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(100),
 	Resource = ItsyScape.Resource.Peep "Svalbard_PartiallyDigestedAdventurer"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Svalbard's Flurry",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SvalbardSnowArmor"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces damage by 50% multiplicatively for every stack of Svalbard's Flurry.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SvalbardSnowArmor"
+}

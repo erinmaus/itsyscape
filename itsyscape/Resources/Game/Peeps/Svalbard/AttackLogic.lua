@@ -20,7 +20,7 @@ local MIN_HITS = 1
 local MAX_HITS = 2
 
 local CHANCE_VOMIT_ADVENTURER = 2 / 3
-local CHANCE_SUMMON_STORM     = 1 / 4
+local CHANCE_SUMMON_STORM     = 1 / 2
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
@@ -120,8 +120,14 @@ local Tree = BTreeBuilder.Node() {
 				},
 			},
 
-			Mashina.Peep.PokeSelf {
-				event = "special"
+			Mashina.Sequence {
+				Mashina.Peep.PokeSelf {
+					event = "clearStorm"
+				},
+
+				Mashina.Peep.PokeSelf {
+					event = "special"
+				}
 			}
 		}
 	}

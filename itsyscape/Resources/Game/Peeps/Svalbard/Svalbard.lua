@@ -19,9 +19,11 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -507,7 +509,32 @@ function Svalbard:onSummonStorm()
 		heaviness = 2,
 		init = false
 	})
+
+	self:applyStormDebuffToAggressors()
 end
+
+function Svalbard:applyStormDebuffToAggressors()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local actor = self:getBehavior(ActorReferenceBehavior).actor
+	local hits = director:probe(self:getLayerName(), function(p)
+		local target = self:getBehavior(CombatTargetBehavior)
+		return target.actor == actor or p:hasBehavior(PlayerBehavior)
+	end)
+
+	local resource = gameDB:getResource("SvalbardSnowArmor", "Effect")
+	for i = 1, #hits do
+		Utility.Peep.applyEffect(hits[i], resource, false)
+	end
+end
+
+function Svalbard:onClearStorm()
+	local _, _, layer = Utility.Peep.getTile(self)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:forecast(layer, 'Trailer_Svalbard_Storm', nil)
+end
+
 
 function Svalbard:update(...)
 	Creep.update(self, ...)
