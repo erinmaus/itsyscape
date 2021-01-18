@@ -10,8 +10,6 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
-local Color = require "ItsyScape.Graphics.Color"
-local Svalbard = require "Resources.Game.Peeps.Svalbard.Svalbard"
 
 local CURRENT_HITS = B.Reference("Svalbard_AttackLogic", "CURRENT_HITS")
 local TARGET_HITS = B.Reference("Svalbard_AttackLogic", "TARGET_HITS")
@@ -108,8 +106,20 @@ local Tree = BTreeBuilder.Node() {
 			}
 		},
 
-		Mashina.Peep.PokeSelf {
-			event = "special"
+		Mashina.Try {
+			Mashina.Sequence {
+				-- Mashina.RandomCheck {
+				-- 	chance = 1 / 4
+				-- },
+
+				Mashina.Peep.SetState {
+					state = "summon"
+				},
+			},
+
+			Mashina.Peep.PokeSelf {
+				event = "special"
+			}
 		}
 	}
 }
