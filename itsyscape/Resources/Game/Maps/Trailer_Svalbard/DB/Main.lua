@@ -106,9 +106,9 @@ end
 M["Svalbard"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 32,
-		PositionY = 4,
-		PositionZ = 32,
+		PositionX = 53,
+		PositionY = 2,
+		PositionZ = 69,
 		Name = "Svalbard",
 		Map = M._MAP,
 		Resource = M["Svalbard"]
@@ -123,9 +123,9 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 32,
-		PositionY = 4,
-		PositionZ = 32,
+		PositionX = 53,
+		PositionY = 2,
+		PositionZ = 79,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]

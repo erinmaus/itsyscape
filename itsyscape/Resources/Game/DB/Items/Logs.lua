@@ -13,7 +13,8 @@ local LOGS = {
 		tier = 0,
 		weight = 8,
 		health = 6,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		variants = { "Snowy" }
 	},
 
 	["Shadow"] = {
@@ -155,6 +156,26 @@ for name, log in pairs(LOGS) do
 	}
 
 	Tree { ChopAction }
+
+	if log.variants then
+		for i = 1, #log.variants do
+			local VariantName = string.format("%sTree_%s", name, log.variants[i])
+			local Variant = ItsyScape.Resource.Prop(VariantName) {
+				ChopAction
+			}
+
+			ItsyScape.Meta.PeepID {
+				Value = log.peepID or "Resources.Game.Peeps.Props.BasicTree",
+				Resource = Variant
+			}
+
+			ItsyScape.Meta.ResourceName {
+				Value = string.format("%s tree", name),
+				Language = "en-US",
+				Resource = Variant
+			}
+		end
+	end
 
 	ItsyScape.Meta.ResourceName {
 		Value = string.format("%s tree", name),
