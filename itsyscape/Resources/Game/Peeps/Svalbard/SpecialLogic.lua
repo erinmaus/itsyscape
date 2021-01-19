@@ -11,6 +11,8 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
+local ATTACK_MAX_WAIT = 5
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Peep.PokeSelf {
@@ -19,7 +21,12 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.Invert {
-				Mashina.Peep.DidAttack
+				Mashina.ParallelTry {
+					Mashina.Peep.DidAttack,
+					Mashina.Peep.TimeOut {
+						duration = ATTACK_MAX_WAIT
+					}
+				}
 			}
 		},
 

@@ -328,8 +328,13 @@ function Svalbard:onEquipRandomSpecialWeapon()
 end
 
 function Svalbard:onEquipRandomWeapon()
-	local weaponIndex = math.random(1, #Svalbard.WEAPONS)
+	local weaponIndex
+	repeat 
+		weaponIndex = math.random(1, #Svalbard.WEAPONS)
+	until weaponIndex ~= self.previousWeaponIndex
+
 	local weapon = Svalbard.WEAPONS[weaponIndex].weapon
+	self.previousWeaponIndex = weaponIndex
 
 	Utility.Peep.equipXWeapon(self, weapon)
 	Log.info("Equipped weapon '%s'.", weapon)
@@ -478,6 +483,10 @@ function Svalbard:onFly()
 		'x-svalbard-fly',
 		CreepActorAnimatorCortex.WALK_PRIORITY + 1,
 		animation)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.offset = Vector.UNIT_Y * 5
+	size.zoom = 20
 end
 
 function Svalbard:onLand()
@@ -491,6 +500,10 @@ function Svalbard:onLand()
 		0,
 		animation,
 		true)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.offset = Vector.ZERO
+	size.zoom = 0
 
 	self:applyCooldown(Svalbard.LAND_COOLDOWN)
 end
@@ -520,7 +533,7 @@ function Svalbard:applyStormDebuffToAggressors()
 	local actor = self:getBehavior(ActorReferenceBehavior).actor
 	local hits = director:probe(self:getLayerName(), function(p)
 		local target = self:getBehavior(CombatTargetBehavior)
-		return target.actor == actor or p:hasBehavior(PlayerBehavior)
+		return (target and target.actor == actor) or p:hasBehavior(PlayerBehavior)
 	end)
 
 	local resource = gameDB:getResource("SvalbardSnowArmor", "Effect")
