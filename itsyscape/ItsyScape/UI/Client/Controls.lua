@@ -61,6 +61,7 @@ Controls.NAMES = {
 	['PLAYER_1_MOVE_LEFT'] = 'Move Left',
 	['PLAYER_1_MOVE_RIGHT'] = 'Move Right',
 	['PLAYER_1_FLEE'] = 'Flee from Combat',
+	['PLAYER_1_FOCUS'] = 'Toggle Camera Focus',
 	['STRATEGY_BAR_SLOT_1'] = 'Strategy Bar Slot 1',
 	['STRATEGY_BAR_SLOT_2'] = 'Strategy Bar Slot 2',
 	['STRATEGY_BAR_SLOT_3'] = 'Strategy Bar Slot 3',

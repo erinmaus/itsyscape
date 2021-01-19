@@ -104,6 +104,10 @@ function LocalPlayer:getActor()
 	return self.actor
 end
 
+function LocalPlayer:isReady()
+	return self.actor ~= false
+end
+
 function LocalPlayer:flee()
 	local peep = self.actor:getPeep()
 	peep:removeBehavior(CombatTargetBehavior)
@@ -113,6 +117,16 @@ end
 function LocalPlayer:getIsEngaged()
 	local peep = self.actor:getPeep()
 	return peep:hasBehavior(CombatTargetBehavior)
+end
+
+function LocalPlayer:getTarget()
+	local peep = self.actor:getPeep()
+	local target = peep:getBehavior(CombatTargetBehavior)
+	if target and target.actor then
+		return target.actor
+	else
+		return nil
+	end
 end
 
 function LocalPlayer:findPath(i, j, k)

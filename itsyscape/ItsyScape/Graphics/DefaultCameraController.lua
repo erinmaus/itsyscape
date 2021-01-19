@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CameraController = require "ItsyScape.Graphics.CameraController"
+local Keybinds = require "ItsyScape.UI.Keybinds"
 
 local DefaultCameraController = Class(CameraController)
 DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
@@ -39,6 +40,10 @@ function DefaultCameraController:new(...)
 		DefaultCameraController.CAMERA_VERTICAL_ROTATION)
 
 	self.targetDistance = self:getCamera():getDistance()
+
+	self.isTargetting = _CONF.targetCameraMode or false
+	self.isFocusDown = Keybinds['PLAYER_1_FOCUS']:isDown()
+	self.targetOpponentDistance = 0
 end
 
 function DefaultCameraController:getPlayerPosition()
@@ -56,6 +61,33 @@ function DefaultCameraController:getPlayerPosition()
 	end
 
 	return position or Vector.ZERO
+end
+
+function DefaultCameraController:getTargetPosition()
+	local delta = self:getApp():getFrameDelta()
+
+	local position, size
+	do
+		local gameView = self:getGameView()
+		local player = self:getGame():getPlayer()
+		if player:isReady() then
+			local target = player:getTarget()
+			if target then
+				local actor = gameView:getActor(target)
+				if actor then
+					local node = actor:getSceneNode()
+					local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
+					position = Vector(transform:transformPoint(0, 1, 0))
+
+					local min, max, zoom = target:getBounds()
+					local bounds = max - min
+					size = math.max(bounds.x, bounds.y, bounds.z) + zoom
+				end
+			end
+		end
+	end
+
+	return position or self:getPlayerPosition(), size or 0
 end
 
 function DefaultCameraController:mousePress(uiActive, x, y, button)
@@ -119,56 +151,56 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 	end
 end
 
-function DefaultCameraController:update(delta)
-	if _DEBUG then
-		local isShiftDown = love.keyboard.isDown('lshift') or
-		                    love.keyboard.isDown('rshift')
-		local isCtrlDown = love.keyboard.isDown('lctrl') or
-		                   love.keyboard.isDown('rctrl')
-		local speed
-		if isShiftDown then
-			speed = 12
-		else
-			speed = 4
+function DefaultCameraController:debugUpdate(delta)
+	local isShiftDown = love.keyboard.isDown('lshift') or
+	                    love.keyboard.isDown('rshift')
+	local isCtrlDown = love.keyboard.isDown('lctrl') or
+	                   love.keyboard.isDown('rctrl')
+	local speed
+	if isShiftDown then
+		speed = 12
+	else
+		speed = 4
+	end
+
+	do
+		if love.keyboard.isDown('up') then
+			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Z * speed * delta
 		end
 
-		do
-			if love.keyboard.isDown('up') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Z * speed * delta
-			end
-
-			if love.keyboard.isDown('down') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_Z * speed * delta
-			end
-		end
-
-		do
-			if love.keyboard.isDown('left') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_X * speed * delta
-			end
-			if love.keyboard.isDown('right') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_X * speed * delta
-			end
-		end
-
-		do
-			if love.keyboard.isDown('pageup') then
-				self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
-			end
-			if love.keyboard.isDown('pagedown') then
-				self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
-			end
-		end
-
-		if love.keyboard.isDown('space') then
-			self.cameraOffset = Vector(0)
+		if love.keyboard.isDown('down') then
+			self.cameraOffset = self.cameraOffset + Vector.UNIT_Z * speed * delta
 		end
 	end
 
+	do
+		if love.keyboard.isDown('left') then
+			self.cameraOffset = self.cameraOffset + -Vector.UNIT_X * speed * delta
+		end
+		if love.keyboard.isDown('right') then
+			self.cameraOffset = self.cameraOffset + Vector.UNIT_X * speed * delta
+		end
+	end
+
+	do
+		if love.keyboard.isDown('pageup') then
+			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
+		end
+		if love.keyboard.isDown('pagedown') then
+			self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
+		end
+	end
+
+	if love.keyboard.isDown('space') then
+		self.cameraOffset = Vector(0)
+	end
+end
+
+function DefaultCameraController:updateScrollPosition(delta)
 	local interpolatedDistance
 	do 
 		local currentDistance = self:getCamera():getDistance()
-		local targetDistance  = self.targetDistance
+		local targetDistance  = self.targetDistance + self.targetOpponentDistance
 
 		local scrollDelta = delta * DefaultCameraController.SCROLL_MULTIPLIER
 		local distanceStep = (targetDistance - currentDistance) * scrollDelta
@@ -178,8 +210,54 @@ function DefaultCameraController:update(delta)
 	self:getCamera():setDistance(interpolatedDistance)
 end
 
+function DefaultCameraController:updateTargetDistance()
+	local playerPosition = self:getPlayerPosition()
+	local targetPosition, targetSize = self:getTargetPosition()
+	local distance = (playerPosition - targetPosition):getLength()
+
+	self.targetOpponentDistance = (distance + targetSize)
+end
+
+function DefaultCameraController:update(delta)
+	if _DEBUG then
+		self:debugUpdate(delta)
+	end
+
+	local isFocusDown = Keybinds['PLAYER_1_FOCUS']:isDown()
+	if isFocusDown ~= self.isFocusDown and isFocusDown then
+		self.isTargetting = not self.isTargetting
+		if self.isTargetting then
+			Log.info("Target camera mode enabled.")
+		else
+			Log.info("Target camera mode disabled.")
+		end
+
+		_CONF.targetCameraMode = self.isTargetting
+	end
+	self.isFocusDown = isFocusDown
+
+	if self.isTargetting then
+		self:updateTargetDistance()
+	end
+
+	self:updateScrollPosition(delta)
+end
+
 function DefaultCameraController:draw()
-	self:getCamera():setPosition(self:getPlayerPosition() + self.cameraOffset)
+	local center
+	if self.isTargetting then
+		local playerPosition = self:getPlayerPosition()
+		local targetPosition = self:getTargetPosition()
+		local difference = playerPosition - targetPosition
+		local normal = difference:getNormal()
+		local distance = difference:getLength()
+
+		center = targetPosition + normal * (distance / 2)
+	else
+		center = self:getPlayerPosition()
+	end
+
+	self:getCamera():setPosition(center + self.cameraOffset)
 end
 
 return DefaultCameraController
