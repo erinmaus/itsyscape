@@ -16,11 +16,13 @@ local TARGET_HITS = B.Reference("Svalbard_AttackLogic", "TARGET_HITS")
 local REACHED_TARGET = B.Reference("Svalbard_AttackLogic", "REACHED_TARGET")
 local ATTACK_POKE = B.Reference("Svalbard_AttackLogic", "ATTACK_POKE")
 
-local MIN_HITS = 1
-local MAX_HITS = 2
+local MIN_HITS = 2
+local MAX_HITS = 3
+
+local ATTACK_MAX_WAIT = 5
 
 local CHANCE_VOMIT_ADVENTURER = 2 / 3
-local CHANCE_SUMMON_STORM     = 1 / 2
+local CHANCE_SUMMON_STORM     = 1 / 4
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
@@ -97,7 +99,13 @@ local Tree = BTreeBuilder.Node() {
 
 				Mashina.Success {
 					Mashina.Sequence {
-						Mashina.Peep.DidAttack,
+						Mashina.ParallelTry {
+							Mashina.Peep.DidAttack,
+
+							Mashina.Peep.TimeOut {
+								duration = ATTACK_MAX_WAIT
+							}
+						},
 
 						Mashina.Add {
 							left = CURRENT_HITS,
