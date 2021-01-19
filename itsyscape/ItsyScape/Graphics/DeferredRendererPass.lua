@@ -273,7 +273,7 @@ function DeferredRendererPass:drawFogNode(node, delta)
 	local fogStart = light:getPosition():getLength()
 	local fogEnd = light:getAttenuation()
 	local color = light:getColor()
-	local eye = self:getRenderer():getCamera():getEye()
+	local eye = self:getRenderer():getCamera():getPosition()
 
 	fogShader:send('scape_PositionTexture', self.gBuffer:getPosition())
 	fogShader:send('scape_ColorTexture', self.gBuffer:getColor())
