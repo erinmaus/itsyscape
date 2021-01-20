@@ -57,7 +57,9 @@ function Animation:loadFromFile(filename)
 		G.Tint = require "ItsyScape.Game.Animation.Commands.Tint"
 		G.Wait = require "ItsyScape.Game.Animation.Commands.Wait"
 		G.ApplySkin = require "ItsyScape.Game.Animation.Commands.ApplySkin"
+		G.Particles = require "ItsyScape.Game.Animation.Commands.Particles"
 		G.Blend = Blend
+		G.INFINITY = math.huge
 
 		G.SLOTS = {}
 		for k, v in pairs(Equipment) do

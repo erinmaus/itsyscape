@@ -115,6 +115,13 @@ function ModelSkin:loadFromFile(filename)
 		self.rotation = Quaternion(unpack(result.rotation))
 	end
 
+	if result.rotation and type(result.rotation) == 'string' then
+		local r = Quaternion[result.rotation]
+		if r and Class.isType(r, Quaternion) then
+			self.rotation = Quaternion(r:get())
+		end
+	end
+
 	if result.fullLit ~= nil then
 		if result.fullLit then
 			self.isFullLit = true

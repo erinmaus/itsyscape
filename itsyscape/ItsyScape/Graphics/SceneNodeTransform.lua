@@ -157,6 +157,13 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, o
 	end
 end
 
+function SceneNodeTransform:getPreviousTransform()
+	return self.previousTranslation or self.translation,
+	       self.previousRotation or self.rotation,
+	       self.previousScale or self.scale,
+	       self.previousOffset or self.offset
+end
+
 -- Rotates the transform by the axis angle.
 function SceneNodeTransform:rotateByAxisAngle(axis, angle)
 	self:setLocalRotation(self.rotation * Quaternion.fromAxisAngle(axis, angle))

@@ -85,6 +85,10 @@ function ActorView.Animatable:removeSceneNode(sceneNode)
 	end
 end
 
+function ActorView.Animatable:getResourceManager()
+	return self.actor.game:getResourceManager()
+end
+
 function ActorView.Animatable:getTransforms()
 	local skeleton = self:getSkeleton()
 	local numBones = skeleton:getNumBones()
@@ -557,7 +561,7 @@ function ActorView:updateAnimations()
 
 				animation.done = false
 			else
-				animation.done = animation.instance:play(animation.time, animation.next ~= nil, animations)
+				animation.done = animation.instance:play(animation.time, animation.next ~= nil)
 			end
 		end
 

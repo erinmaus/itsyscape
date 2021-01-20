@@ -46,6 +46,11 @@ function Animatable:removeSceneNode(sceneNode)
 	Class.ABSTRACT()
 end
 
+-- Gets the resource manager.
+function Animatable:getResourceManager()
+	return Class.ABSTRACT()
+end
+
 -- Gets the array of transforms.
 function Animatable:getTransforms()
 	return Class.ABSTRACT()
