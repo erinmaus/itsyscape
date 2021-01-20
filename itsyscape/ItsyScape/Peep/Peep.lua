@@ -215,6 +215,14 @@ function Peep:getResources(name, resourceTypeID)
 	end
 end
 
+-- Clears all resources with name 'name' belonging to the category 'resourceTypeID'.
+function Peep:clearResources(name, resourceTypeID)
+	local r = self.resources[resourceTypeID]
+	if r then
+		r[name] = nil
+	end
+end
+
 -- Gets the game state of the Peep.
 function Peep:getState()
 	return self.state

@@ -47,6 +47,8 @@ function LocalPlayer:spawn()
 		self.actor = actor
 		actor:getPeep():addBehavior(PlayerBehavior)
 
+		actor:getPeep():listen('actionPerformed', self.onPlayerActionPerformed, self)
+
 		local p = actor:getPeep():getBehavior(PlayerBehavior)
 		p.id = 1
 
@@ -67,9 +69,26 @@ function LocalPlayer:spawn()
 				end
 			end
 		end)
+
+		self.currentAction = nil
 	else
 		self.actor = false
 	end
+end
+
+local VOWELS = { a = true, e = true, i = true, o = true, u = true, y = true }
+function LocalPlayer:onPlayerActionPerformed(_, p)
+	local actionName = p.action:getName():lower()
+	if VOWELS[actionName:sub(-1)] then
+		actionName = actionName:sub(1, -2) .. "ing"
+	else
+		actionName = actionName .. "ing"
+	end
+
+	actionName = actionName:gsub("_", " ")
+	actionName = actionName:sub(1, 1):upper() .. actionName:sub(2)
+
+	self.currentAction = actionName
 end
 
 function LocalPlayer:poof()
@@ -85,6 +104,10 @@ function LocalPlayer:getActor()
 	return self.actor
 end
 
+function LocalPlayer:isReady()
+	return self.actor ~= false
+end
+
 function LocalPlayer:flee()
 	local peep = self.actor:getPeep()
 	peep:removeBehavior(CombatTargetBehavior)
@@ -94,6 +117,16 @@ end
 function LocalPlayer:getIsEngaged()
 	local peep = self.actor:getPeep()
 	return peep:hasBehavior(CombatTargetBehavior)
+end
+
+function LocalPlayer:getTarget()
+	local peep = self.actor:getPeep()
+	local target = peep:getBehavior(CombatTargetBehavior)
+	if target and target.actor then
+		return target.actor
+	else
+		return nil
+	end
 end
 
 function LocalPlayer:findPath(i, j, k)
@@ -135,6 +168,49 @@ function LocalPlayer:move(x, z)
 			peep:poke('walk', { i = i, j = j, k = k })
 		end
 	end
+end
+
+function LocalPlayer:updateDiscord()
+	local discord = self.game.discord
+	if not discord then
+		return
+	end
+
+	local line1, line2
+	if self.actor then
+		local playerPeep = self.actor:getPeep()
+
+		if playerPeep then
+			local target = playerPeep:getBehavior(CombatTargetBehavior)
+			if target and target.actor and target.actor:getPeep() then
+				line1 = "Fighting: " .. target.actor:getName()
+			end
+
+			local playerMap = Utility.Peep.getMapResource(playerPeep)
+			if playerMap and playerMap.name ~= self.currentPlayerMap then
+				line2 = "Location: " .. Utility.getName(playerMap, self.game.gameDB)
+			end
+		end
+
+		if not line1 then
+			line1 = self.currentAction or "Idling"
+		end
+
+		if not line2 then
+			line2 = "Location: Unknown"
+		end
+	else
+		line1 = "Location: Lobby"
+		line2 = "Idling"
+	end
+
+	if self.line1 ~= line1 or self.line2 ~= line2 then
+		discord:updateActivity(line1, line2)
+		Log.info("Updated activity ('%s', '%s')", line1, line2)
+	end
+
+	self.line1 = line1
+	self.line2 = line2
 end
 
 -- Moves the player to the specified position on the map via walking.

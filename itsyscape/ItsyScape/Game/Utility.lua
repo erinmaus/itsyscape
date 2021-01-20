@@ -7,6 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
@@ -35,6 +37,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -701,7 +704,7 @@ function Utility.Combat.calcMaxHit(level, multiplier, bonus)
 end
 
 function Utility.Combat.calcAccuracyRoll(level, bonus)
-	return (level + 16) * (bonus + 64) * 3
+	return (level + 16) * (bonus + 64) * 4
 end
 
 function Utility.Combat.calcDefenseRoll(level, bonus)
@@ -1344,6 +1347,46 @@ function Utility.Peep.getAbsolutePosition(peep)
 	end
 end
 
+function Utility.Peep.getTargetLineOfSight(peep, target, offset)
+	offset = offset or Vector.UNIT_Y
+
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
+	local difference = peepPosition - targetPosition
+	local range = difference:getLength()
+	local direction = difference / range
+
+	return Ray(peepPosition + offset, -direction), range
+end
+
+function Utility.Peep.getPeepsAlongRay(peep, ray, range)
+	local peepsDistance = {}
+	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
+		local position = Utility.Peep.getAbsolutePosition(p)
+		local size = p:getBehavior(SizeBehavior)
+		if not size then
+			return false
+		else
+			size = size.size
+		end
+
+		local min = position - Vector(size.x / 2, 0, size.z / 2)
+		local max = position + Vector(size.x / 2, size.y, size.z / 2)
+
+		local s, hitPosition = ray:hitBounds(min, max)
+		local peepDistance = s and (hitPosition - ray.origin):getLength()
+		peepsDistance[p] = peepDistance
+
+		return s and peepDistance <= range
+	end)
+
+	table.sort(hits, function(a, b)
+		return peepsDistance[a] < peepsDistance[b]
+	end)
+
+	return hits
+end
+
 function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"
 
@@ -1536,16 +1579,20 @@ function Utility.Peep.getXWeapon(game, id, proxyID, ...)
 	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
 	local XType = require(XName)
 
-	return XType(proxyID or nil, game:getDirector():getItemManager(), ...)
+	return XType(proxyID or id, game:getDirector():getItemManager(), ...)
 end
 
 function Utility.Peep.equipXWeapon(peep, id)
+	local Equipment = require "ItsyScape.Game.Equipment"
 	local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 
 	local xWeapon = Utility.Peep.getXWeapon(peep:getDirector():getGameInstance(), id)
 	local s, weapon = peep:addBehavior(WeaponBehavior)
 	if s then
 		weapon.weapon = xWeapon
+		if Class.isDerived(xWeapon:getType(), Equipment) then
+			xWeapon:onEquip(peep)
+		end
 	end
 end
 
@@ -1786,8 +1833,10 @@ function Utility.Peep.face3D(self)
 		if peep then
 			local selfPosition = Utility.Peep.getAbsolutePosition(self)
 			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+			local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-			rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
+			rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
 		end
 	else
 		local targetTile = self:getBehavior(TargetTileBehavior)
@@ -1797,8 +1846,10 @@ function Utility.Peep.face3D(self)
 
 			local selfPosition = Utility.Peep.getAbsolutePosition(self)
 			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+			local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
-			rotation.rotation = Quaternion.lookAt(tilePosition, selfPosition):getNormal()
+			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
 		else
 			rotation.rotation = Quaternion.IDENTITY
 		end
@@ -2484,11 +2535,11 @@ function Utility.Peep.Attackable:onReady(director)
 
 	local success = false
 	if mapObject then
-		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = mapObject }))
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = mapObject, Name = "" }))
 	end
 
 	if not success and resource then
-		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = resource }))
+		success = setEquipmentBonuses(gameDB:getRecord("Equipment", { Resource = resource, Name = "" }))
 	end
 
 	if success then

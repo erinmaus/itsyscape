@@ -20,7 +20,7 @@ local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
 local Wait, Metatable = Class(Command)
 
 -- Constructs a new Wait command.
-function Wait:new(time)
+function Wait:new(duration)
 	self.duration = duration or 0
 end
 

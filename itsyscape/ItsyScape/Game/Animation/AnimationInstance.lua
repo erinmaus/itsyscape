@@ -21,6 +21,7 @@ function AnimationInstance:new(animation, animatable)
 	end
 
 	self.times = {}
+	self.stopping = {}
 end
 
 function AnimationInstance:addChannel(channel)
@@ -61,10 +62,12 @@ function AnimationInstance:play(time, windingDown)
 		for j = channel.current, #channel do
 			local command = channel[j]
 
-			if windingDown then
+			if windingDown and not self.stopping[command] then
 				local duration = command:getDuration(true)
 				if duration > 0 and relativeTime > duration then
-					relativeTime = relativeTime % duration
+					relativeTime = 0
+					self.times[channel] = time
+					self.stopping[command] = true
 				end
 			end
 

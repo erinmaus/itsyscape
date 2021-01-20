@@ -66,10 +66,11 @@ solution "ItsyScape.Utilities"
 		configuration "windows"
 			defines { "NBUNNY_BUILDING_WINDOWS" }
 
-		links { "lua51" }
+		links { "lua51", "discord_game_sdk" }
 
 		files {
 			"nbunny/include/**.hpp",
+			"nbunny/include/**.h",
 			"nbunny/source/**.cpp"
 		}
 

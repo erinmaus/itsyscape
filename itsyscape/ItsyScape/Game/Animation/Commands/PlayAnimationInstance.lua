@@ -32,6 +32,14 @@ function PlayAnimationInstance:pending(time, windingDown)
 	end
 end
 
+function PlayAnimationInstance:getDuration(windingDown)
+	if self.command:getRepeatAnimation() then
+		return math.huge
+	else
+		return self.command:getDuration()
+	end
+end
+
 function PlayAnimationInstance:play(animatable, time)
 	if self.command:getKeep() then
 		time = math.min(time, self.animation:getDuration())
