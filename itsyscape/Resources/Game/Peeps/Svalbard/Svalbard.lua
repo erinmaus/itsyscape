@@ -115,6 +115,10 @@ Svalbard.LAND_COOLDOWN = 3
 
 Svalbard.ORGAN_DAMAGE = 1000
 
+Svalbard.CHASE_DISTANCE = 8
+
+Svalbard.SNEAK_QUEUE = {}
+
 function Svalbard:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Svalbard', ...)
 
@@ -233,6 +237,7 @@ end
 
 function Svalbard:onDie()
 	self.fightStarted = false
+	self:getCommandQueue(Svalbard.SNEAK_QUEUE):clear()
 end
 
 function Svalbard:onPreSpecial()
@@ -548,10 +553,37 @@ function Svalbard:onClearStorm()
 	stage:forecast(layer, 'Trailer_Svalbard_Storm', nil)
 end
 
+function Svalbard:followTarget()
+	local combatTarget = self:getBehavior(CombatTargetBehavior)
+	if combatTarget and combatTarget.actor then
+		local target = combatTarget.actor:getPeep()
+		local targetPosition = Utility.Peep.getAbsolutePosition(target)
+		local selfPosition = Utility.Peep.getAbsolutePosition(self)
+		local distance = (selfPosition - targetPosition):getLength()
+		if distance > Svalbard.CHASE_DISTANCE then
+			local targetI, targetJ, targetK = Utility.Peep.getTile(target)
+			if self.currentTargetI ~= targetI or
+			   self.currentTargetJ ~= targetJ
+			then
+				self.currentTargetI = targetI
+				self.currentTargetJ = targetJ
+
+				local walk = Utility.Peep.getWalk(self, targetI, targetJ, targetK, Svalbard.CHASE_DISTANCE, { asCloseAsPossible = false })
+				self:getCommandQueue(Svalbard.SNEAK_QUEUE):interrupt(walk)
+			end
+		end
+	end
+end
 
 function Svalbard:update(...)
 	Creep.update(self, ...)
-	Utility.Peep.face3D(self)
+
+	local isDead = self:getBehavior(CombatStatusBehavior).dead
+	if not isDead then
+		Utility.Peep.face3D(self)
+
+		self:followTarget()
+	end
 end
 
 return Svalbard
