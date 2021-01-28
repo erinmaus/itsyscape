@@ -761,6 +761,7 @@ include "Resources/Game/DB/Peeps/Sailor.lua"
 include "Resources/Game/DB/Peeps/Tutors.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
 include "Resources/Game/DB/Peeps/Tinkerer.lua"
+include "Resources/Game/DB/Peeps/CreepyDoll.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 
