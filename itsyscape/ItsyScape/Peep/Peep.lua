@@ -354,9 +354,9 @@ end
 function Peep:addBehavior(b, ...)
 	local behaviorType
 	if type(b) == 'number' then
-		behaviorType = behaviors.getTypeByID(b)
+		behaviorType = Behavior.getTypeByID(b)
 	elseif type(b) == 'string' then
-		behaviorType = behaviors.getTypeByName(b)
+		behaviorType = Behavior.getTypeByName(b)
 	elseif type(b) == 'table' then
 		behaviorType = b
 	end
