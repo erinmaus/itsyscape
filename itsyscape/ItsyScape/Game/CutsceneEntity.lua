@@ -13,6 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local CutsceneEntity = Class()
@@ -51,7 +52,15 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 	local currentTime
 
 	return function()
+		local movement = self.peep:getBehavior(MovementBehavior)
 		peepPosition = peepPosition or Utility.Peep.getPosition(self.peep)
+
+		if anchorPosition.x < peepPosition.x then
+			movement.facing = MovementBehavior.FACING_LEFT
+		else
+			movement.facing = MovementBehavior.FACING_RIGHT
+		end
+
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
@@ -98,6 +107,14 @@ function CutsceneEntity:wait(duration)
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
 		end
+	end
+end
+
+function CutsceneEntity:poke(...)
+	local args = { n = select('#', ...), ... }
+
+	return function()
+		self.peep:poke(unpack(args, 1, args.n))
 	end
 end
 
