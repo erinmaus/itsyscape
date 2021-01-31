@@ -692,4 +692,23 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Coelacanth_Dead"
 	}
+
+	ItsyScape.Resource.Peep "Coelacanth_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Fish.Coelacanth",
+		Resource = ItsyScape.Resource.Peep "Coelacanth_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Coelacanth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Coelacanth_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "When you see a living, swimming coelacanth, an eldritch horror often isn't far behind.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "Coelacanth_Default"
+	}
 end
