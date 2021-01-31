@@ -1336,6 +1336,15 @@ function Utility.Peep.getPosition(peep)
 	end
 end
 
+function Utility.Peep.setPosition(peep, position)
+	local p = peep:getBehavior(PositionBehavior)
+	if p then
+		p.position = position
+	else
+		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+	end
+end
+
 function Utility.Peep.getAbsolutePosition(peep)
 	local position = Utility.Peep.getPosition(peep)
 	local transform = Utility.Peep.getParentTransform(peep)
@@ -1993,14 +2002,20 @@ function Utility.Peep.getMapResource(peep)
 	local map = peep:getBehavior(MapResourceReferenceBehavior)
 	if map and map.map then
 		return map.map
-	else
-		local name = peep:getLayerName()
-		local stage = peep:getDirector():getGameInstance():getStage()
-		local mapPeep = stage:getMapScript(name)
-		if mapPeep then
-			return Utility.Peep.getResource(mapPeep)
-		end
 	end
+
+	return Utility.Peep.getMapResourceFromLayer(peep)
+end
+
+function Utility.Peep.getMapResourceFromLayer(peep)
+	local name = peep:getLayerName()
+	local stage = peep:getDirector():getGameInstance():getStage()
+	local mapPeep = stage:getMapScript(name)
+	if mapPeep then
+		return Utility.Peep.getResource(mapPeep)
+	end
+
+	return nil
 end
 
 function Utility.Peep.setMapResource(peep, map)

@@ -119,6 +119,7 @@ function FungalWeather:new(gameView, map, props)
 	self.maxHeight = props.maxHeight or 30
 	self.minSize = props.minSize or 2
 	self.maxSize = props.maxSize or 4
+	self.ceiling = props.ceiling or 0
 
 	self.colors = {}
 	do
@@ -166,10 +167,12 @@ function FungalWeather:update(delta)
 	local startI, startJ = map:getPosition()
 	local mapWidth, mapHeight = map:getSize()
 	local cellSize = map:getCellSize()
-	local velocity = (self.gravity + self.wind) * delta
-	local speed = self.gravity:getLength() * delta
-	local direction = -(self.gravity + self.wind):getNormal()
+	local gravity = self.gravity
+	local velocity = (gravity + self.wind) * delta
+	local speed = gravity:getLength() * delta
+	local direction = -(gravity + self.wind):getNormal()
 	local size = self.size
+	local ceiling = self.ceiling
 	local vertexIndex = 1
 	local vertices = FungalWeather.QUAD
 
@@ -204,7 +207,9 @@ function FungalWeather:update(delta)
 				local j = math.floor(p.z / cellSize + 1)
 
 				local height = math.max(map:getHeightAt(i, j), 0)
-				if p.y <= height then
+				if p.y <= height and gravity.y <= 0 then
+					p.moving = false
+				elseif p.y >= height + ceiling and gravity.y >= 0 then
 					p.moving = false
 				else
 					p.x = p.x + velocity.x
