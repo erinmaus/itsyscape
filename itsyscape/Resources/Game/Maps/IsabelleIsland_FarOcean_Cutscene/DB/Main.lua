@@ -139,6 +139,64 @@ do
 	}
 end
 
+M["Coelacanth1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 28,
+		PositionY = 10,
+		PositionZ = 28,
+		Name = "Coelacanth1",
+		Map = M._MAP,
+		Resource = M["Coelacanth1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Coelacanth_Default",
+		MapObject = M["Coelacanth1"]
+	}
+end
+
+M["Anchor_Coelacanth1_Target"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 10,
+		PositionY = 8,
+		PositionZ = 32,
+		Name = "Anchor_Coelacanth1_Target",
+		Map = M._MAP,
+		Resource = M["Anchor_Coelacanth1_Target"]
+	}
+end
+
+M["Coelacanth2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 12,
+		PositionZ = 28,
+		Name = "Coelacanth2",
+		Map = M._MAP,
+		Resource = M["Coelacanth2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Coelacanth_Default",
+		MapObject = M["Coelacanth2"]
+	}
+end
+
+M["Anchor_Coelacanth2_Target"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 42,
+		PositionY = 8,
+		PositionZ = 26,
+		Name = "Anchor_Coelacanth2_Target",
+		Map = M._MAP,
+		Resource = M["Anchor_Coelacanth2_Target"]
+	}
+end
+
 M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -160,7 +218,7 @@ M["Anchor_Wizard_Target"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 28,
-		PositionY = 0,
+		PositionY = 1,
 		PositionZ = 28,
 		Name = "Anchor_Wizard_Target",
 		Map = M._MAP,
@@ -189,7 +247,7 @@ M["Anchor_Archer_Target"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 36,
-		PositionY = 0,
+		PositionY = 1,
 		PositionZ = 34,
 		Name = "Anchor_Archer_Target",
 		Map = M._MAP,
@@ -213,7 +271,7 @@ M["Anchor_Player_Target"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 32,
-		PositionY = 0,
+		PositionY = 4,
 		PositionZ = 32,
 		Name = "Anchor_Player_Target",
 		Map = M._MAP,
@@ -234,6 +292,18 @@ do
 		Name = "Archer",
 		Cutscene = Cutscene,
 		Resource = M["Archer"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Coelacanth1",
+		Cutscene = Cutscene,
+		Resource = M["Coelacanth1"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Coelacanth2",
+		Cutscene = Cutscene,
+		Resource = M["Coelacanth2"]
 	}
 
 	ItsyScape.Meta.CutsceneMap {
