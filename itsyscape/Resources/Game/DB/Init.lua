@@ -556,6 +556,32 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Cutscene"
+
+	Meta "CutsceneMapObject" {
+		Name = Meta.TYPE_TEXT,
+		Cutscene = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CutsceneMap" {
+		Name = Meta.TYPE_TEXT,
+		Cutscene = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE,
+	}
+
+	Meta "CutscenePeep" {
+		Name = Meta.TYPE_TEXT,
+		Cutscene = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CutsceneProp" {
+		Name = Meta.TYPE_TEXT,
+		Cutscene = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
