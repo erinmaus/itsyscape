@@ -15,6 +15,7 @@ Meta "Fog" {
 	ColorNormalized = Meta.TYPE_INTEGER,
 	NearDistance = Meta.TYPE_REAL,
 	FarDistance = Meta.TYPE_REAL,
+	FollowTarget = Meta.TYPE_INTEGER,
 	Resource = Meta.TYPE_RESOURCE
 }
 

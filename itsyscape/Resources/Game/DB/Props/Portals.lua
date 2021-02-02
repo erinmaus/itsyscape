@@ -47,3 +47,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Portal_Default"
 }
+
+ItsyScape.Resource.Prop "Portal_Chasm" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicPortal",
+	Resource = ItsyScape.Resource.Prop "Portal_Chasm"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 10,
+	SizeY = 16,
+	SizeZ = 10,
+	MapObject = ItsyScape.Resource.Prop "Portal_Chasm"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Wormhole",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Chasm"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The horrors that must have endured to create a split in reality so massive.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Chasm"
+}

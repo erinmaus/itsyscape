@@ -19,6 +19,7 @@ local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
@@ -1065,7 +1066,7 @@ function LocalStage:tick()
 			offset = Vector.ZERO
 		end
 
-		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin)
+		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin, peep:hasBehavior(DisabledBehavior))
 	end
 end
 

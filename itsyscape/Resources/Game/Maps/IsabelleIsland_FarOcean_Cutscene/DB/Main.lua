@@ -97,8 +97,8 @@ do
 		ColorRed = 33,
 		ColorGreen = 33,
 		ColorBlue = 66,
-		NearDistance = 10,
-		FarDistance = 20,
+		NearDistance = 30,
+		FarDistance = 60,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -276,6 +276,23 @@ do
 		Name = "Anchor_Player_Target",
 		Map = M._MAP,
 		Resource = M["Anchor_Player_Target"]
+	}
+end
+
+M["AzathothPortal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 0,
+		PositionZ = 32,
+		Name = "AzathothPortal",
+		Map = M._MAP,
+		Resource = M["AzathothPortal"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		MapObject = M["AzathothPortal"]
 	}
 end
 

@@ -51,7 +51,12 @@ end
 
 function BasicPortal:getPropState()
 	local teleportal = self:getBehavior(TeleportalBehavior)
-	local position = Utility.Map.getAbsoluteTilePosition(
+	local absolutePosition = Utility.Map.getAbsoluteTilePosition(
+		self:getDirector(),
+		teleportal.i,
+		teleportal.j,
+		teleportal.layer or self:getBehavior(PositionBehavior).layer)
+	local localPosition = Utility.Map.getTilePosition(
 		self:getDirector(),
 		teleportal.i,
 		teleportal.j,
@@ -59,7 +64,9 @@ function BasicPortal:getPropState()
 
 	return {
 		color = { self.color:get() },
-		position = { position:get() }
+		absolutePosition = { absolutePosition:get() },
+		localPosition = { localPosition:get() },
+		i = teleportal.i, j = teleportal.j, layer = teleportal.layer
 	}
 end
 
