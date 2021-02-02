@@ -219,16 +219,18 @@ function PortalView:update(delta)
 
 	do
 		local mapSceneNode = gameView:getMapSceneNode(state.layer)
-		local mapSceneNodeParent = mapSceneNode:getParent()
-		mapSceneNode:setParent(nil)
+		if mapSceneNode then
+			local mapSceneNodeParent = mapSceneNode:getParent()
+			mapSceneNode:setParent(nil)
 
-		love.graphics.push('all')
-		love.graphics.setScissor()
-		selfRenderer:setCamera(selfCamera)
-		selfRenderer:draw(mapSceneNode, 0, PortalView.WIDTH, PortalView.HEIGHT)
-		love.graphics.pop()
+			love.graphics.push('all')
+			love.graphics.setScissor()
+			selfRenderer:setCamera(selfCamera)
+			selfRenderer:draw(mapSceneNode, 0, PortalView.WIDTH, PortalView.HEIGHT)
+			love.graphics.pop()
 
-		mapSceneNode:setParent(mapSceneNodeParent)
+			mapSceneNode:setParent(mapSceneNodeParent)
+		end
 	end
 end
 

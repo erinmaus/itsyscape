@@ -57,7 +57,7 @@ end
 
 function FarOcean:prepAzathoth()
 	local layer, azathoth = Utility.Map.spawnMap(
-		self, "Test123", Vector(1000, 0, 0), { isLayer = true })
+		self, "PreTutorial_MansionFloor1", Vector(1000, 0, 0))
 	azathoth:listen('ready', function()
 		azathoth:addBehavior(DisabledBehavior)
 		local director = self:getDirector()
@@ -68,8 +68,8 @@ function FarOcean:prepAzathoth()
 		local tele = portal:getBehavior(TeleportalBehavior)
 
 		local map = Utility.Peep.getMap(azathoth)
-		tele.i = 16
-		tele.j = 16
+		tele.i = 21
+		tele.j = 28
 		tele.layer = layer
 	end)
 end
