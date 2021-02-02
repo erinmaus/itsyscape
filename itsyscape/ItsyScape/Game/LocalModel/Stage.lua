@@ -216,8 +216,6 @@ function LocalStage:placeProp(propID, layer)
 		local prop = LocalProp(self.game, Peep)
 		prop:place(self.currentPropID, self.stageName, resource)
 
-		self.onPropPlaced(self, realID, prop)
-
 		self.currentPropID = self.currentPropID + 1
 		self.props[prop] = true
 
@@ -230,6 +228,8 @@ function LocalStage:placeProp(propID, layer)
 			if p then
 				p.layer = layer
 			end
+
+			self.onPropPlaced(self, realID, prop)
 		end)
 
 		return true, prop
