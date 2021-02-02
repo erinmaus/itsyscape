@@ -30,6 +30,12 @@ function Fog:tick()
 	self.fog:setColor(Color(unpack(state.color)))
 	self.fog:setFarDistance(state.distance.far)
 	self.fog:setNearDistance(state.distance.near)
+
+	if state.followTarget then
+		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_TARGET)
+	elseif state.followEye then
+		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_EYE)
+	end
 end
 
 return Fog

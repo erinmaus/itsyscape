@@ -1007,6 +1007,12 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getTilePosition(director, i, j, layer)
+	local stage = director:getGameInstance():getStage()
+	local center = stage:getMap(layer):getTileCenter(i, j)
+	return center
+end
+
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local mapScript = stage:getMapScript(layer)

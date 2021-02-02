@@ -71,16 +71,17 @@ function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 
 			local w, h = texture:getResource():getWidth(), texture:getResource():getHeight() 
 			local columns = def.columns or 1
-			local cellSize = w / columns
-			local rows = math.max(h / cellSize, 1)
+			local cellSizeX = w / columns
+			local rows = def.rows or math.max(h / cellSizeX, 1)
+			local cellSizeY = h / rows
 
 			self.textures = {}
 			for j = 1, rows do
 				for i = 1, columns do
-					local left = (i - 1) * cellSize / w
-					local right = i * cellSize / w
-					local top = (j - 1) * cellSize / h
-					local bottom = j * cellSize / h
+					local left = (i - 1) * cellSizeX / w
+					local right = i * cellSizeX / w
+					local top = (j - 1) * cellSizeY / h
+					local bottom = j * cellSizeY / h
 
 					table.insert(self.textures, {
 						left = left, right = right,

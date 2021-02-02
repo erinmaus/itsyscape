@@ -8,10 +8,15 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cutscene = require "ItsyScape.Game.Cutscene"
+local Color = require "ItsyScape.Graphics.Color"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local FarOcean = Class(Map)
 
@@ -22,14 +27,8 @@ end
 function FarOcean:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local s = Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_Ship_Spawn")
-	s:listen('ready', function()
-		self.cutscene = Cutscene(
-			self:getDirector():getGameDB():getResource("IsabelleIsland_FarOcean_Sink", "Cutscene"),
-			Utility.Peep.getPlayer(self),
-			self:getDirector(),
-			self:getLayerName())
-	end)
+	self:prepShip()
+	self:prepAzathoth()
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'IsabelleIsland_FarOcean_Cutscene_Bubbles', 'Fungal', {
@@ -43,6 +42,36 @@ function FarOcean:onLoad(filename, args, layer)
 		ceiling = 20,
 		heaviness = 0.5
 	})
+end
+
+function FarOcean:prepShip()
+	local ship = Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_Ship_Spawn")
+	ship:listen('ready', function()
+		self.cutscene = Cutscene(
+			self:getDirector():getGameDB():getResource("IsabelleIsland_FarOcean_Sink", "Cutscene"),
+			Utility.Peep.getPlayer(self),
+			self:getDirector(),
+			self:getLayerName())
+	end)
+end
+
+function FarOcean:prepAzathoth()
+	local layer, azathoth = Utility.Map.spawnMap(
+		self, "Test123", Vector(1000, 0, 0), { isLayer = true })
+	azathoth:listen('ready', function()
+		azathoth:addBehavior(DisabledBehavior)
+		local director = self:getDirector()
+		local hits = director:probe(self:getLayerName(), Probe.namedMapObject("AzathothPortal"))
+		local portal = hits[1]
+
+		portal:setColor(Color(1, 0.4, 0.4, 1))
+		local tele = portal:getBehavior(TeleportalBehavior)
+
+		local map = Utility.Peep.getMap(azathoth)
+		tele.i = 16
+		tele.j = 16
+		tele.layer = layer
+	end)
 end
 
 function FarOcean:update(...)
