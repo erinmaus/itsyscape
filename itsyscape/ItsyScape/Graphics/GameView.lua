@@ -550,7 +550,7 @@ function GameView:forecast(layer, key, id, props)
 
 	if WeatherType then
 		local map = self.mapMeshes[layer].weatherMap
-		local weather = WeatherType(self, map, props or {})
+		local weather = WeatherType(self, layer, map, props or {})
 		self.weather[key] = weather
 	end
 end
