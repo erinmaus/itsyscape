@@ -105,7 +105,7 @@ function FungalWeather.SceneNode:draw(renderer, delta)
 	end
 end
 
-function FungalWeather:new(gameView, map, props)
+function FungalWeather:new(gameView, layer, map, props)
 	Weather.new(self, gameView, map)
 
 	props = props or {}
@@ -149,7 +149,7 @@ function FungalWeather:new(gameView, map, props)
 	self.mesh:setAttributeEnabled("VertexColor", true)
 
 	self.node = FungalWeather.SceneNode(self)
-	self.node:setParent(gameView:getScene())
+	self.node:setParent(gameView:getMapSceneNode(layer))
 
 	if props.init == nil or props.init then
 		for i = 1, props.steps or 100 do

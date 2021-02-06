@@ -87,7 +87,7 @@ function RainWeather.SceneNode:draw(renderer, delta)
 	end
 end
 
-function RainWeather:new(gameView, map, props)
+function RainWeather:new(gameView, layer, map, props)
 	Weather.new(self, gameView, map)
 
 	props = props or {}
@@ -120,7 +120,7 @@ function RainWeather:new(gameView, map, props)
 	self.mesh:setAttributeEnabled("VertexPosition", true)
 
 	self.node = RainWeather.SceneNode(self)
-	self.node:setParent(gameView:getScene())
+	self.node:setParent(gameView:getMapSceneNode(layer))
 
 	if props.init then
 		for i = 1, props.steps or 100 do
