@@ -1,4 +1,4 @@
-local DURATION = 5
+local DURATION = 10
 
 return Parallel {
 	Parallel {
@@ -28,6 +28,11 @@ return Parallel {
 		Archer:playAnimation("Human_Idle_SleepingInVat", "main", 1, math.random()),
 		Archer:lerpPosition("Anchor_Archer_Target", DURATION),
 		Archer:poke('die')
+	},
+
+	Sequence {
+		Player:wait(DURATION - 5),
+		Map:poke('prepAzathoth')
 	},
 
 	Sequence {

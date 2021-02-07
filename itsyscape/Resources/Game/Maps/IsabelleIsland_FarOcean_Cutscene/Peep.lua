@@ -28,7 +28,6 @@ function FarOcean:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
 	self:prepShip()
-	self:prepAzathoth()
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'IsabelleIsland_FarOcean_Cutscene_Bubbles', 'Fungal', {
@@ -47,38 +46,41 @@ end
 function FarOcean:prepShip()
 	local ship = Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_Ship_Spawn")
 	ship:listen('ready', function()
-		self.cutscene = Cutscene(
-			self:getDirector():getGameDB():getResource("IsabelleIsland_FarOcean_Sink", "Cutscene"),
-			Utility.Peep.getPlayer(self),
-			self:getDirector(),
-			self:getLayerName())
+		Utility.Map.playCutscene(self, "IsabelleIsland_FarOcean_Sink")
 	end)
 end
 
-function FarOcean:prepAzathoth()
+function FarOcean:onPrepAzathoth()
 	local layer, azathoth = Utility.Map.spawnMap(
 		self, "PreTutorial_MansionFloor1", Vector(1000, 0, 0))
 	azathoth:listen('ready', function()
 		azathoth:addBehavior(DisabledBehavior)
-		local director = self:getDirector()
-		local hits = director:probe(self:getLayerName(), Probe.namedMapObject("AzathothPortal"))
-		local portal = hits[1]
 
-		portal:setColor(Color(1, 0.4, 0.4, 1))
-		local tele = portal:getBehavior(TeleportalBehavior)
-
-		local map = Utility.Peep.getMap(azathoth)
-		tele.i = 21
-		tele.j = 28
-		tele.layer = layer
+		self:pushPoke('openPortal', layer)
 	end)
+end
+
+function FarOcean:onOpenPortal(layer)
+	local _, actor = Utility.spawnMapObjectAtAnchor(self, "AzathothPortal", "Anchor_Portal", 0)
+	local portal = actor:getPeep()
+	portal:setColor(Color(1, 0.4, 0.4, 1))
+
+	local tele = portal:getBehavior(TeleportalBehavior)
+	tele.i = 21
+	tele.j = 28
+	tele.layer = layer
+
+	Utility.Map.playCutscene(self, "IsabelleIsland_FarOcean_Portal")
+end
+
+function FarOcean:onMovePlayer()
+	local player = Utility.Peep.getPlayer(self)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:movePeep(player, "PreTutorial_MansionFloor1", "Anchor_Spawn")
 end
 
 function FarOcean:update(...)
 	Map.update(self, ...)
-	if self.cutscene then
-		self.cutscene:update()
-	end
 end
 
 return FarOcean
