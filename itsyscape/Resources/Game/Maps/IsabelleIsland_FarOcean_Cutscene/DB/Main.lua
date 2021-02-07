@@ -255,6 +255,23 @@ do
 	}
 end
 
+M["Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 0,
+		PositionZ = 10,
+		Name = "Cthulhu",
+		Map = M._MAP,
+		Resource = M["Cthulhu"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu",
+		MapObject = M["Cthulhu"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -279,12 +296,36 @@ do
 	}
 end
 
-M["AzathothPortal"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Portal_Target"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		ScaleX = 2,
+		ScaleY = 2,
+		ScaleZ = 2,
+		Name = "Anchor_Portal_Target",
+		Map = M._MAP,
+		Resource = M["Anchor_Portal_Target"]
+	}
+end
+
+M["Anchor_Portal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 32,
+		ScaleX = 0.01,
+		ScaleY = 0.01,
+		ScaleZ = 0.01,
+		Name = "Anchor_Portal",
+		Map = M._MAP,
+		Resource = M["Anchor_Portal"]
+	}
+end
+
+M["AzathothPortal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "AzathothPortal",
 		Map = M._MAP,
 		Resource = M["AzathothPortal"]
@@ -327,5 +368,15 @@ do
 		Name = "CapnRavensShip",
 		Cutscene = Cutscene,
 		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_Pirate"
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_FarOcean_Portal"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Portal",
+		Cutscene = Cutscene,
+		Resource = M["AzathothPortal"]
 	}
 end
