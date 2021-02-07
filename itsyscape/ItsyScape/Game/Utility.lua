@@ -214,7 +214,8 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 	end
 
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
-	local actor, prop = stage:instantiateMapObject(mapObject)
+
+	local actor, prop = stage:instantiateMapObject(mapObject, Utility.Peep.getLayer(peep))
 	
 	if actor then
 		local actorPeep = actor:getPeep()
@@ -1348,6 +1349,30 @@ function Utility.Peep.getParentTransform(peep)
 	end
 
 	return nil
+end
+
+function Utility.Peep.getLayer(peep)
+	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
+		return peep:getLayer()
+	end
+
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		return position.layer
+	end
+
+	return nil
+end
+
+function Utility.Peep.setLayer(peep, layer)
+	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
+		Log.error("Can't change layer of map '%s' with this method.", peep:getName())
+	else
+		local position = peep:getBehavior(PositionBehavior)
+		if position then
+			position.layer = layer
+		end
+	end
 end
 
 function Utility.Peep.getPosition(peep)
