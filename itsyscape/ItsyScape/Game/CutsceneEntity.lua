@@ -83,6 +83,41 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 	end
 end
 
+function CutsceneEntity:lerpScale(anchor, duration, tween)
+	local E = 0.1
+	tween = Tween[tween or 'linear'] or Tween.linear
+
+	local mapResource = Utility.Peep.getMapResource(self.peep)
+	local anchorScale = Vector(
+		Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+	local peepScale
+	local currentTime
+
+	return function()
+		peepScale = peepScale or Utility.Peep.getScale(self.peep)
+
+		if duration then
+			repeat
+				currentTime = (currentTime or 0) + self.game:getDelta()
+
+				local delta = currentTime / duration
+				local newScale = peepScale:lerp(anchorScale, tween(delta))
+				Utility.Peep.setScale(self.peep, newScale)
+
+				coroutine.yield()
+			until currentTime > duration
+		else
+			local distance
+			repeat
+				local newScale = Utility.Peep.getScale(self.peep):lerp(anchorScale, self.game:getDelta())
+				Utility.Peep.setScale(self.peep, newScale)
+				distance = (anchorScale - newScale):getLength()
+				coroutine.yield()
+			until distance <= E
+		end
+	end
+end
+
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
 	slot = slot or 'x-cutscene'
 	priority = priority or 1
@@ -107,6 +142,18 @@ function CutsceneEntity:wait(duration)
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
 		end
+	end
+end
+
+function CutsceneEntity:addBehavior(behavior)
+	return function()
+		self.peep:addBehavior(behavior)
+	end
+end
+
+function CutsceneEntity:removeBehavior(behavior)
+	return function()
+		self.peep:removeBehavior(behavior)
 	end
 end
 
