@@ -60,6 +60,42 @@ function CutsceneMap:lerpPosition(anchor, duration, tween)
 	end
 end
 
+function CutsceneMap:lerpScale(anchor, duration, tween)
+	local E = 0.1
+	tween = Tween[tween or 'linear'] or Tween.linear
+
+	local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+	local anchorScale = Vector(
+		Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+	local peepScale
+	local currentTime
+
+	return function()
+		self.peep:addBehavior(MapOffsetBehavior)
+
+		peepScale = peepScale or self.peep:getBehavior(MapOffsetBehavior).offset
+		if duration then
+			repeat
+				currentTime = (currentTime or 0) + self.game:getDelta()
+
+				local delta = currentTime / duration
+				local newScale = peepScale:lerp(anchorScale, tween(delta))
+				self.peep:getBehavior(MapOffsetBehavior).offset = newScale
+
+				coroutine.yield()
+			until currentTime > duration
+		else
+			local distance
+			repeat
+				local newScale = Utility.Peep.getScale(self.peep):lerp(anchorScale, self.game:getDelta())
+				self.peep:getBehavior(MapOffsetBehavior).offset = newScale
+				distance = (anchorScale - newScale):getLength()
+				coroutine.yield()
+			until distance <= E
+		end
+	end
+end
+
 function CutsceneMap:slerpRotation(anchor, duration, tween)
 	local E = 0.01
 	tween = Tween[tween or 'linear'] or Tween.linear
@@ -104,6 +140,14 @@ function CutsceneMap:wait(duration)
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
 		end
+	end
+end
+
+function CutsceneMap:poke(...)
+	local args = { n = select('#', ...), ... }
+
+	return function()
+		self.peep:poke(unpack(args, 1, args.n))
 	end
 end
 
