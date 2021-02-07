@@ -1007,6 +1007,19 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.playCutscene(peep, resource)
+	local director = peep:getDirector()
+
+	if type(resource) == 'string' then
+		resource = director:getGameDB():getResource(resource, "Cutscene")
+	end
+
+	return director:addPeep(
+		peep:getLayerName(),
+		require "ItsyScape.Peep.Peeps.Cutscene",
+		resource)
+end
+
 function Utility.Map.getTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local center = stage:getMap(layer):getTileCenter(i, j)
@@ -1103,7 +1116,11 @@ function Utility.Map.getAnchorScale(game, map, anchor)
 
 	if mapObject then
 		local x, y, z = mapObject:get("ScaleX"), mapObject:get("ScaleY"), mapObject:get("ScaleZ")
-		return math.max(x or 1, 1), math.max(y or 1, 1), math.max(z or 1, 1)
+		if x == 0 then x = 1 end
+		if y == 0 then y = 1 end
+		if z == 0 then z = 1 end
+		
+		return x, y, z
 	end
 
 	return nil, nil, nil
@@ -1348,6 +1365,42 @@ function Utility.Peep.setPosition(peep, position)
 		p.position = position
 	else
 		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+	end
+end
+
+function Utility.Peep.getScale(peep)
+	local scale = peep:getBehavior(ScaleBehavior)
+	if scale then
+		return scale.scale
+	else
+		return Vector.ZERO
+	end
+end
+
+function Utility.Peep.setScale(peep, scale)
+	local p = peep:getBehavior(ScaleBehavior)
+	if p then
+		p.scale = scale
+	else
+		Log.warn("Peep '%s' doesn't have a scale; can't set new scale.", peep:getName())
+	end
+end
+
+function Utility.Peep.getRotation(peep)
+	local rotation = peep:getBehavior(RotationBehavior)
+	if rotation then
+		return rotation.rotation
+	else
+		return Quaternion.IDENTITY
+	end
+end
+
+function Utility.Peep.setRotation(peep, rotation)
+	local p = peep:getBehavior(RotationBehavior)
+	if p then
+		p.rotation = rotation
+	else
+		Log.warn("Peep '%s' doesn't have a rotation; can't set new rotation.", peep:getName())
 	end
 end
 
@@ -1929,7 +1982,7 @@ function Utility.Peep.getResource(peep)
 end
 
 function Utility.Peep.setResource(peep, resource)
-	if resource == false then
+	if not resource then
 		peep:removeBehavior(MappResourceBehavior)
 	else
 		local behavior = peep:getBehavior(MappResourceBehavior)
@@ -2088,6 +2141,10 @@ function Utility.Peep.poof(peep)
 		local prop = peep:getBehavior(PropReferenceBehavior)
 		if prop and prop.prop then
 			stage:removeProp(prop.prop)
+		end
+
+		if not actor and not prop then
+			peep:getDirector():removePeep(peep)
 		end
 	end
 
