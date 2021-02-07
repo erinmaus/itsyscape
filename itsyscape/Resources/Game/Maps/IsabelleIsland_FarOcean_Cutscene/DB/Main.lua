@@ -299,9 +299,9 @@ end
 M["Anchor_Portal_Target"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		ScaleX = 2,
-		ScaleY = 2,
-		ScaleZ = 2,
+		ScaleX = 1,
+		ScaleY = 1,
+		ScaleZ = 1,
 		Name = "Anchor_Portal_Target",
 		Map = M._MAP,
 		Resource = M["Anchor_Portal_Target"]
@@ -334,6 +334,56 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
 		MapObject = M["AzathothPortal"]
+	}
+end
+
+M["Anchor_Hans_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 4,
+		PositionZ = 32,
+		Name = "Anchor_Hans_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Hans_Spawn"]
+	}
+end
+
+M["Anchor_Hans_Target1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 0,
+		PositionZ = 36,
+		Name = "Anchor_Hans_Target1",
+		Map = M._MAP,
+		Resource = M["Anchor_Hans_Target1"]
+	}
+end
+
+M["Anchor_Hans_Target2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 0,
+		PositionZ = 34,
+		Name = "Anchor_Hans_Target2",
+		Map = M._MAP,
+		Resource = M["Anchor_Hans_Target2"]
+	}
+end
+
+M["Hans"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Hans",
+		Map = M._MAP,
+		Resource = M["Hans"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
+		MapObject = M["Hans"]
 	}
 end
 
@@ -378,5 +428,11 @@ do
 		Name = "Portal",
 		Cutscene = Cutscene,
 		Resource = M["AzathothPortal"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Hans",
+		Cutscene = Cutscene,
+		Resource = M["Hans"]
 	}
 end

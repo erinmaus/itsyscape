@@ -35,10 +35,8 @@ return Parallel {
 		Map:poke('prepAzathoth')
 	},
 
-	Sequence {
-		Parallel {
-			Player:playAnimation("Human_Idle_SleepingInVat", "main", 1, math.random()),
-			Player:lerpPosition("Anchor_Player_Target", DURATION)
-		}
+	Parallel {
+		Player:playAnimation("Human_Idle_SleepingInVat", "main", 1, math.random()),
+		Player:lerpPosition("Anchor_Player_Target", DURATION)
 	}
 }
