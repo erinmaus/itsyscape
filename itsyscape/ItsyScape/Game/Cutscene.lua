@@ -22,7 +22,11 @@ function Cutscene:new(resource, player, director, layerName)
 	self.layerName = layerName
 	self.resource = resource
 
-	self.entities = { Player = CutsceneEntity(player) }
+	self.entities = {
+		Player = CutsceneEntity(player),
+		Map = CutsceneMap(Utility.Peep.getMapScript(player))
+	}
+
 	self:findMapObjects()
 	self:findPeeps()
 	self:findProps()
@@ -89,12 +93,17 @@ function Cutscene.parallel(t)
 	local statusT = {}
 
 	return function()
-		local isRunning = false
+		local isRunning
 		repeat
+			isRunning = false
 			for i = 1, #transformedT do
 				local status = statusT[i]
 				if status ~= "dead" then 
-					coroutine.resume(transformedT[i])
+					local s, e = coroutine.resume(transformedT[i])
+					if not s then
+						Log.warn("Error running cutscene: %s", e)
+					end
+
 					statusT[i] = coroutine.status(transformedT[i])
 					isRunning = true
 				end
@@ -146,7 +155,10 @@ end
 
 function Cutscene:update()
 	if coroutine.status(self.script) ~= "dead" then
-		coroutine.resume(self.script)
+		local s, e = coroutine.resume(self.script)
+		if not s then
+			Log.warn("Error running cutscene '%s': %s", self.resource.name, e)
+		end
 
 		return true
 	end
