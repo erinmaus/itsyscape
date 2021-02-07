@@ -50,7 +50,14 @@ function FarOcean:prepShip()
 	end)
 end
 
+function FarOcean:prepHans()
+	local actor = Utility.spawnMapObjectAtAnchor(self, "Hans", "Anchor_Hans_Spawn", 0)
+	actor:getPeep():poke('changeFloor', -1) -- Disable his area-aware talking
+end
+
 function FarOcean:onPrepAzathoth()
+	self:prepHans()
+
 	local layer, azathoth = Utility.Map.spawnMap(
 		self, "PreTutorial_MansionFloor1", Vector(1000, 0, 0))
 	azathoth:listen('ready', function()
@@ -61,8 +68,8 @@ function FarOcean:onPrepAzathoth()
 end
 
 function FarOcean:onOpenPortal(layer)
-	local _, actor = Utility.spawnMapObjectAtAnchor(self, "AzathothPortal", "Anchor_Portal", 0)
-	local portal = actor:getPeep()
+	local _, prop = Utility.spawnMapObjectAtAnchor(self, "AzathothPortal", "Anchor_Portal", 0)
+	local portal = prop:getPeep()
 	portal:setColor(Color(1, 0.4, 0.4, 1))
 
 	local tele = portal:getBehavior(TeleportalBehavior)
