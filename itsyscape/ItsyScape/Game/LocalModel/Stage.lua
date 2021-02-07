@@ -296,6 +296,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 						local position = peep:getBehavior(PositionBehavior)
 						if position then
 							position.position = Vector(x, y, z)
+							position.layer = layer
 						end
 
 						local scale = peep:getBehavior(ScaleBehavior)
@@ -349,6 +350,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 						local position = peep:getBehavior(PositionBehavior)
 						if position then
 							position.position = Vector(x, y, z)
+							position.layer = layer
 						end
 
 						local direction = object:get("Direction")
