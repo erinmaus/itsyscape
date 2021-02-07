@@ -30,13 +30,13 @@ function CutsceneEntity:walkTo(anchor)
 	local map = Utility.Peep.getMap(self.peep)
 	local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 	return function()
-		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ)
+		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep))
 		if success then
 			local peepI, peepJ
 			repeat
 				peepI, peepJ = Utility.Peep.getTile(self.peep)
 				coroutine.yield()
-			until peepI ~= anchorI or peepJ ~= anchorJ
+			until peepI == anchorI and peepJ == anchorJ
 		end
 	end
 end
@@ -130,6 +130,17 @@ function CutsceneEntity:playAnimation(animation, slot, priority, force, time, re
 	return function()
 		if actor and actor.actor then
 			actor.actor:playAnimation(slot, priority, CacheRef(resourceType, animation), force, time)
+		end
+	end
+end
+
+function CutsceneEntity:talk(message, duration)
+	duration = duration or #message / 8
+
+	local actor = self.peep:getBehavior(ActorReferenceBehavior)
+	return function()
+		if actor and actor.actor then
+			actor.actor:flash('Message', 1, message, nil, duration)
 		end
 	end
 end
