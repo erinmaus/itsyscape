@@ -102,6 +102,8 @@ function LocalStage:getMapScript(key)
 				return map.peep, map.filename
 			end
 		end
+
+		Log.warn("No map for layer %d.", key)
 	else
 		local map = self.mapScripts[key]
 		if map then
