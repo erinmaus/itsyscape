@@ -183,12 +183,12 @@ function LocalPlayer:updateDiscord()
 		if playerPeep then
 			local target = playerPeep:getBehavior(CombatTargetBehavior)
 			if target and target.actor and target.actor:getPeep() then
-				line1 = "Fighting: " .. target.actor:getName()
+				line1 = "Vs " .. target.actor:getName()
 			end
 
 			local playerMap = Utility.Peep.getMapResource(playerPeep)
 			if playerMap and playerMap.name ~= self.currentPlayerMap then
-				line2 = "Location: " .. Utility.getName(playerMap, self.game.gameDB)
+				line2 = "@ " .. Utility.getName(playerMap, self.game.gameDB)
 			end
 		end
 
@@ -197,10 +197,10 @@ function LocalPlayer:updateDiscord()
 		end
 
 		if not line2 then
-			line2 = "Location: Unknown"
+			line2 = "@ Unknown"
 		end
 	else
-		line1 = "Location: Lobby"
+		line1 = "@ Lobby"
 		line2 = "Idling"
 	end
 
