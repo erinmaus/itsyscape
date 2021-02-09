@@ -25,11 +25,12 @@ function CutsceneEntity:new(peep)
 end
 
 function CutsceneEntity:walkTo(anchor)
-	local mapResource = Utility.Peep.getMapResource(self.peep)
-	local anchorX, _, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
-	local map = Utility.Peep.getMap(self.peep)
-	local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 	return function()
+		local mapResource = Utility.Peep.getMapResource(self.peep)
+		local anchorX, _, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
+		local map = Utility.Peep.getMap(self.peep)
+		local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
+
 		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep))
 		if success then
 			local peepI, peepJ
@@ -42,18 +43,16 @@ function CutsceneEntity:walkTo(anchor)
 end
 
 function CutsceneEntity:lerpPosition(anchor, duration, tween)
-	local E = 0.1
-	tween = Tween[tween or 'linear'] or Tween.linear
-
-	local mapResource = Utility.Peep.getMapResource(self.peep)
-	local anchorPosition = Vector(
-		Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
-	local peepPosition
-	local currentTime
-
 	return function()
+		local E = 0.1
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local mapResource = Utility.Peep.getMapResource(self.peep)
+		local anchorPosition = Vector(
+			Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
 		local movement = self.peep:getBehavior(MovementBehavior)
-		peepPosition = peepPosition or Utility.Peep.getPosition(self.peep)
+		local peepPosition = Utility.Peep.getPosition(self.peep)
 
 		if anchorPosition.x < peepPosition.x then
 			movement.facing = MovementBehavior.FACING_LEFT
@@ -61,6 +60,7 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 			movement.facing = MovementBehavior.FACING_RIGHT
 		end
 
+		local currentTime
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
@@ -84,18 +84,16 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 end
 
 function CutsceneEntity:lerpScale(anchor, duration, tween)
-	local E = 0.1
-	tween = Tween[tween or 'linear'] or Tween.linear
-
-	local mapResource = Utility.Peep.getMapResource(self.peep)
-	local anchorScale = Vector(
-		Utility.Map.getAnchorScale(self.game, mapResource, anchor))
-	local peepScale
-	local currentTime
-
 	return function()
-		peepScale = peepScale or Utility.Peep.getScale(self.peep)
+		local E = 0.1
+		tween = Tween[tween or 'linear'] or Tween.linear
 
+		local mapResource = Utility.Peep.getMapResource(self.peep)
+		local anchorScale = Vector(
+			Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+		local peepScale = Utility.Peep.getScale(self.peep)
+
+		local currentTime
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
@@ -119,15 +117,14 @@ function CutsceneEntity:lerpScale(anchor, duration, tween)
 end
 
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
-	slot = slot or 'x-cutscene'
-	priority = priority or 1
-	resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
-	time = time or 0
-	animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
-
-	local actor = self.peep:getBehavior(ActorReferenceBehavior)
-
 	return function()
+		slot = slot or 'x-cutscene'
+		priority = priority or 1
+		resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
+		time = time or 0
+		animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor.actor:playAnimation(slot, priority, CacheRef(resourceType, animation), force, time)
 		end
@@ -136,9 +133,8 @@ end
 
 function CutsceneEntity:talk(message, duration)
 	duration = duration or #message / 8
-
-	local actor = self.peep:getBehavior(ActorReferenceBehavior)
 	return function()
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor.actor:flash('Message', 1, message, nil, duration)
 		end
@@ -146,9 +142,8 @@ function CutsceneEntity:talk(message, duration)
 end
 
 function CutsceneEntity:wait(duration)
-	local currentTime = duration
-
 	return function()
+		local currentTime = duration
 		while currentTime > 0 do
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
