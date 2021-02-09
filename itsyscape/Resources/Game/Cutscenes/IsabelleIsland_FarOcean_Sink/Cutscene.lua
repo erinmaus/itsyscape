@@ -35,8 +35,10 @@ return Parallel {
 		Map:poke('prepAzathoth')
 	},
 
-	Parallel {
+	Sequence {
+		Player:addBehavior("Disabled"),
 		Player:playAnimation("Human_Idle_SleepingInVat", "main", 1, math.random()),
-		Player:lerpPosition("Anchor_Player_Target", DURATION)
+		Player:lerpPosition("Anchor_Player_Target", DURATION),
+		Player:removeBehavior("Disabled")
 	}
 }
