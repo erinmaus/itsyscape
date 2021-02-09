@@ -1,13 +1,21 @@
 speaker "Butler"
 
-_TARGET:getState():give('KeyItem', "PreTutorial_Start")
+local Z = _SPEAKERS["Butler"]
+local P = _TARGET
 
-local Common = require "Resources.Game.Peeps.PreTutorial.Common"
-PLAYER_NAME = _TARGET:getName()
-TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(_TARGET, Utility.Text.FORMAL_ADDRESS)
+TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(P, Utility.Text.FORMAL_ADDRESS)
+PLAYER_NAME = P:getName()
+
+if Z:isIn(P, 'ocean') then
+	message "There's no time for talking, %person{${PLAYER_NAME}}! Enter the portal!"
+
+	return
+end
+
+P:getState():give('KeyItem', "PreTutorial_Start")
 
 local firstTalk = false
-if not _TARGET:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
+if not P:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
 	message {
 		"Thank goodness for an adventurer like you, %person{${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}}!"
 	}
@@ -23,14 +31,13 @@ if not _TARGET:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
 		"All the resources I can give you, like the %item{tools from the crate in the shed} or the %location{library on the second floor}, are yours to use."
 	}
 
-	_TARGET:getState():give('KeyItem', "PreTutorial_TalkedToButler1")
+	P:getState():give('KeyItem', "PreTutorial_TalkedToButler1")
 
-	_SPEAKERS["Butler"]:poke('followPlayer', _TARGET)
+	_SPEAKERS["Butler"]:poke('followPlayer', P)
 	firstTalk = true
 end
 
-local Z = _SPEAKERS["Butler"]
-local P = _TARGET
+local Common = require "Resources.Game.Peeps.PreTutorial.Common"
 
 if Z:isIn(P, 'kitchen') then
 	message "Kitchens are useful for cooking."
@@ -228,7 +235,7 @@ else
 
 					local result = select { YES, NO }
 					if result == YES then
-						Common.showEnchantTip(_TARGET)
+						Common.showEnchantTip(P)
 						return
 					end
 				end

@@ -60,12 +60,17 @@ ZombiButler.AREAS = {
 	['ballroom'] = {
 		f = 2,
 		{ i1 = 17, j1 = 4, i2 = 26, j2 = 10 }
+	},
+	['ocean'] = {
+		f = -1,
+		{ i1 = 1, j1 = 1, i2 = 32, j2 = 32 }
 	}
 }
 
 function ZombiButler:new(resource, name, ...)
 	BaseZombi.new(self, resource, name or 'ZombiButler', ...)
 
+	print('>>>>>>>> self', self)
 	self.floor = 1
 end
 
