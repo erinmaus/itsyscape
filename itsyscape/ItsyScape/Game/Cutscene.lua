@@ -122,10 +122,25 @@ function Cutscene.sequence(t)
 	end
 end
 
+function Cutscene.loop(count)
+	return function(t)
+		return function()
+			for i = 1, count do
+				for j = 1, #t do
+					t[j]()
+				end
+
+				coroutine.yield()
+			end
+		end
+	end
+end
+
 function Cutscene:getSandbox()
 	local gSandbox, sSandbox = MirrorSandbox()
 	sSandbox.Sequence = Cutscene.sequence
 	sSandbox.Parallel = Cutscene.parallel
+	sSandbox.Loop = Cutscene.loop
 
 	for name, entity in pairs(self.entities) do
 		sSandbox[name] = entity

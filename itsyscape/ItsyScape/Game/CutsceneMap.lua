@@ -25,19 +25,18 @@ function CutsceneMap:new(peep)
 end
 
 function CutsceneMap:lerpPosition(anchor, duration, tween)
-	local E = 0.1
-	tween = Tween[tween or 'linear'] or Tween.linear
-
-	local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
-	local anchorPosition = Vector(
-		Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
-	local peepPosition
-	local currentTime
-
 	return function()
-		self.peep:addBehavior(MapOffsetBehavior)
+		local E = 0.1
+		tween = Tween[tween or 'linear'] or Tween.linear
 
-		peepPosition = peepPosition or self.peep:getBehavior(MapOffsetBehavior).offset
+		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local anchorPosition = Vector(
+			Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
+		self.peep:addBehavior(MapOffsetBehavior)
+		local peepPosition = self.peep:getBehavior(MapOffsetBehavior).offset
+
+		local currentTime
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
@@ -61,26 +60,25 @@ function CutsceneMap:lerpPosition(anchor, duration, tween)
 end
 
 function CutsceneMap:lerpScale(anchor, duration, tween)
-	local E = 0.1
-	tween = Tween[tween or 'linear'] or Tween.linear
-
-	local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
-	local anchorScale = Vector(
-		Utility.Map.getAnchorScale(self.game, mapResource, anchor))
-	local peepScale
-	local currentTime
-
 	return function()
-		self.peep:addBehavior(MapOffsetBehavior)
+		local E = 0.1
+		tween = Tween[tween or 'linear'] or Tween.linear
 
-		peepScale = peepScale or self.peep:getBehavior(MapOffsetBehavior).offset
+		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local anchorScale = Vector(
+			Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+
+		self.peep:addBehavior(MapOffsetBehavior)
+		local peepScale = self.peep:getBehavior(MapOffsetBehavior).scale
+
+		local currentTime
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
 
 				local delta = currentTime / duration
 				local newScale = peepScale:lerp(anchorScale, tween(delta))
-				self.peep:getBehavior(MapOffsetBehavior).offset = newScale
+				self.peep:getBehavior(MapOffsetBehavior).scale = newScale
 
 				coroutine.yield()
 			until currentTime > duration
@@ -88,7 +86,7 @@ function CutsceneMap:lerpScale(anchor, duration, tween)
 			local distance
 			repeat
 				local newScale = Utility.Peep.getScale(self.peep):lerp(anchorScale, self.game:getDelta())
-				self.peep:getBehavior(MapOffsetBehavior).offset = newScale
+				self.peep:getBehavior(MapOffsetBehavior).scale = newScale
 				distance = (anchorScale - newScale):getLength()
 				coroutine.yield()
 			until distance <= E
@@ -97,19 +95,19 @@ function CutsceneMap:lerpScale(anchor, duration, tween)
 end
 
 function CutsceneMap:slerpRotation(anchor, duration, tween)
-	local E = 0.01
-	tween = Tween[tween or 'linear'] or Tween.linear
-
-	local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
-	local anchorRotation = Quaternion(
-		Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
-	local peepPosition
-	local currentTime
-
 	return function()
-		self.peep:addBehavior(MapOffsetBehavior)
+		local E = 0.01
+		tween = Tween[tween or 'linear'] or Tween.linear
 
-		peepRotation = peepRotation or self.peep:getBehavior(MapOffsetBehavior).rotation
+		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local anchorRotation = Quaternion(
+			Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
+
+		self.peep:addBehavior(MapOffsetBehavior)
+		local peepRotation = self.peep:getBehavior(MapOffsetBehavior).rotation
+
+
+		local currentTime
 		if duration then
 			repeat
 				currentTime = (currentTime or 0) + self.game:getDelta()
@@ -133,9 +131,8 @@ function CutsceneMap:slerpRotation(anchor, duration, tween)
 end
 
 function CutsceneMap:wait(duration)
-	local currentTime = duration
-
 	return function()
+		local currentTime = duration
 		while currentTime > 0 do
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
