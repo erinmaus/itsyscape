@@ -70,7 +70,6 @@ ZombiButler.AREAS = {
 function ZombiButler:new(resource, name, ...)
 	BaseZombi.new(self, resource, name or 'ZombiButler', ...)
 
-	print('>>>>>>>> self', self)
 	self.floor = 1
 end
 
