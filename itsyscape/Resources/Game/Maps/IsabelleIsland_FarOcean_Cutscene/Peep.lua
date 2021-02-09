@@ -52,7 +52,7 @@ end
 
 function FarOcean:prepHans()
 	local actor = Utility.spawnMapObjectAtAnchor(self, "Hans", "Anchor_Hans_Spawn", 0)
-	actor:getPeep():poke('changeFloor', -1) -- Disable his area-aware talking
+	actor:getPeep():poke('floorChange', -1) -- Disable his area-aware talking
 end
 
 function FarOcean:onPrepAzathoth()
