@@ -290,7 +290,7 @@ function PlayerSelect:newPlayer(player)
 		"jenkins_state=1," ..
 		"i=16," ..
 		"j=16," ..
-		"shore=PreTutorial_MansionFloor1," ..
+		"shore=IsabelleIsland_FarOcean_Cutscene," ..
 		"shoreAnchor=Anchor_Spawn",
 		"Anchor_Spawn")
 

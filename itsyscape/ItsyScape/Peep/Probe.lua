@@ -123,4 +123,10 @@ function Probe.actionOutput(actionType, outputName, outputType)
 	end
 end
 
+function Probe.layer(layer)
+	return function(peep)
+		return Utility.Peep.getLayer(peep) == layer
+	end
+end
+
 return Probe

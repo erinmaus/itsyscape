@@ -12,12 +12,15 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 
 local FogSceneNode = Class(LightSceneNode)
+FogSceneNode.FOLLOW_MODE_EYE    = 1
+FogSceneNode.FOLLOW_MODE_TARGET = 2
 
 function FogSceneNode:new()
 	LightSceneNode.new(self)
 
 	self.nearDistance = 0
 	self.farDistance = 100
+	self.followMode = FogSceneNode.FOLLOW_MODE_EYE
 end
 
 function FogSceneNode:getNearDistance()
@@ -38,6 +41,14 @@ end
 
 function FogSceneNode:setAttenuation(value)
 	self.attenuation = value or self.attenuation
+end
+
+function FogSceneNode:getFollowMode()
+	return self.followMode
+end
+
+function FogSceneNode:setFollowMode(value)
+	self.followMode = value or self.followMode
 end
 
 function FogSceneNode:toLight(delta)

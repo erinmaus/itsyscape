@@ -48,7 +48,10 @@ function DialogBoxController:new(peep, director, action, target)
 				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
 				for i = 1, #speakers do
 					local speaker = speakers[i]
-					local peeps = director:probe(peep:getLayerName(), Probe.mapObject(speaker:get("Resource")))
+					local peeps = director:probe(
+						peep:getLayerName(),
+						Probe.mapObject(speaker:get("Resource")),
+						Probe.layer(Utility.Peep.getLayer(peep)))
 
 					local s
 					for _, p in ipairs(peeps) do
@@ -58,7 +61,10 @@ function DialogBoxController:new(peep, director, action, target)
 
 					if not s then
 						local r = speaker:get("Resource")
-						peeps = director:probe(peep:getLayerName(), Probe.resource(r))
+						peeps = director:probe(
+							peep:getLayerName(),
+							Probe.resource(r),
+							Probe.layer(Utility.Peep.getLayer(peep)))
 						for _, p in ipairs(peeps) do
 							s = p
 							break

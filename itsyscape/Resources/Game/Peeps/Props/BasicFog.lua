@@ -72,6 +72,7 @@ function BasicFog:ready(director, game)
 
 			self.nearDistance = fog:get("NearDistance") or 0
 			self.farDistance = fog:get("FarDistance") or 100
+			self.followTarget = fog:get("FollowTarget") ~= 0
 		end
 	end
 end
@@ -82,7 +83,9 @@ function BasicFog:getPropState()
 		distance = {
 			near = self.nearDistance,
 			far = self.farDistance
-		}
+		},
+		followTarget = self.followTarget,
+		followEye = not self.followTarget
 	}
 end
 

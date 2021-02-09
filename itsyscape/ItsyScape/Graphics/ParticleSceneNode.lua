@@ -58,11 +58,22 @@ function ParticleSceneNode:getParticleSystem()
 end
 
 function ParticleSceneNode:initParticleSystemFromDef(def, resources)
-	self.particleSystem = ParticleSystem(def.numParticles)
-
 	self.textures = {
 		{ left = 0, right = 1, top = 0, bottom = 1 }
 	}
+
+	local function create()
+		self.particleSystem = ParticleSystem(def.numParticles)
+
+		local emitters = def.emitters or {}
+		self:initParticleEmittersFromDef(emitters)
+
+		local paths = def.paths or {}
+		self:initParticlePathsFromDef(paths)
+
+		local emissionStrategy = def.emissionStrategy
+		self:initParticleEmissionStrategyFromDef(emissionStrategy)
+	end
 
 	if def.texture then
 		self.textures = {}
@@ -71,16 +82,17 @@ function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 
 			local w, h = texture:getResource():getWidth(), texture:getResource():getHeight() 
 			local columns = def.columns or 1
-			local cellSize = w / columns
-			local rows = math.max(h / cellSize, 1)
+			local cellSizeX = w / columns
+			local rows = def.rows or math.max(h / cellSizeX, 1)
+			local cellSizeY = h / rows
 
 			self.textures = {}
 			for j = 1, rows do
 				for i = 1, columns do
-					local left = (i - 1) * cellSize / w
-					local right = i * cellSize / w
-					local top = (j - 1) * cellSize / h
-					local bottom = j * cellSize / h
+					local left = (i - 1) * cellSizeX / w
+					local right = i * cellSizeX / w
+					local top = (j - 1) * cellSizeY / h
+					local bottom = j * cellSizeY / h
 
 					table.insert(self.textures, {
 						left = left, right = right,
@@ -88,23 +100,12 @@ function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 					})
 				end
 			end
+
+			create()
 		end)
-	end
-
-	if def.rowWidth then
-		self.rowWidth = def.rowWidth
 	else
-		self.rowWidth = 1
+		create()
 	end
-
-	local emitters = def.emitters or {}
-	self:initParticleEmittersFromDef(emitters)
-
-	local paths = def.paths or {}
-	self:initParticlePathsFromDef(paths)
-
-	local emissionStrategy = def.emissionStrategy
-	self:initParticleEmissionStrategyFromDef(emissionStrategy)
 end
 
 local function instantiate(def)

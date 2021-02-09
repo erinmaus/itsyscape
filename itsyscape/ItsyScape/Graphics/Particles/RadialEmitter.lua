@@ -42,7 +42,7 @@ end
 
 function RadialEmitter:setRadius(min, max)
 	self.minRadius = min or 0
-	self.maxRadius = max or 1
+	self.maxRadius = max or self.minRadius
 end
 
 function RadialEmitter:setSpeed(min, max)
