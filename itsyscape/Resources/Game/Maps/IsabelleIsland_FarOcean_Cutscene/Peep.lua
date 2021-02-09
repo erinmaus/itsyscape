@@ -102,8 +102,4 @@ function FarOcean:onDarken(num)
 	end
 end
 
-function FarOcean:update(...)
-	Map.update(self, ...)
-end
-
 return FarOcean
