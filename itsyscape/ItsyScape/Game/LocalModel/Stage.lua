@@ -19,6 +19,7 @@ local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
@@ -101,6 +102,8 @@ function LocalStage:getMapScript(key)
 				return map.peep, map.filename
 			end
 		end
+
+		Log.warn("No map for layer %d.", key)
 	else
 		local map = self.mapScripts[key]
 		if map then
@@ -215,8 +218,6 @@ function LocalStage:placeProp(propID, layer)
 		local prop = LocalProp(self.game, Peep)
 		prop:place(self.currentPropID, self.stageName, resource)
 
-		self.onPropPlaced(self, realID, prop)
-
 		self.currentPropID = self.currentPropID + 1
 		self.props[prop] = true
 
@@ -229,6 +230,8 @@ function LocalStage:placeProp(propID, layer)
 			if p then
 				p.layer = layer
 			end
+
+			self.onPropPlaced(self, realID, prop)
 		end)
 
 		return true, prop
@@ -293,6 +296,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 						local position = peep:getBehavior(PositionBehavior)
 						if position then
 							position.position = Vector(x, y, z)
+							position.layer = layer
 						end
 
 						local scale = peep:getBehavior(ScaleBehavior)
@@ -346,6 +350,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 						local position = peep:getBehavior(PositionBehavior)
 						if position then
 							position.position = Vector(x, y, z)
+							position.layer = layer
 						end
 
 						local direction = object:get("Direction")
@@ -1065,7 +1070,7 @@ function LocalStage:tick()
 			offset = Vector.ZERO
 		end
 
-		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin)
+		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin, peep:hasBehavior(DisabledBehavior))
 	end
 end
 

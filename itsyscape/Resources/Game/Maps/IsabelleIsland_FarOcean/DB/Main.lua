@@ -97,8 +97,9 @@ do
 		ColorRed = 33,
 		ColorGreen = 33,
 		ColorBlue = 33,
-		NearDistance = 40,
-		FarDistance = 60,
+		NearDistance = 20,
+		FarDistance = 40,
+		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -120,9 +121,9 @@ end
 M["Cthulhu_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 21,
-		PositionY = -10,
-		PositionZ = -16,
+		PositionX = 30,
+		PositionY = -8,
+		PositionZ = 8,
 		Name = "Cthulhu_Spawn",
 		Map = M._MAP,
 		Resource = M["Cthulhu_Spawn"]
@@ -132,9 +133,9 @@ end
 M["Anchor_Squid_Spawn1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13,
+		PositionX = 22,
 		PositionY = 1,
-		PositionZ = 19,
+		PositionZ = 43,
 		Name = "Anchor_Squid_Spawn1",
 		Map = M._MAP,
 		Resource = M["Anchor_Squid_Spawn1"]
@@ -144,9 +145,9 @@ end
 M["Anchor_Squid_Spawn2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 1,
+		PositionX = 6,
 		PositionY = 1,
-		PositionZ = 5,
+		PositionZ = 29,
 		Name = "Anchor_Squid_Spawn2",
 		Map = M._MAP,
 		Resource = M["Anchor_Squid_Spawn2"]
@@ -156,9 +157,9 @@ end
 M["Anchor_Squid_Spawn3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 37,
+		PositionX = 51,
 		PositionY = 1,
-		PositionZ = 7,
+		PositionZ = 31,
 		Name = "Anchor_Squid_Spawn3",
 		Map = M._MAP,
 		Resource = M["Anchor_Squid_Spawn3"]

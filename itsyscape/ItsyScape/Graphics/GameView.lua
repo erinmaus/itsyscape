@@ -50,8 +50,8 @@ function GameView:new(game)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
-	self._onMapMoved = function(_, layer, position, rotation, scale, offset)
-		self:moveMap(layer, position, rotation, scale, offset)
+	self._onMapMoved = function(_, layer, position, rotation, scale, offset, disabled)
+		self:moveMap(layer, position, rotation, scale, offset, disabled)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
 
@@ -219,7 +219,7 @@ function GameView:addMap(map, layer, tileSetID)
 		parts = {},
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16)
 	}
-	m.node:setParent(self.scene)
+
 	m.weatherMap:addMap(m.map)
 
 	self.mapMeshes[layer] = m
@@ -295,7 +295,7 @@ function GameView:updateMap(map, layer)
 	end
 end
 
-function GameView:moveMap(layer, position, rotation, scale, offset)
+function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 	local node = self:getMapSceneNode(layer)
 	if node then
 		local transform = node:getTransform()
@@ -303,6 +303,12 @@ function GameView:moveMap(layer, position, rotation, scale, offset)
 		transform:setLocalRotation(rotation)
 		transform:setLocalScale(scale)
 		transform:setLocalOffset(offset)
+
+		if disabled and node:getParent() then
+			node:setParent(nil)
+		elseif not disabled and not node:getParent() then
+			node:setParent(self.scene)
+		end
 	end
 
 	local m = self.mapMeshes[layer]
@@ -543,9 +549,13 @@ function GameView:forecast(layer, key, id, props)
 	end
 
 	if WeatherType then
-		local map = self.mapMeshes[layer].weatherMap
-		local weather = WeatherType(self, map, props or {})
-		self.weather[key] = weather
+		local node = self.mapMeshes[layer]
+		if node then
+			map = node.weatherMap
+
+			local weather = WeatherType(self, layer, map, props or {})
+			self.weather[key] = weather
+		end
 	end
 end
 

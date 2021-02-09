@@ -272,7 +272,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Cthulhu" {
-		ItsyScape.Action.Attack()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
