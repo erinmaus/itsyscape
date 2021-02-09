@@ -296,27 +296,12 @@ do
 	}
 end
 
-M["Anchor_Portal_Target"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		ScaleX = 1,
-		ScaleY = 1,
-		ScaleZ = 1,
-		Name = "Anchor_Portal_Target",
-		Map = M._MAP,
-		Resource = M["Anchor_Portal_Target"]
-	}
-end
-
 M["Anchor_Portal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 32,
-		ScaleX = 0.01,
-		ScaleY = 0.01,
-		ScaleZ = 0.01,
 		Name = "Anchor_Portal",
 		Map = M._MAP,
 		Resource = M["Anchor_Portal"]
@@ -334,6 +319,36 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
 		MapObject = M["AzathothPortal"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Azathoth wormhole",
+		Language = "en-US",
+		Resource = M["AzathothPortal"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Ripped open by some strange force to help you escape from the High Priest of Yendor.",
+		Language = "en-US",
+		Resource = M["AzathothPortal"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Spawn",
+		Map = ItsyScape.Resource.Map "PreTutorial_MansionFloor1",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["AzathothPortal"] {
+		TravelAction
 	}
 end
 

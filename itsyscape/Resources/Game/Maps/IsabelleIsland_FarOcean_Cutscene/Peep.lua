@@ -82,8 +82,24 @@ end
 
 function FarOcean:onMovePlayer()
 	local player = Utility.Peep.getPlayer(self)
+
+	-- Kurse the player for failing to teleport.
+	player:getState():give("KeyItem", "CalmBeforeTheStorm_KursedByCthulhu", 1)
+
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:movePeep(player, "PreTutorial_MansionFloor1", "Anchor_Spawn")
+	stage:movePeep(player, "PreTutorial_MansionFloor1?kursed=1", "Anchor_Spawn")
+end
+
+function FarOcean:onDarken(num)
+	local director = self:getDirector()
+	local hits = director:probe(self:getLayerName(), Probe.namedMapObject("Light_Fog"))
+	local fog = hits[1]
+	if fog then
+		fog:setNearDistance(math.max(fog:getNearDistance() - num, 1))
+		fog:setFarDistance(math.max(fog:getFarDistance() - num, 1))
+	else
+		Log.warn("Couldn't find fog; can't darken map for kurse.")
+	end
 end
 
 function FarOcean:update(...)

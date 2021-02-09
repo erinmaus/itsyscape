@@ -1,21 +1,23 @@
-local DURATION = 5
-
 return Parallel {
-	Sequence {
-		Player:addBehavior("Disabled"),
-		Portal:lerpScale("Anchor_Portal_Target", DURATION),
-		Player:wait(1),
-		Player:playAnimation("Human_Teleport_1"),
-		Player:wait(0.4),
-		Player:removeBehavior("Disabled"),
-		Map:poke('movePlayer')
+	Loop(20) {
+		Map:wait(1),
+		Map:poke('darken', 3)
 	},
 
 	Sequence {
 		Hans:walkTo("Anchor_Hans_Target1"),
-		Hans:talk("Quickly! Through the portal!"),
 		Hans:walkTo("Anchor_Hans_Target2"),
-		Player:wait(2),
+		Hans:talk("Quickly! Through the portal!"),
+		Hans:wait(5),
+
+		Hans:talk("Hurry! Cthulhu is binding a kurse!"),
+		Hans:wait(5),
+
 		Player:talk("*glub* *glub* *glub*!"),
+		Player:wait(5),
+
+		Hans:talk("That's it, I'm forcing you through the portal before it's too late!"),
+		Hans:wait(5),
+		Map:poke('movePlayer')
 	}
 }

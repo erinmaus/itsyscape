@@ -58,9 +58,9 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 10,
-	SizeY = 16,
-	SizeZ = 10,
+	SizeX = 3.5,
+	SizeY = 4,
+	SizeZ = 3.5,
 	MapObject = ItsyScape.Resource.Prop "Portal_Chasm"
 }
 
