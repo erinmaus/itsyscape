@@ -10,13 +10,18 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local Orlando = Class(Player)
 
 function Orlando:new(resource, name, ...)
 	Player.new(self, resource, name or 'Orlando', ...)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 end
 
 function Orlando:ready(director, game)
@@ -48,6 +53,12 @@ function Orlando:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Isabellium/HelmetlessIsabellium.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_SELF, Equipment.SKIN_PRIORITY_BASE, body)
+	local weapon = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Isabellium/IsabelliumZweihander.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, weapon)
+
+	Utility.Peep.equipXWeapon(self, "IsabelliumZweihander")
 end
 
 return Orlando
