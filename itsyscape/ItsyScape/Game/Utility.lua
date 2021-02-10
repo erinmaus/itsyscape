@@ -1224,7 +1224,12 @@ function Utility.Peep.getPlayerActor(peep)
 end
 
 function Utility.Peep.getPlayer(peep)
-	return Utility.Peep.getPlayerActor(peep):getPeep()
+	local actor = Utility.Peep.getPlayerActor(peep)
+	if actor then
+		return actor:getPeep()
+	end
+
+	return nil
 end
 
 function Utility.Peep.dismiss(peep)
