@@ -29,6 +29,10 @@ function BossHUDController:new(peep, director, ...)
 				boss:listen('poof', function()
 					self:poke("close", nil, {})
 				end)
+
+				boss:listen('die', function()
+					self:poke("close", nil, {})
+				end)
 			end
 		end
 	end
