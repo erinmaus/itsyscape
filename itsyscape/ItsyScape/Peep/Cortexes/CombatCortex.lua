@@ -62,7 +62,7 @@ function CombatCortex:resume(peep, target)
 	if actor and actor.actor then
 		actor = actor.actor
 		local s, b = peep:addBehavior(CombatTargetBehavior)
-		if s then
+		if s and not b.actor then
 			b.actor = actor
 		end
 
