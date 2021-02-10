@@ -12,6 +12,8 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 
 local WasAttacked = B.Node("WasAttacked")
+WasAttacked.TARGET = B.Reference()
+WasAttacked.AGGRESSOR = B.Reference()
 WasAttacked.TOOK_DAMAGE = B.Reference()
 WasAttacked.MISSED = B.Reference()
 WasAttacked.ATTACK_POKE = B.Reference()
@@ -29,6 +31,8 @@ function WasAttacked:update(mashina, state, executor)
 		state[self.ATTACKED] = nil
 		state[self.INTERNAL_ATTACK_POKE] = nil
 		state[self.DAMAGE_RECEIVED] = attackPoke:getDamage()
+		state[self.AGGRESSOR] = attackPoke:getAggressor()
+
 		return B.Status.Success
 	elseif attacked == false then
 		state[self.ATTACK_POKE] = state[self.INTERNAL_ATTACK_POKE]
@@ -66,24 +70,24 @@ function WasAttacked:activated(mashina, state, executor)
 	end
 
 	self.callback = callback
-	self.mashina = mashina
+	self.target = state[self.TARGET] or mashina
 
-	mashina:listen('receiveAttack', callback, self, mashina, tookDamage, missed, state)
+	self.target:listen('receiveAttack', callback, self, mashina, tookDamage, missed, state)
 end
 
 function WasAttacked:deactivated(mashina, state, executor)
 	state[self.ATTACKED] = nil
 	state[self.INTERNAL_ATTACK_POKE] = nil
 
-	mashina:silence('receiveAttack', self.callback)
+	self.target:silence('receiveAttack', self.callback)
 	self.callback = nil
 end
 
 function WasAttacked:removed()
-	if self.mashina then
-		self.mashina:silence('receiveAttack', self.callback)
+	if self.target then
+		self.target:silence('receiveAttack', self.callback)
 		self.callback = nil
-		self.mashina = nil
+		self.target = nil
 	end
 end
 
