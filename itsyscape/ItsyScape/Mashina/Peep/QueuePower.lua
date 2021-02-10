@@ -39,7 +39,7 @@ function QueuePower:update(mashina, state, executor)
 		b.power = power
 	end
 
-	local clearCoolDown = state[self.CLEAR_COOLDOWN] or false
+	local clearCoolDown = state[self.CLEAR_COOL_DOWN] or false
 	if clearCoolDown then
 		local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
 		if coolDown then
