@@ -84,6 +84,48 @@ do
 	}
 end
 
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 3,
+		PositionZ = 9,
+		Name = "Orlando",
+		Map = M._MAP,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Orlando_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Orlando"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "follow",
+		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Orlando_FollowLogic.lua",
+		IsDefault = 1,
+		Resource = M["Orlando"]
+	}
+end
+
 M["Anchor_HighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

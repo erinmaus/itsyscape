@@ -151,25 +151,25 @@ ItsyScape.Meta.DropTableEntry {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(10),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(10),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(1),
+	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(30),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
@@ -186,9 +186,9 @@ ItsyScape.Meta.PeepMashinaState {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = 50,
+	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
 	DefenseMagic = -30,
-	StrengthMelee = 20,
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
