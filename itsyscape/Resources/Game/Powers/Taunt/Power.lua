@@ -11,13 +11,14 @@ local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local Taunt = Class(CombatPower)
 Taunt.TAUNTS = {
 	["en-US"] = {
 		"You're as graceful as a drunkard!",
 		"You're as intelligent as a potato!",
-		"You're so fat I could never miss!",
+		"You're as threatening as a clown!",
 		"Your mother hates you!",
 		"The gods disown you!"
 	}
@@ -33,12 +34,15 @@ end
 function Taunt:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 
-	local actor = activator:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
+	local activatorActor = activator:getBehavior(ActorReferenceBehavior)
+	if activatorActor and activatorActor.actor then
+		activatorActor = activatorActor.actor
 
 		local taunt = Taunt.TAUNTS["en-US"][math.random(#Taunt.TAUNTS["en-US"])]
-		actor:flash('Message', 1, taunt)
+		activatorActor:flash('Message', 1, taunt)
+
+		local _, victimTarget = target:addBehavior(CombatTargetBehavior)
+		victimTarget.actor = activatorActor
 	end
 
 	Utility.Peep.applyEffect(target, self.effectResource, true, activator)
