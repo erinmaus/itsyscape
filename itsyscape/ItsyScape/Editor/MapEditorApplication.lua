@@ -855,9 +855,13 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local layerMeta = meta[layer] or {}
 
-			self:getGame():getStage():newMap(
+			local stage = self:getGame():getStage()
+			stage:newMap(
 				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID)
-			self:getGame():getStage():updateMap(layer, map)
+			stage:updateMap(layer, map)
+
+			local gameView = self:getGameView()
+			gameView:getMapSceneNode(layer):setParent(gameView:getScene())
 		end
 	end
 
