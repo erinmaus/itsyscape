@@ -45,11 +45,7 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.Set {
 					value = false,
 					[AGGRESSOR] = B.Output.result
-				},
-
-				Mashina.Check {
-					condition = function(_, state) return true end
-				},
+				}
 			}
 		},
 
