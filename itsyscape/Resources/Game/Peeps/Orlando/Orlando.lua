@@ -12,6 +12,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Peep.Peeps.Player"
+local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
@@ -59,6 +60,12 @@ function Orlando:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, weapon)
 
 	Utility.Peep.equipXWeapon(self, "IsabelliumZweihander")
+
+	local inventory = InfiniteInventoryStateProvider(self)
+	inventory:add("IsabelleIsland_AbandonedMine_WroughtBronzeKey")
+	inventory:add("IsabelleIsland_AbandonedMine_ReinforcedBronzeKey")
+
+	self:getState():addProvider("Item", inventory)
 end
 
 return Orlando

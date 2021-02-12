@@ -95,6 +95,15 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MapObjectRectanglePassage" {
+		X1 = Meta.TYPE_REAL,
+		Z1 = Meta.TYPE_REAL,
+		X2 = Meta.TYPE_REAL,
+		Z2 = Meta.TYPE_REAL,
+		Map = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "MapObjectReference" {
 		Name = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
