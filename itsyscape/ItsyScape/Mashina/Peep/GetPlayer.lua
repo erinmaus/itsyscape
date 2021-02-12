@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Navigation/GetPlayer.lua
+-- ItsyScape/Mashina/Peep/GetPlayer.lua
 --
 -- This file is a part of ItsyScape.
 --
