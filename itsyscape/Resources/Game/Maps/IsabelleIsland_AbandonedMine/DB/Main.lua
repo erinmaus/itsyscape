@@ -84,6 +84,48 @@ do
 	}
 end
 
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 3,
+		PositionZ = 9,
+		Name = "Orlando",
+		Map = M._MAP,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Dialog/Orlando_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Orlando"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "follow",
+		Tree = "Resources/Game/Maps/IsabelleIsland_AbandonedMine/Scripts/Orlando_FollowLogic.lua",
+		IsDefault = 1,
+		Resource = M["Orlando"]
+	}
+end
+
 M["Anchor_HighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -311,7 +353,7 @@ do
 		PositionX = 16.5 * 2,
 		PositionY = 3,
 		PositionZ = 21.5 * 2,
-		Name = "Skeleton",
+		Name = "SkeletonMinerJoe",
 		Map = M._MAP,
 		Resource = M["SkeletonMinerJoe"]
 	}
@@ -331,8 +373,7 @@ do
 	}
 
 	M["SkeletonMinerJoe"] {
-		TalkAction,
-		ItsyScape.Action.Attack()
+		TalkAction
 	}
 
 	ItsyScape.Meta.PeepMapObject {
@@ -423,7 +464,7 @@ do
 		PositionX = 41.5 * 2,
 		PositionY = 3,
 		PositionZ = 19.5 * 2,
-		Name = "CopperSkelemental",
+		Name = "CopperSkelemental1",
 		Map = M._MAP,
 		Resource = M["CopperSkelemental1"]
 	}
@@ -440,7 +481,7 @@ do
 		PositionX = 27.5 * 2,
 		PositionY = 3,
 		PositionZ = 24.5 * 2,
-		Name = "CopperSkelemental",
+		Name = "CopperSkelemental2",
 		Map = M._MAP,
 		Resource = M["CopperSkelemental2"]
 	}
@@ -457,7 +498,7 @@ do
 		PositionX = 14.5 * 2,
 		PositionY = 3,
 		PositionZ = 33.5 * 2,
-		Name = "CopperSkelemental",
+		Name = "CopperSkelemental3",
 		Map = M._MAP,
 		Resource = M["CopperSkelemental3"]
 	}
@@ -474,7 +515,7 @@ do
 		PositionX = 39.5 * 2,
 		PositionY = 3,
 		PositionZ = 18.5 * 2,
-		Name = "TinSkelemental",
+		Name = "TinSkelemental1",
 		Map = M._MAP,
 		Resource = M["TinSkelemental1"]
 	}
@@ -491,7 +532,7 @@ do
 		PositionX = 33.5 * 2,
 		PositionY = 3,
 		PositionZ = 24.5 * 2,
-		Name = "TinSkelemental",
+		Name = "TinSkelemental2",
 		Map = M._MAP,
 		Resource = M["TinSkelemental2"]
 	}
@@ -508,7 +549,7 @@ do
 		PositionX = 14.5 * 2,
 		PositionY = 3,
 		PositionZ = 33.5 * 2,
-		Name = "TinSkelemental",
+		Name = "TinSkelemental3",
 		Map = M._MAP,
 		Resource = M["TinSkelemental3"]
 	}
@@ -550,5 +591,77 @@ M["BossDoor"] {
 		}
 	}
 }
+
+M["Passage_JoeArea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_JoeArea",
+		Map = M._MAP,
+		Resource = M["Passage_JoeArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 19,
+		Z1 = 33,
+		X2 = 33,
+		Z2 = 49,
+		Map = M._MAP,
+		Resource = M["Passage_JoeArea"]
+	}
+end
+
+M["Passage_CraftingRoom"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_CraftingRoom",
+		Map = M._MAP,
+		Resource = M["Passage_CraftingRoom"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 49,
+		Z1 = 27,
+		X2 = 69,
+		Z2 = 43,
+		Map = M._MAP,
+		Resource = M["Passage_CraftingRoom"]
+	}
+end
+
+M["Passage_FirstChamber"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_FirstChamber",
+		Map = M._MAP,
+		Resource = M["Passage_FirstChamber"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 75,
+		Z1 = 33,
+		X2 = 83,
+		Z2 = 43,
+		Map = M._MAP,
+		Resource = M["Passage_FirstChamber"]
+	}
+end
+
+M["Passage_BossChamber"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_BossChamber",
+		Map = M._MAP,
+		Resource = M["Passage_BossChamber"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 49,
+		Z1 = 53,
+		X2 = 73,
+		Z2 = 83,
+		Map = M._MAP,
+		Resource = M["Passage_BossChamber"]
+	}
+end
 
 return M

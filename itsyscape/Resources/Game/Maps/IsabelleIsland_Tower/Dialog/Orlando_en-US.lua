@@ -2,8 +2,8 @@ speaker "Orlando"
 
 PLAYER_NAME = _TARGET:getName()
 message {
-	"'Ey, ${PLAYER_NAME}!",
-	"I'm Isabelle's big bro, Orlando."
+	"'Ey, %person{${PLAYER_NAME}}!",
+	"I'm %person{Isabelle's} big bro, %person{Orlando}."
 }
 
 local killedIsabelle = _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
@@ -42,14 +42,14 @@ while result ~= QUIT do
 		speaker "Orlando"
 
 		message {
-			"I'm Isabelle's first choice to protect the island...",
-			"But I'm too in love with Rosalind to risk my life!",
-			"Oh Rosalind, how my heart burns for you!"
+			"I'm %person{Isabelle's} first choice to protect the island...",
+			"But I'm %hint{too in love} with %person{Rosalind} to risk my life!",
+			"Oh %person{Rosalind}, how my heart burns for you!"
 		}
 
 		message {
 			"So I suppose that's why my little sis has gotten you to do her bidding.",
-			"Not that I'm complaining--getting to live to woo Rosalind is great for me!"
+			"Not that I'm complaining--getting to live to woo %person{Rosalind} is great for me!"
 		}
 
 		speaker "_TARGET"
@@ -75,13 +75,13 @@ while result ~= QUIT do
 			   _TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GaveOrlandoFish")
 			then
 				message {
-					"Here you go, a wrought bronze key to access the mines.",
+					"Here you go, a %item{wrought bronze key} to access %location{the mines}.",
 					"Close the door behind yourself to prevent any creeps from escaping."
 				}
 
 				message {
 					"Make sure you have some food for yourself; the creeps are tough.",
-					"A guy named Joe can help you out; he's spending the rest of his afterlife mining deep in the dungeon."
+					"I'll help you out when I can. But! Don't think I'm gonna risk my neck for you!"
 				}
 			else
 				message {
@@ -106,12 +106,12 @@ while result ~= QUIT do
 
 			message {
 				"Haha, it's easy! My sis gave you a small allowance.",
-				"Head north, towards the port. Buy a fishing rod and catch a sardine in the ocean.",
+				"Head north, towards %location{the port}. Buy a %item{fishing rod} and catch a %item{sardine} in the ocean.",
 				"Cook it on a fire and bring it to me."
 			}
 
 			message {
-				"Alternatively, I heard slaying squids can give lots of fish. Jenkins knows more."
+				"Alternatively, I heard %hint{slaying squids can give lots of fish}. %person{Jenkins} knows more."
 			}
 		end
 	elseif result == KEY then
@@ -136,7 +136,7 @@ while result ~= QUIT do
 		else
 			message {
 				"You already have one. If it's not in your bag, maybe it's in your bank.",
-				"There's a banker in the tower, if you don't remember."
+				"There's a banker in %location{the tower}, if you don't remember."
 			}
 		end
 	end
@@ -144,6 +144,6 @@ end
 
 speaker "Orlando"
 message {
-	"Good sense of humor, ${PLAYER_NAME}!",
-	"Now if only Rosalind would appreciate my jokes... Ahh..."
+	"Good sense of humor, %person{${PLAYER_NAME}}!",
+	"Now if only %person{Rosalind} would appreciate my jokes... Ahh..."
 }

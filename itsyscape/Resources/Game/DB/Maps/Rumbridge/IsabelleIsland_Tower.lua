@@ -218,22 +218,8 @@ do
 end
 
 do
-	local TalkAction = ItsyScape.Action.Talk()
-
 	ItsyScape.Resource.Peep "IsabelleIsland_Orlando" {
-		TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
-		Name = "Orlando",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Orlando_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
+		-- Nothing
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -243,13 +229,49 @@ do
 
 	ItsyScape.Meta.ResourceName {
 		Language = "en-US",
-		Value = "Sir Orlando",
+		Value = "Ser Orlando",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "Hopeless romantic.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 end
