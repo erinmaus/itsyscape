@@ -50,8 +50,12 @@ function GhostlyMinerForeman:onPillarMined(e)
 	if combat.currentHitpoints > 0 then
 		self:poke('hit', AttackPoke({
 			damage = 10,
-			aggressor = e.pillar
+			aggressor = e.aggressor or e.pillar
 		}))
+
+		if e.aggressor then
+			Utility.Peep.attack(self, e.aggressor)
+		end
 	end
 end
 

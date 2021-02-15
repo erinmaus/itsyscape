@@ -185,6 +185,12 @@ ItsyScape.Meta.PeepMashinaState {
 	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/GhostlyMinerForeman/GhostlyMinerForeman_AttackLogic.lua",
+	Resource = ItsyScape.Resource.Peep "GhostlyMinerForeman"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
 	DefenseMagic = -30,
@@ -310,7 +316,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.IsabelleIsland.AbandonedMine.Pillar",
+		Value = "Resources.Game.Peeps.Props.BasicRock",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
 	}
 
