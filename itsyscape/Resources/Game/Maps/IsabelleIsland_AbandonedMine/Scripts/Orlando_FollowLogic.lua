@@ -178,9 +178,36 @@ local Tree = BTreeBuilder.Node() {
 								right = "Passage_FirstChamber"
 							},
 
-							Mashina.Peep.Talk {
-								message = "I'll take out the goons, feel free to mine some ore!",
-								duration = TALK_DURATION
+							Mashina.Try {
+								Mashina.Sequence {
+									Mashina.Peep.GetMapObject {
+										name = "CopperSkelemental1",
+										[CURRENT_PASSAGE_TARGET_NPC] = B.Output.peep
+									},
+
+									Mashina.Peep.IsDead {
+										peep = CURRENT_PASSAGE_TARGET_NPC
+									},
+
+									Mashina.Peep.GetMapObject {
+										name = "TinSkelemental1",
+										[CURRENT_PASSAGE_TARGET_NPC] = B.Output.peep
+									},
+
+									Mashina.Peep.IsDead {
+										peep = CURRENT_PASSAGE_TARGET_NPC
+									},
+
+									Mashina.Peep.Talk {
+										message = "Feel free to mine some ore! I'll be look out.",
+										duration = TALK_DURATION
+									}
+								},
+
+								Mashina.Peep.Talk {
+									message = "I'll take out the goons, feel free to mine some ore!",
+									duration = TALK_DURATION
+								}
 							}
 						},
 
@@ -196,40 +223,57 @@ local Tree = BTreeBuilder.Node() {
 							}
 						},
 
-						Mashina.Step {
-							Mashina.Compare.Equal {
-								left = CURRENT_PASSAGE,
-								right = "Passage_JoeArea"
-							},
+						Mashina.Try {
+							Mashina.Step {
+								Mashina.Compare.Equal {
+									left = CURRENT_PASSAGE,
+									right = "Passage_JoeArea"
+								},
 
-							Mashina.Peep.GetMapObject {
-								name = "SkeletonMinerJoe",
-								[CURRENT_PASSAGE_TARGET_NPC] = B.Output.peep
+								Mashina.Peep.GetMapObject {
+									name = "SkeletonMinerJoe",
+									[CURRENT_PASSAGE_TARGET_NPC] = B.Output.peep
+								},
+
+								Mashina.Navigation.EnteredPassage {
+									peep = CURRENT_PASSAGE_TARGET_NPC,
+									[CURRENT_PASSAGE] = B.Output.result
+								},
+
+								Mashina.Compare.Equal {
+									left = CURRENT_PASSAGE,
+									right = "Passage_JoeArea"
+								},
+
+								Mashina.Peep.Talk {
+									message = "Hey, Joe, how's it goin'!",
+									duration = TALK_DURATION
+								},
+
+								Mashina.Peep.TimeOut {
+									duration = TALK_DURATION
+								},
+
+								Mashina.Peep.Talk {
+									peep = CURRENT_PASSAGE_TARGET_NPC,
+									message = "Pretty ore-some... He he he...",
+									duration = TALK_DURATION
+								},
+
+								Mashina.Peep.TimeOut {
+									duration = TALK_DURATION
+								},
+
+								Mashina.Peep.Talk {
+									message = "Ha! Still got your funny bone, Joe!",
+									duration = TALK_DURATION
+								}
 							},
 
 							Mashina.Peep.Talk {
-								message = "Hey, Joe, how's it goin'!",
+								message = "Seems like Joe's off elsewhere.",
 								duration = TALK_DURATION
-							},
-
-							Mashina.Peep.TimeOut {
-								duration = TALK_DURATION
-							},
-
-							Mashina.Peep.Talk {
-								peep = CURRENT_PASSAGE_TARGET_NPC,
-								message = "Pretty ore-some... He he he...",
-								duration = TALK_DURATION
-							},
-
-							Mashina.Peep.TimeOut {
-								duration = TALK_DURATION
-							},
-
-							Mashina.Peep.Talk {
-								message = "Ha! Still got your funny bone, Joe!",
-								duration = TALK_DURATION
-							},
+							}
 						}
 					}
 				}
