@@ -11,20 +11,14 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
-local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
-local Stats = require "ItsyScape.Game.Stats"
-local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
-local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
-local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
-local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 
 local GhostlyMinerForeman = Class(Creep)
 
@@ -43,13 +37,25 @@ function GhostlyMinerForeman:new(resource, name, ...)
 	self:addPoke('pillarMined')
 end
 
+function GhostlyMinerForeman:onBoss()
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"BossHUD",
+		false,
+		self)
+end
+
 function GhostlyMinerForeman:onPillarMined(e)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if combat.currentHitpoints > 0 then
 		self:poke('hit', AttackPoke({
-			damage = 9,
-			aggressor = e.pillar
+			damage = 10,
+			aggressor = e.aggressor or e.pillar
 		}))
+
+		if e.aggressor then
+			Utility.Peep.attack(self, e.aggressor)
+		end
 	end
 end
 

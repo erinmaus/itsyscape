@@ -27,8 +27,8 @@ local Tree = BTreeBuilder.Node() {
 				peep = TARGET,
 			},
 
-			Mashina.Peep.Talk {
-				message = "WHO DARES DISTURB ME?" 
+			Mashina.Peep.PokeSelf {
+				event = "boss"
 			},
 
 			Mashina.Peep.SetState {

@@ -303,6 +303,24 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
 		MapObject = M["Orlando"]
 	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Orlando_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Orlando"] {
+		TalkAction
+	}
 end
 
 M["Banker"] = ItsyScape.Resource.MapObject.Unique()

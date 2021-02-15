@@ -21,7 +21,22 @@ end
 function Mine:ready(director, game)
 	Map.ready(self, director, game)
 
+	self:initPillars()
 	self:initTorches()
+end
+
+function Mine:initPillars()
+	local director = self:getDirector()
+	local peeps = director:probe(self:getLayerName(), Probe.resource("Prop", "IsabelleIsland_AbandonedMine_Pillar"))
+	for i = 1, #peeps do
+		peeps[i]:listen('resourceObtained', self.onPillarMined, self)
+	end
+end
+
+function Mine:onPillarMined(prop, e)
+	local director = self:getDirector()
+	local hit = director:probe(self:getLayerName(), Probe.namedMapObject("GhostlyMinerForeman"))[1]
+	hit:poke('pillarMined', { pillar = prop, aggressor = (e and e.peep)or prop })
 end
 
 function Mine:getTorches()
