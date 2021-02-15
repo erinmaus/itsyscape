@@ -14,39 +14,32 @@ local Utility = require "ItsyScape.Game.Utility"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
-local TARGET = B.Reference("GhostlyMinerForeman", "TARGET")
+local AGGRESSOR = B.Reference("GhostlyMinerForeman", "AGGRESSOR")
 local Tree = BTreeBuilder.Node() {
-	Mashina.Try {
-		Mashina.Sequence {
-			Mashina.Peep.FindNearbyCombatTarget {
-				distance = 4,
-				[TARGET] = B.Output.RESULT
-			},
-
-			Mashina.Peep.EngageCombatTarget {
-				peep = TARGET,
-			},
-
-			Mashina.Peep.PokeSelf {
-				event = "boss"
-			},
-
-			Mashina.Peep.SetState {
-				state = 'attack'
-			}
+	Mashina.Step {
+		Mashina.Peep.Talk {
+			message = "WHO DARES DISTURB ME?" 
 		},
 
 		Mashina.Repeat {
-			Mashina.Step {
-				Mashina.Navigation.Wander {
-					radial_distance = 2
-				},
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Peep.WasAttacked {
+						took_damage = false,
+						[AGGRESSOR] = B.Output.aggressor
+					},
 
-				Mashina.Peep.Wait,
+					Mashina.RandomCheck {
+						chance = 1 / 2
+					},
 
-				Mashina.Peep.TimeOut {
-					min_duration = 2,
-					max_duration = 3
+					Mashina.Peep.EngageCombatTarget {
+						peep = AGGRESSOR
+					},
+
+					Mashina.Peep.Talk {
+						message = "Maggot!"
+					}
 				}
 			}
 		}
