@@ -16,11 +16,12 @@ GetMapObject.NAME = B.Reference()
 GetMapObject.PEEP = B.Reference()
 
 function GetMapObject:update(mashina, state, executor)
+	local name = state[self.NAME]
 	local hits = mashina:getDirector():probe(
-		mashina:getLayerName(), Probe.namedMapObject(state[self.NAME]))
+		mashina:getLayerName(), Probe.namedMapObject(name))
 
 	if #hits > 1 then
-		Log.warn("More than one hit.")
+		Log.warn("More than one hit (%d total) for named map object '%s'.", #hits, name)
 	end
 
 	local hit = hits[1]
@@ -28,6 +29,7 @@ function GetMapObject:update(mashina, state, executor)
 		state[self.PEEP] = hit
 		return B.Status.Success
 	else
+		Log.warn("No hits found for named map object '%s'.", name)
 		return B.Status.Failure
 	end
 end
