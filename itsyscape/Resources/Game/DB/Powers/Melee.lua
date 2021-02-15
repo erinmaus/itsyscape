@@ -83,7 +83,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Enrages the opponent, halving their attack roll but increasing their damage by 50%.",
+	Value = "Enrages the opponent, halving their attack roll but increasing their damage by 50%. Also draws the attention of mobs focused on other peeps.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Taunt"
 }
