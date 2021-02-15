@@ -465,7 +465,7 @@ do
 		PositionX = 41.5 * 2,
 		PositionY = 3,
 		PositionZ = 19.5 * 2,
-		Name = "CopperSkelemental",
+		Name = "CopperSkelemental1",
 		Map = M._MAP,
 		Resource = M["CopperSkelemental1"]
 	}
