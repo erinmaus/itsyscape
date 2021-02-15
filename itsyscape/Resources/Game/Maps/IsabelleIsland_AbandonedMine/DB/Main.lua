@@ -373,8 +373,7 @@ do
 	}
 
 	M["SkeletonMinerJoe"] {
-		TalkAction,
-		ItsyScape.Action.Attack()
+		TalkAction
 	}
 
 	ItsyScape.Meta.PeepMapObject {
