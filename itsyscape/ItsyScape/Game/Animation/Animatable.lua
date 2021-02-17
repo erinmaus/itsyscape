@@ -56,6 +56,37 @@ function Animatable:getTransforms()
 	return Class.ABSTRACT()
 end
 
+-- Gets the composed transform of a bone with the given name.
+function Animatable:getComposedTransform(attach)
+	local transform = love.math.newTransform()
+
+	do
+		local transforms = self:getTransforms()
+		local skeleton = self:getSkeleton()
+		local boneIndex = skeleton:getBoneIndex(attach)
+
+		local parents = {}
+		local bone
+		repeat
+			bone = skeleton:getBoneByIndex(boneIndex)
+			if bone then
+				table.insert(parents, boneIndex)
+
+				local parentBoneIndex = skeleton:getBoneIndex(bone:getParent())
+
+				boneIndex = parentBoneIndex
+				bone = skeleton:getBoneByIndex(parentBoneIndex)
+			end
+		until not bone
+
+		for i = 1, #parents do
+			transform:apply(transforms[parents[i]])
+		end
+	end
+
+	return transform
+end
+
 -- Sets the array of transforms.
 --
 -- 'transforms' can be a sparse array.

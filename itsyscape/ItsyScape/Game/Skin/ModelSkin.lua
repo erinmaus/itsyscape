@@ -29,6 +29,7 @@ function ModelSkin:new()
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
 	self.lights = {}
+	self.particles = {}
 end
 
 function ModelSkin:getResource()
@@ -153,6 +154,8 @@ function ModelSkin:loadFromFile(filename)
 			end
 		end
 	end
+
+	self.particles = result.particles or {}
 end
 
 -- Gets the model CacheRef.
@@ -199,6 +202,10 @@ end
 
 function ModelSkin:getLights()
 	return self.lights
+end
+
+function ModelSkin:getParticles()
+	return self.particles
 end
 
 return ModelSkin
