@@ -17,6 +17,7 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
+local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 
 local ActorView = Class()
@@ -359,7 +360,7 @@ function ActorView:applySkin(slotNodes)
 						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
 
 						local lights = slot.instance:getLights()
-						if #lights >= 0 then
+						if #lights > 0 then
 							slot.lights = {}
 
 							for i = 1, #lights do
@@ -377,6 +378,22 @@ function ActorView:applySkin(slotNodes)
 									outputLight:setParent(slot.sceneNode)
 									table.insert(slot.lights, outputLight)
 								end
+							end
+						end
+
+						local particles = slot.instance:getParticles()
+						if #particles > 0 then
+							slot.particles = {}
+
+							for i = 1, #particles do
+								local p = ParticleSceneNode()
+								p:initParticleSystemFromDef(particles[i].system, self.game:getResourceManager())
+								p:setParent(slot.sceneNode)
+
+								table.insert(slot.particles, {
+									sceneNode = p,
+									attach = particles[i].attach
+								})
 							end
 						end
 
@@ -565,6 +582,24 @@ function ActorView:updateAnimations()
 			end
 		end
 
+		for _, slotNodes in pairs(self.skins) do
+			for i = 1, #slotNodes do
+				if slotNodes[i].particles then
+					for j = 1, #slotNodes[i].particles do
+						local p = slotNodes[i].particles[j]
+						if p.attach then
+							local transform = self.animatable:getComposedTransform(p.attach)
+							local localPosition = Vector(transform:transformPoint(0, 0, 0))
+							local system = p.sceneNode:getParticleSystem()
+							if system then
+								system:updateEmittersLocalPosition(localPosition)
+							end
+						end
+					end
+				end
+			end
+		end
+
 		local transforms = self.animatable:getTransforms()
 		do
 			for i = 1, #transforms do
@@ -573,7 +608,6 @@ function ActorView:updateAnimations()
 					animation:computeTransform(time, transforms, i)
 				end
 			end
-
 
 			for i = 1, #transforms do
 				local animation, time = self.animatable:getAnimationForBone(i)
