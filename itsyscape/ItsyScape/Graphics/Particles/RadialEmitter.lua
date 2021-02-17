@@ -15,6 +15,7 @@ local RadialEmitter = Class(ParticleEmitter)
 
 function RadialEmitter:new()
 	ParticleEmitter.new(self)
+	self:setPosition()
 	self:setRadius()
 	self:setSpeed()
 	self:setAcceleration()
@@ -22,7 +23,11 @@ function RadialEmitter:new()
 	self:setYRange()
 	self:setZRange()
 
-	self.position = Vector.ZERO
+	self.localPosition = Vector.ZERO
+end
+
+function RadialEmitter:setPosition(x, y, z)
+	self.position = Vector(x, y, z)
 end
 
 function RadialEmitter:setXRange(center, width)
@@ -64,9 +69,9 @@ function RadialEmitter:emitSingleParticle(particle)
 	local velocity = math.random() * (self.maxSpeed - self.minSpeed) + self.minSpeed
 	local acceleration = math.random() * (self.maxAcceleration - self.minAcceleration) + self.minAcceleration
 
-	particle.positionX = normal.x * radius + self.position.x
-	particle.positionY = normal.y * radius + self.position.y
-	particle.positionZ = normal.z * radius + self.position.z
+	particle.positionX = normal.x * radius + self.position.x + self.localPosition.x
+	particle.positionY = normal.y * radius + self.position.y + self.localPosition.y
+	particle.positionZ = normal.z * radius + self.position.z + self.localPosition.z
 
 	particle.velocityX = normal.x * velocity
 	particle.velocityY = normal.y * velocity
@@ -78,7 +83,7 @@ function RadialEmitter:emitSingleParticle(particle)
 end
 
 function RadialEmitter:updateLocalPosition(localPosition)
-	self.position = localPosition
+	self.localPosition = localPosition
 end
 
 return RadialEmitter

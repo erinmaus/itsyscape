@@ -68,7 +68,10 @@ function ParticlesInstance:play(animatable, time)
 			end
 
 			local localPosition = Vector(transform:transformPoint(0, 0, 0))
-			self.sceneNode:getParticleSystem():updateEmittersLocalPosition(localPosition)
+			local system = self.sceneNode:getParticleSystem()
+			if system then
+				system:updateEmittersLocalPosition(localPosition)
+			end
 		end
 	end
 end

@@ -35,7 +35,7 @@ function EmissionStrategy:emit(particleSystem)
 end
 
 function EmissionStrategy:setDuration(min, max)
-	min = min or 1
+	min = min or math.huge
 	max = max or min
 
 	if min == math.huge or max == math.huge then
