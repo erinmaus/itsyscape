@@ -75,6 +75,26 @@ function Sleep:save(player)
 			status.currentPrayer = status.maximumPrayer
 		end
 	end
+
+	self:dream(player)
+end
+
+function Sleep:dream(player)
+	local pendingDreams = Utility.Quest.getPendingDreams(player)
+
+	local hasPendingDreams = #pendingDreams > 0
+	if hasPendingDreams then
+		Log.info("Peep '%s' has pending dreams.", player:getName())
+
+		local randomPendingDreamIndex = math.random(#pendingDreams)
+		local randomPendingDream = pendingDreams[randomPendingDreamIndex]
+
+		Log.info("Selected dream '%s'.", randomPendingDream.name)
+		Utility.Quest.dream(player, randomPendingDream)
+		player:getState():give("Dream", randomPendingDream.name)
+	else
+		Log.info("No pending dreams.")
+	end
 end
 
 return Sleep
