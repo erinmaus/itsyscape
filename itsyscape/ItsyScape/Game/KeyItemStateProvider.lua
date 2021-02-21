@@ -37,6 +37,7 @@ function KeyItemStateProvider:take(name, count, flags)
 	end
 
 	self.storage:set(name, nil)
+	return true
 end
 
 function KeyItemStateProvider:give(name, count, flags)
