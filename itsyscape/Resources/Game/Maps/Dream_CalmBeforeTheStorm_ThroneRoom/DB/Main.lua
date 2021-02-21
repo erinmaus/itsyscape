@@ -131,6 +131,24 @@ do
 		Peep = ItsyScape.Resource.Peep "TheEmptyKing_Cutscene",
 		MapObject = M["TheEmptyKing"]
 	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "TheEmptyKing_Cutscene",
+		Name = "TheEmptyKing",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_ThroneRoom/Dialog/TheEmptyKing_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["TheEmptyKing"] {
+		TalkAction
+	}
 end
 
 M["EmptyZealot1"] = ItsyScape.Resource.MapObject.Unique()
