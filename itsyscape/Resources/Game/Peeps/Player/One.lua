@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
 local BankInventoryProvider = require "ItsyScape.Game.BankInventoryProvider"
+local DreamStateProvider = require "ItsyScape.Game.DreamStateProvider"
 local KeyItemStateProvider = require "ItsyScape.Game.KeyItemStateProvider"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
 local PlayerInventoryStateProvider = require "ItsyScape.Game.PlayerInventoryStateProvider"
@@ -293,6 +294,7 @@ function One:ready(director, game)
 	end
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
+	self:getState():addProvider("Dream", DreamStateProvider(self))
 	self:getState():addProvider("Quest", QuestStateProvider(self))
 	self:getState():addProvider("SailingItem", SailingItemStateProvider(self))
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
