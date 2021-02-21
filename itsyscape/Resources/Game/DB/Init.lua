@@ -591,6 +591,15 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Dream"
+
+	Meta "DreamRequirement" {
+		Map = Meta.TYPE_RESOURCE,
+		KeyItem = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Dream = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
