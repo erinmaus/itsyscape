@@ -1,4 +1,9 @@
-local M = include "Resources/Game/Maps/Dream_ThroneRoom/DB/Default.lua"
+local M = include "Resources/Game/Maps/Dream_CalmBeforeTheStorm_ThroneRoom/DB/Default.lua"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Dream_CalmBeforeTheStorm_ThroneRoom.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
 	Value = "Dream Sequence",
@@ -96,6 +101,18 @@ do
 		FarDistance = 15,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
+	}
+end
+
+M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1,
+		PositionZ = 61,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
 	}
 end
 
