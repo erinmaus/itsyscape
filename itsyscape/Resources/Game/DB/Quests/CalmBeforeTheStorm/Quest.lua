@@ -33,9 +33,7 @@ ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_PirateEncounterInitiated"
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KursedByCthulhu"
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GaveOrlandoFish"
 
-ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledGhostlyMinerForeman"
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph"
-ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledUndeadSquid"
 
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",
@@ -270,7 +268,30 @@ do
 	ItsyScape.Meta.DreamRequirement {
 		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_ThroneRoom",
 		Anchor = "Anchor_Spawn",
-		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledGhostlyMinerForeman",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph",
 		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
+	}
+end
+
+do
+	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "Ocean",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "A near death experience.",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.DreamRequirement {
+		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_Ship",
+		Anchor = "Anchor_Spawn",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
+		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
 	}
 end
