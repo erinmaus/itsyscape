@@ -39,10 +39,7 @@ function Dream:onLoad(filename, args, layer)
 end
 
 function Dream:prepShip()
-	local ship = Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_Ship")
-	ship:listen('ready', function()
-		--Utility.Map.playCutscene(self, "IsabelleIsland_FarOcean_Sink")
-	end)
+	Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_Ship")
 end
 
 return Dream
