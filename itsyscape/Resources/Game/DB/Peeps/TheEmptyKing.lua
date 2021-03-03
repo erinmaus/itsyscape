@@ -49,3 +49,24 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "EmptyZealot_Cutscene"
 }
+
+ItsyScape.Resource.Peep "Nyarlathotep_Cutscene" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Nyarlathotep.BaseNyarlathotep",
+	Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Nyarlathotep, First Consul",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Serves as First Consul of The Empty King's divine bureaucracy, the Fate Mashina. But rumors speak of their inclination for shadows and trickery...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene"
+}
