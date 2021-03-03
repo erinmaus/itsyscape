@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/KeyItemStateProvider.lua
+-- ItsyScape/Game/DreamStateProvider.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,51 +11,45 @@ local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 
-local KeyItemStateProvider = Class(StateProvider)
+local DreamStateProvider = Class(StateProvider)
 
-function KeyItemStateProvider:new(peep)
+function DreamStateProvider:new(peep)
 	local director = peep:getDirector()
 	local storage = director:getPlayerStorage(peep)
 
-	self.storage = storage:getRoot():getSection("KeyItems")
+	self.storage = storage:getRoot():getSection("Dreams")
 	self.peep = peep
 end
 
-function KeyItemStateProvider:getPriority()
+function DreamStateProvider:getPriority()
 	return State.PRIORITY_LOCAL
 end
 
-function KeyItemStateProvider:has(name, count, flags)
+function DreamStateProvider:has(name, count, flags)
 	return (count or 1) <= self:count(name, flags)
 end
 
-function KeyItemStateProvider:take(name, count, flags)
-	local gameDB = self.peep:getDirector():getGameDB()
-	local resource = gameDB:getResource(name, "KeyItem")
-	if not resource then
-		return false
-	end
-
-	self.storage:set(name, nil)
-	return true
+function DreamStateProvider:take(name, count, flags)
+	Log.error("Can't take dreams.")
+	return false
 end
 
-function KeyItemStateProvider:give(name, count, flags)
+function DreamStateProvider:give(name, count, flags)
 	local gameDB = self.peep:getDirector():getGameDB()
-	local resource = gameDB:getResource(name, "KeyItem")
+	local resource = gameDB:getResource(name, "Dream")
 	if not resource then
 		return false
 	end
 
 	if not self.storage:get(name) then
-		Log.analytic("PLAYER_GOT_KEY_ITEM", name)
+		Log.analytic("PLAYER_DREAMED", name)
 	end
 
 	self.storage:set(name, true)
 	return true
 end
 
-function KeyItemStateProvider:count(name, flags)
+function DreamStateProvider:count(name, flags)
 	if self.storage:get(name) == true then
 		return math.huge
 	else
@@ -63,4 +57,4 @@ function KeyItemStateProvider:count(name, flags)
 	end
 end
 
-return KeyItemStateProvider
+return DreamStateProvider

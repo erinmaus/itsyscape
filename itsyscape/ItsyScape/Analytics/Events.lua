@@ -13,6 +13,7 @@ local EVENTS = {
 	END_GAME = true,
 	PLAYER_GOT_KEY_ITEM = true,
 	PLAYER_GOT_LEVEL_UP = true,
+	PLAYER_DREAMED = true,
 	PLAYER_DIED = true,
 	PLAYER_REZZED = true,
 	PLAYER_GOT_SAILING_ITEM = true,

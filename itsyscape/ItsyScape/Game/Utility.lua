@@ -2968,7 +2968,6 @@ function Utility.Quest.isNextStep(quest, step, peep)
 			if previousSteps ~= nil then
 				for j = 1, #previousSteps do
 					if not peep:getState():has("KeyItem", previousSteps[j].name) then
-						print('NOT', previousSteps[j].name)
 						return false
 					end
 				end
@@ -3099,6 +3098,95 @@ function Utility.Quest.canStart(quest, peep)
 	end
 
 	return false
+end
+
+function Utility.Quest.getDreams(peep)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+
+	local dreams = {}
+	for dream in gameDB:getResources("Dream") do
+		table.insert(dreams, dream)
+	end
+
+	return dreams
+end
+
+function Utility.Quest.getPendingDreams(peep)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+	local state = peep:getState()
+
+	local allDreams = Utility.Quest.getDreams(peep)
+	local pendingDreams = {}
+
+	for i = 1, #allDreams do
+		local dreamRequirement = gameDB:getRecord("DreamRequirement", {
+			Dream = allDreams[i]
+		})
+
+		if not dreamRequirement then
+			Log.warn("Dream '%s' doesn't have a requirement.", allDreams[i].name)
+		else
+			local keyItemName = dreamRequirement:get("KeyItem").name
+			local dreamName = allDreams[i].name
+
+			local hasKeyItem = state:has("KeyItem", keyItemName)
+			local hasDreamtDream = state:has("Dream", dreamName)
+
+			if hasKeyItem and not hasDreamtDream then
+				table.insert(pendingDreams, allDreams[i])
+			end
+		end
+	end
+
+	return pendingDreams
+end
+
+function Utility.Quest.dream(peep, dream)
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+
+	if type(dream) == 'string' then
+		local resource = gameDB:getResource(dream, "Dream")
+
+		if not dream then
+			Log.error("Dream '%s' not found.", dream)
+			return false
+		else
+			dream = resource
+		end
+	end
+
+	local dreamRequirement = gameDB:getRecord("DreamRequirement", {
+		Dream = dream
+	})
+
+	if not dreamRequirement then
+		Log.warn("Dream '%s' doesn't have a requirement.", dream.name)
+		return false
+	else
+		peep:getState():give("KeyItem", dream.name, 1)
+
+		local stage = director:getGameInstance():getStage()
+		stage:movePeep(
+			peep,
+			dreamRequirement:get("Map").name,
+			dreamRequirement:get("Anchor"))
+	end
+end
+
+function Utility.Quest.wakeUp(peep)
+	local director = peep:getDirector()
+	local stage = director:getGameInstance():getStage()
+
+	local storage = director:getPlayerStorage(peep):getRoot()
+	local location = storage:getSection("Location")
+
+	stage:movePeep(
+		peep,
+		location:get("name"),
+		Vector(location:get("x"), location:get("y"), location:get("z")))
 end
 
 return Utility

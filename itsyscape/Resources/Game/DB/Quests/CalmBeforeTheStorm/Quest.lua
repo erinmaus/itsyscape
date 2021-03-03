@@ -33,6 +33,8 @@ ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_PirateEncounterInitiated"
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KursedByCthulhu"
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GaveOrlandoFish"
 
+ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph"
+
 ItsyScape.Utility.questStep(
 	"CalmBeforeTheStorm_Start",
 	"CalmBeforeTheStorm_TalkedToIsabelle1"
@@ -247,3 +249,49 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "You defeated Isabelle.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated"
 }
+
+do
+	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "The Empty King's Throne Room",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "The Empty King kindly requests your audience.",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.DreamRequirement {
+		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_ThroneRoom",
+		Anchor = "Anchor_Spawn",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph",
+		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
+	}
+end
+
+do
+	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "Ocean",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Dream = "A near death experience.",
+		Language = "en-US",
+		Resource = Dream
+	}
+
+	ItsyScape.Meta.DreamRequirement {
+		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_Ship",
+		Anchor = "Anchor_Spawn",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
+		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
+	}
+end
