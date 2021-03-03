@@ -116,6 +116,42 @@ do
 	}
 end
 
+M["Nyarlathotep"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1,
+		PositionZ = 51,
+		Direction = -1,
+		Name = "Nyarlathotep",
+		Map = M._MAP,
+		Resource = M["Nyarlathotep"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
+		MapObject = M["Nyarlathotep"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
+		Name = "Nyarlathotep",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_Ship/Dialog/Nyarlathotep_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Nyarlathotep"] {
+		TalkAction
+	}
+end
+
 M["Anchor_Ship"] = ItsyScape.Resource.MapObject.Unique()
 do
 	local rotation1 = ItsyScape.Utility.Quaternion.fromAxisAngle(
