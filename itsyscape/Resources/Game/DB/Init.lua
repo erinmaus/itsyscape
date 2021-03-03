@@ -591,6 +591,15 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Dream"
+
+	Meta "DreamRequirement" {
+		Map = Meta.TYPE_RESOURCE,
+		KeyItem = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Dream = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -796,6 +805,7 @@ include "Resources/Game/DB/Peeps/Sailor.lua"
 include "Resources/Game/DB/Peeps/Tutors.lua"
 include "Resources/Game/DB/Peeps/Yendorian.lua"
 include "Resources/Game/DB/Peeps/Tinkerer.lua"
+include "Resources/Game/DB/Peeps/TheEmptyKing.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 

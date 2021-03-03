@@ -347,7 +347,7 @@ function HumanoidActorAnimatorCortex:update(delta)
 			if not self.idling[actor] then
 				local resource = self:getIdleAnimation(peep)
 				if resource then
-					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
+					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, math.random())
 					self.idling[actor] = resource
 					self.walking[actor] = false
 				end
