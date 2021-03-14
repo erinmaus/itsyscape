@@ -150,7 +150,7 @@ do
 
 			Input {
 				Resource = ItsyScape.Resource.Item "IsabelleIsland_FoggyForest_AncientSplinters",
-				Count = 6
+				Count = 10
 			},
 
 			Input {
@@ -160,12 +160,12 @@ do
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Crafting",
-				Count = ItsyScape.Utility.xpForResource(10) * 7
+				Count = ItsyScape.Utility.xpForResource(10) * 10
 			},
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForResource(5) * 7
+				Count = ItsyScape.Utility.xpForResource(5) * 10
 			},
 
 			Output {
