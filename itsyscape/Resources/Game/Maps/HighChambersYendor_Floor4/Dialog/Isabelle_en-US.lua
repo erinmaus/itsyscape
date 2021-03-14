@@ -15,16 +15,16 @@ local WHO       = option "Who do you think you are?"
 local DIE       = option "Die, traitor!"
 local NEVERMIND = option "Nevermind, I'll take you up on that offer!"
 
-local option
+local result
 repeat
-	option = select {
+	result = select {
 		WHAT,
 		WHO,
 		DIE,
 		NEVERMIND
 	}
 
-	if option == WHAT then
+	if result == WHAT then
 		speaker "_TARGET"
 		message { 
 			"What are you doing?! I thought you wanted to rid the island of the curse!"
@@ -45,7 +45,7 @@ repeat
 			"This must not stand!",
 			"They must be stopped at whatever cost!"
 		}
-	elseif option == WHO then
+	elseif result == WHO then
 		speaker "_TARGET"
 		message {
 			"Who do you think you are?"
@@ -61,7 +61,7 @@ repeat
 			"A group known as the Drakkenson offered to remove the kurse should I stop The Empty King.",
 			"So here I am, on the verge of success! This ends now!"
 		}
-	elseif option == DIE then
+	elseif result == DIE then
 		speaker "_TARGET"
 		message {
 			"You will die for lying to me!"
@@ -72,7 +72,7 @@ repeat
 			"Take it as you will. I will smite you."
 		}
 	end
-until option == NEVERMIND or option == DIE
+until result == NEVERMIND or result == DIE
 
 -- Transmute map object back.
 local mapObject = Utility.Map.getMapObject(
@@ -84,6 +84,6 @@ Utility.Peep.setMapObject(isabelle, mapObject)
 
 _TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_MysteryBoss")
 
-if option == DIE then
+if result == DIE then
 	Utility.Peep.attack(isabelle, _TARGET)
 end
