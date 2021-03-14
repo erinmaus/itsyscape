@@ -95,10 +95,18 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Wood",
+		Value = "AncientSplinters",
+		Language = "en-US",
+		Name = "Ancient splinters",
+		Tier = 10
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Wood",
 		Value = "Willow",
 		Language = "en-US",
 		Name = "Willow",
-		Tier = 1
+		Tier = 10
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
