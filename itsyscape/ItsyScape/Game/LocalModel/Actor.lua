@@ -282,7 +282,7 @@ function LocalActor:getBounds()
 end
 
 function LocalActor:getResource()
-	return self.resource or Utility.Peep.getResource(self.peep)
+	return Utility.Peep.getResource(self.peep)
 end
 
 function LocalActor:getActions(scope)

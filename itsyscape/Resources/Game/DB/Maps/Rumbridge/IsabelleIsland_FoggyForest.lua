@@ -362,25 +362,25 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(5),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(5),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(1),
+		Value = ItsyScape.Utility.xpForLevel(5),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(25),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph"
 	}
 
@@ -407,6 +407,89 @@ do
 		Weight = 100,
 		Count = 1,
 		Resource = ItsyScape.Resource.DropTable "IsabelleIsland_FoggyForest_BossyNymph_Mask"	
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable" {
+		TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable",
+		Name = "BossyNymph",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FoggyForest/Dialog/BossyNymph_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Nymph.BaseNymph",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bound Nymph",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Bound to the ancient driftwood tree by the kursed mask.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "DinkyStaff",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "WoodlandRobe",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientDriftwoodMask",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
 	}
 end
 

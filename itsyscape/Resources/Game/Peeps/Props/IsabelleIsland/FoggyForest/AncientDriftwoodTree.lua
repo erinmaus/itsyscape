@@ -16,7 +16,7 @@ local BasicTree = require "Resources.Game.Peeps.Props.BasicTree"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local AncientDriftwoodTree = Class(BasicTree)
-AncientDriftwoodTree.MAX_TICKS = 3
+AncientDriftwoodTree.MAX_TICKS = 4
 
 function AncientDriftwoodTree:new(...)
 	BasicTree.new(self, ...)
