@@ -102,10 +102,12 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			}
 
 			message {
-				"Cut it down and bring me the logs.",
+				"Cut it down and bring me four ancient splinters.",
 				"Be warned, the ghouls will stop at nothing to protect it.",
 				"The danger is real, and the tree is massive; it will take time to cut it down."
 			}
+
+			message "I've heard you can make a mask from the splinters if you're strong enough."
 
 			message "Head east, past the cow pen, to enter the forest."
 
@@ -150,20 +152,20 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				}
 			end
 
-			if _TARGET:getState():has("Item", "AncientDriftwoodMask", 1, TAKE_FLAGS) then
+			if _TARGET:getState():has("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
 				message {
-					"I see you're in possession of the ancient driftwood mask.",
+					"I see you're in possession of four ancient splinters.",
 					"Isabelle sends her thanks, ${PLAYER_NAME}. That must have been difficult to obtain."
 				}
 
-				if _TARGET:getState():take("Item", "AncientDriftwoodMask", 1, TAKE_FLAGS) then
+				if _TARGET:getState():take("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
 					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood")
 				end
 			end
 		else
 			message {
-				"You've already obtained the ancient driftwood mask.",
-				"If you stumble upon another, feel free to keep it."
+				"You've already obtained the ancient splinters.",
+				"I've heard rumors that it's possible to craft a powerful artifact from the splinters if you're able to obtain glue."
 			}
 		end
 	elseif option == SQUID_SKULL then
