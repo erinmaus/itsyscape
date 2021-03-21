@@ -35,6 +35,12 @@ FoggyForest.NUM_TICKS = 5
 FoggyForest.BOSS_UNATTACKABLE = "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
 FoggyForest.BOSS_ATTACKABLE = "IsabelleIsland_FoggyForest_BossyNymph"
 FoggyForest.BOSS_ANCHOR = "Anchor_SpawnClearing"
+FoggyForest.BOSS_MESSAGES = {
+	"Kill this fool, minions!",
+	"I summon death!",
+	"The Ancient driftwood will not be felled!",
+	"Stop it! Kill this pitiful adventurer, minions!"
+}
 
 function FoggyForest:new(resource, name, ...)
 	Map.new(self, resource, name or 'FoggyForest', ...)
@@ -72,12 +78,31 @@ end
 function FoggyForest:spawnBossyNymph()
 	local player = Utility.Peep.getPlayer(self)
 	local adjacent = Utility.Peep.getPosition(player) - Vector.UNIT_X * 2
-	local actor = Utility.spawnActorAtPosition(self, FoggyForest.BOSS_UNATTACKABLE, adjacent.x, adjacent.y, adjacent.z)
+	local actor = Utility.spawnActorAtPosition(self, FoggyForest.BOSS_UNATTACKABLE, adjacent.x, adjacent.y, adjacent.z, 0)
 
 	self.nymph = actor:getPeep()
 
 	self.nymph:listen('finalize', function()
 		Utility.UI.openInterface(player, "BossHUD", false, self.nymph)
+
+		local actions = Utility.getActions(
+			self:getDirector():getGameInstance(),
+			Utility.Peep.getResource(self.nymph),
+			'world')
+		for i = 1, #actions do
+			if actions[i].instance:is("talk") then
+				return Utility.UI.openInterface(
+					player,
+					"DialogBox",
+					true,
+					actions[i].instance:getAction(),
+					self.nymph)
+			end
+		end
+	end)
+
+	self.nymph:listen('die', function()
+		player:getState():give("KeyItem", "CalmBeforeTheStorm_KilledBoundNymph", 1)
 	end)
 end
 
@@ -105,11 +130,22 @@ function FoggyForest:spawnFoes(e)
 		else
 			Log.warn("Failed to spawn '%s' @ '%s'.", peep, anchor)
 		end
-
 	end
+
+	self:makeNymphTalk(FoggyForest.BOSS_MESSAGES[math.random(#FoggyForest.BOSS_MESSAGES)])
 
 	self.numFoesStat.currentValue = self.numFoesStat.currentValue + FoggyForest.NUM_FOES
 	self.numFoesStat.maxValue = self.numFoesStat.currentValue + FoggyForest.NUM_FOES
+end
+
+function FoggyForest:makeNymphTalk(message)
+	if self.nymph then
+		local actor = self.nymph:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+			actor:flash('Message', 1, message, nil, 2.5)
+		end
+	end
 end
 
 function FoggyForest:onAncientDriftwoodTreeHit(e)
@@ -131,6 +167,8 @@ function FoggyForest:onAncientDriftwoodTreeFelled(e)
 	local gameDB = self:getDirector():getGameDB()
 	Utility.Peep.setResource(self.nymph, gameDB:getResource(FoggyForest.BOSS_ATTACKABLE, "Peep"))
 	Utility.Peep.attack(self.nymph, e.peep or Utility.Peep.getPlayer(self))
+
+	self:makeNymphTalk("Nooooo! FEEL MY WRATH!")
 
 	self.treeHealthStat.currentValue = self.treeHealthStat.currentValue - 1
 end
