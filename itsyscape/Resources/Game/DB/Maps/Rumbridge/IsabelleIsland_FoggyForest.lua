@@ -357,6 +357,7 @@ do
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Bound to the ancient driftwood tree by the kursed mask.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph"
 	}
 
@@ -447,6 +448,7 @@ do
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Bound to the ancient driftwood tree by the kursed mask.",
+		Language = "en-US",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FoggyForest_BossyNymph_Unattackable"
 	}
 
