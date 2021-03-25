@@ -128,6 +128,35 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Crate_Default1"
 }
 
+ItsyScape.Resource.Prop "TV" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "TV"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "TV"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "TV",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TV"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What's a 'TV'?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TV"
+}
+
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "A less fancy chest.",
 	Language = "en-US",
@@ -376,6 +405,63 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
 }
+
+ItsyScape.Resource.Prop "Chair_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Chair_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Chair_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Chair_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Would rather stand than sit on this abomination of planks.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Chair_Default"
+}
+
+ItsyScape.Resource.Prop "ComfyCouch_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyCouch_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Comfy couch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A comfy couch... Or two comfy chairs Frankensteined together?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
+}
+
 
 ItsyScape.Resource.Prop "Bookshelf_Default" {
 	-- Nothing.
