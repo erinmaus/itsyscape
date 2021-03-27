@@ -157,5 +157,13 @@
 		width = 128,
 		height = 256,
 		name = "stone_wall"
+	},
+
+	{
+		x = 128,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "invisible"
 	}
 }
