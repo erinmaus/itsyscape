@@ -114,6 +114,7 @@ function NewMapInterface:getOverflow()
 end
 
 function NewMapInterface:createMap()
+	local gameView = self.application:getGameView()
 	local stage = self.application:getGame():getStage()
 	local width = tonumber(self.widthInput:getText()) or 32
 	local height = tonumber(self.heightInput:getText()) or 32
@@ -141,6 +142,8 @@ function NewMapInterface:createMap()
 				elevation + 5,
 				map:getHeight() / 2 * map:getCellSize())
 			self.application:getCamera():setPosition(center)
+
+			gameView:getMapSceneNode(1):setParent(gameView:getScene())
 
 			self.onSubmit(self)
 			self:close()
