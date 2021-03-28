@@ -28,3 +28,23 @@ do
 		Resource = M["Anchor_DownStairs"]
 	}
 end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_UpStairs",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor4",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Down"] {
+		TravelAction
+	}
+end
