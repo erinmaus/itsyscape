@@ -2,7 +2,7 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor5"
 
-M["WoodenLadder_Default3"] = ItsyScape.Resource.MapObject.Unique()
+M["Ladder_Down"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15.000000,
@@ -15,14 +15,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "WoodenLadder_Default3",
+		Name = "Ladder_Down",
 		Map = M._MAP,
-		Resource = M["WoodenLadder_Default3"]
+		Resource = M["Ladder_Down"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_Default3"]
+		MapObject = M["Ladder_Down"]
 	}
 end
 
