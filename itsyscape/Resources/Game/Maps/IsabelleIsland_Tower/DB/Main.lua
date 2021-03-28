@@ -482,6 +482,38 @@ do
 	}
 end
 
+M["Anchor_UpStairs"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 6,
+		PositionZ = 37,
+		Name = "Anchor_UpStairs",
+		Map = M._MAP,
+		Resource = M["Anchor_UpStairs"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_DownStairs",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Up"] {
+		TravelAction
+	}
+end
+
 M["Door_Office"] {
 	ItsyScape.Action.Open(),
 	ItsyScape.Action.Close()

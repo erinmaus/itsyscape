@@ -194,7 +194,7 @@ do
 	}
 end
 
-M["WoodenLadder_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["Ladder_Down"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13.000000,
@@ -207,14 +207,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "WoodenLadder_Default1",
+		Name = "Ladder_Down",
 		Map = M._MAP,
-		Resource = M["WoodenLadder_Default1"]
+		Resource = M["Ladder_Down"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_Default1"]
+		MapObject = M["Ladder_Down"]
 	}
 end
 
@@ -362,7 +362,7 @@ do
 	}
 end
 
-M["WoodenLadder_Default2"] = ItsyScape.Resource.MapObject.Unique()
+M["Ladder_Up"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13.000000,
@@ -375,14 +375,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "WoodenLadder_Default2",
+		Name = "Ladder_Up",
 		Map = M._MAP,
-		Resource = M["WoodenLadder_Default2"]
+		Resource = M["Ladder_Up"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_Default2"]
+		MapObject = M["Ladder_Up"]
 	}
 end
 

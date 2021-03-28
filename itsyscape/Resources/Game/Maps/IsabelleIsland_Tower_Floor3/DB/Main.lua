@@ -16,3 +16,67 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = M._MAP
 }
+
+M["Anchor_UpStairs"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 37,
+		Name = "Anchor_UpStairs",
+		Map = M._MAP,
+		Resource = M["Anchor_UpStairs"]
+	}
+end
+
+M["Anchor_DownStairs"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 35,
+		Name = "Anchor_DownStairs",
+		Map = M._MAP,
+		Resource = M["Anchor_DownStairs"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_DownStairs",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor4",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Up"] {
+		TravelAction
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_UpStairs",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Down"] {
+		TravelAction
+	}
+end
