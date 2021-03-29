@@ -557,4 +557,18 @@ M["Door_Tower3"] {
 	ItsyScape.Action.Close()
 }
 
+do
+	local SleepAction = ItsyScape.Action.Sleep()
+
+	M["SuperComfyCouch"] {
+		SleepAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Snooze",
+		Language = "en-US",
+		Action = SleepAction
+	}
+end
+
 return M

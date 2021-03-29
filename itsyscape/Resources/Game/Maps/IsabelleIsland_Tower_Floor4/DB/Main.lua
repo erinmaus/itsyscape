@@ -80,3 +80,39 @@ do
 		TravelAction
 	}
 end
+
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 25,
+		Direction = -1,
+		Name = "Rosalind",
+		Map = M._MAP,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
+		MapObject = M["Rosalind"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor4/Dialog/Rosalind_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Rosalind"] {
+		TalkAction
+	}
+end

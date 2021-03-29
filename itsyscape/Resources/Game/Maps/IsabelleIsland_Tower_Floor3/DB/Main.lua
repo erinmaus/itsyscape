@@ -80,3 +80,74 @@ do
 		TravelAction
 	}
 end
+
+M["Susie"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 0,
+		PositionZ = 17,
+		Direction = 1,
+		Name = "Susie",
+		Map = M._MAP,
+		Resource = M["Susie"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Crafter",
+		MapObject = M["Susie"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Crafter Susie",
+		Language = "en-US",
+		Resource = M["Susie"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Susie"],
+		Name = "Crafter",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor3/Dialog/Crafter_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Crafter",
+		MapObject = M["Susie"]
+	}
+
+	M["Susie"] {
+		TalkAction
+	}
+end
+
+M["Bob"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 25,
+		Direction = -1,
+		Name = "Bob",
+		Map = M._MAP,
+		Resource = M["Bob"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard",
+		MapObject = M["Bob"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bob the General Store Owner",
+		Language = "en-US",
+		Resource = M["Susie"]
+	}
+end
