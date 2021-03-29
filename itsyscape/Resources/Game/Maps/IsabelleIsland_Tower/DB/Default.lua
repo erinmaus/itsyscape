@@ -1706,7 +1706,7 @@ do
 	}
 end
 
-M["ComfyCouch_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["SuperComfyCouch"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 31.000000,
@@ -1719,14 +1719,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "ComfyCouch_Default1",
+		Name = "SuperComfyCouch",
 		Map = M._MAP,
-		Resource = M["ComfyCouch_Default1"]
+		Resource = M["SuperComfyCouch"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ComfyCouch_Default",
-		MapObject = M["ComfyCouch_Default1"]
+		MapObject = M["SuperComfyCouch"]
 	}
 end
 

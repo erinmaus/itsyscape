@@ -181,22 +181,8 @@ do
 end
 
 do
-	local TalkAction = ItsyScape.Action.Talk()
-
 	ItsyScape.Resource.Peep "IsabelleIsland_Rosalind" {
-		TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
-		Name = "Rosalind",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Rosalind_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {

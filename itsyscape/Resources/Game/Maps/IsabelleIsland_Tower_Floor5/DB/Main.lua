@@ -29,6 +29,47 @@ do
 	}
 end
 
+M["Anchor_StartGame"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 7,
+		PositionZ = 27,
+		Name = "Anchor_StartGame",
+		Map = M._MAP,
+		Resource = M["Anchor_StartGame"]
+	}
+end
+
+M["UnstablePortal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 7,
+		PositionZ = 25,
+		Name = "UnstablePortal",
+		Map = M._MAP,
+		Resource = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Default",
+		MapObject = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Unstable portal",
+		Language = "en-US",
+		Resource = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The portal is unstable and can't be used.",
+		Language = "en-US",
+		Resource = M["UnstablePortal"]
+	}
+end
+
 do
 	local TravelAction = ItsyScape.Action.Travel()
 
