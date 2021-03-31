@@ -104,9 +104,9 @@ end
 M["Anchor_AbandonedMine"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 55,
-		PositionY = 3,
-		PositionZ = 59,
+		PositionX = 57,
+		PositionY = 6,
+		PositionZ = 57,
 		Name = "Anchor_AbandonedMine",
 		Map = M._MAP,
 		Resource = M["Anchor_AbandonedMine"]
@@ -116,9 +116,9 @@ end
 M["Anchor_FoggyForest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59,
-		PositionY = 3,
-		PositionZ = 21,
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 31,
 		Name = "Anchor_FoggyForest",
 		Map = M._MAP,
 		Resource = M["Anchor_FoggyForest"]
@@ -129,8 +129,8 @@ M["Portal_FoggyForest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 61,
-		PositionY = 1,
-		PositionZ = 19,
+		PositionY = 4,
+		PositionZ = 27,
 		Name = "Portal_FoggyForest",
 		Map = M._MAP,
 		Resource = M["Portal_FoggyForest"]
@@ -176,9 +176,9 @@ end
 M["Anchor_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29,
-		PositionY = 1,
-		PositionZ = 3,
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 5,
 		Name = "Anchor_Port",
 		Map = M._MAP,
 		Resource = M["Anchor_Port"]
@@ -188,9 +188,9 @@ end
 M["Portal_Port"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 25,
-		PositionY = 2,
-		PositionZ = 2,
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 1,
 		Name = "Portal_Port",
 		Map = M._MAP,
 		Resource = M["Portal_Port"]
@@ -236,10 +236,10 @@ end
 M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 14.5 * 2,
-		PositionY = 4,
-		PositionZ = 11.5 * 2,
-		Direction = -1,
+		PositionX = 18,
+		PositionY = 6,
+		PositionZ = 17,
+		Direction = 1,
 		Name = "Isabelle",
 		Map = M._MAP,
 		Resource = M["Isabelle"]
@@ -254,10 +254,10 @@ end
 M["AdvisorGrimm"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29,
-		PositionY = 4,
-		PositionZ = 31,
-		Direction = -1,
+		PositionX = 15,
+		PositionY = 6,
+		PositionZ = 29,
+		Direction = 1,
 		Name = "AdvisorGrimm",
 		Map = M._MAP,
 		Resource = M["AdvisorGrimm"]
@@ -269,30 +269,12 @@ do
 	}
 end
 
-M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 4,
-		PositionZ = 39,
-		Direction = -1,
-		Name = "Rosalind",
-		Map = M._MAP,
-		Resource = M["Rosalind"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
-		MapObject = M["Rosalind"]
-	}
-end
-
 M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 55,
-		PositionY = 4,
-		PositionZ = 57,
+		PositionX = 53,
+		PositionY = 4.5,
+		PositionZ = 55,
 		Direction = -1,
 		Name = "Orlando",
 		Map = M._MAP,
@@ -326,9 +308,9 @@ end
 M["Banker"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16.5 * 2,
-		PositionY = 4,
-		PositionZ = 9.5 * 2,
+		PositionX = 35,
+		PositionY = 6,
+		PositionZ = 15,
 		Name = "Banker",
 		Map = M._MAP,
 		Resource = M["Banker"]
@@ -340,77 +322,12 @@ do
 	}
 end
 
-M["Bob"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 4,
-		PositionZ = 31,
-		Name = "Bob",
-		Map = M._MAP,
-		Resource = M["Bob"]
-	}
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Bob the Shopkeeper",
-		Language = "en-US",
-		Resource = M["Bob"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard",
-		MapObject = M["Bob"]
-	}
-end
-
-M["CraftingTutor"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 41,
-		PositionY = 4,
-		PositionZ = 19,
-		Direction = -1,
-		Name = "Crafter",
-		Map = M._MAP,
-		Resource = M["CraftingTutor"]
-	}
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Crafter Susie",
-		Language = "en-US",
-		Resource = M["CraftingTutor"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["CraftingTutor"],
-		Name = "Crafter",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/Crafter_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Crafter",
-		MapObject = M["CraftingTutor"]
-	}
-
-	M["CraftingTutor"] {
-		TalkAction
-	}
-end
-
 M["BankerChest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16.5 * 2,
-		PositionY = 4,
-		PositionZ = 8.5 * 2,
+		PositionX = 37,
+		PositionY = 6,
+		PositionZ = 13,
 		Name = "BankerChest",
 		Map = M._MAP,
 		Resource = M["BankerChest"]
@@ -429,9 +346,9 @@ end
 M["Cow1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 28.5 * 2,
-		PositionY = 1,
-		PositionZ = 15.5 * 2,
+		PositionX = 51,
+		PositionY = 4,
+		PositionZ = 33,
 		Name = "Cow1",
 		Map = M._MAP,
 		Resource = M["Cow1"]
@@ -446,9 +363,9 @@ end
 M["Cow2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53,
-		PositionY = 1,
-		PositionZ = 43,
+		PositionX = 59,
+		PositionY = 4,
+		PositionZ = 37,
 		Name = "Cow2",
 		Map = M._MAP,
 		Resource = M["Cow2"]
@@ -463,8 +380,8 @@ end
 M["Bessie"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 61,
-		PositionY = 1,
+		PositionX = 49,
+		PositionY = 4,
 		PositionZ = 41,
 		Direction = -1,
 		Name = "Bessie",
@@ -487,9 +404,9 @@ end
 M["Clucker1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59,
-		PositionY = 1,
-		PositionZ = 33,
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 45,
 		Direction = -1,
 		Name = "Clucker1",
 		Map = M._MAP,
@@ -535,9 +452,9 @@ end
 M["Anchor_Clucker"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 61,
-		PositionY = 1,
-		PositionZ = 33,
+		PositionX = 45,
+		PositionY = 4,
+		PositionZ = 35,
 		Direction = -1,
 		Name = "Anchor_Clucker",
 		Map = M._MAP,
@@ -560,7 +477,39 @@ do
 		Action = TravelAction
 	}
 
-	M["AbandonedMineLadder"] {
+	M["Ladder_AbandonedMine"] {
+		TravelAction
+	}
+end
+
+M["Anchor_UpStairs"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 6,
+		PositionZ = 37,
+		Name = "Anchor_UpStairs",
+		Map = M._MAP,
+		Resource = M["Anchor_UpStairs"]
+	}
+end
+
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_DownStairs",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Up"] {
 		TravelAction
 	}
 end
@@ -570,7 +519,12 @@ M["Door_Office"] {
 	ItsyScape.Action.Close()
 }
 
-M["Door_Tower"] {
+M["Door_Grimm"] {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+M["Door_Tower1"] {
 	ItsyScape.Action.Open() {
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
@@ -581,9 +535,40 @@ M["Door_Tower"] {
 	ItsyScape.Action.Close()
 }
 
-M["Door_Merchant"] {
-	ItsyScape.Action.Open(),
+M["Door_Tower2"] {
+	ItsyScape.Action.Open() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
+			Count = 1
+		}
+	},
+
 	ItsyScape.Action.Close()
 }
+
+M["Door_Tower3"] {
+	ItsyScape.Action.Open() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Close()
+}
+
+do
+	local SleepAction = ItsyScape.Action.Sleep()
+
+	M["SuperComfyCouch"] {
+		SleepAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Snooze",
+		Language = "en-US",
+		Action = SleepAction
+	}
+end
 
 return M
