@@ -200,7 +200,7 @@ else
 			local stage = _TARGET:getDirector():getGameInstance():getStage()
 			stage:movePeep(
 				_TARGET,
-				"IsabelleIsland_Tower",
+				"IsabelleIsland_Tower_Floor5",
 				"Anchor_StartGame")
 
 			P:getState():give('KeyItem', "PreTutorial_WokeUp")
