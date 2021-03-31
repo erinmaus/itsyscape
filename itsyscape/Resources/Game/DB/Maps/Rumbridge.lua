@@ -62,6 +62,35 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Door_RumbridgeStone"
 }
 
+ItsyScape.Resource.Prop "Door_RumbridgeMansion" {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeMansion"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Front door",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeMansion"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeMansion"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Such a fancy, big door!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeMansion"
+}
+
 ItsyScape.Resource.Prop "Bed_Rumbridge" {
 	ItsyScape.Action.Sleep()
 }
