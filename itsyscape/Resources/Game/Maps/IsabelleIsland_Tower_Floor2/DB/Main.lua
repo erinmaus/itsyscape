@@ -80,3 +80,20 @@ do
 		TravelAction
 	}
 end
+
+M["Door_RumbridgeStone1"] {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+
+M["Door_RumbridgeStone2"] {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+
+M["Door_RumbridgeStone4"] {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}

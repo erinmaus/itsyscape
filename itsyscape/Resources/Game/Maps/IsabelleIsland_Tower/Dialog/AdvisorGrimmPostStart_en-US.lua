@@ -136,7 +136,7 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			if gaveItem then
 				message {
 					"I'm afraid I can't give you other materials you may find useful.",
-					"But the general store owner near the bank--Bob--can sell you the tools and supplies needed."
+					"But the general store owner on the third floor--Bob--can sell you the tools and supplies needed."
 				}
 
 				message "You might find a knife for fletching useful, or needle and thread for crafting."
