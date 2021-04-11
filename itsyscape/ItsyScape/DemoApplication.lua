@@ -47,6 +47,9 @@ function DemoApplication:new()
 
 	self.cameraController = DefaultCameraController(self)
 	self:getGame():getPlayer().onChangeCamera:register(self.changeCamera, self)
+
+	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
+	love.mouse.setCursor(self.cursor)
 end
 
 function DemoApplication:changeCamera(_, cameraType)
