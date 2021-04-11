@@ -15,6 +15,8 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local patchy = require "patchy"
 
 local ToolTipRenderer = Class(WidgetRenderer)
+ToolTipRenderer.OFFSET_X = 32
+ToolTipRenderer.OFFSET_Y = 32
 
 function ToolTipRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
@@ -96,7 +98,7 @@ function ToolTipRenderer:draw(widget, state)
 	height = height + self.padding * 2
 
 	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()
-	local sx, sy = love.graphics.transformPoint(16, 16)
+	local sx, sy = love.graphics.transformPoint(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)
 	sx = sx / scale
 	sy = sy / scale
 
@@ -107,7 +109,7 @@ function ToolTipRenderer:draw(widget, state)
 		love.graphics.translate(0, screenHeight - (sy + height))
 	end
 
-	love.graphics.translate(16, 16)
+	love.graphics.translate(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)
 
 	local image
 	do
