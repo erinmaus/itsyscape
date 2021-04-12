@@ -94,9 +94,9 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 255,
-		ColorGreen = 255,
-		ColorBlue = 255,
+		ColorRed = 0,
+		ColorGreen = 0,
+		ColorBlue = 0,
 		NearDistance = 5,
 		FarDistance = 15,
 		FollowTarget = 1,
