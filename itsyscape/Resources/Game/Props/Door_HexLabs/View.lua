@@ -23,7 +23,7 @@ function Door:load()
 	local resources = self:getResources()
 	resources:queueEvent(
 		function()
-			self.node:getTransform():setLocalScale(Vector.ONE * 1 + Vector(1/2))
+			self.node:getTransform():setLocalScale(Vector.ONE * 1 + Vector(1 / 2))
 		end)
 end
 
