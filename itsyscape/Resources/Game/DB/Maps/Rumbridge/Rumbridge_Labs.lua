@@ -335,3 +335,27 @@ do
 		Resource = ItsyScape.Resource.Peep "Robot_MkII"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Door_HexLabs" {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lab door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Prevents unauthorized access.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
+end
