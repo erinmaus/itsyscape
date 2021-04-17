@@ -35,7 +35,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "Emily_Default" {
-		ItsyScape.Action.Attack()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -115,13 +115,6 @@ do
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(100),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(100),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
-		Resource = ItsyScape.Resource.Peep "Emily_Default"
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Peeps/Emily/Emily_IdleLogic.lua",
-		IsDefault = 1,
 		Resource = ItsyScape.Resource.Peep "Emily_Default"
 	}
 end
@@ -357,5 +350,12 @@ do
 		Value = "Prevents unauthorized access.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 5.5,
+		SizeY = 12,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Door_HexLabs"
 	}
 end
