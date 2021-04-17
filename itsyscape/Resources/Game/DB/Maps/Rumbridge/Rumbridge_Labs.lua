@@ -328,11 +328,9 @@ do
 		Resource = ItsyScape.Resource.Peep "Robot_MkII"
 	}
 end
-
 do
 	ItsyScape.Resource.Prop "Door_HexLabs" {
-		ItsyScape.Action.Open(),
-		ItsyScape.Action.Close()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -359,3 +357,9 @@ do
 		MapObject = ItsyScape.Resource.Prop "Door_HexLabs"
 	}
 end
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "The door's lock refuses to budge.",
+	Resource = ItsyScape.Resource.KeyItem "HexLabs_GainedAccessToElevator"
+}

@@ -26,7 +26,7 @@ do
 	}
 end
 
-M["Door_HexLabs1"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_Mines1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 11.000000,
@@ -39,18 +39,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_HexLabs1",
+		Name = "Door_Mines1",
 		Map = M._MAP,
-		Resource = M["Door_HexLabs1"]
+		Resource = M["Door_Mines1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_HexLabs",
-		MapObject = M["Door_HexLabs1"]
+		MapObject = M["Door_Mines1"]
 	}
 end
 
-M["Door_HexLabs2"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_Mines2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 19.000000,
@@ -63,14 +63,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_HexLabs2",
+		Name = "Door_Mines2",
 		Map = M._MAP,
-		Resource = M["Door_HexLabs2"]
+		Resource = M["Door_Mines2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_HexLabs",
-		MapObject = M["Door_HexLabs2"]
+		MapObject = M["Door_Mines2"]
 	}
 end
 
@@ -242,7 +242,7 @@ do
 	}
 end
 
-M["Door_HexLabs4"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_Elevator"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 27.000000,
@@ -255,18 +255,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_HexLabs4",
+		Name = "Door_Elevator",
 		Map = M._MAP,
-		Resource = M["Door_HexLabs4"]
+		Resource = M["Door_Elevator"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_HexLabs",
-		MapObject = M["Door_HexLabs4"]
+		MapObject = M["Door_Elevator"]
 	}
 end
 
-M["Door_HexLabs3"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_JakkenstoneShardAnalyzer"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37.000000,
@@ -279,14 +279,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Door_HexLabs3",
+		Name = "Door_JakkenstoneShardAnalyzer",
 		Map = M._MAP,
-		Resource = M["Door_HexLabs3"]
+		Resource = M["Door_JakkenstoneShardAnalyzer"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_HexLabs",
-		MapObject = M["Door_HexLabs3"]
+		MapObject = M["Door_JakkenstoneShardAnalyzer"]
 	}
 end
 

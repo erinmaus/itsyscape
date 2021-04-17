@@ -71,6 +71,35 @@ do
 	}
 end
 
+M["Light_Mine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "Light_Mine",
+		Map = M._MAP,
+		Resource = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 76,
+		ColorGreen = 255,
+		ColorBlue = 76,
+		Resource = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 30,
+		Resource = M["Light_Mine"]
+	}
+end
+
 M["Anchor_FromLeafyLake"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -216,6 +245,36 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
 		MapObject = M["Drakkenson4"]
+	}
+end
+
+do
+	M["Door_Elevator"] {
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem "HexLabs_GainedAccessToElevator",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Close()
+	}
+end
+
+do
+	M["Door_Mines1"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+
+	M["Door_Mines2"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+
+	M["Door_JakkenstoneShardAnalyzer"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
 	}
 end
 
