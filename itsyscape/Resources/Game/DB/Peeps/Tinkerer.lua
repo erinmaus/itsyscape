@@ -34,3 +34,108 @@ ItsyScape.Meta.PeepStat {
 	Value = ItsyScape.Utility.xpForLevel(100),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
+
+do
+	ItsyScape.Resource.Item "PlagueDoctorHat" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(91),
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Plague doctor hat",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Won't stop the plague, but makes you look good.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlagueDoctor/PlagueDoctorJustHat.lua",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
+	}
+end
+
+do
+	ItsyScape.Resource.Item "PlagueDoctor" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(90),
+		Resource = ItsyScape.Resource.Item "PlagueDoctor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Plague doctor mask",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Filters out plague partikles",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctor"
+	}
+
+	ItsyScape.Meta.Equipment {
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "PlagueDoctor"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlagueDoctor/PlagueDoctor.lua",
+		Resource = ItsyScape.Resource.Item "PlagueDoctor"
+	}
+end
+
+do
+	ItsyScape.Resource.Item "PlagueDoctorHatAndMask" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(91) * 2.5,
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Plague doctor hat and mask",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The hat just makes you like dapper.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
+	}
+
+	ItsyScape.Meta.Equipment {
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlagueDoctor/PlagueDoctorHat.lua",
+		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
+	}
+end
