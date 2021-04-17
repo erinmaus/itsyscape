@@ -123,7 +123,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "The hat just makes you like dapper.",
+		Value = "The hat just makes you look dapper.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
 	}
