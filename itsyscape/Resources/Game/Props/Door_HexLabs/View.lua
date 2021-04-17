@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local DoorView = require "Resources.Game.Props.Common.DoorView"
 
 local Door = Class(DoorView)
@@ -25,6 +26,22 @@ function Door:load()
 		function()
 			self.node:getTransform():setLocalScale(Vector.ONE * 1 + Vector(1 / 2))
 		end)
+	resources:queue(
+		TextureResource,
+		self:getResourcePath("Texture_Unlocked.png"),
+		function(texture)
+			self.textureOpen = texture
+		end)
+end
+
+function Door:playOpenAnimation()
+	DoorView.playOpenAnimation(self)
+	self.node:getMaterial():setTextures(self.textureOpen)
+end
+
+function Door:playCloseAnimation()
+	DoorView.playCloseAnimation(self)
+	self.node:getMaterial():setTextures(self.texture)
 end
 
 return Door
