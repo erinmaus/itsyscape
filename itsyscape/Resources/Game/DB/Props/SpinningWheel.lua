@@ -17,6 +17,7 @@ ItsyScape.Meta.DelegatedActionTarget {
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Spin",
+	XProgressive = "Spinning",
 	Language = "en-US",
 	Action = SpinAction
 }

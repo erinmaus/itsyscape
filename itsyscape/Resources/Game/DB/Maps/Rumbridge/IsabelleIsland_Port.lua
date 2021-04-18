@@ -266,6 +266,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Plug",
+		XProgressive = "Plugging",
 		Language = "en-US",
 		Action = PlugAction
 	}

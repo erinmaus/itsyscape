@@ -80,6 +80,7 @@ for name, log in pairs(LOGS) do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Craft",
+		XProgressive = "Crafting",
 		Language = "en-US",
 		Action = CraftAction
 	}
@@ -197,6 +198,7 @@ for name, log in pairs(LOGS) do
 
 		ItsyScape.Meta.ActionVerb {
 			Value = "Cook",
+			XProgressive = "Cooking",
 			Language = "en-US",
 			Action = CookAction
 		}
