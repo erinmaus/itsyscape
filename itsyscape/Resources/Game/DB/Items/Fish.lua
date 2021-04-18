@@ -668,6 +668,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Take",
+		XProgressive = "Taking",
 		Language = "en-US",
 		Action = TakeAction
 	}

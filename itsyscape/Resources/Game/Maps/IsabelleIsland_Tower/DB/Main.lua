@@ -164,6 +164,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Enter",
+		XProgressive = "Entering",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -224,6 +225,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Enter",
+		XProgressive = "Entering",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -440,6 +442,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Discuss-politics",
+		XProgressive = "Discussing-politics",
 		Language = "en-US",
 		Action = TalkAction
 	}
@@ -473,6 +476,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-down",
+		XProgressive = "Climbing-down",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -505,6 +509,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-up",
+		XProgressive = "Climbing-up",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -566,6 +571,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Snooze",
+		XProgressive = "Snoozing",
 		Language = "en-US",
 		Action = SleepAction
 	}
