@@ -109,7 +109,8 @@ do
 	local QuickTalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Quick-Starting",
+		Value = "Quick-start",
+		XProgressive = "Quick-starting",
 		Language = "en-US",
 		Action = QuickTalkAction
 	}
