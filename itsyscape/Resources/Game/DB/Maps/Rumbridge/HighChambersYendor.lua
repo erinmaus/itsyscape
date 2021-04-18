@@ -2247,6 +2247,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Rotate-right",
+		XProgressive = "Rotating-right",
 		Language = "en-US",
 		Action = RotateRightAction
 	}
@@ -2262,6 +2263,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Rotate-left",
+		XProgressive = "Rotating-left",
 		Language = "en-US",
 		Action = RotateLeftAction
 	}
@@ -2303,6 +2305,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Rotate-right",
+		XProgressive = "Rotating-right",
 		Language = "en-US",
 		Action = RotateRightAction
 	}
@@ -2318,6 +2321,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Rotate-forward",
+		XProgressive = "Rotating-forward",
 		Language = "en-US",
 		Action = RotateForwardAction
 	}
