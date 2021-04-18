@@ -248,6 +248,26 @@ do
 	}
 end
 
+M["TV_Jakkenstone"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 50,
+		PositionY = 2.5,
+		PositionZ = 18.25,
+		ScaleX = 4.000000,
+		ScaleY = 4.000000,
+		ScaleZ = 4.000000,
+		Name = "TV_Jakkenstone",
+		Map = M._MAP,
+		Resource = M["TV_Jakkenstone"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TV_HexLabs",
+		MapObject = M["TV_Jakkenstone"]
+	}
+end
+
 do
 	M["Door_Elevator"] {
 		ItsyScape.Action.Open() {
