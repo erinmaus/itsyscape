@@ -109,7 +109,7 @@ do
 	local QuickTalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Quick-Start",
+		Value = "Quick-Starting",
 		Language = "en-US",
 		Action = QuickTalkAction
 	}

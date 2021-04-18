@@ -56,6 +56,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Walk-down",
+		XProgressive = "Walking-down",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -131,6 +132,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Read",
+		XProgressive = "Reading",
 		Language = "en-US",
 		Action = TalkAction
 	}

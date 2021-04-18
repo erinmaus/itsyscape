@@ -106,6 +106,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Craft",
+		XProgressive = "Crafting",
 		Language = "en-US",
 		Action = CraftAction
 	}

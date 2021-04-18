@@ -230,6 +230,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Fletch",
+		XProgressive = "Fletching",
 		Language = "en-US",
 		Action = FletchAction
 	}

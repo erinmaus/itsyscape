@@ -283,12 +283,14 @@ Game "ItsyScape"
 
 	Meta "ActionTypeVerb" {
 		Value = Meta.TYPE_TEXT,
+		XProgressive = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
 		Type = Meta.TYPE_TEXT,
 	}
 
 	Meta "ActionVerb" {
 		Value = Meta.TYPE_TEXT,
+		XProgressive = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION
 	}
@@ -321,7 +323,22 @@ Game "ItsyScape"
 	}
 
 	ActionType "Equip"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Equip",
+			XProgressive = "Equipping",
+			Language = "en-US",
+			Type = "Equip"
+
+		}
+
 	ActionType "Dequip"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Dequip",
+			XProgressive = "Dequipping",
+			Language = "en-US",
+			Type = "Dequip"
+
+		}
 
 	ActionType "Open"
 	ActionType "Close"
@@ -486,8 +503,29 @@ Game "ItsyScape"
 	ResourceType "SailingSeaChart"
 	ResourceType "SailingRandomEvent"
 	ActionType "SailingBuy"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Buy",
+			XProgressive = "Buying",
+			Language = "en-US",
+			Type = "SailingBuy"
+
+		}
 	ActionType "SailingUnlock"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Unlock",
+			XProgressive = "Unlocking",
+			Language = "en-US",
+			Type = "SailingUnlock"
+
+		}
 	ActionType "Sail"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Sailing",
+			XProgressive = "Sailinging",
+			Language = "en-US",
+			Type = "Sailing"
+
+		}
 
 	Meta "SailingItemDetails" {
 		Prop = Meta.TYPE_TEXT,
@@ -901,6 +939,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Ascend",
+		XProgressive = "Ascending-to-godhood",
 		Language = "en-US",
 		Action = ascendAction
 	}
@@ -908,11 +947,13 @@ do
 	ItsyScape.Meta.ActionVerb {
 		Value = "Teleport",
 		Language = "en-US",
+		XProgressive = "Teleporting-through-dimensions",
 		Action = teleportAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Save",
+		XProgressive = "Saving-the-world",
 		Language = "en-US",
 		Action = saveAction
 	}

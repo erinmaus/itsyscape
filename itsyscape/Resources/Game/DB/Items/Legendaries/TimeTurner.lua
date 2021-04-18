@@ -10,14 +10,16 @@
 
 ActionType "TurnForwardTime"
 ItsyScape.Meta.ActionTypeVerb {
-	Value = "Turn-Forward",
+	Value = "Turn-forward",
+	XProgressive = "Turning-forward",
 	Language = "en-US",
 	Type = "TurnForwardTime"
 }
 
 ActionType "TurnBackwardTime"
 ItsyScape.Meta.ActionTypeVerb {
-	Value = "Turn-Backward",
+	Value = "Turn-backward",
+	XProgressive = "Turning-backward",
 	Language = "en-US",
 	Type = "TurnBackwardTime"	
 }
