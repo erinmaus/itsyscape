@@ -17,6 +17,7 @@ ItsyScape.Meta.DelegatedActionTarget {
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Smith",
+	XProgressive = "Smithing",
 	Language = "en-US",
 	Action = AnvilAction
 }

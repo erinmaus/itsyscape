@@ -17,6 +17,7 @@ ItsyScape.Meta.DelegatedActionTarget {
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Cook",
+	XProgressive = "Cook",
 	Language = "en-US",
 	Action = CookAction
 }

@@ -17,6 +17,7 @@ ItsyScape.Meta.DelegatedActionTarget {
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Smelt",
+	XProgressive = "Smelting",
 	Language = "en-US",
 	Action = FurnaceAction
 }

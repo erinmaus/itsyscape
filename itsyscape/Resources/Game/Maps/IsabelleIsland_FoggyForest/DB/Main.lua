@@ -154,6 +154,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Return",
+		XProgressive = "Returning",
 		Language = "en-US",
 		Action = TravelAction
 	}

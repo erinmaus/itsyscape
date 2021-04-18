@@ -76,19 +76,8 @@ function LocalPlayer:spawn()
 	end
 end
 
-local VOWELS = { a = true, e = true, i = true, o = true, u = true, y = true }
 function LocalPlayer:onPlayerActionPerformed(_, p)
-	local actionName = p.action:getName():lower()
-	if VOWELS[actionName:sub(-1)] then
-		actionName = actionName:sub(1, -2) .. "ing"
-	else
-		actionName = actionName .. "ing"
-	end
-
-	actionName = actionName:gsub("_", " ")
-	actionName = actionName:sub(1, 1):upper() .. actionName:sub(2)
-
-	self.currentAction = actionName
+	self.currentAction = p.action:getXProgressiveVerb()
 end
 
 function LocalPlayer:poof()

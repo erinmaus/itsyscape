@@ -72,6 +72,7 @@ ActionType "DiningTable_Heal"
 
 ItsyScape.Meta.ActionTypeVerb {
 	Value = "Eat-from",
+	XProgressive = "Eating-from",
 	Language = "en-US",
 	Type = "DiningTable_Heal"
 }
@@ -236,6 +237,7 @@ ActionType "Dresser_Open"
 
 ItsyScape.Meta.ActionTypeVerb {
 	Value = "Search",
+	XProgressive = "Searching",
 	Language = "en-US",
 	Type = "Dresser_Open"
 }

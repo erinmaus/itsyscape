@@ -12,6 +12,7 @@ BoneCraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Craft",
+	XProgressive = "Crafting",
 	Language = "en-US",
 	Action = BoneCraftAction
 }

@@ -149,6 +149,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Enter",
+		XProgressive = "Entering",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -348,6 +349,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Descend",
+		XProgressive = "Descending",
 		Language = "en-US",
 		Action = TravelAction
 	}
