@@ -22,7 +22,7 @@ function VideoResource:new(video)
 	if video then
 		self.video = video
 	else
-		self.video = false
+		self.video = Video()
 	end
 end
 
@@ -51,7 +51,7 @@ end
 function VideoResource:release()
 	if self.video then
 		self.video:release()
-		self.video = false
+		self.video = Video()
 	end
 end
 
