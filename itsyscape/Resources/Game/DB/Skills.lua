@@ -132,6 +132,13 @@ ItsyScape.Resource.Skill "Crafting"
 
 ItsyScape.Resource.Skill "Woodcutting"
 	ActionType "Chop"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Chop",
+			XProgressive = "Chopping",
+			Language = "en-US",
+			Type = "Chop"
+
+		}
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Chop",
@@ -148,6 +155,7 @@ ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light_Prop"
 		ItsyScape.Meta.ActionTypeVerb {
 			Value = "Light",
+			XProgressive = "Lighting",
 			Language = "en-US",
 			Type = "Light_Prop"
 		}

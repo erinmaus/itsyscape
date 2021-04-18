@@ -92,6 +92,37 @@ function Action:getVerb(lang)
 	return false
 end
 
+local VOWELS = { a = true, e = true, i = true, o = true, u = true }
+
+-- Gets the progressive verb in 'lang'.
+--
+-- 'lang' defaults to "en-US". If no verb is found, returns false.
+function Action:getXProgressiveVerb(lang)
+	lang = lang or "en-US"
+
+	local nameRecord = self.gameDB:getRecord("ActionVerb", { Action = self.action, Language = lang })
+	if nameRecord and nameRecord:get("XProgressive") ~= "" then
+		return nameRecord:get("XProgressive")
+	else
+		local typeRecord = self.gameDB:getRecord("ActionTypeVerb", { Type = self.definitionName, Language = lang })
+		if typeRecord and typeRecord:get("XProgressive") ~= "" then
+			return typeRecord:get("XProgressive")
+		end
+	end
+
+	local actionName = self.definitionName:lower()
+	if VOWELS[actionName:sub(-1)] then
+		actionName = actionName:sub(1, -2) .. "ing"
+	else
+		actionName = actionName .. "ing"
+	end
+
+	actionName = actionName:gsub("_", " ")
+	actionName = actionName:sub(1, 1):upper() .. actionName:sub(2)
+
+	return actionName
+end
+
 -- Returns true if the Action can be performed. Otherwise, returns false.
 --
 -- The default implementation only evaluates requirements, not inputs.

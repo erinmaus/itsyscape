@@ -141,6 +141,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-up",
+		XProgressive = "Climbing-up",
 		Language = "en-US",
 		Action = TravelAction
 	}
@@ -207,6 +208,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-up",
+		XProgressive = "Climbing-up",
 		Language = "en-US",
 		Action = TravelUpAction
 	}
@@ -221,6 +223,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-down",
+		XProgressive = "Climbing-up",
 		Language = "en-US",
 		Action = TravelDownAction
 	}
@@ -261,6 +264,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-up",
+		XProgressive = "Climbing-up",
 		Language = "en-US",
 		Action = TravelUpAction
 	}
@@ -275,6 +279,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-down",
+		XProgressive = "Climbing-down",
 		Language = "en-US",
 		Action = TravelDownAction
 	}
@@ -335,6 +340,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Search",
+		XProgressive = "Searching",
 		Language = "en-US",
 		Action = TalkAction
 	}
@@ -370,6 +376,7 @@ do
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Search",
+		XProgressive = "Searching",
 		Language = "en-US",
 		Action = TalkAction
 	}
