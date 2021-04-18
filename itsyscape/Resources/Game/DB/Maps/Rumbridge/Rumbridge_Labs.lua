@@ -328,6 +328,7 @@ do
 		Resource = ItsyScape.Resource.Peep "Robot_MkII"
 	}
 end
+
 do
 	ItsyScape.Resource.Prop "Door_HexLabs" {
 		-- Nothing.
@@ -355,6 +356,29 @@ do
 		SizeY = 12,
 		SizeZ = 1.5,
 		MapObject = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "TV_HexLabs" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicTV",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Televiewer",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Scries across dimensions in high definition.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
 	}
 end
 
