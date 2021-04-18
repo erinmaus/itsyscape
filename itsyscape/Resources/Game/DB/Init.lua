@@ -521,7 +521,7 @@ Game "ItsyScape"
 	ActionType "Sail"
 		ItsyScape.Meta.ActionTypeVerb {
 			Value = "Sailing",
-			XProgressive = "Sailinging",
+			XProgressive = "Sailing",
 			Language = "en-US",
 			Type = "Sailing"
 
