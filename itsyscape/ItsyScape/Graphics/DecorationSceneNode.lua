@@ -38,11 +38,42 @@ function DecorationSceneNode:fromGroup(staticMesh, group)
 	self:fromDecoration(decoration, staticMesh)
 end
 
-function DecorationSceneNode:fromDecoration(decoration, staticMesh)
-	if self.isOwner and self.mesh then
-		self.mesh:release()
+function DecorationSceneNode:fromLerp(staticMesh, from, to, delta)
+	local decoration1 = Decoration({
+		tileSetID = "anonymous",
+		{ id = from }
+	})
+	local min1, max1, vertices1 = self:_generateVertices(decoration1, staticMesh)
+
+	local decoration2 = Decoration({
+		tileSetID = "anonymous",
+		{ id = to }
+	})
+	local min2, max2, vertices2 = self:_generateVertices(decoration2, staticMesh)
+
+	if #vertices1 ~= #vertices2 then
+		return false
 	end
 
+	local min = min1:lerp(min2, delta)
+	local max = max1:lerp(max2, delta)
+	local vertices = {}
+	for i = 1, #vertices1 do
+		local v1 = vertices1[i]
+		local v2 = vertices2[i]
+
+		local v = {}
+		for j = 1, #v1 do
+			v[j] = v1[j] + (v2[j] - v1[j]) * delta 
+		end
+
+		table.insert(vertices, v)
+	end
+
+	self:_generateMesh(min, max, vertices)
+end
+
+function DecorationSceneNode:_generateVertices(decoration, staticMesh)
 	local min, max = Vector(math.huge), Vector(-math.huge)
 
 	local vertices = {}
@@ -110,6 +141,14 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 		end
 	end
 
+	return min, max, vertices
+end
+
+function DecorationSceneNode:_generateMesh(min, max, vertices)
+	if self.isOwner and self.mesh then
+		self.mesh:release()
+	end
+
 	if #vertices > 0 then
 		local format = StaticMesh.DEFAULT_FORMAT
 		self.mesh = love.graphics.newMesh(format, vertices, 'triangles', 'static')	
@@ -122,6 +161,11 @@ function DecorationSceneNode:fromDecoration(decoration, staticMesh)
 	else
 		self:setBounds(Vector(0), Vector(0))
 	end
+end
+
+function DecorationSceneNode:fromDecoration(decoration, staticMesh)
+	local min, max, vertices = self:_generateVertices(decoration, staticMesh)
+	self:_generateMesh(min, max, vertices)
 end
 
 function DecorationSceneNode:draw(renderer, delta)
