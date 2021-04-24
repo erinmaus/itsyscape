@@ -1,6 +1,7 @@
 #line 1
 uniform ArrayImage scape_DiffuseTexture;
 uniform float scape_NumLayers;
+uniform float scape_Time;
 
 varying vec3 frag_CubeNormal;
 varying vec3 frag_CubePosition;
@@ -12,6 +13,8 @@ const float NEGATIVE_X = 3;
 const float NEGATIVE_Y = 4;
 const float NEGATIVE_Z = 5;
 const float NUM_CUBE_MAP_TEXTURES = 6;
+
+#define PI 3.1415926535898
 
 const vec4[] NORMAL_COLORS = vec4[](
 	vec4(1.0, 0.0, 0.0, 1.0),
@@ -30,8 +33,6 @@ vec3 toCubemap(vec3 normal, vec3 position)
 	bvec3 absX = greaterThanEqual(vec3(absUnitPosition.x), absUnitPosition);
 	bvec3 absY = greaterThanEqual(vec3(absUnitPosition.y), absUnitPosition);
 	bvec3 absZ = greaterThanEqual(vec3(absUnitPosition.z), absUnitPosition);
-
-	// absUnitPosition.x > absUnitPosition.y
 
 	float maxAxis;
 	float u, v, index;
@@ -61,6 +62,7 @@ vec3 toCubemap(vec3 normal, vec3 position)
 	}
 	else
 	{
+		// This is an error condition.
 		discard;
 	}
 
