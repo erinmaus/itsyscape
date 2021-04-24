@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
@@ -17,6 +18,13 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local Tesseract = Class(PropView)
+Tesseract.GROUPS = {
+	"Tesseract1",
+	"Tesseract2",
+	"Tesseract3"
+}
+Tesseract.MAX_SCALE = 2
+Tesseract.STEP = 2
 
 function Tesseract:load(...)
 	PropView.load(self, ...)
@@ -37,7 +45,9 @@ function Tesseract:load(...)
 		"Resources/Game/Props/Tesseract/Model.lstatic",
 		function(mesh)
 			self.mesh = mesh
-			self.decoration:fromGroup(mesh:getResource(), "Tesseract1")
+			self.groupIndex = 1
+			self.decoration:fromGroup(mesh:getResource(), Tesseract.GROUPS[self.groupIndex])
+			self.decoration:getMaterial():setIsTranslucent(true)
 			self.decoration:getMaterial():setTextures(self.texture)
 			self.decoration:setParent(root)
 		end)
@@ -46,6 +56,7 @@ function Tesseract:load(...)
 		"Resources/Shaders/StaticModel_Volume",
 		function(shader)
 			self.decoration:getMaterial():setShader(shader)
+			self.decoration:setParent(root)
 
 			self.decoration:onWillRender(function(renderer)
 				local shader = renderer:getCurrentShader()
@@ -64,12 +75,31 @@ function Tesseract:update(delta)
 	PropView.update(self, delta)
 
 	if self.mesh then
-		self.time = (self.time or 0) + delta 
+		self.time = (self.time or 0) + delta
+		if self.time > Tesseract.STEP then
+			self.groupIndex = self.groupIndex + 1
+			if self.groupIndex > #Tesseract.GROUPS then
+				self.groupIndex = 1
+			end
+			self.time = 0
+		end
+
+		local model1Index, model2Index
+		do
+			model1Index = self.groupIndex
+			if self.groupIndex >= #Tesseract.GROUPS then
+				model2Index = 1
+			else
+				model2Index = self.groupIndex + 1
+			end
+		end
+
+		local delta = self.time / Tesseract.STEP
 		self.decoration:fromLerp(
 			self.mesh:getResource(),
-			"Tesseract1",
-			"Tesseract2",
-			math.abs(math.sin(self.time * math.pi)))
+			Tesseract.GROUPS[model1Index],
+			Tesseract.GROUPS[model2Index],
+			Tween.sineEaseOut(delta))
 	end
 end
 
