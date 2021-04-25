@@ -49,7 +49,7 @@ repeat
 			message {
 				"Why, Antilogika is the the reality-warping, logic-defying powers of the Old Ones themselves!",
 				"By using Antilogika, you cut out those silly obstacles known as plot-holes by rewriting reality to your whim.",
-				"The limit is your imagination! Or lack there of."
+				"The limit is your imagination! Or lack thereof."
 			}
 
 			speaker "_TARGET"
@@ -105,11 +105,10 @@ repeat
 		speaker "Emily"
 		message {
 			"I am %person{Emily}. Emily stands for %hint{Emergent Intelligence Life Ynit}.",
-			"My %hint{core processing unit} exists outside of the time-space continuum.",
-			"In other words, I am seeing you now and also as you stand before %empty{The Empty King} at Skull Island."
+			"My %hint{core processing unit} exists outside of the time-space continuum."
 		}
 
-		local WAIT_WHAT        = option "Wait, what?! The Empty King?!"
+		local WAIT_WHAT        = option "How does that work?"
 		local OK_SURE_WHATEVER = option "Okay, sure, whatever."
 
 		result = select {
@@ -119,24 +118,13 @@ repeat
 
 		if result == WAIT_WHAT then
 			speaker "_TARGET"
-			message {
-				"Wait, what?! %empty{The Empty King}?!",
-				"How do you know of them?",
-			}
+			message "How does that work?"
 
 			speaker "Hex"
 			message {
-				"Well, that's obvious! Emily must be with you when you face %empty{The Empty King}!",
-				"I wish she told me this earlier, it would have sped up my research..."
+				"Don't you remember? Antilogika defies logic! Thus the name!",
+				"Emily is my finest creation, and such an UH-MAZING example of what Antilogika can do!"
 			}
-
-			speaker "Emily"
-			message {
-				"By my calculations, telling you now was the most efficient time."
-			}
-
-			speaker "Hex"
-			message "Interesting... THUH-THANK you, %person{Emily}!"
 		elseif result == OK_SURE_WHATEVER then
 			speaker "_TARGET"
 			message {

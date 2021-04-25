@@ -19,12 +19,16 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local Tesseract = Class(PropView)
 Tesseract.GROUPS = {
-	"Tesseract1",
-	"Tesseract2",
-	"Tesseract3"
+	"Tesseract_Unpowered",
+	"Tesseract_Powered"
 }
-Tesseract.MAX_SCALE = 2
-Tesseract.STEP = 2
+
+Tesseract.GROUP_POWERED_TRANSITION   = 2
+Tesseract.GROUP_UNPOWERED_TRANSITION = 1
+
+Tesseract.MAX_SCALE = 1
+Tesseract.TRANSITION_STEP = 2
+Tesseract.ALPHA_STEP = 1
 
 function Tesseract:load(...)
 	PropView.load(self, ...)
@@ -32,43 +36,103 @@ function Tesseract:load(...)
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	self.decoration = DecorationSceneNode()
+	self.decorationUnpowered = DecorationSceneNode()
+	self.decorationPowered = DecorationSceneNode()
 
+	self.groupIndex = 1
+
+	resources:queue(
+		LayerTextureResource,
+		"Resources/Game/Props/Tesseract/Texture_Unpowered.lua",
+		function(texture)
+			self.textureUnpowered = texture
+			self.textureUnpowered:getResource():setWrap('repeat')
+		end)
 	resources:queue(
 		LayerTextureResource,
 		"Resources/Game/Props/Tesseract/Texture.lua",
 		function(texture)
-			self.texture = texture
+			self.texturePowered = texture
+			self.texturePowered:getResource():setWrap('repeat')
 		end)
 	resources:queue(
 		StaticMeshResource,
 		"Resources/Game/Props/Tesseract/Model.lstatic",
 		function(mesh)
 			self.mesh = mesh
-			self.groupIndex = 1
-			self.decoration:fromGroup(mesh:getResource(), Tesseract.GROUPS[self.groupIndex])
-			self.decoration:getMaterial():setIsTranslucent(true)
-			self.decoration:getMaterial():setTextures(self.texture)
-			self.decoration:setParent(root)
+
+			self.decorationUnpowered:fromGroup(mesh:getResource(), Tesseract.GROUPS[self.groupIndex])
+			self.decorationUnpowered:getMaterial():setIsTranslucent(true)
+			self.decorationUnpowered:getMaterial():setTextures(self.textureUnpowered)
+
+			self.decorationPowered:fromGroup(mesh:getResource(), Tesseract.GROUPS[self.groupIndex])
+			self.decorationPowered:getMaterial():setIsTranslucent(true)
+			self.decorationPowered:getMaterial():setTextures(self.texturePowered)
 		end)
 	resources:queue(
 		ShaderResource,
 		"Resources/Shaders/StaticModel_Volume",
 		function(shader)
-			self.decoration:getMaterial():setShader(shader)
-			self.decoration:setParent(root)
+			self.decorationUnpowered:getMaterial():setShader(shader)
+			self.decorationUnpowered:setParent(root)
 
-			self.decoration:onWillRender(function(renderer)
+			self.decorationUnpowered:onWillRender(function(renderer)
 				local shader = renderer:getCurrentShader()
 				if shader:hasUniform("scape_NumLayers") then
-					shader:send("scape_NumLayers", self.texture:getLayerCount())
+					shader:send("scape_NumLayers", self.textureUnpowered:getLayerCount())
+				end
+			end)
+
+			self.decorationPowered:getMaterial():setShader(shader)
+			self.decorationPowered:setParent(root)
+
+			self.decorationPowered:onWillRender(function(renderer)
+				local shader = renderer:getCurrentShader()
+				if shader:hasUniform("scape_NumLayers") then
+					shader:send("scape_NumLayers", self.textureUnpowered:getLayerCount())
 				end
 			end)
 		end)
+	resources:queueEvent(function()
+		self.isPoweredOn = self:getIsPoweredOn()
+		if self.isPoweredOn then
+			self.groupIndex = Tesseract.GROUP_POWERED_TRANSITION
+		else
+			self.groupIndex = Tesseract.GROUP_UNPOWERED_TRANSITION
+		end
+
+		self.time = Tesseract.TRANSITION_STEP
+		self.isTransitioning = false
+	end)
 end
 
-function Tesseract:getIsStatic()
-	return false
+function Tesseract:getIsPoweredOn()
+	local state = self:getProp():getState()
+
+	-- Marshal to boolean
+	if state.isPoweredOn then
+		return true
+	else
+		return false
+	end
+end
+
+
+function Tesseract:tick()
+	PropView.tick(self)
+
+	local isPoweredOn = self:getIsPoweredOn()
+	if isPoweredOn ~= self.isPoweredOn then
+		if isPoweredOn then
+			self.groupIndex = Tesseract.GROUP_POWERED_TRANSITION
+		else
+			self.groupIndex = Tesseract.GROUP_UNPOWERED_TRANSITION
+		end
+
+		self.isPoweredOn = isPoweredOn
+		self.isTransitioning = true
+		self.time = 0
+	end
 end
 
 function Tesseract:update(delta)
@@ -76,12 +140,9 @@ function Tesseract:update(delta)
 
 	if self.mesh then
 		self.time = (self.time or 0) + delta
-		if self.time > Tesseract.STEP then
-			self.groupIndex = self.groupIndex + 1
-			if self.groupIndex > #Tesseract.GROUPS then
-				self.groupIndex = 1
-			end
-			self.time = 0
+		if self.time > Tesseract.TRANSITION_STEP then	
+			self.time = Tesseract.TRANSITION_STEP
+			self.isTransitioning = false
 		end
 
 		local model1Index, model2Index
@@ -94,13 +155,49 @@ function Tesseract:update(delta)
 			end
 		end
 
-		local delta = self.time / Tesseract.STEP
-		self.decoration:fromLerp(
+		local positionA, positionB
+		if model1Index == 1 then
+			positionA = Vector.UNIT_Y * 4
+			positionB = -Vector.UNIT_Y
+		else
+			positionA = -Vector.UNIT_Y
+			positionB = Vector.UNIT_Y * 4
+		end
+
+		local delta = self.time / Tesseract.TRANSITION_STEP
+		local scaleDelta = delta
+		local alphaDelta = math.min(self.time, Tesseract.ALPHA_STEP) / Tesseract.ALPHA_STEP
+		if model1Index == Tesseract.GROUP_POWERED_TRANSITION then
+			alphaDelta = 1 - alphaDelta
+			scaleDelta = 1 - scaleDelta
+		end
+
+		self.decorationUnpowered:fromLerp(
 			self.mesh:getResource(),
 			Tesseract.GROUPS[model1Index],
 			Tesseract.GROUPS[model2Index],
 			Tween.sineEaseOut(delta))
+		self.decorationUnpowered:getMaterial():setColor(Color(1, 1, 1, 1 - alphaDelta))
+
+		self.decorationPowered:fromLerp(
+			self.mesh:getResource(),
+			Tesseract.GROUPS[model1Index],
+			Tesseract.GROUPS[model2Index],
+			Tween.sineEaseOut(delta))
+		self.decorationPowered:getMaterial():setColor(Color(1, 1, 1, alphaDelta))
+
+		local position = positionA:lerp(positionB, Tween.sineEaseOut(delta))
+		self.decorationPowered:getTransform():setLocalTranslation(position)
+		self.decorationUnpowered:getTransform():setLocalTranslation(position)
+
+		local scale = scaleDelta * Tesseract.MAX_SCALE * Vector.ONE
+		self.decorationPowered:getTransform():setLocalScale(Vector.ONE + scale)
+		self.decorationUnpowered:getTransform():setLocalScale(Vector.ONE + scale)
 	end
+end
+
+function Tesseract:getIsStatic()
+	return false
 end
 
 return Tesseract

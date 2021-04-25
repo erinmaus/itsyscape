@@ -128,12 +128,12 @@ do
 		MapObject = M["Emily"]
 	}
 
-	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Peeps/Emily/Emily_IdleLogic.lua",
-		IsDefault = 1,
-		Resource = M["Emily"]
-	}
+	-- ItsyScape.Meta.PeepMashinaState {
+	-- 	State = "idle",
+	-- 	Tree = "Resources/Game/Peeps/Emily/Emily_IdleLogic.lua",
+	-- 	IsDefault = 1,
+	-- 	Resource = M["Emily"]
+	-- }
 end
 
 M["Hex"] = ItsyScape.Resource.MapObject.Unique()
