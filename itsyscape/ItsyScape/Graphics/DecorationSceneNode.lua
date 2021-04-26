@@ -43,31 +43,54 @@ function DecorationSceneNode:fromLerp(staticMesh, from, to, delta)
 		tileSetID = "anonymous",
 		{ id = from }
 	})
-	local min1, max1, vertices1 = self:_generateVertices(decoration1, staticMesh)
+
+	local min1, max1, vertices1
+	if self._previousFromVertices and self._previousFromVertices.name == from then
+		min1, max1, vertices1 = unpack(self._previousFromVertices)
+	else
+		min1, max1, vertices1 = self:_generateVertices(decoration1, staticMesh)
+		self._previousFromVertices = { name = from, min1, max1, vertices1 }
+	end
 
 	local decoration2 = Decoration({
 		tileSetID = "anonymous",
 		{ id = to }
 	})
-	local min2, max2, vertices2 = self:_generateVertices(decoration2, staticMesh)
+	
+	local min2, max2, vertices2
+	if self._previousToVertices and self._previousToVertices.name == from then
+		min2, max2, vertices2 = unpack(self._previousToVertices)
+	else
+		min2, max2, vertices2 = self:_generateVertices(decoration2, staticMesh)
+		self._previousToVertices = { name = from, min2, max2, vertices2 }
+	end
 
 	if #vertices1 ~= #vertices2 then
 		return false
 	end
 
+	local vertices
+	if not self._previousVertices or #self._previousVertices ~= #vertices1 then
+		vertices = {}
+		for i = 1, #vertices1 do
+			vertices[i] = {}
+		end
+
+		self._previousVertices = vertices
+	else
+		vertices = self._previousVertices 
+	end 
+
 	local min = min1:lerp(min2, delta)
 	local max = max1:lerp(max2, delta)
-	local vertices = {}
 	for i = 1, #vertices1 do
 		local v1 = vertices1[i]
 		local v2 = vertices2[i]
 
-		local v = {}
+		local v = vertices[i]
 		for j = 1, #v1 do
 			v[j] = v1[j] + (v2[j] - v1[j]) * delta 
 		end
-
-		table.insert(vertices, v)
 	end
 
 	self:_generateMesh(min, max, vertices)
