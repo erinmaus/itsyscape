@@ -8,70 +8,33 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Tween = require "ItsyScape.Common.Math.Tween"
-local Vector = require "ItsyScape.Common.Math.Vector"
-local Shape4DView = require "Resources.Game.Props.Common.Shape4DView"
+local Color = require "ItsyScape.Graphics.Color"
+local TransitionView = require "Resources.Game.Props.Common.TransitionView"
+local InactiveView = require "Resources.Game.Props.MysteriousMachinations_MysteriousRuins_Pillar.View_Inactive"
+local ActiveView = require "Resources.Game.Props.MysteriousMachinations_MysteriousRuins_Pillar.View_Active"
 
-local Pillar = Class(Shape4DView)
+local Pillar = Class(TransitionView)
+Pillar.TIME = 1.5
 
-Pillar.GROUPS = {
-	"Pillar_Stable",
-	"Pillar_Unstable1",
-	"Pillar_Unstable2",
-	"Pillar_Unstable3",
-	"Pillar_Unstable4",
-	"Pillar_Unstable5",
-	"Pillar_Unstable6"
-}
-
-Pillar.SCALE_TWEEN = Tween.constantZero
-Pillar.SCALES = {
-	Vector.ONE,
-	Vector.ONE,
-	Vector.ONE,
-	Vector.ONE,
-	Vector.ONE,
-	Vector.ONE,
-	Vector.ONE
-}
-
-Pillar.STEP = 3.5
-
-Pillar.OFFSET_TWEEN = Tween.constantZero
-Pillar.OFFSETS = {
-	Vector.ZERO,
-	Vector.ZERO,
-	Vector.ZERO,
-	Vector.ZERO,
-	Vector.ZERO,
-	Vector.ZERO,
-	Vector.ZERO
-}
-
-function Pillar:getTextureFilename()
-	return "Resources/Game/Props/MysteriousMachinations_MysteriousRuins_Pillar/Texture.lua"
+function Pillar:instantiateInactiveView(prop, gameView)
+	return InactiveView(prop, gameView)
 end
 
-function Pillar:getModelFilename()
-	return "Resources/Game/Props/MysteriousMachinations_MysteriousRuins_Pillar/Model.lstatic"
+function Pillar:instantiateActiveView(prop, gameView)
+	return ActiveView(prop, gameView)
 end
 
-function Pillar:load()
-	Shape4DView.load(self)
+function Pillar:getIsActive()
+	local state = self:getProp():getState()
+	return state.isActive == nil
+end
 
-	local scales = {}
-	for i = 1, #self.GROUPS do
-		scales[i] = self.GROUPS[i]
-	end
+function TransitionView:updateActiveAlpha(propView, alpha)
+	propView:getModelNode():getMaterial():setColor(Color(1, 1, 1, alpha))
+end
 
-	self.GROUPS = {}
-	while #scales > 0 do
-		local index = math.random(#scales)
-		table.insert(self.GROUPS, scales[index])
-		table.remove(scales, index) 
-	end
-
-	self.time = math.random() * self.STEP
+function TransitionView:updateInactiveAlpha(propView, alpha)
+	propView:getModelNode():getMaterial():setColor(Color(1, 1, 1, alpha))
 end
 
 return Pillar

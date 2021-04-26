@@ -254,7 +254,7 @@ ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
 }
 
@@ -282,7 +282,7 @@ ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 

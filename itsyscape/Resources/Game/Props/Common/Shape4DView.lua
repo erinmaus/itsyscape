@@ -38,6 +38,10 @@ function Shape4DView:getModelFilename()
 	return Class.ABSTRACT()
 end
 
+function Shape4DView:getModelNode()
+	return self.decoration
+end
+
 function Shape4DView:load()
 	PropView.load(self)
 

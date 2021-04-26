@@ -14685,7 +14685,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -15221,7 +15220,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -15736,7 +15734,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -15748,7 +15745,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{
@@ -15760,7 +15756,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["impassable"] = true,
 			},
 		},
 		{

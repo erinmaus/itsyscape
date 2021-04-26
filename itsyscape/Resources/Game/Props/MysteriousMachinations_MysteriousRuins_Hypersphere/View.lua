@@ -8,39 +8,33 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Tween = require "ItsyScape.Common.Math.Tween"
-local Vector = require "ItsyScape.Common.Math.Vector"
-local Shape4DView = require "Resources.Game.Props.Common.Shape4DView"
+local Color = require "ItsyScape.Graphics.Color"
+local TransitionView = require "Resources.Game.Props.Common.TransitionView"
+local InactiveView = require "Resources.Game.Props.MysteriousMachinations_MysteriousRuins_Hypersphere.View_Inactive"
+local ActiveView = require "Resources.Game.Props.MysteriousMachinations_MysteriousRuins_Hypersphere.View_Active"
 
-local Hypersphere = Class(Shape4DView)
+local Hypersphere = Class(TransitionView)
+Hypersphere.TIME = 1
 
-Hypersphere.GROUPS = {
-	"Hypersphere_Powered1",
-	"Hypersphere_Powered2",
-	"Hypersphere_Powered3"
-}
-
-Hypersphere.SCALES = {
-	Vector(2),
-	Vector(2.5),
-	Vector(1.5)
-}
-
-Hypersphere.STEP = 2
-
-Hypersphere.OFFSET_TWEEN = Tween.constantZero
-Hypersphere.OFFSETS = {
-	Vector(0, 2.5, 0),
-	Vector(0, 2.5, 0),
-	Vector(0, 2.5, 0)
-}
-
-function Hypersphere:getTextureFilename()
-	return "Resources/Game/Props/MysteriousMachinations_MysteriousRuins_Hypersphere/Texture.lua"
+function Hypersphere:instantiateInactiveView(prop, gameView)
+	return InactiveView(prop, gameView)
 end
 
-function Hypersphere:getModelFilename()
-	return "Resources/Game/Props/MysteriousMachinations_MysteriousRuins_Hypersphere/Model.lstatic"
+function Hypersphere:instantiateActiveView(prop, gameView)
+	return ActiveView(prop, gameView)
+end
+
+function Hypersphere:getIsActive()
+	local state = self:getProp():getState()
+	return state.isActive == nil
+end
+
+function TransitionView:updateActiveAlpha(propView, alpha)
+	propView:getModelNode():getMaterial():setColor(Color(1, 1, 1, alpha))
+end
+
+function TransitionView:updateInactiveAlpha(propView, alpha)
+	propView:getModelNode():getMaterial():setColor(Color(1, 1, 1, alpha))
 end
 
 return Hypersphere
