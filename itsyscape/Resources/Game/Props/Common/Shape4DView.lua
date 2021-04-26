@@ -38,8 +38,8 @@ function Shape4DView:getModelFilename()
 	return Class.ABSTRACT()
 end
 
-function Shape4DView:load(...)
-	PropView.load(self, ...)
+function Shape4DView:load()
+	PropView.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
