@@ -722,7 +722,7 @@ do
 	}
 end
 
-M["MysteriousMachinations_MysteriousRuins_StoneTable2"] = ItsyScape.Resource.MapObject.Unique()
+M["MysteriousMachinations_MysteriousRuins_Hypersphere1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 51.000000,
@@ -735,14 +735,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "MysteriousMachinations_MysteriousRuins_StoneTable2",
+		Name = "MysteriousMachinations_MysteriousRuins_Hypersphere1",
 		Map = M._MAP,
-		Resource = M["MysteriousMachinations_MysteriousRuins_StoneTable2"]
+		Resource = M["MysteriousMachinations_MysteriousRuins_Hypersphere1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable",
-		MapObject = M["MysteriousMachinations_MysteriousRuins_StoneTable2"]
+		Prop = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere",
+		MapObject = M["MysteriousMachinations_MysteriousRuins_Hypersphere1"]
 	}
 end
 

@@ -271,38 +271,38 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
 }
 
--- ItsyScape.Meta.ResourceDescription {
--- 	Value = "",
--- 	Language = "en-US",
--- 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
--- }
+ItsyScape.Meta.ResourceDescription {
+	Value = "What purpose does this pillar serve?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+}
 
-ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable" {
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.StaticProp",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.MapObjectSize {
 	SizeX = 3.5,
 	SizeY = 2,
 	SizeZ = 3.5,
-	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Mysterious ruins table",
+	Value = "Mysterious ruins hypersphere",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "There's dried blood on it...",
+	Value = "A shadow of a sphere from a higher dimension...",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix" {
