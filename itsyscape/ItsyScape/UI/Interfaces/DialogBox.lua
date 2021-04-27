@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
@@ -37,7 +38,7 @@ function DialogBox.concatMessage(message)
 			end
 
 			table.insert(m, { 1, 1, 1, 1 })
-			table.insert(m, "\n")
+			table.insert(m, " ")
 		end
 	end
 
@@ -49,7 +50,7 @@ function DialogBox:new(id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(w, DialogBox.HEIGHT + 32)
-	self:setPosition(0, 0)
+	self:setPosition(0, h - DialogBox.HEIGHT)
 
 	local panel = Panel()
 	panel:setSize(w, DialogBox.HEIGHT)
@@ -58,19 +59,19 @@ function DialogBox:new(id, index, ui)
 	self.speakerLabel = Label()
 	self.speakerLabel:setText("Unknown")
 	self.speakerLabel:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 		fontSize = 32,
 		color = { 1, 1, 1, 1 },
 		textShadow = true
 	}, self:getView():getResources()))
-	self.speakerLabel:setPosition(DialogBox.PADDING, DialogBox.HEIGHT)
+	self.speakerLabel:setPosition(DialogBox.PADDING, -32)
 	self:addChild(self.speakerLabel)
 
 	self.messageLabel = Label()
 	self.messageLabel:setText("Lorem ipsum...")
 	self.messageLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 24,
+		fontSize = 32,
 		color = { 1, 1, 1, 1 },
 		textShadow = true
 	}, self:getView():getResources()))
@@ -86,9 +87,18 @@ function DialogBox:new(id, index, ui)
 	self.inputBox:setPosition(DialogBox.PADDING, DialogBox.HEIGHT / 2 - 16)
 
 	self.nextButton = Button()
-	self.nextButton:setText("Continue >")
-	self.nextButton:setSize(128, 32)
-	self.nextButton:setPosition(w - 128, DialogBox.HEIGHT)
+	self.nextButton:setStyle(ButtonStyle({
+		hover = Color(0, 0, 0, 0.05),
+		pressed = Color(0, 0, 0, 0.1),
+		textY = 0.9,
+		textX = 0.5,
+		textAlign = 'center',
+		textShadow = true,
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 24
+	}, self:getView():getResources()))
+	self.nextButton:setText("Click to continue")
+	self.nextButton:setSize(w, DialogBox.HEIGHT)
 	self.nextButton.onClick:register(DialogBox.pump, self)
 
 	self.speakerIconBackground = Panel()
