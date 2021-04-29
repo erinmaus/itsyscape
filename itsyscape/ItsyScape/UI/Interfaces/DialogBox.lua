@@ -82,7 +82,7 @@ function DialogBox:new(id, index, ui)
 		DialogBox.PADDING * 2 + DialogBox.HEIGHT, DialogBox.PADDING)
 	self.messageLabel:setSize(
 		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT,
-		DialogBox.HEIGHT - DialogBox.PADDING * 2)
+		DialogBox.HEIGHT - DialogBox.PADDING * 2 - 24)
 	panel:addChild(self.messageLabel)
 
 	local clickToContinue = Label()
