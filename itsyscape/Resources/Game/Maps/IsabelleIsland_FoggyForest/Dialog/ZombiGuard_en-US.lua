@@ -15,12 +15,13 @@ do
 
 		if result == INFO then
 			message {
-				"That's the ancient driftwood. Used t'be the oldest oak tree in the Realm.",
-				"But the Empty King kursed it."
+				"That's the ancient driftwood.",
+				"Used t'be the oldest oak tree in the Realm.",
+				"But %empty{The Empty King} kursed it."
 			}
 
 			message {
-				"The only way you can cut it down is with a copper hatchet.",
+				"You gotta use a %item{copper hatchet} t'cut it down.",
 				"That's all I know. I don't have a big brain."
 			}
 
@@ -31,9 +32,14 @@ do
 			speaker "Zombi"
 
 			message {
-				"Brains, where? Mmmmm. You're making me hungry.",
-				"If you get me brains I can give you a hatchet in return...",
-				"Y'know fellow zombies sometimes have open minds, he he he."
+				"Brains, where? Mmmmm.",
+				"You're making me hungry."
+			}
+
+			message {
+				"If you gimme brains,",
+				"I can give you a %item{copper hatchet}...",
+				"Y'know other zombi sometimes have open minds."
 			}
 
 			local FLAGS = {
@@ -62,7 +68,10 @@ do
 			message "I'm outta here, you're creepy!"
 
 			speaker "Zombi"
-			message "That'd hurt if I had a heart. But Brandon ate mine."
+			message {
+				"That'd hurt if I had a heart.",
+				"But %person{Brandon} ate mine."
+			}
 		end
 	end
 end
