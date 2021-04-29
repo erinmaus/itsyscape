@@ -4,7 +4,10 @@ speaker "CapnRaven"
 message "Ye fools! I'll take care of ye myself!"
 
 speaker "Jenkins"
-message "Give up now, mate! There's just one of ye and four o' us."
+message {
+	"Give up now, mate!",
+	"There's just one of ye and there's four o' us."
+}
 
 speaker "CapnRaven"
 message "What was that?"
@@ -23,4 +26,7 @@ do
 end
 
 speaker "Jenkins"
-message "CTHULHU! Abandon ship! Madness awaits us!"
+message {
+	"%person{CTHULHU}! Abandon ship!",
+	"Madness awaits us!"
+}
