@@ -69,6 +69,16 @@ function DialogBoxController:new(peep, director, action, target)
 							s = p
 							break
 						end
+
+						if not s then
+							peeps = director:probe(
+								peep:getLayerName(),
+								Probe.resource(r))
+							for _, p in ipairs(peeps) do
+								s = p
+								break
+							end
+						end
 					end
 
 					if s then
