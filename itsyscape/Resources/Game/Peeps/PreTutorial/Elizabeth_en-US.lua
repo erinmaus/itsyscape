@@ -2,7 +2,10 @@ local gaveItem = false
 
 PLAYER_NAME = _TARGET:getName()
 speaker "_TARGET"
-message "Hello, Elizabeth, it's me, the adventurer ${PLAYER_NAME}!"
+message {
+	"Hello, %person{Elizabeth}!",
+	"It's me, the adventurer %person{${PLAYER_NAME}}!"
+}
 
 local state = _TARGET:getState()
 local hasGhostSpeakEquipped = state:has('Item', "GhostspeakAmulet", 1, { ['item-equipment'] = true })
@@ -13,7 +16,7 @@ if not hasGhostSpeakEquipped then
 	speaker "_TARGET"
 	message "It's useless, I can't speak to her right now."
 
-	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-equipment'] = true })
+	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
 	if hasGhostSpeakInInventory then
 		message "Maybe if I equip that Ghostspeak amulet..."
 	end
@@ -29,7 +32,10 @@ else
 				message "I'm not eating a burnt pet! You might as well try feeding me his ashes."
 			else
 				speaker "Elizabeth"
-				message "How's it, ${PLAYER_NAME}. I can barely think!"
+				message {
+					"How's it, %person{${PLAYER_NAME}}?",
+					"I can barely think!"
+				}
 
 				speaker "_TARGET"
 				message "What's wrong?"
@@ -51,7 +57,10 @@ else
 			local success = state:take('Item', "CookedLarry", 1, { ['item-inventory'] = true })
 			if success then
 				speaker "Elizabeth"
-				message "Thank you, that goldfish was tasty and hit the spot!"
+				message {
+					"Thank you so much!",
+					"Larry was so very tasty and hit the spot!"
+				}
 
 				speaker "_TARGET"
 				message "Oookay."
