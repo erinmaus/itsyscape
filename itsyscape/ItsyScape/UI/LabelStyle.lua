@@ -32,6 +32,7 @@ function LabelStyle:new(t, resources)
 	end
 
 	self.textShadow = t.textShadow or false
+	self.spaceLines = t.spaceLines or false
 
 	self.align = t.align or 'left'
 end
@@ -68,15 +69,28 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
+		local oldLineHeight = font:getLineHeight()
+		local y = 0
+		if self.spaceLines then
+			local _, text = font:getWrap(text, self.width or width)
+
+			local fontHeight = self.font:getHeight()
+			local newLineHeight = math.min(height / (fontHeight * #text), 1.5)
+			font:setLineHeight(newLineHeight)
+			y = height / 2 - (newLineHeight * fontHeight * #text) / 2
+		end
+
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(text, x + 1, 1, self.width or width, self.align)
+			love.graphics.printf(text, x + 1, y + 1, self.width or width, self.align)
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(text, x, 0, self.width or width, self.align)
+		love.graphics.printf(text, x, y, self.width or width, self.align)
 
 		love.graphics.setFont(previousFont)
+
+		oldLineHeight = font:setLineHeight(oldLineHeight)
 	end
 end
 
