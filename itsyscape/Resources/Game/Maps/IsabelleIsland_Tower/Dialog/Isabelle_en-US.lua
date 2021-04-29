@@ -9,7 +9,7 @@ then
 elseif _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
 then
 	speaker "Isabelle"
-	message "The Drakkenson will avenge me, you mite."
+	message "My %hint{colleagues} will avenge me, you mite."
 
 	speaker "_TARGET"
 	message "Sure they will. Sure they will..."

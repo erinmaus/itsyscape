@@ -32,33 +32,34 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 		   not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin") then
 
 			message {
-				"There's some cursed ore in the abandoned mine to the south-east.",
-				"Specifically, tin and copper. If destroyed, they should end the enchantment in the mine."
+				"There's some %item{kursed ore} in the %location{abandoned mine}.",
+				"The %person{last miner foreman} guards the ore with his life.",
+				"Or, perhaps better said, his %hint{afterlife}."
 			}
 
 			message {
-				"Isabelle's older brother, Orlando, is guarding the mines.",
+				"%person{Isabelle's} older brother, %person{Orlando}, guards the door.",
 				"He can let you in, assuming he's not busy writing a sonnet or something silly."
 			}
 
 			message {
-				"There's hostile creeps in the mine, so I suggest ensuring you have supplies, such as food.",
-				"Portmaster Jenkins can help you with that."
+				"There's %hint{hostile creeps} in the mine, so I suggest ensuring you have supplies, such as food.",
+				"%person{Portmaster Jenkins} can help you with that."
 			}
 
 			if not _TARGET:getState():has("Item", "BronzePickaxe", 1, SEARCH_FLAGS) then
 				if _TARGET:getState():give("Item", "BronzePickaxe", 1, TAKE_FLAGS) then
-					message "Here's a pick-axe to help you mine."
+					message "Here's a %item{pickaxe} to help you mine."
 				else
-					message "If you had more inventory space, I could give you a pickaxe."
+					message "If you had more inventory space, I could give you a %hint{pickaxe}."
 				end
 			end
 
 			if not _TARGET:getState():has("Item", "Hammer", 1, SEARCH_FLAGS) then
 				if _TARGET:getState():give("Item", "Hammer", 1, TAKE_FLAGS) then
-					message "And here's a hammer to help you smith."
+					message "And here's a %item{hammer} to help you smith."
 				else
-					message "If you had more inventory space, I could give you a hammer."
+					message "If you had more inventory space, I could give you a %item{hammer}."
 				end
 			end
 
@@ -66,7 +67,7 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 			   _TARGET:getState():has("Item", "IsabelleIsland_TenseTinOre", 1, TAKE_FLAGS)
 			then
 				message {
-					"I see you have some cursed ore.",
+					"I see you have some %item{kursed ore}.",
 					"I'll take it off your hands."
 				}
 
@@ -98,13 +99,17 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood") then
 			message {
 				"There's an ancient, living driftwood tree.",
-				"While it stands, it curses the forest, allowing zombies and nymphs to roam freely."
+				"While it stands, it kurses the forest, allowing %hint{zombies and nymphs} to roam freely."
 			}
 
 			message {
 				"Cut it down and bring me four ancient splinters.",
-				"Be warned, the ghouls will stop at nothing to protect it.",
-				"The danger is real, and the tree is massive; it will take time to cut it down."
+			}
+
+			message {
+				"Heed my warning!",
+				"The ghouls will stop at nothing to protect the tree.",
+				"The danger is real, so be prepared."
 			}
 
 			message "I've heard you can make a mask from the splinters if you're strong enough."
@@ -115,9 +120,9 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 
 			if not _TARGET:getState():has("Item", "BronzeHatchet", 1, SEARCH_FLAGS) then
 				if _TARGET:getState():give("Item", "BronzeHatchet", 1, TAKE_FLAGS) then
-					message "Here's a hatchet to help you woodcut."
+					message "Here's a %item{hatchet} to help you woodcut."
 				else
-					message "If you had more inventory space, I could give you a hatchet."
+					message "If you had more inventory space, I could give you a %item{hatchet}."
 				end
 
 				gaveItem = true
@@ -125,9 +130,9 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 
 			if not _TARGET:getState():has("Item", "Tinderbox", 1, SEARCH_FLAGS) then
 				if _TARGET:getState():give("Item", "Tinderbox", 1, TAKE_FLAGS) then
-					message "And here's a tinderbox to help you make fires."
+					message "And here's a %item{tinderbox} to help you make fires."
 				else
-					message "If you had more inventory space, I could give you a hatchet."
+					message "If you had more inventory space, I could give you a %item{tinderbox}."
 				end
 
 				gaveItem = true
@@ -135,11 +140,15 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 
 			if gaveItem then
 				message {
-					"I'm afraid I can't give you other materials you may find useful.",
-					"But the general store owner on the third floor--Bob--can sell you the tools and supplies needed."
+					"I'm afraid I don't have other tools you may need.",
+					"But shopkeep %person{Bob}, on the third floor,",
+					"can sell you more useful tools and materials."
 				}
 
-				message "You might find a knife for fletching useful, or needle and thread for crafting."
+				message {
+					"You might find a %item{knife} useful for %hint{fletching},",
+					"or a %item{needle} and %item{thread} for %hint{crafting}."
+				}
 
 				speaker "_TARGET"
 				message "That's useful!"
@@ -147,15 +156,15 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				speaker "AdvisorGrimm"
 				message {
 					"Definitely.",
-					"Isabelle wired you a small allowance to help you out.",
+					"%person{Isabelle} wired you a small allowance.",
 					"You'll find it in your bank."
 				}
 			end
 
 			if _TARGET:getState():has("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
 				message {
-					"I see you're in possession of four ancient splinters.",
-					"Isabelle sends her thanks, ${PLAYER_NAME}. That must have been difficult to obtain."
+					"I see you're in possession of %item{four ancient splinters}.",
+					"%person{Isabelle} sends her thanks, %person{${PLAYER_NAME}}. That must have been difficult to obtain."
 				}
 
 				if _TARGET:getState():take("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
@@ -165,18 +174,20 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 		else
 			message {
 				"You've already obtained the ancient splinters.",
-				"I've heard rumors that it's possible to craft a powerful artifact from the splinters if you're able to obtain glue."
+				"I've heard rumors that it's possible to craft a powerful artefact from the splinters if you're able to obtain glue."
 			}
 		end
 	elseif option == SQUID_SKULL then
 		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull") then
 			message {
-				"A giant, undead squid has started attacking the ships.",
-				"I'm afraid it must be stopped before you can leave."
+				"As you might have seen on your sail here,",
+				"giant undead squids attack nearby ships.",
+				"They must be stopped %hint{before you can leave}."
 			}
 
 			message {
-				"See Portmaster Jenkins; he knows more of the specifics.",
+				"See %person{Portmaster Jenkins},",
+				"he knows more of the specifics.",
 				"Remember, the port is to the north."
 			}
 
@@ -232,5 +243,6 @@ end
 
 message {
 	"I'm here if you have any questions.",
-	"Be careful. If you're weary, feel free to rest in the guest room."
+	"Be careful.",
+	"If you're weary, feel free to rest in the guest room."
 }
