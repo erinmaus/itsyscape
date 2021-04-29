@@ -7,7 +7,10 @@ TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(P, Utility.Text.FORMAL_ADDRESS)
 PLAYER_NAME = P:getName()
 
 if Z:isIn(P, 'ocean') then
-	message "There's no time for talking, %person{${PLAYER_NAME}}! Enter the portal!"
+	message {
+		"There's no time for talking, %person{${PLAYER_NAME}}!",
+		"Enter the portal!"
+	}
 
 	return
 end
