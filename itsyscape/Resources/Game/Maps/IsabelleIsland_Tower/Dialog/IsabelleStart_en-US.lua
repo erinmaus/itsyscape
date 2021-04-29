@@ -2,8 +2,8 @@ speaker "Isabelle"
 
 PLAYER_NAME = _TARGET:getName()
 message {
-	"Welcome to Isabelle Island, ${PLAYER_NAME}!",
-	"I'm your host and friendly merchant extraordinaire, Isabelle."
+	"Welcome to %location{Isabelle Island}, %person{${PLAYER_NAME}}!",
+	"I'm your host and merchant extraordinaire... %person{Isabelle}!"
 }
 
 local INFO = option "Can you tell me about this place?"
@@ -20,36 +20,38 @@ while result ~= QUIT do
 
 	if result == INFO then
 		message {
-			"I bought this island from Vizier-King Yohn.",
-			"I wanted some peace and quiet from the city, and also thought this would be a good entrepreneurial endeavor.",
+			"I bought this island from %person{Vizier-King Yohn}.",
+			"I wanted some peace and quiet from the city.",
+			"Also, perhaps,this would be a good entrepreneurial endeavor.",
 		}
 
 		message {
-			"It's just off the coast of Rumbridge, and used to be a place for weary sailors to ease their bodies and minds."
+			"Not to mention %location{Isabelle Island} is the last safe port",
+			"between the %location{mainland} and the %location{Undead Sea}.",
+			"As you found out firsthand, there are some of %person{Yendor's} horrors about further south."
 		}
 
 		message "However..."
 
-		do
-			speaker "_TARGET"
-			message "There's always that 'however'..."
+		speaker "_TARGET"
+		message "There's always that 'however'..."
 
-			speaker "Isabelle"
-			message "You're an adventurer, you know that!"
-		end
+		speaker "Isabelle"
+		message "You're an adventurer, you know that!"
 
 		message {
-			"The stories were true: the island is cursed.",
-			"A hundred years ago some powerful necromancer came to the island.",
-			"Rumors say they sought to live forever."
+			"The stories were true: %hint{the island is cursed}.",
+			"A thousand years ago %empty{some necromancer god}",
+			"sought to slay the gods and lay ruin to the world."
 		}
 
 		message {
-			"They brought ruin to the island, and since then no one has been able to rid the island of their undead servants."
+			"%empty{They} stirred %person{Yendor's servants}.",
+			"Since then, no one has been able to put these angry undead to rest."
 		}
 
 		message {
-			"I have resources and will handsomely reward anyone who can help me bring fortune to this island."
+			"I have resources and will %hint{handsomely reward} anyone who can help me bring fortune to this island."
 		}
 
 		do
@@ -62,26 +64,26 @@ while result ~= QUIT do
 			message "Haha! Why couldn't it be?"
 		end
 	elseif result == HELP then
-		message "I'm glad you asked!"
-
 		message {
-			"I could use an adventurer such as yourself to claim the island.",
-			"For Vizier-King Yohn, of course, but also for me."
+			"I'm glad you asked!",
+			"I could use an adventurer such as yourself",
+			"to put these enraged undead to rest."
 		}
 
 		message {
-			"I've done years of research and need to eradicate sources of necromanic energy. Specifically...",
-			"Some cursed ore...",
-			"...the remains of an ancient driftwood tree...",
-			"...and a rotten squid's skull."
+			"My advisor discovered three artefacts.",
+			"A rotten %item{squid's skull}...",
+			"...some %item{kursed ore}...",
+			"...and %item{splinters} from an ancient driftwood tree."
 		}
 
 		message {
-			"You're free to keep all valuable treasures you find, except for those few I need.",
-			"And I'll give you a hefty amount of gold should you succeed."
+			"You're free to %hint{keep all treasures} you find.",
+			"I just need these artefacts.",
+			"I will also %hint{reward you with gold and fine resources}."
 		}
 
-		message "Are you willing to help me, ${PLAYER_NAME}?"
+		message "Are you willing to help me, %person{${PLAYER_NAME}}?"
 
 		speaker "_TARGET"
 		do
@@ -123,6 +125,9 @@ while result ~= QUIT do
 		end
 	elseif result == QUIT then
 		message "How rude! You better show some respect."
-		message "I won't let you leave this room until you clean up your act."
+		message {
+			"I won't let you leave this room",
+			"until you clean up your act."
+		}
 	end
 end
