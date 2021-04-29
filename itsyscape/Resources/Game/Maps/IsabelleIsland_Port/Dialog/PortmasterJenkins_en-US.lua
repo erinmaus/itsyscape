@@ -47,7 +47,7 @@ repeat
 
 		message {
 			"So what's going on now?",
-			"Grimm mentioned we're stuck at port."
+			"%person{Grimm} mentioned we're stuck at port."
 		}
 
 		speaker "Jenkins"
