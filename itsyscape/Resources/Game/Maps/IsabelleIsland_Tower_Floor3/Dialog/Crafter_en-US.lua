@@ -18,22 +18,25 @@ do
 
 		if result == INFO then
 			message {
-				"This used to be the old Rumbridge Outpost, but now it's Isabelle Tower.",
+				"This is %location{Isabelle Tower}.",
 				"It's not very tall, or fancy, but it serves its purpose."
 			}
 
 			message {
-				"There's useful stuff around these parts to craft a variety of goods.",
+				"There's useful stuff around these parts.",
+				"You can use them to craft a variety of goods.",
 				"Let me know if you have any questions, dear."
 			}
 		elseif result == DO then
 			message {
 				"I make all kinds of clothes and armor from fabrics.",
-				"With some thread and a needle, anything is possible."
+				"With some thread and a needle,",
+				"anything is possible."
 			}
 
 			message {
-				"There's more you can do with crafting; you can make weapons and incense, too.",
+				"There's more you can do with crafting:",
+				"you can make weapons and incense, too.",
 				"Very useful stuff for your adventures, dear."
 			}
 
@@ -57,8 +60,8 @@ do
 			end
 		else
 			message {
-				"Safe travels, ${TARGET_NAME}.",
-				"May Bastiel guide you."
+				"Safe travels, %person{${TARGET_NAME}}.",
+				"May %person{Bastiel} guide you."
 			}
 		end
 	end
