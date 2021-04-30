@@ -142,14 +142,15 @@ repeat
 		message "..."
 
 		message {
-			"No way in 'ell we'll be sailin' now. The waters will be angry, mate.",
-			"Might be wanting to see what caused that earthquake, ain't natural.",
+			"No way in 'ell we'll be sailin' now.",
+			"The waters will be angry, mate.",
+			"Might be wanting to see what caused that."
 		}
 
 		speaker "_TARGET"
 
 		message {
-			"It felt like it came from direction of the Abandoned Mine."
+			"It felt like it came from direction of the %location{Abandoned Mine}."
 		}
 
 		speaker "Jenkins"
