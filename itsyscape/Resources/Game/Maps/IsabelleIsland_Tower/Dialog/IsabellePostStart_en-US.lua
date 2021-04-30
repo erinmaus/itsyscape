@@ -1,10 +1,13 @@
 speaker "Isabelle"
 
 message {
-	"Please speak to Advisor Grimm just outside this room.",
+	"Please speak to %person{Advisor Grimm}.",
 	"He has my full faith and acts in my stead."
 }
 
-message "Thank you and I look forward to hearing your progress!"
+message {
+	"I'm excited to learn of your progress!",
+	"Good luck!"
+}
 
 _TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_TalkedToIsabelle1")

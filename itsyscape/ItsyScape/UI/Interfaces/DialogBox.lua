@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
@@ -25,6 +26,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local DialogBox = Class(Interface)
 DialogBox.PADDING = 16
+DialogBox.WIDTH = 960
 DialogBox.HEIGHT = 240
 
 function DialogBox.concatMessage(message)
@@ -48,47 +50,66 @@ function DialogBox:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
-	self:setSize(w, DialogBox.HEIGHT + 32)
-	self:setPosition(0, 0)
+	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
+	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT)
 
 	local panel = Panel()
-	panel:setSize(w, DialogBox.HEIGHT)
+	panel:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
 	self:addChild(panel)
 
 	self.speakerLabel = Label()
 	self.speakerLabel:setText("Unknown")
 	self.speakerLabel:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 		fontSize = 32,
 		color = { 1, 1, 1, 1 },
 		textShadow = true
 	}, self:getView():getResources()))
-	self.speakerLabel:setPosition(DialogBox.PADDING, DialogBox.HEIGHT)
+	self.speakerLabel:setPosition(DialogBox.PADDING, -48)
 	self:addChild(self.speakerLabel)
 
 	self.messageLabel = Label()
 	self.messageLabel:setText("Lorem ipsum...")
 	self.messageLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 24,
+		fontSize = 32,
 		color = { 1, 1, 1, 1 },
-		textShadow = true
+		textShadow = true,
+		align = 'center',
+		spaceLines = true
 	}, self:getView():getResources()))
 	self.messageLabel:setPosition(
 		DialogBox.PADDING * 2 + DialogBox.HEIGHT, DialogBox.PADDING)
 	self.messageLabel:setSize(
-		w - DialogBox.PADDING * 2 - DialogBox.HEIGHT,
-		DialogBox.HEIGHT - DialogBox.PADDING * 2)
+		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT,
+		DialogBox.HEIGHT - DialogBox.PADDING * 2 - 24)
 	panel:addChild(self.messageLabel)
 
+	local clickToContinue = Label()
+	clickToContinue:setText("Click to continue")
+	clickToContinue:setStyle(LabelStyle({
+		align = 'center',
+		textShadow = true,
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 24
+	}, self:getView():getResources()))
+	clickToContinue:setSize(
+		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT, 24)
+	clickToContinue:setPosition(
+		0,
+		DialogBox.HEIGHT - 24 - DialogBox.PADDING * 2)
+	self.messageLabel:addChild(clickToContinue)
+
 	self.inputBox = TextInput()
-	self.inputBox:setSize(w - DialogBox.PADDING * 2, 32)
+	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
 	self.inputBox:setPosition(DialogBox.PADDING, DialogBox.HEIGHT / 2 - 16)
 
 	self.nextButton = Button()
-	self.nextButton:setText("Continue >")
-	self.nextButton:setSize(128, 32)
-	self.nextButton:setPosition(w - 128, DialogBox.HEIGHT)
+	self.nextButton:setStyle(ButtonStyle({
+		hover = Color(0, 0, 0, 0.05),
+		pressed = Color(0, 0, 0, 0.1)
+	}, self:getView():getResources()))
+	self.nextButton:setSize(w, DialogBox.HEIGHT)
 	self.nextButton.onClick:register(DialogBox.pump, self)
 
 	self.speakerIconBackground = Panel()
@@ -149,6 +170,7 @@ function DialogBox:next()
 	if state.content then
 		self.messageLabel:setText(DialogBox.concatMessage(state.content))
 
+		self:addChild(self.messageLabel)
 		self:addChild(self.nextButton)
 		self:addChild(self.speakerIcon)
 		self:addChild(self.speakerIconBackground)
@@ -161,6 +183,7 @@ function DialogBox:next()
 		self:addChild(self.inputBox)
 		self:addChild(self.nextButton)
 	elseif state.options then
+		self:removeChild(self.messageLabel)
 		self.messageLabel:setText("")
 		self:removeChild(self.inputBox)
 		local y = DialogBox.PADDING

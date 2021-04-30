@@ -17,7 +17,7 @@ do
 
 		if result == INFO then
 			message {
-				"Gotcha! You're in the Foggy Forest.",
+				"Gotcha! You're in the %location{Foggy Forest}.",
 				"Lots of undead creeps roam this area."
 			}
 
@@ -28,17 +28,27 @@ do
 
 		elseif result == DO then
 			message {
-				"I'm a self-sufficient archer, so I gotta make my own arrows and bows.",
-				"With a knife, you can make little work of logs to make arrow shafts and bows like me."
+				"I'm a self-sufficient archer!",
+				"I gotta make my own arrows and bows.",
 			}
 
 			message {
-				"Gotta smith arrowheads and get some feathers if you want to make arrows.",
-				"Bows need bowstring, which is spun from flax. Luckily there's wild flax here."
+				"With a knife, you can make little work of logs",
+				"to make arrow shafts and bows like me."
 			}
 
 			message {
-				"With some skill, you can make a longbow like mine.",
+				"Gotta smith arrowheads and get some feathers",
+				"if you want to make arrows.",
+			}
+
+			message {
+				"Bows need bowstring, which is spun from flax.",
+				"Luckily there's wild flax here."
+			}
+
+			message {
+				"With some skill, you can make a longbow like me.",
 				"It goes a lot further than a regular bow!"
 			}
 

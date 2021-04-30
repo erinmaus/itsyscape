@@ -19,23 +19,19 @@ do
 		if result == INFO then
 			message {
 				"I've been gravely wounded by those evil Skelementals roaming the halls.",
-				"They're stronger than they look and attack anyone living."
-			}
-
-			message {
-				"There's a miner, Joe, and while he may be dead, he can help you.",
-				"Seek him out further in the dungeon--just run past the Skelementals!"
+				"They're stronger than they look."
 			}
 
 			message "I'm too weak to leave, so I'm resting here."
 		elseif result == DO then
 			message {
-				"I was mining copper and tin when I was ambushed be Skelementals.",
-				"After all, I am a miner and mining is what I do."
+				"I was mining when I was ambushed by undead!",
+				"I'm a miner, not a fighter, so I fled."
 			}
 
 			message {
-				"Mining is slow work, and prestigious. Every ore is a hardship!",
+				"Mining is slow work and prestigious.",
+				"Every ore is a hardship!",
 				"You should be proud of every XP you get."
 			}
 
