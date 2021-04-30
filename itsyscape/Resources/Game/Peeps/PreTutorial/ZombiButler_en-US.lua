@@ -7,7 +7,10 @@ TARGET_FORMAL_ADDRESS = Utility.Text.getPronoun(P, Utility.Text.FORMAL_ADDRESS)
 PLAYER_NAME = P:getName()
 
 if Z:isIn(P, 'ocean') then
-	message "There's no time for talking, %person{${PLAYER_NAME}}! Enter the portal!"
+	message {
+		"There's no time for talking, %person{${PLAYER_NAME}}!",
+		"Enter the portal!"
+	}
 
 	return
 end
@@ -17,18 +20,24 @@ P:getState():give('KeyItem', "PreTutorial_Start")
 local firstTalk = false
 if not P:getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
 	message {
-		"Thank goodness for an adventurer like you, %person{${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}}!"
+		"Thank goodness for an adventurer like you, %person{${TARGET_FORMAL_ADDRESS}}!"
 	}
 
 	message {
-		"My charges, %person{Elizabeth} and %person{Edward}, passed on many moons ago to disease.",
+		"My charges passed on many moons ago to disease.",
 		"If only I could %hint{speak with the dead}, I'd ask those poor souls why they haven't moved on."
 	}
 
 	message {
-		"If I can be of any help to you, then please ask me anything.",
-		"I'll be at your side at all times on this urgent matter.",
-		"All the resources I can give you, like the %item{tools from the crate in the shed} or the %location{library on the second floor}, are yours to use."
+		"Please ask me anything that comes to mind.",
+		"I'll be at your side at all times."
+	}
+
+	message {
+		"All the resources I can give you,",
+		"like the %item{tools from the crate in the shed}",
+		"or the %location{library on the second floor},",
+		"are yours to use and keep."
 	}
 
 	P:getState():give('KeyItem', "PreTutorial_TalkedToButler1")
@@ -53,10 +62,13 @@ if Z:isIn(P, 'kitchen') then
 
 	if option == MEAN then
 		speaker "_TARGET"
-		message "Of course they are! Do you think I'm a moron?"
+		message "Of course!"
 
 		speaker "Butler"
-		message "No, ${TARGET_FORMAL_ADDRESS}, I meant no offense."
+		message "Aplogies, %person{${TARGET_FORMAL_ADDRESS}}, I meant no offense."
+
+		speaker "_TARGET"
+		message "None taken!"
 	elseif option == NICE then
 		speaker "_TARGET"
 		message "Definitely!"
@@ -64,8 +76,9 @@ if Z:isIn(P, 'kitchen') then
 
 	speaker "Butler"
 	message {
-		"You can also use a tinderbox and light logs on fire to cook...",
-		"...but food tastes better when cooked properly, right?"
+		"You can also light logs on fire to cook...",
+		"...but food tastes better",
+		"when properly cooked, if I may say."
 	}
 elseif Z:isIn(P, 'dining-room')then
 	message {
@@ -80,12 +93,13 @@ elseif Z:isIn(P, 'boys-room')then
 	}
 elseif Z:isIn(P, 'girls-room')then
 	message {
-		"Elizabeth was very sick and did not eat for weeks before she passed on.",
-		"I can hear her ghostly stomach rumbling as I speak."
+		"%person{Elizabeth} was very sick.",
+		"She did not eat for weeks before she passed on.",
+		"I can still hear her ghostly stomach rumbling."
 	}
 elseif Z:isIn(P, 'courtyard') then
 	message {
-		"If you want to fish, you'll need to equip a fishing rod.",
+		"If you want to fish, you'll need a fishing rod.",
 		"You may find one in the toolshed."
 	}
 elseif Z:isIn(P, 'shed') then
@@ -104,8 +118,9 @@ elseif Z:isIn(P, 'study') then
 	}
 elseif Z:isIn(P, 'library') then
 	message {
-		"I think the only useful book for you is the Powernomicon.",
-		"I've already moved it to the table in the study on your behalf."
+		"I think the only useful book is the Powernomicon.",
+		"I've already put it to the table in the study.",
+		"Dare hope I've not overstepped, %person{${TARGET_FORMAL_ADDRESS}}."
 	}
 elseif Z:isIn(P, 'ballroom') then
 	message {
@@ -121,12 +136,14 @@ local didPreReqs =
 if not didPreReqs then
 	if firstTalk then
 		message {
-			"I see you have the Nominomicon. I can show you how to use that, if you wish."
+			"I see you have the Nominomicon.",
+			"I can show you how to use that, if you wish."
 		}
 	else
 		message {
 			"Remember, the %item{tools from the crate in the shed} or the %location{library on the second floor}, are yours to use.",
-			"I see you have the Nominomicon. I can show you how to use that, if you wish."
+			"I see you have the Nominomicon.",
+			"I can show you how to use that, if you wish."
 		}
 	end
 
@@ -163,8 +180,8 @@ if not didPreReqs then
 
 			speaker "Butler"
 			message {
-				"The Nominomicon is a book that records your personal history.",
-				"Here, let me show you how to use it."
+				"The Nominomicon records your adventure.",
+				"Let me show you how to use it, %person{${TARGET_FORMAL_ADDRESS}}."
 			}
 
 			Common.showQuestTip(_TARGET)
@@ -190,10 +207,25 @@ else
 		local option = select { WAKE_UP, QUESTION }
 		if option == WAKE_UP then
 			speaker "_TARGET"
-			message "I've saved %person{Edward} and %person{Elizabeth}. What's next, %person{Hans}?"
+			message {
+				"I've saved the both of the kids.",
+				"What's next, %person{Hans}?"
+			}
 
 			speaker "Butler"
-			message "Well, you need to wake up, ${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}."
+			message {
+				"Well, I suppose that's all for now, %person{${TARGET_FORMAL_ADDRESS}}.",
+				"I have a %hint{teleportation spell} ready.",
+			}
+
+			message {
+				"If %empty{The Fate Mashina} wills it...",
+				"...I do hope we will see each other again."
+			}
+
+			message {
+				"Farewell, %person{${TARGET_FORMAL_ADDRESS} ${PLAYER_NAME}}."
+			}
 
 			P:getState():give('KeyItem', "PreTutorial_TalkedToButler2")
 

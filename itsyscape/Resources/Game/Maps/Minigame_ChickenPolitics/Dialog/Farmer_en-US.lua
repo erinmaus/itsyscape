@@ -39,27 +39,45 @@ if not mapScript.isDone then
 			speaker "Farmer"
 			message {
 				"Ain't got a clue, friend.",
-				"If you help us out, there's good rewards in it for ya..."
+				"If you help us out,",
+				"there's good rewards in it for ya..."
 			}
 		elseif result == WHAT_DO then
 			message {
-				"So ya see, ya need to tackle 'em chickens. So I'm about to bre'k the f'rth wall 'ere...",
-				"Hold the %hint{dash button (normally the SPACE key)}, to charge ya tackle.",
-				"The longer you prep your tackle, the more powerful it'll be. But the longer ya'll be looking like a loon.",
-				"The direction ya are movin' in will be the direction ya tackle the chickens from."
+				"So ya see, ya need to tackle 'em chickens.",
+				"So I'm about to bre'k the f'rth wall 'ere...",
+			}
+
+			message {
+				"Hold the %hint{dash button} to charge ya tackle.",
+				"The longer you prep your tackle,",
+				"the more powerful it'll be.",
+				"But the longer ya'll be looking like a loon."
+			}
+
+			message {
+				"The direction ya are movin' in will be",
+				"the direction ya tackle the chickens from."
 			}
 
 			speaker "_TARGET"
 			message {
-				"Got it! So I've got to %hint{hold the dash button, normally the SPACE key, to tackle the chickens}.",
-				"And I'll tackle them %hint{in the direction I'm moving}."
+				"Got it!",
+				"Hold the dash button to tackle the chickens...",
+				"And I'll tackle them in the direction I'm moving!"
 			}
 
 			speaker "Farmer"
 			message {
 				"Yeah, that's 'ight, friend!",
-				"Tackle as many chickens in o' minute as possible an ya good to go.",
-				"Ya'll get combat XP based on ya're weapon and stance, plus I'll give you some coins and other goodies for ya time."
+				"Tackle as many chickens in o' minute as possible.",
+				"An 'en ya good to go.",
+			}
+
+			message {
+				"Ya'll get XP based on ya're weapon and stance,",
+				" plus I'll give you some coins",
+				"and other goodies for ya time."
 			}
 		elseif result == PLAY then
 			defer "Resources/Game/Maps/Minigame_ChickenPolitics/Dialog/FarmerStart_en-US.lua"
@@ -78,7 +96,8 @@ if not mapScript.isDone then
 	until result == LOOK_AROUND
 else
 	message {
-		"Thank ya for knockin' some sense into 'em chickens."
+		"Thank ya for knockin' some",
+		"sense into 'em chickens."
 	}
 
 	message {
