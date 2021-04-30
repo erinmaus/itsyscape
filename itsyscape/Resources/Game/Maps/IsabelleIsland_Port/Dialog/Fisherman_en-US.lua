@@ -7,7 +7,7 @@ message {
 		" " ..
 		Utility.Text.getEnglishBe(_TARGET).present ..
 		".",
-	"How's it goin', ${TARGET_NAME}?"
+	"How's it goin', %person{${TARGET_NAME}}?"
 }
 
 do
@@ -26,13 +26,13 @@ do
 		if result == INFO then
 			message {
 				"'Ere's Port Isabelle.",
-				"Normally we'd be bustlin' with men and women resting on their way to Rumbridge...",
-				"...but a awesome squid is terrorizing the waters around the island."
+				"Normally we'd be bustlin' with peeps...",
+				"...but an awesome squid is terrorizing the waters."
 			}
 
 			message {
-				"The squid is vicious, but none o' them sailors wanna fight it.",
-				"See, it's a bad omen to kill the undead while on open water.",
+				"The squid is vicious, but none wanna fight it.",
+				"See, it's a bad omen to kill the undead at sea.",
 				"And y'know how superstitious sailors are..."
 			}
 		elseif result == DO then
@@ -41,18 +41,24 @@ do
 			}
 
 			message {
-				"I buy my bait from the shop nearby, and with my trust fishin' rod, find a fish near the surface.",
-				"I then toss out my line and wait.",
-				"Every nibble takes some bait, so best be carrying lots o' it.",
+				"I buy my bait from the shop nearby,",
+				"and with my trust fishin' rod,",
+				"find some fish near the surface."
 			}
 
 			message {
-				"You can cook 'em after on a fire or range for some food that can heal ya.",
+				"I go 'n toss out my line and wait.",
+				"Every nibble takes some bait,",
+				"so best be carrying lots o' it.",
+			}
+
+			message {
+				"You can cook 'em fish for food that can heal ya.",
 				"Helps when you're in a pickle fightin'."
 			}
 
 			message {
-				"Wanna see what lay ahead of you on your fishy adventure?"
+				"Wanna see what's ahead of you on your fishy adventure?"
 			}
 
 			local YES = option "Definitely, mate!"

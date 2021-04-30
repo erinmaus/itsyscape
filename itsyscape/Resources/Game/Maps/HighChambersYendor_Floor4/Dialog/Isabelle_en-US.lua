@@ -3,8 +3,8 @@ speaker "Isabelle"
 PLAYER_NAME = _TARGET:getName()
 
 message {
-	"You've discovered me, ${PLAYER_NAME}! How interesting.",
-	"I'm willing to let you leave alive, for now, should you return to whence you came..."
+	"You've discovered me! How interesting.",
+	"I'm willing to let you live, for now, should you return to whence you came..."
 }
 
 local stage = _DIRECTOR:getGameInstance():getStage()
@@ -27,23 +27,24 @@ repeat
 	if result == WHAT then
 		speaker "_TARGET"
 		message { 
-			"What are you doing?! I thought you wanted to rid the island of the curse!"
+			"What are you doing?! I thought you wanted to rid the island of the kurse!"
 		}
 
 		speaker "Isabelle"
 		message {
-			"I will rid the entire world of the curse! The Empty King is beyond understanding.",
-			"They must be dealt with by whatever means necessary."
+			"I will rid the entire world of the kurse!",
+			"%empty{The Empty King} is beyond understanding.",
+			"%empty{They} must be dealt with by whatever means necessary."
 		}
 
 		message {
-			"I have... a group of like-minded comrades who want to see The Empty King killed.",
+			"I have... a group of like-minded comrades who want to see %empty{The Empty King} killed.",
 		}
 
 		message {
-			"The Empty King threatens to bring ruin to the balance of things.",
+			"%empty{The Empty King} threatens the balance of things!",
 			"This must not stand!",
-			"They must be stopped at whatever cost!"
+			"%empty{They} must be stopped at whatever cost!"
 		}
 	elseif result == WHO then
 		speaker "_TARGET"
@@ -58,8 +59,14 @@ repeat
 		}
 
 		message {
-			"A group known as the Drakkenson offered to remove the kurse should I stop The Empty King.",
-			"So here I am, on the verge of success! This ends now!"
+			"I searched to the ends of the world, for a cure.",
+			"Then I discovered these... kreatures."
+		}
+
+		message {
+			"They opened my mind to %empty{Their} evils.",
+			"So here I am, on the verge of a breakthrough!",
+			"This ends now!"
 		}
 	elseif result == DIE then
 		speaker "_TARGET"
