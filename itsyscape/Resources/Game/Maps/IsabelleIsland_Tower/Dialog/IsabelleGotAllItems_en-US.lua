@@ -3,17 +3,21 @@ speaker "Isabelle"
 PLAYER_NAME = _TARGET:getName()
 
 message {
-	"Thank you sincerely, ${PLAYER_NAME}!",
-	"Now I have all the items needed to break the curse on this island."
+	"Thank you sincerely, %person{${PLAYER_NAME}}!",
+	"Now I have all the items needed!",
+	"Gosh, the kurse will be lifted... I'm so excited!"
 }
 
 message {
-	"I've wired 10,000 coins and some supplies to your bank, per our agreement.",
+	"I've wired 10,000 to your bank.",
+	"I also provided soem supplies.",
+	"Per our agreement, of course.",
 	"Consider our deal done."
 }
 
 message {
-	"Portmaster Jenkins should be able to take you off the island.",
+	"Take a stroll to see %person{Portmaster Jenkins}.",
+	"He should be able to take you to %location{Rumbridge}.",
 	"Feel free to return any time!"
 }
 
