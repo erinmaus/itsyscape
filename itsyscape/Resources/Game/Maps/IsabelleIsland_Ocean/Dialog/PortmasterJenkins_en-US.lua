@@ -21,7 +21,10 @@ end
 
 if squidAlive then
 	speaker "Jenkins"
-	message "Bloody 'ell! No time for talkin', slay the squid, mate!"
+	message {
+		"Bloody 'ell!",
+		"No time for talkin', slay the squid, mate!"
+	}
 
 	speaker "Squid"
 	message "EEEEEEEEEEEEEEE'RGH! EEEEEEE!"

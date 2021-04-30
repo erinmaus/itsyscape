@@ -1,6 +1,9 @@
 PLAYER_NAME = _TARGET:getName()
 speaker "_TARGET"
-message "Hello, Edward, it's me, the adventurer ${PLAYER_NAME}!"
+message {
+	"Hello, %person{Edward}!",
+	"It's me, the adventurer %person{${PLAYER_NAME}}!"
+}
 
 local state = _TARGET:getState()
 local hasGhostSpeakEquipped = state:has('Item', "GhostspeakAmulet", 1, { ['item-equipment'] = true })
@@ -11,12 +14,16 @@ if not hasGhostSpeakEquipped then
 	speaker "_TARGET"
 	message "It's useless, I can't speak to him right now."
 
-	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-equipment'] = true })
+	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
 	if hasGhostSpeakInInventory then
 		message "Maybe if I equip that Ghostspeak amulet..."
 	end
 else
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
+	local maggotHits = _DIRECTOR:probe(
+		_TARGET:getLayerName(),
+		require("ItsyScape.Peep.Probe").resource("Peep", "PreTutorial_Maggot"))
+	local hasSpawnedMaggot = #maggotHits >= 1
 	local hasToyWeaponEquipped =
 		state:has('Item', "ToyLongsword", 1, { ['item-equipment'] = true }) or
 		state:has('Item', "ToyWand", 1, { ['item-equipment'] = true }) or
@@ -27,7 +34,10 @@ else
 		state:has('Item', "ToyBoomerang", 1, { ['item-inventory'] = true })
 	if not saved then
 		speaker "Edward"
-		message "H-h-hello, ${PLAYER_NAME}. There's a monster under my bed!"
+		message {
+			"H-h-hello, %person{${PLAYER_NAME}}.",
+			"There's a monster under my bed!"
+		}
 
 		speaker "_TARGET"
 		message "Are you sure it's not your imagination?"
@@ -36,22 +46,27 @@ else
 		message {
 			"I'm d-d-d-definitely s-s-sure!",
 			"I'm too weak to fight it.",
-			"Anyway, you n-n-n-need a special type of weapon to fight it."
+			"Y-you n-need a special type of weapon to fight it."
 		}
 
 		if hasToyWeaponEquipped then
-			speaker "Edward"
-			message "L-l-looks like you've got one in y-y-your hand!"
+			if hasSpawnedMaggot then
+				speaker "Edward"
+				message "Kill the m-m-monster, silly!"
+			else
+				speaker "Edward"
+				message "L-l-looks like you've got one in y-y-your hand!"
 
-			local maggot = Utility.spawnMapObjectAtAnchor(
-				_TARGET,
-				"Maggot",
-				"Anchor_Maggot")
+				local maggot = Utility.spawnMapObjectAtAnchor(
+					_TARGET,
+					"Maggot",
+					"Anchor_Maggot")
 
-			speaker "Edward"
-			message "S-S-SAVE ME!"
+				speaker "Edward"
+				message "S-S-SAVE ME!"
 
-			Utility.Peep.attack(maggot:getPeep(), _TARGET)
+				Utility.Peep.attack(maggot:getPeep(), _TARGET)
+			end
 		elseif hasToyWeaponInventory then
 			speaker "Edward"
 			message {

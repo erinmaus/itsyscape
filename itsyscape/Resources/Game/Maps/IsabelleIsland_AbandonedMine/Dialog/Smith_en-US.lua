@@ -1,7 +1,7 @@
 speaker "Smith"
 
 TARGET_NAME = _TARGET:getName()
-message "Finally! ${TARGET_NAME}!"
+message "Finally! %person{${TARGET_NAME}}!"
 
 do
 	local INFO = option "Can you tell me about this place?"
@@ -18,12 +18,14 @@ do
 
 		if result == INFO then
 			message {
-				"This is the Abandoned Mine. It's haunted!",
-				"There's a plentiful amount of copper and tin, and this handy smithy."
+				"This is the %location{Abandoned Mine}.",
+				"But it's, like, super haunted!",
 			}
 
 			message {
-				"But I've lost my hammer and am too scared to leave!"
+				"Thankfully I found a place to hide.",
+				"But I've lost my %item{hammer}!",
+				"And am too scared to leave!"
 			}
 
 			if _TARGET:getState():has("Item", "Hammer", 1, { ['item-inventory'] = true }) then
@@ -37,11 +39,11 @@ do
 
 				if offerOption == OFFER then
 					speaker "_TARGET"
-					message "Why don't you take my hammer?"
+					message "Why don't you take my %item{hammer}?"
 
 					speaker "Smith"
 					message {
-						"I couldn't bear to deprive an up-and-coming smith like yourself!",
+						"I can't bear to deprive an up-and-coming smith!",
 						"I'll get out of here... Eventually..."
 					}
 				end
@@ -53,11 +55,11 @@ do
 			}
 
 			message {
-				"The more bars, the more experienced you'll become.",
+				"The more bars, the more experience you'll get.",
 				"Try and make the best stuff you can--it will pay off!"
 			}
 
-			message "Want me to show you what awesome stuff you can make?"
+			message "Wanna to show you what stuff you can make?"
 
 			local YES = option "Absolutely!"
 			local NO  = option "Spoilers are bad!"

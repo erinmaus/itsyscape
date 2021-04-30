@@ -3,16 +3,20 @@ speaker "Isabelle"
 PLAYER_NAME = _TARGET:getName()
 
 message {
-	"Aaah! *cough*! You may have defeated me for now, ${PLAYER_NAME}...",
+	"Aaah! *cough*!",
+	"You have beat me now, %person{${PLAYER_NAME}}...",
 }
 
 message {
-	"The Drakkenson... *cough*... are as mighty as gods themselves, and they will never rest until The Empty King is dead.",
-	"And now, they will hunt you down and avenge me."
+	"My comrades... *cough*... are gods in the making.",
+	"They will never rest until %empty{The Empty King} is dead.",
+	"And now, they will hunt you down and avenge me!"
 }
 
 message {
-	"May they have mercy on you. Because next time we meet, I won't. *cough* *hack*"
+	"May they have mercy on you.",
+	"Because next time we meet, I won't.",
+	"*cough* *hack*"
 }
 
 message "..."

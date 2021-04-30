@@ -17,12 +17,12 @@ do
 
 		if result == INFO then
 			message {
-				"'Ere's the Foggy Forest. Lots o' trees to cut.",
-				"Y'see, that's what I'm doin'. Gotta get that 99..."
+				"'Ere's the %location{Foggy Forest}. Lots o' trees to cut.",
+				"Y'see, that's what I'm doin'. %hint{Gotta get that 99}..."
 			}
 
 			message {
-				"I burn 'em to scare away zombis and other ghouls.",
+				"I burn 'em to scare away zombi and other ghouls.",
 				"Never be knowin' what's out there..."
 			}
 		elseif result == DO then
