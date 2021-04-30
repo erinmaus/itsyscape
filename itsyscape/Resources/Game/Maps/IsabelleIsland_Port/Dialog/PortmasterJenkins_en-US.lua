@@ -2,8 +2,12 @@ speaker "Jenkins"
 
 JENKINS_NAME = _SPEAKERS["Jenkins"]:getName()
 TARGET_NAME = _TARGET:getName()
-message "Ahoy, ${TARGET_NAME}, I'm ${JENKINS_NAME}."
-message "Ye be timing yer visit badly."
+message {
+	"Ahoy, %person{${TARGET_NAME}}.",
+	"Sorries 'bout ye trip here.",
+	"Glad ye made it, however the hells ye did.",
+	"Most others ain't so lucky."
+}
 
 local INFO      = option "Can you tell me about the squid?"
 local SAIL      = option "Let's set sail!"
@@ -28,40 +32,45 @@ repeat
 
 	if result == INFO then
 		message {
-			"Squids were the holiest of Yendor's pets.",
-			"Them crazy priests of 'is would bring 'em to land and smother 'em."
+			"Squids were the holiest of %person{Yendor}'s pets.",
+			"Them crazy priests of 'ers would bring 'em to land",
+			"only to then smother 'em 'til they croaked!"
 		}
 
 		message {
-			"The squids were reborn, like all of 'is loons, and haunt the seas.",
-			"They lurked at the deepest oceans guarding The City in the Sea.",
-			"...or as us pirates and ex-pirates would call it, Davy Jone's Locker."
+			"The squids were reborn and haunt the seas.",
+			"Much like all of %person{Yendor's} loons.",
+			"They guard %location{The City in the Sea}... *shiver*"
 		}
 
 		speaker "_TARGET"
 
 		message {
-			"So what's gone on now?",
-			"Grimm mentioned there's one squid that's keeping us at port."
+			"So what's going on now?",
+			"%person{Grimm} mentioned we're stuck at port."
 		}
 
 		speaker "Jenkins"
 
 		message {
 			"Aye, ye be right on 'at.",
-			"They've grown restless since 'is vanishin'.",
-			"Mun'throo is the strongest of his pets, and he's being causing us nothin' but trouble."
+			"They've grown restless since recent times.",
+			"%person{Mun'throo} is the strongest of 'er pets,",
+			"and he's being causing us nothin' but grief."
 		}
 
 		message {
-			"According to Miss Isabelle, Mun'throo gots a skull!",
-			"Without 'at skull, he's a goner and the enchantments broken.",
+			"According to %person{Miss Isabelle}, %person{Mun'throo} gots a skull!",
+			"Without 'at skull, he's a goner!",
 			"Ever heard of 'at, a squid with a skull?"
 		}
 
 		speaker "_TARGET"
 
-		message "Can't say I have, but you pirates have had weirder tales!"
+		message {
+			"Can't say I have!",
+			"But you pirates have had weirder tales!"
+		}
 
 		speaker "Jenkins"
 		message {
@@ -70,13 +79,15 @@ repeat
 		}
 	elseif result == SAIL then
 		message {
-			"I'll give ye the supplies to man the ship, and ye've got the help of my crew.",
-			"But it's a bad omen to slay the undead on the seas, so yer on yer own with the killin'."
+			"I'll give ye the supplies to man the ship,",
+			"and ye've got the help of my crew.",
+			"But it's a %hint{bad omen to slay the undead} on the seas,",
+			"so yer on yer own with the killin'."
 		}
 
 		speaker "_TARGET"
 
-		message "I don't believe in sailors superstitions!"
+		message "I don't believe in sailors' superstitions!"
 
 		speaker "Jenkins"
 		message {
@@ -102,8 +113,12 @@ repeat
 				}
 			else
 				message {
-					"'Ere be some cannonballs to help ye. Fire 'em from the cannons.",
-					"Try'n aim for the squid, or ye might as well just jump overboard.",
+					"'Ere be some cannonballs to help ye.",
+					"%hint{Try'n aim for the squid} 'n fire from the cannons.",
+					"Or, y'know, ye might as well jump overboard.",
+				}
+
+				message {
 					"And if the ship takes damage, patch 'er up and plug any leaks."
 				}
 
@@ -127,14 +142,15 @@ repeat
 		message "..."
 
 		message {
-			"No way in 'ell we'll be sailin' now. The waters will be angry, mate.",
-			"Might be wanting to see what caused that earthquake, ain't natural.",
+			"No way in 'ell we'll be sailin' now.",
+			"The waters will be angry, mate.",
+			"Might be wanting to see what caused that."
 		}
 
 		speaker "_TARGET"
 
 		message {
-			"It felt like it came from direction of the Abandoned Mine."
+			"It felt like it came from direction of the %location{Abandoned Mine}."
 		}
 
 		speaker "Jenkins"
@@ -147,8 +163,9 @@ repeat
 	elseif result == NEVERMIND then
 		message {
 			"Ye best plan yer route.",
-			"The mines are dangerous and the forest even deadlier.",
-			"I suggest ye deal with this squid to prepare ye for the rest."
+			"The %hint{mines are dangerous}.",
+			"And the %hint{forest even deadlier}.",
+			"The squid might be the easiest o' the three."
 		}
 
 		message {

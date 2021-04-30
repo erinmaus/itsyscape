@@ -2,7 +2,10 @@ if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_TalkedToIsabelle1")
 	PLAYER_NAME = _TARGET:getName()
 
 	speaker "AdvisorGrimm"
-	message "Hello, ${PLAYER_NAME}. Please see Isabelle in the room to the north."
+	message {
+		"Hello, %person{${PLAYER_NAME}}.",
+		"Please see %person{Isabelle} in the room to the north."
+	}
 elseif not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_TalkedToGrimm1") then
 	defer "Resources/Game/Maps/IsabelleIsland_Tower/Dialog/AdvisorGrimmStart_en-US.lua"
 else

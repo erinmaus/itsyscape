@@ -1,12 +1,14 @@
 speaker "Joe"
 
 JOE_NAME = _SPEAKERS["Joe"]:getName()
-message "Hey, I'm ${JOE_NAME}."
+message "Hey, I'm %person{${JOE_NAME}}."
 message "I'm just mining my own business. He he he..."
 
 if Utility.Item.spawnInPeepInventory(_TARGET, "CavePotato", 1) then
-	message "Here's something you can use."
-	message "It has lots of iron. He he he..."
+	message {
+		"Here's something you can use.",
+		"It has lots of iron. He he he..."
+	}
 end
 
 do
@@ -29,17 +31,25 @@ do
 	end
 
 	if result == INFO then
-		message "An evil necromancer sought something secret in this mine."
 		message {
-			"He killed all us miners, and brought them back...",
-			"I escaped his control, but the others didn't, and they changed."
+			"These are said to be the first mines in the Realm.",
+			"The %hint{Lady of the Shroud}, %person{Yendor},",
+			"used copper to speak to the dead."
 		}
-		message "They're dull and will ignore you if you disguise yourself."
-		message "I heard tin cans are pretty fashionable here... He he he."
+
+		message {
+			"The skelemental serve to protect this mine,",
+			"but they ain't the brightest.",
+			"A tin can covering your noggin",
+			"makes some of 'em friendly.",
+		}
+
+		message "He... He... He."
 	elseif result == BOSS then
 		message {
 			"The miner foreman...",
-			"His soul was bound by the Necromancer to protect the secret."
+			"His soul was bound by the %empty{Necromancer}.",
+			"Now he's a treacheous zealot."
 		}
 
 		local INFO = option "How do I open the secret door?"
@@ -50,12 +60,20 @@ do
 		}
 
 		if result == INFO then
-			message "You're reckless... But you've got soul, I'll give you that."
+			message {
+				"You're reckless...",
+				"But you've got soul,",
+				"I'll give you that."
+			}
+
 			message "Bring my five bronze bars and I'll make you a key."
 
 
 			if _TARGET:getState():has("Item", "BronzeBar", 5, { ['item-inventory'] = true }) then
-				message "I see you have enough... Want me to make you that key?"
+				message {
+					"I see you have enough...",
+					"Want me to make you that key?"
+				}
 
 				local YES = option "Yes, please!"
 				local NO = option "I changed my mind, I'm a wimp!"
