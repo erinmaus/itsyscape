@@ -56,6 +56,7 @@ function Resource.readFile(filename)
 		local s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
 		while not s do
 			coroutine.yield()
+			s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
 		end
 
 		return s
