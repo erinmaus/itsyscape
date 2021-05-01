@@ -32,7 +32,8 @@ function StaticMeshResource:release()
 end
 
 function StaticMeshResource:loadFromFile(filename)
-	self.mesh = StaticMesh(filename, self.skeleton)
+	local file = Resource.readLua(filename)
+	self.mesh = StaticMesh(file, self.skeleton)
 end
 
 function StaticMeshResource:getIsReady()
