@@ -12,8 +12,8 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION = 1 / 120
-ResourceManager.MOBILE_FRAME_DURATION  = 1
+ResourceManager.DESKTOP_FRAME_DURATION = 1 / 30
+ResourceManager.MOBILE_FRAME_DURATION  = 1 / 10
 
 function ResourceManager:new()
 	self.resources = {}
@@ -29,6 +29,9 @@ function ResourceManager:new()
 	self.onUpdate = Callback()
 	self.onFinish = Callback()
 	self.wasPending = false
+
+	self.fileIOThread = love.thread.newThread("ItsyScape/Graphics/Threads/Resource.lua")
+	self.fileIOThread:start()
 end
 
 -- Sets the frame duration, in seconds.
@@ -58,17 +61,14 @@ function ResourceManager:update()
 			break
 		end
 
-		local s, r = xpcall(top.callback, debug.traceback)
-		if not s then
-			if top.filename then
-				Log.warn("failed to load resource '%s': %s", top.filename, r)
-			else
-				Log.warn("failed to run event: %s", r)
-			end
+		local callback = top.callback
+		local status = coroutine.status(callback)
+		if status == 'suspended' then
+			coroutine.resume(callback)
+		elseif status == 'dead' then
+			table.remove(self.pending, 1)
+			count = count + 1
 		end
-
-		table.remove(self.pending, 1)
-		count = count + 1
 
 		currentTime = love.timer.getTime()
 	until currentTime > breakTime
@@ -130,7 +130,7 @@ function ResourceManager:loadCacheRef(ref, ...)
 	return self:_blockingLoad(ref:getResourceType(), ref:getFilename(), ...)
 end
 
--- Queues a resource. Not yet implemented.
+-- Queues a resource.
 function ResourceManager:queue(resourceType, filename, callback, ...)
 	if not Class.isDerived(resourceType, Resource) then
 		error("expected Resource-derived type")
@@ -138,16 +138,23 @@ function ResourceManager:queue(resourceType, filename, callback, ...)
 
 	local load = Callback.bind(self._load, self, resourceType, filename, ...)
 	local c = function()
-		local resource = load()
-		if callback then
-			callback(resource)
+		function wrappedCallback()
+			local resource = load()
+			if callback then
+				callback(resource)
+			end
+		end
+
+		local s, r = xpcall(wrappedCallback, debug.traceback)
+		if not s then
+			Log.warn("failed to load resource '%s': %s", filename, r)
 		end
 	end
 
-	table.insert(self.pending, { filename = filename, callback = c })
+	table.insert(self.pending, { filename = filename, callback = coroutine.create(c) })
 end
 
--- Queues a CacheRef. Not yet implemented.
+-- Queues a CacheRef.
 function ResourceManager:queueCacheRef(ref, callback, ...)
 	self:queue(ref:getResourceType(), ref:getFilename(), callback, ...)
 end
@@ -155,8 +162,14 @@ end
 -- Queues a callback. No resource loading is performed.
 function ResourceManager:queueEvent(callback, ...)
 	callback = Callback.bind(callback, ...)
+	local c = function()
+		local s, r = xpcall(callback, debug.traceback)
+		if not s then
+			Log.warn("failed run callback: %s", filename, r)
+		end
+	end
 
-	table.insert(self.pending, { callback = callback })
+	table.insert(self.pending, { callback = coroutine.create(c) })
 end
 
 return ResourceManager

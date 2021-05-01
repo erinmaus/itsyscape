@@ -31,7 +31,8 @@ function SkeletonAnimationResource:release()
 end
 
 function SkeletonAnimationResource:loadFromFile(filename, _, skeleton)
-	self.animation = SkeletonAnimation(filename, skeleton or self.skeleton)
+	local file = Resource.readLua(filename)
+	self.animation = SkeletonAnimation(file, skeleton or self.skeleton)
 end
 
 function SkeletonAnimationResource:getIsReady()

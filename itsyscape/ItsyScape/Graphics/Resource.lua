@@ -44,6 +44,48 @@ function Resource:loadFromFile(filename, resourceManager)
 	return Class.ABSTRACT()
 end
 
+function Resource.readFile(filename)
+	if coroutine.running() then
+		love.thread.getChannel('ItsyScape.Resource.File::input'):push({
+			type = 'file',
+			filename = filename
+		})
+
+		coroutine.yield()
+
+		local s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		while not s do
+			coroutine.yield()
+		end
+
+		return s
+	else
+		return love.filesystem.read(filename)
+	end
+end
+
+function Resource.readLua(filename)
+	if coroutine.running() then
+		love.thread.getChannel('ItsyScape.Resource.File::input'):push({
+			type = 'lua',
+			filename = filename
+		})
+
+		coroutine.yield()
+
+		local s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		while not s do
+			coroutine.yield()
+			s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		end
+
+		return s
+	else
+		local s = "return " .. love.filesystem.read(filename)
+		return assert(setfenv(loadstring(s), {}))()
+	end
+end
+
 -- Returns a boolean value indicating if the resource is ready (e.g., loaded).
 function Resource:getIsReady()
 	return Class.ABSTRACT()
