@@ -38,6 +38,8 @@ end
 
 function SkeletonResource:loadFromFile(filename, resourceManager)
 	self:release()
+
+	local file = Resource.readLua(filename)
 	self.skeleton = Skeleton(filename)
 end
 
