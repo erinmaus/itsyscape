@@ -49,7 +49,7 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
-function Utility.save(player, location, talk, ...)
+function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
 	director:getItemBroker():toStorage()
 
@@ -62,7 +62,7 @@ function Utility.save(player, location, talk, ...)
 				stats.stats:save(root:getSection("Peep"))
 			end
 
-			if location then
+			if saveLocation then
 				local map = player:getBehavior(MapResourceReferenceBehavior)
 				if map and map.map then
 					map = map.map
