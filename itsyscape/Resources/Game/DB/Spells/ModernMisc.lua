@@ -19,11 +19,6 @@ ItsyScape.Resource.Spell "Enchant" {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
 			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "CosmicRune",
-			Count = 1
 		}
 	}
 }
