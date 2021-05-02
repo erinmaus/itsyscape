@@ -10,7 +10,6 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
-local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -42,20 +41,7 @@ function Mansion:onLoad(filename, args, layer)
 		heaviness = 0.25
 	})
 
-	self.player = self:getDirector():getGameInstance():getPlayer():getActor()
-	do
-		local playerPeep = self.player:getPeep()
-
-		self.runes = InfiniteInventoryStateProvider(self)
-		self.runes:add("AirRune")
-		self.runes:add("EarthRune")
-		self.runes:add("WaterRune")
-		self.runes:add("FireRune")
-		self.runes:add("CosmicRune")
-
-		playerPeep:getState():addProvider("Item", self.runes)
-		playerPeep:listen('travel', self.onPlayerTravel, self)
-	end
+	self.player = Utility.Peep.getPlayerActor(self)
 
 	self.lightning = self:getDirector():probe(
 		self:getLayerName(),
@@ -91,11 +77,6 @@ function Mansion:boom()
 			math.huge,
 			animation)
 	end
-end
-
-function Mansion:onPlayerTravel()
-	self.player:getPeep():getState():removeProvider("Item", self.runes)
-	self.player:getPeep():silence('travel', self.onPlayerTravel)
 end
 
 function Mansion:update(director, game)
