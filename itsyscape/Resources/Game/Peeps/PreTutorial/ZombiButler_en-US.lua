@@ -160,20 +160,27 @@ if not didPreReqs then
 			message "This place is massive! Where's the library?"
 
 			speaker "Butler"
-			message {
-				"The library is on the second floor.",
-				"Take the stairs in the %location{foyer} then head %hint{north-west}.",
-				"I've set a book on the table you might find useful."
-			}
+			if Z:isIn(P, 'study') or Z:isIn(P, 'library') then
+				message "We're in the library, %person{${TARGET_FORMAL_ADDRESS}}!"
+			else
+				message {
+					"The library is on the second floor.",
+					"I've set a book on the table you might find useful."
+				}
+			end
 		elseif option == WHERE_SHED then
 			speaker "_TARGET"
 			message "I didn't see a shed on the way in!"
 
 			speaker "Butler"
-			message {
-				"The toolshed is to the east of the %location{courtyard}.",
-				"And the %location{courtyard} is on the first floor, just north of the %location{foyer}."
-			}
+			if Z:isIn(P, 'shed') then
+				message "Well, we're in the shed right now!"
+			else
+				message {
+					"The toolshed is to the east of the %location{courtyard}.",
+					"And the %location{courtyard} is on the first floor, just north of the %location{foyer}."
+				}
+			end
 		elseif option == WHERE_WHAT then
 			speaker "_TARGET"
 			message "I'm not sure what to do!"
@@ -250,14 +257,21 @@ else
 			result = select { FIND_COPPER, CRAFT_COPPER, ENCHANT_COPPER, THANK_YOU }
 
 			if result == FIND_COPPER then
-				message "You may find %item{copper} in the basement. You'll need to equip a pick-axe to mine it."
+				message {
+					"You may find %item{copper} in the basement.",
+					"You'll need to equip a pick-axe to mine it."
+				}
 			elseif result == CRAFT_COPPER then
 				message {
-					"You may go to the %location{shed} and smelt %item{copper} into a %item{copper bar}.",
-					"After that, take a %item{hammer} and smith it into what shape you want on the %item{anvil}."
+					"You may go to the %location{shed} and smelt %item{copper}.",
+					"Take a %item{hammer} and the %item{copper bar},",
+					"and smith it on the %item{anvil}."
 				}
 			elseif result == ENCHANT_COPPER then
-				message "You'll need to have a %item{copper amulet}, then you can cast the Enchant spell."
+				message {
+					"You'll need to have a %item{copper amulet} and %item{runes},",
+					"then you can cast the Enchant spell."
+				}
 
 				if P:getState():has('Item', "CopperAmulet", 1, { ['item-inventory'] = true }) then
 					local YES = option "Yes, please!"
