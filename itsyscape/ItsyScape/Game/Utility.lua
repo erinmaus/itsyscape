@@ -742,9 +742,8 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 	}
 }
 Utility.Text.BE = {
-	["x"] = { present = 'are', past = 'were', future = 'will be' },
-	["male"] = { present = 'is', past = 'was', future = 'will be' },
-	["female"] = { present = 'is', past = 'was', future = 'will be' }
+	[true] = { present = 'are', past = 'were', future = 'will be' },
+	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
 
 function Utility.Text.getPronoun(peep, class, lang, upperCase)
@@ -773,10 +772,10 @@ function Utility.Text.getEnglishBe(peep)
 	do
 		local gender = peep:getBehavior(GenderBehavior)
 		if gender then
-			g = Utility.Text.BE[gender.gender]
+			g = Utility.Text.BE[gender.pronounsPlural or false]
 		end
 
-		g = g or Utility.Text.BE['x']
+		g = g or Utility.Text.BE[true]
 	end
 
 	return g

@@ -15,6 +15,12 @@ local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 
 local CharacterCustomizationController = Class(Controller)
 local MODEL_SKIN = "ItsyScape.Game.Skin.ModelSkin"
+local PRONOUN_INDEX = {
+	subject = GenderBehavior.PRONOUN_SUBJECT,
+	object = GenderBehavior.PRONOUN_OBJECT,
+	possessive = GenderBehavior.PRONOUN_POSSESSIVE,
+	formal = GenderBehavior.FORMAL_ADDRESS
+}
 local SKINS = {
 	hair = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
@@ -143,6 +149,12 @@ function CharacterCustomizationController:poke(actionID, actionIndex, e)
 		self:nextWardrobe(e)
 	elseif actionID == "changeGender" then
 		self:changeGender(e)
+	elseif actionID == "changeGenderDescription" then
+		self:changeGenderDescription(e)
+	elseif actionID == "changePronoun" then
+		self:changePronoun(e)
+	elseif actionID == "changePronounPlurality" then
+		self:changePronounPlurality(e)
 	elseif actionID == "changeName" then
 		self:changeName(e)
 	elseif actionID == "close" then
@@ -257,6 +269,8 @@ function CharacterCustomizationController:changeGender(e)
 					'his',
 					'ser'
 				}
+				gender.description = 'Male'
+				gender.pronounsPlural = false
 			elseif e.gender == GenderBehavior.GENDER_FEMALE then
 				gender.pronouns = {
 					'she',
@@ -264,6 +278,8 @@ function CharacterCustomizationController:changeGender(e)
 					'hers',
 					'misse'
 				}
+				gender.description = 'Female'
+				gender.pronounsPlural = false
 			elseif e.gender == GenderBehavior.GENDER_OTHER then
 				gender.pronouns = {
 					'they',
@@ -271,11 +287,75 @@ function CharacterCustomizationController:changeGender(e)
 					'their',
 					'mazer'
 				}
+				gender.description = 'Non-Binary'
+				gender.pronounsPlural = true
 			end
 		end
 
 		gender:unload(peep)
 	end
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateGender",
+		nil,
+		{ self:pull() })
+end
+
+function CharacterCustomizationController:changeGenderDescription(e)
+	assert(type(e.description) == 'string', "description must be string")
+
+	local peep = self:getPeep()
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		gender.description = e.description
+
+		gender:unload(peep)
+	end
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateGender",
+		nil,
+		{ self:pull() })
+end
+
+function CharacterCustomizationController:changePronoun(e)
+	assert(type(e.index) == 'string', "index must be string")
+	assert(type(e.value) == 'string', "value must be string")
+
+	local peep = self:getPeep()
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		local pronounIndex = PRONOUN_INDEX[e.index]
+		assert(pronounIndex ~= nil, "pronoun index must be valid")
+
+		gender.pronouns[pronounIndex] = e.value
+
+		gender:unload(peep)
+	end
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateGender",
+		nil,
+		{ self:pull() })
+end
+
+function CharacterCustomizationController:changePronounPlurality(e)
+	assert(type(e.value) == 'boolean', "value must be boolean")
+
+	local peep = self:getPeep()
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		gender.pronounsPlural = e.value
+	end
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateGender",
+		nil,
+		{ self:pull() })
 end
 
 function CharacterCustomizationController:pull()
@@ -287,11 +367,13 @@ function CharacterCustomizationController:pull()
 	return {
 		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name"),
 		gender = gender.gender,
+		description = gender.description or "Non-Binary",
 		pronouns = {
 			subject = gender.pronouns[GenderBehavior.PRONOUN_SUBJECT],
 			object = gender.pronouns[GenderBehavior.PRONOUN_OBJECT],
 			possessive = gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE],
-			formal = gender.pronouns[GenderBehavior.PRONOUN_FORMAL]
+			formal = gender.pronouns[GenderBehavior.FORMAL_ADDRESS],
+			plural = gender.pronounsPlural
 		}
 	}
 end

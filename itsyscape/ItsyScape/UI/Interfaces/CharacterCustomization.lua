@@ -23,6 +23,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
+local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
 local CharacterCustomization = Class(Interface)
@@ -30,13 +31,27 @@ local CharacterCustomization = Class(Interface)
 CharacterCustomization.BUTTON_SIZE = 48
 CharacterCustomization.PADDING = 16
 CharacterCustomization.CUSTOMIZATION_WIDTH = 480
-CharacterCustomization.CUSTOMIZATION_HEIGHT = 544
+CharacterCustomization.CUSTOMIZATION_HEIGHT = 540
 CharacterCustomization.INPUT_HEIGHT = 64
+
+CharacterCustomization.TITLE_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 32,
+	textShadow = true
+}
 
 CharacterCustomization.BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/Purple-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/Purple-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	fontSize = 24
+}
+
+CharacterCustomization.ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 	fontSize = 24
 }
@@ -56,8 +71,56 @@ CharacterCustomization.DESCRIPTION_STYLE = {
 	textShadow = true
 }
 
+CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE = {
+	inactive = Color(0, 0, 0, 0),
+	pressed = Color(82 / 255, 45 / 255, 81 / 255, 1),
+	hover = Color(196 / 255, 149 / 255, 194 / 255, 1),
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
+	fontSize = 24,
+	textX = 0.0,
+	textY = 0.5,
+	textAlign = 'left',
+	textShadow = true
+}
+
+CharacterCustomization.SELECT_ACTIVE_BOX_BUTTON_STYLE = {
+	inactive = Color(182 / 255, 125 / 255, 183 / 255, 1),
+	pressed = Color(82 / 255, 46 / 255, 81 / 255, 1),
+	hover = Color(196 / 255, 149 / 255, 194 / 255, 1),
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
+	fontSize = 24,
+	textX = 0.0,
+	textY = 0.5,
+	textAlign = 'left',
+	textShadow = true
+}
+
+CharacterCustomization.VALUE_STYLE = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	textShadow = true
+}
+
+CharacterCustomization.TEXT_INPUT_STYLE = {
+	inactive = "Resources/Renderers/Widget/TextInput/Purple-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/TextInput/Purple-Hover.9.png",
+	active = "Resources/Renderers/Widget/TextInput/Purple-Active.9.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	color = Color(1, 1, 1, 1),
+	textShadow = true,
+	padding = 4
+}
+
 function CharacterCustomization:new(id, index, ui)
 	Interface.new(self, id, index, ui)
+
+	self.onChangeSlot = Callback()
+	self.onChangeGender = Callback()
+	self.onChangeGenderDescription = Callback()
+	self.onChangeGenderPronouns = Callback()
+	self.onChangeGenderPlurality = Callback()
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(w, h)
@@ -68,6 +131,12 @@ function CharacterCustomization:new(id, index, ui)
 		image = "Resources/Renderers/Widget/Panel/FullscreenInterface.9.png"
 	}, ui:getResources()))
 	self:addChild(self.panel)
+
+	local mainLayout = GridLayout()
+	mainLayout:setSize(w, 0)
+	mainLayout:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
+	mainLayout:setWrapContents(true)
+	self:addChild(mainLayout)
 
 	do
 		local LABEL_WIDTH = 96
@@ -80,10 +149,18 @@ function CharacterCustomization:new(id, index, ui)
 		panel:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
 		panel:setPosition(
 			CharacterCustomization.PADDING,
-			CharacterCustomization.BUTTON_SIZE + CharacterCustomization.PADDING)
+			CharacterCustomization.PADDING)
+
+		local titleLabel = Label()
+		titleLabel:setText("Appearance")
+		titleLabel:setStyle(LabelStyle(CharacterCustomization.TITLE_LABEL_STYLE, ui:getResources()))
+		panel:addChild(titleLabel)
 
 		local gridLayout = GridLayout()
 		gridLayout:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		gridLayout:setPosition(
+			0,
+			CharacterCustomization.PADDING + CharacterCustomization.BUTTON_SIZE)
 		gridLayout:setPadding(4, 4)
 		panel:addChild(gridLayout)
 
@@ -92,8 +169,8 @@ function CharacterCustomization:new(id, index, ui)
 			VALUE_WIDTH,
 			CharacterCustomization.CUSTOMIZATION_HEIGHT - CharacterCustomization.PADDING * 2)
 		self.peepSnippet:setPosition(
-			ARROW_BUTTON_WIDTH + LABEL_WIDTH + CharacterCustomization.PADDING * 2,
-			CharacterCustomization.PADDING)
+			ARROW_BUTTON_WIDTH + LABEL_WIDTH + CharacterCustomization.PADDING,
+			CharacterCustomization.PADDING + CharacterCustomization.BUTTON_SIZE)
 		panel:addChild(self.peepSnippet)
 
 		local function addOption(description, slot)
@@ -130,7 +207,195 @@ function CharacterCustomization:new(id, index, ui)
 		addOption("Hands", "hands")
 		addOption("Feet", "feet")
 
-		self:addChild(panel)
+		mainLayout:addChild(panel)
+	end
+
+	do
+		local state = self:getState()
+
+		local INPUT_WIDTH = CharacterCustomization.CUSTOMIZATION_WIDTH - CharacterCustomization.PADDING * 2
+		local INPUT_HEIGHT = 48
+
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+		panel:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		panel:setPosition(
+			CharacterCustomization.PADDING + CharacterCustomization.CUSTOMIZATION_WIDTH,
+			CharacterCustomization.PADDING)
+
+		local titleLabel = Label()
+		titleLabel:setText("Basics")
+		titleLabel:setStyle(LabelStyle(CharacterCustomization.TITLE_LABEL_STYLE, ui:getResources()))
+		panel:addChild(titleLabel)
+
+		local basic = GridLayout()
+		basic:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		basic:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
+		basic:setPosition(0, CharacterCustomization.BUTTON_SIZE)
+
+		local nameLabel = Label()
+		nameLabel:setText("Name:")
+		nameLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
+		nameLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		basic:addChild(nameLabel)
+
+		local nameInput = TextInput()
+		nameInput:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
+		nameInput:setText(state.name)
+		nameInput.onValueChanged:register(function()
+			self:changeName(nameInput.text)
+		end)
+		nameInput.onFocus:register(function()
+			nameInput:setCursor(0, #nameInput:getText() + 1)
+		end)
+		nameInput:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		basic:addChild(nameInput)
+
+		local genderLabel = Label()
+		genderLabel:setText("Gender:")
+		genderLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
+		genderLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		basic:addChild(genderLabel)
+
+		local genderSelect = ScrollablePanel(GridLayout)
+		genderSelect:setScrollBarVisible(true, false)
+		genderSelect:getInnerPanel():setPadding(0, 0)
+		genderSelect:getInnerPanel():setUniformSize(true,
+			INPUT_WIDTH,
+			INPUT_HEIGHT)
+		genderSelect:getInnerPanel():setSize(
+			INPUT_WIDTH,
+			INPUT_HEIGHT * 3)
+		genderSelect:setSize(
+			INPUT_WIDTH,
+			INPUT_HEIGHT * 3)
+
+		local function addGender(name, value)
+			local button = Button()
+			button:setText(name)
+			button:setStyle(ButtonStyle(CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE, self:getView():getResources()))
+			button:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+			button.onClick:register(self.changeGender, self, value)
+			self.onChangeGender:register(function(newValue)
+				if value == newValue then
+					button:setStyle(ButtonStyle(CharacterCustomization.SELECT_ACTIVE_BOX_BUTTON_STYLE, self:getView():getResources()))
+				else
+					button:setStyle(ButtonStyle(CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE, self:getView():getResources()))
+				end
+			end)
+
+			genderSelect:addChild(button)
+		end
+
+		addGender("- Male", 'male')
+		addGender("- Female", 'female')
+		addGender("- Something Else", 'x')
+
+		basic:addChild(genderSelect)
+
+		local descriptionLabel = Label()
+		descriptionLabel:setText("Gender Description:")
+		descriptionLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
+		descriptionLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		basic:addChild(descriptionLabel)
+
+		local descriptionInput = TextInput()
+		descriptionInput:setText(state.description)
+		descriptionInput:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
+		descriptionInput.onValueChanged:register(function()
+			self:changeGenderDescription(descriptionInput.text)
+		end)
+		descriptionInput.onFocus:register(function()
+			descriptionInput:setCursor(0, #descriptionInput:getText() + 1)
+		end)
+		descriptionInput:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		self.onChangeGenderDescription:register(function(newValue)
+			descriptionInput:setText(newValue)
+		end)
+		basic:addChild(descriptionInput)
+
+		panel:addChild(basic)
+		mainLayout:addChild(panel)
+	end
+
+	do
+		local state = self:getState()
+
+		local INPUT_WIDTH = (CharacterCustomization.CUSTOMIZATION_WIDTH - CharacterCustomization.PADDING * 2) / 2
+		local INPUT_HEIGHT = 48
+
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+		panel:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		panel:setPosition(
+			CharacterCustomization.PADDING * 3 + CharacterCustomization.CUSTOMIZATION_WIDTH * 2,
+			CharacterCustomization.PADDING)
+
+		local titleLabel = Label()
+		titleLabel:setText("Pronouns")
+		titleLabel:setStyle(LabelStyle(CharacterCustomization.TITLE_LABEL_STYLE, ui:getResources()))
+		panel:addChild(titleLabel)
+
+		local grid = GridLayout()
+		grid:setUniformSize(true, INPUT_WIDTH, INPUT_HEIGHT)
+		grid:setPadding(0, CharacterCustomization.PADDING)
+		grid:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, 0)
+		grid:setWrapContents(true)
+		grid:setPosition(0, CharacterCustomization.BUTTON_SIZE)
+
+		local function addPronoun(name, key)
+			local label = Label()
+			label:setText(name)
+			label:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, ui:getResources()))
+			label:setText(name)
+			grid:addChild(label)
+
+			local input = TextInput()
+			input:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
+			input:setText(state.pronouns[key])
+			input.onValueChanged:register(function()
+				self:changePronoun(key, input.text)
+			end)
+			input.onFocus:register(function()
+				input:setCursor(0, #input:getText() + 1)
+			end)
+			self.onChangeGenderPronouns:register(function(newValue)
+				input:setText(newValue[key])
+			end)
+			grid:addChild(input)
+		end
+
+		addPronoun("Subject", "subject")
+		addPronoun("Object", "object")
+		addPronoun("Possessive", "possessive")
+		addPronoun("Formal", "formal")
+
+		local function setPronounPlurality(text, isPlural)
+			local button = Button()
+			button:setText(text)
+			button.onClick:register(function()
+				self:changePronounPlurality(isPlural)
+			end)
+
+			local setStyle = function(newValue)
+				if isPlural == newValue then
+					button:setStyle(ButtonStyle(CharacterCustomization.ACTIVE_BUTTON_STYLE, ui:getResources()))
+				else
+					button:setStyle(ButtonStyle(CharacterCustomization.BUTTON_STYLE, ui:getResources()))
+				end
+			end
+
+			self.onChangeGenderPlurality:register(setStyle)
+			setStyle(state.pronouns.plural)
+
+			grid:addChild(button)
+		end
+
+		setPronounPlurality("Plural: ON", true)
+		setPronounPlurality("Plural: OFF", false)
+
+		panel:addChild(grid)
+		mainLayout:addChild(panel)
 	end
 
 	self.closeButton = Button()
@@ -143,12 +408,119 @@ function CharacterCustomization:new(id, index, ui)
 	end)
 	self:addChild(self.closeButton)
 
-	self.onChangeSlot = Callback()
-	self.onChangeGender = Callback()
-
 	self.camera = ThirdPersonCamera()
 	self.camera:setDistance(2.5)
 	self.camera:setUp(Vector(0, -1, 0))
+	self.peepSnippet:setCamera(self.camera)
+end
+
+function CharacterCustomization:update(...)
+	Interface.update(self, ...)
+
+	if not self.ready then
+		local state = self:getState()
+		self.onChangeGender(state.gender)
+		self.ready = true
+	end
+
+	self:updatePeep()
+end
+
+function CharacterCustomization:updatePeep()
+	local state = self:getState()
+
+	local gameCamera = self:getView():getGameView():getRenderer():getCamera()
+	self.camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
+	self.camera:setVerticalRotation(gameCamera:getVerticalRotation())
+
+	local actor = self:getView():getGame():getPlayer():getActor()
+	do
+		local gameView = self:getView():getGameView()
+		local actorView = gameView:getActor(actor)
+		self.peepSnippet:setRoot(actorView:getSceneNode())
+	end
+
+	local offset
+	local zoom
+	if actor then
+		local min, max = actor:getBounds()
+		offset = (max.y - min.y) / 2 - 0.5
+		zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 4
+
+		-- Flip if facing left.
+		if actor:getDirection().x < 0 then
+			self.camera:setVerticalRotation(
+				self.camera:getVerticalRotation() + math.pi)
+		end
+	else
+		offset = 0
+		zoom = 1
+	end
+
+	local root = self.peepSnippet:getRoot()
+	local transform = root:getTransform():getGlobalTransform()
+
+	local x, y, z = transform:transformPoint(0, offset, 0)
+
+	local w, h = self.peepSnippet:getSize()
+	self.camera:setWidth(w)
+	self.camera:setHeight(h)
+	self.camera:setPosition(Vector(x, y, z))
+	self.camera:setDistance(zoom)
+end
+
+function CharacterCustomization:updateGender(state)
+	self.onChangeGender(state.gender)
+	self.onChangeGenderDescription(state.description)
+	self.onChangeGenderPronouns(state.pronouns)
+	self.onChangeGenderPlurality(state.pronouns.plural)
+end
+
+function CharacterCustomization:previousWardrobe(slot)
+	self:sendPoke("previousWardrobe", nil, {
+		slot = slot
+	})
+end
+
+function CharacterCustomization:nextWardrobe(slot)
+	self:sendPoke("nextWardrobe", nil, {
+		slot = slot
+	})
+end
+
+function CharacterCustomization:changeSlot(slot, value)
+	self.onChangeSlot(slot, value)
+end
+
+function CharacterCustomization:changeGender(value)
+	self:sendPoke("changeGender", nil, {
+		gender = value
+	})
+end
+
+function CharacterCustomization:changeGenderDescription(value)
+	self:sendPoke("changeGenderDescription", nil, {
+		description = value
+	})
+end
+
+function CharacterCustomization:changePronoun(index, value)
+	self:sendPoke("changePronoun", nil, {
+		index = index,
+		value = value
+	})
+end
+
+function CharacterCustomization:changePronounPlurality(value)
+	self:sendPoke("changePronounPlurality", nil, {
+		value = value
+	})
+end
+
+function CharacterCustomization:changeName(value)
+	self:sendPoke("changeName", nil, {
+		name = value
+	})
 end
 
 return CharacterCustomization
