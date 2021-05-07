@@ -35,6 +35,8 @@ function GenderBehavior:new()
 		"their",
 		"mazer"
 	}
+	self.pronounsPlural = true
+	self.description = "Non-Binary"
 end
 
 function GenderBehavior:unload(peep)
@@ -49,6 +51,8 @@ function GenderBehavior:unload(peep)
 			object = self.pronouns[GenderBehavior.PRONOUN_OBJECT],
 			possessive = self.pronouns[GenderBehavior.PRONOUN_POSSESSIVE],
 			formal = self.pronouns[GenderBehavior.FORMAL_ADDRESS],
+			plural = self.pronounsPlural,
+			description = self.description
 		})
 	end
 end
