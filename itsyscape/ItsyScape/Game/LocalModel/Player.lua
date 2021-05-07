@@ -91,7 +91,7 @@ function LocalPlayer:poof()
 
 	self.actor = false
 
-	self.game:setPlayerStorage(self.id, nil)
+	self.game:getDirector():setPlayerStorage(self.id, nil)
 end
 
 -- Gets the Actor this Player is represented by.
