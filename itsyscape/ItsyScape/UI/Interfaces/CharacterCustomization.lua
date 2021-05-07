@@ -30,6 +30,8 @@ local DialogBox = require "ItsyScape.UI.Interfaces.DialogBox"
 local CharacterCustomization = Class(Interface)
 
 CharacterCustomization.BUTTON_SIZE = 48
+CharacterCustomization.CONFIRM_BUTTON_WIDTH = 128
+CharacterCustomization.CONFIRM_BUTTON_HEIGHT = 64
 CharacterCustomization.PADDING = 16
 CharacterCustomization.CUSTOMIZATION_WIDTH = 480
 CharacterCustomization.INFO_WIDTH = 320
@@ -485,6 +487,18 @@ function CharacterCustomization:new(id, index, ui)
 		nextButton:setSize(dialogWidth, dialogHeight)
 		nextButton.onClick:register(self.nextDialog, self)
 		dialogPanel:addChild(nextButton)
+
+		local confirmButton = Button()
+		confirmButton:setText("Confirm")
+		confirmButton:setStyle(ButtonStyle(CharacterCustomization.BUTTON_STYLE, ui:getResources()))
+		confirmButton:setSize(CharacterCustomization.CONFIRM_BUTTON_WIDTH, CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
+		confirmButton:setPosition(
+			panelWidth - CharacterCustomization.CONFIRM_BUTTON_WIDTH,
+			panelHeight - CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
+		confirmButton.onClick:register(function()
+			self:sendPoke("close", nil, {})
+		end)
+		panel:addChild(confirmButton)
 
 		self:nextDialog()
 	end
