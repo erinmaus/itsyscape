@@ -39,9 +39,13 @@ function LocalPlayer:new(game, stage)
 	self.stage = stage
 	self.actor = false
 	self.direction = Vector.UNIT_X
+	self.id = 0
 end
 
-function LocalPlayer:spawn()
+function LocalPlayer:spawn(storage)
+	self.id = self.id + 1
+	self.game:getDirector():setPlayerStorage(self.id, storage)
+
 	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One")
 	if success then
 		self.actor = actor
@@ -50,10 +54,10 @@ function LocalPlayer:spawn()
 		actor:getPeep():listen('actionPerformed', self.onPlayerActionPerformed, self)
 
 		local p = actor:getPeep():getBehavior(PlayerBehavior)
-		p.id = 1
+		p.id = self.id
 
 		actor:getPeep():listen('finalize', function()
-			local storage = self.game:getDirector():getPlayerStorage(1):getRoot()
+			local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
 			if storage:hasSection("Location") then
 				local location = storage:getSection("Location")
 				if location:get("name") then
@@ -86,6 +90,8 @@ function LocalPlayer:poof()
 	end
 
 	self.actor = false
+
+	self.game:setPlayerStorage(self.id, nil)
 end
 
 -- Gets the Actor this Player is represented by.
