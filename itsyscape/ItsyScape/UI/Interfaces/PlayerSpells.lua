@@ -115,11 +115,18 @@ function PlayerSpells:setNumSpells(value)
 
 		button:setID("Spell-" .. spell.id)
 
-		button:setToolTip(
-			ToolTip.Header(spell.name),
-			ToolTip.Text(spell.description),
-			ToolTip.Text(string.format("Requires level %d Magic and:", spell.level)),
-			unpack(runes))
+		if #runes == 0 then
+			button:setToolTip(
+				ToolTip.Header(spell.name),
+				ToolTip.Text(spell.description),
+				ToolTip.Text(string.format("Requires level %d Magic.", spell.level)))
+		else
+			button:setToolTip(
+				ToolTip.Header(spell.name),
+				ToolTip.Text(spell.description),
+				ToolTip.Text(string.format("Requires level %d Magic and:", spell.level)),
+				unpack(runes))
+		end
 	end
 
 	self:performLayout()

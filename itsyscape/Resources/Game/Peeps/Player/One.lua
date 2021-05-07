@@ -146,6 +146,8 @@ function One:assign(director, key, ...)
 		if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
 			local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
 			gender.gender = g:get("gender")
+			gender.description = g:get("description") or "Non-Binary"
+			gender.pronounsPlural = g:get("plural")
 			gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
 			gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
 			gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")

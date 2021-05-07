@@ -326,29 +326,23 @@ function Ship:update(director, game)
 				self.blockingInterfaceIndex = nil
 			end
 		end
-	end
+	elseif not self.showedCombatHints then
+		Utility.UI.openInterface(
+			self.player,
+			"TutorialHint",
+			false,
+			"root",
+			"Look at the bottom right corner.\nClick on the flashing icon to continue.",
+			function()
+				return Utility.UI.isOpen(self.player, "PlayerInventory")
+			end,
+			{ position = 'center' })
 
-	if Utility.UI.isOpen(self.player, "VideoTutorial") then
-		self.showedVideoTutorial = true
-	elseif self.showedVideoTutorial then
-		if not self.showedCombatHints then
-			Utility.UI.openInterface(
-				self.player,
-				"TutorialHint",
-				false,
-				"root",
-				"Look at the bottom right corner.\nClick on the flashing icon to continue.",
-				function()
-					return Utility.UI.isOpen(self.player, "PlayerInventory")
-				end,
-				{ position = 'center' })
-
-			if not _DEBUG then
-				Ship.showTip(Ship.COMBAT_HINT, self.player)
-			end
-			
-			self.showedCombatHints = true
+		if not _DEBUG then
+			Ship.showTip(Ship.COMBAT_HINT, self.player)
 		end
+		
+		self.showedCombatHints = true
 	end
 end
 

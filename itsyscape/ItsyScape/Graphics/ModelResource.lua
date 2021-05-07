@@ -32,7 +32,8 @@ function ModelResource:release()
 end
 
 function ModelResource:loadFromFile(filename, _, skeleton)
-	self.model = Model(filename, skeleton or self.skeleton)
+	local file = Resource.readLua(filename)
+	self.model = Model(file, skeleton or self.skeleton)
 end
 
 function ModelResource:getIsReady()
