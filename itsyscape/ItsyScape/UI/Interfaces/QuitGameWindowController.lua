@@ -28,6 +28,7 @@ end
 function QuitGameWindowController:confirm(e)
 	self:getGame():quit()
 	self:getGame():getUI():closeInstance(self)
+	Log.analytic("END_GAME")
 end
 
 function QuitGameWindowController:cancel(e)
