@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Message = require "ItsyScape.Game.Dialog.Message"
 local Controller = require "ItsyScape.UI.Controller"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 
@@ -138,6 +139,25 @@ local SKINS = {
 	}
 }
 
+CharacterCustomizationController.DIALOG = {
+	{
+		"%person{${Formal} ${name}}! Wake up!",
+		"Help! ${Subject} ${arentOrIsnt} responding...",
+		"Get me ${possessive} potion! We have to help ${object}...!"
+	},
+
+	{
+		"Get ${object} to the cells!",
+		"I demand ${possessive} head on a spike by dawn!",
+		"How dare ${subject} insult me, the Czar?!"
+	},
+
+	{
+		"Fate has a way, %person{${formal} ${name}}, of making things right.",
+		"Remember that..."
+	}
+}
+
 function CharacterCustomizationController:new(peep, director)
 	Controller.new(self, peep, director)
 end
@@ -250,6 +270,12 @@ end
 
 function CharacterCustomizationController:changeName(e)
 	self:getPeep():poke('rename', { name = e.name })
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"updateGender",
+		nil,
+		{ self:pull() })
 end
 
 function CharacterCustomizationController:changeGender(e)
@@ -364,7 +390,7 @@ function CharacterCustomizationController:pull()
 
 	local storage = self:getDirector():getPlayerStorage(peep)
 
-	return {
+	local state = {
 		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name"),
 		gender = gender.gender,
 		description = gender.description or "Non-Binary",
@@ -376,6 +402,50 @@ function CharacterCustomizationController:pull()
 			plural = gender.pronounsPlural
 		}
 	}
+	state.dialog = self:prepDialog(state)
+
+	return state
+end
+
+function CharacterCustomizationController:getPreppedPronounsG(state)
+	local function firstWord(v)
+		return v:sub(1, 1):upper() .. v:sub(2)
+	end
+
+	local arentOrIsnt
+	if state.pronouns.plural then
+		arentOrIsnt = "aren't"
+	else
+		arentOrIsnt = "isn't"
+	end
+
+	return {
+		name = state.name,
+		subject = state.pronouns.subject,
+		Subject = firstWord(state.pronouns.subject),
+		object = state.pronouns.object,
+		Object = firstWord(state.pronouns.object),
+		possessive = state.pronouns.possessive,
+		Possessive = firstWord(state.pronouns.possessive),
+		formal = state.pronouns.formal,
+		Formal = firstWord(state.pronouns.formal),
+		arentOrIsnt = arentOrIsnt
+	}
+end
+
+function CharacterCustomizationController:prepDialog(state)
+	local d = {}
+	local g = self:getPreppedPronounsG(state)
+
+	for i = 1, #CharacterCustomizationController.DIALOG do
+		local input = CharacterCustomizationController.DIALOG[i]
+		local message = Message(input, g)
+		local output = message:inflate()
+
+		table.insert(d, output)
+	end
+
+	return d
 end
 
 return CharacterCustomizationController

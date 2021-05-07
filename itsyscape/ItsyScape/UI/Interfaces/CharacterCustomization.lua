@@ -25,12 +25,15 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 local Widget = require "ItsyScape.UI.Widget"
+local DialogBox = require "ItsyScape.UI.Interfaces.DialogBox"
 
 local CharacterCustomization = Class(Interface)
 
 CharacterCustomization.BUTTON_SIZE = 48
 CharacterCustomization.PADDING = 16
 CharacterCustomization.CUSTOMIZATION_WIDTH = 480
+CharacterCustomization.INFO_WIDTH = 320
+CharacterCustomization.INFO_HEIGHT = 540
 CharacterCustomization.CUSTOMIZATION_HEIGHT = 540
 CharacterCustomization.INPUT_HEIGHT = 64
 
@@ -113,6 +116,22 @@ CharacterCustomization.TEXT_INPUT_STYLE = {
 	padding = 4
 }
 
+CharacterCustomization.DIALOG_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 32,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	align = 'center',
+	spaceLines = true
+}
+
+CharacterCustomization.DIALOG_CLICK_TO_CONTINUE_STYLE = {
+		align = 'center',
+		textShadow = true,
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 24
+	}
+
 function CharacterCustomization:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -133,9 +152,22 @@ function CharacterCustomization:new(id, index, ui)
 	self:addChild(self.panel)
 
 	local mainLayout = GridLayout()
-	mainLayout:setSize(w, 0)
-	mainLayout:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
-	mainLayout:setWrapContents(true)
+	do
+		local minWidth = CharacterCustomization.CUSTOMIZATION_WIDTH + CharacterCustomization.INFO_WIDTH * 2
+
+		local columns
+		if w < minWidth then
+			columns = 2
+			minWidth = CharacterCustomization.CUSTOMIZATION_WIDTH + CharacterCustomization.INFO_WIDTH
+		else
+			columns = 3
+		end
+
+		local padding = math.floor((w - minWidth) / columns)
+		mainLayout:setSize(w, 0)
+		mainLayout:setPadding(padding / 2, CharacterCustomization.PADDING)
+		mainLayout:setWrapContents(true)
+	end
 	self:addChild(mainLayout)
 
 	do
@@ -213,14 +245,14 @@ function CharacterCustomization:new(id, index, ui)
 	do
 		local state = self:getState()
 
-		local INPUT_WIDTH = CharacterCustomization.CUSTOMIZATION_WIDTH - CharacterCustomization.PADDING * 2
+		local INPUT_WIDTH = CharacterCustomization.INFO_WIDTH - CharacterCustomization.PADDING * 2
 		local INPUT_HEIGHT = 48
 
 		local panel = Panel()
 		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
-		panel:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		panel:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
 		panel:setPosition(
-			CharacterCustomization.PADDING + CharacterCustomization.CUSTOMIZATION_WIDTH,
+			CharacterCustomization.PADDING + CharacterCustomization.INFO_WIDTH,
 			CharacterCustomization.PADDING)
 
 		local titleLabel = Label()
@@ -229,7 +261,7 @@ function CharacterCustomization:new(id, index, ui)
 		panel:addChild(titleLabel)
 
 		local basic = GridLayout()
-		basic:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		basic:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
 		basic:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
 		basic:setPosition(0, CharacterCustomization.BUTTON_SIZE)
 
@@ -274,7 +306,7 @@ function CharacterCustomization:new(id, index, ui)
 			local button = Button()
 			button:setText(name)
 			button:setStyle(ButtonStyle(CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE, self:getView():getResources()))
-			button:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+			button:setSize(CharacterCustomization.INFO_WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE)
 			button.onClick:register(self.changeGender, self, value)
 			self.onChangeGender:register(function(newValue)
 				if value == newValue then
@@ -321,14 +353,14 @@ function CharacterCustomization:new(id, index, ui)
 	do
 		local state = self:getState()
 
-		local INPUT_WIDTH = (CharacterCustomization.CUSTOMIZATION_WIDTH - CharacterCustomization.PADDING * 2) / 2
+		local INPUT_WIDTH = (CharacterCustomization.INFO_WIDTH - CharacterCustomization.PADDING * 2) / 2
 		local INPUT_HEIGHT = 48
 
 		local panel = Panel()
 		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
-		panel:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, CharacterCustomization.CUSTOMIZATION_HEIGHT)
+		panel:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
 		panel:setPosition(
-			CharacterCustomization.PADDING * 3 + CharacterCustomization.CUSTOMIZATION_WIDTH * 2,
+			CharacterCustomization.PADDING * 3 + CharacterCustomization.INFO_WIDTH * 2,
 			CharacterCustomization.PADDING)
 
 		local titleLabel = Label()
@@ -339,7 +371,7 @@ function CharacterCustomization:new(id, index, ui)
 		local grid = GridLayout()
 		grid:setUniformSize(true, INPUT_WIDTH, INPUT_HEIGHT)
 		grid:setPadding(0, CharacterCustomization.PADDING)
-		grid:setSize(CharacterCustomization.CUSTOMIZATION_WIDTH, 0)
+		grid:setSize(CharacterCustomization.INFO_WIDTH, 0)
 		grid:setWrapContents(true)
 		grid:setPosition(0, CharacterCustomization.BUTTON_SIZE)
 
@@ -396,6 +428,65 @@ function CharacterCustomization:new(id, index, ui)
 
 		panel:addChild(grid)
 		mainLayout:addChild(panel)
+	end
+
+	do
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+		panel:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
+		panel:setPosition(
+			CharacterCustomization.PADDING * 3 + CharacterCustomization.INFO_WIDTH * 2,
+			CharacterCustomization.PADDING)
+
+		mainLayout:addChild(panel)
+
+		local panelX, panelY = panel:getPosition()
+		local mainLayoutWidth, mainLayoutHeight = mainLayout:getSize()
+		local mainLayoutPaddingX, mainLayoutPaddingY = mainLayout:getPadding()
+		local remainingWidth = mainLayoutWidth - panelX - mainLayoutPaddingX
+		local remainingHeight = h - panelY - mainLayoutPaddingY * 2
+		panel:setSize(remainingWidth, remainingHeight)
+
+		local panelWidth, panelHeight = panel:getSize()
+		local dialogWidth = panelWidth * (2 / 3)
+		local dialogHeight = 240
+
+		local dialogPanel = Panel()
+		dialogPanel:setSize(dialogWidth, dialogHeight)
+		dialogPanel:setPosition(
+			panelWidth / 2 - dialogWidth / 2,
+			panelHeight / 2 - dialogHeight / 2)
+		panel:addChild(dialogPanel)
+
+		local label = Label()
+		label:setStyle(LabelStyle(CharacterCustomization.DIALOG_STYLE, ui:getResources()))
+		label:setPosition(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
+		label:setSize(
+			dialogWidth - CharacterCustomization.PADDING * 2,
+			dialogHeight - CharacterCustomization.PADDING * 3 - 24)
+		dialogPanel:addChild(label)
+
+		local clickToContinue = Label()
+		clickToContinue:setText("Click for example")
+		clickToContinue:setStyle(LabelStyle(CharacterCustomization.DIALOG_CLICK_TO_CONTINUE_STYLE, ui:getResources()))
+		clickToContinue:setSize(dialogWidth, 24)
+		clickToContinue:setPosition(
+			0,
+			dialogHeight - 24 - CharacterCustomization.PADDING * 2)
+		dialogPanel:addChild(clickToContinue)
+
+		self.dialogLabel = label
+
+		local nextButton = Button()
+		nextButton:setStyle(ButtonStyle({
+			hover = Color(0, 0, 0, 0.05),
+			pressed = Color(0, 0, 0, 0.1)
+		}, ui:getResources()))
+		nextButton:setSize(dialogWidth, dialogHeight)
+		nextButton.onClick:register(self.nextDialog, self)
+		dialogPanel:addChild(nextButton)
+
+		self:nextDialog()
 	end
 
 	self.closeButton = Button()
@@ -474,6 +565,7 @@ function CharacterCustomization:updateGender(state)
 	self.onChangeGenderDescription(state.description)
 	self.onChangeGenderPronouns(state.pronouns)
 	self.onChangeGenderPlurality(state.pronouns.plural)
+	self:refreshDialog()
 end
 
 function CharacterCustomization:previousWardrobe(slot)
@@ -521,6 +613,20 @@ function CharacterCustomization:changeName(value)
 	self:sendPoke("changeName", nil, {
 		name = value
 	})
+end
+
+function CharacterCustomization:nextDialog()
+	local state = self:getState()
+	self.dialogIndex = (((self.dialogIndex or -1) + 1) % #state.dialog)
+
+	self:refreshDialog()
+end
+
+function CharacterCustomization:refreshDialog()
+	local state = self:getState()
+	local dialog = { state.dialog[self.dialogIndex + 1] }
+	local preppedDialog = DialogBox.concatMessage(dialog)
+	self.dialogLabel:setText(preppedDialog)
 end
 
 return CharacterCustomization
