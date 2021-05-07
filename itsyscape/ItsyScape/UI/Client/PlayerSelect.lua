@@ -249,17 +249,13 @@ function PlayerSelect:addPlayerButton(player)
 end
 
 function PlayerSelect:loadPlayer(player)
-	local storage = love.filesystem.read(player.storage:getRoot():get("filename"))
-	if storage then
-		local game = self.application:getGame()
-		game:getDirector():getPlayerStorage(1):deserialize(storage)
-		game:getPlayer():spawn()
-		game:tick()
+	local game = self.application:getGame()
+	game:getPlayer():spawn(player.storage)
+	game:tick()
 
-		self.application:closeTitleScreen()
+	self.application:closeTitleScreen()
 
-		Log.analytic("START_GAME")
-	end
+	Log.analytic("START_GAME")
 end
 
 function PlayerSelect:newPlayer(player)

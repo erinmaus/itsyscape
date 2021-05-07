@@ -132,6 +132,8 @@ function LocalGame:quit()
 	self.stage:collectItems()
 	self:saveGame()
 
+	self.director:setPlayerStorage(1, nil)
+
 	self.stage:unloadAll()
 	self:tick()
 
@@ -139,8 +141,6 @@ function LocalGame:quit()
 	self:tick()
 
 	self.onQuit(self)
-
-	Log.analytic("END_GAME")
 end
 
 return LocalGame
