@@ -95,6 +95,7 @@ end
 function DemoApplication:quit()
 	if not self.titleScreen then
 		self:getGame():quit()
+		Log.analytic("END_GAME")
 		return true
 	else
 		return false
