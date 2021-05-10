@@ -26,7 +26,7 @@ end
 
 function Hypersphere:getIsActive()
 	local state = self:getProp():getState()
-	return state.isActive == nil
+	return state.isActive == true
 end
 
 function TransitionView:updateActiveAlpha(propView, alpha)
