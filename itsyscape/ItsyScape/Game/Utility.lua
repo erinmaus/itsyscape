@@ -749,14 +749,13 @@ Utility.Text.BE = {
 function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	lang = lang or "en-US"
 
-	local g, x
+	local g
 	do
 		local gender = peep:getBehavior(GenderBehavior)
 		if gender then
 			g = gender.pronouns[class] or "*None"
 		else
-			g = Utility.Text.DEFAULT_PRONOUNS[lang][class] or "*Default"
-			x = "are"
+			g = Utility.Text.DEFAULT_PRONOUNS[lang]["x"][class] or "*Default"
 		end
 	end
 
