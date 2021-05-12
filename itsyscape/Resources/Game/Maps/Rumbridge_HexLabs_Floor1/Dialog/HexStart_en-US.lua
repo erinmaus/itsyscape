@@ -1,8 +1,7 @@
 PLAYER_NAME = _TARGET:getName()
-
 speaker "Hex"
 message {
-	"Huh-H-E-Y! You there! %person{${PLAYER_NAME}}!",
+	"Huh-HEY! You there! %person{${PLAYER_NAME}}!",
 	"Watcha need?"
 }
 
