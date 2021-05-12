@@ -227,26 +227,46 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedDrakkensonToHex"
 }
 
-ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll" {
+ItsyScape.Resource.Item "MysteriousMachinations_PowerButton" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.Item {
-	Stackable = 1,
 	Untradeable = 1,
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
 }
 
 ItsyScape.Meta.ResourceName {
 	Language = "en-US",
-	Value = "Time Tug spell scroll",
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Value = "Power button",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "A spell scroll given to you by Hex to pull the eldritch ruins near Leafy Lake out of the past.",
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Value = "Activates ancient ruins or your money back!",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
+}
+
+ItsyScape.Resource.Item "MysteriousMachinations_Battery" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.Item {
+	Untradeable = 1,
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Hex Labs, Inc. double-A battery",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A magical battery compatible with Old One's tech.",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
 }
 
 ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar" {
