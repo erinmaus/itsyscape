@@ -15,7 +15,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local MoveToTileCortex = Class(Cortex)
-MoveToTileCortex.SPEED_MULTIPLIER = 4
+MoveToTileCortex.SPEED_MULTIPLIER = 3
 
 function MoveToTileCortex:new()
 	Cortex.new(self)
