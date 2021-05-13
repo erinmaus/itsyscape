@@ -124,8 +124,6 @@ function MovementCortex:update(delta)
 				else
 					position.position = Vector(snappedX, position.position.y, snappedZ)
 				end
-
-				Log.info("Peep '%s' entered an impassable region.", peep:getName())
 			end
 
 			local y = map:getInterpolatedHeight(
