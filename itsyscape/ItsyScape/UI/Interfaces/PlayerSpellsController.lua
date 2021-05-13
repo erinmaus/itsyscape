@@ -15,6 +15,7 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 local Spell = require "ItsyScape.Game.Spell"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local InterfaceSpell = require "ItsyScape.Game.InterfaceSpell"
+local TeleportSpell = require "ItsyScape.Game.TeleportSpell"
 local Utility = require "ItsyScape.Game.Utility"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -137,7 +138,9 @@ function PlayerSpellsController:cast(e)
 				end
 			end
 		end
-	elseif spell:isCompatibleType(InterfaceSpell) then
+	elseif spell:isCompatibleType(InterfaceSpell) or
+	       spell:isCompatibleType(TeleportSpell)
+	then
 		local result = spell:canCast(peep)
 		if result:good() then
 			spell:cast(peep)

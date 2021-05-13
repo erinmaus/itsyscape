@@ -853,6 +853,7 @@ include "Resources/Game/DB/Shops/FishingStore.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
+include "Resources/Game/DB/Spells/ModernTeleports.lua"
 include "Resources/Game/DB/Spells/ModernCombat.lua"
 
 -- Prayers
