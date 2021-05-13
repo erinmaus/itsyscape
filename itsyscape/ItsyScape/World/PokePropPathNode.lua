@@ -7,10 +7,10 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local PathNode = require "ItsyScape.World.PathNode"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local PokePropPathNode = Class(PathNode)
 PokePropPathNode.CHANNEL = {}
@@ -32,7 +32,8 @@ function PokePropPathNode:finish(peep)
 	PathNode.finish(self, peep)
 
 	local n = self:getNextNode()
-	if n then
+	local b = peep:getBehavior(TargetTileBehavior)
+	if n and (not b or b.nextPathNode == n) then
 		n:activate(peep)
 	end
 end
