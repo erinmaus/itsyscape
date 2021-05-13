@@ -17,6 +17,10 @@ local Tile = Class()
 
 Tile.CREASE_FORWARD = 1
 Tile.CREASE_BACKWARD = 2
+Tile.IMPASSABLE_FLAGS = {
+	'impassable',
+	'door'
+}
 
 function Tile:new()
 	-- The edge texture index. Defaults to the first edge texture.
@@ -97,6 +101,19 @@ function Tile:iterateFlags()
 		c = next(self.flags, c)
 		return c
 	end
+end
+
+function Tile:getIsPassable(flags)
+	flags = flags or Tile.IMPASSABLE_FLAGS
+
+	for i = 1, #flags do
+		local flag = flags[i]
+		if self:hasFlag(flag) then
+			return false
+		end
+	end
+
+	return true
 end
 
 function Tile:setData(key, value)

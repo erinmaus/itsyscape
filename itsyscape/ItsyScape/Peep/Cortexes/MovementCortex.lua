@@ -64,6 +64,7 @@ function MovementCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
+		local size = peep:getBehavior(SizeBehavior)
 		local map = self:getDirector():getMap(position.layer or 1)
 		if map then
 			movement:clampMovement()
@@ -105,15 +106,25 @@ function MovementCortex:update(delta)
 			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
 			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)
 
-			if (newTile:hasFlag('impassable') and not oldTile:hasFlag('impassable')) or
-			   (newTile:hasFlag('door') and not oldTile:hasFlag('door')) or
+			if newTile:hasFlag('impassable') or
+			   newTile:hasFlag('door') or
 			   not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ)
 			then
 				local difference = (oldPosition - position.position):getNormal()
-				position.position = Vector(oldPosition.x, position.position.y, oldPosition.z)
+				local reflectionX, reflectionZ = map:snapToTile(
+					position.position.x, position.position.z,
+					oldPosition.x, oldPosition.z)
+				local snappedX = reflectionX + position.position.x
+				local snappedZ = reflectionZ + position.position.z
+
+				local snappedTile = map:getTileAt(snappedX, snappedZ)
+				if snappedTile:hasFlag('impassable') or snappedTile:hasFlag('door') then
+					position.position = Vector(oldPosition:get())
+				else
+					position.position = Vector(snappedX, position.position.y, snappedZ)
+				end
+
 				Log.info("Peep '%s' entered an impassable region.", peep:getName())
-				movement.acceleration = Vector.ZERO
-				movement.velocity = difference * movement.maxSpeed / 4
 			end
 
 			local y = map:getInterpolatedHeight(
