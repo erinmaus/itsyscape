@@ -724,7 +724,7 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 		["x"] = {
 			"they",
 			"them",
-			"theirs",
+			"their",
 			"mazer"
 		},
 		["male"] = {
@@ -736,8 +736,8 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 		["female"] = {
 			"she",
 			"her",
-			"hers",
-			"miss"
+			"her",
+			"misse"
 		},
 	}
 }

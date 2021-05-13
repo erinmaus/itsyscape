@@ -129,6 +129,80 @@ function Map:getTileCenter(i, j)
 	return Vector(x, y, z)
 end
 
+function Map:snapToTile(newX, newZ, oldX, oldZ, isImpassable)
+	local _, newI, newJ = self:getTileAt(newX, newZ)
+	local _, oldI, oldJ = self:getTileAt(oldX, oldZ)
+
+	local differenceI = newI - oldI
+	local differenceJ = newJ - oldJ
+
+	local reflectionX1, reflectionZ1
+	local reflectionX2, reflectionZ2
+	if math.abs(differenceI) > 0 and math.abs(differenceJ) > 0 then
+		local tile1 = self:getTile(oldI + differenceI, oldJ)
+		local tile2 = self:getTile(oldI, oldJ + differenceJ)
+		local tile3 = self:getTile(oldI + differenceI, oldJ + differenceJ)
+		local tile1Impassable = not tile1:getIsPassable() or not self:canMove(oldI, oldJ, differenceI, 0)
+		local tile2Impassable = not tile2:getIsPassable() or not self:canMove(oldI, oldJ, 0, differenceJ)
+		local tile3Impassable = not tile3:getIsPassable() or not not self:canMove(oldI, oldJ, differenceI, differenceJ)
+
+		local areAdjacentTilesImpassable = tile1Impassable and tile2Impassable
+		local areAdjacentTilesPassable = not tile1Impassable and not tile2Impassable
+		local isCornerImpassable = areAdjacentTilesPassable and tile3Impassable
+
+		if areAdjacentTilesImpassable or isCornerImpassable then
+			return oldX - newX, oldZ - newZ
+		end
+
+		if tile1Impassable then
+			reflectionX1, reflectionZ1 = self:_doSnapToTile(oldI + differenceI, oldJ, newX, newZ, oldX, oldZ)
+		else
+			reflectionX1, reflectionZ1 = 0, 0
+		end
+
+		if tile2Impassable then
+			reflectionX2, reflectionZ2 = self:_doSnapToTile(oldI, oldJ + differenceJ, newX, newZ, oldX, oldZ)
+		else
+			reflectionX2, reflectionZ2 = 0, 0
+		end
+	else
+		reflectionX1, reflectionZ1 = self:_doSnapToTile(newI, newJ, newX, newZ, oldX, oldZ)
+		reflectionX2, reflectionZ2 = 0, 0
+	end
+
+	return reflectionX1 + reflectionX2, reflectionZ1 + reflectionZ2
+end
+
+function Map:_doSnapToTile(i, j, newX, newZ, oldX, oldZ)
+	local tileCenter = self:getTileCenter(i, j)
+	local min = tileCenter - Vector(self.cellSize / 2)
+	local max = tileCenter + Vector(self.cellSize / 2)
+
+	if oldX > min.x and oldX < max.x and
+	   oldZ > min.z and oldZ < max.z
+	then
+		return 0, 0
+	end
+
+	local normal
+	if oldX < min.x and oldZ > min.z and oldZ < max.z then
+		normal = -Vector.UNIT_X
+	elseif oldX > max.x and oldZ > min.z and oldZ < max.z then
+		normal = Vector.UNIT_X
+	elseif oldZ < min.z and oldX > min.x and oldX < max.x then
+		normal = -Vector.UNIT_Z
+	elseif oldZ > max.z and oldX > min.x and oldX < max.x then
+		normal = Vector.UNIT_Z
+	else
+		normal = Vector.ZERO
+	end
+
+	local direction = Vector(newX, 0, newZ) - Vector(oldX, 0, oldZ)
+	local reflection = direction - 2 * (direction:dot(normal)) * normal
+
+	return reflection.x, reflection.z
+end
+
 -- Gets the interpolated height at (x, z).
 --
 -- If x or z are outside the bounds, they are clamped to the nearest tile.
@@ -173,6 +247,17 @@ function Map:testRay(ray)
 	return hitTiles
 end
 
+function Map:isOutOfBounds(x, z)
+	local i = math.floor(x / self.cellSize) + 1
+	local j = math.floor(z / self.cellSize) + 1
+
+	if i < 1 or i > self:getWidth() or j < 1 or j > self:getHeight() then
+		return true
+	end
+
+	return false
+end
+
 function Map:canMove(i, j, di, dj)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
@@ -190,8 +275,7 @@ function Map:canMove(i, j, di, dj)
 		local left = self:getTile(i - 1, j)
 		if (left.topRight <= tile.topLeft or
 		    left.bottomRight <= tile.bottomLeft) and
-		   not left:hasFlag('impassable') and
-		   not left:hasFlag('door')
+		   left:getIsPassable()
 		then
 			isLeftPassable = true
 		end
@@ -201,8 +285,7 @@ function Map:canMove(i, j, di, dj)
 		local right = self:getTile(i + 1, j)
 		if (right.topLeft <= tile.topRight or
 		    right.bottomLeft <= tile.bottomRight) and
-		   not right:hasFlag('impassable') and
-		   not right:hasFlag('door')
+		   right:getIsPassable()
 		then
 			isRightPassable = true
 		end
@@ -212,8 +295,7 @@ function Map:canMove(i, j, di, dj)
 		local top = self:getTile(i, j - 1)
 		if (top.bottomLeft <= tile.topLeft or
 		    top.bottomRight <= tile.topRight) and
-		   not top:hasFlag('impassable') and
-		   not top:hasFlag('door')
+		   top:getIsPassable()
 		then
 			isTopPassable = true
 		end
@@ -223,53 +305,52 @@ function Map:canMove(i, j, di, dj)
 		local bottom = self:getTile(i, j + 1)
 		if (bottom.topLeft <= tile.bottomLeft or
 		    bottom.topRight <= tile.bottomRight) and
-		   not bottom:hasFlag('impassable') and
-		   not bottom:hasFlag('door')
+		   bottom:getIsPassable()
 		then
 			isBottomPassable = true
 		end
 	end
 
 	if math.abs(di) + math.abs(dj) > 1 then
-		if di < 0 and dj < 0 and i > 1 and j > 1 and isTopPassable and isLeftPassable then
+		if di < 0 and dj < 0 and i > 1 and j > 1 then
 			local topLeft = self:getTile(i - 1, j - 1)
 			if topLeft.bottomRight <= tile.topLeft and
-			   not topLeft:hasFlag('impassable')
+			   not topLeft:getIsPassable({ 'impassable' })
 			then
-				return true
+				return isTopPassable and isLeftPassable
 			else
 				return false
 			end
 		end
 
-		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() and isBottomPassable and isLeftPassable then
+		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() then
 			local bottomLeft = self:getTile(i - 1, j + 1)
 			if bottomLeft.topRight <= tile.bottomLeft and
-			   not bottomLeft:hasFlag('impassable')
+			   not bottomLeft:getIsPassable({ 'impassable' })
 			then
-				return true
+				return isBottomPassable and isLeftPassable
 			else
 				return false
 			end
 		end
 
-		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 and isTopPassable and isRightPassable then
+		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 then
 			local topRight = self:getTile(i + 1, j - 1)
 			if topRight.bottomLeft <= tile.topRight and
-			   not topRight:hasFlag('impassable')
+			   not topRight:getIsPassable({ 'impassable' })
 			then
-				return true
+				return isTopPassable and isRightPassable
 			else
 				return false
 			end
 		end
 
-		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() and isBottomPassable and isRightPassable then
+		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() then
 			local bottomRight = self:getTile(i + 1, j + 1)
 			if bottomRight.topLeft <= tile.bottomRight and
-			   not bottomRight:hasFlag('impassable')
+			   not bottomRight:getIsPassable({ 'impassable' })
 			then
-				return true
+				return isBottomPassable and isRightPassable
 			else
 				return false
 			end

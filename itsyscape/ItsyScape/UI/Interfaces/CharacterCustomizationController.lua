@@ -301,7 +301,7 @@ function CharacterCustomizationController:changeGender(e)
 				gender.pronouns = {
 					'she',
 					'her',
-					'hers',
+					'her',
 					'misse'
 				}
 				gender.description = 'Female'
