@@ -273,11 +273,10 @@ function PlayerSelect:newPlayer(player)
 		end
 	end
 
-	local storage = game:getDirector():getPlayerStorage(1)
-	storage:deserialize("{}")
+	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
 
-	game:getPlayer():spawn()
+	game:getPlayer():spawn(storage)
 	game:tick()
 
 	game:getStage():movePeep(
