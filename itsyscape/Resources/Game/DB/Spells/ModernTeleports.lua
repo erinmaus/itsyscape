@@ -29,7 +29,7 @@ do
 
 		Requirement {
 			Resource = ItsyScape.Resource.Quest "PreTutorial",
-			Count = ItsyScape.Utility.xpForLevel(1)
+			Count = 1
 		}
 	}
 
