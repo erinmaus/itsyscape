@@ -108,7 +108,8 @@ function MovementCortex:update(delta)
 
 			if newTile:hasFlag('impassable') or
 			   newTile:hasFlag('door') or
-			   not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ)
+			   not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or
+			   map:isOutOfBounds(position.position.x, position.position.z)
 			then
 				local difference = (oldPosition - position.position):getNormal()
 				local reflectionX, reflectionZ = map:snapToTile(
@@ -116,9 +117,9 @@ function MovementCortex:update(delta)
 					oldPosition.x, oldPosition.z)
 				local snappedX = reflectionX + position.position.x
 				local snappedZ = reflectionZ + position.position.z
-
 				local snappedTile = map:getTileAt(snappedX, snappedZ)
-				if snappedTile:hasFlag('impassable') or snappedTile:hasFlag('door') then
+
+				if not snappedTile:getIsPassable() or map:isOutOfBounds(snappedX, snappedZ) then
 					position.position = Vector(oldPosition:get())
 				else
 					position.position = Vector(snappedX, position.position.y, snappedZ)
