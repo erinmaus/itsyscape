@@ -247,6 +247,17 @@ function Map:testRay(ray)
 	return hitTiles
 end
 
+function Map:isOutOfBounds(x, z)
+	local i = math.floor(x / self.cellSize) + 1
+	local j = math.floor(z / self.cellSize) + 1
+
+	if i < 1 or i > self:getWidth() or j < 1 or j > self:getHeight() then
+		return true
+	end
+
+	return false
+end
+
 function Map:canMove(i, j, di, dj)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
