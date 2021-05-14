@@ -327,19 +327,21 @@ function Ship:update(director, game)
 			end
 		end
 	elseif not self.showedCombatHints then
-		Utility.UI.openInterface(
-			self.player,
-			"TutorialHint",
-			false,
-			"root",
-			"Look at the bottom right corner.\nClick on the flashing icon to continue.",
-			function()
-				return Utility.UI.isOpen(self.player, "PlayerInventory")
-			end,
-			{ position = 'center' })
+		if not self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1) then
+			Utility.UI.openInterface(
+				self.player,
+				"TutorialHint",
+				false,
+				"root",
+				"Look at the bottom right corner.\nClick on the flashing icon to continue.",
+				function()
+					return Utility.UI.isOpen(self.player, "PlayerInventory")
+				end,
+				{ position = 'center' })
 
-		if not _DEBUG then
-			Ship.showTip(Ship.COMBAT_HINT, self.player)
+			if not _DEBUG then
+				Ship.showTip(Ship.COMBAT_HINT, self.player)
+			end
 		end
 		
 		self.showedCombatHints = true
