@@ -448,7 +448,9 @@ end
 
 function GameView:decorate(group, decoration, layer)
 	local groupName = group .. '#' .. tostring(layer)
-	if self.decorations[groupName] then
+	if self.decorations[groupName] and
+	   self.decorations[groupName].node
+	then
 		self.decorations[groupName].node:setParent(nil)
 		self.decorations[groupName] = nil
 	end
@@ -459,27 +461,35 @@ function GameView:decorate(group, decoration, layer)
 	end
 
 	if decoration then
-		local tileSetFilename = string.format(
-			"Resources/Game/TileSets/%s/Layout.lstatic",
-			decoration:getTileSetID())
-		local staticMesh = self.resourceManager:load(
-			StaticMeshResource,
-			tileSetFilename)
+		local d = {}
 
-		local textureFilename = string.format(
-			"Resources/Game/TileSets/%s/Texture.png",
-			decoration:getTileSetID())
-		local texture = self.resourceManager:load(
-			TextureResource,
-			textureFilename)
+		self.resourceManager:queueEvent(function()
+			local tileSetFilename = string.format(
+				"Resources/Game/TileSets/%s/Layout.lstatic",
+				decoration:getTileSetID())
+			local staticMesh = self.resourceManager:load(
+				StaticMeshResource,
+				tileSetFilename)
 
-		local sceneNode = DecorationSceneNode()
-		sceneNode:fromDecoration(decoration, staticMesh:getResource())
-		sceneNode:getMaterial():setTextures(texture)
+			local textureFilename = string.format(
+				"Resources/Game/TileSets/%s/Texture.png",
+				decoration:getTileSetID())
+			local texture = self.resourceManager:load(
+				TextureResource,
+				textureFilename)
 
-		sceneNode:setParent(map)
+			local sceneNode = DecorationSceneNode()
+			sceneNode:fromDecoration(decoration, staticMesh:getResource())
+			sceneNode:getMaterial():setTextures(texture)
 
-		self.decorations[groupName] = { node = sceneNode, decoration = decoration, name = group }
+			sceneNode:setParent(map)
+
+			d.sceneNode = sceneNode
+			d.decoration = decoration
+			d.name = group
+		end)
+
+		self.decorations[groupName] = d
 	end
 end
 
