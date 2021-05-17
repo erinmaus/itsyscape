@@ -15,6 +15,7 @@ local Player = Class()
 -- Constructs a new player.
 function Player:new()
 	self.onChangeCamera = Callback()
+	self.onPokeCamera = Callback()
 end
 
 -- Gets the Actor this Player is represented by.
@@ -40,6 +41,10 @@ end
 -- Moves the player to the specified position on the map via walking.
 function Player:walk(i, j, k)
 	return Class.ABSTRACT()
+end
+
+function Player:pokeCamera(event, ...)
+	Class.ABSTRACT()
 end
 
 return Player

@@ -54,4 +54,14 @@ function CameraController:update(delta)
 	-- Nothing.
 end
 
+function CameraController:poke(event, ...)
+	local name = "on" .. event:sub(1, 1):upper() .. event:sub(2)
+	local func = self[name]
+	if func then
+		func(self, ...)
+	else
+		Log.warn("Poke '%s' (transformed to '%s') not recognized.", event, name)
+	end
+end
+
 return CameraController
