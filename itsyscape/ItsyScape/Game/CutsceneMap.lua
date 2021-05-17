@@ -148,4 +148,20 @@ function CutsceneMap:poke(...)
 	end
 end
 
+function CutsceneMap:performNamedAction(name, target)
+	return function()
+		local game = self.peep:getDirector():getGameInstance()
+		local gameDB = self.peep:getDirector():getGameDB()
+		local action = gameDB:getRecord("NamedMapAction", {
+			Name = name,
+			Map = Utility.Peep.getResource(self.peep)
+		})
+
+		if action then
+			local action = Utility.getAction(game, action:get("Action"))
+			action.instance:perform(target:getPeep():getState(), target:getPeep())
+		end
+	end
+end
+
 return CutsceneMap

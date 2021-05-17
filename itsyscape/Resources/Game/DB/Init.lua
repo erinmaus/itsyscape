@@ -160,6 +160,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Talk"
+	ActionType "Yell"
 
 	Meta "TalkSpeaker" {
 		Name = Meta.TYPE_TEXT,
@@ -627,6 +628,29 @@ Game "ItsyScape"
 		Name = Meta.TYPE_TEXT,
 		Cutscene = Meta.TYPE_RESOURCE,
 		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CutsceneCamera" {
+		Name = Meta.TYPE_TEXT,
+		Cutscene = Meta.TYPE_RESOURCE
+	}
+
+	ItsyScape.Resource.Peep "CameraDolly"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Camera dolly",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Peep "CameraDolly"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "It's a figment of your imagination.",
+		Resource = ItsyScape.Resource.Peep "CameraDolly"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.CameraDolly.CameraDolly",
+		Resource = ItsyScape.Resource.Peep "CameraDolly"
 	}
 
 	ResourceType "Dream"

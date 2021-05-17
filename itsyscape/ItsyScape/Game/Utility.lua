@@ -1007,7 +1007,7 @@ end
 
 Utility.Map = {}
 
-function Utility.Map.playCutscene(peep, resource)
+function Utility.Map.playCutscene(peep, resource, cameraName)
 	local director = peep:getDirector()
 
 	if type(resource) == 'string' then
@@ -1017,7 +1017,8 @@ function Utility.Map.playCutscene(peep, resource)
 	return director:addPeep(
 		peep:getLayerName(),
 		require "ItsyScape.Peep.Peeps.Cutscene",
-		resource)
+		resource,
+		cameraName)
 end
 
 function Utility.Map.getTilePosition(director, i, j, layer)
