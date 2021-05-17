@@ -24,6 +24,10 @@ function CutsceneEntity:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneEntity:getPeep()
+	return self.peep
+end
+
 function CutsceneEntity:walkTo(anchor)
 	return function()
 		local mapResource = Utility.Peep.getMapResource(self.peep)

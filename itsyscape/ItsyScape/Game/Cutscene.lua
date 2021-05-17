@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local MirrorSandbox = require "ItsyScape.Common.MirrorSandbox"
+local CutsceneCamera = require "ItsyScape.Game.CutsceneCamera"
 local CutsceneEntity = require "ItsyScape.Game.CutsceneEntity"
 local CutsceneMap = require "ItsyScape.Game.CutsceneMap"
 local Utility = require "ItsyScape.Game.Utility"
@@ -24,7 +25,8 @@ function Cutscene:new(resource, player, director, layerName)
 
 	self.entities = {
 		Player = CutsceneEntity(player),
-		Map = CutsceneMap(Utility.Peep.getMapScript(player))
+		Map = CutsceneMap(Utility.Peep.getMapScript(player)),
+		Camera = CutsceneCamera(self.game)
 	}
 
 	self:findMapObjects()
