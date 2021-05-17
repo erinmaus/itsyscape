@@ -92,9 +92,9 @@ end
 M["Anchor_StartGame"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 4,
-		PositionZ = 41,
+		PositionX = 18,
+		PositionY = 6,
+		PositionZ = 19,
 		Name = "Anchor_StartGame",
 		Map = M._MAP,
 		Resource = M["Anchor_StartGame"]

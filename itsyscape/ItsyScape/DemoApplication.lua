@@ -47,6 +47,7 @@ function DemoApplication:new()
 
 	self.cameraController = DefaultCameraController(self)
 	self:getGame():getPlayer().onChangeCamera:register(self.changeCamera, self)
+	self:getGame():getPlayer().onPokeCamera:register(self.pokeCamera, self)
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)
@@ -61,6 +62,10 @@ function DemoApplication:changeCamera(_, cameraType)
 	else
 		self.cameraController = r(self)
 	end
+end
+
+function DemoApplication:pokeCamera(event, ...)
+	self.cameraController:poke(event, ...)
 end
 
 function DemoApplication:initialize()

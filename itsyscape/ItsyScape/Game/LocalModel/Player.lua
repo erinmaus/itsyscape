@@ -218,4 +218,8 @@ function LocalPlayer:changeCamera(cameraType)
 	self.onChangeCamera(self, cameraType)
 end
 
+function LocalPlayer:pokeCamera(event, ...)
+	self.onPokeCamera(event, ...)
+end
+
 return LocalPlayer

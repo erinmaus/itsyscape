@@ -28,6 +28,23 @@ function Tower:onLoad(filename, args, layer)
 
 	local offset = self:getBehavior(MapOffsetBehavior)
 	offset.offset = Vector(0, 14.4, 0)
+
+	self:initCutscene()
+end
+
+function Tower:initCutscene()
+	local player = Utility.Peep.getPlayer(self)
+	local metOrlando = player:getState():has("KeyItem", "CalmBeforeTheStorm_MetOrlando")
+	if not metOrlando then
+		Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando", 0)
+		Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Floor5_Introduction", "StandardCutscene")
+	end
+end
+
+function Tower:onMovePlayer()
+	local player = Utility.Peep.getPlayer(self)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:movePeep(player, "IsabelleIsland_Tower", "Anchor_StartGame")
 end
 
 return Tower
