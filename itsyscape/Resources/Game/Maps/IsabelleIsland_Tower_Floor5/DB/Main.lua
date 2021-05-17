@@ -29,6 +29,33 @@ do
 	}
 end
 
+M["Anchor_Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 0,
+		PositionZ = 35,
+		Direction = 1,
+		Name = "Anchor_Orlando",
+		Map = M._MAP,
+		Resource = M["Anchor_Orlando"]
+	}
+end
+
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Orlando",
+		Map = M._MAP,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
+	}
+end
+
 M["Anchor_StartGame"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -88,5 +115,60 @@ do
 
 	M["Ladder_Down"] {
 		TravelAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Yell()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Orlando1_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "OrlandoYell1",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Yell()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Orlando2_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "OrlandoYell2",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end
+
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_Floor5_Introduction"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Orlando",
+		Cutscene = Cutscene,
+		Resource = M["Orlando"]
 	}
 end
