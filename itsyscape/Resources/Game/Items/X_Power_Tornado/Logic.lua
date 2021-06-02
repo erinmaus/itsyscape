@@ -10,11 +10,16 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local CacheRef = require "ItsyScape.Game.CacheRef"
+local Equipment = require "ItsyScape.Game.Equipment"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local HumanoidActorAnimatorCortex = require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex"
+local Zweihander = require "Resources.Game.Items.Common.Zweihander"
 
 -- Shoots two arrows. If the first attack hits, so does the second.
 local Tornado = Class(ProxyXWeapon)
@@ -25,6 +30,7 @@ function Tornado:perform(peep, target)
 	end
 
 	self:hitSurroundingPeeps(peep, target)
+	self:performAnimation(peep)
 end
 
 function Tornado:hitSurroundingPeeps(peep, target)
@@ -45,8 +51,35 @@ function Tornado:hitSurroundingPeeps(peep, target)
 	end
 end
 
-function Tornado:getProjectile()
-	return "Power_Tornado"
+function Tornado:performAnimation(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return
+	end
+
+	local isZweihander
+	do
+		local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+		isZweihander = weapon and Class.isCompatibleType(weapon, Zweihander)
+	end
+
+	local isHuman
+	do
+		local body = actor:getBody()
+		isHuman = body:getFilename() == "Resources/Game/Bodies/Human.lskel"
+	end
+
+	if isHuman and isZweihander then
+		local animation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Human_AttackZweihanderSlash_Tornado/Script.lua")
+		actor:playAnimation(
+			'combat',
+			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
+			animation)
+	end
 end
 
 return Tornado
