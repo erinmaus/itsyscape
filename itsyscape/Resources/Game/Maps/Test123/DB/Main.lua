@@ -109,3 +109,20 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
+
+M["TheEmptyKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 5,
+		PositionZ = 29,
+		Name = "TheEmptyKing",
+		Map = M._MAP,
+		Resource = M["TheEmptyKing"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene",
+		MapObject = M["TheEmptyKing"]
+	}
+end

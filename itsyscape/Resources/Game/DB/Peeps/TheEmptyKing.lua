@@ -29,6 +29,27 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "TheEmptyKing_Cutscene"
 }
 
+ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.TheEmptyKing.CutsceneEmptyKingFullyRealized",
+	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "The Empty King",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The Empty King in their fully realized glory. Praise!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+}
+
 ItsyScape.Resource.Peep "EmptyZealot_Cutscene" {
 	-- Nothing
 }
