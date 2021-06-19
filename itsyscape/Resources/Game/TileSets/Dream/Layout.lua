@@ -12,6 +12,9 @@
 		y = 896,
 		width = 128,
 		height = 128,
+		colorRed = 0,
+		colorGreen = 0,
+		colorBlue = 0,
 		name = "ground"
 	},
 

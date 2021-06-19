@@ -45,9 +45,30 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The Empty King in their fully realized glory. Praise!",
+	Value = "The Empty King in their fully realized glory. Praise Them!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+}
+
+ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "The Empty King's executioner axe",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "How many lives were lost during the ritual that banished the Old Ones from the Realm?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
 }
 
 ItsyScape.Resource.Peep "EmptyZealot_Cutscene" {
