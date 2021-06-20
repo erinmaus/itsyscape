@@ -33,7 +33,7 @@ ItsyScape.Resource.Quest "MysteriousMachinations" {
 
 	ItsyScape.Action.QuestComplete() {
 		Requirement {
-			Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedDrakkensonToHex",
+			Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedCreepyDollToHex",
 			Count = 1
 		}
 	}
@@ -85,15 +85,15 @@ ItsyScape.Utility.questStep(
 
 ItsyScape.Utility.questStep(
 	"MysteriousMachinations_FoundEldritchRuins",
-	"MysteriousMachinations_CraftAzathothianSpacialRune")
+	"MysteriousMachinations_FoundTesseract")
 
 ItsyScape.Utility.questStep(
-	"MysteriousMachinations_CraftAzathothianSpacialRune",
-	"MysteriousMachinations_TalkToKvre")
+	"MysteriousMachinations_FoundTesseract",
+	"MysteriousMachinations_TalkToCreepyDoll")
 
 ItsyScape.Utility.questStep(
-	"MysteriousMachinations_TalkToKvre",
-	"MysteriousMachinations_ReportedDrakkensonToHex")
+	"MysteriousMachinations_TalkToCreepyDoll",
+	"MysteriousMachinations_ReportedCreepyDollToHex")
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
@@ -103,7 +103,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You talked to Hex about the mysterious Drakkenson.",
+	Value = "You talked to Hex about Old One's tech.",
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_Start"
 }
 
@@ -121,13 +121,13 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to pull the mysterious ruins into existence.",
+	Value = "You need to power on the mysterious ruins.",
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_PulledRuinsIntoExistence"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You pulled the mysterious ruins into existence using the primordial temporal rune and time tug spell scroll.",
+	Value = "You powered on the mysterious ruins using the battery and button.",
 	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_PulledRuinsIntoExistence"
 }
 
@@ -193,60 +193,80 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to craft an azathothian spacial rune",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_CraftAzathothianSpacialRune"
+	Value = "You need to find the Tesseract in the ruins.",
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_FoundTesseract"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You crafted an azathothian spacial rune for Hex.",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_CraftAzathothianSpacialRune"
+	Value = "You found the Tesseract.",
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_FoundTesseract"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to leave Azathoth and return to Hex.",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_TalkToKvre"
+	Value = "You need to leave Azathoth and return the Tesseract to Hex.",
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_TalkToCreepyDoll"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You went to leave Azathoth and encountered the powerful Kvre, Czar of the Drakkenson.",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_TalkToKvre"
+	Value = "You went to leave Azathoth and encountered a creepy doll.",
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_TalkToCreepyDoll"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "You need to report your findings to Hex.",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedDrakkensonToHex"
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedCreepyDollToHex"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "You reported your findings to Hex.",
-	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedDrakkensonToHex"
+	Resource = ItsyScape.Resource.KeyItem "MysteriousMachinations_ReportedCreepyDollToHex"
 }
 
-ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll" {
+ItsyScape.Resource.Item "MysteriousMachinations_PowerButton" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.Item {
-	Stackable = 1,
 	Untradeable = 1,
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
 }
 
 ItsyScape.Meta.ResourceName {
 	Language = "en-US",
-	Value = "Time Tug spell scroll",
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Value = "Power button",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "A spell scroll given to you by Hex to pull the eldritch ruins near Leafy Lake out of the past.",
-	Resource = ItsyScape.Resource.Item "MysteriousMachinations_TimeTugSpellScroll"
+	Value = "Activates ancient ruins or your money back!",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_PowerButton"
+}
+
+ItsyScape.Resource.Item "MysteriousMachinations_Battery" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.Item {
+	Untradeable = 1,
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Hex Labs, Inc. double-A battery",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A magical battery compatible with Old One's tech.",
+	Resource = ItsyScape.Resource.Item "MysteriousMachinations_Battery"
 }
 
 ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar" {
@@ -254,7 +274,7 @@ ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
 }
 
@@ -271,38 +291,38 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
 }
 
--- ItsyScape.Meta.ResourceDescription {
--- 	Value = "",
--- 	Language = "en-US",
--- 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
--- }
+ItsyScape.Meta.ResourceDescription {
+	Value = "What purpose does this pillar serve?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Pillar"
+}
 
-ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable" {
+ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.MapObjectSize {
 	SizeX = 3.5,
 	SizeY = 2,
 	SizeZ = 3.5,
-	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Mysterious ruins table",
+	Value = "Mysterious ruins hypersphere",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "There's dried blood on it...",
+	Value = "A shadow of a sphere from a higher dimension...",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_StoneTable"
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Hypersphere"
 }
 
 ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_AncientMatrix" {
@@ -338,14 +358,14 @@ ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 0.5,
+	SizeX = 1.5,
 	SizeY = 6,
-	SizeZ = 0.5,
+	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
 }
 
@@ -355,8 +375,8 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
 }
 
--- ItsyScape.Meta.ResourceDescription {
--- 	Value = "",
--- 	Language = "en-US",
--- 	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
--- }
+ItsyScape.Meta.ResourceDescription {
+	Value = "Feels like it's listening and watching...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MysteriousMachinations_MysteriousRuins_Antenna"
+}
