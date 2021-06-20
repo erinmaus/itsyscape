@@ -86,11 +86,9 @@ function DoorView:load()
 
 				local state = self:getProp():getState()
 				if state.open then
-					self.currentAnimation = DoorView.ANIMATION_OPEN
-					self.open = true
+					self:playOpenAnimation()
 				else
-					self.currentAnimation = DoorView.ANIMATION_CLOSE
-					self.open = false
+					self:playCloseAnimation()
 				end
 
 				self.time = self:getCurrentAnimation():getDuration()
@@ -112,17 +110,25 @@ function DoorView:load()
 		end)
 end
 
+function DoorView:playOpenAnimation()
+	self.currentAnimation = DoorView.ANIMATION_OPEN
+	self.open = true
+end
+
+function DoorView:playCloseAnimation()
+	self.currentAnimation = DoorView.ANIMATION_CLOSE
+	self.open = false
+end
+
 function DoorView:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
 	if state.open ~= self.open then
 		if state.open then
-			self.currentAnimation = DoorView.ANIMATION_OPEN
-			self.open = true
+			self:playOpenAnimation()
 		else
-			self.currentAnimation = DoorView.ANIMATION_CLOSE
-			self.open = false
+			self:playCloseAnimation()
 		end
 
 		self.time = 0

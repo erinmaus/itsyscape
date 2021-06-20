@@ -33,9 +33,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 124,
-		ColorGreen = 111,
-		ColorBlue = 255,
+		ColorRed = 244,
+		ColorGreen = 255,
+		ColorBlue = 240,
 		Resource = M["Light_Ambient"]
 	}
 
@@ -62,21 +62,50 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 90,
-		ColorGreen = 90,
-		ColorBlue = 255,
-		NearDistance = 60,
-		FarDistance = 80,
+		ColorRed = 244,
+		ColorGreen = 255,
+		ColorBlue = 240,
+		NearDistance = 40,
+		FarDistance = 60,
 		Resource = M["Light_Fog1"]
+	}
+end
+
+M["Light_Mine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 1,
+		PositionZ = 55,
+		Name = "Light_Mine",
+		Map = M._MAP,
+		Resource = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 76,
+		ColorGreen = 255,
+		ColorBlue = 76,
+		Resource = M["Light_Mine"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 30,
+		Resource = M["Light_Mine"]
 	}
 end
 
 M["Anchor_FromLeafyLake"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 2,
-		PositionZ = 47,
+		PositionX = 27,
+		PositionY = 3,
+		PositionZ = 37,
 		Name = "Anchor_FromLeafyLake",
 		Map = M._MAP,
 		Resource = M["Anchor_FromLeafyLake"]
@@ -86,9 +115,9 @@ end
 M["Emily"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 2,
-		PositionZ = 19,
+		PositionX = 23,
+		PositionY = 3,
+		PositionZ = 29,
 		Name = "Emily",
 		Map = M._MAP,
 		Resource = M["Emily"]
@@ -98,14 +127,21 @@ do
 		Peep = ItsyScape.Resource.Peep "Emily_Default",
 		MapObject = M["Emily"]
 	}
+
+	-- ItsyScape.Meta.PeepMashinaState {
+	-- 	State = "idle",
+	-- 	Tree = "Resources/Game/Peeps/Emily/Emily_IdleLogic.lua",
+	-- 	IsDefault = 1,
+	-- 	Resource = M["Emily"]
+	-- }
 end
 
 M["Hex"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29,
-		PositionY = 2,
-		PositionZ = 25,
+		PositionX = 25,
+		PositionY = 3,
+		PositionZ = 21,
 		Direction = 1,
 		Name = "Hex",
 		Map = M._MAP,
@@ -145,9 +181,9 @@ end
 M["Drakkenson1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 38,
-		PositionY = 3,
-		PositionZ = 18,
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 23,
 		Name = "Drakkenson1",
 		Map = M._MAP,
 		Resource = M["Drakkenson1"]
@@ -162,9 +198,9 @@ end
 M["Drakkenson2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 38,
-		PositionY = 3,
-		PositionZ = 22,
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 19,
 		Name = "Drakkenson2",
 		Map = M._MAP,
 		Resource = M["Drakkenson2"]
@@ -179,9 +215,10 @@ end
 M["Drakkenson3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 38,
-		PositionY = 3,
-		PositionZ = 26,
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 21,
+		Direction = -1,
 		Name = "Drakkenson3",
 		Map = M._MAP,
 		Resource = M["Drakkenson3"]
@@ -196,9 +233,10 @@ end
 M["Drakkenson4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 38,
-		PositionY = 3,
-		PositionZ = 30,
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 17,
+		Direction = -1,
 		Name = "Drakkenson4",
 		Map = M._MAP,
 		Resource = M["Drakkenson4"]
@@ -210,71 +248,53 @@ do
 	}
 end
 
-M["Drakkenson5"] = ItsyScape.Resource.MapObject.Unique()
+M["TV_Jakkenstone"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 24,
-		PositionY = 3,
-		PositionZ = 18,
-		Name = "Drakkenson5",
+		PositionX = 50,
+		PositionY = 2.5,
+		PositionZ = 18.25,
+		ScaleX = 4.000000,
+		ScaleY = 4.000000,
+		ScaleZ = 4.000000,
+		Name = "TV_Jakkenstone",
 		Map = M._MAP,
-		Resource = M["Drakkenson5"]
+		Resource = M["TV_Jakkenstone"]
 	}
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
-		MapObject = M["Drakkenson5"]
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TV_HexLabs",
+		MapObject = M["TV_Jakkenstone"]
 	}
 end
 
-M["Drakkenson6"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 24,
-		PositionY = 3,
-		PositionZ = 22,
-		Name = "Drakkenson6",
-		Map = M._MAP,
-		Resource = M["Drakkenson6"]
-	}
+	M["Door_Elevator"] {
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem "HexLabs_GainedAccessToElevator",
+				Count = 1
+			}
+		},
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
-		MapObject = M["Drakkenson6"]
+		ItsyScape.Action.Close()
 	}
 end
 
-M["Drakkenson7"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 24,
-		PositionY = 3,
-		PositionZ = 26,
-		Name = "Drakkenson7",
-		Map = M._MAP,
-		Resource = M["Drakkenson7"]
+	M["Door_Mines1"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
 	}
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
-		MapObject = M["Drakkenson7"]
-	}
-end
-
-M["Drakkenson8"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 24,
-		PositionY = 3,
-		PositionZ = 30,
-		Name = "Drakkenson8",
-		Map = M._MAP,
-		Resource = M["Drakkenson8"]
+	M["Door_Mines2"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
 	}
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Draconic_Sleeping",
-		MapObject = M["Drakkenson8"]
+	M["Door_JakkenstoneShardAnalyzer"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
 	}
 end
 
