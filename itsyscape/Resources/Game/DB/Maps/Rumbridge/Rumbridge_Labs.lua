@@ -35,7 +35,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "Emily_Default" {
-		ItsyScape.Action.Attack()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -115,13 +115,6 @@ do
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(100),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(100),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
-		Resource = ItsyScape.Resource.Peep "Emily_Default"
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Peeps/Emily/Emily_IdleLogic.lua",
-		IsDefault = 1,
 		Resource = ItsyScape.Resource.Peep "Emily_Default"
 	}
 end
@@ -338,8 +331,7 @@ end
 
 do
 	ItsyScape.Resource.Prop "Door_HexLabs" {
-		ItsyScape.Action.Open(),
-		ItsyScape.Action.Close()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -358,4 +350,40 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Door_HexLabs"
 	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 5.5,
+		SizeY = 12,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Door_HexLabs"
+	}
 end
+
+do
+	ItsyScape.Resource.Prop "TV_HexLabs" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicTV",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Televiewer",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Scries across dimensions in high definition.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "TV_HexLabs"
+	}
+end
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "The door's lock refuses to budge.",
+	Resource = ItsyScape.Resource.KeyItem "HexLabs_GainedAccessToElevator"
+}

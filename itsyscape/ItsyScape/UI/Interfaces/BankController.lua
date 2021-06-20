@@ -144,7 +144,9 @@ function BankController:pullItemMeta(itemID)
 
 	local meta = {
 		tags = {},
-		actions = {}
+		actions = {},
+		name = "",
+		description = ""
 	}
 
 	if not itemResource then
