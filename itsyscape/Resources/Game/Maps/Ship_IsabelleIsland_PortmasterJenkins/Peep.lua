@@ -327,7 +327,9 @@ function Ship:update(director, game)
 			end
 		end
 	elseif not self.showedCombatHints then
-		if not self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1) then
+		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
+		   and not self.player:getState():has("Quest", "PreTutorial")
+		then
 			Utility.UI.openInterface(
 				self.player,
 				"TutorialHint",

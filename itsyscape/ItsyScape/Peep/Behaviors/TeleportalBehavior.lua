@@ -12,7 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies the output of a teleport action.
-local TeleportalBehavior = Behavior("Humanoid")
+local TeleportalBehavior = Behavior("Teleportal")
 
 -- Constructs a TeleportalBehavior.
 function TeleportalBehavior:new()

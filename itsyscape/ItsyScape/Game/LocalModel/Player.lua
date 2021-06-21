@@ -78,6 +78,8 @@ function LocalPlayer:spawn(storage)
 	else
 		self.actor = false
 	end
+
+	self:changeCamera("Default")
 end
 
 function LocalPlayer:onPlayerActionPerformed(_, p)
