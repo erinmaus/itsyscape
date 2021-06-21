@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local Light = require "ItsyScape.Graphics.Light"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
@@ -19,14 +20,17 @@ local ForwardRendererPass = Class(RendererPass)
 -- Maximum number of lights that can be rendered at once.
 ForwardRendererPass.MAX_LIGHTS = 16
 
+-- Maximum number of fog that can be rendered at once.
+ForwardRendererPass.MAX_FOG = 4
+
 function ForwardRendererPass:new(renderer)
 	RendererPass.new(self, renderer)
 
 	self.lBuffer = false
 
 	self:loadBaseShaderFromFile(
-		"Resources/Renderers/Forward/Base.frag.glsl",
-		"Resources/Renderers/Forward/Base.vert.glsl")
+		"Resources/Renderers/Mobile/Base.frag.glsl",
+		"Resources/Renderers/Mobile/Base.vert.glsl")
 
 	self.lightTypes = {}
 	self.nodeTypes = {}
@@ -61,11 +65,14 @@ function ForwardRendererPass:walkLights(node, delta)
 	if self.lightTypes[nodeType] or
 	   not self.nodeTypes[nodeType] and node:isCompatibleType(LightSceneNode)
 	then
-		self.lightTypes[nodeType] = true
-		if node:getIsGlobal() then
-			table.insert(self.globalLights, node)
+		if node:isCompatibleType(FogSceneNode) then
+			table.insert(self.fog, node)
 		else
-			table.insert(self.lights, node)
+			if node:getIsGlobal() then
+				table.insert(self.globalLights, node)
+			else
+				table.insert(self.lights, node)
+			end
 		end
 	else
 		self.nodeTypes[nodeType] = true
@@ -78,11 +85,31 @@ end
 
 function ForwardRendererPass:beginDraw(scene, delta)
 	self.nodes = {}
+	self.fog = {}
 	self.lights = {}
 	self.globalLights = {}
 
 	self:walk(scene, delta)
 	self:walkLights(scene, delta)
+
+	local nodeX, nodeY, nodeZ = self:getRenderer():getCamera():getPosition():get()
+	table.sort(self.lights, function(a, b)
+		local distanceA
+		do
+			local transform = a:getTransform():getGlobalDeltaTransform(delta)
+			local x, y, z = transform:transformPoint(0, 0, 0)
+			distanceA = (x - nodeX) ^ 2 + (y - nodeY) ^ 2 + (z - nodeZ) ^ 2
+		end
+
+		local distanceB
+		do
+			local transform = b:getTransform():getGlobalDeltaTransform(delta)
+			local x, y, z = transform:transformPoint(0, 0, 0)
+			distanceB = (x - nodeX) ^ 2 + (y - nodeY) ^ 2 + (z - nodeZ) ^ 2
+		end
+
+		return distanceA < distanceB
+	end)
 end
 
 function ForwardRendererPass:endDraw(scene, delta)
@@ -103,10 +130,27 @@ local function setLightProperties(shader, index, light)
 	end
 end
 
+local function setFogProperties(shader, index, fog, eye)
+	index = index - 1
+
+	function setFogProperty(key, value)
+		local uniform = string.format("scape_Fog[%d].%s", index, key)
+		if shader:hasUniform(uniform) then
+			shader:send(uniform, value)
+		end
+	end
+
+	setFogProperty("near", fog:getNearDistance())
+	setFogProperty("far", fog:getFarDistance())
+	setFogProperty("position", { eye.x, eye.y, eye.z })
+	setFogProperty("color", { fog:getColor():get() })
+end
+
 function ForwardRendererPass:drawNodes(scene, delta)
 	local previousShader = nil
 	local currentShaderProgram = nil
 	local numGlobalLights = math.min(#self.globalLights, ForwardRendererPass.MAX_LIGHTS)
+	local numFog = math.min(#self.fog, ForwardRendererPass.MAX_FOG)
 
 	local projection, view = self:getRenderer():getCamera():getTransforms()
 	local viewProjection = projection * view
@@ -129,18 +173,49 @@ function ForwardRendererPass:drawNodes(scene, delta)
 
 					numLights = 1
 				else
-					for i = 1, numGlobalLights do
-						local p = self.globalLights[i]
+					for j = 1, numGlobalLights do
+						local p = self.globalLights[j]
 						local light = p:toLight(delta)
 
-						setLightProperties(currentShaderProgram, i, light)
+						setLightProperties(currentShaderProgram, j, light)
 					end
 
-					numLights = numGlobalLights
+					local remainingLights = math.min(math.max(#self.lights - numGlobalLights, 0), ForwardRendererPass.MAX_LIGHTS)
+					for j = 1, remainingLights do
+						local p = self.lights[j]
+						local light = p:toLight(delta)
+
+						setLightProperties(
+							currentShaderProgram,
+							numGlobalLights - 1 + j,
+							light)
+					end
+
+					numLights = numGlobalLights + math.max(remainingLights, 1) - 1
 				end
 
-				-- TODO: Local lights
 				currentShaderProgram:send("scape_NumLights", numLights)
+
+				for i = 1, numFog do
+					local f = self.fog[i]
+
+					local eye
+					if f:getFollowMode() == f.FOLLOW_MODE_EYE then
+						eye = self:getRenderer():getCamera():getEye()
+					elseif f:getFollowMode() == f.FOLLOW_MODE_TARGET then
+						eye = self:getRenderer():getCamera():getPosition()
+					else
+						eye = Vector.ZERO
+					end
+
+					setFogProperties(
+						currentShaderProgram,
+						i,
+						f,
+						eye)
+				end
+
+				currentShaderProgram:send("scape_NumFogs", numFog)
 			end
 
 			local d = node:getTransform():getGlobalDeltaTransform(delta)

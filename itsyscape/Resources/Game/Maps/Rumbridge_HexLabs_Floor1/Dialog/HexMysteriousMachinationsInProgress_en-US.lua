@@ -3,22 +3,35 @@ local QUEST = Utility.Quest.build("MysteriousMachinations", _DIRECTOR:getGameDB(
 
 if not hasStartedQuest then
 	speaker "_TARGET"
-	message "Can I help you with anything? I'm always looking for a quest!"
+	message {
+		"Can I help you with anything?",
+		"I'm always looking for a quest!"
+	}
 
 	speaker "Hex"
 	message "You are exactly the person I need!"
+
 	message {
-		"You might have noticed those %hint{mysterious draconic creatures} in the life support vats.",
-		"They are based off a race of sapient creatures of legend called the Drakkenson, who jump through time like we walk through a field.",
-		"Few have lived to speak of their encounters."
+		"I'm trying to uncover the secrets of Old One's tech!",
+		"Before the Old Ones left a thousand years ago,",
+		"Prisium, the Great Intelligence left behind hyper-dimensional tech."
 	}
+
 	message {
-		"My hunch is these creatures reside in a split timeline called Azathoth...",
-		"...but I've not been able to build a stable portal to Azathoth.",
-		"The Old Ones built world gates connecting the two realities eons ago, before they were banished from the Realm."
+		"I want to build an %hint{Old One's Tesseract}...",
+		"It's a computer, much like %person{Emily}...",
+		"Only a bajillion times more advanced!"
 	}
+
 	message {
-		"I need you to help me reverse engineer their tech to build a portal to Azathoth. Can you help me?"
+		"I have a suspicion a working %hint{Tesseract}",
+		"can be found on %location{Azathoth},",
+		"the Realm's shadowy mirror dimension."
+	}
+
+	message {
+		"But %location{Azathoth} is dangerous and I'm not a fighter!",
+		"So I need you to explore that dimension and report your findings."
 	}
 
 	Utility.Quest.promptToStart(
@@ -28,37 +41,54 @@ if not hasStartedQuest then
 elseif Utility.Quest.isNextStep(QUEST, "MysteriousMachinations_FindRuinsNearLeafyLake", _TARGET) then
 	local state = _TARGET:getState()
 	local flags = { ['item-inventory'] = true }
-	local hasPrimordialTimeRune = state:has("Item", "PrimordialTimeRune", 1, flags)
-	local hasTimeTugSpellScroll = state:has("Item", "MysteriousMachinations_TimeTugSpellScroll", 1, flags)
+	local hasBattery = state:has("Item", "MysteriousMachinations_Battery", 1, flags)
+	local hasPowerButton = state:has("Item", "MysteriousMachinations_PowerButton", 1, flags)
 
-	if not hasPrimordialTimeRune or not hasTimeTugSpellScroll then
+	if not hasBattery or not hasPowerButton then
 		speaker "Hex"
 		message {
-			"Awesome! So there's some ruins near the Leafy Lake, just south of here.",
-			"I'll need you to use a %item{primordial time rune} and %item{time tug spell scroll} to pull the ruins out of time.",
-			"Don't worry - I've already prepped the spell scroll to cast the eldritch spell.",
+			"Awesome! So there's some ruins near %location{Leafy Lake}.",
+			"You should've passed by on your way here."
+		}
+
+		message {
+			"I'll need you to install a %item{battery} and %item{power button}.",
+			"If you need any help, well, figure it out! Bwahaha!",
+			"Antilogika requires the right headspace!"
 		}
 
 		local gaveItems = true
-		if not hasPrimordialTimeRune then
-			gaveItems = gaveItems and state:give("Item", "PrimordialTimeRune", 1, flags)
+		if not hasBattery then
+			gaveItems = gaveItems and state:give("Item", "MysteriousMachinations_Battery", 1, flags)
 		end
 
-		if not hasTimeTugSpellScroll then
-			gaveItems = gaveItems and state:give("Item", "MysteriousMachinations_TimeTugSpellScroll", 1, flags)
+		if not hasPowerButton then
+			gaveItems = gaveItems and state:give("Item", "MysteriousMachinations_PowerButton", 1, flags)
 		end
 
 		if not gaveItems then
 			message "You need to make space for this stuff!"
+		else
+			message {
+				"Here's the %item{battery} and %item{power button}.",
+				"Report back what you find!"
+			}
 		end
 	else
+		speaker "Hex"
+
 		message {
-			"Head to the ruins near the Leafy Lake, just south of here.",
-			"With the %item{primordial time rune} and %item{time tug spell scroll}, you can cast %hint{Time Tug}.",
-			"The spell will pull the ruins out of time."
+			"Head to %location{Leafy Lake}, just south of here.",
+			"Install the %item{battery} and %item{power button} at the ruins,",
+			"then report back your findings!"
 		}
+
+		message "I'm just soooOOOooo excited!"
 	end
 else
 	speaker "Hex"
-	message "I can't help you right now. Maybe %hint{check your Nominomicon}?"
+	message {
+		"I can't help you right now.",
+		"Maybe %hint{check your Nominomicon}?"
+	}
 end

@@ -309,12 +309,25 @@ function DemoApplication:keyDown(key, ...)
 	                    love.keyboard.isDown('rshift')
 
 	local isCtrlDown = love.keyboard.isDown('lctrl') or
-	                    love.keyboard.isDown('rctrl')
+	                   love.keyboard.isDown('rctrl')
 
-	if key == 'printscreen' and isCtrlDown then
-		self:snapshotPlayerPeep()
-	elseif key == 'printscreen' and isShiftDown then
-		self:snapshotGame()
+	if key == 'printscreen' then
+		if isCtrlDown then
+			self:snapshotPlayerPeep()
+		elseif isShiftDown then
+			self:snapshotGame()
+		else
+			local filename = self:getScreenshotName("Screenshot")
+
+			local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), filename)
+			local isWindows = love.system.getOS() == "Windows"
+			if isWindows then
+				url = url:gsub("/", "\\")
+			end
+			Log.info("Captured \"%s\".", url)
+
+			love.graphics.captureScreenshot(filename)
+		end
 	end
 end
 
