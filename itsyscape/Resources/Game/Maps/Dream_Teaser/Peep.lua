@@ -36,23 +36,4 @@ function Dream:onLoad(filename, args, layer)
 	})
 end
 
-function Dream:update(...)
-	Map.update(self, ...)
-
-	if love.keyboard.isDown('space') then
-		local director = self:getDirector()
-		local stage = director:getGameInstance():getStage()
-		local emptyKing = director:probe(self:getLayerName(), function(peep)
-			local r = Utility.Peep.getResource(peep)
-			return r and r.name == "TheEmptyKing_FullyRealized_Cutscene"
-		end)[1]
-		local axe = director:probe(self:getLayerName(), function(peep)
-			local r = Utility.Peep.getResource(peep)
-			return r and r.name == "TheEmptyKingsExecutionAxe"
-		end)[1]
-
-		stage:fireProjectile("TheEmptyKingsExecutionerAxe", emptyKing, axe)
-	end
-end
-
 return Dream

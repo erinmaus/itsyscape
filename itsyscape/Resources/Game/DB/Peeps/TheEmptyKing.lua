@@ -112,3 +112,19 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene"
 }
+
+ItsyScape.Resource.Prop "Building_SistineOfSimulacrum" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Building_SistineOfSimulacrum"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 0,
+	SizeY = 0,
+	SizeZ = 0,
+	MapObject = ItsyScape.Resource.Prop "Building_SistineOfSimulacrum"
+}

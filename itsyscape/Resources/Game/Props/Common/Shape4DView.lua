@@ -74,13 +74,24 @@ function Shape4DView:load()
 			self.decoration:getMaterial():setShader(shader)
 			self.decoration:setParent(root)
 
-			self.decoration:onWillRender(function(renderer)
+			self.decoration:onWillRender(function(renderer, ...)
 				local shader = renderer:getCurrentShader()
+
 				if shader:hasUniform("scape_NumLayers") then
 					shader:send("scape_NumLayers", self.texture:getLayerCount())
 				end
+
+				if shader:hasUniform("scape_TextureDepthScale") then
+					shader:send("scape_TextureDepthScale", 1)
+				end
+
+				self:onWillRender(renderer, ...)
 			end)
 		end)
+end
+
+function Shape4DView:onWillRender(...)
+	-- Nothing.
 end
 
 function Shape4DView:update(delta)
