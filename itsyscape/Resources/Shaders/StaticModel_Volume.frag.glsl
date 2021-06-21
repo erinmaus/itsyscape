@@ -1,5 +1,6 @@
 #line 1
 uniform ArrayImage scape_DiffuseTexture;
+uniform float scape_TextureDepthScale;
 uniform float scape_NumLayers;
 uniform float scape_Time;
 
@@ -97,7 +98,7 @@ vec4 sampleTexture(vec3 textureCoordinate, vec3 cubePosition)
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
-	vec3 cubeMapTextureCoords = toCubemap(frag_CubeNormal, frag_CubePosition);
+	vec3 cubeMapTextureCoords = toCubemap(frag_CubeNormal, frag_CubePosition * scape_TextureDepthScale);
 	vec4 texture = sampleTexture(cubeMapTextureCoords, frag_CubePosition);
 	return texture * color;
 }

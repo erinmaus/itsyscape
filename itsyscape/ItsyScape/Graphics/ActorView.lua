@@ -545,6 +545,37 @@ function ActorView:update(delta)
 	self.animatable:update()
 end
 
+function ActorView:getLocalBoneTransform(boneName)
+	local transform = love.math.newTransform()
+
+	local transforms = self.localTransforms or {}
+	local skeleton = self.animatable:getSkeleton()
+	local boneIndex = skeleton:getBoneIndex(boneName)
+
+	local parents = {}
+	local bone
+	repeat
+		bone = skeleton:getBoneByIndex(boneIndex)
+		if bone then
+			table.insert(parents, 1, boneIndex)
+
+			local parentBoneIndex = skeleton:getBoneIndex(bone:getParent())
+
+			boneIndex = parentBoneIndex
+			bone = skeleton:getBoneByIndex(parentBoneIndex)
+		end
+	until not bone
+
+	for i = 1, #parents do
+		local t = transforms[parents[i]]
+		if t then
+			transform:apply(t)
+		end
+	end
+
+	return transform
+end
+
 function ActorView:updateAnimations()
 	if self.animationsDirty then
 		local delta = self.animationDelta
@@ -601,6 +632,14 @@ function ActorView:updateAnimations()
 		end
 
 		local transforms = self.animatable:getTransforms()
+		do
+			self.localTransforms = {}
+			for i = 1, #transforms do
+				self.localTransforms[i] = love.math.newTransform()
+				self.localTransforms[i]:apply(transforms[i])
+			end
+		end
+
 		do
 			for i = 1, #transforms do
 				local animation, time = self.animatable:getAnimationForBone(i)

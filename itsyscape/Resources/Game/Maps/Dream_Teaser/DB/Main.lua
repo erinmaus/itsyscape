@@ -1,14 +1,18 @@
+local M = include "Resources/Game/Maps/Dream_Teaser/DB/Default.lua"
 
-local M = include "Resources/Game/Maps/Test123/DB/Default.lua"
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Dream_Teaser.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
-	Value = "Home Zombi",
+	Value = "Dream Sequence",
 	Language = "en-US",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "It's full of zombies.",
+	Value = "This dream is just a teaser playground.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -30,9 +34,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 231,
-		ColorGreen = 168,
-		ColorBlue = 194,
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
 		Resource = M["Light_Ambient"]
 	}
 
@@ -59,9 +63,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 234,
-		ColorGreen = 162,
-		ColorBlue = 33,
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
 		Resource = M["Light_Sun"]
 	}
 
@@ -90,11 +94,12 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 81,
-		ColorGreen = 16,
-		ColorBlue = 117,
-		NearDistance = 20,
-		FarDistance = 60,
+		ColorRed = 0,
+		ColorGreen = 0,
+		ColorBlue = 0,
+		NearDistance = 10,
+		FarDistance = 20,
+		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -102,11 +107,34 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
-		PositionY = 5,
-		PositionZ = 29,
+		PositionX = 33,
+		PositionY = 1,
+		PositionZ = 61,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["TheEmptyKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1,
+		PositionZ = 33,
+		Name = "TheEmptyKing",
+		Map = M._MAP,
+		Resource = M["TheEmptyKing"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene",
+		MapObject = M["TheEmptyKing"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "begin-attack",
+		Tree = "Resources/Game/Maps/Dream_Teaser/Scripts/TheEmptyKing_BeginAttackLogic.lua",
+		Resource = M["TheEmptyKing"]
 	}
 end
