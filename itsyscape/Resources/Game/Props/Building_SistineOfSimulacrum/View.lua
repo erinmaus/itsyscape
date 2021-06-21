@@ -80,6 +80,16 @@ function BuildingWindows:getModelFilename()
 	return "Resources/Game/Props/Building_SistineOfSimulacrum/Sistine.lstatic", "Windows"
 end
 
+local BuildingDoor = Class(SimpleStaticView)
+
+function BuildingDoor:getTextureFilename()
+	return "Resources/Game/Props/Building_SistineOfSimulacrum/Door.png"
+end
+
+function BuildingDoor:getModelFilename()
+	return "Resources/Game/Props/Building_SistineOfSimulacrum/Sistine.lstatic", "Door"
+end
+
 local Sistine = Class(PropView)
 Sistine.SCALE = Vector(40)
 
@@ -93,7 +103,8 @@ function Sistine:load()
 	self.props = {
 		Building(prop, gameView),
 		Roof(prop, gameView),
-		BuildingWindows(prop, gameView)
+		BuildingWindows(prop, gameView),
+		BuildingDoor(prop, gameView)
 	}
 
 	for i = 1, #self.props do
@@ -107,11 +118,9 @@ function Sistine:tick()
 
 	for i = 1, #self.props do
 		self.props[i]:tick()
+		self.props[i]:getRoot():getTransform():setLocalScale(Sistine.SCALE)
+		self.props[i]:getRoot():getTransform():setPreviousTransform(nil, nil, Sistine.SCALE)
 	end
-
-	local root = self:getRoot()
-	root:getTransform():setLocalScale(Sistine.SCALE)
-	root:getTransform():setPreviousTransform(nil, nil, Sistine.SCALE)
 end
 
 function Sistine:update(delta)
