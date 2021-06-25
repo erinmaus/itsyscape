@@ -36,13 +36,19 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Archery",
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(40),
+	Resource = ItsyScape.Resource.Peep "Tinkerer"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Magic",
 	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Skill = ItsyScape.Resource.Skill "Wisdom",
 	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
