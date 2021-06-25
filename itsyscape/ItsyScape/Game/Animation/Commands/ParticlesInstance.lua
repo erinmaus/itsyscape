@@ -44,7 +44,10 @@ function ParticlesInstance:play(animatable, time)
 		local rotation = Quaternion[self.command:getRotation()]
 		if attach then
 			local transform = love.math.newTransform()
-			transform:applyQuaternion(rotation:get())
+
+			if rotation and Class.isCompatibleType(rotation, Quaternion) then
+				transform:applyQuaternion(rotation:get())
+			end
 
 			do
 				local transforms = animatable:getTransforms()

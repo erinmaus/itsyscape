@@ -25,8 +25,6 @@ function Particles:new(t)
 	self.duration = t.duration or 0
 	self.particleSystem = t.system or {}
 	self.attach = t.attach or false
-
-	-- Does this: transform:rotate(1, 0, 0, -math.pi / 2)
 	self.rotation = t.rotation or 'IDENTITY'
 end
 
