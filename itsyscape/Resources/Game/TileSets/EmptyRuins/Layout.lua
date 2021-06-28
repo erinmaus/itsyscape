@@ -258,7 +258,7 @@
 		y = 512,
 		width = 128,
 		height = 128,
-		name = "sand.edge.tl"
+		name = "grass.edge.tl"
 	},
 
 	{
@@ -266,7 +266,7 @@
 		y = 512,
 		width = 128,
 		height = 128,
-		name = "sand.edge.tm"
+		name = "grass.edge.tm"
 	},
 
 	{
@@ -274,7 +274,7 @@
 		y = 512,
 		width = 128,
 		height = 128,
-		name = "sand.edge.tr"
+		name = "grass.edge.tr"
 	},
 
 	{
@@ -282,7 +282,7 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "sand.edge.ml"
+		name = "grass.edge.ml"
 	},
 
 	{
@@ -290,7 +290,7 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "sand.edge.mr"
+		name = "grass.edge.mr"
 	},
 
 	{
@@ -298,7 +298,7 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "sand.edge.bl"
+		name = "grass.edge.bl"
 	},
 
 	{
@@ -306,7 +306,7 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "sand.edge.bm"
+		name = "grass.edge.bm"
 	},
 
 	{
@@ -314,6 +314,6 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "sand.edge.br"
+		name = "grass.edge.br"
 	}
 }
