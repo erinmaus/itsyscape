@@ -859,6 +859,7 @@ include "Resources/Game/DB/Creeps/Skeleton.lua"
 include "Resources/Game/DB/Creeps/Zombi.lua"
 include "Resources/Game/DB/Creeps/Ghost.lua"
 include "Resources/Game/DB/Creeps/Mummy.lua"
+include "Resources/Game/DB/Creeps/GoryMass.lua"
 include "Resources/Game/DB/Creeps/FungalDemogorgon.lua"
 
 -- Peeps
