@@ -113,10 +113,6 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalOffset(value)
-	if value ~= Vector.ZERO then
-		print('>>>>>>>>>>>', value:get())
-	end
-
 	self.offset = value or self.offset
 	self._handle:setCurrentOffset(
 		self.offset.x,
