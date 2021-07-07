@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/EmptyZealot/BaseEmptyZealot.lua
+-- Resources/Peeps/AncientSkeleton/AncientSkeleton.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,40 +13,41 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
-local BaseEmptyZealot = Class(Player)
+local AncientSkeleton = Class(Player)
 
-function BaseEmptyZealot:new(resource, name, ...)
-	Player.new(self, resource, name or 'BaseEmptyZealot', ...)
+function AncientSkeleton:new(resource, name, ...)
+	Player.new(self, resource, name or 'AncientSkeleton', ...)
 end
 
-function BaseEmptyZealot:ready(director, game)
-	Player.ready(self, director, game)
-
+function AncientSkeleton:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
 
+	local body = CacheRef(
+		"ItsyScape.Game.Body",
+		"Resources/Game/Bodies/Human.lskel")
+	actor:setBody(body)
+
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientCeremonial/Helmet.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
+		"Resources/Game/Skins/AncientSkeleton/Head.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientCeremonial/Body.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
+		"Resources/Game/Skins/AncientSkeleton/Body.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientCeremonial/Gloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local boots = CacheRef(
+		"Resources/Game/Skins/AncientSkeleton/Hands.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
+	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientCeremonial/Boots.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, boots)
+		"Resources/Game/Skins/AncientSkeleton/Feet.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
+
+	Player.ready(self, director, game)
 end
 
-return BaseEmptyZealot
+return AncientSkeleton
