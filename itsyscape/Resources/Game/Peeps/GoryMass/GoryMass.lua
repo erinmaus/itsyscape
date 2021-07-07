@@ -76,6 +76,8 @@ function GoryMass:ready(director, game)
 	movement.maxSpeed = 32
 	movement.float = 1.5
 
+	Utility.Peep.equipXWeapon(self, "GoryMass_Attack")
+
 	Creep.ready(self, director, game)
 end
 
@@ -130,6 +132,7 @@ function GoryMass:followTarget()
 		movement.acceleration = (self.targetPosition - selfPosition):getNormal() * movement.maxAcceleration
 
 		self:faceTarget()
+		self:splodeTargets()
 	end
 end
 
@@ -137,6 +140,39 @@ function GoryMass:wobble()
 	local scaleDelta = (math.sin(self.time) + 1) / 2
 	local scale = self:getBehavior(ScaleBehavior)
 	scale.scale = (GoryMass.MAX_SCALE - GoryMass.MIN_SCALE) * scaleDelta + GoryMass.MIN_SCALE
+end
+
+function GoryMass:splodeTargets()
+	local selfPosition = self:getSelfPosition()
+	local director = self:getDirector()
+	local hits = director:probe(self:getLayerName(), function(peep)
+		local position = Utility.Peep.getAbsolutePosition(peep)
+
+		local isOnSameLayer = Utility.Peep.getLayer(peep) == Utility.Peep.getLayer(self)
+		local isWithinRadius = (position - selfPosition):getLengthSquared() < GoryMass.STOP_ROLLING_THRESHOLD_SQUARED
+		local isAttackable = Utility.Peep.canAttack(peep) and Utility.Peep.isAttackable(peep)
+		local isDifferentThanSelf = peep ~= self
+
+		return isOnSameLayer and isWithinRadius and isAttackable and isDifferentThanSelf
+	end)
+
+	for i = 1, #hits do
+		local peep = hits[i]
+		if not self.hits[peep] then
+			self.hits[peep] = true
+			self:splode(peep)
+		end
+	end
+end
+
+function GoryMass:splode(peep)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("GoryMassSplosion", self, peep)
+
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+	if weapon then
+		weapon:perform(self, peep)
+	end
 end
 
 function GoryMass:update(...)
