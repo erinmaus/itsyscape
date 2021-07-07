@@ -66,6 +66,11 @@ function GoryMass:ready(director, game)
 		"Resources/Game/Animations/GoryMass_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/GoryMass_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
+
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/GoryMass/GoryMass.lua")
@@ -114,6 +119,13 @@ function GoryMass:getSelfPosition()
 	return Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
 end
 
+function GoryMass:onDie()
+	self:poke('stopRoll')
+
+	local rotation = self:getBehavior(RotationBehavior)
+	rotation.rotation = Quaternion.IDENTITY
+end
+
 function GoryMass:faceTarget()
 	local selfPosition = self:getSelfPosition()
 	local rotation = self:getBehavior(RotationBehavior)
@@ -137,9 +149,11 @@ function GoryMass:followTarget()
 end
 
 function GoryMass:wobble()
-	local scaleDelta = (math.sin(self.time) + 1) / 2
-	local scale = self:getBehavior(ScaleBehavior)
-	scale.scale = (GoryMass.MAX_SCALE - GoryMass.MIN_SCALE) * scaleDelta + GoryMass.MIN_SCALE
+	if Utility.Peep.canAttack(self) then
+		local scaleDelta = (math.sin(self.time) + 1) / 2
+		local scale = self:getBehavior(ScaleBehavior)
+		scale.scale = (GoryMass.MAX_SCALE - GoryMass.MIN_SCALE) * scaleDelta + GoryMass.MIN_SCALE
+	end
 end
 
 function GoryMass:splodeTargets()
