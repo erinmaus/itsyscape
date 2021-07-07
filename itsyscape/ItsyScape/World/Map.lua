@@ -352,7 +352,6 @@ function Map:canMove(i, j, di, dj)
 			then
 				return isBottomPassable and isRightPassable
 			else
-				print(bottomRight:getIsPassable({ 'impassable' }))
 				return false
 			end
 		end
