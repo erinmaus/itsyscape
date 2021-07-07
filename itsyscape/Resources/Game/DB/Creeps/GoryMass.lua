@@ -54,7 +54,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(30),
+	Value = ItsyScape.Utility.xpForLevel(500),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }
 
