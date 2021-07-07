@@ -92,6 +92,7 @@ function GoryMass:onStartRoll(target)
 		local overshoot = math.random() * (GoryMass.MAX_OVERSHOOT - GoryMass.MIN_OVERSHOOT) + GoryMass.MIN_OVERSHOOT
 
 		self.targetPosition = targetPosition + direction * overshoot
+		self.hits = {}
 	end
 end
 
@@ -107,6 +108,37 @@ function GoryMass:onReceiveAttack(attackPoke)
 	self:poke('startRoll', attackPoke:getAggressor())
 end
 
+function GoryMass:getSelfPosition()
+	return Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
+end
+
+function GoryMass:faceTarget()
+	local selfPosition = self:getSelfPosition()
+	local rotation = self:getBehavior(RotationBehavior)
+	local lookAt = Quaternion.lookAt(selfPosition, self.targetPosition)
+	local spin = Quaternion.fromAxisAngle(Vector.UNIT_X, self.targetTime * GoryMass.ROTATION_MULTIPLIER)
+	rotation.rotation = lookAt * spin
+end
+
+function GoryMass:followTarget()
+	local selfPosition = self:getSelfPosition()
+	local difference = self.targetPosition - selfPosition
+	if difference:getLengthSquared() < GoryMass.STOP_ROLLING_THRESHOLD_SQUARED then
+		self:poke('stopRoll')
+	else
+		local movement = self:getBehavior(MovementBehavior)
+		movement.acceleration = (self.targetPosition - selfPosition):getNormal() * movement.maxAcceleration
+
+		self:faceTarget()
+	end
+end
+
+function GoryMass:wobble()
+	local scaleDelta = (math.sin(self.time) + 1) / 2
+	local scale = self:getBehavior(ScaleBehavior)
+	scale.scale = (GoryMass.MAX_SCALE - GoryMass.MIN_SCALE) * scaleDelta + GoryMass.MIN_SCALE
+end
+
 function GoryMass:update(...)
 	Creep.update(self, ...)
 
@@ -118,30 +150,15 @@ function GoryMass:update(...)
 
 	if self.targetPosition then
 		multiplier = GoryMass.DELTA_MULTIPLIER_MOVING
-
-		local difference = self.targetPosition - selfPosition
-		if difference:getLengthSquared() < GoryMass.STOP_ROLLING_THRESHOLD_SQUARED then
-			self:poke('stopRoll')
-		else
-			local movement = self:getBehavior(MovementBehavior)
-			movement.acceleration = (self.targetPosition - selfPosition):getNormal() * movement.maxAcceleration
-
-			local rotation = self:getBehavior(RotationBehavior)
-			local lookAt = Quaternion.lookAt(selfPosition, self.targetPosition)
-			local spin = Quaternion.fromAxisAngle(Vector.UNIT_X, self.targetTime * GoryMass.ROTATION_MULTIPLIER)
-			rotation.rotation = lookAt * spin
-		end
-
 		self.targetTime = self.time + delta
+
+		self:followTarget()
 	else
 		multiplier = GoryMass.DELTA_MULTIPLIER_STATIONARY
 	end
-
 	self.time = self.time + delta * multiplier
 
-	local scaleDelta = (math.sin(self.time) + 1) / 2
-	local scale = self:getBehavior(ScaleBehavior)
-	scale.scale = (GoryMass.MAX_SCALE - GoryMass.MIN_SCALE) * scaleDelta + GoryMass.MIN_SCALE
+	self:wobble()
 end
 
 return GoryMass
