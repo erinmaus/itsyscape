@@ -63,3 +63,10 @@ ItsyScape.Meta.Equipment {
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/GoryMass/IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "GoryMass"
+}
