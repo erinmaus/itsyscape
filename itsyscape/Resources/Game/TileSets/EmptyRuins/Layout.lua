@@ -3,7 +3,7 @@
 		['invert-y'] = true
 	},
 
-	texture = "Resources/Game/TileSets/EmptyRuins/Texture.png",
+	texture = "Resources/Game/TileSets/EmptyRuins/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 
