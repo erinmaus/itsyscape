@@ -22,13 +22,20 @@ function GroundDecorations:new(id)
 	self.tileFunctions = {}
 end
 
-function GroundDecorations:noise(...)
-	local args = { ... }
-	for i = 1, #args do
-		args[i] = args[i] * self.FUDGE
+function GroundDecorations:noise(octaves, ...)
+	local sum = 0
+	local average = 0
+	for i = 1, octaves do
+		local args = { ... }
+		for i = 1, #args do
+			args[i] = args[i] * self.FUDGE + i ^ 2
+		end
+
+		sum = sum + 1 / i * love.math.noise(unpack(args))
+		average = average + 1 / i
 	end
 
-	return love.math.noise(unpack(args))
+	return sum / average
 end
 
 function GroundDecorations:getDecoration()
