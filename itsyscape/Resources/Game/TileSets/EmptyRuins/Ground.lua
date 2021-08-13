@@ -14,13 +14,16 @@ local Color = require "ItsyScape.Graphics.Color"
 local GroundDecorations = require "ItsyScape.World.GroundDecorations"
 
 local EmptyRuinsGround = Class(GroundDecorations)
+EmptyRuinsGround.GRASS_OCTAVES = 1
 EmptyRuinsGround.GRASS_SATURATION = 4
 EmptyRuinsGround.GRASS_THRESHOLD  = 0.45
 EmptyRuinsGround.GRASS_FUDGE = 0.83
 EmptyRuinsGround.GRASS_COLOR = Color(0.4, 0.6, 0.5, 1.0)
 
+EmptyRuinsGround.STONE_OCTAVES = 8
 EmptyRuinsGround.STONE_THRESHOLD = 0.45
-EmptyRuinsGround.STONE_TYPE_FUDGE = 7.934058
+EmptyRuinsGround.STONE_FUDGE = 0.33
+EmptyRuinsGround.STONE_Y_OFFSET = 0.25
 EmptyRuinsGround.STONE_PURPLE_COLOR = Color(0.3, 0.3, 0.5, 1.0)
 EmptyRuinsGround.STONE_GREEN_COLOR = Color(0.3, 0.5, 0.3, 1.0)
 EmptyRuinsGround.STONE_SKULL_DECO = 0.35
@@ -38,14 +41,17 @@ end
 
 function EmptyRuinsGround:placeSkull(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
-	local noise = self:noise(center.x / 4, center.y / 4, center.z / 4)
+	local noise = self:noise(
+		EmptyRuinsGround.STONE_OCTAVES,
+		center.x / 4, center.y / 4, center.z / 4)
 	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, noise * math.pi * 2)
 	self:addFeature("skull", center, rotation, Vector((noise + 1) * 2))
 end
 
 function EmptyRuinsGround:placeCrack(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
-	local texture = math.floor(self:noise(center.x, center.y, center.z, 0.25) * EmptyRuinsGround.STONE_NUM_CRACK + 0.5)
+	local texture = self:noise(EmptyRuinsGround.STONE_OCTAVES, center.x, center.y, center.z, 0.25)
+	texture = math.floor(texture * EmptyRuinsGround.STONE_NUM_CRACK + 0.5)
 	local noise = self:noise(center.x, center.y, center.z)
 	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, noise * math.pi * 2)
 	self:addFeature("crack" .. texture, center, rotation)
@@ -53,9 +59,20 @@ end
 
 function EmptyRuinsGround:placeBricks(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
-	local texture = math.floor(self:noise(center.x, center.y, center.z, 0.25) * EmptyRuinsGround.STONE_NUM_BRICK + 0.5)
-	local colorScale = (self:noise(center.x, center.y, center.z) + 1) / 2
-	local noise = self:noise(center.x, center.y, center.z)
+	local texture = self:noise(EmptyRuinsGround.STONE_OCTAVES, center.x, center.y, center.z, 0.25)
+	texture = math.floor(texture * EmptyRuinsGround.STONE_NUM_BRICK + 0.5)
+	local colorScale = self:noise(EmptyRuinsGround.STONE_OCTAVES, center.x, center.y, center.z)
+	local noise = self:noise(EmptyRuinsGround.STONE_OCTAVES, 
+		center.x / EmptyRuinsGround.STONE_FUDGE,
+		center.y / EmptyRuinsGround.STONE_FUDGE,
+		center.z / EmptyRuinsGround.STONE_FUDGE)
+
+	center = center - Vector.UNIT_Y * noise * EmptyRuinsGround.STONE_Y_OFFSET
+
+	local rotation = self:noise(
+		EmptyRuinsGround.STONE_OCTAVES,
+		center.x, center.y, center.z)
+	rotation = (rotation * 2 - 1) * (math.pi / 8)
 
 	local featureColor
 	if tileSetTile.name == "purple-stone" then
@@ -67,17 +84,19 @@ function EmptyRuinsGround:placeBricks(tileSet, map, i, j, tileSetTile, mapTile)
 		featureColor = Color(1, 0, 0, 1)
 	end
 
+	colorScale = (colorScale + 1) / 2
+
 	self:addFeature(
 		"brick" .. texture,
 		center,
-		Quaternion.IDENTITY,
+		Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
 		Vector.ONE,
 		featureColor * Color(colorScale, colorScale, colorScale, 1))
 end
 
 function EmptyRuinsGround:emitStone(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
-	local noise = self:noise(center.x, center.y, center.z)
+	local noise = self:noise(EmptyRuinsGround.STONE_OCTAVES, center.x, center.y, center.z)
 	if noise < EmptyRuinsGround.STONE_THRESHOLD then
 		self:placeBricks(tileSet, map, i, j, tileSetTile, mapTile)
 	end
@@ -97,24 +116,27 @@ function EmptyRuinsGround:emitGrass(tileSet, map, i, j, tileSetTile, mapTile)
 			local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
 
 			local noise = self:noise(
+				EmptyRuinsGround.GRASS_OCTAVES, 
 				absoluteX,
 				absoluteY,
 				absoluteZ)
 
 			if noise < EmptyRuinsGround.GRASS_THRESHOLD then
-				local offsetX = self:noise(absoluteX, absoluteY, absoluteZ, 0.25) * 2 - 1 + absoluteX
-				local offsetZ = self:noise(absoluteX, absoluteY, absoluteZ, 0.75) * 2 - 1 + absoluteZ
+				local offsetX = self:noise(EmptyRuinsGround.GRASS_OCTAVES, absoluteX, absoluteY, absoluteZ, 0.25) * 2 - 1 + absoluteX
+				local offsetZ = self:noise(EmptyRuinsGround.GRASS_OCTAVES, absoluteX, absoluteY, absoluteZ, 0.75) * 2 - 1 + absoluteZ
 				local offsetY = map:getInterpolatedHeight(offsetX, offsetZ)
 
-				local scale = self:noise(offsetX / EmptyRuinsGround.GRASS_FUDGE, offsetY / EmptyRuinsGround.GRASS_FUDGE, offsetZ / EmptyRuinsGround.GRASS_FUDGE, 0.5)
+				local scale = self:noise(EmptyRuinsGround.GRASS_OCTAVES, offsetX / EmptyRuinsGround.GRASS_FUDGE, offsetY / EmptyRuinsGround.GRASS_FUDGE, offsetZ / EmptyRuinsGround.GRASS_FUDGE, 0.5)
 				scale = scale + 0.5
-				local color = self:noise(offsetX / EmptyRuinsGround.GRASS_FUDGE, offsetY / EmptyRuinsGround.GRASS_FUDGE, offsetZ / EmptyRuinsGround.GRASS_FUDGE, 0.25)
+				local color = self:noise(EmptyRuinsGround.GRASS_OCTAVES, offsetX / EmptyRuinsGround.GRASS_FUDGE, offsetY / EmptyRuinsGround.GRASS_FUDGE, offsetZ / EmptyRuinsGround.GRASS_FUDGE, 0.25)
 				color = (color + 1) / 2
+
+				local rotation = (noise * 2 - 1) * (math.pi / 2)
 
 				self:addFeature(
 					"grass",
 					Vector(offsetX, offsetY, offsetZ),
-					Quaternion.IDENTITY,
+					Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
 					Vector(scale),
 					EmptyRuinsGround.GRASS_COLOR * Color(color, color, color, 1))
 			end
