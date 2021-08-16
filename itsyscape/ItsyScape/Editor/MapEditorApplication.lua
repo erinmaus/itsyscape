@@ -52,7 +52,7 @@ end
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "RumbridgeCabin"
+	self.currentDecorationTileSet = "EmptyRuinsGiantsCarcass"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
