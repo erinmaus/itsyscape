@@ -29,7 +29,7 @@ function BaseEmptyZealot:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/EmptyZealot/Helmet.lua")
+		"Resources/Game/Skins/AncientCeremonial/Helmet.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
@@ -37,15 +37,15 @@ function BaseEmptyZealot:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/EmptyZealot/Body.lua")
+		"Resources/Game/Skins/AncientCeremonial/Body.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/EmptyZealot/Gloves.lua")
+		"Resources/Game/Skins/AncientCeremonial/Gloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
 	local boots = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/EmptyZealot/Boots.lua")
+		"Resources/Game/Skins/AncientCeremonial/Boots.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, boots)
 end
 

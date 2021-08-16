@@ -217,6 +217,7 @@ function GameView:addMap(map, layer, tileSetID)
 		map = map,
 		node = SceneNode(),
 		parts = {},
+		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16)
 	}
 
@@ -237,6 +238,32 @@ function GameView:removeMap(layer)
 		m.weatherMap:removeMap(m.map)
 
 		self.mapMeshes[layer] = nil
+	end
+end
+
+function GameView:updateGroundDecorations(m)
+	local isMapEditor = _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
+	if isMapEditor then
+		Log.info("Map editor: not updating ground decorations.")
+		return
+	end
+
+	local groundDecorationsFilename = string.format(
+		"Resources/Game/TileSets/%s/Ground.lua",
+		m.tileSetID)
+	local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
+
+	if groundExists then
+		local chunk = love.filesystem.load(groundDecorationsFilename)
+
+		local GroundType = chunk()
+		if GroundType then
+			local ground = GroundType()
+			ground:emitAll(m.tileSet, m.map)
+
+			local decoration = ground:getDecoration()
+			self:decorate("_x_GroundDecorations", decoration, m.layer)
+		end
 	end
 end
 
@@ -292,6 +319,8 @@ function GameView:updateMap(map, layer)
 		end
 
 		m.weatherMap:addMap(m.map)
+
+		self:updateGroundDecorations(m)
 	end
 end
 
@@ -449,9 +478,9 @@ end
 function GameView:decorate(group, decoration, layer)
 	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] and
-	   self.decorations[groupName].node
+	   self.decorations[groupName].sceneNode
 	then
-		self.decorations[groupName].node:setParent(nil)
+		self.decorations[groupName].sceneNode:setParent(nil)
 		self.decorations[groupName] = nil
 	end
 
