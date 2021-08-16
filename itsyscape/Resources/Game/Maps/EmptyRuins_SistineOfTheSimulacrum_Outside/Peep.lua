@@ -20,19 +20,21 @@ end
 function Sistine:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local stage = self:getDirector():getGameInstance():getStage()
-	stage:forecast(layer, 'EmptyRuins_SistineOfTheSimulacrum_Outside_Bubbles', 'Fungal', {
-		gravity = { 0, 3, 0 },
-		wind = { 0, 0, 0 },
-		colors = {
-			{ 0.0, 0.0, 0.0, 1.0 },
-			{ 0.7, 0.8, 0.2, 1.0 },
-		},
-		minHeight = -10,
-		maxHeight = 0,
-		ceiling = 20,
-		heaviness = 0.5
-	})
+	if args and not args.isLayer then
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:forecast(layer, 'EmptyRuins_SistineOfTheSimulacrum_Outside_Bubbles', 'Fungal', {
+			gravity = { 0, 3, 0 },
+			wind = { 0, 0, 0 },
+			colors = {
+				{ 0.0, 0.0, 0.0, 1.0 },
+				{ 0.7, 0.8, 0.2, 1.0 },
+			},
+			minHeight = -10,
+			maxHeight = 0,
+			ceiling = 20,
+			heaviness = 0.5
+		})
+	end
 end
 
 return Sistine

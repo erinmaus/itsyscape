@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -27,7 +28,7 @@ GoryMass.MIN_OVERSHOOT = 8
 GoryMass.MAX_OVERSHOOT = 12
 GoryMass.DELTA_MULTIPLIER_MOVING = 2
 GoryMass.DELTA_MULTIPLIER_STATIONARY = 4
-GoryMass.STOP_ROLLING_THRESHOLD_SQUARED = 3 * 3
+GoryMass.STOP_ROLLING_THRESHOLD_SQUARED = 3 ^ 2
 GoryMass.ROTATION_MULTIPLIER = math.pi
 
 function GoryMass:new(resource, name, ...)
@@ -86,6 +87,10 @@ function GoryMass:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
+function GoryMass:isMoving()
+	return self.targetPosition ~= nil
+end
+
 function GoryMass:onStartRoll(target)
 	if not target then
 		Log.warn("No target for gory mass; cannot attack.")
@@ -105,6 +110,15 @@ end
 
 function GoryMass:onStopRoll()
 	self.targetPosition = nil
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		if Utility.Peep.canAttack(self) then
+			mashina.currentState = "idle"
+		else
+			mashina.currentState = false
+		end
+	end
 end
 
 function GoryMass:onMovedOutOfBounds()
@@ -160,7 +174,7 @@ function GoryMass:splodeTargets()
 	local selfPosition = self:getSelfPosition()
 	local director = self:getDirector()
 	local hits = director:probe(self:getLayerName(), function(peep)
-		local position = Utility.Peep.getAbsolutePosition(peep)
+		local position = Utility.Peep.getAbsolutePosition(peep) * Vector.PLANE_XZ
 
 		local isOnSameLayer = Utility.Peep.getLayer(peep) == Utility.Peep.getLayer(self)
 		local isWithinRadius = (position - selfPosition):getLengthSquared() < GoryMass.STOP_ROLLING_THRESHOLD_SQUARED
