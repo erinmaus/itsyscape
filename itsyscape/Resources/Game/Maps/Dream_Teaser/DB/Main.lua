@@ -207,20 +207,3 @@ do
 	}
 end
 
-M["GoryMass"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 1,
-		PositionZ = 35,
-		Name = "GoryMass",
-		Map = M._MAP,
-		Resource = M["GoryMass"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "GoryMass",
-		MapObject = M["GoryMass"]
-	}
-end
-

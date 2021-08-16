@@ -950,6 +950,9 @@ include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
 
+-- Trailer
+include "Resources/Game/DB/Trailer/Trailer.lua"
+
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
