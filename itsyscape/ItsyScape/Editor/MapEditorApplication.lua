@@ -53,6 +53,7 @@ function MapEditorApplication:new()
 	EditorApplication.new(self)
 
 	self.currentDecorationTileSet = "EmptyRuinsGiantsCarcass"
+	self.currentDecorationTileSet = "RumbridgeMonasteryWalls"
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
@@ -399,7 +400,9 @@ function MapEditorApplication:mousePress(x, y, button)
 						hit = hits[1]
 					end
 
+
 					if hit then
+						print('group', group)
 						decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
 						self:getGame():getStage():decorate(group, decoration)
 					end
