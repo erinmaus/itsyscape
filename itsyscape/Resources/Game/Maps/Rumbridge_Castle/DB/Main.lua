@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Castle of Duke Reddick and home of the Rumbridge.",
+	Value = "Castle of Earl Reddick and home of the Rumbridge.",
 	Language = "en-US",
 	Resource = M._MAP
 }
