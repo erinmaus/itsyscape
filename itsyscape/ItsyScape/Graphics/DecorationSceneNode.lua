@@ -162,6 +162,10 @@ function DecorationSceneNode:_generateVertices(decoration, staticMesh)
 				table.insert(vertices, v)
 			end
 		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 
 	return min, max, vertices

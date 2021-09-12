@@ -315,7 +315,7 @@ function Map:canMove(i, j, di, dj)
 		if di < 0 and dj < 0 and i > 1 and j > 1 then
 			local topLeft = self:getTile(i - 1, j - 1)
 			if topLeft.bottomRight <= tile.topLeft and
-			   not topLeft:getIsPassable({ 'impassable' })
+			   topLeft:getIsPassable({ 'impassable' })
 			then
 				return isTopPassable and isLeftPassable
 			else
@@ -326,7 +326,7 @@ function Map:canMove(i, j, di, dj)
 		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() then
 			local bottomLeft = self:getTile(i - 1, j + 1)
 			if bottomLeft.topRight <= tile.bottomLeft and
-			   not bottomLeft:getIsPassable({ 'impassable' })
+			   bottomLeft:getIsPassable({ 'impassable' })
 			then
 				return isBottomPassable and isLeftPassable
 			else
@@ -337,7 +337,7 @@ function Map:canMove(i, j, di, dj)
 		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 then
 			local topRight = self:getTile(i + 1, j - 1)
 			if topRight.bottomLeft <= tile.topRight and
-			   not topRight:getIsPassable({ 'impassable' })
+			   topRight:getIsPassable({ 'impassable' })
 			then
 				return isTopPassable and isRightPassable
 			else
@@ -348,7 +348,7 @@ function Map:canMove(i, j, di, dj)
 		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() then
 			local bottomRight = self:getTile(i + 1, j + 1)
 			if bottomRight.topLeft <= tile.bottomRight and
-			   not bottomRight:getIsPassable({ 'impassable' })
+			   bottomRight:getIsPassable({ 'impassable' })
 			then
 				return isBottomPassable and isRightPassable
 			else

@@ -42,6 +42,14 @@ add('STRATEGY_BAR_SLOT_10', '0')
 -- Minigames
 add('MINIGAME_DASH', 'space')
 
+-- Debug
+if _DEBUG then
+	add('DEBUG_TRIGGER_1', 'rshift f5')
+	add('DEBUG_TRIGGER_2', 'rshift f6')
+	add('DEBUG_TRIGGER_3', 'rshift f7')
+	add('DEBUG_TRIGGER_4', 'rshift f8')
+end
+
 -- Sailing
 add('SAILING_ACTION_PRIMARY', 'space')
 add('SAILING_ACTION_SECONDARY', 'rshift space')

@@ -124,11 +124,13 @@ function MovementCortex:update(delta)
 				else
 					position.position = Vector(snappedX, position.position.y, snappedZ)
 				end
+
+				peep:poke('movedOutOfBounds')
 			end
 
 			local y = map:getInterpolatedHeight(
 				position.position.x,
-				position.position.z)
+				position.position.z) + movement.float
 			if position.position.y < y then
 				if movement.bounce > 0 then
 					movement.acceleration.y = -movement.acceleration.y * movement.bounce
