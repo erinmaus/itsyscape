@@ -837,6 +837,7 @@ include "Resources/Game/DB/Items/Trinkets.lua"
 include "Resources/Game/DB/Items/PartyHats.lua"
 include "Resources/Game/DB/Items/CreepyDoll.lua"
 include "Resources/Game/DB/Items/SuperiorTier50.lua"
+include "Resources/Game/DB/Items/AncientCeremonial.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -857,6 +858,8 @@ include "Resources/Game/DB/Creeps/Skelemental.lua"
 include "Resources/Game/DB/Creeps/Skeleton.lua"
 include "Resources/Game/DB/Creeps/Zombi.lua"
 include "Resources/Game/DB/Creeps/Ghost.lua"
+include "Resources/Game/DB/Creeps/Mummy.lua"
+include "Resources/Game/DB/Creeps/GoryMass.lua"
 include "Resources/Game/DB/Creeps/FungalDemogorgon.lua"
 
 -- Peeps
@@ -946,6 +949,9 @@ include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
 
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
+
+-- Trailer
+include "Resources/Game/DB/Trailer/Trailer.lua"
 
 do
 	ActionType "Debug_Ascend"
