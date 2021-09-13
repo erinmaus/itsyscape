@@ -514,9 +514,10 @@ function GameView:decorate(group, decoration, layer)
 			sceneNode:setParent(map)
 
 			d.sceneNode = sceneNode
-			d.decoration = decoration
-			d.name = group
 		end)
+
+		d.decoration = decoration
+		d.name = group
 
 		self.decorations[groupName] = d
 	end
