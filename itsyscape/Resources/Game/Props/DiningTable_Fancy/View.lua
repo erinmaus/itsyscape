@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/DiningTableView.lua
+-- Resources/Game/Props/DiningTable_Fancy/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,14 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 local BasicTableView = require "Resources.Game.Props.Common.BasicTableView"
 
-local DiningTableView = Class(BasicTableView)
+local DiningTable = Class(BasicTableView)
 
-function DiningTableView:getTextureFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.png"
+function DiningTable:getTextureFilename()
+	return "Resources/Game/Props/DiningTable_Fancy/Texture.png"
 end
 
-function DiningTableView:getModelFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.lstatic"
+function DiningTable:getModelFilename()
+	return "Resources/Game/Props/DiningTable_Fancy/Model.lstatic"
 end
 
-return DiningTableView
+return DiningTable
