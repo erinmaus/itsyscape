@@ -333,9 +333,6 @@ function ActorView:applySkin(slotNodes)
 					self.game:getResourceManager():queueCacheRef(slot.instance:getModel(), function(model)
 						model:getResource():bindSkeleton(self.body:getSkeleton())
 						slot.sceneNode:setModel(model)
-						slot.sceneNode:onWillRender(function()
-							self:updateAnimations()
-						end)
 
 						local texture = slot.instance:getTexture()
 						if texture then
@@ -539,9 +536,9 @@ function ActorView:tick()
 end
 
 function ActorView:update(delta)
-	self.animationsDirty = true
 	self.animationDelta = delta
 
+	self:updateAnimations()
 	self.animatable:update()
 end
 
@@ -577,90 +574,86 @@ function ActorView:getLocalBoneTransform(boneName)
 end
 
 function ActorView:updateAnimations()
-	if self.animationsDirty then
-		local delta = self.animationDelta
+	local delta = self.animationDelta
 
-		local animations = {}
-		do
-			for slot, animation in pairs(self.animations) do
-				if animation.instance then
-					table.insert(animations, { value = animation, key = slot })
-				end
+	local animations = {}
+	do
+		for slot, animation in pairs(self.animations) do
+			if animation.instance then
+				table.insert(animations, { value = animation, key = slot })
 			end
-			table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
 		end
+		table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
+	end
 
-		for index, a in ipairs(animations) do
-			local animation = a.value
-			local slot = a.key
+	for index, a in ipairs(animations) do
+		local animation = a.value
+		local slot = a.key
 
-			animation.time = animation.time + delta
-			if animation.done then
-				if animation.next then
-					animation.definition = animation.next.definition
-					animation.instance = animation.definition:play(self.animatable)
-					animation.time = animation.next.time or 0
-					animation.priority = animation.next.priority or -math.huge
-					animation.next = nil
-				else
-					self.animations[slot] = nil
-					self.actor:playAnimation(slot, false)
-				end
-
-				animation.done = false
+		animation.time = animation.time + delta
+		if animation.done then
+			if animation.next then
+				animation.definition = animation.next.definition
+				animation.instance = animation.definition:play(self.animatable)
+				animation.time = animation.next.time or 0
+				animation.priority = animation.next.priority or -math.huge
+				animation.next = nil
 			else
-				animation.done = animation.instance:play(animation.time, animation.next ~= nil)
+				self.animations[slot] = nil
+				self.actor:playAnimation(slot, false)
 			end
-		end
 
-		for _, slotNodes in pairs(self.skins) do
-			for i = 1, #slotNodes do
-				if slotNodes[i].particles then
-					for j = 1, #slotNodes[i].particles do
-						local p = slotNodes[i].particles[j]
-						if p.attach then
-							local transform = self.animatable:getComposedTransform(p.attach)
-							local localPosition = Vector(transform:transformPoint(0, 0, 0))
-							local system = p.sceneNode:getParticleSystem()
-							if system then
-								system:updateEmittersLocalPosition(localPosition)
-							end
+			animation.done = false
+		else
+			animation.done = animation.instance:play(animation.time, animation.next ~= nil)
+		end
+	end
+
+	for _, slotNodes in pairs(self.skins) do
+		for i = 1, #slotNodes do
+			if slotNodes[i].particles then
+				for j = 1, #slotNodes[i].particles do
+					local p = slotNodes[i].particles[j]
+					if p.attach then
+						local transform = self.animatable:getComposedTransform(p.attach)
+						local localPosition = Vector(transform:transformPoint(0, 0, 0))
+						local system = p.sceneNode:getParticleSystem()
+						if system then
+							system:updateEmittersLocalPosition(localPosition)
 						end
 					end
 				end
 			end
 		end
+	end
 
-		local transforms = self.animatable:getTransforms()
-		do
-			self.localTransforms = {}
-			for i = 1, #transforms do
-				self.localTransforms[i] = love.math.newTransform()
-				self.localTransforms[i]:apply(transforms[i])
+	local transforms = self.animatable:getTransforms()
+	do
+		self.localTransforms = {}
+		for i = 1, #transforms do
+			self.localTransforms[i] = love.math.newTransform()
+			self.localTransforms[i]:apply(transforms[i])
+		end
+	end
+
+	do
+		for i = 1, #transforms do
+			local animation, time = self.animatable:getAnimationForBone(i)
+			if animation then
+				animation:computeTransform(time, transforms, i)
 			end
 		end
 
-		do
-			for i = 1, #transforms do
-				local animation, time = self.animatable:getAnimationForBone(i)
-				if animation then
-					animation:computeTransform(time, transforms, i)
-				end
-			end
-
-			for i = 1, #transforms do
-				local animation, time = self.animatable:getAnimationForBone(i)
-				if animation then
-					animation:applyBindPose(time, transforms, i)
-				end
+		for i = 1, #transforms do
+			local animation, time = self.animatable:getAnimationForBone(i)
+			if animation then
+				animation:applyBindPose(time, transforms, i)
 			end
 		end
+	end
 
-		for model in pairs(self.models) do
-			model:setTransforms(self.animatable:getTransforms())
-		end
-
-		self.animationsDirty = false
+	for model in pairs(self.models) do
+		model:setTransforms(self.animatable:getTransforms())
 	end
 end
 

@@ -71,6 +71,11 @@ function TVMimic:ready(director, game)
 	-- 	"Resources/Game/Animations/TVMimic_Attack/Script.lua")
 	-- self:addResource("animation-attack", attackAnimation)
 
+	Utility.spawnPropAtPosition(
+		self,
+		"TV_Mimic",
+		Utility.Peep.getPosition(self):get())
+
 	Creep.ready(self, director, game)
 end
 

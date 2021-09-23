@@ -60,13 +60,12 @@ function TVMimic:load()
 		self.tv:fromGroup(self.mesh:getResource(), "TV")
 		self.tv:getMaterial():setTextures(self.texture)
 		self.tv:setParent(root)
-		self.tv:onWillRender(self:getApplyTransformCallback())
+		self.tv:onWillRender(function() self:applyTransform() end)
 
 		self.screen = DecorationSceneNode()
 		self.screen:fromGroup(self.mesh:getResource(), "TVScreen")
 		self.screen:getMaterial():setTextures(self.texture)
 		self.screen:setParent(root)
-		self.screen:onWillRender(self:getApplyTransformCallback())
 
 		self.screen:onWillRender(function(_, delta)
 			local texture = self.video:getSnapshot()
@@ -75,6 +74,8 @@ function TVMimic:load()
 			end
 
 			self.screen:getMaterial():setTextures(self.screenTexture)
+
+			self:applyTransform()
 		end)
 	end)
 end
@@ -94,10 +95,9 @@ function TVMimic:tick()
 	self.spawned = true
 end
 
-function TVMimic:getApplyTransformCallback()
-	return function()
-		love.graphics.transform(self.transform)
-	end
+function TVMimic:applyTransform()
+	love.graphics.applyTransform(self.transform)
+	love.graphics.rotate(1, 0, 0, -math.pi / 2)
 end
 
 
@@ -115,9 +115,8 @@ function TVMimic:update(delta)
 
 	if self.video then
 		self.video:update()
+		self.video:makeSnapshot()
 	end
-
-	self.video:makeSnapshot()
 
 	local state = self:getProp():getState()
 	if state.actorID then
