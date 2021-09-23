@@ -10,14 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
-local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
-local TVMimicBody = Class(Prop)
+local TVMimicBody = Class(PassableProp)
 
 function TVMimicBody:new(resource, name, ...)
-	Prop.new(self, resource, name or 'TVMimic', ...)
+	PassableProp.new(self, resource, name or 'TVMimicBody', ...)
 
 	self:addBehavior(RotationBehavior)
 end
@@ -33,7 +33,7 @@ function TVMimicBody:onParentPoof()
 end
 
 function TVMimicBody:update(...)
-	Prop.update(self, ...)
+	PassableProp.update(self, ...)
 
 	if self.chestMimic then
 		Utility.Peep.setPosition(self, Utility.Peep.getPosition(self.chestMimic))
@@ -42,7 +42,7 @@ function TVMimicBody:update(...)
 end
 
 function TVMimicBody:getPropState()
-	local state = Prop.getPropState(self)
+	local state = PassableProp.getPropState(self)
 
 	if self.chestMimic then
 		local actor = self.chestMimic:getBehavior(ActorReferenceBehavior)

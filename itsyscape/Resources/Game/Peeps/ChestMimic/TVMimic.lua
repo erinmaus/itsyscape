@@ -56,20 +56,10 @@ function TVMimic:ready(director, game)
 		"Resources/Game/Animations/TVMimic_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
-	-- local walkAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/TVMimic_Walk/Script.lua")
-	-- self:addResource("animation-walk", walkAnimation)
-
-	-- local dieAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/TVMimic_Die/Script.lua")
-	-- self:addResource("animation-die", dieAnimation)
-
-	-- local attackAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/TVMimic_Attack/Script.lua")
-	-- self:addResource("animation-attack", attackAnimation)
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/TVMimic_Walk/Script.lua")
+	self:addResource("animation-walk", walkAnimation)
 
 	Utility.spawnPropAtPosition(
 		self,
