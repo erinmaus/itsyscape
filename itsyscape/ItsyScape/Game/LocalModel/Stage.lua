@@ -1024,8 +1024,28 @@ function LocalStage:iterateActors()
 	return pairs(self.actors)
 end
 
+function LocalStage:getActorByID(id)
+	for actor in self:iterateActors() do
+		if actor:getID() == id then
+			return actor
+		end
+	end
+
+	return nil
+end
+
 function LocalStage:iterateProps()
 	return pairs(self.props)
+end
+
+function LocalStage:getPropByID(id)
+	for prop in self:iterateProps() do
+		if prop:getID() == id then
+			return prop
+		end
+	end
+
+	return nil
 end
 
 function LocalStage:tick()
