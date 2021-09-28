@@ -154,6 +154,8 @@ function DemoApplication:openMainMenu()
 					vsync = _CONF.vsync,
 					display = _CONF.display
 				})
+
+				_DEBUG = _CONF.debug
 			end
 
 			self:closeMainMenu()
