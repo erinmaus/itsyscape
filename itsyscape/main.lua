@@ -71,6 +71,7 @@ function love.load(args)
 	end
 
 	_ARGS["anonymous"] = true
+	_DEBUG = _DEBUG or _CONF.debug or false
 
 	do
 		if not _MOBILE then

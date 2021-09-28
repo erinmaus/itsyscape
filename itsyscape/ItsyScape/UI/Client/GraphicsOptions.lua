@@ -310,6 +310,76 @@ function GraphicsOptions:new(application)
 	end
 
 	do
+		local label = Label()
+		label:setStyle(
+			LabelStyle(
+				GraphicsOptions.INPUT_STYLE,
+				self.application:getUIView():getResources()))
+		label:setText("Debug")
+		label:setPosition(
+			GraphicsOptions.WIDTH / 2 + GraphicsOptions.PADDING * 2,
+			GraphicsOptions.PADDING * 4 + GraphicsOptions.INPUT_HEIGHT * 2)
+		label:setSize(GraphicsOptions.WIDTH / 4, GraphicsOptions.INPUT_HEIGHT)
+		self:addChild(label)
+
+		local onButton = Button()
+		onButton:setText('On')
+		onButton:setToolTip(
+			ToolTip.Text("Enable debug mode."),
+			ToolTip.Text("Will enable debug controls and show a HUD."),
+			ToolTip.Text("The function keys toggle various debugging tools."),
+			ToolTip.Text("Isabelle will be pick-pocketable and give a useful item."),
+			ToolTip.Text("You might have to restart the game for access to all debug tools."))
+		onButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.PADDING * 3,
+			GraphicsOptions.PADDING * 3 + GraphicsOptions.INPUT_HEIGHT * 2)
+		onButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+
+		if _CONF.debug then
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		onButton.onClick:register(self.setDebug, self, true)
+		self:addChild(onButton)
+		self.debugOnButton = onButton
+
+		local offButton = Button()
+		offButton:setText('Off')
+		offButton:setToolTip(
+			ToolTip.Text("Disable debug mode."),
+			ToolTip.Text("Debug mode functions and actions will no longer be accessible."))
+		offButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.INPUT_WIDTH + GraphicsOptions.PADDING * 4,
+			GraphicsOptions.PADDING * 3 + GraphicsOptions.INPUT_HEIGHT * 2)
+		offButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+		if not _CONF.debug then
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		offButton.onClick:register(self.setDebug, self, false)
+		self:addChild(offButton)
+		self.debugOffButton = offButton
+	end
+
+	do
 		local confirmButton = Button()
 		confirmButton:setText("Confirm")
 		confirmButton:setStyle(
@@ -419,12 +489,36 @@ function GraphicsOptions:setFullscreen(enabled)
 	end
 end
 
+function GraphicsOptions:setDebug(enabled)
+	self.conf.debug = enabled
+	if enabled then
+		self.debugOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	else
+		self.debugOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	end
+end
+
 function GraphicsOptions:confirm(save)
 	if save then
 		_CONF.width = self.conf.width
 		_CONF.height = self.conf.height
 		_CONF.fullscreen = self.conf.fullscreen
 		_CONF.vsync = self.conf.vsync
+		_CONF.debug = self.conf.debug
 	end
 
 	self.onClose(save)
