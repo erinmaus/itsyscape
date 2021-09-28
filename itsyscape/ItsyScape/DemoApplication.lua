@@ -237,7 +237,7 @@ function DemoApplication:mousePress(x, y, button)
 
 		self.titleScreen:suppressTitle()
 
-		if _ANALYTICS and not _ANALYTICS:getAcked() then
+		if _ANALYTICS and not _ANALYTICS:getAcked() and not _ARGS["anonymous"] then
 			local WIDTH = 480
 			local HEIGHT = 240
 			local alertWindow = AlertWindow(self)
