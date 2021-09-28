@@ -101,10 +101,9 @@ function DemoApplication:quit()
 	if not self.titleScreen then
 		self:getGame():quit()
 		Log.analytic("END_GAME")
-		return true
-	else
-		return false
 	end
+
+	return false
 end
 
 function DemoApplication:quitGame()
@@ -217,6 +216,29 @@ function DemoApplication:openMainMenu()
 	soundButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
 	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	self.mainMenu:addChild(soundButton)
+
+	if _CONF.fullscreen then
+		local closeButton = Button()
+		closeButton:setStyle(ButtonStyle({
+			pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			fontSize = 24,
+			textShadow = true,
+			}, self:getUIView():getResources()))
+		closeButton:setText("X")
+		closeButton.onClick:register(function()
+			love.event.quit()
+		end)
+		closeButton:setPosition(
+			w - BUTTON_SIZE - PADDING,
+			PADDING)
+		closeButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+		closeButton:setToolTip(ToolTip.Text("Quit the game."))
+		self.mainMenu:addChild(closeButton)
+	end
 
 	self:getUIView():getRoot():addChild(self.mainMenu)
 end
