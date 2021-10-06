@@ -96,6 +96,34 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "DiningTable_Fancy"
 }
 
+ItsyScape.Resource.Prop "DiningTableChair_Fancy" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fancy dining chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Makes eating all the fancier!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
 ActionType "DiningTable_Heal"
 
 ItsyScape.Meta.ActionTypeVerb {
