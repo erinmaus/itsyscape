@@ -157,6 +157,41 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Default"
 }
 
+ItsyScape.Resource.Prop "Fireplace_Default" {
+	ItsyScape.Action.Light_Prop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Snuff()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTorch",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fireplace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Keeps you warm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
 ItsyScape.Resource.Prop "Crate_Default1" {
 	-- Nothing.
 }
