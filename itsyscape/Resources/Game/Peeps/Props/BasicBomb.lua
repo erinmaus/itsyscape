@@ -118,6 +118,12 @@ function BasicBomb:onBoom()
 		Log.info('Sploded on %s.', hits[i]:getName())
 	end
 
+	local stage = director:getGameInstance():getStage()
+	stage:fireProjectile(
+		"BoomBombSplosion",
+		Utility.Peep.getAbsolutePosition(self),
+		Utility.Peep.getAbsolutePosition(self))
+
 	Log.info("BOOM!")
 	Utility.Peep.poof(self)
 end
