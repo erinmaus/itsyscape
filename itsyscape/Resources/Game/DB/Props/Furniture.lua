@@ -751,3 +751,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Loo_Default"
 }
+
+ItsyScape.Resource.Prop "ArmorStand_Iron" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Armor stand",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "There's a note that says, \"Do not wear; for display only.\"",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
