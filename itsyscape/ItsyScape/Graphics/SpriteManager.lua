@@ -34,10 +34,17 @@ function SpriteManager:add(spriteID, node, offset, ...)
 		self.nodes[node] = nodes
 	end
 
-	local sprite = Type(self, node, offset + #nodes * Vector(0, 0.5, 0))
+	local numNodesOfType = 0
+	for i = 1, #nodes do
+		if nodes[i].id == spriteID then
+			numNodesOfType = numNodesOfType + 1
+		end
+	end
+
+	local sprite = Type(self, node, offset + numNodesOfType * Vector(0, 0.5, 0))
 	sprite:spawn(...)
 
-	table.insert(nodes, sprite)
+	table.insert(nodes, { sprite = sprite, id = spriteID })
 	self.nodes[sprite] = node
 
 	table.insert(self.sprites, sprite)
@@ -52,7 +59,7 @@ function SpriteManager:poof(sprite)
 			local node = self.nodes[sprite]
 			local nodes = self.nodes[node]
 			for i = 1, #nodes do
-				if nodes[i] == sprite then
+				if nodes[i].sprite == sprite then
 					table.remove(nodes, i)
 					break
 				end

@@ -52,7 +52,6 @@ end
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "EmptyRuinsGiantsCarcass"
 	self.currentDecorationTileSet = "RumbridgeMonasteryWalls"
 
 	self.motion = false

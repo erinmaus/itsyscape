@@ -70,7 +70,7 @@ end
 
 function Client:init(t)
 	if not t then
-		t = { enable = true }
+		t = { enable = not _ARGS["anonymous"] }
 	end
 
 	if t.enable then
