@@ -769,7 +769,7 @@ ItsyScape.Meta.MapObjectSize {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Armor stand",
+	Value = "Iron armor stand",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
 }
@@ -778,4 +778,88 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "There's a note that says, \"Do not wear; for display only.\"",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Resource.Prop "Art1" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's herald",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Herald featuring Lightslayer, Bastiel's sword. Lightslayer is said to send the dead to eternal torture in the Daemon Dimension.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Resource.Prop "Art2" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ugly piece of art",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Is that actually art...?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Resource.Prop "Art3" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Seaside landscape",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A simple seaside landscape.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art3"
 }
