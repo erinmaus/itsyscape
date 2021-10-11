@@ -499,6 +499,34 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
 }
 
+ItsyScape.Resource.Prop "ComfyChair_Blue" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "...are there blue cows that give blue cowhide to make blue leather?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
 ItsyScape.Resource.Prop "Chair_Default" {
 	-- Nothing.
 }
@@ -555,6 +583,33 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
 }
 
+ItsyScape.Resource.Prop "ComfyCouch_Blue" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Comfy couch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Fits with a sort of Rumbridge-esque aesthetic.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
 
 ItsyScape.Resource.Prop "Bookshelf_Default" {
 	-- Nothing.
