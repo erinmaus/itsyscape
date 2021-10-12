@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/DiningTableView.lua
+-- Resources/Game/Props/ComfyChair_Blue/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,16 +8,17 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local BasicTableView = require "Resources.Game.Props.Common.BasicTableView"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 
-local DiningTableView = Class(BasicTableView)
+local Chair = Class(SimpleStaticView)
 
-function DiningTableView:getTextureFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.png"
+function Chair:getTextureFilename()
+	return "Resources/Game/Props/ComfyChair_Blue/Texture.png"
 end
 
-function DiningTableView:getModelFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.lstatic"
+function Chair:getModelFilename()
+	return "Resources/Game/Props/ComfyChair_Blue/Model.lstatic", "ComfyChair"
 end
 
-return DiningTableView
+return Chair

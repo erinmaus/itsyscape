@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/DiningTableView.lua
+-- Resources/Game/Props/Fireplace_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,16 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local BasicTableView = require "Resources.Game.Props.Common.BasicTableView"
+local FireplaceView = require "Resources.Game.Props.Common.FireplaceView"
 
-local DiningTableView = Class(BasicTableView)
+local Fireplace = Class(FireplaceView)
 
-function DiningTableView:getTextureFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.png"
+function Fireplace:getTextureFilename()
+	return "Resources/Game/Props/Fireplace_Default/Texture.png"
 end
 
-function DiningTableView:getModelFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.lstatic"
+function Fireplace:getModelFilename()
+	return "Resources/Game/Props/Fireplace_Default/Model.lstatic", "Fireplace"
 end
 
-return DiningTableView
+return Fireplace
