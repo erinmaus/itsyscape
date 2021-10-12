@@ -319,121 +319,22 @@
 		y = 512,
 		width = 128,
 		height = 256,
-		name = "brick_wall1"
-	},
-
-	{
-		x = 0,
-		y = 256,
-		width = 128,
-		height = 256,
-		name = "brick_wall2"
+		name = "brick_wall"
 	},
 
 	{
 		x = 128,
-		y = 256,
+		y = 0,
 		width = 128,
 		height = 128,
 		name = "invisible"
 	},
 
 	{
-		x = 640,
-		y = 512,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.tl"
-	},
-
-	{
-		x = 768,
-		y = 512,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.tm"
-	},
-
-	{
-		x = 896,
-		y = 512,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.tr"
-	},
-
-	{
-		x = 640,
-		y = 384,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.ml"
-	},
-
-	{
-		x = 896,
-		y = 384,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.mr"
-	},
-
-	{
-		x = 640,
-		y = 256,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.bl"
-	},
-
-	{
-		x = 768,
-		y = 256,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.bm"
-	},
-
-	{
-		x = 896,
-		y = 256,
-		width = 128,
-		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue.edge.br"
-	},
-
-	{
 		x = 128,
-		y = 384,
+		y = 256,
 		width = 128,
 		height = 128,
-		colorRed = 200,
-		colorGreen = 200,
-		colorBlue = 255,
-		name = "brick_blue"
-	},
+		name = "brick_wide"
+	}
 }
