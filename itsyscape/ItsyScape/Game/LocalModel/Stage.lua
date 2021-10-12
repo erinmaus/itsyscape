@@ -301,11 +301,14 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 
 						local scale = peep:getBehavior(ScaleBehavior)
 						if scale then
-							local sx = math.max(object:get("ScaleX") or 0, 1)
-							local sy = math.max(object:get("ScaleY") or 0, 1)
-							local sz = math.max(object:get("ScaleZ") or 0, 1)
+							local sx = object:get("ScaleX")
+							local sy = object:get("ScaleY")
+							local sz = object:get("ScaleZ")
 
-							scale.scale = Vector(sx, sy, sz)
+							scale.scale = Vector(
+								(sx ~= 0 and sx) or 1,
+								(sy ~= 0 and sy) or 1,
+								(sz ~= 0 and sz) or 1)
 						end
 
 						local rotation = peep:getBehavior(RotationBehavior)

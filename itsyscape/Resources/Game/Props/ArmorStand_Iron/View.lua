@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/DiningTableView.lua
+-- Resources/Game/Props/ArmorStand_Iron/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,16 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local BasicTableView = require "Resources.Game.Props.Common.BasicTableView"
+local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 
-local DiningTableView = Class(BasicTableView)
+local ArmorStand = Class(SimpleStaticView)
 
-function DiningTableView:getTextureFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.png"
+function ArmorStand:getTextureFilename()
+	return "Resources/Game/Props/ArmorStand_Iron/Texture.png"
 end
 
-function DiningTableView:getModelFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.lstatic"
+function ArmorStand:getModelFilename()
+	return "Resources/Game/Props/ArmorStand_Iron/Model.lstatic", "ArmorStand"
 end
 
-return DiningTableView
+return ArmorStand

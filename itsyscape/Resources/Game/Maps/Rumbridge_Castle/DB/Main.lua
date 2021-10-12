@@ -77,31 +77,38 @@ do
 	}
 end
 
-M["Light_Chandlier"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromFloor1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 57,
-		PositionY = 7,
-		PositionZ = 47,
-		Name = "Light_Chandlier",
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Anchor_FromFloor1",
 		Map = M._MAP,
-		Resource = M["Light_Chandlier"]
+		Resource = M["Anchor_FromFloor1"]
 	}
+end
 
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "PointLight_Default",
-		MapObject = M["Light_Chandlier"]
+M["Anchor_FromBasement"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 29,
+		Name = "Anchor_FromBasement",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBasement"]
 	}
+end
 
-	ItsyScape.Meta.Light {
-		ColorRed = 255,
-		ColorGreen = 255,
-		ColorBlue = 255,
-		Resource = M["Light_Chandlier"]
-	}
-
-	ItsyScape.Meta.PointLight {
-		Attenuation = 10,
-		Resource = M["Light_Chandlier"]
+M["Anchor_FromDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 4,
+		PositionZ = 39,
+		Name = "Anchor_FromDungeon",
+		Map = M._MAP,
+		Resource = M["Anchor_FromDungeon"]
 	}
 end

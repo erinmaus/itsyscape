@@ -31,6 +31,7 @@ RumbridgeMainlandGround.STONE_FUDGE = 0.33
 RumbridgeMainlandGround.STONE_Y_OFFSET = 0.25
 RumbridgeMainlandGround.STONE_BLACK_COLOR = Color(0.2, 0.2, 0.2, 1.0)
 RumbridgeMainlandGround.STONE_WHITE_COLOR = Color(0.7, 0.7, 0.7, 1.0)
+RumbridgeMainlandGround.STONE_WIDE_COLOR = Color(0.9, 0.8, 0.5, 1.0)
 RumbridgeMainlandGround.STONE_NUM_BRICK = 3
 
 RumbridgeMainlandGround.PLANK_OCTAVES = 8
@@ -46,12 +47,13 @@ function RumbridgeMainlandGround:new()
 	self:registerTile("grass", self.emitGrass)
 	self:registerTile("brick", self.emitStone)
 	self:registerTile("wood", self.emitPlank)
+	self:registerTile("brick_wide", self.emitPlank)
 end
 
 function RumbridgeMainlandGround:placeBricks(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
 	local texture = self:noise(RumbridgeMainlandGround.STONE_OCTAVES, center.x, center.y, center.z, 0.25)
-	texture = math.ceil(texture * RumbridgeMainlandGround.STONE_NUM_BRICK + 0.5)
+	texture = math.ceil(texture * RumbridgeMainlandGround.STONE_NUM_BRICK)
 	local colorScale = self:noise(RumbridgeMainlandGround.STONE_OCTAVES, center.x, center.y, center.z)
 	local noise = self:noise(RumbridgeMainlandGround.STONE_OCTAVES, 
 		center.x / RumbridgeMainlandGround.STONE_FUDGE,
@@ -85,7 +87,7 @@ end
 function RumbridgeMainlandGround:placePlanks(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
 	local texture = self:noise(RumbridgeMainlandGround.PLANK_OCTAVES, center.x, center.y, center.z, 0.25)
-	texture = math.floor(texture * RumbridgeMainlandGround.PLANK_NUM_PLANK + 0.5)
+	texture = math.ceil(texture * RumbridgeMainlandGround.PLANK_NUM_PLANK)
 	local colorScale = self:noise(RumbridgeMainlandGround.PLANK_OCTAVES, center.x, center.y, center.z)
 	local noise = self:noise(RumbridgeMainlandGround.PLANK_OCTAVES, 
 		center.x / RumbridgeMainlandGround.PLANK_FUDGE,
@@ -99,7 +101,14 @@ function RumbridgeMainlandGround:placePlanks(tileSet, map, i, j, tileSetTile, ma
 		center.x, center.y, center.z)
 	rotation = (rotation * 2 - 1) * (math.pi / 8)
 
-	local featureColor = RumbridgeMainlandGround.PLANK_COLOR
+	local featureColor, featureScale
+	if tileSetTile.name == "brick_wide" then
+		featureColor = RumbridgeMainlandGround.STONE_WIDE_COLOR
+		featureScale = Vector(0.5, 1, 1)
+	else
+		featureColor = RumbridgeMainlandGround.PLANK_COLOR
+		featureScale = Vector.ONE
+	end
 
 	colorScale = (colorScale + 1) / 2
 
@@ -107,7 +116,7 @@ function RumbridgeMainlandGround:placePlanks(tileSet, map, i, j, tileSetTile, ma
 		"plank" .. texture,
 		center,
 		Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
-		Vector.ONE,
+		featureScale,
 		featureColor * Color(colorScale, colorScale, colorScale, 1))
 end
 

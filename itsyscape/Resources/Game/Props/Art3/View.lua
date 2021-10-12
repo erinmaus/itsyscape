@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/DiningTableView.lua
+-- Resources/Game/Props/Art3/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,16 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local BasicTableView = require "Resources.Game.Props.Common.BasicTableView"
+local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 
-local DiningTableView = Class(BasicTableView)
+local Art = Class(SimpleStaticView)
 
-function DiningTableView:getTextureFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.png"
+function Art:getTextureFilename()
+	return "Resources/Game/Props/Art_Common/Art3.png"
 end
 
-function DiningTableView:getModelFilename()
-	return "Resources/Game/Props/DiningTable_Default_Common/DiningTable.lstatic"
+function Art:getModelFilename()
+	return "Resources/Game/Props/Art_Common/Model.lstatic", "WideRect"
 end
 
-return DiningTableView
+return Art
