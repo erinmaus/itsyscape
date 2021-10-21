@@ -918,3 +918,12 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Art3"
 }
+
+ItsyScape.Resource.Prop "Throne_Rumbridge" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
+}
