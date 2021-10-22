@@ -2341,6 +2341,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -2353,6 +2354,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -2365,6 +2367,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -2425,7 +2428,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			},
 			flags =
 			{
-				["building"] = true,
 			},
 		},
 		{
@@ -2438,386 +2440,12 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
 			},
 		},
 		{
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 36, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 36, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 36, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
 			data =
 			{
 			},
@@ -3030,7 +2658,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-				["impassable"] = true,
 			},
 		},
 		{
@@ -3091,6 +2718,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -3115,6 +2743,385 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 36, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 36, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 36, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -3469,6 +3476,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -3493,6 +3501,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -3847,6 +3856,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -3871,6 +3881,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -4221,6 +4232,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -4245,6 +4257,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -4595,6 +4608,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -4619,6 +4633,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -4969,271 +4984,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5259,114 +5009,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6730,379 +6373,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 40, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 40, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 			},
 		},
 		{
@@ -7863,7 +7134,186 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
-				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
 			},
 		},
 		{
@@ -7906,6 +7356,138 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 40, flat = 36, decals = {  },
 			data =
 			{
@@ -7914,6 +7496,367 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			{
 				["building"] = true,
 				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 40, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
 			},
 		},
 		{
@@ -8069,6 +8012,85 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			flags =
 			{
 				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 40, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
