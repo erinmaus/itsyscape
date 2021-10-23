@@ -50,30 +50,6 @@ do
 	}
 end
 
-M["Door_IronGate2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 43.000000,
-		PositionY = 0.000000,
-		PositionZ = 15.000000,
-		RotationX = 0.000000,
-		RotationY = 0.707107,
-		RotationZ = 0.000000,
-		RotationW = -0.707107,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_IronGate2",
-		Map = M._MAP,
-		Resource = M["Door_IronGate2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_IronGate",
-		MapObject = M["Door_IronGate2"]
-	}
-end
-
 M["ArmorStand_Iron5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -434,30 +410,6 @@ do
 	}
 end
 
-M["WoodenLadder_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 49.000000,
-		PositionY = 0.000000,
-		PositionZ = 13.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "WoodenLadder_Default1",
-		Map = M._MAP,
-		Resource = M["WoodenLadder_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_Default1"]
-	}
-end
-
 M["ArmorStand_Iron6"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -503,30 +455,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Chandelier_Default",
 		MapObject = M["Chandelier_Default1"]
-	}
-end
-
-M["Door_IronGate1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 47.000000,
-		PositionY = 0.000000,
-		PositionZ = 19.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_IronGate1",
-		Map = M._MAP,
-		Resource = M["Door_IronGate1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_IronGate",
-		MapObject = M["Door_IronGate1"]
 	}
 end
 
@@ -743,30 +671,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "BathroomSink_Default",
 		MapObject = M["BathroomSink_Default3"]
-	}
-end
-
-M["SpiralStaircase_Default3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 15.000000,
-		PositionY = 0.000000,
-		PositionZ = 13.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "SpiralStaircase_Default3",
-		Map = M._MAP,
-		Resource = M["SpiralStaircase_Default3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "SpiralStaircase_Default",
-		MapObject = M["SpiralStaircase_Default3"]
 	}
 end
 
