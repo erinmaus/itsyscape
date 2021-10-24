@@ -56,6 +56,25 @@ do
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
 		MapObject = M["Ladder_ToAttic"]
 	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromLadder",
+		Map = ItsyScape.Resource.Map "Rumbridge_Castle_Floor3",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_ToAttic"] {
+		TravelAction
+	}
 end
 
 M["Portal_Ladder"] = ItsyScape.Resource.MapObject.Unique()
