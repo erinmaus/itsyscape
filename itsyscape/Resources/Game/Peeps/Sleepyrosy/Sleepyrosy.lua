@@ -23,8 +23,8 @@ function Sleepyrosy:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Sleepyrosy_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4, 4, 5)
-	size.offset = Vector.UNIT_Y * 4
+	size.size = Vector(4, 6, 5)
+	size.offset = Vector.UNIT_Y * 2
 
 	self:addBehavior(RotationBehavior)
 end
