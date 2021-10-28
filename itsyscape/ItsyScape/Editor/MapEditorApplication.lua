@@ -648,7 +648,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								self.lastDecorationFeature:getID(),
 								self.lastDecorationFeature:getPosition(),
 								newRotation,
-								self.lastDecorationFeature:getScale())
+								self.lastDecorationFeature:getScale(),
+								self.lastDecorationFeature:getColor())
 							self:getGame():getStage():decorate(group, decoration)
 						end
 					end
