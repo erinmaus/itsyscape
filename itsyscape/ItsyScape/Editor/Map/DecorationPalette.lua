@@ -123,6 +123,8 @@ function DecorationPalette:loadDecorations()
 		true,
 		DecorationPalette.TILE_WIDTH,
 		DecorationPalette.TILE_HEIGHT)
+	gridLayout:setWrapContents(true)
+
 
 	local oldButtons = {}
 	for _, button in gridLayout:iterate() do
@@ -138,7 +140,7 @@ function DecorationPalette:loadDecorations()
 	end
 
 	self.buttonsPanel:setSize(width, windowHeight)
-	self.buttonsPanel:setScrollSize(width, math.floor(#buttons / 2 + 0.5) * DecorationPalette.TILE_HEIGHT + DecorationPalette.PADDING * 2)
+	self.buttonsPanel:setScrollSize(gridLayout:getSize())
 end
 
 function DecorationPalette:open(x, y, parent)
