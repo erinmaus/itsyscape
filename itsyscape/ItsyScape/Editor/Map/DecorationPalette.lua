@@ -188,11 +188,14 @@ function DecorationPalette:setColor()
 	local prompt = PromptWindow(self.application)
 	prompt.onSubmit:register(function(_, color)
 		local red, green, blue = color:match("(%x%x)(%x%x)(%x%x)")
-		red = tonumber(red, 16) / 255
-		green = tonumber(green, 16) / 255
-		blue = tonumber(blue, 16) / 255
 
-		self.application.currentDecorationColor = Color(red, green, blue, 1)
+		if red and green and blue then
+			red = tonumber(red, 16) / 255
+			green = tonumber(green, 16) / 255
+			blue = tonumber(blue, 16) / 255
+
+			self.application.currentDecorationColor = Color(red, green, blue, 1)
+		end
 	end)
 	prompt:open("Enter six-digit color hex code.", "Color")
 end
