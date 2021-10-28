@@ -185,7 +185,7 @@ function LocalPlayer:updateDiscord()
 
 			local playerMap = Utility.Peep.getMapResource(playerPeep)
 			if playerMap and playerMap.name ~= self.currentPlayerMap then
-				line2 = "@ " .. Utility.getName(playerMap, self.game.gameDB)
+				line2 = "@ " .. (Utility.getName(playerMap, self.game.gameDB) or playerMap.name .. "*")
 			end
 		end
 
