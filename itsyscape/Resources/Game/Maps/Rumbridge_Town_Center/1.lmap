@@ -161,7 +161,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -172,7 +172,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -513,7 +513,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -524,7 +524,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -865,7 +865,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -876,359 +876,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 3, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 3, topRight = 4, bottomLeft = 3, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 3, decals = { 8 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -1547,7 +1195,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 5 },
 			data =
 			{
 			},
@@ -1558,7 +1206,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 5 },
 			data =
 			{
 			},
@@ -1569,7 +1217,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 4 },
 			data =
 			{
 			},
@@ -1580,7 +1228,359 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 3, topRight = 4, bottomLeft = 3, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 3, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 9 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -1921,7 +1921,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -1932,7 +1932,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -2273,7 +2273,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -2284,7 +2284,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -2625,7 +2625,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -2636,7 +2636,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -2977,7 +2977,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -2988,7 +2988,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -3329,6 +3329,72 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
 			data =
 			{
@@ -3340,73 +3406,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -3681,6 +3681,72 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
 			data =
 			{
@@ -3692,73 +3758,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -4000,7 +4000,95 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 5, 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 4 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 6 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 4 },
 			data =
 			{
 			},
@@ -4022,447 +4110,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -4704,7 +4352,1393 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 9 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8, 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5, 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 4 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 6 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8, 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -4726,50 +5760,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
 			data =
 			{
@@ -4781,7 +5771,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -4836,997 +5826,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7, 10 },
 			data =
 			{
 			},
@@ -5837,7 +5837,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 10 },
 			data =
 			{
 			},
@@ -5848,7 +5848,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 9 },
 			data =
 			{
 			},
@@ -5859,7 +5859,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -6002,7 +6002,73 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
 			data =
 			{
 			},
@@ -6024,7 +6090,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -6035,282 +6101,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 38, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -6409,7 +6200,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -6420,150 +6211,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -6706,6 +6354,116 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -6794,7 +6552,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -6805,18 +6563,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -6839,105 +6586,6 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
 			data =
 			{
 			},
@@ -7058,6 +6706,116 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7146,117 +6904,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -7410,7 +7058,106 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -7488,6 +7235,28 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -7531,7 +7300,238 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 38, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 6 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 5 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8, 5 },
 			data =
 			{
 			},
@@ -7586,7 +7586,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7, 5 },
 			data =
 			{
 			},
@@ -7597,7 +7597,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 5 },
 			data =
 			{
 			},
@@ -7608,7 +7608,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 4 },
 			data =
 			{
 			},
@@ -7619,7 +7619,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -7762,6 +7762,138 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7, 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 10 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 9 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -7806,7 +7938,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -7817,7 +7949,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 11 },
 			data =
 			{
 			},
@@ -7828,7 +7960,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 10 },
 			data =
 			{
 			},
@@ -7839,139 +7971,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8, 10 },
 			data =
 			{
 			},
@@ -8114,6 +8114,138 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -8158,7 +8290,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -8169,139 +8301,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -8466,7 +8466,73 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
 			data =
 			{
 			},
@@ -8510,7 +8576,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -8521,139 +8587,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -8708,7 +8642,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -8719,293 +8653,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 36, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -9170,6 +8818,138 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -9214,7 +8994,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -9225,139 +9005,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -9522,6 +9170,204 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
 			data =
 			{
@@ -9588,7 +9434,51 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
@@ -9632,7 +9522,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = { 36 },
 			data =
 			{
 			},
@@ -9643,7 +9533,117 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 7 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -9698,7 +9698,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 5, bottomRight = 5,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 4 },
 			data =
 			{
 			},
@@ -9709,7 +9709,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 5, bottomRight = 5,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 6 },
 			data =
 			{
 			},
@@ -9874,7 +9874,73 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = { 36 },
 			data =
 			{
 			},
@@ -9918,7 +9984,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -9929,73 +9995,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -10336,7 +10336,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -10347,7 +10347,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -10688,7 +10688,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -10699,7 +10699,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
@@ -11040,7 +11040,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 7 },
 			data =
 			{
 			},
@@ -11051,7 +11051,7 @@ red = 1.000000, green = 1.000000, blue = 1.000000,
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 41, decals = { 8 },
 			data =
 			{
 			},
