@@ -920,6 +920,7 @@ include "Resources/Game/DB/Props/Hole.lua"
 include "Resources/Game/DB/Props/Doors.lua"
 include "Resources/Game/DB/Props/OldOnesTech.lua"
 include "Resources/Game/DB/Props/Stairs.lua"
+include "Resources/Game/DB/Props/Shops.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"

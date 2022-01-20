@@ -927,3 +927,31 @@ ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.StaticProp",
 	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
 }
+
+ItsyScape.Resource.Prop "Counter_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Isn't very useful for counting...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
+}
