@@ -28,6 +28,14 @@ function RockView:getTextureFilename()
 	return "Resources/Game/Props/Common/Rock/Texture.png"
 end
 
+function RockView:getDepletedTextureFilename()
+	return "Resources/Game/Props/Common/Rock/Texture.png"
+end
+
+function RockView:getModelFilename()
+	return "Resources/Game/Props/Common/Rock/Model.lstatic"
+end
+
 function RockView:load()
 	PropView.load(self)
 
@@ -38,7 +46,7 @@ function RockView:load()
 
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/Common/Rock/Texture.png",
+		self:getDepletedTextureFilename(),
 		function(texture)
 			self.depletedTexture = texture
 		end)
@@ -50,7 +58,7 @@ function RockView:load()
 		end)
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/Common/Rock/Model.lstatic",
+		self:getModelFilename(),
 		function(mesh)
 			self.decoration:fromGroup(mesh:getResource(), "CommonRock")
 			self.decoration:getMaterial():setTextures(self.texture)
