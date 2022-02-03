@@ -140,7 +140,7 @@ for name, ore in pairs(ORES) do
 			ItsyScape.Meta.GatherableProp {
 				Health = ore.health,
 				SpawnTime = ore.tier + 10,
-				Resource = Rock
+				Resource = VariantRock
 			}
 		end
 	end
