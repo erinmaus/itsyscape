@@ -43,6 +43,10 @@ function SceneNode:getBounds()
 end
 
 function SceneNode:_debugDrawBounds(renderer, delta)
+	if not Class.isCompatibleType(self, require "ItsyScape.Graphics.ParticleSceneNode") then
+		return
+	end
+
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('lequal', true)
 

@@ -103,3 +103,20 @@ do
 		Resource = M["Light_Fog"]
 	}
 end
+
+M["SaberToothShrimp"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 0,
+		PositionZ = 27,
+		Name = "SaberToothShrimp",
+		Map = M._MAP,
+		Resource = M["SaberToothShrimp"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SaberToothShrimp",
+		MapObject = M["SaberToothShrimp"]
+	}
+end
