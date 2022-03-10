@@ -44,3 +44,33 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Furnace_Default"
 }
+
+ItsyScape.Resource.Prop "Furnace_MoltenColumn" {
+	FurnaceAction,
+
+	ItsyScape.Action.UseCraftWindow()
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Furnace_MoltenColumn"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Furnace_MoltenColumn"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Molten column",
+	Resource = ItsyScape.Resource.Prop "Furnace_MoltenColumn"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "Looks like it's possible to use as a furnace.",
+	Resource = ItsyScape.Resource.Prop "Furnace_MoltenColumn"
+}

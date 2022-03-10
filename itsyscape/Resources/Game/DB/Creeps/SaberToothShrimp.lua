@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "SaberToothShrimp" {
-	ItsyScape.Action.Attack()
+	-- Nothing.
 }
 
 ItsyScape.Meta.PeepID {
