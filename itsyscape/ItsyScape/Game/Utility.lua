@@ -1940,22 +1940,27 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
-function Utility.Peep.face3D(self)
+function Utility.Peep.lookAt(self, target)
 	local rotation = self:getBehavior(RotationBehavior)
+	local selfPosition = Utility.Peep.getAbsolutePosition(self)
+	local peepPosition = Utility.Peep.getAbsolutePosition(target)
+	local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+	local xzPeepPosition = peepPosition * Vector.PLANE_XZ
+
+	rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+end
+
+function Utility.Peep.face3D(self)
 	local combatTarget = self:getBehavior(CombatTargetBehavior)
 	if combatTarget and combatTarget.actor then
 		local actor = combatTarget.actor
 		local peep = actor:getPeep()
 
 		if peep then
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
-			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-			local xzPeepPosition = peepPosition * Vector.PLANE_XZ
-
-			rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+			Utility.Peep.lookAt(self, peep)
 		end
 	else
+		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
 		if targetTile and targetTile.pathNode then
 			local position = self:getBehavior(PositionBehavior)
