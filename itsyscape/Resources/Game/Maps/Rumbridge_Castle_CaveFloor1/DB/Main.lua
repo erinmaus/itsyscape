@@ -137,3 +137,88 @@ do
 		MapObject = M["MagmaSnail1"]
 	}
 end
+
+M["MagmaSnail2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 2,
+		PositionZ = 15,
+		Name = "MagmaSnail2",
+		Map = M._MAP,
+		Resource = M["MagmaSnail2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MagmaSnail",
+		MapObject = M["MagmaSnail2"]
+	}
+end
+
+M["MagmaSnail3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 2,
+		PositionZ = 39,
+		Name = "MagmaSnail3",
+		Map = M._MAP,
+		Resource = M["MagmaSnail3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MagmaSnail",
+		MapObject = M["MagmaSnail3"]
+	}
+end
+
+M["MagmaSnail4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 2,
+		PositionZ = 51,
+		Name = "MagmaSnail4",
+		Map = M._MAP,
+		Resource = M["MagmaSnail4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MagmaSnail",
+		MapObject = M["MagmaSnail4"]
+	}
+end
+
+M["MagmaSnail5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 2,
+		PositionZ = 43,
+		Name = "MagmaSnail5",
+		Map = M._MAP,
+		Resource = M["MagmaSnail5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MagmaSnail",
+		MapObject = M["MagmaSnail5"]
+	}
+end
+
+M["MagmaSnail6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 2,
+		PositionZ = 49,
+		Name = "MagmaSnail6",
+		Map = M._MAP,
+		Resource = M["MagmaSnail6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MagmaSnail",
+		MapObject = M["MagmaSnail6"]
+	}
+end

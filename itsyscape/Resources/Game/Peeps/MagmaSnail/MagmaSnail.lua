@@ -14,10 +14,47 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local MagmaSnail = Class(Creep)
+
+function MagmaSnail.hasIronItemInInventory(peep, inventory)
+	local gameDB = peep:getDirector():getGameDB()
+
+	local broker = peep:getDirector():getItemBroker()
+	for item in broker:iterateItems(inventory) do
+		local resource = gameDB:getResource(item:getID(), "Item")
+		local metal = gameDB:getRecord("ResourceCategory", { Key = "Metal", Resource = resource })
+		if metal then
+			metal = metal:get("Value")
+
+			if metal and metal:lower() == "iron" then
+				return true
+			end
+		end
+	end
+end
+
+function MagmaSnail.probeForIronItem(peep)
+	local hasIronItem = false
+
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	if equipment and equipment.equipment then
+		equipment = equipment.equipment
+		hasIronItem = hasIronItem or MagmaSnail.hasIronItemInInventory(peep, equipment)
+	end
+
+	local inventory = peep:getBehavior(InventoryBehavior)
+	if inventory and inventory.inventory then
+		inventory = inventory.inventory
+		hasIronItem = hasIronItem or MagmaSnail.hasIronItemInInventory(peep, inventory)
+	end
+
+	return hasIronItem
+end
 
 function MagmaSnail:new(resource, name, ...)
 	Creep.new(self, resource, name or 'MagmaSnail_Base', ...)
