@@ -862,6 +862,9 @@ include "Resources/Game/DB/Creeps/Mummy.lua"
 include "Resources/Game/DB/Creeps/GoryMass.lua"
 include "Resources/Game/DB/Creeps/FungalDemogorgon.lua"
 include "Resources/Game/DB/Creeps/Sleepyrosy.lua"
+include "Resources/Game/DB/Creeps/SaberToothShrimp.lua"
+include "Resources/Game/DB/Creeps/MagmaSnail.lua"
+include "Resources/Game/DB/Creeps/MagmaJellyfish.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -920,6 +923,7 @@ include "Resources/Game/DB/Props/Hole.lua"
 include "Resources/Game/DB/Props/Doors.lua"
 include "Resources/Game/DB/Props/OldOnesTech.lua"
 include "Resources/Game/DB/Props/Stairs.lua"
+include "Resources/Game/DB/Props/Shops.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
