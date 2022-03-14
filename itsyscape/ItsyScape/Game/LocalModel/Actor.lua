@@ -291,7 +291,7 @@ function LocalActor:getActions(scope)
 		return {}
 	end
 
-	if self:getResource() and self:getCurrentHealth() > 0 then
+	if self:getResource() then
 		local actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
 		if self.peep then
 			local mapObject = Utility.Peep.getMapObject(self.peep)
