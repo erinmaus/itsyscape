@@ -37,6 +37,10 @@ function Projectile:load()
 	-- Nothing.
 end
 
+function Projectile:resetTime()
+	self.time = 0
+end
+
 function Projectile:getTime()
 	return self.time
 end
