@@ -24,7 +24,10 @@ local ORES = {
 	["Iron"] = {
 		tier = 10,
 		weight = 11.5,
-		health = 20
+		health = 20,
+		variants = {
+			"DeepSlate"
+		}
 	},
 
 	["Adamant"] = {
@@ -113,6 +116,34 @@ for name, ore in pairs(ORES) do
 		Language = "en-US",
 		Resource = Rock
 	}
+
+	if ore.variants then
+		for i = 1, #ore.variants do
+			local VariantRockName = string.format("%sRock_%s", name, ore.variants[i])
+			local VariantRock = ItsyScape.Resource.Prop(VariantRockName)
+
+			VariantRock {
+				MineAction
+			} 
+
+			ItsyScape.Meta.ResourceName {
+				Value = string.format("%s rock", name),
+				Language = "en-US",
+				Resource = VariantRock
+			}
+
+			ItsyScape.Meta.PeepID {
+				Value = "Resources.Game.Peeps.Props.BasicRock",
+				Resource = VariantRock
+			}
+
+			ItsyScape.Meta.GatherableProp {
+				Health = ore.health,
+				SpawnTime = ore.tier + 10,
+				Resource = VariantRock
+			}
+		end
+	end
 end
 
 ItsyScape.Meta.ResourceDescription {
@@ -167,6 +198,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Contains iron ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "IronRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains iron ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronRock_DeepSlate"
 }
 
 ItsyScape.Meta.ResourceDescription {
