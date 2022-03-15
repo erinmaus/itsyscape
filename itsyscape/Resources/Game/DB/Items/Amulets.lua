@@ -253,3 +253,168 @@ do
 		Resource = ItsyScape.Resource.Item "GoldenAmulet"
 	}
 end
+
+do
+	ItsyScape.Resource.Item "CopperRing" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Smith() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Hammer",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "CopperBar",
+				Count = 1
+			},
+			
+			Output {
+				Resource = ItsyScape.Resource.Item "CopperRing",
+				Count = 1
+			},
+			
+			Output {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForResource(2)
+			},
+			
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(2)
+			}
+		}
+	}
+
+	ItsyScape.Meta.Equipment {
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FINGER,
+		Resource = ItsyScape.Resource.Item "CopperRing"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(3) * 2,
+		Weight = 0,
+		Resource = ItsyScape.Resource.Item "CopperRing"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Copper ring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperRing"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not worth much, but it has the potential for so much more.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CopperRing"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "CopperRing"
+	}
+end
+
+do
+	ItsyScape.Resource.Item "GhostBindersRing" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Enchant() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Magic",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "CosmicRune",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "AirRune",
+				Count = 1
+			},
+			
+			Input {
+				Resource = ItsyScape.Resource.Item "CopperRing",
+				Count = 1
+			},
+			
+			Output {
+				Resource = ItsyScape.Resource.Item "GhostBindersRing",
+				Count = 1
+			},
+			
+			Output {
+				Resource = ItsyScape.Resource.Skill "Magic",
+				Count = ItsyScape.Utility.xpForResource(2)
+			}
+		}
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = 2,
+		AccuracySlash = 2,
+		AccuracyCrush = 2,
+		AccuracyMagic = 2,
+		AccuracyRanged = 2,
+		DefenseStab = 2,
+		DefenseSlash = 2,
+		DefenseCrush = 2,
+		DefenseMagic = 2,
+		DefenseRanged = 2,
+		StrengthMelee = 2,
+		StrengthRanged = 2,
+		StrengthMagic = 2,
+		Prayer = 4,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FINGER,
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(28),
+		Weight = -1,
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ghost binder's ring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Turns damaging attacks from undead and ghosts into healing.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Enchanted",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ghost binder's ring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Effect "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Has a 25% chance of turning damage dealt by ghosts and undead into healing.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Effect "GhostBindersRing"
+	}
+end
