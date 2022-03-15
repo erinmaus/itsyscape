@@ -427,8 +427,14 @@ function Weapon:onAttackHit(peep, target)
 		aggressor = peep
 	})
 
-	target:poke('receiveAttack', attack)
-	peep:poke('initiateAttack', attack)
+	if damage < 0 then
+		target:poke('heal', {
+			hitPoints = -damage
+		})
+	else
+		target:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+	end
 
 	self:applyCooldown(peep)
 
