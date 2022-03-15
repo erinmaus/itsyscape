@@ -91,6 +91,35 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Door_RumbridgeMansion"
 }
 
+ItsyScape.Resource.Prop "Door_RumbridgeCastle" {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeCastle"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Big door",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeCastle"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 4,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeCastle"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A door for giants.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_RumbridgeCastle"
+}
+
 ItsyScape.Resource.Prop "Bed_Rumbridge" {
 	ItsyScape.Action.Sleep()
 }
@@ -117,4 +146,51 @@ ItsyScape.Meta.MapObjectSize {
 	SizeY = 1.5,
 	SizeZ = 3.5,
 	MapObject = ItsyScape.Resource.Prop "Bed_Rumbridge"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Throne_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Earl's Throne",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "An example of form over function.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
+}
+
+ItsyScape.Resource.Prop "Banner_Rumbridge" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Banner_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Rumbridge banner",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Banner_Rumbridge"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Banner_Rumbridge"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Rumbridge's banner, representing the three pillars of Bastiel, Divine Arbiter's dogma, Arbitrationism.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Banner_Rumbridge"
 }

@@ -52,7 +52,8 @@ end
 function MapEditorApplication:new()
 	EditorApplication.new(self)
 
-	self.currentDecorationTileSet = "EmptyRuinsGiantsCarcass"
+	self.currentDecorationTileSet = "RumbridgeCabin"
+	self.currentDecorationColor = Color()
 
 	self.motion = false
 	self.decorationList = DecorationList(self)
@@ -61,6 +62,8 @@ function MapEditorApplication:new()
 	self.terrainToolPanel = TerrainToolPanel(self)
 	self.tileSetPalette = TileSetPalette(self)
 	self.propPalette = PropPalette(self)
+
+	self.decorationList.onSelect:register(self.onSelectDecorationGroup, self)
 
 	self.windows = {
 		self.decorationList,
@@ -151,6 +154,11 @@ function MapEditorApplication:updateGrid(stage, map, layer)
 	if layer == 1 then
 		self.mapGridSceneNode:fromMap(map, false)
 	end
+end
+
+function MapEditorApplication:onSelectDecorationGroup(_, _, decoration)
+	self.currentDecorationTileSet = decoration:getTileSetID()
+	self.decorationPalette:loadDecorations()
 end
 
 function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID)
@@ -338,7 +346,8 @@ function MapEditorApplication:mousePress(x, y, button)
 							tile,
 							Vector(x, y, z),
 							rotation,
-							scale)
+							scale,
+							self.currentDecorationColor)
 						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
@@ -639,7 +648,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								self.lastDecorationFeature:getID(),
 								self.lastDecorationFeature:getPosition(),
 								newRotation,
-								self.lastDecorationFeature:getScale())
+								self.lastDecorationFeature:getScale(),
+								self.lastDecorationFeature:getColor())
 							self:getGame():getStage():decorate(group, decoration)
 						end
 					end

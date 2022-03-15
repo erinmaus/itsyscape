@@ -10,8 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
+local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -22,6 +24,7 @@ local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 DecorationPalette = Class(Widget)
@@ -33,13 +36,8 @@ function DecorationPalette:new(application)
 	Widget.new(self)
 
 	self.application = application
-	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", application.currentDecorationTileSet))
-	self.texture = TextureResource()
-	do
-		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", application.currentDecorationTileSet))
-	end
 	self.camera = ThirdPersonCamera()
-	self.camera:setDistance(8)
+	self.camera:setDistance(12)
 	self.camera:setUp(Vector(0, -1, 0))
 
 	local windowWidth, windowHeight = love.window.getMode()
@@ -53,22 +51,21 @@ function DecorationPalette:new(application)
 	panel:setSize(width, windowHeight)
 	self:addChild(panel)
 
-	local scrollablePanel = ScrollablePanel(GridLayout)
-	scrollablePanel:setPosition(DecorationPalette.PADDING / 2, DecorationPalette.PADDING / 2)
-	scrollablePanel:setSize(width - DecorationPalette.PADDING, windowHeight - DecorationPalette.PADDING)
-	self:addChild(scrollablePanel)
+	self.buttonsPanel = ScrollablePanel(GridLayout)
+	self.buttonsPanel:setPosition(DecorationPalette.PADDING / 2, DecorationPalette.PADDING / 2)
+	self.buttonsPanel:setSize(width - DecorationPalette.PADDING, windowHeight - DecorationPalette.PADDING)
+	self:addChild(self.buttonsPanel)
 
-	local gridLayout = scrollablePanel:getInnerPanel()
-	gridLayout:setPosition(
-		DecorationPalette.PADDING / 2,
-		DecorationPalette.PADDING / 2)
-	gridLayout:setPadding(
-		DecorationPalette.PADDING,
-		DecorationPalette.PADDING)
-	gridLayout:setUniformSize(
-		true,
-		DecorationPalette.TILE_WIDTH,
-		DecorationPalette.TILE_HEIGHT)
+	self.currentGroup = false
+	self.currentGroupButton = false
+end
+
+function DecorationPalette:loadDecorations()
+	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
+	self.texture = TextureResource()
+	do
+		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", self.application.currentDecorationTileSet))
+	end
 
 	local buttons = {}
 
@@ -98,6 +95,7 @@ function DecorationPalette:new(application)
 			DecorationPalette.PADDING,
 			DecorationPalette.PADDING)
 		sceneSnippet:setCamera(self.camera)
+		sceneSnippet:setToolTip(ToolTip.Text(group))
 
 		button:addChild(sceneSnippet)
 
@@ -108,15 +106,41 @@ function DecorationPalette:new(application)
 		return a:getData('tile-group') < b:getData('tile-group')
 	end)
 
+	local setColorButton = Button()
+	setColorButton:setText("Set Color")
+	setColorButton.onClick:register(self.setColor, self)
+
+	table.insert(buttons, setColorButton)
+
+	local gridLayout = self.buttonsPanel:getInnerPanel()
+	gridLayout:setPosition(
+		DecorationPalette.PADDING / 2,
+		DecorationPalette.PADDING / 2)
+	gridLayout:setPadding(
+		DecorationPalette.PADDING,
+		DecorationPalette.PADDING)
+	gridLayout:setUniformSize(
+		true,
+		DecorationPalette.TILE_WIDTH,
+		DecorationPalette.TILE_HEIGHT)
+	gridLayout:setWrapContents(true)
+
+
+	local oldButtons = {}
+	for _, button in gridLayout:iterate() do
+		table.insert(oldButtons, button)
+	end
+
+	for i = 1, #oldButtons do
+		gridLayout:removeChild(oldButtons[i])
+	end
+
 	for i = 1, #buttons do
 		gridLayout:addChild(buttons[i])
 	end
 
-	scrollablePanel:setSize(width, windowHeight)
-	scrollablePanel:setScrollSize(width, math.floor(#buttons / 2 + 0.5) * DecorationPalette.TILE_HEIGHT + DecorationPalette.PADDING * 2)
-
-	self.currentGroup = false
-	self.currentGroupButton = false
+	self.buttonsPanel:setSize(width, windowHeight)
+	self.buttonsPanel:setScrollSize(gridLayout:getSize())
 end
 
 function DecorationPalette:open(x, y, parent)
@@ -125,6 +149,8 @@ function DecorationPalette:open(x, y, parent)
 
 	local root = parent or self.application:getUIView():getRoot()
 	root:addChild(self)
+
+	self:loadDecorations()
 end
 
 function DecorationPalette:close()
@@ -156,6 +182,22 @@ function DecorationPalette:select(group, button)
 		self.currentGroup = group
 		self.currentGroupButton = button
 	end
+end
+
+function DecorationPalette:setColor()
+	local prompt = PromptWindow(self.application)
+	prompt.onSubmit:register(function(_, color)
+		local red, green, blue = color:match("(%x%x)(%x%x)(%x%x)")
+
+		if red and green and blue then
+			red = tonumber(red, 16) / 255
+			green = tonumber(green, 16) / 255
+			blue = tonumber(blue, 16) / 255
+
+			self.application.currentDecorationColor = Color(red, green, blue, 1)
+		end
+	end)
+	prompt:open("Enter six-digit color hex code.", "Color")
 end
 
 function DecorationPalette:getCurrentGroup()

@@ -68,6 +68,62 @@ ItsyScape.Resource.Prop "DiningTableChair_Default" {
 	-- Nothing.
 }
 
+ItsyScape.Resource.Prop "DiningTable_Fancy" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTableProp",
+	Resource = ItsyScape.Resource.Prop "DiningTable_Fancy"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 4,
+	SizeZ = 9.5,
+	MapObject = ItsyScape.Resource.Prop "DiningTable_Fancy"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fancy dining table",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTable_Fancy"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Look at all that fancy food on the fancy table!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTable_Fancy"
+}
+
+ItsyScape.Resource.Prop "DiningTableChair_Fancy" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fancy dining chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Makes eating all the fancier!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
+}
+
 ActionType "DiningTable_Heal"
 
 ItsyScape.Meta.ActionTypeVerb {
@@ -99,6 +155,41 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Not the comfiest, but fooooooood!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Default"
+}
+
+ItsyScape.Resource.Prop "Fireplace_Default" {
+	ItsyScape.Action.Light_Prop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Snuff()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTorch",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fireplace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Keeps you warm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_Default"
 }
 
 ItsyScape.Resource.Prop "Crate_Default1" {
@@ -408,6 +499,34 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
 }
 
+ItsyScape.Resource.Prop "ComfyChair_Blue" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "...are there blue cows that give blue cowhide to make blue leather?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
 ItsyScape.Resource.Prop "Chair_Default" {
 	-- Nothing.
 }
@@ -464,6 +583,33 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
 }
 
+ItsyScape.Resource.Prop "ComfyCouch_Blue" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Comfy couch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Fits with a sort of Rumbridge-esque aesthetic.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
+}
 
 ItsyScape.Resource.Prop "Bookshelf_Default" {
 	-- Nothing.
@@ -659,4 +805,153 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Nasty!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Loo_Default"
+}
+
+ItsyScape.Resource.Prop "ArmorStand_Iron" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron armor stand",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "There's a note that says, \"Do not wear; for display only.\"",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
+}
+
+ItsyScape.Resource.Prop "Art1" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's herald",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Herald featuring Lightslayer, Bastiel's sword. Lightslayer is said to send the dead to eternal torture in the Daemon Dimension.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art1"
+}
+
+ItsyScape.Resource.Prop "Art2" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ugly piece of art",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Is that actually art...?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art2"
+}
+
+ItsyScape.Resource.Prop "Art3" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Seaside landscape",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A simple seaside landscape.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Art3"
+}
+
+ItsyScape.Resource.Prop "Throne_Rumbridge" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
+}
+
+ItsyScape.Resource.Prop "Counter_Default" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Isn't very useful for counting...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Counter_Default"
 }
