@@ -23,7 +23,9 @@ ItsyScape.Meta.ActionVerb {
 }
 
 ItsyScape.Resource.Prop "Anvil_Default" {
-	AnvilAction
+	AnvilAction,
+
+	ItsyScape.Action.UseCraftWindow()
 }
 
 ItsyScape.Meta.PeepID {

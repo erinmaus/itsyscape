@@ -44,9 +44,23 @@ function DecorationList:new(application)
 	self.newButton:setPosition(DecorationList.PADDING, DecorationList.PADDING)
 	self.newButton.onClick:register(function()
 		local namePrompt = PromptWindow(self.application)
+		local tileSetPrompt = PromptWindow(self.application)
+
+		local decorationName
+
 		namePrompt.onSubmit:register(function(_, name)
-			local t = { tileSetID = application.currentDecorationTileSet }
-			self.application:getGame():getStage():decorate(name, Decoration(t))
+			tileSetPrompt:open("Enter decoration tile set ID.", "Tile Set")
+			decorationName = name
+		end)
+
+		tileSetPrompt.onSubmit:register(function(_, name)
+			local decorationFilename = string.format("Resources/Game/TileSets/%s/Layout.lstatic", name)
+			if love.filesystem.getInfo(decorationFilename) then
+				local t = { tileSetID = name }
+				self.application:getGame():getStage():decorate(decorationName, Decoration(t))
+			else
+				Log.warn("Couldn't find decoration tile set '%s'.", name)
+			end
 		end)
 		namePrompt:open("Enter name for decoration.", "Name")
 	end)
@@ -180,6 +194,7 @@ function DecorationList:select(group, decoration, button)
 
 		self.onSelect(self, group, decoration)
 		self.currentDecoration = group
+		self.currentDecorationButton = button
 	end
 end
 
