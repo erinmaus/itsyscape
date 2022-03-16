@@ -1,5 +1,9 @@
-
 local M = include "Resources/Game/Maps/Test123/DB/Default.lua"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Test123.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
 	Value = "Home Zombi",
@@ -109,4 +113,8 @@ do
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
 	}
+end
+
+do
+	ItsyScape.Resource.Cutscene "Test123_Skilling"
 end
