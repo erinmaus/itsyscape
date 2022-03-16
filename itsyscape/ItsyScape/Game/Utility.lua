@@ -2820,10 +2820,38 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
 	peep:addResource("animation-idle-fishing-rod", idleFishingRodAnimation)
+	local actionBury = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
+	peep:addResource("animation-action-bury", actionBury)
+	local actionCook = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-cook", actionCook)
+	local actionCraft = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
+	peep:addResource("animation-action-craft", actionCraft)
+	local actionEnchant = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionEnchant_1/Script.lua")
+	peep:addResource("animation-action-enchant", actionEnchant)
+	local actionFletch = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionFletch_1/Script.lua")
+	peep:addResource("animation-action-fletch", actionFletch)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
 	peep:addResource("animation-action-shake", actionShake)
+	local actionSmelt = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionSmelt_1/Script.lua")
+	peep:addResource("animation-action-smelt", actionSmelt)
+	local actionSmith = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionSmith_1/Script.lua")
+	peep:addResource("animation-action-smith", actionSmith)
 	local defendShieldRightAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Defend_Shield_Right_1/Script.lua")
