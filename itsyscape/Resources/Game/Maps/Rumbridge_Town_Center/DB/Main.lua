@@ -170,3 +170,21 @@ do
 		Resource = M["Anchor_FromTown"]
 	}
 end
+
+M["Thernen"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 8,
+		PositionZ = 7,
+		Direction = -1,
+		Name = "Thernen",
+		Map = M._MAP,
+		Resource = M["Thernen"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Alchemist_Thernen",
+		MapObject = M["Thernen"]
+	}
+end
