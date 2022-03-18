@@ -115,6 +115,55 @@ do
 	}
 end
 
+M["Portal_ToTown"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 36,
+		PositionY = 5,
+		PositionZ = 62,
+		Name = "Portal_ToTown",
+		Map = M._MAP,
+		Resource = M["Portal_ToTown"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 2,
+		SizeZ = 4,
+		MapObject = M["Portal_ToTown"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToTown"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge Town Center",
+		Language = "en-US",
+		Resource = M["Portal_ToTown"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromPort",
+		Map = ItsyScape.Resource.Map "Rumbridge_Town_Center",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToTown"] {
+		TravelAction
+	}
+end
+
 M["Anchor_FirstMateLocked"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
