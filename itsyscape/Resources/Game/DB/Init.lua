@@ -881,6 +881,7 @@ include "Resources/Game/DB/Peeps/Svalbard.lua"
 -- Shops
 include "Resources/Game/DB/Shops/GeneralStore.lua"
 include "Resources/Game/DB/Shops/FishingStore.lua"
+include "Resources/Game/DB/Shops/Alchemist.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
