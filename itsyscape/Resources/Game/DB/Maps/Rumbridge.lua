@@ -16,6 +16,7 @@ include "Resources/Game/DB/Maps/Rumbridge/IsabelleIsland_Tower.lua"
 include "Resources/Game/DB/Maps/Rumbridge/HighChambersYendor.lua"
 include "Resources/Game/DB/Maps/Rumbridge/Rumbridge_Port.lua"
 include "Resources/Game/DB/Maps/Rumbridge/Rumbridge_Labs.lua"
+include "Resources/Game/DB/Maps/Rumbridge/Rumbridge_Town.lua"
 
 ItsyScape.Resource.Prop "Door_RumbridgeDungeon"
 
