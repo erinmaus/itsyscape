@@ -253,6 +253,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "GanymedesBow"
 }
 
+ItsyScape.Meta.Item {
+	Value = ItsyScape.Utility.valueForItem(120) * 5,
+	Weight = 5,
+	Resource = ItsyScape.Resource.Item "GanymedesBow"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Ganymede's Waltz",
 	Language = "en-US",
