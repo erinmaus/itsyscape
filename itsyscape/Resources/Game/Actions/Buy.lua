@@ -58,28 +58,36 @@ function Buy:perform(state, peep, quantity)
 	local brochure = gameDB:getBrochure()
 
 	quantity = math.min(quantity, self:count(state, Buy.FLAGS))
-	for i = 1, quantity do
-		for input in brochure:getInputs(self:getAction()) do
-			local resource = brochure:getConstraintResource(input)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+	if quantity < 1 then
+		return false, "can't buy anything"
+	end
 
-			state:take(resourceType.name, resource.name, input.count, Buy.FLAGS)
+	for input in brochure:getInputs(self:getAction()) do
+		local resource = brochure:getConstraintResource(input)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		local tookItem = state:take(resourceType.name, resource.name, input.count * quantity, Buy.FLAGS)
+		if not tookItem then
+			-- This can only happen if Action.count is wrong.
+			-- If that's the case, just log it and continue.
+			-- It's unfair to take a resources and bail without some reward. 
+			Log.error("Could not take %d of resource '%s' (resource type: '%s') when buying; incoming free item.", input.count * quantity, resource.name, resourceType.name)
 		end
+	end
 
-		for output in brochure:getOutputs(self:getAction()) do
-			local resource = brochure:getConstraintResource(output)
-			local resourceType = brochure:getResourceTypeFromResource(resource)
+	for output in brochure:getOutputs(self:getAction()) do
+		local resource = brochure:getConstraintResource(output)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			if not state:give(resourceType.name, resource.name, output.count, Buy.FLAGS) then
-				for input in brochure:getInputs(self:getAction()) do
-					local resource = brochure:getConstraintResource(input)
-					local resourceType = brochure:getResourceTypeFromResource(resource)
+		if not state:give(resourceType.name, resource.name, output.count * quantity, Buy.FLAGS) then
+			for input in brochure:getInputs(self:getAction()) do
+				local resource = brochure:getConstraintResource(input)
+				local resourceType = brochure:getResourceTypeFromResource(resource)
 
-					state:give(resourceType.name, resource.name, input.count, Buy.FLAGS)
-				end
-
-				return false, "not enough inventory space"
+				state:give(resourceType.name, resource.name, input.count * quantity, Buy.FLAGS)
 			end
+
+			return false, "not enough inventory space"
 		end
 	end
 
