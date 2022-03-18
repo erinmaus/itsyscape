@@ -177,4 +177,4 @@ function ConstraintsPanel:performLayout(doLogic)
 	end
 end
 
-return ConstraintsPanelww
+return ConstraintsPanel
