@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Rumbridge/Alchemist.lua
+-- Resources/Peeps/Rumbridge/Butcher.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,13 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
-local Alchemist = Class(Player)
+local Butcher = Class(Player)
 
-function Alchemist:new(resource, name, ...)
-	Player.new(self, resource, name or 'Alchemist', ...)
+function Butcher:new(resource, name, ...)
+	Player.new(self, resource, name or 'Butcher', ...)
 end
 
-function Alchemist:ready(director, game)
+function Butcher:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -32,30 +32,30 @@ function Alchemist:ready(director, game)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua")
+		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
 	local eyes = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Black.lua")
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
 	local hair = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/Messy_Black.lua")
+		"Resources/Game/Skins/PlayerKit1/Hair/Bald.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Alchemist.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/RedPlaid.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua")
+		"Resources/Game/Skins/PlayerKit1/Hands/RedGloves.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
 	local feet = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots2.lua")
+		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
 
 	Player.ready(self, director, game)
 end
 
-return Alchemist
+return Butcher
