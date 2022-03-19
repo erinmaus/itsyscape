@@ -35,3 +35,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Alchemist_Thernen"
 }
+
+local ShopAction = ItsyScape.Action.Shop()
+
+ItsyScape.Meta.ShopTarget {
+	Resource = ItsyScape.Resource.Shop "Standard_Butcher",
+	Action = ShopAction
+}
+
+ItsyScape.Resource.Peep "Butcher_Urgo" {
+	ShopAction
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Rumbridge.Butcher",
+	Resource = ItsyScape.Resource.Peep "Butcher_Urgo"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Urgo, Butcher",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Butcher_Urgo"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Likes cutting meat.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Butcher_Urgo"
+}

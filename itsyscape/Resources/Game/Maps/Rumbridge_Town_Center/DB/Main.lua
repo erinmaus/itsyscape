@@ -188,3 +188,39 @@ do
 		MapObject = M["Thernen"]
 	}
 end
+
+M["GeneralStoreOwner"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 5,
+		PositionY = 4,
+		PositionZ = 55,
+		Direction = 1,
+		Name = "GeneralStoreOwner",
+		Map = M._MAP,
+		Resource = M["GeneralStoreOwner"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GeneralStoreOwner_Standard",
+		MapObject = M["GeneralStoreOwner"]
+	}
+end
+
+M["Urgo"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 6,
+		PositionZ = 45,
+		Direction = 1,
+		Name = "Urgo",
+		Map = M._MAP,
+		Resource = M["Urgo"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Butcher_Urgo",
+		MapObject = M["Urgo"]
+	}
+end
