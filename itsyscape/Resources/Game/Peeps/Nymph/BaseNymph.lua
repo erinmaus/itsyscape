@@ -32,7 +32,7 @@ function BaseNymph:new(resource, name, ...)
 	movement.maxAcceleration = 12
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChangeDistance = 12
+	status.maxChaseDistance = 12
 
 	self:addBehavior(ActiveSpellBehavior)
 	self:addBehavior(StanceBehavior)
