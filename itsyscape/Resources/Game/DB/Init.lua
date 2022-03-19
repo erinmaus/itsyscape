@@ -819,6 +819,7 @@ include "Resources/Game/DB/Items/PrideCapes.lua"
 include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
 include "Resources/Game/DB/Items/FruitTrees.lua"
+include "Resources/Game/DB/Items/Meat.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -882,6 +883,7 @@ include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Shops/GeneralStore.lua"
 include "Resources/Game/DB/Shops/FishingStore.lua"
 include "Resources/Game/DB/Shops/Alchemist.lua"
+include "Resources/Game/DB/Shops/Butcher.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
