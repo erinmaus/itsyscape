@@ -23,6 +23,13 @@ ItsyScape.Resource.Peep "Cow_Base" {
 			Resource = ItsyScape.Resource.DropTable "Cow_Secondary",
 			Count = 1
 		}
+	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Cow_Tertiary",
+			Count = 1
+		}
 	}
 }
 
@@ -62,6 +69,13 @@ ItsyScape.Meta.DropTableEntry {
 	Count = 2,
 	Range = 1,
 	Resource = ItsyScape.Resource.DropTable "Cow_Secondary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Beef",
+	Weight = 1,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	
 }
 
 ItsyScape.Meta.Equipment {
