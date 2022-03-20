@@ -58,3 +58,10 @@ ItsyScape.Meta.Equipment {
 	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20),
 	Resource = ItsyScape.Resource.Peep "Chocoroach"
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Bug/Chocoroach_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Chocoroach"
+}
