@@ -81,11 +81,20 @@ end
 
 M["Ladder_ToKitchen"] = ItsyScape.Resource.MapObject.Unique()
 do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 0,
+		PositionZ = 25,
+		Name = "Ladder_ToKitchen",
+		Map = M._MAP,
+		Resource = M["Ladder_ToKitchen"]
+	}
+
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromBasement",
-		Map = ItsyScape.Resource.Map "Ladder_ToKitchen",
+		Map = ItsyScape.Resource.Map "Rumbridge_Castle",
 		Action = TravelAction
 	}
 

@@ -148,3 +148,43 @@ do
 		TravelAction
 	}
 end
+
+M["Ladder_ToBasement"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromKitchen",
+		Map = ItsyScape.Resource.Map "Rumbridge_Castle_Basement",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 2,
+		PositionZ = 29,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		Name = "Ladder_ToBasement",
+		Map = M._MAP,
+		Resource = M["Ladder_ToBasement"]
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		XProgressive = "Climbing-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_ToBasement"]
+	}
+
+	M["Ladder_ToBasement"] {
+		TravelAction
+	}
+end
