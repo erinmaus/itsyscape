@@ -267,11 +267,12 @@ function LocalActor:getBounds()
 	end
 
 	local position = self:getPosition()
+	local scale = self:getScale()
 
 	local size = self.peep:getBehavior(SizeBehavior)
 	if size then
-		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2)
-		local ySize = Vector(0, size.size.y, 0)
+		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2) * scale 
+		local ySize = Vector(0, size.size.y, 0) * scale
 		local min = position - xzSize
 		local max = position + xzSize + ySize
 
