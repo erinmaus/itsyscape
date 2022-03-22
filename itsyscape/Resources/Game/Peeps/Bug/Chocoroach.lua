@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local Bug = require "Resources.Game.Peeps.Bug.Bug"
 
 local Chocoroach = Class(Bug)
@@ -27,6 +28,9 @@ function Chocoroach:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 12
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(2, 3, 3)
 end
 
 function Chocoroach:ready(director, game)
