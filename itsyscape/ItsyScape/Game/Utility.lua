@@ -1972,8 +1972,6 @@ function Utility.Peep.face3D(self)
 			local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
 			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
-		else
-			rotation.rotation = Quaternion.IDENTITY
 		end
 	end
 
