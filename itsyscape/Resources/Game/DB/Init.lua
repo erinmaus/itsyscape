@@ -867,6 +867,7 @@ include "Resources/Game/DB/Creeps/SaberToothShrimp.lua"
 include "Resources/Game/DB/Creeps/MagmaSnail.lua"
 include "Resources/Game/DB/Creeps/MagmaJellyfish.lua"
 include "Resources/Game/DB/Creeps/Chocoroach.lua"
+include "Resources/Game/DB/Creeps/Boop.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
