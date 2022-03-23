@@ -17,6 +17,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Bug = Class(Creep)
@@ -25,6 +26,7 @@ function Bug:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Bug_Base', ...)
 
 	self:addBehavior(RotationBehavior)
+	self:addBehavior(ScaleBehavior)
 end
 
 function Bug:ready(director, game)

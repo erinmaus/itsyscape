@@ -674,30 +674,6 @@ do
 	}
 end
 
-M["WoodenLadder_Default2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
-		PositionY = 2.000000,
-		PositionZ = 29.000000,
-		RotationX = 0.000000,
-		RotationY = 0.707107,
-		RotationZ = 0.000000,
-		RotationW = 0.707107,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "WoodenLadder_Default2",
-		Map = M._MAP,
-		Resource = M["WoodenLadder_Default2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_Default2"]
-	}
-end
-
 M["Crate_Default14"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
