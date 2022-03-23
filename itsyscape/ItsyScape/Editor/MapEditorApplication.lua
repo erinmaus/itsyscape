@@ -332,23 +332,25 @@ function MapEditorApplication:mousePress(x, y, button)
 						motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
 						local t, i, j = motion:getTile()
-						local y = t:getInterpolatedHeight(0.5, 0.5)
-						local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
-						local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+						if t then
+							local y = t:getInterpolatedHeight(0.5, 0.5)
+							local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
-						local rotation, scale
-						if self.lastDecorationFeature then
-							rotation = self.lastDecorationFeature:getRotation()
-							scale = self.lastDecorationFeature:getScale()
+							local rotation, scale
+							if self.lastDecorationFeature then
+								rotation = self.lastDecorationFeature:getRotation()
+								scale = self.lastDecorationFeature:getScale()
+							end
+
+							self.lastDecorationFeature = decoration:add(
+								tile,
+								Vector(x, y, z),
+								rotation,
+								scale,
+								self.currentDecorationColor)
+							self:getGame():getStage():decorate(group, decoration)
 						end
-
-						self.lastDecorationFeature = decoration:add(
-							tile,
-							Vector(x, y, z),
-							rotation,
-							scale,
-							self.currentDecorationColor)
-						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
