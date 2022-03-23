@@ -188,3 +188,39 @@ do
 		TravelAction
 	}
 end
+
+M["SpiralStaircase_ToDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "SpiralStaircase_ToDungeon",
+		Map = M._MAP,
+		Resource = M["SpiralStaircase_ToDungeon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "SpiralStaircase_Default",
+		MapObject = M["SpiralStaircase_ToDungeon"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromGroundFloor",
+		Map = ItsyScape.Resource.Map "Rumbridge_Castle_Dungeon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		XProgressive = "Climbing-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["SpiralStaircase_ToDungeon"] {
+		TravelAction
+	}
+end

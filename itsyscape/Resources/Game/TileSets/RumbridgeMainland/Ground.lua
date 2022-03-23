@@ -48,6 +48,7 @@ function RumbridgeMainlandGround:new()
 	self:registerTile("brick", self.emitStone)
 	self:registerTile("wood", self.emitPlank)
 	self:registerTile("brick_wide", self.emitPlank)
+	self:registerTile("brick_wide_dark", self.emitPlank)
 end
 
 function RumbridgeMainlandGround:placeBricks(tileSet, map, i, j, tileSetTile, mapTile)
@@ -104,6 +105,9 @@ function RumbridgeMainlandGround:placePlanks(tileSet, map, i, j, tileSetTile, ma
 	local featureColor, featureScale
 	if tileSetTile.name == "brick_wide" then
 		featureColor = RumbridgeMainlandGround.STONE_WIDE_COLOR
+		featureScale = Vector(0.5, 1, 1)
+	elseif tileSetTile.name == "brick_wide_dark" then
+		featureColor = RumbridgeMainlandGround.STONE_BLACK_COLOR
 		featureScale = Vector(0.5, 1, 1)
 	else
 		featureColor = RumbridgeMainlandGround.PLANK_COLOR
