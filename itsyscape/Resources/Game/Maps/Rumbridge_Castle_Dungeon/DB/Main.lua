@@ -296,3 +296,88 @@ do
 		Resource = M["Anchor_FromCave"]
 	}
 end
+
+M["Boop1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 0,
+		PositionZ = 21,
+		Name = "Boop1",
+		Map = M._MAP,
+		Resource = M["Boop1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Boop",
+		MapObject = M["Boop1"]
+	}
+end
+
+M["Boop2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Boop2",
+		Map = M._MAP,
+		Resource = M["Boop2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Boop",
+		MapObject = M["Boop2"]
+	}
+end
+
+M["Boop3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 25,
+		Name = "Boop3",
+		Map = M._MAP,
+		Resource = M["Boop3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Boop",
+		MapObject = M["Boop3"]
+	}
+end
+
+M["Boop4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 0,
+		PositionZ = 7,
+		Name = "Boop4",
+		Map = M._MAP,
+		Resource = M["Boop4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Boop",
+		MapObject = M["Boop4"]
+	}
+end
+
+M["Boop5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Boop5",
+		Map = M._MAP,
+		Resource = M["Boop5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Boop",
+		MapObject = M["Boop5"]
+	}
+end
