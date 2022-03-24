@@ -22,7 +22,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
-local MapPathFinder = require "ItsyScape.World.MapPathFinder"
+local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
@@ -131,7 +131,7 @@ function LocalPlayer:findPath(i, j, k)
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = self.game:getDirector():getMap(k)
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = MapPathFinder(map)
+	local pathFinder = SmartPathFinder(map, peep)
 	return pathFinder:find(
 		{ i = playerI, j = playerJ },
 		{ i = i, j = j },
