@@ -122,6 +122,10 @@ function DeferredRendererPass:beginDraw(scene, delta)
 
 	self:walk(scene, delta)
 	self:walkLights(scene, delta)
+
+	table.sort(self.fog, function(a, b)
+		return a:getFarDistance() < b:getFarDistance()
+	end)
 end
 
 function DeferredRendererPass:endDraw(scene, delta)
@@ -135,7 +139,17 @@ function DeferredRendererPass:drawNodes(scene, delta)
 	local camera = self:getRenderer():getCamera()
 	if self.gBuffer then
 		self.gBuffer:use()
-		love.graphics.clear(self:getRenderer():getClearColor():get())
+
+		local clearColor
+		if #self.fog > 0 then
+			local lastFog = self.fog[#self.fog]
+			local lastFogLight = lastFog:toLight(delta)
+			clearColor = lastFogLight:getColor()
+		else
+			clearColor = self:getRenderer():getClearColor()
+		end
+
+		love.graphics.clear(clearColor:get())
 
 		camera:apply()
 	else
@@ -350,10 +364,6 @@ function DeferredRendererPass:drawFog(scene, delta)
 
 	self.fBuffer:use()
 	love.graphics.clear(0, 0, 0, 0, false, false)
-
-	table.sort(self.fog, function(a, b)
-		return a:getFarDistance() < b:getFarDistance()
-	end)
 
 	for i = 1, #self.fog do
 		self:drawFogNode(self.fog[i], delta)

@@ -21,6 +21,12 @@ local METALS = {
 		hammer = "Hammer"
 	},
 
+	["Iron"] = {
+		tier = 10,
+		weight = 31,
+		hammer = "Hammer"
+	},
+
 	["Itsy"] = {
 		tier = 50,
 		weight = 5,
@@ -317,6 +323,140 @@ do
 		Value = "Heavy and unwieldy, but with enough skill, can do some serious damage.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BronzeZweihander"
+	}
+end
+
+-- Iron
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(15, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(14, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "IronGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Don't let these gloves get wet.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.4),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "IronBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Awfully heavy for minimal defense.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "IronHelmet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Useless against a Rust Eater.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronHelmet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(11, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(12, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(18, 0.7),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "IronPlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Okay protection for your body.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronPlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "IronShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Blocks pebbles but probably not rocks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronShield"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(55, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(53),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "IronDagger"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Submerge it in seawater for a few years and you'll get your own trusty rusty dagger!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronDagger"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(57, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(57),
+		Prayer = 12,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "IronMace"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Crushes skulls. If those skulls are made of paper.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronMace"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(58, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(58),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "IronLongsword"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "More useful as a butter knife than a sword.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronLongsword"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(51, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.6),
+		DefenseRanged = 1,
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "IronZweihander"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "At least there's a cool animation if you use Tornado.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronZweihander"
 	}
 end
 
