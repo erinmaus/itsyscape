@@ -381,3 +381,54 @@ do
 		MapObject = M["Boop5"]
 	}
 end
+
+M["Guard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Guard1",
+		Map = M._MAP,
+		Resource = M["Guard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon",
+		MapObject = M["Guard1"]
+	}
+end
+
+M["Guard2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Guard2",
+		Map = M._MAP,
+		Resource = M["Guard2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon",
+		MapObject = M["Guard2"]
+	}
+end
+
+M["Guard3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Guard3",
+		Map = M._MAP,
+		Resource = M["Guard3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon",
+		MapObject = M["Guard3"]
+	}
+end
