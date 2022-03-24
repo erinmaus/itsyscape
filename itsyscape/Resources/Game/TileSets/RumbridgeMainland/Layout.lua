@@ -336,5 +336,13 @@
 		width = 128,
 		height = 128,
 		name = "brick_wide"
+	},
+
+	{
+		x = 128,
+		y = 128,
+		width = 128,
+		height = 128,
+		name = "brick_wide_dark"
 	}
 }
