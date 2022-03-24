@@ -41,7 +41,7 @@ local SHIELDS = {
 
 	["CottonCloth"] = {
 		name = "Boo book",
-		logs = "CommonLogs",
+		logs = "WillowLogs",
 		fabric = 3
 	}
 }
