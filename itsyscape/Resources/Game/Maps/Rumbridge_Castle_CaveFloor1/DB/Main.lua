@@ -94,13 +94,61 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 255,
+		ColorRed = 235,
 		ColorGreen = 30,
 		ColorBlue = 30,
 		NearDistance = 20,
 		FarDistance = 40,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
+	}
+end
+
+M["Anchor_FromDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 2,
+		PositionZ = 11,
+		Name = "Anchor_FromDungeon",
+		Map = M._MAP,
+		Resource = M["Anchor_FromDungeon"]
+	}
+end
+
+M["Ladder_ToDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 2,
+		PositionZ = 9,
+		Name = "Ladder_ToDungeon",
+		Map = M._MAP,
+		Resource = M["Ladder_ToDungeon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_ToDungeon"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromCave",
+		Map = ItsyScape.Resource.Map "Rumbridge_Castle_Dungeon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_ToDungeon"] {
+		TravelAction
 	}
 end
 
