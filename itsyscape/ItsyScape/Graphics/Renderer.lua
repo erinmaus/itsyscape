@@ -15,6 +15,7 @@ local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
+Renderer.DEFAULT_CLEAR_COLOR = Color(0.39, 0.58, 0.93, 1)
 
 function Renderer:new(isMobile)
 	self.cachedShaders = {}
@@ -31,7 +32,7 @@ function Renderer:new(isMobile)
 	self.width = 0
 	self.height = 0
 
-	self.clearColor = Color(0.39, 0.58, 0.93, 1)
+	self.clearColor = Renderer.DEFAULT_CLEAR_COLOR
 
 	self.cull = true
 	self.startTime = love.timer.getTime()
