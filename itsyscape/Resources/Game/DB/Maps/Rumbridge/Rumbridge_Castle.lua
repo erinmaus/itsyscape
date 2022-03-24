@@ -48,54 +48,54 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(10),
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(10),
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(10),
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(500),
+		Value = ItsyScape.Utility.xpForLevel(30),
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AdamantPlatebody",
+		Item = ItsyScape.Resource.Item "IronPlatebody",
 		Count = 1,
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AdamantBoots",
+		Item = ItsyScape.Resource.Item "IronBoots",
 		Count = 1,
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AdamantGloves",
+		Item = ItsyScape.Resource.Item "IronGloves",
 		Count = 1,
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AdamantLongsword",
+		Item = ItsyScape.Resource.Item "IronLongsword",
 		Count = 1,
 		Resource = Guard
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AdamantShield",
+		Item = ItsyScape.Resource.Item "IronShield",
 		Count = 1,
 		Resource = Guard
 	}
