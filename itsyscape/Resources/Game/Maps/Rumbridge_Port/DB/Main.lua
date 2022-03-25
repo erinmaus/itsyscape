@@ -249,3 +249,38 @@ do
 		TalkAction
 	}
 end
+
+M["IsabelleIslandSailor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "IsabelleIslandSailor",
+		Map = M._MAP,
+		Resource = M["IsabelleIslandSailor"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Sailor_Panicked",
+		MapObject = M["IsabelleIslandSailor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["IsabelleIslandSailor"],
+		Name = "Sailor",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Port/Dialog/IsabelleIslandSailor_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["IsabelleIslandSailor"] {
+		TalkAction
+	}
+end
