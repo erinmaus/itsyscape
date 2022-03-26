@@ -54,10 +54,10 @@ local Tree = BTreeBuilder.Node() {
 				event = "equipAxe"
 			},
 
-			Mashina.Peep.Talk {
-				message = "I WILL DECIDE YOUR FATE.",
-				duration = 4
-			},
+			-- Mashina.Peep.Talk {
+			-- 	message = "I WILL DECIDE YOUR FATE.",
+			-- 	duration = 4
+			-- },
 
 			Mashina.Peep.TimeOut {
 				duration = POST_SUMMON_WAIT
