@@ -196,26 +196,30 @@ function ForwardRendererPass:drawNodes(scene, delta)
 
 				currentShaderProgram:send("scape_NumLights", numLights)
 
-				for i = 1, numFog do
-					local f = self.fog[i]
+				if material:getIsFullLit() then
+					currentShaderProgram:send("scape_NumFogs", 0)
+				else
+					for i = 1, numFog do
+						local f = self.fog[i]
 
-					local eye
-					if f:getFollowMode() == f.FOLLOW_MODE_EYE then
-						eye = self:getRenderer():getCamera():getEye()
-					elseif f:getFollowMode() == f.FOLLOW_MODE_TARGET then
-						eye = self:getRenderer():getCamera():getPosition()
-					else
-						eye = Vector.ZERO
+						local eye
+						if f:getFollowMode() == f.FOLLOW_MODE_EYE then
+							eye = self:getRenderer():getCamera():getEye()
+						elseif f:getFollowMode() == f.FOLLOW_MODE_TARGET then
+							eye = self:getRenderer():getCamera():getPosition()
+						else
+							eye = Vector.ZERO
+						end
+
+						setFogProperties(
+							currentShaderProgram,
+							i,
+							f,
+							eye)
 					end
 
-					setFogProperties(
-						currentShaderProgram,
-						i,
-						f,
-						eye)
+					currentShaderProgram:send("scape_NumFogs", numFog)
 				end
-
-				currentShaderProgram:send("scape_NumFogs", numFog)
 			end
 
 			local d = node:getTransform():getGlobalDeltaTransform(delta)
