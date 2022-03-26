@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
@@ -34,6 +35,63 @@ function Dream:onLoad(filename, args, layer)
 		ceiling = 20,
 		heaviness = 0.5
 	})
+
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Dream:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
+	local cutscene = Utility.Map.playCutscene(self, "Dream_Teaser_TheEmptyKing", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self)
+
+	self.fogTime = 0
+end
+
+function Dream:onFinishCutscene()
+	Utility.UI.openGroup(
+		Utility.Peep.getPlayer(self),
+		Utility.UI.Groups.WORLD)
+end
+
+function Dream:onEngage(target, player)
+	target = target:getPeep()
+	player = player:getPeep()
+
+	Utility.Peep.attack(player, target, math.huge)
+end
+
+function Dream:onSplode(target)
+	target = target:getPeep()
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("GoryMassSplosion", Vector.ZERO, target)
+end
+
+function Dream:onWriteLine(line)
+	local _, _, ui = Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"DramaticText",
+		false,
+		{ line })
+end
+
+function Dream:onClearText()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
 end
 
 return Dream

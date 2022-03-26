@@ -45,14 +45,18 @@ end
 function Dream:onPlayCutscene()
 	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
 
-	local cutscene = Utility.Map.playCutscene(self, "Dream_Teaser2_TheEmptyKing", "StandardCutscene")
+	local cutscene = Utility.Map.playCutscene(self, "Dream_Teaser_TheEmptyKing", "StandardCutscene")
 	cutscene:listen('done', self.onPlayCutsceneAgain, self)
 
 	self.fogTime = 0
 end
 
 function Dream:onPlayCutsceneAgain()
-	self:pushPoke('playCutscene')
+	if not _DEBUG then
+		self:pushPoke('playCutscene')
+	else
+		Utility.UI.openGroup(Utility.Peep.getPlayer(self), Utility.UI.Groups.WORLD)
+	end
 end
 
 function Dream:onWriteLine(line)
