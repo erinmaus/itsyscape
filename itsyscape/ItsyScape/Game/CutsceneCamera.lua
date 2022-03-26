@@ -18,6 +18,12 @@ function CutsceneCamera:new(game)
 	self.director = game:getDirector()
 end
 
+function CutsceneCamera:translate(position, duration)
+	return function()
+		self.player:pokeCamera("translate", position, duration or 0)
+	end
+end
+
 function CutsceneCamera:target(entity)
 	return function()
 		local peep = entity:getPeep()
