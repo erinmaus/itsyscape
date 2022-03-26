@@ -19,7 +19,7 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CreepActorAnimatorCortex = Class(Cortex)
 CreepActorAnimatorCortex.WALK_PRIORITY = 1
 CreepActorAnimatorCortex.SKILL_PRIORITY = 5
-CreepActorAnimatorCortex.ATTACK_PRIORITY = math.huge
+CreepActorAnimatorCortex.ATTACK_PRIORITY = 1000
 CreepActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function CreepActorAnimatorCortex:new()
