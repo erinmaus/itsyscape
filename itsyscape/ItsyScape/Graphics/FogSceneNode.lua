@@ -55,6 +55,7 @@ function FogSceneNode:toLight(delta)
 	local result = LightSceneNode.toLight(self, delta)
 	local x, y, z = self:getTransform():getGlobalDeltaTransform(delta):transformPoint(0, 0, 0)
 
+	delta = 1 - delta
 	local previousNearDistance = self.previousNearDistance or self.nearDistance
 	local nearDistance = self.nearDistance * (1 - delta) + previousNearDistance * delta
 	local previousFarDistance = self.previousFarDistance or self.farDistance
