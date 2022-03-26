@@ -13,6 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
@@ -26,6 +27,67 @@ end
 
 function CutsceneEntity:getPeep()
 	return self.peep
+end
+
+function CutsceneEntity:playAttackAnimation(target)
+	return function()
+		local animation, projectile
+		do
+			local weapon = Utility.Peep.getEquippedWeapon(self.peep, true)
+			if weapon then
+				local animations = {
+					string.format("animation-attack-%s-%s", weapon:getBonusForStance(self.peep):lower(), weapon:getWeaponType()),
+					string.format("animation-attack-%s", weapon:getBonusForStance(self.peep):lower()),
+					string.format("animation-attack-%s", weapon:getWeaponType()),
+					"animation-attack"
+				}
+
+				for i = 1, #animations do
+					local resource = self.peep:getResource(
+						animations[i],
+						"ItsyScape.Graphics.AnimationResource")
+					if not animation then
+						animation = resource
+					end
+				end
+
+				projectile = weapon:getProjectile(self.peep)
+			else
+				animation = self.peep:getResource("animation-attack", "ItsyScape.Graphics.AnimationResource")
+			end
+
+			if animation then
+				local actor = self.peep:getBehavior(ActorReferenceBehavior)
+				if actor and actor.actor then
+					actor.actor:playAnimation('x-cutscene', math.huge, animation, true, 0)
+				end
+			end
+
+			if projectile then
+				local stage = self.peep:getDirector():getGameInstance():getStage()
+				stage:fireProjectile(projectile, self.peep, target:getPeep())
+			end
+		end
+	end
+end
+
+function CutsceneEntity:lookAt(target)
+	return function()
+		if Class.isCompatibleType(target, CutsceneEntity) then
+			Utility.Peep.lookAt(self.peep, target:getPeep())
+		elseif type(target) == 'string' then
+			local mapResource = Utility.Peep.getMapResource(self.peep)
+			local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
+			local rotation = self.peep:getBehavior(RotationBehavior)
+			if rotation then
+				local selfPosition = Utility.Peep.getPosition(self)
+				local anchorPosition = Vector(anchorX, anchorY, anchorZ)
+				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+				local xzAnchorPosition = peepPosition * Vector.PLANE_XZ
+				rotation.rotation = (Quaternion.lookAt(xzAnchorPosition, xzSelfPosition):getNormal())
+			end
+		end
+	end
 end
 
 function CutsceneEntity:walkTo(anchor)
