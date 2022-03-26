@@ -412,10 +412,18 @@ function Svalbard:equip(xWeapon, weapons)
 end
 
 function Svalbard:onEquipXWeapon(xWeapon)
+	if type(xWeapon) == 'string' then
+		xWeapon = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), xWeapon)
+	end
+
 	self:equip(xWeapon, Svalbard.WEAPONS)
 end
 
 function Svalbard:onEquipSpecialWeapon(xWeapon)
+	if type(xWeapon) == 'string' then
+		xWeapon = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), xWeapon)
+	end
+
 	local specials
 	if Class.isCompatibleType(xWeapon, Weapon) then
 		for i = 1, #Svalbard.WEAPONS do
