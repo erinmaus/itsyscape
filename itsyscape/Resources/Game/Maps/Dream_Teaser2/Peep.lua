@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local Dream = Class(Map)
 Dream.MIN_FOG = 0
@@ -42,6 +43,8 @@ function Dream:onLoad(filename, args, layer)
 end
 
 function Dream:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
 	local cutscene = Utility.Map.playCutscene(self, "Dream_Teaser2_TheEmptyKing", "StandardCutscene")
 	cutscene:listen('done', self.onPlayCutsceneAgain, self)
 
@@ -50,6 +53,14 @@ end
 
 function Dream:onPlayCutsceneAgain()
 	self:pushPoke('playCutscene')
+end
+
+function Dream:onWriteLine(line)
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"DramaticText",
+		false,
+		{ line })
 end
 
 return Dream
