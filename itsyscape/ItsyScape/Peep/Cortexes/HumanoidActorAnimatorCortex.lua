@@ -24,7 +24,7 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
 HumanoidActorAnimatorCortex.SKILL_PRIORITY = 5
-HumanoidActorAnimatorCortex.ATTACK_PRIORITY = math.huge
+HumanoidActorAnimatorCortex.ATTACK_PRIORITY = 1000
 HumanoidActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function HumanoidActorAnimatorCortex:new()
