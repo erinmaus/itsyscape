@@ -46,6 +46,14 @@ function CutsceneEntity:walkTo(anchor)
 	end
 end
 
+function CutsceneEntity:teleport(anchor)
+	return function()
+		local mapResource = Utility.Peep.getMapResource(self.peep)
+		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+		Utility.Peep.setPosition(self.peep, anchorPosition)
+	end
+end
+
 function CutsceneEntity:lerpPosition(anchor, duration, tween)
 	return function()
 		local E = 0.1
