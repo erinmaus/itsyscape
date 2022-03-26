@@ -143,6 +143,9 @@ function Cutscene:getSandbox()
 	sSandbox.Sequence = Cutscene.sequence
 	sSandbox.Parallel = Cutscene.parallel
 	sSandbox.Loop = Cutscene.loop
+	sSandbox.math = math
+	sSandbox.Vector = require "ItsyScape.Common.Math.Vector"
+	sSandbox.Quaternion = require "ItsyScape.Common.Math.Quaternion"
 
 	for name, entity in pairs(self.entities) do
 		sSandbox[name] = entity
