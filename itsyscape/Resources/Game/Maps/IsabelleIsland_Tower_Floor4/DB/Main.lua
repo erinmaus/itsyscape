@@ -118,3 +118,13 @@ do
 		TalkAction
 	}
 end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_Floor4_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Rosalind",
+		Cutscene = Cutscene,
+		Resource = M["Rosalind"]
+	}
+end
