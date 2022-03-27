@@ -81,7 +81,7 @@ function LabelStyle:draw(widget, state)
 		end
 
 		if self.textShadow then
-			love.graphics.setColor(0, 0, 0, 1)
+			love.graphics.setColor(0, 0, 0, self.color.a)
 			love.graphics.printf(text, x + 1, y + 1, self.width or width, self.align)
 		end
 
