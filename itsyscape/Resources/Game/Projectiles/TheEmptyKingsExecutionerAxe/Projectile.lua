@@ -16,10 +16,9 @@ local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local Axe = Class(Projectile)
-Axe.DURATION = 20 / 24 -- Frame 20 of a 24 FPS animation
+Axe.DURATION = 12 / 24 -- Frame 12 of a 24 FPS animation
 Axe.OFFSET_POSITION = Vector(0, 1, -1.5)
 Axe.OFFSET_ANGLE = -math.pi / 4
-
 
 function Axe:attach()
 	Projectile.attach(self)
