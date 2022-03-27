@@ -26,16 +26,7 @@ function Notification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
-	local x, y = 0, 0
-	do
-		for _, interface in self:getView():getInterfaces(id) do
-			local interfaceWidth, interfaceHeight = interface:getSize()
-			local interfaceX, interfaceY = interface:getPosition()
-			y = math.max(interfaceY + interfaceHeight, y)
-		end
-	end
-
-	self:setPosition(x + Notification.PADDING, y + Notification.PADDING)
+	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
 
 	local panel = Panel()
 	panel:setStyle(PanelStyle({
@@ -92,9 +83,15 @@ function Notification:new(id, index, ui)
 	self:setSize(width, height + Notification.BOTTOM)
 	panel:setSize(self:getSize())
 
-	if #state.requirements == 0 and #state.inputs == 0 then
-		self:setSize(0, 0)
-	end
+	self:setPosition(
+		x + Notification.PADDING,
+		y - Notification.PADDING - height - Notification.BOTTOM)
+
+	self:setSize(0, 0)
+end
+
+function Notification:getOverflow()
+	return true
 end
 
 return Notification
