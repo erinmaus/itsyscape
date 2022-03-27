@@ -4,6 +4,7 @@ ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Maps.Rumbridge_HexLabs_Floor1.Peep",
 	Resource = M._MAP
 }
+
 ItsyScape.Meta.ResourceName {
 	Value = "Hex Labs, Inc., Floor 1",
 	Language = "en-US",
@@ -323,5 +324,15 @@ do
 		Name = "StartMysteriousMachinations",
 		Action = TalkAction,
 		Map = M._MAP
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_HexLabs_Floor1_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Hex",
+		Cutscene = Cutscene,
+		Resource = M["Hex"]
 	}
 end

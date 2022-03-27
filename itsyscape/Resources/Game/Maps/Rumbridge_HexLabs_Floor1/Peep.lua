@@ -22,6 +22,12 @@ function HexLabs:onFinalize(director, game)
 	self:initMysteriousMachinations()
 end
 
+function HexLabs:onLoad(...)
+	Map.onLoad(self, ...)
+
+	self:prepareDebugCutscene()
+end
+
 function HexLabs:initMysteriousMachinations()
 	local director = self:getDirector()
 
@@ -53,6 +59,45 @@ function HexLabs:onAcceptMysteriousMachinations(hex)
 		local action = Utility.getAction(game, namedMapAction:get("Action"))
 		action.instance:perform(player:getState(), player, hex)
 	end
+end
+
+function HexLabs:prepareDebugCutscene()
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function HexLabs:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
+	local cutscene = Utility.Map.playCutscene(self, "Rumbridge_HexLabs_Floor1_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self)
+end
+
+function HexLabs:onFinishCutscene()
+	Utility.UI.openGroup(
+		Utility.Peep.getPlayer(self),
+		Utility.UI.Groups.WORLD)
+end
+
+function HexLabs:onWriteLine(line)
+	local _, _, ui = Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"DramaticText",
+		false,
+		{ line })
 end
 
 return HexLabs
