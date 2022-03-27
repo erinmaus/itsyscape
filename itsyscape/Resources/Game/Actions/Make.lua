@@ -8,6 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CacheRef = require "ItsyScape.Game.CacheRef"
+local GatherResourceCommand = require "ItsyScape.Game.GatherResourceCommand"
+local Utility = require "ItsyScape.Game.Utility"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local Action = require "ItsyScape.Peep.Action"
 
 local Make = Class(Action)
@@ -43,6 +50,63 @@ end
 
 function Make:getActionDuration(...)
 	return self.PAUSE
+end
+
+function Make:gather(state, player, prop, toolType, skill)
+	local gameDB = self:getGame():getGameDB()
+	if self:canPerform(state) then
+		local bestTool = Utility.Peep.getBestTool(player, toolType)
+		if bestTool then
+			local skin
+
+			local itemResource = gameDB:getResource(bestTool:getID(), "Item")
+			if itemResource then
+				local equipmentModelRecord = gameDB:getRecord("EquipmentModel", { Resource = itemResource })
+				if equipmentModelRecord then
+					skin = CacheRef(
+						equipmentModelRecord:get("Type"),
+						equipmentModelRecord:get("Filename"))
+				else
+					Log.error("No skin for tool '%s'.", bestTool:getID())
+				end
+
+				local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+				if equipmentRecord then
+					slot = equipmentRecord:get("EquipSlot")
+				else
+					Log.error("No equipment record for tool '%s'.", bestTool:getID())
+				end
+			else
+				Log.warn("No item resource for tool '%s', is it an XWeapon?", bestTool:getID())
+			end
+
+			Log.info("Using tool '%s'.", bestTool:getID())
+
+			local progress = prop:getBehavior(PropResourceHealthBehavior)
+			if progress then
+				local i, j, k = Utility.Peep.getTile(prop)
+				local walk = Utility.Peep.getWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
+				local face = CallbackCommand(Utility.Peep.face, player, prop)
+
+				if not walk then
+					return false
+				end
+
+				local gatherCommand = GatherResourceCommand(prop, bestTool, { skill = skill, skin = skin, action = self })
+				local callbackCommand = CallbackCommand(self.make, self, state, player, prop)
+				local queue = player:getCommandQueue()
+				queue:interrupt(CompositeCommand(nil, walk, face, gatherCommand, callbackCommand))
+
+				return true
+			else
+				Log.info("Resource '%s' depleted.", prop:getName())
+			end
+		else
+			Log.info("Does not have tool of type '%s'.", toolType)
+		end
+	end
+
+	return false
 end
 
 function Make:make(state, player, prop)
