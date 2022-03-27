@@ -13,7 +13,7 @@ local Mashina = require "ItsyScape.Mashina"
 
 local AXE = B.Reference("TheEmptyKing_BeginAttackLogic", "AXE")
 local AGGRESSOR = B.Reference("TheEmptyKing_BeginAttackLogic", "AGGRESSOR")
-local PRE_SUMMON_WAIT = 20 / 24
+local PRE_SUMMON_WAIT = 12 / 24
 local POST_SUMMON_WAIT = 1.25
 
 local Tree = BTreeBuilder.Node() {

@@ -152,6 +152,30 @@ do
 	}
 end
 
+M["Anchor_Debug_VsShrimp"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 2,
+		PositionZ = 31,
+		Name = "Anchor_Debug_VsShrimp",
+		Map = M._MAP,
+		Resource = M["Anchor_Debug_VsShrimp"]
+	}
+end
+
+M["Anchor_Debug_MagmaJellyfishTarget"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 2,
+		PositionZ = 15,
+		Name = "Anchor_Debug_MagmaJellyfishTarget",
+		Map = M._MAP,
+		Resource = M["Anchor_Debug_MagmaJellyfishTarget"]
+	}
+end
+
 M["SaberToothShrimp"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -285,5 +309,21 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "MagmaJellyfish",
 		MapObject = M["MagmaJellyfish1"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_CaveFloor1_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Shrimp",
+		Cutscene = Cutscene,
+		Resource = M["SaberToothShrimp"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "MagmaJellyfish",
+		Cutscene = Cutscene,
+		Resource = M["MagmaJellyfish1"]
 	}
 end

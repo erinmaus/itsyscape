@@ -146,30 +146,6 @@ do
 	}
 end
 
-M["Tesseract1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27.000000,
-		PositionY = 4.000000,
-		PositionZ = 31.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Tesseract1",
-		Map = M._MAP,
-		Resource = M["Tesseract1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Tesseract",
-		MapObject = M["Tesseract1"]
-	}
-end
-
 M["HexLabs_JakkenstoneShardAnalyzer_Pillar11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

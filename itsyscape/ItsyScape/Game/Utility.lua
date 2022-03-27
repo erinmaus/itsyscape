@@ -1942,12 +1942,14 @@ end
 
 function Utility.Peep.lookAt(self, target)
 	local rotation = self:getBehavior(RotationBehavior)
-	local selfPosition = Utility.Peep.getAbsolutePosition(self)
-	local peepPosition = Utility.Peep.getAbsolutePosition(target)
-	local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-	local xzPeepPosition = peepPosition * Vector.PLANE_XZ
+	if rotation then
+		local selfPosition = Utility.Peep.getAbsolutePosition(self)
+		local peepPosition = Utility.Peep.getAbsolutePosition(target)
+		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-	rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+	end
 end
 
 function Utility.Peep.face3D(self)
@@ -1962,7 +1964,7 @@ function Utility.Peep.face3D(self)
 	else
 		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
-		if targetTile and targetTile.pathNode then
+		if rotation and targetTile and targetTile.pathNode then
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 

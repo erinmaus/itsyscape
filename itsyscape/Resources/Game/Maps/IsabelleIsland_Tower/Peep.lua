@@ -17,4 +17,49 @@ function Tower:new(resource, name, ...)
 	Map.new(self, resource, name or 'Tower', ...)
 end
 
+function Tower:onLoad(...)
+	Map.onLoad(self, ...)
+
+	self:prepareDebugCutscene()
+end
+
+function Tower:prepareDebugCutscene()
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Tower:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
+	local cutscene = Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self)
+end
+
+function Tower:onFinishCutscene()
+	Utility.UI.openGroup(
+		Utility.Peep.getPlayer(self),
+		Utility.UI.Groups.WORLD)
+end
+
+function Tower:onWriteLine(line)
+	local _, _, ui = Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"DramaticText",
+		false,
+		{ line })
+end
+
 return Tower
