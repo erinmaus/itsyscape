@@ -1,6 +1,6 @@
 return Sequence {
 	Sequence {
-		Camera:zoom(50),
+		Camera:zoom(40),
 		Camera:target(Svalbard),
 		Camera:verticalRotate(-math.pi / 2 + math.pi / 8),
 		Svalbard:removeBehavior("MashinaBehavior"),
