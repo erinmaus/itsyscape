@@ -9,10 +9,14 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Command = require "ItsyScape.Peep.Command"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local GatherResourceCommand = Class(Command)
+GatherResourceCommand.FINISH_DELAY = 0.5
 
 function GatherResourceCommand:new(prop, tool, t)
 	Command.new(self)
@@ -22,6 +26,7 @@ function GatherResourceCommand:new(prop, tool, t)
 	self.tool = tool
 	self.skill = t.skill or false
 	self.action = t.action or false
+	self.skin = t.skin or false
 	self.time = 0
 	self.isFinished = false
 	self._onResourceObtained = function(...)
@@ -30,20 +35,22 @@ function GatherResourceCommand:new(prop, tool, t)
 end
 
 function GatherResourceCommand:getIsFinished()
-	return self.isFinished
+	return self.isFinished and self.time > self.cooldown
 end
 
 function GatherResourceCommand:onResourceObtained(peep, e)
 	self.isFinished = true
+	self.time = 0
+	self.cooldown = GatherResourceCommand.FINISH_DELAY
 end
 
 function GatherResourceCommand:onBegin(peep)
 	local itemManager = peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(self.tool:getID())
-	if logic:isCompatibleType(require "ItsyScape.Game.Weapon") then
+	if logic:isCompatibleType(Weapon) then
 		self.cooldown = logic:getCooldown(peep)
 	else
-		Log.warn("Unsupported logic for Item '%s'.", tool)
+		Log.warn("Unsupported logic for Item '%s'.", self.tool:getID())
 		self.cooldown = math.huge
 	end
 
@@ -55,14 +62,64 @@ function GatherResourceCommand:onBegin(peep)
 		skill = self.skill,
 		prop = self.prop
 	})
+
+	self:showTool(peep)
+end
+
+function GatherResourceCommand:showTool(peep)
+	if self.skin then
+		local currentWeapon = Utility.Peep.getEquippedWeapon(peep)
+		if currentWeapon then
+			local gameDB = peep:getDirector():getGameDB()
+			local itemResource = gameDB:getResource(currentWeapon:getID(), "Item")
+
+			if itemResource then
+				local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+				if equipmentRecord then
+					self.slot = equipmentRecord:get("EquipSlot")
+				else
+					Log.error("No equipment record for tool '%s'.", bestTool:getID())
+				end
+			else
+				Log.error("No item resource for '%s'.", currentWeapon:getID())
+			end
+		else
+			self.slot = Equipment.PLAYER_SLOT_RIGHT_HAND
+		end
+
+		if self.slot then
+			local actor = peep:getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				actor = actor.actor
+
+				actor:setSkin(
+					self.slot,
+					Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE,
+					self.skin)
+			end
+		end
+	end
+end
+
+function GatherResourceCommand:hideTool(peep)
+	if self.slot then
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor = actor.actor
+
+			actor:unsetSkin(self.slot, self.skin)
+		end
+	end
 end
 
 function GatherResourceCommand:onEnd(peep)
 	self.prop:silence('resourceObtained', self._onResourceObtained)
+	self:hideTool(peep)
 end
 
 function GatherResourceCommand:onInterrupt(peep)
 	self.prop:silence('resourceObtained', self._onResourceObtained)
+	self:hideTool(peep)
 end
 
 function GatherResourceCommand:update(delta, peep)

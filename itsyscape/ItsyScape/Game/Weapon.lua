@@ -61,24 +61,21 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		stats = false
 	end
 
-	-- TODO: combat multipliers
 	local style = weapon:getStyle()
-	local bonus, level
+	local bonusType, level
 	do
 		if style == Weapon.STYLE_MAGIC then
-			bonus = 'StrengthMagic'
+			bonusType = 'StrengthMagic'
 		elseif style == Weapon.STYLE_ARCHERY then
-			bonus = 'StrengthRanged'
+			bonusType = 'StrengthRanged'
 		elseif style == Weapon.STYLE_MELEE then
-			bonus = 'StrengthMelee'
+			bonusType = 'StrengthMelee'
 		end
 
 		local success, skill = weapon:getSkill(purpose)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
-
-		self.stat = skill
 	end
 
 	if purpose == Weapon.PURPOSE_KILL then
@@ -90,15 +87,31 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 				level = (level or 1) + 8
 			end
 		end
+
+		self.stat = skill
+
+		local bonuses = Utility.Peep.getEquipmentBonuses(peep)
+		self.bonus = (bonuses[bonusType] or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
+		self.bonus = 0
+
+		local gameDB = peep:getDirector():getGameDB()
+		local itemResource = gameDB:getResource(weapon:getID(), "Item")
+		if itemResource then
+			local equipmentRecord = gameDB:getRecord("Equipment", {
+				Resource = itemResource
+			})
+
+			if equipmentRecord then
+				self.bonus = equipmentRecord:get(bonusType)
+			end
+		end
+
 		level = (level or 1) + 8
 	end
 
-	self.bonusType = bonus
+	self.bonusType = bonusType
 	self.level = level
-
-	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-	self.bonus = (bonuses[bonus] or 0)
 
 	if target and target:hasBehavior(PlayerBehavior) then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)

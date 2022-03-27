@@ -1600,6 +1600,97 @@ function Utility.Peep.getEquippedItem(peep, slot)
 	end
 end
 
+function Utility.Peep.canEquipItem(peep, itemResource)
+	local director = peep:getDirector()
+
+	if type(itemResource) == 'string' then
+		itemResource = director:getGameDB():getResource(itemResource, "Item")
+	end
+
+	local actions = Utility.getActions(director:getGameInstance(), itemResource, 'inventory')
+
+	for i = 1, #actions do
+		if actions[i].instance:is("equip") then
+			return actions[i].instance:canPerform(peep:getState())
+		end
+	end
+
+	return false
+end
+
+function Utility.Peep.getToolsFromInventory(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local inventory = peep:getBehavior(InventoryBehavior)
+	if inventory and inventory.inventory then
+		inventory = inventory.inventory
+	else
+		return {}
+	end
+
+	local itemBroker = peep:getDirector():getItemBroker()
+	local itemManager = peep:getDirector():getItemManager()
+
+	local tools = {}
+	for item in itemBroker:iterateItems(inventory) do
+		local logic = itemManager:getLogic(item:getID())
+		local isLogicWeapon = Class.isCompatibleType(logic, Weapon)
+		local isToolOfType = isLogicWeapon and logic:getWeaponType() == toolType
+		local canEquipTool = Utility.Peep.canEquipItem(peep, item:getID())
+
+		if isToolOfType and canEquipTool then
+			table.insert(tools, {
+				item = item,
+				logic = logic
+			})
+		end
+	end
+
+	return tools
+end
+
+function Utility.Peep.getEquippedTool(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local logic, item = Utility.Peep.getEquippedWeapon(peep, true)
+	local isLogicWeapon = Class.isCompatibleType(logic, Weapon)
+	local isToolOfType = isLogicWeapon and logic:getWeaponType() == toolType
+
+	if isToolOfType then
+		return item, logic
+	end
+
+	return nil, nil
+end
+
+function Utility.Peep.getBestTool(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local tools
+	do
+		tools = Utility.Peep.getToolsFromInventory(peep, toolType)
+		local equippedItem, equippedLogic = Utility.Peep.getEquippedTool(peep, toolType)
+		if equippedItem and equippedLogic then
+			table.insert(tools, {
+				item = equippedItem,
+				logic = equippedLogic
+			})
+		end
+	end
+
+	if #tools < 1 then
+		return nil
+	end
+
+	for i = 1, #tools do
+		local roll = tools[i].logic:rollDamage(peep, Weapon.PURPOSE_TOOL)
+		tools[i].maxHit = roll:getMaxHit()
+	end
+
+	table.sort(tools, function(a, b) return a.maxHit > b.maxHit end)
+	return tools[1].logic
+end
+
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
@@ -1608,7 +1699,7 @@ function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	if weapon then
 		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
 		if logic then
-			return logic
+			return logic, weapon
 		end
 	end
 
