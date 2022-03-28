@@ -45,7 +45,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "In Soviet Realm, cows don't moo, they big moo.",
+	Value = "A factory that turns grass in cow hide.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
 }
