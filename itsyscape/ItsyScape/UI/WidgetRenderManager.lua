@@ -21,7 +21,7 @@ function WidgetRenderManager:new(inputProvider)
 	self.defaultRenderer = WidgetRenderer()
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
 	self.input = inputProvider
-	self.toolTip = false
+	self.toolTips = {}
 end
 
 function WidgetRenderManager:getCursor()
@@ -50,19 +50,28 @@ function WidgetRenderManager:setCursor(widget)
 end
 
 function WidgetRenderManager:setToolTip(duration, ...)
-	self.toolTip = ToolTip(...)
-	self.toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
-	self.toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+	local toolTip = ToolTip(...)
+	toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
+	toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
 
-	return self.toolTip
+	self.toolTips[toolTip] = true
+
+	return toolTip
 end
 
-function WidgetRenderManager:unsetToolTip()
-	self.toolTip = false
+function WidgetRenderManager:unsetToolTip(toolTip)
+	if toolTip then
+		self.toolTips[toolTip] = nil
+	end
 end
 
-function WidgetRenderManager:getToolTip()
-	return self.toolTip
+function WidgetRenderManager:getToolTips()
+	local toolTips = {}
+	for toolTip in pairs(self.toolTips) do
+		table.insert(toolTips, toolTip)
+	end
+
+	return toolTips
 end
 
 function WidgetRenderManager:hasRenderer(widgetType)
@@ -141,12 +150,15 @@ function WidgetRenderManager:stop()
 		love.graphics.pop()
 	end
 
-	if self.toolTip then
-		if self.toolTip:getDuration() < 0.5 then
-			self.toolTip = false
+	local toolTips = self:getToolTips()
+	for i = 1, #toolTips do
+		local toolTip = toolTips[i]
+
+		if toolTip:getDuration() < 0.5 then
+			self.toolTips[toolTip] = nil
 		else
 			love.graphics.push('all')
-			self:draw(self.toolTip, {}, true)
+			self:draw(toolTip, {}, true)
 			love.graphics.pop()
 		end
 	end
