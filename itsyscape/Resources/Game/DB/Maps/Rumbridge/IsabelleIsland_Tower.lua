@@ -294,7 +294,7 @@ do
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
-		Value = "Gesundheit!",
+		Value = "Seems a bit pretentious but he means well.",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm"
 	}
 end
