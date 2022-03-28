@@ -205,11 +205,11 @@ function UIView:examine(a, b)
 		end
 	end
 
-	self.renderManager:setToolTip(
-		math.max(#description * 1 / 16, 1.5), 
+	local toolTip = self.renderManager:setToolTip(
+		math.max(#description / 8, 1.5), 
 		ToolTip.Header(object),
 		ToolTip.Text(description))
-	self.renderManager:getToolTip():setStyle(PanelStyle({
+	toolTip:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Examine.9.png"
 	}, self.resources))
 end
@@ -267,8 +267,9 @@ end
 function UIView:update(delta)
 	self.root:update(delta)
 
-	if self.renderManager:getToolTip() then
-		self.renderManager:getToolTip():update(delta)
+	local toolTips = self.renderManager:getToolTips()
+	for i = 1, #toolTips do
+		toolTips[i]:update(delta)
 	end
 end
 
