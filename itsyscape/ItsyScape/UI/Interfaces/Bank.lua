@@ -24,6 +24,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local Bank = Class(Interface)
 
@@ -368,7 +369,6 @@ function Bank:addFilterButton(sectionIndex, filterIndex)
 	local icon = ItemIcon()
 	icon:setData('sectionIndex', sectionIndex)
 	icon:setData('filterIndex', filterIndex)
-	icon:setText('yewp filter button')
 	icon:bind('itemID', "filters[{sectionIndex}][{filterIndex}].item")
 	button:addChild(icon)
 
@@ -757,12 +757,17 @@ function Bank:updateItemLayout(layout, items, source)
 		button.onDrag:register(self.drag, self, source, layout)
 		button.onLeftClick:register(self.activate, self, source)
 		button.onRightClick:register(self.probe, self, source)
+		button.onMouseMove:register(self.examine, self, icon, items, i)
 
 		layout:addChild(button)
 	end
 
 	layout:setScrollSize(layout:getInnerPanel():getSize())
 	layout:setData('source', source)
+end
+
+function Bank:examine(icon, inventory, index)
+	self:examineItem(icon, inventory, index)
 end
 
 function Bank:getRightHandItem(layout, source, x, y)

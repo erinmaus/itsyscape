@@ -39,6 +39,46 @@ Equipment.SKIN_PRIORITY_ACCENT             = 10
 Equipment.SKIN_PRIORITY_EQUIPMENT          = 100
 Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE = 1000
 
+Equipment.STATS = {
+	"AccuracyStab",
+	"AccuracySlash",
+	"AccuracyCrush",
+	"AccuracyMagic",
+	"AccuracyRanged",
+	"DefenseStab",
+	"DefenseSlash",
+	"DefenseCrush",
+	"DefenseMagic",
+	"DefenseRanged",
+	"StrengthMelee",
+	"StrengthRanged",
+	"StrengthMagic",
+	"Prayer"
+}
+
+Equipment.OFFENSIVE_STATS = {
+	["AccuracyStab"] = "Stab",
+	["AccuracySlash"] = "Slash",
+	["AccuracyCrush"] = "Crush",
+	["AccuracyMagic"] = "Magic",
+	["AccuracyRanged"] = "Ranged",
+	["StrengthMelee"] = "Melee strength",
+	["StrengthRanged"] = "Ranged strength",
+	["StrengthMagic"] = "Magic strength"
+}
+
+Equipment.DEFENSIVE_STATS = {
+	["DefenseStab"] = "Stab",
+	["DefenseSlash"] = "Slash",
+	["DefenseCrush"] = "Crush",
+	["DefenseMagic"] = "Magic",
+	["DefenseRanged"] = "Ranged"
+}
+
+Equipment.MISC_STATS = {
+	["Prayer"] = "Divinity"
+}
+
 function Equipment:onEquip(peep)
 	-- Nothing.
 end

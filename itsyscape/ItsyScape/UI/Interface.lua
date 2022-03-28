@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 local Interface = Class(Widget)
@@ -82,6 +84,62 @@ end
 -- By default, it requests the state from the UI model.
 function Interface:getState()
 	return self:getUI():pull(self:getID(), self:getIndex()) or {}
+end
+
+function Interface:examineItem(widget, inventory, index)
+	local item = inventory[index]
+
+	if not item then
+		widget:setToolTip()
+		return
+	end
+
+	local object, description, stats = Utility.Item.getInfo(
+		item.id,
+		self:getView():getGame():getGameDB())
+
+	local action = item.actions[1]
+	if action then
+		object = action.verb .. " " .. object
+	end
+
+	local toolTip = {
+		ToolTip.Header(object),
+		ToolTip.Text(description)
+	}
+
+	if stats then
+		stats = Utility.Item.groupStats(stats)
+
+		if #stats.offensive > 0 then
+			table.insert(toolTip, ToolTip.Header("Offense"))
+			for i = 1, #stats.offensive do
+				local stat = stats.offensive[i]
+				local text = string.format("%s: %d", stat.niceName, stat.value)
+				table.insert(toolTip, ToolTip.Text(text))
+			end
+		end
+
+		if #stats.defensive > 0 then
+			table.insert(toolTip, ToolTip.Header("Defense"))
+			for i = 1, #stats.defensive do
+				local stat = stats.defensive[i]
+				local text = string.format("%s: %d", stat.niceName, stat.value)
+				table.insert(toolTip, ToolTip.Text(text))
+			end
+		end
+
+		if #stats.other > 0 then
+			table.insert(toolTip, ToolTip.Header("Other"))
+			for i = 1, #stats.other do
+				local stat = stats.other[i]
+				local text = string.format("%s: %d", stat.niceName, stat.value)
+				table.insert(toolTip, ToolTip.Text(text))
+			end
+		end
+	end
+
+	widget:setToolTip(unpack(toolTip))
 end
 
 return Interface
