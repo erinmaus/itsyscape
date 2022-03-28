@@ -3,7 +3,7 @@ message "What would you like to know?"
 
 PLAYER_NAME = _TARGET:getName()
 
-local CURSED_ORE = option "Cursed Ore"
+local CURSED_ORE = option "Kursed Ore"
 local ANCIENT_DRIFTWOOD = option "Ancient Driftwood"
 local SQUID_SKULL = option "Squid Skull"
 local NEVERMIND = option "Nevermind."
