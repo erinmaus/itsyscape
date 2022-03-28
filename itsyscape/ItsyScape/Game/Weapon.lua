@@ -62,7 +62,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	end
 
 	local style = weapon:getStyle()
-	local bonusType, level
+	local bonusType, level, bonuses
 	do
 		if style == Weapon.STYLE_MAGIC then
 			bonusType = 'StrengthMagic'
@@ -90,7 +90,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 		self.stat = skill
 
-		local bonuses = Utility.Peep.getEquipmentBonuses(peep)
+		bonuses = Utility.Peep.getEquipmentBonuses(peep)
 		self.bonus = (bonuses[bonusType] or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
 		self.bonus = 0
@@ -104,6 +104,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 			if equipmentRecord then
 				self.bonus = equipmentRecord:get(bonusType)
+				bonuses = { [bonusType] = self.bonus }
 			end
 		end
 
