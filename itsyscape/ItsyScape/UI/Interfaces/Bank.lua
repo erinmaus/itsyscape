@@ -52,15 +52,15 @@ Bank.ACTIVE_TAB_STYLE = {
 }
 
 Bank.INACTIVE_TAB_STYLE = {
-	inactive = "Resources/Renderers/Widget/Button/BankTab-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/BankTab-Hover.9.png",
-	pressed = "Resources/Renderers/Widget/Button/BankTab-Pressed.9.png"
+	inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+	hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+	pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
 }
 
 Bank.BUTTON_STYLE = {
-	inactive = "Resources/Renderers/Widget/Button/Purple-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/Purple-Hover.9.png",
-	pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png",
+	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 	fontSize = 24
 }
@@ -87,8 +87,8 @@ Bank.LABEL_STYLE = {
 
 Bank.SECTION_TITLE_STYLE = {
 	inactive = Color(0, 0, 0, 0),
-	hover = Color(0.7, 0.5, 0.7),
-	active = Color(0.6, 0.4, 0.6),
+	hover = Color(0.7, 0.6, 0.5),
+	active = Color(0.5, 0.4, 0.3),
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 	fontSize = 24,
 	color = Color(1, 1, 1, 1),
@@ -97,9 +97,9 @@ Bank.SECTION_TITLE_STYLE = {
 }
 
 Bank.TEXT_INPUT_STYLE = {
-	inactive = "Resources/Renderers/Widget/TextInput/Purple-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/TextInput/Purple-Hover.9.png",
-	active = "Resources/Renderers/Widget/TextInput/Purple-Active.9.png",
+	inactive = "Resources/Renderers/Widget/TextInput/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/TextInput/Default-Hover.9.png",
+	active = "Resources/Renderers/Widget/TextInput/Default-Active.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 	fontSize = 24,
 	color = Color(1, 1, 1, 1),
@@ -116,7 +116,7 @@ function Bank:new(id, index, ui)
 	self.panel = Panel()
 	self.panel:setSize(w, h)
 	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/FullscreenInterface.9.png"
+		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
 	self:addChild(self.panel)
 
@@ -140,7 +140,7 @@ function Bank:new(id, index, ui)
 
 	local tabsBackground = Panel()
 	tabsBackground:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/FullscreenGroup.9.png"
+		image = "Resources/Renderers/Widget/Panel/Group.9.png"
 	}, ui:getResources()))
 	tabsBackground:setPosition(self.tabsLayout:getPosition())
 	tabsBackground:setSize(self.tabsLayout:getSize())
@@ -190,7 +190,7 @@ function Bank:new(id, index, ui)
 
 	local bankBackground = Panel()
 	bankBackground:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/FullscreenGroup.9.png"
+		image = "Resources/Renderers/Widget/Panel/Group.9.png"
 	}, ui:getResources()))
 	bankBackground:setPosition(self.bankLayout:getPosition())
 	bankBackground:setSize(self.bankLayout:getSize())
@@ -259,7 +259,7 @@ function Bank:new(id, index, ui)
 
 	local inventoryBackground = Panel()
 	inventoryBackground:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/FullscreenGroup.9.png"
+		image = "Resources/Renderers/Widget/Panel/Group.9.png"
 	}, ui:getResources()))
 	inventoryBackground:setPosition(self.inventoryLayout:getPosition())
 	inventoryBackground:setSize(self.inventoryLayout:getSize())
@@ -744,9 +744,9 @@ function Bank:updateItemLayout(layout, items, source)
 			Bank.ICON_PADDING)
 
 		button:setStyle(ButtonStyle({
-			inactive = "Resources/Renderers/Widget/Button/BankItem.9.png",
-			hover = "Resources/Renderers/Widget/Button/BankItem.9.png",
-			pressed = "Resources/Renderers/Widget/Button/BankItem.9.png"
+			inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
 		}, self:getView():getResources()))
 
 		button:addChild(icon)
