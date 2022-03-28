@@ -979,6 +979,28 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.getStats(id, gameDB)
+	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+
+	local itemResource = gameDB:getResource(id, "Item")
+	local statsRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+
+	if statsRecord then
+		local stats = {}
+		for i = 1, #EquipmentInventoryProvider.STATS do
+			local statName = EquipmentInventoryProvider.STATS[i]
+			local statValue = statsRecord:get(statName)
+			if statValue ~= 0 then
+				table.insert(stats, { name = statName, value = statValue })
+			end
+		end
+
+		return stats
+	end
+
+	return nil
+end
+
 function Utility.Item.getInfo(id, gameDB, lang)
 	lang = lang or "en-US"
 
@@ -992,7 +1014,35 @@ function Utility.Item.getInfo(id, gameDB, lang)
 		description = string.format("It's %s, as if you didn't know.", object)
 	end
 
-	return name, description
+	stats = Utility.Item.getStats(id, gameDB)
+
+	return name, description, stats
+end
+
+function Utility.Item.groupStats(stats)
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local offensive, defensive, other = {}, {}, {}
+	for i = 1, #stats do
+		local stat = stats[i]
+
+		if Equipment.OFFENSIVE_STATS[stat.name] then
+			table.insert(offensive, stat)
+			stat.niceName = Equipment.OFFENSIVE_STATS[stat.name]
+		elseif Equipment.DEFENSIVE_STATS[stat.name] then
+			table.insert(defensive, stat)
+			stat.niceName = Equipment.DEFENSIVE_STATS[stat.name]
+		else
+			table.insert(other, stat)
+			stat.niceName = Equipment.MISC_STATS[stat.name] or stat.name
+		end
+	end
+
+	return {
+		offensive = offensive,
+		defensive = defensive,
+		other = other
+	}
 end
 
 function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
