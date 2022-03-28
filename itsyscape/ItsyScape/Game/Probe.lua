@@ -188,6 +188,7 @@ function Probe:walk()
 		local action = {
 			id = "Walk",
 			verb = "Walk",
+			type = "walk",
 			object = "here", -- lol
 			description = "Walk to this location.",
 			callback = function()
