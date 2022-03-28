@@ -117,8 +117,8 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.GatherableProp {
-	Health = 15,
-	SpawnTime = 15,
+	Health = 5,
+	SpawnTime = 5,
 	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }
 
