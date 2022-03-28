@@ -197,26 +197,7 @@ end
 function PlayerEquipment:examine(index, button)
 	local icon = button:getData('icon')
 
-	local item = self:getState().items[index]
-	if not item then
-		icon:setToolTip()
-		return
-	end
-
-	local icon = button:getData('icon')
-
-	local object, description = Utility.Item.getInfo(
-		item.id,
-		self:getView():getGame():getGameDB())
-
-	local action = item.actions[1]
-	if action then
-		object = action.verb .. " " .. object
-	end
-
-	icon:setToolTip(
-		ToolTip.Header(object),
-		ToolTip.Text(description))
+	self:examineItem(icon, self:getState().items, index)
 end
 
 function PlayerEquipment:probe(button)
