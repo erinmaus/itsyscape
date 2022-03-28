@@ -518,7 +518,7 @@ function DemoApplication:update(delta)
 			else
 				self:hideToolTip()
 			end
-		end, { ['actors'] = true, ['props'] = true })
+		end, { ['actors'] = true, ['props'] = true, ['loot'] = true })
 
 		self.mouseMoved = false
 		self.toolTipTick = DemoApplication.PROBE_TICK

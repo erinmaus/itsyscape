@@ -216,12 +216,17 @@ function Probe:loot()
 		local items = self.game:getStage():getItemsAtTile(i, j, k)
 
 		for _, item in pairs(items) do
-			local name
+			local name, description
 			do
 				-- TODO: [LANG]
 				name = Utility.Item.getName(item.id, self.gameDB, "en-US")
 				if not name then
 					name = "*" .. item.id
+				end
+
+				description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
+				if not description then
+					description = "Pick up item from the ground."
 				end
 			end
 
@@ -246,7 +251,7 @@ function Probe:loot()
 				id = "Take",
 				verb = "Take",
 				object = object,
-				description = "Pick up item from the ground.",
+				description = description,
 				callback = function()
 					self.game:getStage():takeItem(i, j, k, item.ref)
 				end,
