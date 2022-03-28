@@ -481,6 +481,17 @@ function DemoApplication:updatePlayerMovement()
 	end
 end
 
+function DemoApplication:hideToolTip()
+	if self.toolTipWidget then
+		local renderer = self:getUIView():getRenderManager()
+		renderer:unsetToolTip(self.toolTipWidget)
+		self.toolTipWidget = nil
+		self.toolTip = nil
+		self.showingToolTip = false
+		self.lastToolTipObject = false
+	end
+end
+
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
@@ -494,20 +505,18 @@ function DemoApplication:update(delta)
 			if action and (action.type ~= 'examine' and not action.suppress) then
 				local text = string.format("%s %s", action.verb, action.object)
 				self.showingToolTip = true
-				if self.lastToolTipObject ~= action.id then
+				if self.lastToolTipObject ~= action.id or not self.showingToolTip then
 					self.toolTip = {
 						ToolTip.Header(text),
 						ToolTip.Text(action.description)
 					}
 					self.lastToolTipObject = action.id
+
+					renderer:unsetToolTip(self.toolTipWidget)
+					self.toolTipWidget = nil
 				end
 			else
-				if renderer:getToolTip() == self.toolTipWidget then
-					renderer:unsetToolTip()
-					self.toolTip = nil
-					self.showingToolTip = false
-					self.lastToolTipObject = false
-				end
+				self:hideToolTip()
 			end
 		end, { ['actors'] = true, ['props'] = true })
 
@@ -517,9 +526,15 @@ function DemoApplication:update(delta)
 
 	if self.showingToolTip then
 		local renderer = self:getUIView():getRenderManager()
-		self.toolTipWidget = renderer:setToolTip(
-			math.huge,
-			unpack(self.toolTip))
+		if not self.toolTipWidget then
+			self.toolTipWidget = renderer:setToolTip(math.huge, unpack(self.toolTip))
+		else
+			if self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition()) then
+				self:hideToolTip()
+			else
+				self.toolTipWidget:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+			end
+		end
 	end
 
 	if self.titleScreen then
