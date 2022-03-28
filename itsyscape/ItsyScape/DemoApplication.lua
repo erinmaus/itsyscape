@@ -492,36 +492,38 @@ function DemoApplication:hideToolTip()
 	end
 end
 
-function DemoApplication:update(delta)
-	Application.update(self, delta)
-
-	self:updatePlayerMovement()
+function DemoApplication:updateToolTip(delta)
+	local isUIBlocking = self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition())
 
 	self.toolTipTick = self.toolTipTick - delta
 	if self.mouseMoved and self.toolTipTick < 0 then
-		self:probe(self.mouseX, self.mouseY, false, function(probe)
-			local action = probe:toArray()[1]
-			local renderer = self:getUIView():getRenderManager()
-			if action and (action.type ~= 'examine' and not action.suppress) then
-				local text = string.format("%s %s", action.verb, action.object)
-				self.showingToolTip = true
-				if self.lastToolTipObject ~= action.id or not self.showingToolTip then
-					self.toolTip = {
-						ToolTip.Header(text),
-						ToolTip.Text(action.description)
-					}
-					self.lastToolTipObject = action.id
+		if isUIBlocking then
+			self:hideToolTip()
+		else
+			self:probe(self.mouseX, self.mouseY, false, function(probe)
+				local action = probe:toArray()[1]
+				local renderer = self:getUIView():getRenderManager()
+				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
+					local text = string.format("%s %s", action.verb, action.object)
+					self.showingToolTip = true
+					if self.lastToolTipObject ~= action.id or not self.showingToolTip then
+						self.toolTip = {
+							ToolTip.Header(text),
+							ToolTip.Text(action.description)
+						}
+						self.lastToolTipObject = action.id
 
-					renderer:unsetToolTip(self.toolTipWidget)
-					self.toolTipWidget = nil
+						renderer:unsetToolTip(self.toolTipWidget)
+						self.toolTipWidget = nil
+					end
+				else
+					self:hideToolTip()
 				end
-			else
-				self:hideToolTip()
-			end
-		end, { ['actors'] = true, ['props'] = true, ['loot'] = true })
+			end, { ['actors'] = true, ['props'] = true, ['loot'] = true })
 
-		self.mouseMoved = false
-		self.toolTipTick = DemoApplication.PROBE_TICK
+			self.mouseMoved = false
+			self.toolTipTick = DemoApplication.PROBE_TICK
+		end
 	end
 
 	if self.showingToolTip then
@@ -536,6 +538,13 @@ function DemoApplication:update(delta)
 			end
 		end
 	end
+end
+
+function DemoApplication:update(delta)
+	Application.update(self, delta)
+
+	self:updatePlayerMovement()
+	self:updateToolTip(delta)
 
 	if self.titleScreen then
 		self.titleScreen:update(delta)
