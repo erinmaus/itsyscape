@@ -3,7 +3,7 @@
 		['invert-y'] = true
 	},
 
-	texture = "Resources/Game/TileSets/Azathoth/Texture.png",
+	texture = "Resources/Game/TileSets/Azathoth/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 

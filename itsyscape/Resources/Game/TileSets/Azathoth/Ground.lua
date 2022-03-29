@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/TileSets/EmptyRuins/Ground.lua
+-- Resources/Game/TileSets/Azathoth/Ground.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -15,36 +15,29 @@ local GroundDecorations = require "ItsyScape.World.GroundDecorations"
 local BrickBlock = require "ItsyScape.World.GroundDecorations.BrickBlock"
 local GrassBlock = require "ItsyScape.World.GroundDecorations.GrassBlock"
 
-local EmptyRuinsGround = Class(GroundDecorations)
+local AzathothGround = Class(GroundDecorations)
 
-function EmptyRuinsGround:new()
-	GroundDecorations.new(self, "EmptyRuins")
+function AzathothGround:new()
+	GroundDecorations.new(self, "Azathoth")
 
 	self:registerTile("grass", GrassBlock:Bind(self) {
-		COLOR = Color(0.3, 0.5, 0.4, 1.0),
+		COLOR = Color(0.8, 0.2, 0.2, 1.0),
 		FEATURE = "grass"
 	})
 
-	self:registerTile("purple-stone", BrickBlock:Bind(self) {
-		COLOR = Color(0.3, 0.3, 0.5, 1.0),
-		FEATURE = "brick",
-		SCALE = Vector.ONE,
-		NUM_FEATURES = 3
-	})
-
-	self:registerTile("green-stone", BrickBlock:Bind(self) {
-		COLOR = Color(0.3, 0.5, 0.3, 1.0),
+	self:registerTile("checkered", BrickBlock:Bind(self) {
+		COLOR = Color(0.2, 0.2, 0.2, 1.0),
 		FEATURE = "brick",
 		SCALE = Vector.ONE,
 		NUM_FEATURES = 3
 	})
 
 	self:registerTile("wood", BrickBlock:Bind(self) {
-		COLOR = Color(0.3, 0.2, 0.3, 1.0),
-		FEATURE = "brick",
-		SCALE = Vector(2, 1, 1),
+		COLOR = Color(0.5, 0.3, 0.2, 1.0),
+		FEATURE = "plank",
+		SCALE = Vector.ONE,
 		NUM_FEATURES = 2
 	})
 end
 
-return EmptyRuinsGround
+return AzathothGround

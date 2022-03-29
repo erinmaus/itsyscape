@@ -19,6 +19,7 @@ Brick.THRESHOLD = 0.45
 Brick.FUDGE = 0.33
 Brick.Y_OFFSET = 0.25
 Brick.COLOR = Color(1, 0, 0, 1)
+Brick.USE_TILE_COLOR = false
 Brick.SCALE = Vector.ONE
 Brick.FEATURE = "brick"
 Brick.NUM_FEATURES = 2
@@ -48,12 +49,23 @@ function Brick:emit(tileSet, map, i, j, tileSetTile, mapTile)
 
 	colorScale = (colorScale + 1) / 2
 
+	local color
+	if self.USE_TILE_COLOR then
+		color = Color(
+			mapTile.red * (tileSetTile.colorRed or 1),
+			mapTile.green * (tileSetTile.colorGreen or 1),
+			mapTile.blue * (tileSetTile.colorColor or 1),
+			1)
+	else
+		color = self.COLOR
+	end
+
 	self:addFeature(
 		self.FEATURE .. texture,
 		center,
 		Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
 		self.SCALE,
-		self.COLOR * Color(colorScale, colorScale, colorScale, 1))
+		color * Color(colorScale, colorScale, colorScale, 1))
 end
 
 return Brick

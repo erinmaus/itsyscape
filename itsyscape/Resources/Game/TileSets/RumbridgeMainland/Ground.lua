@@ -21,7 +21,7 @@ function RumbridgeMainlandGround:new()
 	GroundDecorations.new(self, "RumbridgeMainland")
 
 	self:registerTile("grass", GrassBlock:Bind(self) {
-		GRASS_COLOR = Color(0.5, 0.7, 0.1, 1.0),
+		COLOR = Color(0.5, 0.7, 0.1, 1.0),
 		FEATURE = "grass"
 	})
 
