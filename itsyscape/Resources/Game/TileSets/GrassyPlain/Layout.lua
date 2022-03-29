@@ -165,5 +165,13 @@
 		width = 128,
 		height = 128,
 		name = "invisible"
+	},
+
+	{
+		x = 128,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "sand"
 	}
 }
