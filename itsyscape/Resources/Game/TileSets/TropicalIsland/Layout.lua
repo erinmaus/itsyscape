@@ -3,7 +3,7 @@
 		['invert-y'] = true
 	},
 
-	texture = "Resources/Game/TileSets/TropicalIsland/Texture.png",
+	texture = "Resources/Game/TileSets/TropicalIsland/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 
