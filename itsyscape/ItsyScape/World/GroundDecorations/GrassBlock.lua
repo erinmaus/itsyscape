@@ -22,6 +22,10 @@ GrassBlock.COLOR = Color(0.5, 0.7, 0.1, 1.0)
 GrassBlock.FEATURE = "grass"
 
 function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
+	if #mapTile.decals > 0 then
+		return
+	end
+
 	local topLeft = Vector(
 		(i - 1) * map:getCellSize(),
 		0,
