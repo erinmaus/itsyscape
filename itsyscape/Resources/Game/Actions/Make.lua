@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local GatherResourceCommand = require "ItsyScape.Game.GatherResourceCommand"
 local Utility = require "ItsyScape.Game.Utility"
@@ -92,10 +93,10 @@ function Make:gather(state, player, prop, toolType, skill)
 					return false
 				end
 
-				local gatherCommand = GatherResourceCommand(prop, bestTool, { skill = skill, skin = skin, action = self })
-				local callbackCommand = CallbackCommand(self.make, self, state, player, prop)
+				local callback = Callback.bind(self.make, self, state, player, prop)
+				local gatherCommand = GatherResourceCommand(prop, bestTool, callback, { skill = skill, skin = skin, action = self })
 				local queue = player:getCommandQueue()
-				queue:interrupt(CompositeCommand(nil, walk, face, gatherCommand, callbackCommand))
+				queue:interrupt(CompositeCommand(nil, walk, face, gatherCommand))
 
 				return true
 			else

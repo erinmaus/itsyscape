@@ -18,7 +18,7 @@ local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourc
 local GatherResourceCommand = Class(Command)
 GatherResourceCommand.FINISH_DELAY = 0.5
 
-function GatherResourceCommand:new(prop, tool, t)
+function GatherResourceCommand:new(prop, tool, callback, t)
 	Command.new(self)
 
 	t = t or {}
@@ -29,6 +29,7 @@ function GatherResourceCommand:new(prop, tool, t)
 	self.skin = t.skin or false
 	self.time = 0
 	self.isFinished = false
+	self.callback = callback
 	self._onResourceObtained = function(...)
 		self:onResourceObtained(...)
 	end
@@ -42,6 +43,10 @@ function GatherResourceCommand:onResourceObtained(peep, e)
 	self.isFinished = true
 	self.time = 0
 	self.cooldown = GatherResourceCommand.FINISH_DELAY
+
+	if self.callback then
+		self.callback()
+	end
 end
 
 function GatherResourceCommand:onBegin(peep)
