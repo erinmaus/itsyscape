@@ -541,6 +541,15 @@ function GameView:flood(key, water, layer)
 		water.height or (map:getHeight() - ((water.j or 1) - 1) + 1),
 		water.y,
 		water.finesse)
+
+	if water.timeScale then
+		node:setTextureTimeScale(water.timeScale)
+	end
+
+	if water.yOffset then
+		node:setYOffset(water.yOffset)
+	end
+
 	if water.isTranslucent then
 		node:getMaterial():setIsTranslucent(true)
 	end
