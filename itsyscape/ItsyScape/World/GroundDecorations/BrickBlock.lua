@@ -20,14 +20,24 @@ Brick.FUDGE = 0.33
 Brick.Y_OFFSET = 0.25
 Brick.COLOR = Color(1, 0, 0, 1)
 Brick.USE_TILE_COLOR = false
+Brick.ROTATION_RANGE = math.pi / 8
 Brick.SCALE = Vector.ONE
 Brick.FEATURE = "brick"
 Brick.NUM_FEATURES = 2
+Brick.ONLY_FLAT = true
 
 function Brick:emit(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
 	local noise = self:noise(self.OCTAVES, center.x, center.y, center.z)
 	if noise > self.THRESHOLD then
+		return
+	end
+
+	if (mapTile.topLeft ~= mapTile.topRight or
+	   mapTile.topLeft ~= mapTile.bottomLeft or
+	   mapTile.topLeft ~= mapTile.bottomRight) and
+	   self.ONLY_FLAT
+	then
 		return
 	end
 
@@ -45,7 +55,7 @@ function Brick:emit(tileSet, map, i, j, tileSetTile, mapTile)
 	local rotation = self:noise(
 		self.OCTAVES,
 		center.x, center.y, center.z)
-	rotation = (rotation * 2 - 1) * (math.pi / 8)
+	rotation = (rotation * 2 - 1) * self.ROTATION_RANGE
 
 	colorScale = (colorScale + 1) / 2
 
