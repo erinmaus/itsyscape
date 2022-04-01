@@ -130,14 +130,44 @@ do
 	}
 end
 
+M["Light_Lightning"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Lightning",
+		Map = M._MAP,
+		Resource = M["Light_Lightning"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AmbientLight_Default",
+		MapObject = M["Light_Lightning"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Light_Lightning"]
+	}
+
+	ItsyScape.Meta.AmbientLight {
+		Ambience = 0.0,
+		Resource = M["Light_Lightning"]
+	}
+end
+
 M["Anchor_BeachedShip"] = ItsyScape.Resource.MapObject.Unique()
 do
 	local Rotation1 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
-	local Rotation2 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_X, math.pi / 2 - math.pi / 4)
-	local Rotation = Rotation1 * Rotation2
+	local Rotation2 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_X, math.pi / 3 - math.pi / 6)
+	local Rotation3 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Z, math.pi / 32)
+	local Rotation = Rotation1 * Rotation2 * Rotation3
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
-		PositionY = 12,
+		PositionY = 7.5,
 		PositionZ = 45,
 		RotationX = Rotation.x,
 		RotationY = Rotation.y,
