@@ -26,6 +26,22 @@ function Color:new(r, g, b, a)
 	self.a = math.max(math.min(a or 1), 0)
 end
 
+function Color.fromHexString(color, alpha)
+	local red, green, blue = color:match("(%x%x)(%x%x)(%x%x)")
+
+	if red and green and blue then
+		red = tonumber(red, 16) / 255
+		green = tonumber(green, 16) / 255
+		blue = tonumber(blue, 16) / 255
+
+		return Color(red, green, blue, alpha or 1)
+	end
+
+	Log.error("Color '%s' not in hex string format.", color)
+	return nil
+end
+
+
 -- Clamps the colors in the range of 0 .. 1 inclusive.
 --
 -- Returns the color.
