@@ -664,6 +664,20 @@ function GameView:getDecorations()
 	return result, count
 end
 
+function GameView:getDecorationSceneNodes()
+	local result = {}
+	local count = 0
+	for k, v in pairs(self.decorations) do
+		-- Only return "drawable" nodes
+		if v.sceneNode and v.sceneNode:canLerp() then
+			result[v.name] = v.sceneNode
+			count = count + 1
+		end
+	end
+
+	return result, count
+end
+
 function GameView:update(delta)
 	self.resourceManager:update()
 
