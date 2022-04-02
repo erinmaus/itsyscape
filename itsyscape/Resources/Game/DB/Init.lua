@@ -951,6 +951,7 @@ include "Resources/Game/DB/Sailing/RandomEvents.lua"
 include "Resources/Game/DB/Maps/Rumbridge.lua"
 include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
+include "Resources/Game/DB/Maps/Sailing.lua"
 
 -- Quests
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"

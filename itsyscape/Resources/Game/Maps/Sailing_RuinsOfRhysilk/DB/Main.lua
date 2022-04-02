@@ -159,6 +159,23 @@ do
 	}
 end
 
+M["CastleLerper"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "CastleLerper",
+		Map = M._MAP,
+		Resource = M["CastleLerper"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RuinsOfRhysilk_CastleLerper",
+		MapObject = M["CastleLerper"]
+	}
+end
+
 M["Anchor_BeachedShip"] = ItsyScape.Resource.MapObject.Unique()
 do
 	local Rotation1 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
@@ -182,9 +199,9 @@ end
 M["Anchor_Ship"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 67,
+		PositionX = 57,
 		PositionY = 0,
-		PositionZ = 127,
+		PositionZ = 107,
 		Name = "Anchor_Ship",
 		Map = M._MAP,
 		Resource = M["Anchor_Ship"]

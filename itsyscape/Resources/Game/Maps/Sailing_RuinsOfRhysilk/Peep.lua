@@ -19,8 +19,8 @@ local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 local Ruins = Class(Map)
 Ruins.MIN_LIGHTNING_PERIOD = 2
 Ruins.MAX_LIGHTNING_PERIOD = 4
-Ruins.LIGHTNING_TIME = 0.5
-Ruins.MAX_AMBIENCE = 2
+Ruins.LIGHTNING_TIME = 0.75
+Ruins.MAX_AMBIENCE = 3
 
 function Ruins:new(resource, name, ...)
 	Map.new(self, resource, name or 'RuinsOfRhysilk', ...)
