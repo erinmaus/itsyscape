@@ -97,8 +97,8 @@ do
 		ColorRed = 33,
 		ColorGreen = 33,
 		ColorBlue = 33,
-		NearDistance = 20,
-		FarDistance = 40,
+		NearDistance = 5,
+		FarDistance = 10,
 		FollowTarget = 1,
 		Resource = M["Light_Fog1"]
 	}
@@ -250,5 +250,60 @@ do
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Portal_ToTemple"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 2.5,
+		PositionZ = 63,
+		Name = "Portal_ToTemple",
+		Map = M._MAP,
+		Resource = M["Portal_ToTemple"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 6,
+		MapObject = M["Portal_ToTemple"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToTemple"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vast chasm",
+		Language = "en-US",
+		Resource = M["Portal_ToTemple"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Jump if you dare...",
+		Language = "en-US",
+		Resource = M["Portal_ToTemple"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromChasm",
+		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk_UndergroundTemple",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Jump",
+		XProgressive = "Jumping",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToTemple"] {
+		TravelAction
 	}
 end
