@@ -27,7 +27,7 @@ function BallistaYendorian:ready(director, game)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	if status then
-		status.maxHitpoints = 2000
+		status.maximumHitpoints = 2000
 		status.currentHitpoints = 2000
 		status.maxChaseDistance = math.huge
 	end

@@ -180,3 +180,9 @@ ItsyScape.Meta.Equipment {
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/Yendorian/BallistaYendorian_AttackLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
+}
