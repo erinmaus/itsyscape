@@ -256,5 +256,6 @@ Vector.UNIT_X = Vector(1, 0, 0)
 Vector.UNIT_Y = Vector(0, 1, 0)
 Vector.UNIT_Z = Vector(0, 0, 1)
 Vector.PLANE_XZ = Vector(1, 0, 1)
+Vector.PLANE_XY = Vector(1, 1, 0)
 
 return Vector
