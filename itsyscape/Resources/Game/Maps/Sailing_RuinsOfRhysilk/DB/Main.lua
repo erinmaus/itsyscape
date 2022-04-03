@@ -307,3 +307,24 @@ do
 		TravelAction
 	}
 end
+
+M["Yendorian1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 8,
+		PositionZ = 61,
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
+		Name = "Yendorian1",
+		Map = M._MAP,
+		Resource = M["Yendorian1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		MapObject = M["Yendorian1"]
+	}
+end
