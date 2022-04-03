@@ -25,7 +25,6 @@ function WaitCommand:new(duration, interruptible, relative)
 	end
 
 	self.duration = duration
-	print('duration', self.duration)
 	self.currentDuration = 0
 
 	if interruptible == nil then
