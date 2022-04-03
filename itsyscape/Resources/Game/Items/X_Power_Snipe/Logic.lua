@@ -38,6 +38,9 @@ function Snipe:perform(peep, target)
 			aggressor = peep
 		})
 
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("SnipeSplosion", peep, target)
+
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)
 	else
