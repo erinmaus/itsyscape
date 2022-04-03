@@ -22,6 +22,10 @@ function YendorianBoltStrike:getAttackRange(peep)
 	return 11
 end
 
+function YendorianBoltStrike:getWeaponType()
+	return 'ballista'
+end
+
 function YendorianBoltStrike:getProjectile()
 	return 'YendorianBoltStrike'
 end
