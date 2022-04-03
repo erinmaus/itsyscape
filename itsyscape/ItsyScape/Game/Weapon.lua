@@ -439,10 +439,8 @@ function Weapon:onAttackHit(peep, target)
 		weaponType = self:getWeaponType(),
 		damage = damage,
 		aggressor = peep,
-		delay = self:getDelay(peep)
+		delay = self:getDelay(peep, target)
 	})
-
-	print('delay', attack:getDelay())
 
 	if damage < 0 then
 		target:poke('heal', {
@@ -464,7 +462,7 @@ function Weapon:onAttackMiss(peep, target)
 		weaponType = self:getWeaponType(),
 		damage = 0,
 		aggressor = peep,
-		delay = self:getDelay(peep)
+		delay = self:getDelay(peep, target)
 	})
 
 	target:poke('receiveAttack', attack)
@@ -527,8 +525,12 @@ function Weapon:getWeaponType()
 	return 'none'
 end
 
-function Weapon:getDelay(peep)
-	return 0.5
+function Weapon:getDelay(peep, target)
+	if peep:hasBehavior(PlayerBehavior) then
+		return 0
+	else
+		return 0.5
+	end
 end
 
 function Weapon:getCooldown(peep)
