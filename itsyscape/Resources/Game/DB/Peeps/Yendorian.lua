@@ -274,8 +274,8 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
--- ItsyScape.Meta.PeepMashinaState {
--- 	State = "attack",
--- 	Tree = "Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua",
--- 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
--- }
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
