@@ -2656,7 +2656,8 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		weaponType = p:getWeaponType(),
 		damageType = p:getDamageType(),
 		damage = damage,
-		aggressor = p:getAggressor()
+		aggressor = p:getAggressor(),
+		delay = p:getDelay()
 	})
 
 	local target = self:getBehavior(CombatTargetBehavior)
@@ -2687,10 +2688,28 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		end
 	end
 
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
+
 	if damage > 0 then
-		self:poke('hit', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('hit', attack)
+		end
 	else
-		self:poke('miss', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('miss', attack)
+		end
 	end
 end
 
@@ -2711,13 +2730,10 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 		delay = p:getDelay()
 	})
 
-	print('delay', p:getDelay())
-
 	if damage > 0 then
 		if p:getDelay() > 0 then
-			-- TODO: Parellel command queue
-			local queue = self:getCommandQueue('hit')
-			local a = WaitCommand(love.timer.getTime() + p:getDelay(), false, false)
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
 			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
 			queue:push(CompositeCommand(true, a, b))
 		else
@@ -2725,9 +2741,8 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 		end
 	else
 		if p:getDelay() > 0 then
-			-- TODO: Parellel command queue
-			local queue = self:getCommandQueue('hit')
-			local a = WaitCommand(love.timer.getTime() + p:getDelay(), false, false)
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
 			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
 			queue:push(CompositeCommand(true, a, b))
 		else
