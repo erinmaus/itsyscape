@@ -19,8 +19,13 @@ local WaitCommand = Class(Command)
 --
 -- 'interruptible' controls if the command can be interrupted. It defaults to
 -- true.
-function WaitCommand:new(duration, interruptible)
+function WaitCommand:new(duration, interruptible, relative)
+	if relative ~= nil and not relative then
+		duration = duration - love.timer.getTime()
+	end
+
 	self.duration = duration
+	print('duration', self.duration)
 	self.currentDuration = 0
 
 	if interruptible == nil then

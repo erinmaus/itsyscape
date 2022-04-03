@@ -438,8 +438,11 @@ function Weapon:onAttackHit(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = damage,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep)
 	})
+
+	print('delay', attack:getDelay())
 
 	if damage < 0 then
 		target:poke('heal', {
@@ -460,7 +463,8 @@ function Weapon:onAttackMiss(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = 0,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep)
 	})
 
 	target:poke('receiveAttack', attack)
@@ -521,6 +525,10 @@ end
 
 function Weapon:getWeaponType()
 	return 'none'
+end
+
+function Weapon:getDelay(peep)
+	return 0.5
 end
 
 function Weapon:getCooldown(peep)
