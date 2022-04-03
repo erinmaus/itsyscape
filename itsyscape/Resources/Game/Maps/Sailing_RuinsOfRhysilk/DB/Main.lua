@@ -314,10 +314,6 @@ do
 		PositionX = 57,
 		PositionY = 8,
 		PositionZ = 61,
-		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
-		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
-		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
-		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
 		Name = "Yendorian1",
 		Map = M._MAP,
 		Resource = M["Yendorian1"]
@@ -326,5 +322,22 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
 		MapObject = M["Yendorian1"]
+	}
+end
+
+M["Yendorian2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 6,
+		PositionZ = 91,
+		Name = "Yendorian2",
+		Map = M._MAP,
+		Resource = M["Yendorian2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		MapObject = M["Yendorian2"]
 	}
 end
