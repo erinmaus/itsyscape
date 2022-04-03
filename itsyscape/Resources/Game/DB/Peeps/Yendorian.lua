@@ -186,3 +186,96 @@ ItsyScape.Meta.PeepMashinaState {
 	Tree = "Resources/Game/Peeps/Yendorian/BallistaYendorian_AttackLogic.lua",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
+
+ItsyScape.Resource.Peep "Yendorian_Mast" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.ResourceTag {
+	Value = "Eldritch",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Yendorian.MastYendorian",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Yendorian wizard",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "I have a feeling that this wizard might not be a book nerd.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(99),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(200),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(90, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(100, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(100, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(100, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(80, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1),
+	Prayer = 100,
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(120),
+	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+-- ItsyScape.Meta.PeepMashinaState {
+-- 	State = "attack",
+-- 	Tree = "Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua",
+-- 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+-- }
