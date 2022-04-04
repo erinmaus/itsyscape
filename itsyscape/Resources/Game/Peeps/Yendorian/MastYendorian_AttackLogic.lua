@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Peeps/Yendorian/BallistaYendorian_AttackLogic.lua
+-- Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,7 +11,7 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
-local HITS = B.Reference("BallistaYendorian_AttackLogic", "HITS")
+local HITS = B.Reference("MastYendorian_AttackLogic", "HITS")
 
 local THRESHOLD_SPECIAL = 2
 
