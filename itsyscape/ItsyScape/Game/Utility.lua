@@ -2021,11 +2021,15 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
+		Log.info("Peep '%s' can't walk because they don't have a position or movement behavior.", peep:getName())
 		return nil, "missing walking behaviors"
 	end
 
 	local position = peep:getBehavior(PositionBehavior)
 	if position.layer ~= k then
+		Log.info(
+			"Peep '%s' is on a different map (on layer %d, can't move to layer %d).",
+			peep:getName(), position.layer, k)
 		return nil, "different map"
 	else
 		position = position.position
@@ -2033,6 +2037,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	local map = peep:getDirector():getMap(k)
 	if not map then
+		Log.info("Peep '%s' doesn't have a map.", peep:getName())
 		return false, "no map"
 	end
 
