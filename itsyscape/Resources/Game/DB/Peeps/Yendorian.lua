@@ -94,6 +94,7 @@ ItsyScape.Meta.Equipment {
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
+
 ItsyScape.Resource.Peep "Yendorian_Ballista" {
 	ItsyScape.Action.Attack()
 }
@@ -187,6 +188,13 @@ ItsyScape.Meta.PeepMashinaState {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Yendorian/GenericYendorian_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
+}
+
 ItsyScape.Resource.Peep "Yendorian_Mast" {
 	ItsyScape.Action.Attack()
 }
@@ -208,7 +216,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "I have a feeling that this wizard might not be a book nerd.",
+	Value = "I have a feeling that this wizard might not just be a book nerd.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
@@ -278,7 +286,16 @@ ItsyScape.Meta.PeepMashinaState {
 	State = "attack",
 	Tree = "Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}ItsyScape.Resource.Peep "Yendorian_Swordfish" {
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Yendorian/GenericYendorian_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Resource.Peep "Yendorian_Swordfish" {
 	ItsyScape.Action.Attack()
 }
 
