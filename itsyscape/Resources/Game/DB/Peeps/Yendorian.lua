@@ -278,4 +278,102 @@ ItsyScape.Meta.PeepMashinaState {
 	State = "attack",
 	Tree = "Resources/Game/Peeps/Yendorian/MastYendorian_AttackLogic.lua",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}ItsyScape.Resource.Peep "Yendorian_Swordfish" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.ResourceTag {
+	Value = "Eldritch",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Yendorian.SwordfishYendorian",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Yendorian warrior",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Takes reduce, re-use, recycle pretty far.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(90),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(99),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(200),
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(90, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(80, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(80, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(80, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(70, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(100, 1),
+	Prayer = 100,
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
+	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/Yendorian/SwordfishYendorian_AttackLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Yendorian/SwordfishYendorian_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
