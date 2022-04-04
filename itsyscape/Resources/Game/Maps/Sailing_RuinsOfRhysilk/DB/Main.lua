@@ -341,3 +341,20 @@ do
 		MapObject = M["Yendorian2"]
 	}
 end
+
+M["Yendorian3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 4,
+		PositionZ = 89,
+		Name = "Yendorian3",
+		Map = M._MAP,
+		Resource = M["Yendorian3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		MapObject = M["Yendorian3"]
+	}
+end
