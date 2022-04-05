@@ -881,6 +881,9 @@ include "Resources/Game/DB/Peeps/TheEmptyKing.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 
+-- Gods
+include "Resources/Game/DB/Gods/Yendor.lua"
+
 -- Shops
 include "Resources/Game/DB/Shops/GeneralStore.lua"
 include "Resources/Game/DB/Shops/FishingStore.lua"
