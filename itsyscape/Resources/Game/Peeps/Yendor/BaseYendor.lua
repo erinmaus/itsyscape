@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseYendor = Class(Creep)
@@ -27,6 +28,10 @@ function BaseYendor:ready(director, game)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maximumHitpoints = 40000
+	status.currentHitpoints = 40000	
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

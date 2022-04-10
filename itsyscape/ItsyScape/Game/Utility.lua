@@ -2666,7 +2666,7 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	})
 
 	local target = self:getBehavior(CombatTargetBehavior)
-	if not target then
+	if not target and p:getAggressor() then
 		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			if self:getCommandQueue():interrupt(AttackCommand()) then
