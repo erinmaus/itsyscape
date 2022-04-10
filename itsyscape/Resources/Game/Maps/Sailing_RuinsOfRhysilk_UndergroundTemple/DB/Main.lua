@@ -130,12 +130,62 @@ do
 	}
 end
 
+M["TempleLerper"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "TempleLerper",
+		Map = M._MAP,
+		Resource = M["TempleLerper"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RuinsOfRhysilk_TempleLerper",
+		MapObject = M["TempleLerper"]
+	}
+end
+
+M["Door"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 2,
+		PositionZ = 45,
+		ScaleX = 3.33,
+		ScaleY = 3.33,
+		ScaleZ = 3.33,
+		Name = "Door",
+		Map = M._MAP,
+		Resource = M["Door"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 25,
+		SizeY = 10,
+		SizeZ = 1,
+		MapObject = M["Door"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Guardian",
+		MapObject = M["Door"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Temple",
+		Map = M._MAP,
+		MapObject = M["Door"]
+	}
+end
+
 M["Anchor_FromChasm"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17,
-		PositionY = 2,
-		PositionZ = 89,
+		PositionX = 24,
+		PositionY = 30,
+		PositionZ = 76,
 		Name = "Anchor_FromChasm",
 		Map = M._MAP,
 		Resource = M["Anchor_FromChasm"]
@@ -156,5 +206,133 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Yendor_Base",
 		MapObject = M["Yendor"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Temple",
+		Map = M._MAP,
+		MapObject = M["Yendor"]
+	}
+end
+
+M["Axe"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 2,
+		PositionZ = 25,
+		ScaleX = 5,
+		ScaleY = 5,
+		ScaleZ = 5,
+		Name = "Axe",
+		Map = M._MAP,
+		Resource = M["Axe"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe",
+		MapObject = M["Axe"]
+	}
+end
+
+M["Maggot1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 2,
+		PositionZ = 25,
+		Name = "Maggot1",
+		Map = M._MAP,
+		Resource = M["Maggot1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot1"]
+	}
+end
+
+M["Maggot2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 2,
+		PositionZ = 23,
+		Name = "Maggot2",
+		Map = M._MAP,
+		Resource = M["Maggot2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot2"]
+	}
+end
+
+M["Maggot3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 2,
+		PositionZ = 9,
+		Name = "Maggot3",
+		Map = M._MAP,
+		Resource = M["Maggot3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot3"]
+	}
+end
+
+M["Maggot4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 39,
+		Name = "Maggot4",
+		Map = M._MAP,
+		Resource = M["Maggot4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot4"]
+	}
+end
+
+M["Maggot5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 2,
+		PositionZ = 35,
+		Name = "Maggot5",
+		Map = M._MAP,
+		Resource = M["Maggot5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot5"]
+	}
+end
+
+M["Maggot6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 2,
+		PositionZ = 7,
+		Name = "Maggot6",
+		Map = M._MAP,
+		Resource = M["Maggot6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Maggot",
+		MapObject = M["Maggot6"]
 	}
 end
