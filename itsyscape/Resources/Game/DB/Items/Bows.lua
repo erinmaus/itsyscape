@@ -59,7 +59,7 @@ for name, log in pairs(LOGS) do
 
 		local FletchAction = ItsyScape.Action.Fletch() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Fletching",
+				Resource = ItsyScape.Resource.Skill "Engineering",
 				Count = ItsyScape.Utility.xpForLevel(math.max(log.tier + itemProps.tier - 1, 1))
 			},
 
@@ -74,7 +74,7 @@ for name, log in pairs(LOGS) do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Fletching",
+				Resource = ItsyScape.Resource.Skill "Engineering",
 				Count = ItsyScape.Utility.xpForResource(log.tier + itemProps.tier) * 2
 			},
 
