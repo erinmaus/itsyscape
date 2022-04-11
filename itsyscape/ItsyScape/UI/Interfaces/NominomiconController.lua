@@ -84,7 +84,7 @@ NominomiconController.TUTORIAL = {
 				"Skills"
 			},
 			"You can use gathering skills (such as mining, fishing, and woodcutting) or combat to obtain resources. " ..
-			"These resources can then be refined by artisan skills (like smithing, cooking, crafting, and fletching) to make weapons, armor, and other useful items.",
+			"These resources can then be refined by artisan skills (like smithing, cooking, crafting, and engineering) to make weapons, armor, and other useful items.",
 			"To see all of what you can gather and make, check out the skill guides on the stats tab. " ..
 			"Simply click on the corresponding tab to view a list of nearly all things possible with that skill."
 		}

@@ -189,7 +189,7 @@ do
 
 	local FletchAction = ItsyScape.Action.Fletch() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
 
@@ -204,7 +204,7 @@ do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = ItsyScape.Utility.xpForResource(2) * 2
 		},
 
