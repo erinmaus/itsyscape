@@ -196,7 +196,7 @@ for name, log in pairs(LOGS) do
 
 	local LightAction
 	if log.tinderbox then
-		local FireName = string.format("%sFire", log.niceName or name)
+		local FireName = string.format("%sFire", name)
 		local Fire = ItsyScape.Resource.Prop(FireName)
 
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
@@ -336,7 +336,13 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A shadow of the great common fir tree of the Realm",
+	Value = "A shadow of the great common fir tree of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the great common fir tree of the Realm, whipped around in a frenzy.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
 }
@@ -355,6 +361,12 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Hopefully you're not allergic...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CoconutTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Hopefully the tree doesn't fall...",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CoconutTree_Default"
 }
