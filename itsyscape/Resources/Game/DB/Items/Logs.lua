@@ -21,7 +21,8 @@ local LOGS = {
 		tier = 0,
 		weight = -2,
 		health = 3,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		variants = { "Stormy" }
 	},
 
 	["Rotten"] = {
@@ -43,13 +44,22 @@ local LOGS = {
 		weight = 2,
 		health = 20,
 		tinderbox = "Tinderbox",
-		peepID = "Resources.Game.Peeps.CoconutTree.CoconutTree"
+		peepID = "Resources.Game.Peeps.CoconutTree.CoconutTree",
+		variants = { "Stormy" }
 	},
 
 	["Azathothian"] = {
 		tier = 90,
 		weight = -10,
 		health = 255,
+		tinderbox = "Tinderbox"
+	},
+
+	["FossilizedOak"] = {
+		niceName = "Fossilized oak",
+		tier = 20,
+		weight = 15,
+		health = 150,
 		tinderbox = "Tinderbox"
 	}
 }
@@ -171,7 +181,7 @@ for name, log in pairs(LOGS) do
 			}
 
 			ItsyScape.Meta.ResourceName {
-				Value = string.format("%s tree", name),
+				Value = string.format("%s tree", log.niceName or name),
 				Language = "en-US",
 				Resource = Variant
 			}
@@ -179,14 +189,14 @@ for name, log in pairs(LOGS) do
 	end
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s tree", name),
+		Value = string.format("%s tree", log.niceName or name),
 		Language = "en-US",
 		Resource = Tree
 	}
 
 	local LightAction
 	if log.tinderbox then
-		local FireName = string.format("%sFire", name)
+		local FireName = string.format("%sFire", log.niceName or name)
 		local Fire = ItsyScape.Resource.Prop(FireName)
 
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
@@ -243,7 +253,7 @@ for name, log in pairs(LOGS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format("%s fire", name),
+			Value = string.format("%s fire", log.niceName or name),
 			Language = "en-US",
 			Resource = Fire
 		}
@@ -365,4 +375,28 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A dead, rotten tree; not even good for firewood.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "RottenTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That's a regal fire, fit for Yendor's most favored tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Logs from a tree only found at the Ruins of Rh'ysilk.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FossilizedOakLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A tree with shell so hard it can shatter axes.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The tree needs no leaves, for it draws its health from Yendor...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
 }

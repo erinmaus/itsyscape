@@ -119,14 +119,15 @@ function TreeView:load()
 						self.depleted = true
 					else
 						self.currentAnimation = TreeView.ANIMATION_IDLE
-						self.time = 0
+						self.time = math.random() * self.animations[TreeView.ANIMATION_IDLE]:getDuration()
 						self.depleted = false
 					end
 
 					self.shaken = state.shaken
+				else
+					self.time = self:getCurrentAnimation():getDuration()
 				end
 
-				self.time = self:getCurrentAnimation():getDuration()
 				self.spawned = true
 			end)
 		end)
@@ -210,10 +211,12 @@ function TreeView:update(delta)
 
 	if self.spawned then
 		local animation = self:getCurrentAnimation()
+
 		self.time = math.min(self.time + delta, animation:getDuration())
 
 		if (self.currentAnimation == TreeView.ANIMATION_CHOPPED or
-			self.currentAnimation == TreeView.ANIMATION_IDLE) and
+			self.currentAnimation == TreeView.ANIMATION_IDLE or
+			self.currentAnimation == TreeView.ANIMATION_SPAWNED) and
 			self.time >= animation:getDuration()
 		then
 			self.time = 0

@@ -35,7 +35,7 @@ function Ruins:onLoad(filename, args, layer)
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'Sailing_RuinsOfRhysilk_HeavyRain', 'Rain', {
-		wind = { -15, 0, 0 },
+		wind = { 15, 0, 0 },
 		heaviness = 1
 	})
 
