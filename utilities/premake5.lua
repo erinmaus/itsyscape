@@ -61,10 +61,10 @@ solution "ItsyScape.Utilities"
 		configuration "Release"
 			objdir "obj/release"
 			targetdir "bin"
-		configuration {}
-			runtime "release"
 		configuration "windows"
 			defines { "NBUNNY_BUILDING_WINDOWS" }
+		configuration {}
+			runtime "release"
 
 		links { "lua51", "discord_game_sdk" }
 
