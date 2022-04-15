@@ -19,7 +19,7 @@ do
 
 		local cpath = package.cpath
 		package.cpath = string.format(
-			"%s/ext/?.dll;%s/ext/?.so;%s/ext/?.dylib;%s",
+			"%s/ext/?.dll;%s/ext/?.so;%s/../Frameworks/?.dylib;%s",
 			sourceDirectory,
 			sourceDirectory,
 			sourceDirectory,
