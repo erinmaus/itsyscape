@@ -20,7 +20,7 @@ function ResourceManager:new()
 	self.pending = {}
 
 	if _MOBILE then
-		self.frameDuration = Resource.MOBILE_FRAME_DURATION
+		self.frameDuration = ResourceManager.MOBILE_FRAME_DURATION
 	else
 		self.frameDuration = ResourceManager.DESKTOP_FRAME_DURATION
 	end
