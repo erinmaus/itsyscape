@@ -820,6 +820,7 @@ include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
 include "Resources/Game/DB/Items/FruitTrees.lua"
 include "Resources/Game/DB/Items/Meat.lua"
+include "Resources/Game/DB/Items/MiningSecondaries.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
