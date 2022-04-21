@@ -14,10 +14,14 @@
 #define NBUNNY_DISCORD_HPP
 
 #include <string>
+
+#ifndef __APPLE__
 #include "deps/discord_game_sdk.h"
+#endif
 
 namespace nbunny
 {
+	#ifndef __APPLE__
 	struct Discord
 	{
 		struct IDiscordCore* core = nullptr;
@@ -27,6 +31,15 @@ namespace nbunny
 		void tick();
 		void update_activity(const std::string& details, const std::string& state);
 	};
+	#else
+	struct Discord
+	{
+		~Discord() { };
+
+		void tick() { }
+		void update_activity(const std::string& details, const std::string& state) { };
+	};
+	#endif
 }
 
 #endif

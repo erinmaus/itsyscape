@@ -662,6 +662,13 @@ Game "ItsyScape"
 		Dream = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "ObtainSecondary"
+
+	Meta "SecondaryWeight" {
+		Weight = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -820,6 +827,7 @@ include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
 include "Resources/Game/DB/Items/FruitTrees.lua"
 include "Resources/Game/DB/Items/Meat.lua"
+include "Resources/Game/DB/Items/MiningSecondaries.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
