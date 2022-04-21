@@ -87,6 +87,12 @@ function Resource.readLua(filename)
 	end
 end
 
+function Resource.quit()
+	love.thread.getChannel('ItsyScape.Resource.File::input'):push({
+		type = 'quit'
+	})
+end
+
 -- Returns a boolean value indicating if the resource is ready (e.g., loaded).
 function Resource:getIsReady()
 	return Class.ABSTRACT()
