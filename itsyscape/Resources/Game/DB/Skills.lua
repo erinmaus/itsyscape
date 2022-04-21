@@ -108,6 +108,11 @@ ItsyScape.Resource.Skill "Mining"
 		Skill = ItsyScape.Resource.Skill "Mining"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
 ItsyScape.Resource.Skill "Smithing"
 	ActionType "Smith"
 	ActionType "Smelt"
