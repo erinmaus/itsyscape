@@ -9,14 +9,14 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Item "PurpleSaltPeter" {
-	ItsyScape.Action.Mine() {
+	ItsyScape.Action.ObtainSecondary() {
 		Requirement {
-			Count = ItsyScape.Utility.xpForLevel(1),
+			Count = ItsyScape.Utility.xpForLevel(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
 		Output {
-			Count = ItsyScape.Utility.xpForResource(1),
+			Count = ItsyScape.Utility.xpForResource(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
@@ -33,7 +33,7 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
 }
 
-ItsyScape.Meta.ResourceName {
+ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "A useful compound; can make gunpowder, salt meats, and fertilize plants!",
 	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
@@ -41,19 +41,24 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.Item {
 	Stackable = 1,
-	Value = ItsyScape.Utility.valueForItem(1) / 2,
+	Value = ItsyScape.Utility.valueForItem(5),
+	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 500,
 	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
 }
 
 ItsyScape.Resource.Item "BlackFlint" {
-	ItsyScape.Action.Mine() {
+	ItsyScape.Action.ObtainSecondary() {
 		Requirement {
-			Count = ItsyScape.Utility.xpForLevel(1),
+			Count = ItsyScape.Utility.xpForLevel(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
 		Output {
-			Count = ItsyScape.Utility.xpForResource(1),
+			Count = ItsyScape.Utility.xpForResource(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
@@ -70,7 +75,7 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "BlackFlint"
 }
 
-ItsyScape.Meta.ResourceName {
+ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "The pathway to pyromania!",
 	Resource = ItsyScape.Resource.Item "BlackFlint"
@@ -78,19 +83,24 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.Item {
 	Stackable = 1,
-	Value = ItsyScape.Utility.valueForItem(1) / 2,
+	Value = ItsyScape.Utility.valueForItem(5),
+	Resource = ItsyScape.Resource.Item "BlackFlint"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 100,
 	Resource = ItsyScape.Resource.Item "BlackFlint"
 }
 
 ItsyScape.Resource.Item "CrumblySulfur" {
-	ItsyScape.Action.Mine() {
+	ItsyScape.Action.ObtainSecondary() {
 		Requirement {
-			Count = ItsyScape.Utility.xpForLevel(1),
+			Count = ItsyScape.Utility.xpForLevel(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
 		Output {
-			Count = ItsyScape.Utility.xpForResource(1),
+			Count = ItsyScape.Utility.xpForResource(5),
 			Resource = ItsyScape.Resource.Skill "Mining"
 		},
 
@@ -107,7 +117,7 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Item "CrumblySulfur"
 }
 
-ItsyScape.Meta.ResourceName {
+ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "A useful, powdery substance... but why does it have to smell so bad?!",
 	Resource = ItsyScape.Resource.Item "CrumblySulfur"
@@ -115,6 +125,11 @@ ItsyScape.Meta.ResourceName {
 
 ItsyScape.Meta.Item {
 	Stackable = 1,
-	Value = ItsyScape.Utility.valueForItem(1) / 2,
+	Value = ItsyScape.Utility.valueForItem(5),
+	Resource = ItsyScape.Resource.Item "CrumblySulfur"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 500,
 	Resource = ItsyScape.Resource.Item "CrumblySulfur"
 }

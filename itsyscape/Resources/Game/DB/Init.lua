@@ -662,6 +662,13 @@ Game "ItsyScape"
 		Dream = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "ObtainSecondary"
+
+	Meta "SecondaryWeight" {
+		Weight = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 

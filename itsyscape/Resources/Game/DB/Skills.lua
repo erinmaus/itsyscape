@@ -93,21 +93,8 @@ ItsyScape.Resource.Skill "Faith"
 ItsyScape.Resource.Skill "Mining"
 	ActionType "Mine"
 
-	ActionType "Mining_Secondary"
-	ItsyScape.Meta.ActionTypeVerb {
-		Value = "Mine",
-		XProgressive = "Mining",
-		Language = "en-US",
-		Action = "Mine_Secondary"
-	}
-
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Mine",
-		Skill = ItsyScape.Resource.Skill "Mining"
-	}
-
-	ItsyScape.Meta.SkillAction {
-		ActionType = "Mine_Secondary",
 		Skill = ItsyScape.Resource.Skill "Mining"
 	}
 
@@ -118,6 +105,11 @@ ItsyScape.Resource.Skill "Mining"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
 		Skill = ItsyScape.Resource.Skill "Mining"
 	}
 
