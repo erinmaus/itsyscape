@@ -82,3 +82,39 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "BlackFlint"
 }
 
+ItsyScape.Resource.Item "CrumblySulfur" {
+	ItsyScape.Action.Mine() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(1),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(1),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "CrumblySulfur"
+		}
+	},
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Crumbling sulfur",
+	Resource = ItsyScape.Resource.Item "CrumblySulfur"
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "A useful, powdery substance... but why does it have to smell so bad?!",
+	Resource = ItsyScape.Resource.Item "CrumblySulfur"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(1) / 2,
+	Resource = ItsyScape.Resource.Item "CrumblySulfur"
+}
