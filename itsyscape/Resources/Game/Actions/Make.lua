@@ -53,6 +53,90 @@ function Make:getActionDuration(...)
 	return self.PAUSE
 end
 
+function Make:getSecondaryResourceActions(state, prop)
+	local gameDB = self:getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	local secondaryActions = Utility.getActions(self:getGame(), Utility.Peep.getResource(prop), 'make-action')
+	local secondaryResourceActions = {}
+	for i = 1, #secondaryActions do
+		local action = secondaryActions[i].instance
+		for output in brochure:getOutputs(action:getAction()) do
+			local resource = brochure:getConstraintResource(output)
+			local resourceActions = Utility.getActions(self:getGame(), resource, 'make-action')
+			local weight = gameDB:getRecord("SecondaryWeight", {
+				Resource = resource
+			})
+
+			if weight then
+				for j = 1, #resourceActions do
+					if resourceActions[j].instance:canPerform(state) then
+						table.insert(secondaryResourceActions, {
+							action = resourceActions[j].instance,
+							resource = resource,
+							weight = weight:get("Weight")
+						})
+					end
+				end
+			end
+		end
+	end
+
+	return secondaryResourceActions
+end
+
+function Make:gatherSecondaries(state, player, prop)
+	local actions = self:getSecondaryResourceActions(state, prop)
+
+	local maxWeight = 0
+	for i = 1, #actions do
+		maxWeight = maxWeight + actions[i].weight
+	end
+
+	local maxNumRolls = 1
+	local progress = prop:getBehavior(PropResourceHealthBehavior)
+	if progress then
+		maxNumRolls = math.ceil(progress.maxProgress / 5)
+	end
+
+	local loot = {}
+
+	-- The '0' is so there's a chance an action doesn't give any resources.
+	local numRolls = math.random(0, maxNumRolls)
+	for i = 1, maxNumRolls do
+
+		local item = actions[1]
+		local currentWeight = 0
+		if item then
+			currentWeight = item.weight
+		end
+
+		local roll = math.random(0, maxWeight)
+		for j = 2, #actions do
+			if currentWeight > roll then
+				break
+			end
+
+			local nextItem = actions[j]
+			local nextItemWeight = nextItem.weight
+			local nextWeight = currentWeight + nextItemWeight
+
+			item = nextItem
+			currentWeight = nextItemWeight
+		end
+
+		if item then
+			local l = loot[item.resource.name] or { item = item, count = 0}
+			l.count = l.count + 1
+			loot[item.resource.name] = l
+		end
+	end
+
+	for lootName, lootItem in pairs(loot) do
+		lootItem.item.action:perform(state, player, lootItem.count)
+	end
+end
+
 function Make:gather(state, player, prop, toolType, skill)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state) then
@@ -114,6 +198,7 @@ function Make:make(state, player, prop)
 	local flags = self.FLAGS
 
 	self:transfer(state, player, flags)
+	self:gatherSecondaries(state, player, prop)
 	Action.perform(self, state, player)
 
 	player:poke('resourceObtained', {})
