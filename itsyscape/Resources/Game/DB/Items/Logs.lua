@@ -412,3 +412,21 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Charcoal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Burnt remains of some logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = 1,
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
