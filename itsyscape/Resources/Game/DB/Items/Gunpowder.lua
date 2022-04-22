@@ -90,8 +90,18 @@ do
 		},
 
 		Input {
-			Resource = ItsyScape.Resource.Item "Gunpowder",
-			Count = 5
+			Resource = ItsyScape.Resource.Item "Charcoal",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PurpleSaltPeter",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "CrumblySulfur",
+			Count = 1
 		},
 
 		Output {
@@ -101,7 +111,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Engineering",
-			Count = ItsyScape.Utility.xpForResource(16) * 5
+			Count = ItsyScape.Utility.xpForResource(15) * 3
 		}
 	}
 
