@@ -445,7 +445,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Value = "Resources.Game.Peeps.Props.BasicCharcoal",
 	Resource = ItsyScape.Resource.Prop "Charcoal"
 }
 
