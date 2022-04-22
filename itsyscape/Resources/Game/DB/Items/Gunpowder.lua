@@ -35,6 +35,11 @@ do
 		Output {
 			Resource = Gunpowder,
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForResource(11) * 3
 		}
 	}
 
@@ -92,6 +97,11 @@ do
 		Output {
 			Resource = Dynamite,
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForResource(16) * 5
 		}
 	}
 
