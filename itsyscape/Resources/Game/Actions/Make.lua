@@ -194,11 +194,46 @@ function Make:gather(state, player, prop, toolType, skill)
 	return false
 end
 
-function Make:make(state, player, prop)
-	local flags = self.FLAGS
+function Make:getDynamicCount(state, player, flags)
+	flags = flags or self.FLAGS
+	local f = {}
+	for k, v in pairs(flags) do
+		f[k] = v
+	end
 
+	local count = 1
+	do
+		local action = self:getAction()
+		local record = self:getGameDB():getRecord("DynamicSkillMultiplier", {
+			Action = action
+		})
+
+		if record then
+			local minMultiplier = record:get("MinMultiplier")
+			local maxMultiplier = record:get("MaxMultiplier")
+			local minLevel = record:get("MinLevel")
+			local maxLevel = record:get("MaxLevel")
+			local skill = record:get("Skill").name
+			local currentLevel = state:count("Skill", skill, { ['skill-as-level'] = true })
+			local levelMultiplier = math.max(currentLevel - minLevel, 1) / (maxLevel - minLevel)
+			local multiplier = (maxMultiplier - minMultiplier) * levelMultiplier + minMultiplier
+
+			count = math.min(math.max(math.floor(multiplier), minMultiplier), maxMultiplier)
+		end
+	end
+
+	f['action-output-count'] = count
+
+	return f
+end
+
+function Make:make(state, player, prop, flags)
 	self:transfer(state, player, flags)
-	self:gatherSecondaries(state, player, prop)
+
+	if prop then
+		self:gatherSecondaries(state, player, prop)
+	end
+
 	Action.perform(self, state, player)
 
 	player:poke('resourceObtained', {})
