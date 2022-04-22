@@ -6,3 +6,4 @@ media/
 itsyscape-android/
 *.trace
 *.log
+*.make
