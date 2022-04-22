@@ -292,6 +292,7 @@ function Action:transfer(state, player, flags)
 	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
 	local multiplier = flags['action-count'] or 1
+	local outputMultiplier = flags['action-output-count'] or 1
 
 	if self:canTransfer(state, flags) then
 		local gameDB = self:getGameDB()
@@ -327,7 +328,7 @@ function Action:transfer(state, player, flags)
 			local resource = brochure:getConstraintResource(output)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			if not state:give(resourceType.name, resource.name, output.count * multiplier, flags) then
+			if not state:give(resourceType.name, resource.name, output.count * multiplier * outputMultiplier, flags) then
 				reverse()
 				return false
 			else
