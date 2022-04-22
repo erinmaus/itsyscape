@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Makes/Craft.lua
+-- Resources/Game/Makes/Mix.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,15 +13,21 @@ local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local Make = require "Resources.Game.Actions.Make"
 
-local Craft = Class(Make)
-Craft.SCOPES = { ['craft'] = true }
+local Mix = Class(Make)
+Mix.SCOPES = { ['craft'] = true }
+Mix.FLAGS = {
+	['item-inventory'] = true,
+	['item-equipment'] = true,
+	['item-drop-excess'] = true
+}
+Mix.PAUSE = 2
 
-function Craft:perform(state, player)
+function Mix:perform(state, player)
 	local flags = { ['item-inventory'] = true }
 
 	if self:canPerform(state, flags) then
-		local a = WaitCommand(self:getActionDuration(10))
-		local b = CallbackCommand(self.make, self, state, player)
+		local a = WaitCommand(self:getActionDuration(5))
+		local b = CallbackCommand(self.make, self, state, player, nil, self:getDynamicCount(state, player))
 
 		local queue = player:getCommandQueue()
 		return queue:push(CompositeCommand(nil, a, b))
@@ -30,4 +36,4 @@ function Craft:perform(state, player)
 	return false, "can't perform"
 end
 
-return Craft
+return Mix
