@@ -55,7 +55,7 @@ for name, metal in pairs(METALS) do
 
 		Output {
 			Resource = Item,
-			Count = 10
+			Count = 15
 		},
 
 		Output {
