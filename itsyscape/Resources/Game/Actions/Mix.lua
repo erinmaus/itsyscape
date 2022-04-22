@@ -20,6 +20,7 @@ Mix.FLAGS = {
 	['item-equipment'] = true,
 	['item-drop-excess'] = true
 }
+Mix.PAUSE = 2
 
 function Mix:perform(state, player)
 	local flags = { ['item-inventory'] = true }
