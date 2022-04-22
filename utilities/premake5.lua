@@ -10,7 +10,7 @@ newoption {
 
 solution "ItsyScape.Utilities"
 	configurations { "Debug", "Release" }
-	platforms { "x86", "x64" }
+	platforms { "x86", "x64", "ARM64" }
 
 	configuration "Debug"
 		defines { "DEBUG" }

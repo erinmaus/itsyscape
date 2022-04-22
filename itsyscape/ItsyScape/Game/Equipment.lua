@@ -25,10 +25,11 @@ Equipment.PLAYER_SLOT_QUIVER = 10
 Equipment.PLAYER_SLOT_EFFECT = 11
 Equipment.PLAYER_SLOTS_MAX   = 11
 
-Equipment.AMMO_NONE  = 0
-Equipment.AMMO_ARROW = 1
-Equipment.AMMO_BOLT  = 2
-Equipment.AMMO_ANY   = 100
+Equipment.AMMO_NONE   = 0
+Equipment.AMMO_ARROW  = 1
+Equipment.AMMO_BOLT   = 2
+Equipment.AMMO_BULLET = 3
+Equipment.AMMO_ANY    = 100
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND  = 21
