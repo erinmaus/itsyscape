@@ -179,9 +179,15 @@ ItsyScape.Resource.Skill "Firemaking"
 
 ItsyScape.Resource.Skill "Engineering"
 	ActionType "Fletch"
+	ActionType "Mix"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Fletch",
+		Skill = ItsyScape.Resource.Skill "Engineering"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Mix",
 		Skill = ItsyScape.Resource.Skill "Engineering"
 	}
 
