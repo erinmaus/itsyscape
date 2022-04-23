@@ -119,6 +119,12 @@ for gunName, gun in pairs(GUNS) do
 			Resource = Item
 		}
 
+		ItsyScape.Meta.EquipmentModel {
+			Type = "ItsyScape.Game.Skin.ModelSkin",
+			Filename = string.format("Resources/Game/Skins/%s/%s.lua", metalName, gunName),
+			Resource = Item
+		}
+
 		Item {
 			EquipAction,
 			DequipAction,
