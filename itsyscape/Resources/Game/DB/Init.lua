@@ -858,6 +858,7 @@ include "Resources/Game/DB/Items/CreepyDoll.lua"
 include "Resources/Game/DB/Items/SuperiorTier50.lua"
 include "Resources/Game/DB/Items/AncientCeremonial.lua"
 include "Resources/Game/DB/Items/Bullets.lua"
+include "Resources/Game/DB/Items/Guns.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
