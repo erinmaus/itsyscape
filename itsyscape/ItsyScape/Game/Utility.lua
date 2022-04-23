@@ -3088,6 +3088,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-longbow", attackAnimationLongbowRanged)
+	local attackAnimationPistolRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPistolRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-pistol", attackAnimationPistolRanged)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
