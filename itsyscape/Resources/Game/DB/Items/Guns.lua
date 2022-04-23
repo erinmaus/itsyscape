@@ -18,7 +18,14 @@ local METALS = {
 
 local GUNS = {
 	["Blunderbuss"] = {
+		niceName = "blunderbuss",
 		bars = 3,
+		logs = 1
+	},
+
+	["Musket"] = {
+		niceName = "musket",
+		bars = 2,
 		logs = 1
 	}
 }
@@ -46,12 +53,12 @@ for gunName, gun in pairs(GUNS) do
 		local SmithAction = ItsyScape.Action.Smith() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Engineering",
-				Count = ItsyScape.Utility.xpForLevel(metal.tier)
+				Count = ItsyScape.Utility.xpForLevel(metal.tier + gun.bars)
 			},
 
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForLevel(metal.tier)
+				Count = ItsyScape.Utility.xpForLevel(metal.tier + gun.bars)
 			},
 
 			Requirement {
@@ -86,17 +93,17 @@ for gunName, gun in pairs(GUNS) do
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Engineering",
-				Count = ItsyScape.Utility.xpForResource(metal.tier + 1) * (gun.logs + gun.bars)
+				Count = ItsyScape.Utility.xpForResource(metal.tier + 1 + gun.bars) * (gun.logs + gun.bars)
 			},
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForResource(metal.tier + 1) * (gun.logs + gun.bars)
+				Count = ItsyScape.Utility.xpForResource(metal.tier + 1 + gun.bars) * (gun.logs + gun.bars)
 			}
 		}
 
 		ItsyScape.Meta.Item {
-			Value = ItsyScape.Utility.valueForItem(metal.tier + 2) * (gun.logs + gun.bars),
+			Value = ItsyScape.Utility.valueForItem(metal.tier + 2 + gun.bars) * (gun.logs + gun.bars),
 			Weight = metal.weight,
 			Resource = Item
 		}
@@ -114,7 +121,7 @@ for gunName, gun in pairs(GUNS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format("%s blunderbuss", metalName),
+			Value = string.format("%s %s", metalName, gun.niceName),
 			Language = "en-US",
 			Resource = Item
 		}
@@ -147,5 +154,18 @@ do
 		Value = "That will hurt up close, but not from afar.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IronBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "IronMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wide shot!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronMusket"
 	}
 end
