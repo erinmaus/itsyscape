@@ -27,4 +27,8 @@ function Pistol:getCooldown(peep)
 	return 1.2
 end
 
+function Pistol:getProjectile()
+	return nil
+end
+
 return Pistol
