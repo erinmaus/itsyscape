@@ -2985,6 +2985,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Walk_1/Script.lua")
 	peep:addResource("animation-walk", walkAnimation)
+	local walkBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_WalkBlunderbuss_1/Script.lua")
+	peep:addResource("animation-walk-blunderbuss", walkBlunderbussAnimation)
 	local walkCaneAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_WalkCane_1/Script.lua")
@@ -3005,6 +3009,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleZweihander_1/Script.lua")
 	peep:addResource("animation-idle-zweihander", idleZweihanderAnimation)
+	local idleBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_IdleBlunderbuss_1/Script.lua")
+	peep:addResource("animation-idle-blunderbuss", idleBlunderbussAnimation)
 	local idleFishingRodAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
@@ -3069,6 +3077,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-bow", attackAnimationBowRanged)
+	local attackAnimationBlunderbussRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-blunderbuss", attackAnimationBlunderbussRanged)
 	local attackAnimationLongbowRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
