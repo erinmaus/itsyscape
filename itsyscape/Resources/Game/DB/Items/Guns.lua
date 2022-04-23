@@ -27,6 +27,12 @@ local GUNS = {
 		niceName = "musket",
 		bars = 2,
 		logs = 1
+	},
+
+	["Pistol"] = {
+		niceName = "flintlock pistol",
+		bars = 1,
+		logs = 1
 	}
 }
 
@@ -167,5 +173,18 @@ do
 		Value = "Wide shot!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IronMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1.2),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "IronPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Don't want to be on the recieving end of that.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "IronPistol"
 	}
 end
