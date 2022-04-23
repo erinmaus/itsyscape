@@ -25,7 +25,7 @@ function Blunderbuss:rollDamage(peep, purpose, target)
 	local selfPosition = Utility.Peep.getAbsolutePosition(peep)
 	local targetPosition = Utility.Peep.getAbsolutePosition(target)
 	local distance = math.max((targetPosition - selfPosition):getLength() - self.FULL_DAMAGE_DISTANCE, 0)
-	local range = math.max(self:getAttackRange() - self.FULL_DAMAGE_DISTANCE, 1)
+	local range = math.max(self:getAttackRange(peep) - self.FULL_DAMAGE_DISTANCE, 1)
 	local multiplier = math.max(1 - distance / (range * 2 + 1), 0)
 
 	roll:setDamageMultiplier(roll:getDamageMultiplier() * multiplier)
