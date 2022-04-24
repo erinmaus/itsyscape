@@ -179,6 +179,12 @@ for name, metal in pairs(METALS) do
 		Resource = GrenadeItem
 	}
 
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = string.format("Resources/Game/Skins/%s/Grenade.lua", name),
+		Resource = Item
+	}
+
 	ItsyScape.Meta.Equipment {
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 15),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
