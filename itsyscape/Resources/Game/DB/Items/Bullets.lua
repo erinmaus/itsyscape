@@ -17,6 +17,8 @@ local METALS = {
 for name, metal in pairs(METALS) do
 	local ItemName = string.format("%sBullet", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
+	local GrenadeItemName = string.format("%sGrenade", name)
+	local GrenadeItem = ItsyScape.Resource.Item(GrenadeItemName)
 
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
@@ -69,8 +71,50 @@ for name, metal in pairs(METALS) do
 		}
 	}
 
+	local GrenadeSmithAction = ItsyScape.Action.Smith() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier + 10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier + 10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Hammer",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Gunpowder",
+			Count = 5
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item(string.format("%sBar", name)),
+			Count = 1
+		},
+
+		Output {
+			Resource = GrenadeItem,
+			Count = 10
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForResource(metal.tier + 11)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(metal.tier + 11)
+		}
+	}
+
 	ItsyScape.Meta.Item {
-		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 2) / 10), 10) * metal.tier,
+		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 12) / 10), 10) * metal.tier,
 		Weight = 0,
 		Stackable = 1,
 		Resource = Item
@@ -105,17 +149,66 @@ for name, metal in pairs(METALS) do
 		Resource = Item
 	}
 
+	ItsyScape.Meta.Item {
+		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 12) / 10), 10) * metal.tier,
+		Weight = 0,
+		Stackable = 1,
+		Resource = GrenadeItem
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = name,
+		Resource = GrenadeItem
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Bullet",
+		Value = name,
+		Resource = GrenadeItem
+	}
+
+	ItsyScape.Meta.RangedAmmo {
+		Type = ItsyScape.Utility.Equipment.AMMO_THROWN,
+		Resource = GrenadeItem
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = string.format("%s grenade", name),
+		Language = "en-US",
+		Resource = GrenadeItem
+	}
+
+	ItsyScape.Meta.Equipment {
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 15),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = GrenadeItem
+	}
+
 	Item {
 		EquipAction,
 		DequipAction,
 		SmithAction
 	}
 
+	GrenadeItem {
+		EquipAction,
+		DequipAction,
+		GrenadeSmithAction
+	}
+
 	ItsyScape.Utility.tag(Item, "archery")
+	ItsyScape.Utility.tag(GrenadeItem, "archery")
 end
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "That's gonna hurt!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronBullet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Don't wanna drop this at your feet.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronGrenade"
 }
