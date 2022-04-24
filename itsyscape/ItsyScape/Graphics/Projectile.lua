@@ -87,9 +87,16 @@ function Projectile:getTargetPosition(target)
 		if positionable then
 			local transform = positionable:getTransform():getGlobalDeltaTransform(0)
 			local position = Vector(transform:transformPoint(0, 0, 0))
-			local min, max = target:getBounds()
 
-			return position + Vector(0, (max.y - min.y) / 2, 0)
+			local y
+			if self.CLAMP_BOTTOM then
+				y = 0
+			else
+				local min, max = target:getBounds()
+				y = (max.y - min.y) / 2
+			end
+
+			return position + Vector(0, y, 0)
 		end
 	elseif target:isCompatibleType(Vector) then
 		return target
