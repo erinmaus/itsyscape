@@ -98,7 +98,7 @@ function Musket:getCooldown(peep)
 	return 3
 end
 
-function RangedWeapon:getProjectile(peep)
+function Musket:getProjectile(peep)
 	return nil
 end
 
