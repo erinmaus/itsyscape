@@ -1,8 +1,9 @@
 razmatazz/
 workspace/
-tools/
+/tools
 design/
 media/
 itsyscape-android/
 *.trace
 *.log
+*.make

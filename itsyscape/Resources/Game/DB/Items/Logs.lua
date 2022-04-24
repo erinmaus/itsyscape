@@ -412,3 +412,57 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
 }
+
+ItsyScape.Resource.Prop "Charcoal" {
+	ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Charcoal",
+			Count = 10
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Charcoal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Burnt remains of some logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicCharcoal",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Charcoal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Burnt remains of some logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = 1,
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}

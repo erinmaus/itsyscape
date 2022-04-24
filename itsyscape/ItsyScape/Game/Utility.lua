@@ -2770,6 +2770,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints == 0 or combat.isDead then
+		return
+	end
+
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
 
 	if math.floor(combat.currentHitpoints) == 0 then
@@ -2985,6 +2989,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Walk_1/Script.lua")
 	peep:addResource("animation-walk", walkAnimation)
+	local walkBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_WalkBlunderbuss_1/Script.lua")
+	peep:addResource("animation-walk-blunderbuss", walkBlunderbussAnimation)
+	peep:addResource("animation-walk-musket", walkBlunderbussAnimation)
 	local walkCaneAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_WalkCane_1/Script.lua")
@@ -3005,6 +3014,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleZweihander_1/Script.lua")
 	peep:addResource("animation-idle-zweihander", idleZweihanderAnimation)
+	local idleBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_IdleBlunderbuss_1/Script.lua")
+	peep:addResource("animation-idle-blunderbuss", idleBlunderbussAnimation)
+	peep:addResource("animation-idle-musket", idleBlunderbussAnimation)
 	local idleFishingRodAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
@@ -3029,6 +3043,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionFletch_1/Script.lua")
 	peep:addResource("animation-action-fletch", actionFletch)
+	local actionMix = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionMix_1/Script.lua")
+	peep:addResource("animation-action-mix", actionMix)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
@@ -3065,10 +3083,23 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-bow", attackAnimationBowRanged)
+	local attackAnimationBlunderbussRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-blunderbuss", attackAnimationBlunderbussRanged)
+	peep:addResource("animation-attack-ranged-musket", attackAnimationBlunderbussRanged)
 	local attackAnimationLongbowRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-longbow", attackAnimationLongbowRanged)
+	local attackAnimationGrenadeRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackGrenadeRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-grenade", attackAnimationGrenadeRanged)
+	local attackAnimationPistolRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPistolRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-pistol", attackAnimationPistolRanged)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")

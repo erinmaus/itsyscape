@@ -99,6 +99,9 @@ end
 
 function DemoApplication:quit()
 	if not self.titleScreen then
+		local Resource = require "ItsyScape.Graphics.Resource"
+		Resource.quit()
+
 		self:getGame():quit()
 		Log.analytic("END_GAME")
 	end

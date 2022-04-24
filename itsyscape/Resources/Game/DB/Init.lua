@@ -662,6 +662,22 @@ Game "ItsyScape"
 		Dream = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "ObtainSecondary"
+
+	Meta "SecondaryWeight" {
+		Weight = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "DynamicSkillMultiplier" {
+		MinMultiplier = Meta.TYPE_INTEGER,
+		MaxMultiplier = Meta.TYPE_INTEGER,
+		MinLevel = Meta.TYPE_INTEGER,
+		MaxLevel = Meta.TYPE_INTEGER,
+		Skill = Meta.TYPE_RESOURCE,
+		Action = Meta.TYPE_ACTION
+	}
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
@@ -820,6 +836,8 @@ include "Resources/Game/DB/Items/Buckets.lua"
 include "Resources/Game/DB/Items/Lanterns.lua"
 include "Resources/Game/DB/Items/FruitTrees.lua"
 include "Resources/Game/DB/Items/Meat.lua"
+include "Resources/Game/DB/Items/MiningSecondaries.lua"
+include "Resources/Game/DB/Items/Gunpowder.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -839,6 +857,8 @@ include "Resources/Game/DB/Items/PartyHats.lua"
 include "Resources/Game/DB/Items/CreepyDoll.lua"
 include "Resources/Game/DB/Items/SuperiorTier50.lua"
 include "Resources/Game/DB/Items/AncientCeremonial.lua"
+include "Resources/Game/DB/Items/Bullets.lua"
+include "Resources/Game/DB/Items/Guns.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -932,6 +952,7 @@ include "Resources/Game/DB/Props/Doors.lua"
 include "Resources/Game/DB/Props/OldOnesTech.lua"
 include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
+include "Resources/Game/DB/Props/ChemistTable.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"

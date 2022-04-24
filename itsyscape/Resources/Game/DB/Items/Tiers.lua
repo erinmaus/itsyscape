@@ -166,3 +166,14 @@ do
 		Tier = 10
 	}
 end
+
+-- Chemicals
+do
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Chemical",
+		Value = "Gunpowder",
+		Language = "en-US",
+		Name = "Gunpowder",
+		Tier = 0
+	}
+end

@@ -408,8 +408,14 @@ function Weapon:rollAttack(peep, target, bonus)
 	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
+function Weapon:previewDamageRoll(roll)
+	-- Nothing.
+end
+
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	self:previewDamageRoll(roll)
+
 	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 		effect:applySelfToDamage(roll, purpose)
 	end

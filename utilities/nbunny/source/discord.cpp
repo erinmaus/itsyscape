@@ -13,8 +13,10 @@
 #include <cctype>
 #include <locale>
 #include "nbunny/nbunny.hpp"
+
 #include "nbunny/discord.hpp"
 
+#ifndef __APPLE__
 nbunny::Discord::~Discord()
 {
 	core->destroy(core);
@@ -85,6 +87,12 @@ static std::shared_ptr<nbunny::Discord> nbunny_discord_create(sol::this_state S)
 
 	return discord;
 }
+#else
+static std::shared_ptr<nbunny::Discord> nbunny_discord_create(sol::this_state S)
+{
+	return std::make_shared<nbunny::Discord>();
+}
+#endif
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_discord(lua_State* L)

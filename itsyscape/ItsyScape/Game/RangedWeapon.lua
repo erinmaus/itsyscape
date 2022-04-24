@@ -13,11 +13,12 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
 
 local RangedWeapon = Class(Weapon)
+RangedWeapon.AMMO_SLOT = Equipment.PLAYER_SLOT_QUIVER
 
 function RangedWeapon:getAmmo(peep)
 	-- TODO: Make "Ammo" item type.
 	-- Query Ammo item for info.
-	local quiver = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_QUIVER)
+	local quiver = Utility.Peep.getEquippedItem(peep, self:getAmmoSlot())
 	if quiver then
 		local gameDB = self:getManager():getGameDB()
 		local ammo = gameDB:getRecord("RangedAmmo", {
@@ -61,6 +62,10 @@ function RangedWeapon:getAmmoType()
 	return self.AMMO
 end
 
+function RangedWeapon:getAmmoSlot()
+	return self.AMMO_SLOT
+end
+
 function RangedWeapon:perform(peep, target)
 	local FLAGS = {
 		['item-equipment-slot'] = true,
@@ -70,7 +75,7 @@ function RangedWeapon:perform(peep, target)
 	local ammoType, ammo = self:getAmmo(peep)
 	if ammoType == Equipment.AMMO_ANY or ammoType == self:getAmmoType() then
 		if ammoType == Equipment.AMMO_NONE or
-		   peep:getState():take("Item", Equipment.PLAYER_SLOT_QUIVER, 1, FLAGS)
+		   peep:getState():take("Item", self:getAmmoSlot(), 1, FLAGS)
 		then
 			return Weapon.perform(self, peep, target)
 		end
@@ -107,7 +112,7 @@ function RangedWeapon:getStyle()
 end
 
 function RangedWeapon:getProjectile(peep)
-	local quiver = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_QUIVER)
+	local quiver = Utility.Peep.getEquippedItem(peep, self:getAmmoSlot())
 	if quiver then
 		return quiver:getID()
 	end
