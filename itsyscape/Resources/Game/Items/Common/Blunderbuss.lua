@@ -40,7 +40,7 @@ function Blunderbuss:getCooldown(peep)
 	return 3
 end
 
-function RangedWeapon:getProjectile(peep)
+function Blunderbuss:getProjectile(peep)
 	return nil
 end
 
