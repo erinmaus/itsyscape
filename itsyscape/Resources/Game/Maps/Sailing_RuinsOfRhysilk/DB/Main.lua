@@ -253,6 +253,18 @@ do
 	}
 end
 
+M["Anchor_FromTemple"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 8,
+		PositionZ = 63,
+		Name = "Anchor_FromTemple",
+		Map = M._MAP,
+		Resource = M["Anchor_FromTemple"]
+	}
+end
+
 M["Portal_ToTemple"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -305,6 +317,35 @@ do
 
 	M["Portal_ToTemple"] {
 		TravelAction
+	}
+end
+
+M["UnstablePortal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 8,
+		PositionZ = 59,
+		Name = "UnstablePortal",
+		Map = M._MAP,
+		Resource = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Default",
+		MapObject = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Unstable portal",
+		Language = "en-US",
+		Resource = M["UnstablePortal"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The portal is unstable and can't be used.",
+		Language = "en-US",
+		Resource = M["UnstablePortal"]
 	}
 end
 
