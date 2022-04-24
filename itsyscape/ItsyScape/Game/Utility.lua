@@ -2770,6 +2770,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints == 0 or combat.isDead then
+		return
+	end
+
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
 
 	if math.floor(combat.currentHitpoints) == 0 then
@@ -3088,6 +3092,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-longbow", attackAnimationLongbowRanged)
+	local attackAnimationGrenadeRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackGrenadeRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-grenade", attackAnimationGrenadeRanged)
 	local attackAnimationPistolRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackPistolRanged_1/Script.lua")

@@ -29,6 +29,7 @@ Equipment.AMMO_NONE   = 0
 Equipment.AMMO_ARROW  = 1
 Equipment.AMMO_BOLT   = 2
 Equipment.AMMO_BULLET = 3
+Equipment.AMMO_THROWN = 4
 Equipment.AMMO_ANY    = 100
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
