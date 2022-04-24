@@ -42,7 +42,7 @@ Game "ItsyScape"
 
 	Meta "PeepEquipmentItem" {
 		Item = Meta.TYPE_RESOURCE,
-		Count = Meta.TYPE_INTEGER,
+		Count = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -985,6 +985,9 @@ include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
 
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
+
+-- Drop tables
+include "Resources/Game/DB/SharedDropTables/Pirate.lua"
 
 -- Trailer
 include "Resources/Game/DB/Trailer/Trailer.lua"

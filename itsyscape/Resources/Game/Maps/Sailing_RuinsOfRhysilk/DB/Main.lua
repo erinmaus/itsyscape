@@ -358,3 +358,118 @@ do
 		MapObject = M["Yendorian3"]
 	}
 end
+
+M["Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 5,
+		PositionZ = 51,
+		Name = "Pirate1",
+		Map = M._MAP,
+		Resource = M["Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronBlunderbuss",
+		Count = 1,
+		Resource = M["Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate1"]
+	}
+end
+
+M["Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 3,
+		PositionZ = 57,
+		Name = "Pirate2",
+		Map = M._MAP,
+		Resource = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronPistol",
+		Count = 1,
+		Resource = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate2"]
+	}
+end
+
+M["Pirate3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 43,
+		Name = "Pirate3",
+		Map = M._MAP,
+		Resource = M["Pirate3"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronMusket",
+		Count = 1,
+		Resource = M["Pirate3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate3"]
+	}
+end
+
+M["Pirate4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 4,
+		PositionZ = 61,
+		Name = "Pirate4",
+		Map = M._MAP,
+		Resource = M["Pirate4"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronPistol",
+		Count = 1,
+		Resource = M["Pirate4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate4"]
+	}
+end
+
+M["Pirate5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 71,
+		Name = "Pirate5",
+		Map = M._MAP,
+		Resource = M["Pirate5"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronGrenade",
+		Count = math.huge,
+		Resource = M["Pirate5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate5"]
+	}
+end
