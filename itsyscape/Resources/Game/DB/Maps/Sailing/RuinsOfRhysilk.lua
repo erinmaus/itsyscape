@@ -121,3 +121,101 @@ do
 		Resource = Maggot
 	}
 end
+
+do
+	local Pirate = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate"
+
+	Pirate {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Pirate_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Pirate_Secondary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Pirate_Tertiary_Tier10",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Pirate.BasePirate",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Pirate",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Arrrrgh, matey.",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "PiratesHat",
+		Count = 1,
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronBullet",
+		Count = math.huge,
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Pirate
+	}
+end
