@@ -162,17 +162,10 @@ end
 function Metatable.__mul(a, b)
 	local result = Quaternion()
 
-	if type(b) == 'number' then
-		result.x = result.x * b
-		result.y = result.y * b
-		result.z = result.z * b
-		result.w = result.w * b
-	else
-		result.x =  a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
-		result.y = -a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y
-		result.z =  a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z
-		result.w = -a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w
-	end
+	result.x =  a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
+	result.y = -a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y
+	result.z =  a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z
+	result.w = -a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w
 
 	return result
 end
