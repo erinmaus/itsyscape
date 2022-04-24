@@ -28,9 +28,12 @@ function Grenade:getAttackRange()
 end
 
 function Grenade:perform(peep, target)
-	RangedWeapon.perform(self, peep, target)
+	if RangedWeapon.perform(self, peep, target) then
+		self:splode(peep, target)
+		return true
+	end
 
-	self:splode(peep, target)
+	return false
 end
 
 function Grenade:splode(peep, target)
@@ -53,8 +56,8 @@ function Grenade:splode(peep, target)
 
 	-- Hit the main target up to an additional X times if it's big enough
 	do
-		local size = target:getBehavior(SizeBehavior)
-		local scale = target:getBehavior(ScaleBehavior)
+		local size = target:getBehavior(SizeBehavior) or { size = Vector.ZERO }
+		local scale = target:getBehavior(ScaleBehavior) or { scale = Vector.ONE }
 		local targetSize = math.min((scale.scale * size.size):getLength() / 2, self.RADIUS_TILES - 1)
 		for i = 1, targetSize do
 			table.insert(hits, target)
