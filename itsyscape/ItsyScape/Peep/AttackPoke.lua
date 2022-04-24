@@ -31,6 +31,7 @@ function AttackPoke:new(t)
 	self.damageType = t.damageType or 'none'
 	self.damage = math.max(t.damage or 0, 0)
 	self.aggressor = t.aggressor or false
+	self.delay = t.delay or 0
 end
 
 function AttackPoke:getAttackType()
@@ -51,6 +52,10 @@ end
 
 function AttackPoke:getAggressor()
 	return self.aggressor
+end
+
+function AttackPoke:getDelay()
+	return self.delay
 end
 
 return AttackPoke

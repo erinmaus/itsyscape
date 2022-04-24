@@ -36,7 +36,7 @@ function Corrupt:new(activator)
 		local maxHit = damageRoll:getMaxHit() + 1
 		local multiplier = math.min(math.max(level - 5, 0) / 50, 2) + 1
 
-		self.damage = math.floor(maxHit * multiplier)
+		self.damage = math.floor(maxHit * multiplier * damageRoll:getDamageMultiplier())
 	else
 		self.damage = 0
 	end

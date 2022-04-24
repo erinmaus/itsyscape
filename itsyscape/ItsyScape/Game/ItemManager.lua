@@ -70,12 +70,17 @@ function ItemManager:isTradeable(id)
 	end
 end
 
-function ItemManager:getLogic(id, unique)
+function ItemManager:getLogic(id, unique, tryXWeapon)
 	if not self.logic[id] or unique then
 		local Logic
 		do
 			local file = string.format("Resources.Game.Items.%s.Logic", id)
 			local s, r = pcall(require, file)
+			if not s and tryXWeapon then
+				local fileXWeapon = string.format("Resources.Game.Items.X_%s.Logic", id)
+				s, r = pcall(require, fileXWeapon)
+			end
+
 			if s and Class.isDerived(r, Item) then
 				Logic = function(manager)
 					return r(id, manager)

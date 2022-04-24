@@ -408,8 +408,14 @@ function Weapon:rollAttack(peep, target, bonus)
 	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
+function Weapon:previewDamageRoll(roll)
+	-- Nothing.
+end
+
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	self:previewDamageRoll(roll)
+
 	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 		effect:applySelfToDamage(roll, purpose)
 	end
@@ -438,7 +444,8 @@ function Weapon:onAttackHit(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = damage,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep, target)
 	})
 
 	if damage < 0 then
@@ -460,7 +467,8 @@ function Weapon:onAttackMiss(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = 0,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep, target)
 	})
 
 	target:poke('receiveAttack', attack)
@@ -521,6 +529,14 @@ end
 
 function Weapon:getWeaponType()
 	return 'none'
+end
+
+function Weapon:getDelay(peep, target)
+	if peep:hasBehavior(PlayerBehavior) then
+		return 0
+	else
+		return 0.5
+	end
 end
 
 function Weapon:getCooldown(peep)

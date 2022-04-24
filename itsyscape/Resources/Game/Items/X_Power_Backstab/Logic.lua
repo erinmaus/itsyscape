@@ -13,12 +13,14 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
--- Deals 100%-300% damage to opponent if they are not in combat.
+-- Deals 100%-300% damage to opponent if they are not in combat with the
+-- attacker.
 local Backstab = Class(ProxyXWeapon)
 
 function Backstab:onAttackHit(peep, target)
 	local logic = self:getLogic()
-	if logic and not target:hasBehavior(CombatTargetBehavior) then
+	local t = target:getBehavior(CombatTargetBehavior)
+	if logic and (not t or not t.target or t.target:getPeep() ~= target) then
 		local roll = logic:rollDamage(peep, Weapon.PURPOSE_KILL, target)
 		local maxHit = roll:getMaxHit()
 
@@ -30,10 +32,13 @@ function Backstab:onAttackHit(peep, target)
 		local scale = math.min((level / 50) * 2 + 1, 3)
 		local damage = math.floor(maxHit * scale + 0.5)
 
+		roll:setMinHit(maxHit)
+		roll:setMaxHit(maxHit)
+
 		local attack = AttackPoke({
 			attackType = self:getBonusForStance(peep):lower(),
 			weaponType = self:getWeaponType(),
-			damage = damage,
+			damage = roll:roll(),
 			aggressor = peep
 		})
 

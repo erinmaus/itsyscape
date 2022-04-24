@@ -20,7 +20,7 @@ function DirectionalEmitter:new()
 end
 
 function DirectionalEmitter:setDirection(x, y, z)
-	self.direction = Vector(x, y, z)
+	self.direction = Vector(x, y, z):getNormal()
 end
 
 function DirectionalEmitter:setSpeed(min, max)

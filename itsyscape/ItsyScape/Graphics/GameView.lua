@@ -541,6 +541,15 @@ function GameView:flood(key, water, layer)
 		water.height or (map:getHeight() - ((water.j or 1) - 1) + 1),
 		water.y,
 		water.finesse)
+
+	if water.timeScale then
+		node:setTextureTimeScale(water.timeScale)
+	end
+
+	if water.yOffset then
+		node:setYOffset(water.yOffset)
+	end
+
 	if water.isTranslucent then
 		node:getMaterial():setIsTranslucent(true)
 	end
@@ -650,6 +659,20 @@ function GameView:getDecorations()
 	for k, v in pairs(self.decorations) do
 		result[v.name] = v.decoration
 		count = count + 1
+	end
+
+	return result, count
+end
+
+function GameView:getDecorationSceneNodes()
+	local result = {}
+	local count = 0
+	for k, v in pairs(self.decorations) do
+		-- Only return "drawable" nodes
+		if v.sceneNode and v.sceneNode:canLerp() then
+			result[v.name] = v.sceneNode
+			count = count + 1
+		end
 	end
 
 	return result, count

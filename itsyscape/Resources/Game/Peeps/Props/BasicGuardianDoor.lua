@@ -54,7 +54,7 @@ function BasicGuardianDoor:canOpen()
 
 		for i = 1, #peeps do
 			local status = peeps[i]:getBehavior(CombatStatusBehavior)
-			if status and status.currentHitpoints > 0 then
+			if status and (status.currentHitpoints > 0 and not status.dead) then
 				return false, "Message_GuardianDoorLocked"
 			end
 		end
