@@ -108,6 +108,11 @@ ItsyScape.Resource.Skill "Mining"
 		Skill = ItsyScape.Resource.Skill "Mining"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
+		Skill = ItsyScape.Resource.Skill "Mining"
+	}
+
 ItsyScape.Resource.Skill "Smithing"
 	ActionType "Smith"
 	ActionType "Smelt"
@@ -172,12 +177,23 @@ ItsyScape.Resource.Skill "Firemaking"
 		Skill = ItsyScape.Resource.Skill "Firemaking"
 	}
 
-ItsyScape.Resource.Skill "Fletching"
+ItsyScape.Resource.Skill "Engineering"
 	ActionType "Fletch"
+	ActionType "Mix"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Smith",
+		Skill = ItsyScape.Resource.Skill "Engineering"
+	}
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Fletch",
-		Skill = ItsyScape.Resource.Skill "Fletching"
+		Skill = ItsyScape.Resource.Skill "Engineering"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Mix",
+		Skill = ItsyScape.Resource.Skill "Engineering"
 	}
 
 ItsyScape.Resource.Skill "Cooking"
@@ -379,15 +395,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Fletching",
+	Value = "Engineering",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Skill "Fletching"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Fletching",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Skill "Fletching"
+	Resource = ItsyScape.Resource.Skill "Engineering"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -511,9 +521,9 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lets you make ranged weapons and ammunition.",
+	Value = "Create advanced weaponry and tech.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Skill "Fletching"
+	Resource = ItsyScape.Resource.Skill "Engineering"
 }
 
 ItsyScape.Meta.ResourceDescription {

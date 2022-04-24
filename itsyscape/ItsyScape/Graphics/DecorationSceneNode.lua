@@ -20,6 +20,10 @@ do
 	DecorationSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/StaticModel")
 end
 
+DecorationSceneNode._MIN_INDEX = 1
+DecorationSceneNode._MAX_INDEX = 2
+DecorationSceneNode._VERTICES_INDEX = 3
+
 function DecorationSceneNode:new()
 	SceneNode.new(self)
 
@@ -36,6 +40,23 @@ function DecorationSceneNode:fromGroup(staticMesh, group)
 	})
 
 	self:fromDecoration(decoration, staticMesh)
+end
+
+function DecorationSceneNode:canLerp()
+	return self._previousVertices ~= nil
+end
+
+-- Note: 'a' and 'b' must already be drawable (e.g., any of the fromX calls).
+-- You can call 'canLerp' on 'a' or 'b' to see if they are drawable
+function DecorationSceneNode:lerp(a, b, delta)
+	self:_lerp(
+		a._previousVertices[DecorationSceneNode._VERTICES_INDEX],
+		a._previousVertices[DecorationSceneNode._MIN_INDEX],
+		a._previousVertices[DecorationSceneNode._MAX_INDEX],
+		b._previousVertices[DecorationSceneNode._VERTICES_INDEX],
+		b._previousVertices[DecorationSceneNode._MIN_INDEX],
+		b._previousVertices[DecorationSceneNode._MAX_INDEX],
+		delta)
 end
 
 function DecorationSceneNode:fromLerp(staticMesh, from, to, delta)
@@ -65,35 +86,44 @@ function DecorationSceneNode:fromLerp(staticMesh, from, to, delta)
 		self._previousToVertices = { name = from, min2, max2, vertices2 }
 	end
 
+	return self:_lerp(vertices1, min1, max1, vertices2, min2, max2, delta)
+end
+
+function DecorationSceneNode:_lerp(vertices1, min1, max1, vertices2, min2, max2, delta)
 	if #vertices1 ~= #vertices2 then
 		return false
 	end
 
 	local vertices
-	if not self._previousVertices or #self._previousVertices ~= #vertices1 then
-		vertices = {}
-		for i = 1, #vertices1 do
-			vertices[i] = {}
+	do
+		if not self._previousVertices then
+			vertices = {}
+		else
+			vertices = self._previousVertices[DecorationSceneNode._VERTICES_INDEX]
 		end
 
-		self._previousVertices = vertices
-	else
-		vertices = self._previousVertices 
-	end 
+		if #vertices ~= #vertices1 then
+			vertices = {}
+			for i = 1, #vertices1 do
+				vertices[i] = {}
+			end
+		end
+	end
 
 	local min = min1:lerp(min2, delta)
 	local max = max1:lerp(max2, delta)
-	for i = 1, #vertices1 do
+	for i = 1, #vertices do
 		local v1 = vertices1[i]
 		local v2 = vertices2[i]
 
 		local v = vertices[i]
 		for j = 1, #v1 do
-			v[j] = v1[j] + (v2[j] - v1[j]) * delta 
+			v[j] = v1[j] + (v2[j] - v1[j]) * delta
 		end
 	end
 
 	self:_generateMesh(min, max, vertices)
+	return true
 end
 
 function DecorationSceneNode:_generateVertices(decoration, staticMesh)
@@ -185,6 +215,10 @@ function DecorationSceneNode:_generateMesh(min, max, vertices)
 
 		self.isOwner = true
 		self:setBounds(min, max)
+
+		self._previousVertices = {
+			min, max, vertices
+		}
 	else
 		self:setBounds(Vector(0), Vector(0))
 	end

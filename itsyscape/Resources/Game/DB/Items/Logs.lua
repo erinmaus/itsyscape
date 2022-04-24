@@ -21,7 +21,8 @@ local LOGS = {
 		tier = 0,
 		weight = -2,
 		health = 3,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		variants = { "Stormy" }
 	},
 
 	["Rotten"] = {
@@ -43,13 +44,22 @@ local LOGS = {
 		weight = 2,
 		health = 20,
 		tinderbox = "Tinderbox",
-		peepID = "Resources.Game.Peeps.CoconutTree.CoconutTree"
+		peepID = "Resources.Game.Peeps.CoconutTree.CoconutTree",
+		variants = { "Stormy" }
 	},
 
 	["Azathothian"] = {
 		tier = 90,
 		weight = -10,
 		health = 255,
+		tinderbox = "Tinderbox"
+	},
+
+	["FossilizedOak"] = {
+		niceName = "Fossilized oak",
+		tier = 20,
+		weight = 15,
+		health = 150,
 		tinderbox = "Tinderbox"
 	}
 }
@@ -93,7 +103,7 @@ for name, log in pairs(LOGS) do
 
 	local FletchAction = ItsyScape.Action.Fletch() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 1))
 		},
 
@@ -113,7 +123,7 @@ for name, log in pairs(LOGS) do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(math.max(log.tier + 1, 1)) / 2), 1)
 		}
 	}
@@ -171,7 +181,7 @@ for name, log in pairs(LOGS) do
 			}
 
 			ItsyScape.Meta.ResourceName {
-				Value = string.format("%s tree", name),
+				Value = string.format("%s tree", log.niceName or name),
 				Language = "en-US",
 				Resource = Variant
 			}
@@ -179,7 +189,7 @@ for name, log in pairs(LOGS) do
 	end
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s tree", name),
+		Value = string.format("%s tree", log.niceName or name),
 		Language = "en-US",
 		Resource = Tree
 	}
@@ -243,7 +253,7 @@ for name, log in pairs(LOGS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format("%s fire", name),
+			Value = string.format("%s fire", log.niceName or name),
 			Language = "en-US",
 			Resource = Fire
 		}
@@ -326,7 +336,13 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A shadow of the great common fir tree of the Realm",
+	Value = "A shadow of the great common fir tree of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the great common fir tree of the Realm, whipped around in a frenzy.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
 }
@@ -350,6 +366,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Hopefully the tree doesn't fall...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CoconutTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "What a crazy fire!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CoconutFire"
@@ -365,4 +387,82 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A dead, rotten tree; not even good for firewood.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "RottenTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That's a regal fire, fit for Yendor's most favored tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Logs from a tree only found at the Ruins of Rh'ysilk.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FossilizedOakLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A tree with shell so hard it can shatter axes.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The tree needs no leaves, for it draws its health from Yendor...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
+}
+
+ItsyScape.Resource.Prop "Charcoal" {
+	ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Charcoal",
+			Count = 10
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Charcoal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Burnt remains of some logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicCharcoal",
+	Resource = ItsyScape.Resource.Prop "Charcoal"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Charcoal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Burnt remains of some logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "Charcoal"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = 1,
+	Resource = ItsyScape.Resource.Item "Charcoal"
 }

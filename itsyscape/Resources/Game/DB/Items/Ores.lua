@@ -12,13 +12,23 @@ local ORES = {
 	["Copper"] = {
 		tier = 0,
 		weight = 10.5,
-		health = 8
+		health = 8,
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
+		}
 	},
 
 	["Tin"] = {
 		tier = 0,
 		weight = 9.1,
-		health = 8
+		health = 8,
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
+		}
 	},
 
 	["Iron"] = {
@@ -27,6 +37,11 @@ local ORES = {
 		health = 20,
 		variants = {
 			"DeepSlate"
+		},
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
 		}
 	},
 
@@ -111,6 +126,26 @@ for name, ore in pairs(ORES) do
 
 	Rock { MineAction }
 
+	local SecondaryActions = {}
+	if ore.secondaries then
+		for i = 1, #ore.secondaries do
+			local Action = ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = ItsyScape.Resource.Item(ore.secondaries[i]),
+					Count = 1
+				}
+			}
+
+			ItsyScape.Meta.HiddenFromSkillGuide {
+				Action = Action
+			}
+			
+			table.insert(SecondaryActions, Action)
+		end
+	end
+
+	Rock(SecondaryActions)
+
 	ItsyScape.Meta.ResourceName {
 		Value = string.format("%s rock", name),
 		Language = "en-US",
@@ -124,7 +159,9 @@ for name, ore in pairs(ORES) do
 
 			VariantRock {
 				MineAction
-			} 
+			}
+
+			VariantRock(SecondaryActions)
 
 			ItsyScape.Meta.ResourceName {
 				Value = string.format("%s rock", name),

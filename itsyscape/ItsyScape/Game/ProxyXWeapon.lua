@@ -12,11 +12,11 @@ local Weapon = require "ItsyScape.Game.Weapon"
 
 local ProxyXWeapon = Class(Weapon)
 
-function ProxyXWeapon:new(id, manager)
+function ProxyXWeapon:new(id, manager, logic)
 	Weapon.new(self, id, manager)
 
 	if id then
-		self.logic = manager:getLogic(id, true)
+		self.logic = manager:getLogic(id, true, true)
 		if not self.logic:isCompatibleType(Weapon) then
 			self.logic = nil
 		else

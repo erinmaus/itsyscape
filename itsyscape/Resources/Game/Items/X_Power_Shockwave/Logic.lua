@@ -39,6 +39,9 @@ function Shockwave:onAttackHit(peep, target)
 			aggressor = peep
 		})
 
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("ShockwaveSplosion", peep, target)
+
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)
 

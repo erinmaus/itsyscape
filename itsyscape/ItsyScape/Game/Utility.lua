@@ -2021,11 +2021,15 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
+		Log.info("Peep '%s' can't walk because they don't have a position or movement behavior.", peep:getName())
 		return nil, "missing walking behaviors"
 	end
 
 	local position = peep:getBehavior(PositionBehavior)
 	if position.layer ~= k then
+		Log.info(
+			"Peep '%s' is on a different map (on layer %d, can't move to layer %d).",
+			peep:getName(), position.layer, k)
 		return nil, "different map"
 	else
 		position = position.position
@@ -2033,6 +2037,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	local map = peep:getDirector():getMap(k)
 	if not map then
+		Log.info("Peep '%s' doesn't have a map.", peep:getName())
 		return false, "no map"
 	end
 
@@ -2090,7 +2095,10 @@ function Utility.Peep.lookAt(self, target)
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
 		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+		return true
 	end
+
+	return false
 end
 
 function Utility.Peep.face3D(self)
@@ -2100,7 +2108,7 @@ function Utility.Peep.face3D(self)
 		local peep = actor:getPeep()
 
 		if peep then
-			Utility.Peep.lookAt(self, peep)
+			return Utility.Peep.lookAt(self, peep)
 		end
 	else
 		local rotation = self:getBehavior(RotationBehavior)
@@ -2115,12 +2123,14 @@ function Utility.Peep.face3D(self)
 			local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
 			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+			return true
 		end
 	end
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.facing = MovementBehavior.FACING_RIGHT
 	movement.targetFacing = MovementBehavior.FACING_LEFT
+	return false
 end
 
 function Utility.Peep.attack(peep, other, distance)
@@ -2651,11 +2661,12 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		weaponType = p:getWeaponType(),
 		damageType = p:getDamageType(),
 		damage = damage,
-		aggressor = p:getAggressor()
+		aggressor = p:getAggressor(),
+		delay = p:getDelay()
 	})
 
 	local target = self:getBehavior(CombatTargetBehavior)
-	if not target then
+	if not target and p:getAggressor() then
 		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			if self:getCommandQueue():interrupt(AttackCommand()) then
@@ -2682,14 +2693,36 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		end
 	end
 
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
+
 	if damage > 0 then
-		self:poke('hit', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('hit', attack)
+		end
 	else
-		self:poke('miss', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('miss', attack)
+		end
 	end
 end
 
 function Utility.Peep.Attackable:onReceiveAttack(p)
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
@@ -2698,13 +2731,28 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 		weaponType = p:getWeaponType(),
 		damageType = p:getDamageType(),
 		damage = damage,
-		aggressor = p:getAggressor()
+		aggressor = p:getAggressor(),
+		delay = p:getDelay()
 	})
 
 	if damage > 0 then
-		self:poke('hit', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('hit', attack)
+		end
 	else
-		self:poke('miss', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('miss', attack)
+		end
 	end
 end
 
@@ -2722,6 +2770,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints == 0 or combat.isDead then
+		return
+	end
+
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
 
 	if math.floor(combat.currentHitpoints) == 0 then
@@ -2937,6 +2989,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Walk_1/Script.lua")
 	peep:addResource("animation-walk", walkAnimation)
+	local walkBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_WalkBlunderbuss_1/Script.lua")
+	peep:addResource("animation-walk-blunderbuss", walkBlunderbussAnimation)
+	peep:addResource("animation-walk-musket", walkBlunderbussAnimation)
 	local walkCaneAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_WalkCane_1/Script.lua")
@@ -2957,6 +3014,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleZweihander_1/Script.lua")
 	peep:addResource("animation-idle-zweihander", idleZweihanderAnimation)
+	local idleBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_IdleBlunderbuss_1/Script.lua")
+	peep:addResource("animation-idle-blunderbuss", idleBlunderbussAnimation)
+	peep:addResource("animation-idle-musket", idleBlunderbussAnimation)
 	local idleFishingRodAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
@@ -2981,6 +3043,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionFletch_1/Script.lua")
 	peep:addResource("animation-action-fletch", actionFletch)
+	local actionMix = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionMix_1/Script.lua")
+	peep:addResource("animation-action-mix", actionMix)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
@@ -3017,10 +3083,23 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-bow", attackAnimationBowRanged)
+	local attackAnimationBlunderbussRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-blunderbuss", attackAnimationBlunderbussRanged)
+	peep:addResource("animation-attack-ranged-musket", attackAnimationBlunderbussRanged)
 	local attackAnimationLongbowRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-longbow", attackAnimationLongbowRanged)
+	local attackAnimationGrenadeRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackGrenadeRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-grenade", attackAnimationGrenadeRanged)
+	local attackAnimationPistolRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPistolRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-pistol", attackAnimationPistolRanged)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")
