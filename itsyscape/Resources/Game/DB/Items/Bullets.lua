@@ -182,7 +182,7 @@ for name, metal in pairs(METALS) do
 	ItsyScape.Meta.EquipmentModel {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = string.format("Resources/Game/Skins/%s/Grenade.lua", name),
-		Resource = Item
+		Resource = GrenadeItem
 	}
 
 	ItsyScape.Meta.Equipment {
