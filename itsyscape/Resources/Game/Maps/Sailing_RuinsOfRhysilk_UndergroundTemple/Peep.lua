@@ -54,11 +54,9 @@ function Ruins:initTroll()
 	if yendor then
 		local encounteredYendor = player:getState():has("KeyItem", "Sailing_YendorTroll")
 		if not encounteredYendor then
-			if yendor then
-				Utility.UI.openInterface(player, "BossHUD", false, yendor)
-				self:pushPoke('damageYendor', yendor, love.timer.getTime() + Ruins.INITIAL_DRAMATIC_WAIT)
-				self:playMusic("V2_VsPirates")
-			end
+			Utility.UI.openInterface(player, "BossHUD", false, yendor)
+			self:pushPoke('damageYendor', yendor, love.timer.getTime() + Ruins.INITIAL_DRAMATIC_WAIT)
+			self:playMusic("V2_VsPirates")
 		else
 			local status = yendor:getBehavior(CombatStatusBehavior)
 			status.dead = true
