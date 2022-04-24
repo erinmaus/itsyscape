@@ -13,12 +13,14 @@ do
 
 		_DEBUG = true
 		_MOBILE = true
+		_ANALYTICS_DISABLED = true
 	else
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
 		local cpath = package.cpath
 		package.cpath = string.format(
-			"%s/ext/?.dll;%s/ext/?.so;%s",
+			"%s/ext/?.dll;%s/ext/?.so;%s/../Frameworks/?.dylib;%s",
+			sourceDirectory,
 			sourceDirectory,
 			sourceDirectory,
 			cpath)
@@ -29,6 +31,10 @@ do
 			sourceDirectory,
 			sourceDirectory,
 			cpath)
+		
+		if love.system.getOS() == "OS X" then
+			_ANALYTICS_DISABLED = true
+		end
 	end
 end
 
@@ -74,7 +80,7 @@ function love.load(args)
 	_DEBUG = _DEBUG or _CONF.debug or false
 
 	do
-		if not _MOBILE then
+		if not _ANALYTICS_DISABLED then
 			local AnalyticsClient = require "ItsyScape.Analytics.Client"
 			_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
 		end

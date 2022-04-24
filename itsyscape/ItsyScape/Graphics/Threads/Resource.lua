@@ -23,6 +23,8 @@ while true do
 				local s = "return " .. love.filesystem.read(request.filename)
 				local l = assert(setfenv(loadstring(s), {}))()
 				output:push(l)
+			elseif request.type == 'quit' then
+				return
 			end
 		end
 	until not request
