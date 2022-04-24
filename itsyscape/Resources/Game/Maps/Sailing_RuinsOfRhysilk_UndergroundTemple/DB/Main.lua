@@ -336,3 +336,51 @@ do
 		MapObject = M["Maggot6"]
 	}
 end
+
+M["Exit"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 6,
+		Name = "Exit",
+		Map = M._MAP,
+		Resource = M["Exit"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious door",
+		Language = "en-US",
+		Resource = M["Exit"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wonder where this leads... Hopefully out of here!",
+		Language = "en-US",
+		Resource = M["Exit"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["Exit"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_Fromtemple",
+		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Exit"] {
+		TravelAction
+	}
+end
