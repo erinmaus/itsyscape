@@ -209,6 +209,12 @@ do
 		Resource = Pirate
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "LitBullseyeLantern",
+		Count = 1,
+		Resource = Pirate
+	}
+
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10),
