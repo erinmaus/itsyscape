@@ -47,7 +47,7 @@ function BasicFire:onSpawnedByAction(instigator)
 				local charcoal = Utility.spawnPropAtPosition(self, "Charcoal", x, y, z, 0.5)
 				if charcoal then
 					local charcoalPeep = charcoal:getPeep()
-					charcoalPeep:poke('spawnedByFire', self, duration)
+					charcoalPeep:poke('spawnedByFire', self, self.duration)
 				end
 			end
 		end
