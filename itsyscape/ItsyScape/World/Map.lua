@@ -360,11 +360,7 @@ function Map:canMove(i, j, di, dj)
 	return isLeftPassable or isRightPassable or isTopPassable or isBottomPassable
 end
 
-function Map.loadFromString(value)
-	local data = "return " .. value or ""
-	local chunk = assert(loadstring(data))
-	local t = setfenv(chunk, {})() or { width = 1, height = 1, cellSize = 2, tiles = { {} } }
-
+function Map.loadFromTable(t)
 	local result = Map(t.width or 1, t.height or 1, t.cellSize or 2)
 	local index = 1
 	for j = 1, result.height do
@@ -401,9 +397,26 @@ function Map.loadFromString(value)
 	return result
 end
 
+function Map.loadFromString(value)
+	local data = "return " .. value or ""
+	local chunk = assert(loadstring(data))
+	local t = setfenv(chunk, {})() or { width = 1, height = 1, cellSize = 2, tiles = { {} } }
+
+	return Map.loadFromTable(t)
+end
+
 -- Deserializes the Map.
 function Map.loadFromFile(filename)
-	return Map.loadFromString(love.filesystem.read(filename))
+	local cacheFilename = filename .. ".cache"
+	local hasCache = love.filesystem.getInfo(cacheFilename)
+	if hasCache then
+		local chunk = assert(load(love.filesystem.read(cacheFilename)))
+		local t = assert(setfenv(chunk, {})())
+
+		return Map.loadFromTable(t)
+	else
+		return Map.loadFromString(love.filesystem.read(filename))
+	end
 end
 
 -- Serializes the Map.
