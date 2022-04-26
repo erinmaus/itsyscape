@@ -228,6 +228,10 @@ function love.quit()
 		love.filesystem.write("settings.cfg", serializedConf)
 	end
 
+	if _DEBUG then
+		_APP:getGameView():getRenderer():dumpStatsToCSV("renderer.csv")
+	end
+
 	return result
 end
 

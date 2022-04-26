@@ -185,9 +185,7 @@ function DeferredRendererPass:drawNodes(scene, delta)
 					end
 				end
 
-				node:beforeDraw(self:getRenderer(), delta)
-				node:draw(self:getRenderer(), delta)
-				node:afterDraw(self:getRenderer(), delta)
+				self:getRenderer():renderNode(node, delta)
 			end
 		end
 	end

@@ -194,4 +194,67 @@ function Renderer:releaseCachedShaders()
 	self.cachedShaders = {}
 end
 
+if _DEBUG then
+	function Renderer:renderNode(node, delta)
+		local debugStats = self.debugStats or {}
+
+		local nodeName = node:getDebugInfo().shortName
+		local stat = debugStats[nodeName] or { min = math.huge, max = -math.huge, currentTotal = 0, samples = 0 }
+
+		local before = love.timer.getTime()
+		node:beforeDraw(self, delta)
+		node:draw(self, delta)
+		node:afterDraw(self, delta)
+		local after = love.timer.getTime()
+		local duration = after - before
+
+		stat.min = math.min(stat.min, duration)
+		stat.max = math.max(stat.max, duration)
+		stat.currentTotal = stat.currentTotal + duration
+		stat.samples = stat.samples + 1
+
+		debugStats[nodeName] = stat
+		self.debugStats = debugStats
+	end
+
+	function Renderer:dumpStatsToCSV(filename)
+		local debugStats = {}
+		do
+			local unsortedDebugStats = self.debugStats or {}
+			for nodeName, stats in pairs(unsortedDebugStats) do
+				table.insert(debugStats, {
+					nodeName = nodeName,
+					stats = stats
+				})
+			end
+
+			table.sort(debugStats, function(a, b)
+				return a.nodeName < b.nodeName
+			end)
+		end
+
+		local file = io.open(filename, "w")
+
+		for i = 1, #debugStats do
+			local stats = debugStats[i].stats
+			local nodeName = debugStats[i].nodeName
+			local f = string.format(
+				"%s, %f, %f, %f, %f, %f\n",
+				nodeName, stats.min, stats.max, stats.currentTotal, stats.samples, stats.currentTotal / stats.samples)
+
+			file:write(f)
+		end
+	end
+else
+	function Renderer:renderNode(node, delta)
+		node:beforeDraw(self, delta)
+		node:draw(self, delta)
+		node:afterDraw(self, delta)
+	end
+
+	function Renderer:dumpStatsToCSV()
+		-- Nothing.
+	end
+end
+
 return Renderer
