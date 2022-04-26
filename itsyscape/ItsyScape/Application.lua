@@ -405,9 +405,9 @@ function Application:draw()
 
 		love.graphics.printf(
 			r,
-			width - 300,
+			width - 600,
 			0,
-			300,
+			600,
 			'right')
 	end
 

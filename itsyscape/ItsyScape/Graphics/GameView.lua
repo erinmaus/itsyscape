@@ -678,17 +678,19 @@ function GameView:getDecorationSceneNodes()
 	return result, count
 end
 
-function GameView:update(delta)
-	self.resourceManager:update()
-
+function GameView:updateActors(delta)
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
 	end
+end
 
+function GameView:updateProps(delta)
 	for _, prop in pairs(self.props) do
 		prop:update(delta)
 	end
+end
 
+function GameView:updateProjectiles(delta)
 	local finishedProjectiles = {}
 	for projectile in pairs(self.projectiles) do
 		projectile:update(delta)
@@ -702,22 +704,19 @@ function GameView:update(delta)
 		finishedProjectiles[i]:poof()
 		self.projectiles[finishedProjectiles[i]] = nil
 	end
+end
 
+function GameView:updateWeather(delta)
 	for _, weather in pairs(self.weather) do
 		weather:update(delta)
 	end
+end
 
+function GameView:updateSprites(delta)
 	self.spriteManager:update(delta)
+end
 
-	do
-		local actor = self:getActor(self.game:getPlayer():getActor())
-		if actor then
-			player = actor:getSceneNode()
-			local transform = player:getTransform():getGlobalDeltaTransform(0, 0, 0)
-			love.audio.setPosition(transform:transformPoint(0, 0, 0))
-		end
-	end
-
+function GameView:updateMusic(delta)
 	for track, songs in pairs(self.music) do
 		local index = 1
 		while index < #songs do
@@ -744,6 +743,26 @@ function GameView:update(delta)
 			end
 		else
 			lastSong:setVolume(math.min(lastSong:getVolume() + 0.5 * delta, 1))
+		end
+	end
+end
+
+function GameView:update(delta)
+	self.resourceManager:update()
+
+	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
+	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
+	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)
+	_APP:measure("gameView:updateWeather()", GameView.updateWeather, self, delta)
+	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)
+	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
+
+	do
+		local actor = self:getActor(self.game:getPlayer():getActor())
+		if actor then
+			player = actor:getSceneNode()
+			local transform = player:getTransform():getGlobalDeltaTransform(0, 0, 0)
+			love.audio.setPosition(transform:transformPoint(0, 0, 0))
 		end
 	end
 end
