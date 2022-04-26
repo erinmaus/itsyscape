@@ -96,7 +96,7 @@ local function __call(self, parent)
 
 		local info = debug.getinfo(2, "Sl")
 		if info then
-			local shortClassName = info.source:match("^.*/(.*).lua$") or info.source
+			local shortClassName = info.source:match("^.*/(.*/.*).lua$") or info.source
 			local lineNumber = info.currentline
 
 			Class._DEBUG.lineNumber = lineNumber

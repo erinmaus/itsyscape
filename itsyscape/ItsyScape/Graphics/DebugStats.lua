@@ -59,6 +59,8 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
+	table.insert(stringifiedStats, "Node, Min (secs), Max (secs), Total (secs), Samples, Avg (secs)")
+
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
 		local nodeName = sortedDebugStats[i].nodeName

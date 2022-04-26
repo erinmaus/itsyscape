@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
@@ -28,11 +29,17 @@ local WeatherMap = require "ItsyScape.World.WeatherMap"
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
 
+GameView.PropViewDebugStats = Class(DebugStats)
+function GameView.PropViewDebugStats:process(node, delta)
+	node:update(delta)
+end
+
 function GameView:new(game)
 	self.game = game
 	self.actors = {}
 	self.props = {}
 	self.views = {}
+	self.propViewDebugStats = GameView.PropViewDebugStats()
 
 	local stage = game:getStage()
 	self._onLoadMap = function(_, map, layer, tileSetID)
@@ -686,7 +693,7 @@ end
 
 function GameView:updateProps(delta)
 	for _, prop in pairs(self.props) do
-		prop:update(delta)
+		self.propViewDebugStats:measure(prop, delta)
 	end
 end
 
@@ -781,6 +788,10 @@ function GameView:tick()
 	for projectile in pairs(self.projectiles) do
 		projectile:tick()
 	end
+end
+
+function GameView:dumpStatsToCSV()
+	self.propViewDebugStats:dumpStatsToCSV("GameView_PropView_Update")
 end
 
 return GameView

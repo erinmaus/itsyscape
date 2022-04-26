@@ -18,12 +18,19 @@ local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
 local Renderer = Class()
 Renderer.DEFAULT_CLEAR_COLOR = Color(0.39, 0.58, 0.93, 1)
 
-Renderer.DebugStats = Class(DebugStats)
+Renderer.NodeDebugStats = Class(DebugStats)
+Renderer.PassDebugStats = Class(DebugStats)
 
-function Renderer.DebugStats:process(node, renderer, delta)
+function Renderer.NodeDebugStats:process(node, renderer, delta)
 	node:beforeDraw(renderer, delta)
 	node:draw(renderer, delta)
 	node:afterDraw(renderer, delta)
+end
+
+function Renderer.PassDebugStats:process(pass, scene, delta)
+	pass:beginDraw(scene, delta)
+	pass:draw(scene, delta)
+	pass:endDraw(scene, delta)
 end
 
 function Renderer:new(isMobile)
@@ -46,7 +53,8 @@ function Renderer:new(isMobile)
 	self.cull = true
 	self.startTime = love.timer.getTime()
 
-	self.debugStats = Renderer.DebugStats()
+	self.nodeDebugStats = Renderer.NodeDebugStats()
+	self.passDebugStats = Renderer.PassDebugStats()
 end
 
 function Renderer:getCullEnabled()
@@ -77,8 +85,12 @@ function Renderer:setCamera(value)
 	self.camera = value or self.camera
 end
 
-function Renderer:getDebugStats()
-	return self.debugStats
+function Renderer:getNodeDebugStats()
+	return self.nodeDebugStats
+end
+
+function Renderer:getPassDebugStats()
+	return self.passDebugStats
 end
 
 function Renderer:clean()
@@ -91,16 +103,12 @@ function Renderer:drawFinalStep(scene, delta)
 		self.mobilePass:draw(scene, delta)
 		self.mobilePass:endDraw(scene, delta)
 	else
-		self.finalDeferredPass:beginDraw(scene, delta)
-		self.finalDeferredPass:draw(scene, delta)
-		self.finalDeferredPass:endDraw(scene, delta)
+		self.passDebugStats:measure(self.finalDeferredPass, scene, delta)
 
 		local cBuffer = self.finalDeferredPass:getCBuffer()
-
 		cBuffer:use()
-		self.finalForwardPass:beginDraw(scene, delta)
-		self.finalForwardPass:draw(scene, delta)
-		self.finalForwardPass:endDraw(scene, delta)
+
+		self.passDebugStats:measure(self.finalForwardPass, scene, delta)
 	end
 end
 
@@ -210,7 +218,7 @@ function Renderer:releaseCachedShaders()
 end
 
 function Renderer:renderNode(node, delta)
-	self.debugStats:measure(node, self, delta)
+	self.nodeDebugStats:measure(node, self, delta)
 end
 
 return Renderer
