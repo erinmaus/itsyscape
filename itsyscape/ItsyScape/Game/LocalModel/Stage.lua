@@ -561,7 +561,14 @@ function LocalStage:movePeep(peep, path, anchor, force)
 		-- We want to reload if this is a new stage or if it's forced.
 		local teleportedPeep = false
 		if filename ~= self.stageName or force or filename ~= path then
-			self:loadStage(path)
+			local t1, t2
+			do
+				t1 = love.timer.getTime()
+				self:loadStage(path)
+				t2 = love.timer.getTime()
+			end
+			Log.debug("Loaded '%s' in %d ms.", path, (t2 - t1) * 1000)
+
 			teleportedPeep = true
 		end
 
