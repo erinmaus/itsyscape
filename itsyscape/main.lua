@@ -229,7 +229,7 @@ function love.quit()
 	end
 
 	if _DEBUG then
-		_APP:getGameView():getRenderer():dumpStatsToCSV("renderer.csv")
+		_APP:getGameView():getRenderer():getDebugStats():dumpStatsToCSV("Renderer")
 	end
 
 	return result
