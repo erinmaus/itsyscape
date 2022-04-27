@@ -97,6 +97,11 @@ function GameView:new(game)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
+	self._onUndecorate = function(_, group, layer)
+		self:decorate(group, nil, layer)
+	end
+	stage.onUndecorate:register(self._onUndecorate)
+
 	self._onWaterFlood = function(_, key, water, layer)
 		self:flood(key, water, layer)
 	end
@@ -112,6 +117,11 @@ function GameView:new(game)
 		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
+
+	self._onStopForecast = function(_, layer, key)
+		self:forecast(layer, key, nil)
+	end
+	stage.onStopForecast:register(self._onStopForecast)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
 		self:fireProjectile(projectileID, source, destination, time)
@@ -199,9 +209,11 @@ function GameView:release()
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
 	stage.onDecorate:unregister(self._onDecorate)
+	stage.onUndecorate:unregister(self._onUndecorate)
 	stage.onWaterFlood:unregister(self._onWaterFlood)
 	stage.onWaterDrain:unregister(self._onWaterDrain)
 	stage.onForecast:unregister(self._onForecast)
+	stage.onStopForecast:unregister(self._onStopForecast)
 	stage.onProjectile:unregister(self._onProjectile)
 	stage.onPlayMusic:unregister(self._onPlayMusic)
 	stage.onStopMusic:unregister(self._onStopMusic)

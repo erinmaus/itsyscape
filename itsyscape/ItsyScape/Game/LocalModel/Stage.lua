@@ -1045,13 +1045,23 @@ function LocalStage:fireProjectile(projectileID, source, destination)
 end
 
 function LocalStage:forecast(layer, name, id, props)
-	self.onForecast(self, layer, name, id, props)
-	self.weathers[name] = true
+	if not props then
+		self.onStopForecast(self, layer, name)
+		self.weathers[name] = nil
+	else
+		self.onForecast(self, layer, name, id, props)
+		self.weathers[name] = true
+	end
 end
 
 function LocalStage:decorate(group, decoration, layer)
-	self.onDecorate(self, group, decoration, layer or 1)
-	self.decorations[group] = decoration
+	if not decoration then
+		self.onUndecorate(self, group, layer or 1)
+		self.decorations[group] = nil
+	else
+		self.onDecorate(self, group, decoration, layer or 1)
+		self.decorations[group] = decoration
+	end
 end
 
 function LocalStage:iterateActors()

@@ -235,32 +235,6 @@ function LocalActor:getTile()
 	end
 end
 
-function LocalActor:getCurrentHealth()
-	if not self.peep then
-		return 1
-	end
-
-	local status = self.peep:getBehavior(CombatStatusBehavior)
-	if status then
-		return status.currentHitpoints
-	else
-		return 1
-	end
-end
-
-function LocalActor:getMaximumHealth()
-	if not self.peep then
-		return 1
-	end
-
-	local status = self.peep:getBehavior(CombatStatusBehavior)
-	if status then
-		return status.maxHitpoints
-	else
-		return 1
-	end
-end
-
 function LocalActor:getBounds()
 	if not self.peep then
 		return Vector.ZERO, Vector.ZERO, 1, 0
