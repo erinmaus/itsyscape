@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
@@ -16,6 +17,21 @@ local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
 Renderer.DEFAULT_CLEAR_COLOR = Color(0.39, 0.58, 0.93, 1)
+
+Renderer.NodeDebugStats = Class(DebugStats)
+Renderer.PassDebugStats = Class(DebugStats)
+
+function Renderer.NodeDebugStats:process(node, renderer, delta)
+	node:beforeDraw(renderer, delta)
+	node:draw(renderer, delta)
+	node:afterDraw(renderer, delta)
+end
+
+function Renderer.PassDebugStats:process(pass, scene, delta)
+	pass:beginDraw(scene, delta)
+	pass:draw(scene, delta)
+	pass:endDraw(scene, delta)
+end
 
 function Renderer:new(isMobile)
 	self.cachedShaders = {}
@@ -36,6 +52,9 @@ function Renderer:new(isMobile)
 
 	self.cull = true
 	self.startTime = love.timer.getTime()
+
+	self.nodeDebugStats = Renderer.NodeDebugStats()
+	self.passDebugStats = Renderer.PassDebugStats()
 end
 
 function Renderer:getCullEnabled()
@@ -66,6 +85,14 @@ function Renderer:setCamera(value)
 	self.camera = value or self.camera
 end
 
+function Renderer:getNodeDebugStats()
+	return self.nodeDebugStats
+end
+
+function Renderer:getPassDebugStats()
+	return self.passDebugStats
+end
+
 function Renderer:clean()
 	self:releaseCachedShaders()
 end
@@ -76,16 +103,12 @@ function Renderer:drawFinalStep(scene, delta)
 		self.mobilePass:draw(scene, delta)
 		self.mobilePass:endDraw(scene, delta)
 	else
-		self.finalDeferredPass:beginDraw(scene, delta)
-		self.finalDeferredPass:draw(scene, delta)
-		self.finalDeferredPass:endDraw(scene, delta)
+		self.passDebugStats:measure(self.finalDeferredPass, scene, delta)
 
 		local cBuffer = self.finalDeferredPass:getCBuffer()
-
 		cBuffer:use()
-		self.finalForwardPass:beginDraw(scene, delta)
-		self.finalForwardPass:draw(scene, delta)
-		self.finalForwardPass:endDraw(scene, delta)
+
+		self.passDebugStats:measure(self.finalForwardPass, scene, delta)
 	end
 end
 
@@ -192,6 +215,10 @@ function Renderer:releaseCachedShaders()
 	end
 
 	self.cachedShaders = {}
+end
+
+function Renderer:renderNode(node, delta)
+	self.nodeDebugStats:measure(node, self, delta)
 end
 
 return Renderer
