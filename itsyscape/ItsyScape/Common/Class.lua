@@ -88,6 +88,24 @@ local function __call(self, parent)
 	local Metatable = { __index = Class, __type = Class }
 	Class._METATABLE = Metatable
 	Class._PARENT = parent or false
+	Class._DEBUG = {}
+
+	do
+		local debug = require "debug"
+		local log = require "ItsyScape.Common.Log" -- Class has higher priority than Log so the Log global might not be available
+
+		local info = debug.getinfo(2, "Sl")
+		if info then
+			local shortClassName = info.source:match("^.*/(.*/.*).lua$") or info.source
+			local lineNumber = info.currentline
+
+			Class._DEBUG.lineNumber = lineNumber
+			Class._DEBUG.filename = info.source
+			Class._DEBUG.shortName = string.format("%s:%d", shortClassName, lineNumber)
+
+			log.debug("Created class '%s' (%s:%d).", Class._DEBUG.shortName, Class._DEBUG.filename, Class._DEBUG.lineNumber)
+		end
+	end
 
 	-- Propagate metamethods.
 	--
@@ -112,6 +130,10 @@ local function __call(self, parent)
 
 		function result:isCompatibleType(type)
 			return C.isCompatibleType(self, type)
+		end
+
+		function result:getDebugInfo()
+			return Class._DEBUG
 		end
 
 		if Class.new then

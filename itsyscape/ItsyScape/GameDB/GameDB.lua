@@ -24,7 +24,7 @@ function GameDB.create(inputFilename, outputFilename)
 		return chunk()
 	end, S)
 
-	local packages = {}
+	local packages = { ["debug"] = require "debug" }
 	S.require = setfenv(function(filename)
 		if not packages[filename] then
 			local r = S.include(filename:gsub("%.", "/") .. ".lua")

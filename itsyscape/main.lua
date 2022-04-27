@@ -228,6 +228,12 @@ function love.quit()
 		love.filesystem.write("settings.cfg", serializedConf)
 	end
 
+	if _DEBUG then
+		_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
+		_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
+		_APP:getGameView():dumpStatsToCSV()
+	end
+
 	return result
 end
 

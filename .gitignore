@@ -8,3 +8,4 @@ itsyscape-android/
 *.log
 *.make
 *.cache
+*.csv

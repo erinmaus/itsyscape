@@ -235,9 +235,7 @@ function ForwardRendererPass:drawNodes(scene, delta)
 				love.graphics.setDepthMode('lequal', false)
 			end
 
-			node:beforeDraw(self:getRenderer(), delta)
-			node:draw(self:getRenderer(), delta)
-			node:afterDraw(self:getRenderer(), delta)
+			self:getRenderer():renderNode(node, delta)
 
 			if material:getIsZWriteDisabled() then
 				love.graphics.setDepthMode('lequal', true)
