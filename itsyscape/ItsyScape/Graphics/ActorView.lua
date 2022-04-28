@@ -175,6 +175,10 @@ function ActorView:new(actor, actorID)
 		self:changeSkin(slot, priority, skin)
 	end
 	actor.onSkinChanged:register(self._onSkinChanged)
+	self._onSkinRemoved = function(_, slot, priority, skin)
+		self:changeSkin(slot, false, skin)
+	end
+	actor.onSkinRemoved:register(self._onSkinRemoved)
 
 	self.body = false
 	self._onTransmogrified = function(_, body)
@@ -224,6 +228,7 @@ function ActorView:poof()
 	self.actor.onAnimationPlayed:unregister(self._onAnimationPlayed)
 	self.actor.onTransmogrified:unregister(self._onTransmogrified)
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
+	self.actor.onSkinRemoved:unregister(self._onSkinRemoved)
 	self.actor.onDamage:unregister(self._onDamage)
 	self.actor.onHUDMessage:unregister(self._onHUDMessage)
 

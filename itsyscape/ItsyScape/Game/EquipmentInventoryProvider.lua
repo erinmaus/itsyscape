@@ -136,7 +136,7 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 			local ref = CacheRef(
 				equipModelTag:get("Type"),
 				equipModelTag:get("Filename"))
-			actor:unsetSkin(equipSlotTag, ref)
+			actor:unsetSkin(equipSlotTag, Equipment.SKIN_PRIORITY_EQUIPMENT, ref)
 		end
 	end
 end
