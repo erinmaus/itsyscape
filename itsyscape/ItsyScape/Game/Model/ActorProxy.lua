@@ -42,7 +42,7 @@ ActorProxy.getDirection = Property()
 ActorProxy.teleport = Event.ServerToClientRPC(Event.Argument("position"))
 ActorProxy.teleport:link("onTeleport", Event.Argument("position"))
 ActorProxy.move = Event.ServerToClientRPC(Event.Argument("position"), Event.Argument("layer"))
-ActorProxy.teleport:link("onMove", Event.Argument("position"), Event.Argument("layer"))
+ActorProxy.move:link("onMove", Event.Argument("position"), Event.Argument("layer"))
 
 ActorProxy.getPosition = Property()
 ActorProxy.getScale = Property()
@@ -62,8 +62,15 @@ ActorProxy.playAnimation = Event.Set(
 	Event.Argument("animation"),
 	Event.OverrideKeyArgument("force"),
 	Event.TimeArgument("time"))
+ActorProxy.playAnimation:link(
+	"onAnimationPlayed",
+	Event.Argument("slot"),
+	Event.Argument("priority"),
+	Event.Argument("animation"),
+	Event.Argument("force"),
+	Event.Argument("time"))
 
 ActorProxy.flash = Event.ServerToClientRPC(Event.Argument("message"), Event.Arguments())
 ActorProxy.flash:link("onHUDMessage", Event.Argument("message"), Event.Arguments())
 
-return ActorProxy
+return Proxy(ActorProxy)

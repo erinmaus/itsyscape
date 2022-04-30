@@ -13,6 +13,8 @@ local Game = require "ItsyScape.Game.Model.Game"
 local RemoteGame = Class(Game)
 
 function RemoteGame:new(gameManager, gameDB)
+	Game.new(self)
+
 	self.gameManager = gameManager
 	self.gameDB = gameDB
 end
