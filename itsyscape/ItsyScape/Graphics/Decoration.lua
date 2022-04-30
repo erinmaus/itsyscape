@@ -60,6 +60,15 @@ function Decoration.Feature:setColor(value)
 	self.color = value or self.color
 end
 
+function Decoration.Feature:serialize()
+	return {
+		id = self.tileID,
+		position = { self.position:get() },
+		rotation = { self.rotation:get() },
+		scale = { self.scale:get() },
+		color = { self.color:get() }
+	}
+end
 
 function Decoration:new(d)
 	self.tileSetID = false
@@ -167,6 +176,18 @@ function Decoration:toString()
 	r:pushLine("}")
 
 	return r:toString()
+end
+
+function Decoration:serialize()
+	local result = {
+		tileSetID = self:getTileSetID()
+	}
+
+	for i = 1, #self.features do
+		table.insert(result, self.features[i]:serialize())
+	end
+
+	return result
 end
 
 Decoration.RAY_TEST_RESULT_FEATURE = 1

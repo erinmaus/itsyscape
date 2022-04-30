@@ -227,6 +227,8 @@ function GameManager:new()
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Vector", TypeProvider.Vector())
 	self.state:registerTypeProvider("ItsyScape.Game.CacheRef", TypeProvider.CacheRef())
 	self.state:registerTypeProvider("ItsyScape.Game.PlayerStorage", TypeProvider.PlayerStorage())
+	self.state:registerTypeProvider("ItsyScape.Graphics.Color", TypeProvider.Color())
+	self.state:registerTypeProvider("ItsyScape.Graphics.Decoration", TypeProvider.Decoration())
 	self.state:registerTypeProvider("ItsyScape.World.Map", TypeProvider.Map())
 	self.state:registerTypeProvider("ItsyScape.World.Tile", TypeProvider.Tile())
 end
