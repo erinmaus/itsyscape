@@ -94,6 +94,7 @@ function RemoteGameManager:receive()
 			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				self:flush()
 				return true
 			end
@@ -134,7 +135,7 @@ function RemoteGameManager:processDestroy(e)
 end
 
 function RemoteGameManager:processTick()
-	self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+	-- Nothing.
 end
 
 return RemoteGameManager

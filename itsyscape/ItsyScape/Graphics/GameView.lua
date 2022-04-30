@@ -424,6 +424,13 @@ function GameView:getMapTileSet(layer)
 	end
 end
 
+function GameView:getMap(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.map
+	end
+end
+
 function GameView:addActor(actorID, actor)
 	local view = ActorView(actor, actorID)
 	view:attach(self)
@@ -484,7 +491,7 @@ function GameView:getView(instance)
 end
 
 function GameView:spawnItem(item, tile)
-	local map = self.game:getStage():getMap(tile.layer)
+	local map = self:getMap(tile.layer)
 	if map then
 		position = map:getTileCenter(tile.i, tile.j)
 	end
@@ -590,7 +597,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	local node = WaterMeshSceneNode()
-	local map = self.game:getStage():getMap(water.layer or 1)
+	local map = self:getMap(water.layer or 1)
 	node:generate(
 		map,
 		water.i or 1,

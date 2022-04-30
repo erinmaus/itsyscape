@@ -15,7 +15,7 @@ function Property:filter(...)
 	return ...
 end
 
-Property.Actions = Class()
+Property.Actions = Class(Property)
 function Property.Actions:filter(actions)
 	local result = {}
 	for i = 1, #actions do
@@ -27,7 +27,7 @@ function Property.Actions:filter(actions)
 		})
 	end
 
-	return actions
+	return result
 end
 
 return Property

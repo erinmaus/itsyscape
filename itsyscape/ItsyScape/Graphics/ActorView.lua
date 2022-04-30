@@ -607,7 +607,7 @@ function ActorView:updateAnimations()
 					animation.next = nil
 				else
 					self.animations[slot] = nil
-					self.actor:playAnimation(slot, false)
+					self.actor:onAnimationPlayed(slot, false)
 				end
 
 				animation.done = false

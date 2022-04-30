@@ -153,7 +153,9 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 			local argument = v.argument
 
 			if Class.isCompatibleType(argument, Event.SortedKeyArgument) then
-				if key[k].value < value and not override then
+				local shouldOverride = not value or (not key[k].value and value)
+
+				if (shouldOverride or value >= key[k].value) and not override then
 					isMatch = false
 					outPrioritized = true
 					break
@@ -383,11 +385,11 @@ function GameManager:iterateInstances(interface)
 	local current = nil
 	return function()
 		current = next(instances, current)
-		while type(current) ~= "table" and type(current) ~= "nil" do
+		while type(current) ~= "number" and type(current) ~= "nil" do
 			current = next(instances, current)
 		end
 
-		return current and current:getInstance()
+		return current and instances[current]:getInstance()
 	end
 end
 

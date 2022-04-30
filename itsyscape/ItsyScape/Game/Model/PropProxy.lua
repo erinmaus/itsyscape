@@ -13,6 +13,7 @@ local Property = require "ItsyScape.Game.RPC.Property"
 
 local PropProxy = {}
 
+PropProxy.getID = Property()
 PropProxy.getName = Property()
 PropProxy.getDescription = Property()
 PropProxy.getResourceName = Property()

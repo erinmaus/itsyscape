@@ -35,6 +35,7 @@ ActorProxy.unsetSkin:link(
 	Event.Argument("priority"),
 	Event.Argument("skin"))
 
+ActorProxy.getID = Property()
 ActorProxy.getName = Property()
 ActorProxy.getDescription = Property()
 ActorProxy.getDirection = Property()
