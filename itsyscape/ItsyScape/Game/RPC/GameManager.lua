@@ -424,55 +424,65 @@ end
 -- instance of the entity, which we don't care about.
 function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
-	local group = instance:getPropertyGroup(event:getGroup())
+	if instance then
+		local group = instance:getPropertyGroup(event:getGroup())
 
-	local key = event:getKeyFromArguments(...)
-	local args = self:getArgs(...)
-	if group:set(key, args) then
-		self:pushCallback(interface, id, event:getCallbackName(), args)
+		local key = event:getKeyFromArguments(...)
+		local args = self:getArgs(...)
+		if group:set(key, args) then
+			self:pushCallback(interface, id, event:getCallbackName(), args)
+		end
 	end
 end
 
 function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
-	local group = instance:getPropertyGroup(event:getGroup())
+	if instance then
+		local group = instance:getPropertyGroup(event:getGroup())
 
-	local key = event:getKeyFromArguments(...)
-	local args = self:getArgs(...)
-	if group:unset(key, args) then
-		self:pushCallback(interface, id, event:getCallbackName(), args)
+		local key = event:getKeyFromArguments(...)
+		local args = self:getArgs(...)
+		if group:unset(key, args) then
+			self:pushCallback(interface, id, event:getCallbackName(), args)
+		end
 	end
 end
 
 function GameManager:setLocalStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
-	local group = instance:getPropertyGroup(event:getGroup())
+	if instance then
+		local group = instance:getPropertyGroup(event:getGroup())
 
-	local key = event:getKeyFromArguments(...)
-	local args = self:getArgs(...)
-	group:set(key, args)
+		local key = event:getKeyFromArguments(...)
+		local args = self:getArgs(...)
+		group:set(key, args)
+	end
 end
 
 function GameManager:unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
-	local group = instance:getPropertyGroup(event:getGroup())
+	if instance then
+		local group = instance:getPropertyGroup(event:getGroup())
 
-	local key = event:getKeyFromArguments(...)
-	local args = self:getArgs(...)
-	group:unset(key, args)
+		local key = event:getKeyFromArguments(...)
+		local args = self:getArgs(...)
+		group:unset(key, args)
+	end
 end
 
 function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
-	local group = instance:getPropertyGroup(event:getGroup())
+	if instance then
+		local group = instance:getPropertyGroup(event:getGroup())
 
-	local key = event:getKeyFromArguments(...)
-	local args = group:get(key)
-	if args then
-		local args = self.state:deserialize(args)
-		return event:getReturnValue(unpack(args, 1, args.n))
-	else
-		return
+		local key = event:getKeyFromArguments(...)
+		local args = group:get(key)
+		if args then
+			local args = self.state:deserialize(args)
+			return event:getReturnValue(unpack(args, 1, args.n))
+		else
+			return
+		end
 	end
 end
 
