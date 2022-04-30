@@ -29,6 +29,12 @@ PlayerProxy.walk = Event.ClientToServerRPC(
 
 PlayerProxy.poke = Event.ClientToServerRPC(Event.Argument("id"), Event.Argument("obj"), Event.Argument("scope"))
 
+PlayerProxy.takeItem = Event.ClientToServerRPC(
+	Event.Argument("i"),
+	Event.Argument("j"),
+	Event.Argument("layer"),
+	Event.Argument("ref"))
+
 PlayerProxy.pokeCamera = Event.ServerToClientRPC(Event.Argument("event"), Event.Arguments())
 PlayerProxy.pokeCamera:link("onPokeCamera", Event.Argument("event"), Event.Arguments())
 

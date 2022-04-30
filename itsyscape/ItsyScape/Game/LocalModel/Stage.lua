@@ -90,7 +90,7 @@ function LocalStage:notifyDropItem(item, key, source)
 
 	self.onDropItem(
 		self,
-		{ ref = ref, id = item:getID(), noted = item:isNoted() },
+		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
 		{ i = key.i, j = key.j, layer = key.layer },
 		position)
 end
@@ -893,7 +893,7 @@ function LocalStage:dropItem(item, count, owner)
 	transaction:commit()
 end
 
-function LocalStage:takeItem(i, j, layer, ref)
+function LocalStage:takeItem(i, j, layer, ref, player)
 	local inventory = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
 	if inventory then
 		local key = GroundInventoryProvider.Key(i, j, layer)
@@ -908,7 +908,6 @@ function LocalStage:takeItem(i, j, layer, ref)
 		end
 
 		if targetItem then
-			local player = self.game:getPlayer()
 			local path = player:findPath(i, j, layer)
 			if path then
 				local queue = player:getActor():getPeep():getCommandQueue()
