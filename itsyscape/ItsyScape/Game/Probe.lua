@@ -298,7 +298,7 @@ function Probe:actors()
 					object = actor:getName(),
 					description = actor:getDescription(),
 					callback = function()
-						actor:poke(actions[i].id, 'world')
+						self.game:getPlayer():poke(actions[i].id, actor, 'world')
 					end,
 					depth = -p.z + ((i / #actions) / 100)
 				}
@@ -365,7 +365,7 @@ function Probe:props()
 					suppress = i > 1 or isHidden,
 					description = prop:getDescription(),
 					callback = function()
-						prop:poke(actions[i].id, 'world')
+						self.game:getPlayer():poke(actions[i].id, prop, 'world')
 					end,
 					depth = -p.z + ((i / #actions) / 100)
 				}
