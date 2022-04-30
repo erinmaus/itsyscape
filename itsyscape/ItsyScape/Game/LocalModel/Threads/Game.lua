@@ -59,6 +59,11 @@ do
 	end
 end
 
+do
+	local B = require "B"
+	B._ROOT = "ItsyScape.Mashina"
+end
+
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"

@@ -364,8 +364,10 @@ function LocalActor:unsetSkin(slot, priority, skin)
 	if s then
 		for i = 1, #s do
 			if s[i].skin == skin and s[i].priority == priority then
+				local priority = s[i].priority
+
 				table.remove(s, i)
-				self.onSkinChanged(self, slot, s[i].priority, skin)
+				self.onSkinChanged(self, slot, priority, skin)
 				break
 			end
 		end

@@ -26,6 +26,10 @@ StageProxy.loadMap:link(
 	Event.Argument("map"),
 	Event.Argument("layer"),
 	Event.Argument("tileSetID"))
+StageProxy.getMap = Event.Get(
+	StageProxy.MAP,
+	Event.Return("map"),
+	Event.KeyArgument("layer"))
 StageProxy.unloadMap = Event.Unset(
 	StageProxy.MAP,
 	Event.Argument("map"),
