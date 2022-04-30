@@ -79,6 +79,29 @@ function TypeProvider.PlayerStorage:deserialize(obj, state)
 	return storage
 end
 
+local Color = require "ItsyScape.Graphics.Color"
+TypeProvider.Color = Class(TypeProvider)
+function TypeProvider.Color:serialize(obj, result, state, exceptions)
+	result.r = obj.r
+	result.g = obj.g
+	result.b = obj.b
+	result.a = obj.a
+end
+
+function TypeProvider.Color:deserialize(obj, state)
+	return Color(obj.r, obj.g, obj.b, obj.a)
+end
+
+local Decoration = require "ItsyScape.Graphics.Decoration"
+TypeProvider.Decoration = Class(TypeProvider)
+function TypeProvider.Decoration:serialize(obj, result, state, exceptions)
+	result.decoration = obj:serialize()
+end
+
+function TypeProvider.Decoration:deserialize(obj, state)
+	return Decoration(obj.decoration)
+end
+
 local Map = require "ItsyScape.World.Map"
 TypeProvider.Map = Class(TypeProvider)
 function TypeProvider.Map:serialize(obj, result, state, exceptions)
