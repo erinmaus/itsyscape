@@ -29,7 +29,7 @@ function TypeProvider.Quaternion:serialize(obj, result, state, exceptions)
 end
 
 function TypeProvider.Quaternion:deserialize(obj, state)
-	return Quaternion(obj.x, obj, obj.z, obj.w)
+	return Quaternion(obj.x, obj.y, obj.z, obj.w)
 end
 
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -52,7 +52,7 @@ function TypeProvider.Vector:serialize(obj, result, state, exceptions)
 end
 
 function TypeProvider.Vector:deserialize(obj, state)
-	return Vector(obj.x, obj, obj.z)
+	return Vector(obj.x, obj.y, obj.z)
 end
 
 local CacheRef = require "ItsyScape.Game.CacheRef"
@@ -82,11 +82,21 @@ end
 local Map = require "ItsyScape.World.Map"
 TypeProvider.Map = Class(TypeProvider)
 function TypeProvider.Map:serialize(obj, result, state, exceptions)
-	result.map = obj:toString()
+	result.map = obj:serialize()
 end
 
 function TypeProvider.Map:deserialize(obj, state)
-	return Map.loadFromString(obj.map)
+	return Map.loadFromTable(obj.map)
+end
+
+local Tile = require "ItsyScape.World.Tile"
+TypeProvider.Tile = Class(TypeProvider)
+function TypeProvider.Tile:serialize(obj, result, state, exceptions)
+	result.tile = state:serialize(obj:serialize())
+end
+
+function TypeProvider.Tile:deserialize(obj, state)
+	return Tile(state:deserialize(obj.tile))
 end
 
 TypeProvider.Instance = Class(TypeProvider)

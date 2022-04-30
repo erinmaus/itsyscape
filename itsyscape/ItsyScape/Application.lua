@@ -110,7 +110,7 @@ function Application:new()
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
 	self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
-	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel)
+	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
 
 	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	self.gameView = GameView(self.game)
@@ -190,7 +190,7 @@ function Application:probe(x, y, performDefault, callback, tests)
 	end
 
 	local ray = self:shoot(x, y)
-	local probe = Probe(self.localGame, self.gameView, self.gameDB, ray, tests)
+	local probe = Probe(self.game, self.gameView, self.gameDB, ray, tests)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)
@@ -262,10 +262,11 @@ function Application:tick()
 	if not self.paused then
 		self:measure('gameView:tick()', function() self.gameView:tick() end)
 		self:measure('game:tick()', function() self.localGame:tick() end)
+		self:measure('localGameManager:update()', function() self.localGameManager:update() end)
 		self.localGameManager:pushTick()
-		while not self.remoteGameManager:receive() do Log.info('remote receive'); love.timer.sleep(1); end
+		self:measure('remote receive', function() while not self.remoteGameManager:receive() do Log.info('remote receive') end end)
 		self.remoteGameManager:pushTick()
-		while not self.localGameManager:receive() do Log.info('local receive'); love.timer.sleep(1); end
+		while not self.localGameManager:receive() do Log.info('local receive') end
 	end
 end
 

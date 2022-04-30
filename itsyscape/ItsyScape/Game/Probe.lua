@@ -32,7 +32,6 @@ function Probe:new(game, gameView, gameDB, ray, tests)
 	self.onExamine = Callback()
 
 	self.game = game
-	--self.gameManager = gameView:getGameManager()
 	self.gameView = gameView
 	self.gameDB = gameDB
 	self.ray = ray
@@ -41,8 +40,7 @@ function Probe:new(game, gameView, gameDB, ray, tests)
 	self.isDirty = false
 
 	self.probes = {}
-	--self.tests = tests
-	self.tests = {}
+	self.tests = tests
 
 	self.tile = false
 	self.layer = false
@@ -103,6 +101,11 @@ end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
+	if not self.game:getPlayer() or not self.game:getPlayer():getActor() then
+		callback()
+		return
+	end
+
 	local layer
 	do
 		local i, j, k = self.game:getPlayer():getActor():getTile()

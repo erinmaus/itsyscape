@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local GameProxy = require "ItsyScape.Game.Model.GameProxy"
@@ -24,7 +25,7 @@ local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
 local RemoteGameManager = Class(GameManager)
 
-function RemoteGameManager:new(inputChannel, outputChannel)
+function RemoteGameManager:new(inputChannel, outputChannel, ...)
 	GameManager.new(self)
 
 	self.inputChannel = inputChannel
@@ -37,7 +38,7 @@ function RemoteGameManager:new(inputChannel, outputChannel)
 	self:registerInterface("ItsyScape.Game.Model.Prop", RemoteProp)
 	self:registerInterface("ItsyScape.Game.Model.UI", RemoteUI)
 
-	self:newInstance("ItsyScape.Game.Model.Game", 0, RemoteGame(self))
+	self:newInstance("ItsyScape.Game.Model.Game", 0, RemoteGame(self, ...))
 	GameProxy:wrapClient(
 		"ItsyScape.Game.Model.Game",
 		0,
@@ -45,19 +46,19 @@ function RemoteGameManager:new(inputChannel, outputChannel)
 		self)
 	self.game = self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 
-	self:newInstance("ItsyScape.Game.Model.Player", 0, RemotePlayer())
+	self:newInstance("ItsyScape.Game.Model.Player", 0, RemotePlayer(self))
 	PlayerProxy:wrapClient(
 		"ItsyScape.Game.Model.Player",
 		0,
 		self:getInstance("ItsyScape.Game.Model.Player", 0):getInstance(),
 		self)
-	self:newInstance("ItsyScape.Game.Model.Stage", 0, RemoteStage())
+	self:newInstance("ItsyScape.Game.Model.Stage", 0, RemoteStage(self))
 	StageProxy:wrapClient(
 		"ItsyScape.Game.Model.Stage",
 		0,
 		self:getInstance("ItsyScape.Game.Model.Stage", 0):getInstance(),
 		self)
-	self:newInstance("ItsyScape.Game.Model.UI", 0, RemoteUI())
+	self:newInstance("ItsyScape.Game.Model.UI", 0, RemoteUI(self))
 	UIProxy:wrapClient(
 		"ItsyScape.Game.Model.UI",
 		0,
@@ -77,7 +78,7 @@ function RemoteGameManager:new(inputChannel, outputChannel)
 end
 
 function RemoteGameManager:push(e)
-	self.outputChannel:push(e)
+	self.outputChannel:push(buffer.encode(e))
 end
 
 function RemoteGameManager:send()
@@ -90,6 +91,7 @@ function RemoteGameManager:receive()
 	repeat
 		e = self.inputChannel:pop()
 		if e then
+			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 				self:flush()
@@ -111,6 +113,12 @@ function RemoteGameManager:flush()
 end
 
 function RemoteGameManager:processCreate(e)
+	local exists = self:getInstance(e.interface, e.id)
+	if exists then
+		Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
+		return
+	end
+
 	local proxyTypeName = string.format("%sProxy", e.interface)
 	local proxy = require(proxyTypeName)
 

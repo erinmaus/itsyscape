@@ -149,7 +149,7 @@ function UIView:getInterfaces(interfaceID)
 	return pairs(self.interfaces[interfaceID] or {})
 end
 
-function UIView:open(interfaceID, index)
+function UIView:open(ui, interfaceID, index)
 	local TypeName = string.format("ItsyScape.UI.Interfaces.%s", interfaceID)
 	local Type = require(TypeName)
 
@@ -161,7 +161,7 @@ function UIView:open(interfaceID, index)
 	self.root:addChild(interface)
 end
 
-function UIView:close(interfaceID, index)
+function UIView:close(ui, interfaceID, index)
 	local interfaces = self.interfaces[interfaceID]
 	if interfaces then
 		local interface = interfaces[index]
@@ -172,7 +172,7 @@ function UIView:close(interfaceID, index)
 	end
 end
 
-function UIView:poke(interfaceID, index, actionID, actionIndex, e)
+function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 	local interfaces = self.interfaces[interfaceID]
 	if interfaces then
 		local interface = interfaces[index]

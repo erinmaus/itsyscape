@@ -79,7 +79,8 @@ function PlayerEquipmentController:pullActions(item, serializedItem)
 		serializedItem.actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
-			'equipment')
+			'equipment',
+			true)
 	else
 		serializedItem.actions = {}
 	end

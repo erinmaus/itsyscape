@@ -21,7 +21,7 @@ PropProxy.getRotation = Property()
 PropProxy.getScale = Property()
 PropProxy.getTile = Property()
 PropProxy.getBounds = Property()
-PropProxy.getActions = Property()
+PropProxy.getActions = Property.Actions()
 PropProxy.getState = Property()
 
 return Proxy(PropProxy)
