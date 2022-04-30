@@ -84,6 +84,47 @@ function LocalPlayer:spawn(storage)
 	self:changeCamera("Default")
 end
 
+function Player:save()
+	local playerActor = self.actor
+	local playerPeep = playerActor and playerActor:getPeep()
+	if playerPeep then
+		local storage = self.game:getDirector():getPlayerStorage(playerPeep)
+		local root = storage:getRoot()
+
+		local hasLocation = root:hasSection("Location")
+		if not hasLocation then
+			local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
+			local startedQuest = playerPeep:getState():has('KeyItem', "PreTutorial_Start")
+
+			local map, anchor
+			if finishedQuest then
+				map = "IsabelleIsland_Tower_Floor5"
+				anchor = "Anchor_StartGame"
+			elseif startedQuest then
+				map = "PreTutorial_MansionFloor1"
+				anchor = "Anchor_Spawn"
+			end
+
+			if map and anchor then
+				local x, y, z = Utility.Map.getAnchorPosition(self, map, anchor)
+				local locationSection = root:getSection("Location")
+				locationSection:set({
+					name = map,
+					x = x,
+					y = y,
+					z = z,
+					layer = 1
+				})
+			end
+		end
+
+		hasLocation = root:hasSection("Location")
+		if hasLocation then
+			Utility.save(playerPeep, false)
+		end
+	end
+end
+
 function LocalPlayer:onPlayerActionPerformed(_, p)
 	self.currentAction = p.action:getXProgressiveVerb()
 end

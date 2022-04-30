@@ -19,7 +19,7 @@ local Class = require "ItsyScape.Common.Class"
 local Game = Class()
 
 function Game:new()
-	-- Nothing.
+	self.onQuit = Callback()
 end
 
 -- Gets the GameDB.
