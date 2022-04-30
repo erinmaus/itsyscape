@@ -34,7 +34,7 @@ DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 
 DemoApplication.PROBE_TICK = 1 / 10
 
 function DemoApplication:new()
-	Application.new(self)
+	Application.new(self, true)
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
