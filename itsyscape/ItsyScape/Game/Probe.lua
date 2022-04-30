@@ -32,6 +32,7 @@ function Probe:new(game, gameView, gameDB, ray, tests)
 	self.onExamine = Callback()
 
 	self.game = game
+	--self.gameManager = gameView:getGameManager()
 	self.gameView = gameView
 	self.gameDB = gameDB
 	self.ray = ray
@@ -123,7 +124,7 @@ function Probe:all(callback)
 	local tests = self.tests or Probe.TESTS
 
 	if tests['loot'] or tests['walk'] then
-		self.game:getStage():testMap(layer, ray, function(result)
+		self.gameView:testMap(layer, ray, function(result)
 			self:getTile(result, layer)
 			self:walk()
 			self:loot()
