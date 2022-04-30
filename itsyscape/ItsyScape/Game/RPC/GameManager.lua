@@ -18,6 +18,7 @@ local UI = require "ItsyScape.Game.Model.UI"
 local Event = require "ItsyScape.Game.RPC.Event"
 local State = require "ItsyScape.Game.RPC.State"
 local Property = require "ItsyScape.Game.RPC.Property"
+local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
 local GameManager = Class()
 
@@ -143,7 +144,7 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 		local outPrioritized = false
 		for k, v in pairs(v.key) do
 			local value = v.value
-			local argument = v.key
+			local argument = v.argument
 
 			if Class.isCompatibleType(argument, Event.SortedKeyArgument) then
 				if key[k].value < value and not override then
@@ -200,6 +201,13 @@ function GameManager.PropertyGroup:unset(key, values)
 	return false
 end
 
+function GameManager.PropertyGroup:get(key)
+	local index, outPrioritized = self:findIndexOfKey(key)
+	if index then
+		return self.values[index].value
+	end
+end
+
 function GameManager:new()
 	self.state = State()
 
@@ -207,6 +215,13 @@ function GameManager:new()
 
 	self.interfaces = {}
 	self.instances = {}
+
+	self.state:registerTypeProvider("ItsyScape.Common.Math.Quaternion", TypeProvider.Quaternion())
+	self.state:registerTypeProvider("ItsyScape.Common.Math.Ray", TypeProvider.Ray())
+	self.state:registerTypeProvider("ItsyScape.Common.Math.Vector", TypeProvider.Vector())
+	self.state:registerTypeProvider("ItsyScape.Game.CacheRef", TypeProvider.CacheRef())
+	self.state:registerTypeProvider("ItsyScape.Game.PlayerStorage", TypeProvider.PlayerStorage())
+	self.state:registerTypeProvider("ItsyScape.World.Map", TypeProvider.Map())
 end
 
 function GameManager:getState()
@@ -225,7 +240,7 @@ function GameManager:registerInterface(interface, Type)
 end
 
 function GameManager:getInterfaceType(interface)
-	return self.interface[interface].type
+	return self.interfaces[interface].type
 end
 
 function GameManager:push(e)
@@ -289,12 +304,12 @@ end
 -- This process should be the same client/server.
 function GameManager:processCallback(e)
 	local instance = self:getInstance(e.interface, e.id)
-	local obj = instances:getInstance()
+	local obj = instance:getInstance()
 	local event = obj[e.callback]
 
 	if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-		local args = self.state:deserialize(args)
-		event(obj, unpack(args, 1, e.args.n))
+		local args = self.state:deserialize(e.value)
+		event(obj, unpack(args, 1, args.n))
 	end
 end
 
@@ -360,10 +375,12 @@ end
 function GameManager:newInstance(interface, id, obj)
 	local instance = GameManager.Instance(interface, id, obj, self)
 
-	local interface = self.interfaces[interface]
-	interface[id] = instance
+	local instances = self.interfaces[interface]
+	instances[id] = instance
 
 	table.insert(self.instances, instance)
+
+	self:pushCreate(interface, id)
 end
 
 function GameManager:destroyInstance(interface, id)
@@ -378,6 +395,8 @@ function GameManager:destroyInstance(interface, id)
 			break
 		end
 	end
+
+	self:pushDestroy(interface, id)
 end
 
 -- In setStateForPropertyGroup and unsetStateForPropertyGroup, the first argument
@@ -390,30 +409,47 @@ function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
 	local key = event:getKeyFromArguments(...)
 	local args = self:getArgs(...)
 	if group:set(key, args) then
-		self:pushCallback(interface, id, event, args)
+		self:pushCallback(interface, id, event:getCallbackName(), args)
 	end
 end
 
-function GameManager:unsetStateForPropertyGroup(interface, id. event, _, ...)
+function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
 	local group = instance:getPropertyGroup(event:getGroup())
 
 	local key = event:getKeyFromArguments(...)
 	local args = self:getArgs(...)
 	if group:unset(key, args) then
-		self:pushCallback(interface, id, event, args)
+		self:pushCallback(interface, id, event:getCallbackName(), args)
+	end
+end
+
+function GameManager:getStateForPropertyGroup(interface, id, event, ...)
+	local instance self:getInstance(interface, id)
+	local group = instance:getPropertyGroup(event:getGroup())
+
+	local key = event:getKeyFromArguments(...)
+	local args = group:get(key)
+	if args then
+		return self.state:deserialize(args)
+	else
+		return { n = 0 }
 	end
 end
 
 function GameManager:invokeCallback(interface, id, event, _, ...)
 	local args = self:getArgs(...)
-	self:pushCallback(interface, id, event, args)
+	self:pushCallback(interface, id, event:getCallbackName(), args)
 end
 
 function GameManager:getProperty(interface, id, property)
 	local instance = self:getInstance(interface, id)
-	local instance = instnce:getProperty(property)
-	return self.state:deserialize(instance)
+	local args = instance:getProperty(property)
+	if args then
+		return self.state:deserialize(args)
+	else
+		return { n = 0 }
+	end
 end
 
 function GameManager:registerProperty(interface, id, property)

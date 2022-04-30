@@ -59,6 +59,7 @@ function LocalPlayer:spawn(storage)
 		p.id = self.id
 
 		actor:getPeep():listen('finalize', function()
+			Utility.UI.openGroup(actor:getPeep(), Utility.UI.Groups.WORLD)
 			local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
 			if storage:hasSection("Location") then
 				local location = storage:getSection("Location")

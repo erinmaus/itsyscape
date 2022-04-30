@@ -14,6 +14,8 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
+local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
 local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
@@ -108,7 +110,7 @@ function Application:new()
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
 	self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
-	self.remoteGameManager = RemoteGameManager(self.inputChannel, self.outputChannel)
+	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel)
 
 	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	self.gameView = GameView(self.game)
@@ -151,9 +153,7 @@ function Application:measure(name, func, ...)
 end
 
 function Application:initialize()
-	self:getGame():getStage():newMap(1, 1, 1)
-
-	self:tick()
+	-- Nothing.
 end
 
 function Application:getCamera()
@@ -190,7 +190,7 @@ function Application:probe(x, y, performDefault, callback, tests)
 	end
 
 	local ray = self:shoot(x, y)
-	local probe = Probe(self.game, self.gameView, self.gameDB, ray, tests)
+	local probe = Probe(self.localGame, self.gameView, self.gameDB, ray, tests)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)
@@ -241,17 +241,17 @@ function Application:update(delta)
 	self.time = self.time + delta
 
 	-- Only update at the specified intervals.
-	while self.time > self.game:getDelta() do
+	while self.time > self.localGame:getDelta() do
 		self:tick()
 
 		-- Handle cases where 'delta' exceeds TICK_RATE
-		self.time = self.time - self.game:getDelta()
+		self.time = self.time - self.localGame:getDelta()
 
 		-- Store the previous frame time.
 		self.previousTickTime = love.timer.getTime()
 	end
 
-	self:measure('game:update()', function() self.game:update(delta) end)
+	self:measure('game:update()', function() self.localGame:update(delta) end)
 	self:measure('gameView:update()', function() self.gameView:update(delta) end)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
 
@@ -261,7 +261,11 @@ end
 function Application:tick()
 	if not self.paused then
 		self:measure('gameView:tick()', function() self.gameView:tick() end)
-		self:measure('game:tick()', function() self.game:tick() end)
+		self:measure('game:tick()', function() self.localGame:tick() end)
+		self.localGameManager:pushTick()
+		while not self.remoteGameManager:receive() do Log.info('remote receive'); love.timer.sleep(1); end
+		self.remoteGameManager:pushTick()
+		while not self.localGameManager:receive() do Log.info('local receive'); love.timer.sleep(1); end
 	end
 end
 
@@ -324,7 +328,7 @@ function Application:getFrameDelta()
 
 	-- Generate a delta (0 .. 1 inclusive) between the current and previous
 	-- frames
-	return (currentTime - previousTime) / self.game:getDelta()
+	return (currentTime - previousTime) / self.localGame:getDelta()
 end
 
 function Application:draw()

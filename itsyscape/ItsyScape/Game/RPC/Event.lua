@@ -94,6 +94,16 @@ function Event.Unset:getGroup()
 	return self.group
 end
 
+Event.Get = Class(Event.BaseCall)
+function Event.Get:new(group, ...)
+	Event.BaseCall.new(self, ...)
+	self.group = group
+end
+
+function Event.Get:getGroup()
+	return self.group
+end
+
 Event.ServerToClientRPC = Class(Event.BaseCall)
 Event.ClientToServerRPC = Class(Event.BaseCall)
 

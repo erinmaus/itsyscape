@@ -42,6 +42,11 @@ UIProxy.push = Event.Set(
 	Event.KeyArgument("interfaceID"),
 	Event.KeyArgument("index"),
 	Event.Argument("state"))
+UIProxy.push:link(
+	"onPush",
+	Event.Argument("interfaceID"),
+	Event.Argument("index"),
+	Event.Argument("state"))
 UIProxy.pull = Event.Get(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID"),
@@ -50,5 +55,9 @@ UIProxy.close = Event.Unset(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID"),
 	Event.KeyArgument("index"))
+UIProxy.close:link(
+	"onClose",
+	Event.Argument("interfaceID"),
+	Event.Argument("index"))
 
 return Proxy(UIProxy)

@@ -14,7 +14,7 @@ local Property = require "ItsyScape.Game.RPC.Property"
 
 local Proxy = Class()
 
-local Proxy.Field = Class()
+Proxy.Field = Class()
 
 function Proxy.Field:new(key, value)
 	self.key = key
@@ -35,11 +35,11 @@ function Proxy:new(definition)
 	self.properties = {}
 	self.groups = {}
 
-	for key, value in pairs(definitions) do
+	for key, value in pairs(definition) do
 		if Class.isCompatibleType(value, Property) then
 			self:createProperty(key, value)
 		elseif Class.isCompatibleType(value, Event.BaseCall) then
-			self:createEvent(value)
+			self:createEvent(key, value)
 		end
 	end
 
@@ -73,20 +73,21 @@ function Proxy:wrapServer(interface, id, instance, gameManager)
 
 	local groups = {}
 	for i = 1, #self.events do
+		local key = self.events[i]:getKey()
 		local event = self.events[i]:getValue()
 
 		if Class.isCompatibleType(event, Event.Set) then
-			instance[event:getCallbackName()]:register(gameManager.setStateForPropertyGroup, gameManager, interface, id)
+			instance[event:getCallbackName()]:register(gameManager.setStateForPropertyGroup, gameManager, interface, id, event)
 		elseif Class.isCompatibleType(event, Event.Unset) then
-			instance[event:getCallbackName()]:register(gameManager.unsetStateForPropertyGroup, gameManager, interface, id)
+			instance[event:getCallbackName()]:register(gameManager.unsetStateForPropertyGroup, gameManager, interface, id, event)
 		elseif Class.isCompatibleType(event, Event.ServerToClientRPC) then
-			instance[event:getCallbackName()]:register(gameManager.invokeCallback, gameManager, interface, id)
+			instance[event:getCallbackName()]:register(gameManager.invokeCallback, gameManager, interface, id, event)
 		elseif Class.isCompatibleType(event, Event.ClientToServerRPC) then
 			Log.debug("Ignoring event '%s' of type 'ClientToServerRPC'; wrapping for server, not client.")
 		elseif Class.isCompatibleType(event, Event.Create) then
-			instance[event:getCallbackName()]:register(event:getFunc(), gameManager)
+			instance[event:getCallbackName()]:register(event:getFunc(), event, gameManager)
 		elseif Class.isCompatibleType(event, Event.Destroy) then
-			instance[event:getCallbackName()]:register(event:getFunc(), gameManager)
+			instance[event:getCallbackName()]:register(event:getFunc(), event, gameManager)
 		end
 	end
 end
@@ -109,7 +110,17 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 
 		if Class.isCompatibleType(event, Event.ClientToServerRPC) then
 			instance[name] = function(...)
-				gameManager:invokeCallback(interface, id, name, ...)
+				event:link(name)
+				gameManager:invokeCallback(interface, id, event, ...)
+			end
+		--elseif Class.isCompatibleType(event, Event.Set) then
+		--	instance[event:getCallbackName()]:register(gameManager.setStateForPropertyGroup, gameManager, interface, id, event)
+		--elseif Class.isCompatibleType(event, Event.Unset) then
+		--	instance[event:getCallbackName()]:register(gameManager.unsetStateForPropertyGroup, gameManager, interface, id, event)
+		elseif Class.isCompatibleType(event, Event.Get) then
+			instance[name] = function(...)
+				local property = gameManager:getPropertyGroup(interface, id, event, ...)
+				return unpack(property, 1., property.n)
 			end
 		end
 	end

@@ -84,9 +84,6 @@ function DemoApplication:closeTitleScreen()
 	if self.titleScreen then
 		self.titleScreen = nil
 	end
-
-	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
-	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 end
 
 function DemoApplication:openTitleScreen()

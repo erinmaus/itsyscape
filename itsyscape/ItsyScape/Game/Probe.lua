@@ -41,7 +41,8 @@ function Probe:new(game, gameView, gameDB, ray, tests)
 	self.isDirty = false
 
 	self.probes = {}
-	self.tests = tests
+	--self.tests = tests
+	self.tests = {}
 
 	self.tile = false
 	self.layer = false

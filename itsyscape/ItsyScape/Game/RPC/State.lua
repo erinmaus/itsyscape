@@ -59,15 +59,17 @@ function State:new()
 end
 
 function State:verifyIsClass(typeName)
-	local success, type = pcall(require, typeName)
+	local success, t = pcall(require, typeName)
 	if not success then
 		return false, nil
 	end
 
-	return Class.isClass(type), type
+	metatable = getmetatable(t)
+
+	return type(metatable) == "table" and metatable.__c == Class, t
 end
 
-function State:registerTypeProvider(typeName, provider)
+function State:registerTypeProvider(typeName, provider, alias)
 	local isType, type = self:verifyIsClass(typeName)
 	if not isType then
 		Log.error("Type name '%s' is not a type.", typeName)
@@ -76,12 +78,16 @@ function State:registerTypeProvider(typeName, provider)
 
 	local result = {
 		provider = provider,
-		typeName = typeName,
+		typeName = alias or typeName,
 		type = type
 	}
 
 	self.types[type] = result
 	self.typeNames[typeName] = result
+
+	if alias then
+		self.typeNames[alias] = result
+	end
 end
 
 function State:serializePrimitive(value)
@@ -137,7 +143,9 @@ function State:deserialize(obj)
 		local t = self.typeNames[typeName]
 
 		if t then
-			return t:deserialize(obj, state)
+			return t.provider:deserialize(obj, state)
+		else
+			Log.warn("Type '%s' not supported.", typeName)
 		end
 	end
 
@@ -145,15 +153,17 @@ function State:deserialize(obj)
 end
 
 function State:serialize(obj, exceptions)
+	exceptions = exceptions or {}
+
 	if self:isPrimitive(obj) then
-		return self:serializePrimitive(value)
+		return self:serializePrimitive(obj)
 	end
 
 	local isClass = Class.isClass(obj)
 	if isClass then
-		local t = Class.getType(obj)
-		if not self.types[t] then
-			Log.error("Type '%s' is not registered.", t._DEBUG.shortName)
+		local t = self.types[Class.getType(obj)]
+		if not t then
+			Log.error("Type '%s' is not registered.", obj:getDebugInfo().shortName)
 			return nil
 		else
 			if exceptions[obj] then
@@ -165,6 +175,8 @@ function State:serialize(obj, exceptions)
 			t.provider:serialize(obj, result, self, exceptions)
 
 			exceptions[obj] = result
+
+			return result
 		end
 	end
 
@@ -184,14 +196,16 @@ function State:serialize(obj, exceptions)
 				Log.error("Could not serialize key '%s' (type: %s)", tostring(k), type(k))
 			end
 
+			assert(k.typeName ~= "nil")
+
 			if v == nil then
 				Log.error("Could not serialize value '%s' (type: %s)", tostring(v), type(v))
 			end
 
 			if k and v then
 				table.insert(result.value, {
-					key = self:serialize(key, exceptions),
-					value = self:serialize(value, exceptions)
+					key = k,
+					value = v
 				})
 			end
 		end

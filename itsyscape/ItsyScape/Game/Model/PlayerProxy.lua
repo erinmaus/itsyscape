@@ -33,7 +33,7 @@ PlayerProxy.pokeCamera = Event.ServerToClientRPC(Event.Argument("event"), Event.
 PlayerProxy.pokeCamera:link("onPokeCamera", Event.Argument("event"), Event.Arguments())
 
 PlayerProxy.CAMERA = "camera"
-PlayerProxy.changeCamera = Event.Set(PlayerProxy.KeyArgument("cameraType"))
+PlayerProxy.changeCamera = Event.Set(Event.KeyArgument("cameraType"))
 PlayerProxy.changeCamera:link("onChangeCamera", Event.Argument("cameraType"))
 
 return Proxy(PlayerProxy)

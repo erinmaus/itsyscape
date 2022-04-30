@@ -36,7 +36,7 @@ StageProxy.unloadMap:link(
 	Event.Argument("layer"))
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,
-	Event.Argument("map")
+	Event.Argument("map"),
 	Event.KeyArgument("layer"))
 StageProxy.modifyMap:link(
 	"onMapModified",
@@ -69,26 +69,26 @@ StageProxy.stopMoveMap:link(
 	Event.Argument("map"),
 	Event.Argument("layer"))
 
-StageProxy.spawnActor = Event.Create(ActorProxy, function(gameManager, stage, id, actor)
-	gameManager:newInstance("ItsyScape.Game.Model.Actor", id, actor)
-	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", id, actor, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, "onActorSpawned", stage, id, actor)
+StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor)
+	gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
+	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
 end)
 StageProxy.spawnActor:link("onActorSpawned")
-StageProxy.killActor = Event.Destroy(ActorProxy, function(gameManager, stage, actor)
-	gameManager:invokeCallback("ItsyScape.Gane.Model.Stage", 0, "onActorKilled", stage, actor)
+StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Actor", actor:getID())
 end)
 StageProxy.killActor:link("onActorKilled")
 
-StageProxy.placeProp = Event.Create(PropProxy,function(gameManager, stage, id, prop)
-	gameManager:newInstance("ItsyScape.Game.Model.Prop", id, prop)
-	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", id, prop, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, "onPropPlaced", stage, id, actor)
+StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop)
+	gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
+	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
 end)
 StageProxy.placeProp:link("onPropPlaced")
-StageProxy.removeProp = Event.Destroy(PropProxy, function(gameManager, stage, prop)
-	gameManager:invokeCallback("ItsyScape.Gane.Model.Stage", 0, "onPropRemoved", stage, prop)
+StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
 end)
 StageProxy.removeProp:link("onPropRemoved")
@@ -150,8 +150,8 @@ StageProxy.stopForecast = Event.Unset(
 	Event.Argument("layer"),
 	Event.KeyArgument("name"))
 StageProxy.stopForecast:link(
-	"onStopForecast",,
-	Event.Argument("layer")
+	"onStopForecast",
+	Event.Argument("layer"),
 	Event.KeyArgument("name"))
 
 StageProxy.WATER = "water"
@@ -176,7 +176,13 @@ StageProxy.projectile = Event.ServerToClientRPC(
 	Event.Argument("projectileID"),
 	Event.Argument("source"),
 	Event.Argument("destination"),
-	EVent.Argument("time"))
+	Event.Argument("time"))
+StageProxy.projectile:link(
+	"onProjectile",
+	Event.Argument("projectileID"),
+	Event.Argument("source"),
+	Event.Argument("destination"),
+	Event.Argument("time"))
 
 StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
