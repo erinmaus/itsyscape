@@ -14,7 +14,7 @@ local CAPES = {
 	}
 }
 
-for name, props in pairs(CAPES) do
+for name, props in spairs(CAPES) do
 	local ItemName = string.format("%sPrideCape", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
 

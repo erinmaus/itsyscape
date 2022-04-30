@@ -64,7 +64,7 @@ local ORES = {
 	}
 }
 
-for name, ore in pairs(ORES) do
+for name, ore in spairs(ORES) do
 	local ItemName = string.format("%sOre", name)
 	local Ore = ItsyScape.Resource.Item(ItemName)
 

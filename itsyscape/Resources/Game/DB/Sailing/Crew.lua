@@ -144,7 +144,7 @@ local GENERAL_HUMAN_NAMES = {
 }
 
 local function nameSailor(list, resource)
-	for gender, names in pairs(list) do
+	for gender, names in spairs(list) do
 		for i = 1, #names do
 			local name = names[i]
 
