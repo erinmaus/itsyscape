@@ -69,11 +69,11 @@ function GameManager.Instance:getProperty(propertyName)
 	return self.properties[propertyName]:getValue()
 end
 
-function GameManager.Instance:registerProperty(propertyName)
-	local property = GameManager.Property(propertyName)
+function GameManager.Instance:registerProperty(propertyName, property)
+	local p = GameManager.Property(propertyName, property)
 
-	table.insert(self.properties, property)
-	self.properties[propertyName] = property
+	table.insert(self.properties, p)
+	self.properties[propertyName] = p
 end
 
 function GameManager.Instance:setProperty(propertyName, value)
@@ -96,8 +96,10 @@ function GameManager.Instance:update()
 end
 
 GameManager.Property = Class()
-function GameManager.Property:new(field)
+function GameManager.Property:new(field, filter)
 	self.field = field
+	self.filter = filter
+	assert(filter)
 end
 
 function GameManager.Property:getField()
@@ -110,9 +112,13 @@ end
 
 function GameManager.Property:update(instance, gameManager)
 	local getFunc = instance[self.field]
-	local newValue = gameManager:getArgs(getFunc(instance))
+	if not getFunc then
+		Log.error("Unknown field: %s", self.field)
+	end
 
-	local isDirty = not State.deepEquals(self.currentValue, newValue)
+	local newValue = gameManager:getArgs(self.filter:filter(getFunc(instance)))
+
+	local isDirty = true
 	self.currentValue = newValue
 
 	return isDirty
@@ -183,7 +189,7 @@ function GameManager.PropertyGroup:set(key, values)
 	elseif not outPrioritized then
 		table.insert(self.values, {
 			key = key,
-			values = values
+			value = values
 		})
 		return true
 	end
@@ -222,6 +228,7 @@ function GameManager:new()
 	self.state:registerTypeProvider("ItsyScape.Game.CacheRef", TypeProvider.CacheRef())
 	self.state:registerTypeProvider("ItsyScape.Game.PlayerStorage", TypeProvider.PlayerStorage())
 	self.state:registerTypeProvider("ItsyScape.World.Map", TypeProvider.Map())
+	self.state:registerTypeProvider("ItsyScape.World.Tile", TypeProvider.Tile())
 end
 
 function GameManager:getState()
@@ -350,6 +357,12 @@ function GameManager:receive()
 	Class.ABSTRACT()
 end
 
+function GameManager:update()
+	for i = 1, #self.instances do
+		self.instances[i]:update()
+	end
+end
+
 function GameManager:getArgs(...)
 	local args = { n = select('#', ...), ... }
 	return self.state:serialize(args)
@@ -368,16 +381,19 @@ function GameManager:iterateInstances(interface)
 	local current = nil
 	return function()
 		current = next(instances, current)
-		return current
+		while type(current) ~= "table" and type(current) ~= "nil" do
+			current = next(instances, current)
+		end
+
+		return current and current:getInstance()
 	end
 end
 
 function GameManager:newInstance(interface, id, obj)
 	local instance = GameManager.Instance(interface, id, obj, self)
-
 	local instances = self.interfaces[interface]
-	instances[id] = instance
 
+	instances[id] = instance
 	table.insert(self.instances, instance)
 
 	self:pushCreate(interface, id)
@@ -424,16 +440,35 @@ function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 	end
 end
 
-function GameManager:getStateForPropertyGroup(interface, id, event, ...)
-	local instance self:getInstance(interface, id)
+function GameManager:setLocalStateForPropertyGroup(interface, id, event, _, ...)
+	local instance = self:getInstance(interface, id)
+	local group = instance:getPropertyGroup(event:getGroup())
+
+	local key = event:getKeyFromArguments(...)
+	local args = self:getArgs(...)
+	group:set(key, args)
+end
+
+function GameManager:unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
+	local instance = self:getInstance(interface, id)
+	local group = instance:getPropertyGroup(event:getGroup())
+
+	local key = event:getKeyFromArguments(...)
+	local args = self:getArgs(...)
+	group:unset(key, args)
+end
+
+function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
+	local instance = self:getInstance(interface, id)
 	local group = instance:getPropertyGroup(event:getGroup())
 
 	local key = event:getKeyFromArguments(...)
 	local args = group:get(key)
 	if args then
-		return self.state:deserialize(args)
+		local args = self.state:deserialize(args)
+		return event:getReturnValue(unpack(args, 1, args.n))
 	else
-		return { n = 0 }
+		return
 	end
 end
 
@@ -452,9 +487,9 @@ function GameManager:getProperty(interface, id, property)
 	end
 end
 
-function GameManager:registerProperty(interface, id, property)
+function GameManager:registerProperty(interface, id, propertyName, property)
 	local instance = self:getInstance(interface, id)
-	instance:registerProperty(property)
+	instance:registerProperty(propertyName, property)
 end
 
 return GameManager

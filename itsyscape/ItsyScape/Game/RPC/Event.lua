@@ -26,6 +26,7 @@ Event.SortedKeyArgument = Class(Event.BaseArgument)
 Event.OverrideKeyArgument = Class(Event.BaseArgument)
 Event.TimeArgument = Class(Event.BaseArgument)
 Event.Arguments = Class(Event.BaseArgument)
+Event.Return = Class(Event.BaseArgument)
 
 Event.BaseCall = Class()
 function Event.BaseCall:new(...)
@@ -55,6 +56,17 @@ function Event.BaseCall:getKeyFromArguments(...)
 		end
 	end
 	return key
+end
+
+function Event.BaseCall:getReturnValue(...)
+	for i = 1, #self.arguments do
+		local argument = self.arguments[i]
+		if Class.isCompatibleType(argument, Event.Return) then
+			return select(i, ...)
+		end
+	end
+
+	return ...
 end
 
 function Event.BaseCall:link(callbackName, ...)

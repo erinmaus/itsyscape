@@ -66,9 +66,10 @@ end
 
 function Proxy:wrapServer(interface, id, instance, gameManager)
 	for i = 1, #self.properties do
-		local property = self.properties[i]:getKey()
+		local propertyName = self.properties[i]:getKey()
+		local property = self.properties[i]:getValue()
 
-		gameManager:registerProperty(interface, id, property)
+		gameManager:registerProperty(interface, id, propertyName, property)
 	end
 
 	local groups = {}
@@ -94,13 +95,14 @@ end
 
 function Proxy:wrapClient(interface, id, instance, gameManager)
 	for i = 1, #self.properties do
-		local property = self.properties[i]:getKey()
+		local propertyName = self.properties[i]:getKey()
+		local property = self.properties[i]:getValue()
 
-		gameManager:registerProperty(interface, id, property)
+		gameManager:registerProperty(interface, id, propertyName, property)
 
-		instance[property] = function()
-			local property = gameManager:getProperty(interface, id, property)
-			return unpack(property, 1, property.n)
+		instance[propertyName] = function()
+			local p = gameManager:getProperty(interface, id, propertyName)
+			return unpack(p, 1, p.n)
 		end
 	end
 
@@ -113,14 +115,13 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 				event:link(name)
 				gameManager:invokeCallback(interface, id, event, ...)
 			end
-		--elseif Class.isCompatibleType(event, Event.Set) then
-		--	instance[event:getCallbackName()]:register(gameManager.setStateForPropertyGroup, gameManager, interface, id, event)
-		--elseif Class.isCompatibleType(event, Event.Unset) then
-		--	instance[event:getCallbackName()]:register(gameManager.unsetStateForPropertyGroup, gameManager, interface, id, event)
+		elseif Class.isCompatibleType(event, Event.Set) then
+			instance[event:getCallbackName()]:register(gameManager.setLocalStateForPropertyGroup, gameManager, interface, id, event)
+		elseif Class.isCompatibleType(event, Event.Unset) then
+			instance[event:getCallbackName()]:register(gameManager.unsetLocalStateForPropertyGroup, gameManager, interface, id, event)
 		elseif Class.isCompatibleType(event, Event.Get) then
 			instance[name] = function(...)
-				local property = gameManager:getPropertyGroup(interface, id, event, ...)
-				return unpack(property, 1., property.n)
+				return gameManager:getStateForPropertyGroup(interface, id, event, ...)
 			end
 		end
 	end

@@ -43,13 +43,13 @@ MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
 
--- ew
-do
-	local GameView = require "ItsyScape.Graphics.GameView"
-	GameView.MAP_MESH_DIVISIONS = 1024
-end
-
 function MapEditorApplication:new()
+	-- ew
+	do
+		local GameView = require "ItsyScape.Graphics.GameView"
+		GameView.MAP_MESH_DIVISIONS = 1024
+	end
+
 	EditorApplication.new(self)
 
 	self.currentDecorationTileSet = "RumbridgeCabin"

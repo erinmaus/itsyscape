@@ -20,7 +20,7 @@ PlayerProxy.getActor = Property()
 PlayerProxy.isReady = Property()
 
 PlayerProxy.flee = Event.ClientToServerRPC()
-PlayerProxy.getIsEnganged = Property()
+PlayerProxy.getIsEngaged = Property()
 PlayerProxy.getTarget = Property()
 
 PlayerProxy.move = Event.ClientToServerRPC(Event.Argument("x"), Event.Arguments("z"))

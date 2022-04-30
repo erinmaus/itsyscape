@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local GameProxy = require "ItsyScape.Game.Model.GameProxy"
@@ -66,7 +67,7 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 end
 
 function LocalGameManager:push(e)
-	self.outputChannel:push(e)
+	self.outputChannel:push(buffer.encode(e))
 end
 
 function LocalGameManager:send()
@@ -79,6 +80,7 @@ function LocalGameManager:receive()
 	repeat
 		e = self.inputChannel:pop()
 		if e then
+			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 				self:flush()

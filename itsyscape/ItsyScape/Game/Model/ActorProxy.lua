@@ -44,14 +44,16 @@ ActorProxy.teleport:link("onTeleport", Event.Argument("position"))
 ActorProxy.move = Event.ServerToClientRPC(Event.Argument("position"), Event.Argument("layer"))
 ActorProxy.move:link("onMove", Event.Argument("position"), Event.Argument("layer"))
 
+ActorProxy.transmogrify = Event.ServerToClientRPC(Event.Argument("body"))
+ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))
+
 ActorProxy.getPosition = Property()
 ActorProxy.getScale = Property()
 ActorProxy.getCurrentHitpoints = Property()
 ActorProxy.getMaximumHitpoints = Property()
 ActorProxy.getTile = Property()
 ActorProxy.getBounds = Property()
-ActorProxy.getResource = Property()
-ActorProxy.getActions = Property()
+ActorProxy.getActions = Property.Actions()
 ActorProxy.getBody = Property()
 
 ActorProxy.ANIMATIONS = "animations"

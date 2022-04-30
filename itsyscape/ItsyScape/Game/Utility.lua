@@ -414,7 +414,7 @@ function Utility.performAction(game, resource, id, scope, ...)
 	return foundAction
 end
 
-function Utility.getAction(game, action, scope)
+function Utility.getAction(game, action, scope, filter)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	local definition = brochure:getActionDefinitionFromAction(action)
@@ -429,9 +429,12 @@ function Utility.getAction(game, action, scope)
 			local t = {
 				id = action.id.value,
 				type = definition.name,
-				verb = a:getVerb() or a:getName(),
-				instance = ActionType(game, action)
+				verb = a:getVerb() or a:getName()
 			}
+
+			if not filter then
+				t.instance = ActionType(game, action)
+			end
 
 			return t, ActionType
 		end
@@ -488,12 +491,12 @@ function Utility.getActionConstraints(game, action)
 	return result
 end
 
-function Utility.getActions(game, resource, scope)
+function Utility.getActions(game, resource, scope, filter)
 	local actions = {}
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	for action in brochure:findActionsByResource(resource) do
-		local action = Utility.getAction(game, action, scope)
+		local action = Utility.getAction(game, action, scope, filter)
 		if action then
 			table.insert(actions, action)
 		end

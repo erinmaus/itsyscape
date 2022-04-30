@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -43,6 +44,7 @@ function GameView:new(game)
 	self.propViewDebugStats = GameView.PropViewDebugStats()
 
 	local stage = game:getStage()
+
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		self:addMap(map, layer, tileSetID)
 	end
@@ -319,7 +321,7 @@ function GameView:updateMap(map, layer)
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',
 				key = layer,
-				data = m.map:toString()
+				data = buffer.encode(m.map:serialize())
 			})
 			local after = love.timer.getTime()
 
@@ -734,6 +736,10 @@ function GameView:getDecorationSceneNodes()
 	return result, count
 end
 
+function GameView:updateResourceManager()
+	self.resourceManager:update()
+end
+
 function GameView:updateActors(delta)
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
@@ -835,8 +841,7 @@ function GameView:updateMapQueries(delta)
 end
 
 function GameView:update(delta)
-	self.resourceManager:update()
-
+	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
 	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
 	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
 	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)

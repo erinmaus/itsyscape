@@ -11,4 +11,23 @@ local Class = require "ItsyScape.Common.Class"
 
 local Property = Class()
 
+function Property:filter(...)
+	return ...
+end
+
+Property.Actions = Class()
+function Property.Actions:filter(actions)
+	local result = {}
+	for i = 1, #actions do
+		local action = actions[i]
+		table.insert(result, {
+			id = action.id,
+			type = action.type,
+			verb = action.verb
+		})
+	end
+
+	return actions
+end
+
 return Property

@@ -17,19 +17,19 @@ UIProxy.open = Event.ServerToClientRPC(
 	Event.Argument("interfaceID"),
 	Event.Argument("index"))
 UIProxy.open:link("onOpen", Event.Argument("interfaceID"), Event.Argument("index"))
-UIProxy.poke = Event.ServerToClientRPC(
+UIProxy.poke = Event.ClientToServerRPC(
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
 	Event.Argument("actionID"),
 	Event.Argument("actionIndex"),
 	Event.Argument("e"))
-UIProxy.poke:link("onPoke",
+UIProxy.sendPoke = Event.ServerToClientRPC(
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
 	Event.Argument("actionID"),
 	Event.Argument("actionIndex"),
 	Event.Argument("e"))
-UIProxy.sendPoke = Event.ClientToServerRPC(
+UIProxy.sendPoke:link("onPoke",
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
 	Event.Argument("actionID"),
@@ -50,7 +50,8 @@ UIProxy.push:link(
 UIProxy.pull = Event.Get(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID"),
-	Event.KeyArgument("index"))
+	Event.KeyArgument("index"),
+	Event.Return("e"))
 UIProxy.close = Event.Unset(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID"),

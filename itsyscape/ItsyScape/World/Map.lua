@@ -419,6 +419,24 @@ function Map.loadFromFile(filename)
 	end
 end
 
+function Map:serialize()
+	local result = {
+		width = self.width,
+		height = self.height,
+		cellSize = self.cellSize,
+		tiles = {}
+	}
+
+	for j = 1, self.height do
+		for i = 1, self.width do
+			local tile = self:getTile(i, j)
+			table.insert(result.tiles, tile:serialize())
+		end
+	end
+
+	return result
+end
+
 -- Serializes the Map.
 function Map:toString()
 	local r = StringBuilder()

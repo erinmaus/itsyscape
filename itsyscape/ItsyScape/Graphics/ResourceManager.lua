@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local debug = require "debug"
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
@@ -64,7 +65,13 @@ function ResourceManager:update()
 		local callback = top.callback
 		local status = coroutine.status(callback)
 		if status == 'suspended' then
-			coroutine.resume(callback)
+			local success, error = coroutine.resume(callback)
+			if not success then
+				Log.warn("Error running coroutine: %s", error)
+				if _DEBUG then
+					Log.warn(debug.traceback(callback))
+				end
+			end
 		elseif status == 'dead' then
 			table.remove(self.pending, 1)
 			count = count + 1
@@ -72,6 +79,10 @@ function ResourceManager:update()
 
 		currentTime = love.timer.getTime()
 	until currentTime > breakTime
+
+	if currentTime and currentTime > breakTime then
+		Log.debug('Resource loading spilled %d ms.', math.floor((currentTime - breakTime) * 1000))
+	end
 
 	if count > 0 then
 		self.onUpdate(count, #self.pending)
@@ -151,7 +162,7 @@ function ResourceManager:queue(resourceType, filename, callback, ...)
 		end
 	end
 
-	table.insert(self.pending, { filename = filename, callback = coroutine.create(c) })
+	table.insert(self.pending, { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() })
 end
 
 -- Queues a CacheRef.
@@ -162,14 +173,18 @@ end
 -- Queues a callback. No resource loading is performed.
 function ResourceManager:queueEvent(callback, ...)
 	callback = Callback.bind(callback, ...)
+	local traceback = _DEBUG and debug.traceback()
 	local c = function()
 		local s, r = xpcall(callback, debug.traceback)
 		if not s then
-			Log.warn("failed run callback: %s", filename, r)
+			Log.warn("Failed to run callback: %s", r)
+			if traceback then
+				Log.info(traceback)
+			end
 		end
 	end
 
-	table.insert(self.pending, { callback = coroutine.create(c) })
+	table.insert(self.pending, { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() })
 end
 
 return ResourceManager

@@ -37,7 +37,7 @@ function State.deepEquals(a, b)
 		if b[key] == nil then
 			return false
 		else
-			local isEqual = deepEquals(a[key], b[key])
+			local isEqual = State.deepEquals(a[key], b[key])
 			if not isEqual then
 				return false
 			end
@@ -143,7 +143,7 @@ function State:deserialize(obj)
 		local t = self.typeNames[typeName]
 
 		if t then
-			return t.provider:deserialize(obj, state)
+			return t.provider:deserialize(obj, self)
 		else
 			Log.warn("Type '%s' not supported.", typeName)
 		end
@@ -152,7 +152,7 @@ function State:deserialize(obj)
 	error("Could not deserialize object.")
 end
 
-function State:serialize(obj, exceptions)
+function State:serialize(obj, exceptions, key)
 	exceptions = exceptions or {}
 
 	if self:isPrimitive(obj) then
@@ -214,7 +214,7 @@ function State:serialize(obj, exceptions)
 		return result
 	end
 
-	Log.error("Unsupported object of type %s.", type(obj))
+	Log.error("Unsupported object (key: '%s') of type %s.", key or "root", type(obj))
 	return nil
 end
 
