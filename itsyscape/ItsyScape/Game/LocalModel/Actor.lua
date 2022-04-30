@@ -285,9 +285,8 @@ function LocalActor:getActions(scope)
 	end
 end
 
-function LocalActor:poke(action, scope)
+function LocalActor:poke(action, scope, player)
 	if self:getResource() then
-		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,

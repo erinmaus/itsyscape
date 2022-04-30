@@ -181,9 +181,8 @@ function LocalProp:getActions(scope)
 	return {}
 end
 
-function LocalProp:poke(action, scope)
+function LocalProp:poke(action, scope, player)
 	if self.resource then
-		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,

@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
+local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
+local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -123,6 +125,14 @@ function LocalPlayer:getTarget()
 		return target.actor
 	else
 		return nil
+	end
+end
+
+function LocalPlayer:poke(id, obj, scope)
+	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
+		obj:poke(id, scope, self.actor:getPeep())
+	elseif Class.isType(obj) then
+		Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
 	end
 end
 
