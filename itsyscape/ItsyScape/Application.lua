@@ -23,24 +23,6 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local UIView = require "ItsyScape.UI.UIView"
 
-local function createGameDB()
-	local t = {
-		"Resources/Game/DB/Init.lua"
-	}
-
-	for _, item in ipairs(love.filesystem.getDirectoryItems("Resources/Game/Maps/")) do
-		local f1 = "Resources/Game/Maps/" .. item .. "/DB/Main.lua"
-		local f2 = "Resources/Game/Maps/" .. item .. "/DB/Default.lua"
-		if love.filesystem.getInfo(f1) then
-			table.insert(t, f1)
-		elseif love.filesystem.getInfo(f2) then
-			table.insert(t, f2)
-		end
-	end
-
-	return GameDB.create(t, ":memory:")
-end
-
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
 		"Item",
@@ -87,7 +69,7 @@ Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
 
-function Application:new()
+function Application:new(multiThreaded)
 	self.camera = ThirdPersonCamera()
 	do
 		self.camera:setDistance(30)
@@ -103,14 +85,25 @@ function Application:new()
 	self.frames = 0
 	self.frameTime = 0
 
-	self.gameDB = createGameDB()
-	self.localGame = LocalGame(self.gameDB)
+	self.gameDB = GameDB.create()
+
+	self.multiThreaded = multiThreaded or false
 
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
-	self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
 	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
+
+	if not self.multiThreaded then
+		self.localGame = LocalGame(self.gameDB)
+		self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
+
+	else
+		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
+		self.gameThread:start()
+		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
+	end
+
 
 	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	self.gameView = GameView(self.game)
@@ -241,33 +234,55 @@ function Application:update(delta)
 	self.time = self.time + delta
 
 	-- Only update at the specified intervals.
-	while self.time > self.localGame:getDelta() do
-		self:tick()
+	if not self.multiThreaded then
+		while self.time > self.localGame:getDelta() do
+			self:tickSingleThread()
 
-		-- Handle cases where 'delta' exceeds TICK_RATE
-		self.time = self.time - self.localGame:getDelta()
+			-- Handle cases where 'delta' exceeds TICK_RATE
+			self.time = self.time - self.localGame:getDelta()
 
-		-- Store the previous frame time.
-		self.previousTickTime = love.timer.getTime()
+			-- Store the previous frame time.
+			self.previousTickTime = love.timer.getTime()
+		end
+
+		self:measure('game:update()', function() self.localGame:update(delta) end)
+	else
+		self.remoteGameManager:receive()
 	end
 
-	self:measure('game:update()', function() self.localGame:update(delta) end)
 	self:measure('gameView:update()', function() self.gameView:update(delta) end)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
 
 	self.clickActionTime = self.clickActionTime - delta
 end
 
-function Application:tick()
+function Application:tickSingleThread()
 	if not self.paused then
 		self:measure('gameView:tick()', function() self.gameView:tick() end)
 		self:measure('game:tick()', function() self.localGame:tick() end)
 		self:measure('localGameManager:update()', function() self.localGameManager:update() end)
 		self.localGameManager:pushTick()
-		self:measure('remote receive', function() while not self.remoteGameManager:receive() do Log.info('remote receive') end end)
+
+		self:measure('remoteGameManager:receive()', function()
+			while not self.remoteGameManager:receive() do
+				Log.debug("Remote receive pending.")
+			end
+		end)
+
 		self.remoteGameManager:pushTick()
-		while not self.localGameManager:receive() do Log.info('local receive') end
+
+		self:measure('localGameManager:receive()', function()
+			while not self.localGameManager:receive() do
+				Log.debug("Local receive pending.")
+			end
+		end)
 	end
+end
+
+function Application:tickMultiThread()
+	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self.remoteGameManager:pushTick()
+	self.previousTickTime = love.timer.getTime()
 end
 
 function Application:quit()
@@ -327,9 +342,14 @@ function Application:getFrameDelta()
 	local currentTime = love.timer.getTime()
 	local previousTime = self.previousTickTime
 
-	-- Generate a delta (0 .. 1 inclusive) between the current and previous
-	-- frames
-	return (currentTime - previousTime) / self.localGame:getDelta()
+	local gameDelta = self.game:getDelta()
+	if not gameDelta then
+		return 0
+	else
+		-- Generate a delta (0 .. 1 inclusive) between the current and previous
+		-- frames'
+		return (currentTime - previousTime) / gameDelta
+	end
 end
 
 function Application:draw()

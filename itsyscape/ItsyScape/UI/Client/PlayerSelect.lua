@@ -251,7 +251,6 @@ end
 function PlayerSelect:loadPlayer(player)
 	local game = self.application:getGame()
 	game:getPlayer():spawn(player.storage)
-	self.application.localGame:tick()
 
 	self.application:closeTitleScreen()
 

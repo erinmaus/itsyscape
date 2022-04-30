@@ -98,8 +98,8 @@ function MirrorView:load()
 	end)
 end
 
-function MirrorView:update(delta)
-	PropView.update(self, delta)
+function MirrorView:tick()
+	PropView.tick(self)
 
 	local gameView = self:getGameView()
 

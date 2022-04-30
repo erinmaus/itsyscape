@@ -64,7 +64,12 @@ end
 --
 -- This value is the same as 1.0 / self:getTicks().
 function Game:getDelta()
-	return 1.0 / self:getTicks()
+	local ticks = self:getTicks()
+	if ticks then
+		return 1.0 / ticks
+	else
+		return nil
+	end
 end
 
 -- Gets the current tick since the beginning of the game instance.
