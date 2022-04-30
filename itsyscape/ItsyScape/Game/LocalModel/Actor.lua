@@ -323,7 +323,7 @@ function LocalActor:playAnimation(slot, priority, animation, force, time)
 		return true
 	else
 		local s = self.animations[slot] or { priority = -math.huge, animation = false }
-		if (s.priority <= priority and s.animation ~= animation) or force then
+		if s.priority <= priority or force then
 			s.priority = priority
 			s.animation = animation
 

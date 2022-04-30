@@ -44,6 +44,10 @@ ActorProxy.teleport = Event.ServerToClientRPC(Event.Argument("position"))
 ActorProxy.teleport:link("onTeleport", Event.Argument("position"))
 ActorProxy.move = Event.ServerToClientRPC(Event.Argument("position"), Event.Argument("layer"))
 ActorProxy.move:link("onMove", Event.Argument("position"), Event.Argument("layer"))
+ActorProxy.direction = Event.ServerToClientRPC(
+	Event.Argument("direction"),
+	Event.Argument("rotation"))
+ActorProxy.direction:link("onDirectionChanged", Event.Argument("direction"), Event.Argument("rotation"))
 
 ActorProxy.transmogrify = Event.ServerToClientRPC(Event.Argument("body"))
 ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))

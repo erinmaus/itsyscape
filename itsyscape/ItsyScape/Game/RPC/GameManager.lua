@@ -153,9 +153,8 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 			local argument = v.argument
 
 			if Class.isCompatibleType(argument, Event.SortedKeyArgument) then
-				local shouldOverride = not value or (not key[k].value and value)
-
-				if (shouldOverride or value >= key[k].value) and not override then
+				local isNotBooleanOverride = type(value) == type(key[k].value) and type(value) ~= "boolean"
+				if (isNotBooleanOverride and key[k].value > value) and not override then
 					isMatch = false
 					outPrioritized = true
 					break
