@@ -102,7 +102,15 @@ function Application:new()
 	self.frameTime = 0
 
 	self.gameDB = createGameDB()
-	self.game = LocalGame(self.gameDB)
+	self.localGame = LocalGame(self.gameDB)
+
+	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
+	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
+
+	self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
+	self.remoteGameManager = RemoteGameManager(self.inputChannel, self.outputChannel)
+
+	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.gameView)
 
