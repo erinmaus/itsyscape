@@ -16,7 +16,7 @@ local METALS = {
 	}
 }
 
-for name, metal in pairs(METALS) do
+for name, metal in spairs(METALS) do
 	local ItemName = string.format("%sArrow", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
 

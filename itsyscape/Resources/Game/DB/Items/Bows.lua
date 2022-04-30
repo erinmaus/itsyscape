@@ -43,8 +43,8 @@ local ITEMS = {
 }
 
 
-for name, log in pairs(LOGS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, log in spairs(LOGS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", log.style, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 

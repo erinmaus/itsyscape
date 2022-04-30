@@ -51,6 +51,26 @@ function GameDB.create(inputFilename, outputFilename)
 	S.Resource = S.require "ItsyScape.GameDB.Commands.Resource"
 	S.ResourceType = S.require "ItsyScape.GameDB.Commands.ResourceType"
 
+	local p = pairs
+	S.spairs = function(t)
+		local keys = {}
+		for key in p(t) do
+			if type(key) == "string" then
+				table.insert(keys, key)
+			end
+		end
+
+		table.sort(keys)
+		local index = 0
+
+		return function()
+			index = index + 1
+			local key = keys[index]
+			local value = t[key]
+			return key, value
+		end
+	end
+
 	local game
 	do
 		local inputs
