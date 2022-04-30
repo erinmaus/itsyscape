@@ -223,6 +223,8 @@ function Probe:loot()
 		local items = self.game:getStage():getItemsAtTile(i, j, k)
 
 		for _, item in pairs(items) do
+			item = item.item
+
 			local name, description
 			do
 				-- TODO: [LANG]
@@ -260,7 +262,7 @@ function Probe:loot()
 				object = object,
 				description = description,
 				callback = function()
-					self.game:getStage():takeItem(i, j, k, item.ref)
+					self.game:getPlayer():takeItem(i, j, k, item.ref)
 				end,
 				depth = position.z - (i / #items) -- This ensures items remain stable.
 			}

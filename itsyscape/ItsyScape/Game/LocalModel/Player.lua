@@ -178,6 +178,10 @@ function LocalPlayer:poke(id, obj, scope)
 	end
 end
 
+function LocalPlayer:takeItem(i, j, layer, ref)
+	self.stage:takeItem(i, j, layer, ref, self)
+end
+
 function LocalPlayer:findPath(i, j, k)
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
