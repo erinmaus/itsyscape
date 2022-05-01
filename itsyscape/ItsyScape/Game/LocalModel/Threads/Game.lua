@@ -82,9 +82,11 @@ while isRunning do
 	local t1 = love.timer.getTime()
 	game:tick()
 	game:update(game:getDelta())
+	local t3 = love.timer.getTime()
 
 	gameManager:update()
 	gameManager:pushTick()
+	gameManager:send()
 
 	while not gameManager:receive() do
 		love.timer.sleep(0)
@@ -93,7 +95,11 @@ while isRunning do
 	local t2 = love.timer.getTime()
 
 	local duration = t2 - t1
+	local duration2 = t3 - t1
+	Log.info("duration w/ queue: %d ms", duration * 1000)
+	Log.info("duration w/o queue: %d ms", duration2 * 1000)
 	if duration < game:getDelta() then
+		print('sleeping', (game:getDelta() - duration) * 1000)
 		love.timer.sleep(game:getDelta() - duration)
 	end
 end

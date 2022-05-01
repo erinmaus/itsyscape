@@ -99,7 +99,6 @@ GameManager.Property = Class()
 function GameManager.Property:new(field, filter)
 	self.field = field
 	self.filter = filter
-	assert(filter)
 end
 
 function GameManager.Property:getField()

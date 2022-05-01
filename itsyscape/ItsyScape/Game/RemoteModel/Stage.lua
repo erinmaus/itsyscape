@@ -22,16 +22,16 @@ function RemoteStage:new(gameManager)
 	self.onTakeItem:register(self.spyOnTakeItem)
 end
 
-function RemoteStage:spyOnDropItem(item, tile, position)
-	self.itemSpies[item.ref] = {
+function RemoteStage:spyOnDropItem(ref, item, tile, position)
+	self.itemSpies[ref] = {
 		item = item,
 		tile = tile,
 		position = positions
 	}
 end
 
-function RemoteStage:spyOnTakeItem(item)
-	self.itemSpies[item.ref] = nil
+function RemoteStage:spyOnTakeItem(ref, item)
+	self.itemSpies[ref] = nil
 end
 
 function RemoteStage:getItemsAtTile(i, j, layer)

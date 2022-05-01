@@ -85,12 +85,12 @@ function GameView:new(game)
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
 
-	self._onDropItem = function(_, item, tile, position)
+	self._onDropItem = function(_, ref, item, tile, position)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
-	self._onTakeItem = function(_, item)
+	self._onTakeItem = function(_, ref, item)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)

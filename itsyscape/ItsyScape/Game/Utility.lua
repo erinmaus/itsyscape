@@ -491,7 +491,17 @@ function Utility.getActionConstraints(game, action)
 	return result
 end
 
+Utility.ACTION_CACHE = {}
+
 function Utility.getActions(game, resource, scope, filter)
+	do
+		local cache = Utility.ACTION_CACHE[resource.id.value]
+		cache = cache and cache[scope or 'all']
+		if cache then
+			return cache
+		end
+	end
+
 	local actions = {}
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -500,6 +510,12 @@ function Utility.getActions(game, resource, scope, filter)
 		if action then
 			table.insert(actions, action)
 		end
+	end
+
+	do
+		local cache = Utility.ACTION_CACHE[resource.id.value] or {}
+		cache[scope or 'all'] = actions
+		Utility.ACTION_CACHE[resource.id.value] = cache
 	end
 
 	return actions

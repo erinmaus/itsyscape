@@ -90,73 +90,56 @@ function State:registerTypeProvider(typeName, provider, alias)
 	end
 end
 
-function State:serializePrimitive(value)
-	local typeName = type(value)
-
-	if not State.PRIMITIVES[typeName] then
-		Log.error("Type '%s' is not a primitive; cannot serialize.", typeName)
-		return nil
-	end
-
-	return {
-		typeName = typeName,
-		value = value
-	}
+local function isPrimitive(v)
+	v = type(v)
+	return v == "nil" or v == "number" or v == "string" or v == "boolean"
 end
 
-function State:isPrimitive(value)
-	local typeName = type(value)
-	return State.PRIMITIVES[typeName] == true
-end
-
-function State:isClass(value)
-	return Class.isClass(value)
-end
-
-function State:isTable(value)
+local function isTable(value)
 	return type(value) == 'table' and not getmetatable(value)
 end
 
 function State:deserialize(obj)
-	exceptions = exceptions or {}
-
-	local typeName = obj.typeName
-
-	if typeName == "nil" then
-		return nil
-	elseif typeName == "number" or typeName == "string" or typeName == "boolean" then
-		return obj.value
-	elseif typeName == "table" then
-		local value = obj.value
+	if type(obj) == "table" then
+		local typeName = obj["$__typeName"]
+		if typeName then
+			local t = self.typeNames[typeName]
+			if t then
+				return t.provider:deserialize(obj, self)
+			end
+		end
 
 		local result = {}
-		for i = 1, #value do
-			local pair = value[i]
-			local key = self:deserialize(pair.key)
-			local value = self:deserialize(pair.value)
-
-			result[key] = value
+		for key, value in pairs(obj) do
+			result[self:deserialize(key)] = self:deserialize(value)
 		end
 
 		return result
 	else
-		local t = self.typeNames[typeName]
-
-		if t then
-			return t.provider:deserialize(obj, self)
-		else
-			Log.warn("Type '%s' not supported.", typeName)
-		end
+		return obj
 	end
-
-	error("Could not deserialize object.")
 end
 
-function State:serialize(obj, exceptions, key)
+function State:serialize(obj, exceptions)
 	exceptions = exceptions or {}
 
-	if self:isPrimitive(obj) then
-		return self:serializePrimitive(obj)
+	if isPrimitive(obj) then
+		return obj
+	end
+
+	local isTable = isTable(obj)
+	if isTable then
+		if exceptions[obj] then
+			return exceptions[obj]
+		end
+
+		local result = {}
+		for key, value in pairs(obj) do
+			result[self:serialize(key, exceptions)] = self:serialize(value, exceptions)
+		end
+
+		exceptions[obj] = result
+		return result
 	end
 
 	local isClass = Class.isClass(obj)
@@ -167,11 +150,10 @@ function State:serialize(obj, exceptions, key)
 			return nil
 		else
 			if exceptions[obj] then
-				Log.warn("Recursive object. Will probably die over the wire.")
 				return exceptions[obj]
 			end
 
-			local result = { typeName = t.typeName }
+			local result = { ["$__typeName"] = t.typeName }
 			t.provider:serialize(obj, result, self, exceptions)
 
 			exceptions[obj] = result
@@ -180,41 +162,7 @@ function State:serialize(obj, exceptions, key)
 		end
 	end
 
-	local isTable = self:isTable(obj)
-	if isTable then
-		if exceptions[obj] then
-			Log.warn("Recursive object. Will probably die over the wire.")
-			return exceptions[obj]
-		end
-
-		local result = { typeName = 'table', value = {} }
-		for key, value in pairs(obj) do
-			local k = self:serialize(key, exceptions)
-			local v = self:serialize(value, exceptions)
-
-			if k == nil then
-				Log.error("Could not serialize key '%s' (type: %s)", tostring(k), type(k))
-			end
-
-			assert(k.typeName ~= "nil")
-
-			if v == nil then
-				Log.error("Could not serialize value '%s' (type: %s)", tostring(v), type(v))
-			end
-
-			if k and v then
-				table.insert(result.value, {
-					key = k,
-					value = v
-				})
-			end
-		end
-
-		exceptions[obj] = result
-		return result
-	end
-
-	Log.error("Unsupported object (key: '%s') of type %s.", key or "root", type(obj))
+	Log.error("Unsupported object of type '%s'.", type(obj))
 	return nil
 end
 
