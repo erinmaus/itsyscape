@@ -75,7 +75,7 @@ end
 
 function LocalStage:notifyTakeItem(item, key)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+	self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
 end
 
 function LocalStage:notifyDropItem(item, key, source)
@@ -90,6 +90,7 @@ function LocalStage:notifyDropItem(item, key, source)
 
 	self.onDropItem(
 		self,
+		ref,
 		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
 		{ i = key.i, j = key.j, layer = key.layer },
 		position)
@@ -978,7 +979,7 @@ function LocalStage:collectItems()
 
 
 					local ref = broker:getItemRef(item)
-					self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+					self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
 				end
 			end
 		end

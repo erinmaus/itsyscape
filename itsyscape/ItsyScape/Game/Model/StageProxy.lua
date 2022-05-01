@@ -99,23 +99,25 @@ StageProxy.removeProp:link("onPropRemoved")
 
 StageProxy.ITEM = "item"
 StageProxy.dropItem = Event.Set(
-	Event.KeyArgument("item"),
+	StageProxy.ITEM,
+	Event.KeyArgument("ref"),
+	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"))
 StageProxy.dropItem:link(
 	"onDropItem",
-	Event.Argument("key"),
+	Event.Argument("ref"),
+	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"))
 StageProxy.takeItem = Event.Unset(
-	Event.KeyArgument("item"),
-	Event.Argument("tile"),
-	Event.Argument("position"))
+	StageProxy.ITEM,
+	Event.KeyArgument("ref"),
+	Event.Argument("item"))
 StageProxy.takeItem:link(
 	"onTakeItem",
-	Event.Argument("key"),
-	Event.Argument("tile"),
-	Event.Argument("position"))
+	Event.Argument("ref"),
+	Event.Argument("item"))
 
 StageProxy.DECORATION = "decoration"
 StageProxy.decorate = Event.Set(

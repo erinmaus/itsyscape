@@ -204,7 +204,7 @@ function LocalUI:update(delta)
 	for id, interfaces in pairs(self.interfaces) do
 		for n, interface in pairs(interfaces.v) do
 			interface:update(delta)
-			--self.onPush(self, id, n, interface:pull())
+			self.onPush(self, id, n, interface:pull())
 		end
 	end
 end
