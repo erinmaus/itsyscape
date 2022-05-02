@@ -77,6 +77,9 @@ ActorProxy.playAnimation:link(
 	Event.Argument("force"),
 	Event.Argument("time"))
 
+ActorProxy.damage = Event.ServerToClientRPC(Event.Arguments())
+ActorProxy.damage:link("onDamage", Event.Arguments())
+
 ActorProxy.flash = Event.ServerToClientRPC(Event.Argument("message"), Event.Arguments())
 ActorProxy.flash:link("onHUDMessage", Event.Argument("message"), Event.Arguments())
 

@@ -102,7 +102,7 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 
 		instance[propertyName] = function()
 			local p = gameManager:getProperty(interface, id, propertyName)
-			return unpack(p, 1, p.n)
+			return unpack(p, 1, table.maxn(p))
 		end
 	end
 

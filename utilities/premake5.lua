@@ -71,7 +71,8 @@ solution "ItsyScape.Utilities"
 		files {
 			"nbunny/include/**.hpp",
 			"nbunny/include/**.h",
-			"nbunny/source/**.cpp"
+			"nbunny/source/**.cpp",
+			"nbunny/source/**.c"
 		}
 
 		includedirs {

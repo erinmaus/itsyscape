@@ -81,8 +81,10 @@ function GameManager.Instance:setProperty(propertyName, value)
 	property:set(propertyName, value)
 end
 
+local PROPS = 0
 function GameManager.Instance:update()
 	for i = 1, #self.properties do
+		PROPS = PROPS + 1
 		local property = self.properties[i]
 		local isDirty = property:update(self.instance, self.gameManager)
 		if isDirty then
@@ -318,7 +320,7 @@ function GameManager:processCallback(e)
 
 	if Class.isCompatibleType(event, Callback) or type(event) == "function" then
 		local args = self.state:deserialize(e.value)
-		event(obj, unpack(args, 1, args.n))
+		event(obj, unpack(args, 1, table.maxn(args)))
 	end
 end
 
@@ -359,14 +361,29 @@ function GameManager:receive()
 	Class.ABSTRACT()
 end
 
+local ProFi = require "ProFi"
+ProFi:setGetTimeMethod(love.timer.getTime)
+local COUNT = 0
 function GameManager:update()
+	-- jit.off()
+	-- ProFi:start()
+	PROPS = 0
 	for i = 1, #self.instances do
 		self.instances[i]:update()
 	end
+	print(PROPS)
+	-- ProFi:stop()
+	-- jit.on()
+
+	-- COUNT = COUNT + 1
+	-- if COUNT > 100 then
+	-- 	ProFi:writeReport("itsyscape.log")
+	-- 	os.exit()
+	-- end
 end
 
 function GameManager:getArgs(...)
-	local args = { n = select('#', ...), ... }
+	local args = { ... }
 	return self.state:serialize(args)
 end
 
@@ -477,7 +494,7 @@ function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
 		local args = group:get(key)
 		if args then
 			local args = self.state:deserialize(args)
-			return event:getReturnValue(unpack(args, 1, args.n))
+			return event:getReturnValue(unpack(args, 1, table.maxn(args)))
 		else
 			return
 		end
@@ -495,7 +512,7 @@ function GameManager:getProperty(interface, id, property)
 	if args then
 		return self.state:deserialize(args)
 	else
-		return { n = 0 }
+		return {}
 	end
 end
 
