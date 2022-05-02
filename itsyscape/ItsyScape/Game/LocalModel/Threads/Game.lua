@@ -80,29 +80,22 @@ game.onQuit:register(function() isRunning = false end)
 
 while isRunning do
 	local t1 = love.timer.getTime()
-	game:tick()
-	game:update(game:getDelta())
-	local t3 = love.timer.getTime()
+	do
+		game:tick()
+		game:update(game:getDelta())
 
-	local t4 = love.timer.getTime()
-	gameManager:update()
-	local t5 = love.timer.getTime()
-	gameManager:pushTick()
-	gameManager:send()
+		gameManager:update()
+		gameManager:pushTick()
+		gameManager:send()
+
+		while not gameManager:receive() do
+			love.timer.sleep(0)
+		end
+	end
 	local t2 = love.timer.getTime()
 
-	while not gameManager:receive() do
-		love.timer.sleep(0)
-	end
-
 	local duration = t2 - t1
-	local duration2 = t3 - t1
-	local duration3 = t5 - t4
-	Log.info("duration w/ queue: %d ms", duration * 1000)
-	Log.info("duration w/o queue: %d ms", duration2 * 1000)
-	Log.info("duration just update: %d ms", duration3 * 1000)
 	if duration < game:getDelta() then
-		print('sleeping', (game:getDelta() - duration) * 1000)
 		love.timer.sleep(game:getDelta() - duration)
 	end
 end
