@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local marshal = require "nbunny.marshal"
 local Class = require "ItsyScape.Common.Class"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
@@ -58,6 +59,11 @@ function State:new()
 	self.typeNames = {}
 end
 
+local _CURRENT_STATE = nil
+function State.getCurrentState()
+	return _CURRENT_STATE
+end
+
 function State:verifyIsClass(typeName)
 	local success, t = pcall(require, typeName)
 	if not success then
@@ -88,6 +94,24 @@ function State:registerTypeProvider(typeName, provider, alias)
 	if alias then
 		self.typeNames[alias] = result
 	end
+
+	function type._METATABLE.__persist(obj)
+		local S = require "ItsyScape.Game.RPC.State"
+		local state = S.getCurrentState()
+
+		local r = {
+			typeName = result.typeName
+		}
+		result.provider:serialize(obj, r, state)
+
+		return function()
+			local S = require "ItsyScape.Game.RPC.State"
+			local state = S.getCurrentState()
+			local t = state.typeNames[r.typeName]
+
+			return t.provider:deserialize(r, state)
+		end
+	end
 end
 
 local function isPrimitive(v)
@@ -100,70 +124,23 @@ local function isTable(value)
 end
 
 function State:deserialize(obj)
-	if type(obj) == "table" then
-		local typeName = obj["$__typeName"]
-		if typeName then
-			local t = self.typeNames[typeName]
-			if t then
-				return t.provider:deserialize(obj, self)
-			end
-		end
+	_CURRENT_STATE = self
 
-		local result = {}
-		for key, value in pairs(obj) do
-			result[self:deserialize(key)] = self:deserialize(value)
-		end
+	local result = marshal.decode(obj)
 
-		return result
-	else
-		return obj
-	end
+	_CURRENT_STATE = nil
+
+	return result
 end
 
-function State:serialize(obj, exceptions)
-	exceptions = exceptions or {}
+function State:serialize(obj)
+	_CURRENT_STATE = self
 
-	if isPrimitive(obj) then
-		return obj
-	end
+	local result = marshal.encode(obj)
 
-	local isTable = isTable(obj)
-	if isTable then
-		if exceptions[obj] then
-			return exceptions[obj]
-		end
+	_CURRENT_STATE = nil
 
-		local result = {}
-		for key, value in pairs(obj) do
-			result[self:serialize(key, exceptions)] = self:serialize(value, exceptions)
-		end
-
-		exceptions[obj] = result
-		return result
-	end
-
-	local isClass = Class.isClass(obj)
-	if isClass then
-		local t = self.types[Class.getType(obj)]
-		if not t then
-			Log.error("Type '%s' is not registered.", obj:getDebugInfo().shortName)
-			return nil
-		else
-			if exceptions[obj] then
-				return exceptions[obj]
-			end
-
-			local result = { ["$__typeName"] = t.typeName }
-			t.provider:serialize(obj, result, self, exceptions)
-
-			exceptions[obj] = result
-
-			return result
-		end
-	end
-
-	Log.error("Unsupported object of type '%s'.", type(obj))
-	return nil
+	return result
 end
 
 return State

@@ -132,7 +132,7 @@ function TypeProvider.Instance:serialize(obj, result, state, exceptions)
 end
 
 function TypeProvider.Instance:deserialize(obj, state, exceptions)
-	return self.gameManager:getInstance(obj["$__typeName"], obj.id):getInstance()
+	return self.gameManager:getInstance(obj.typeName, obj.id):getInstance()
 end
 
 return TypeProvider
