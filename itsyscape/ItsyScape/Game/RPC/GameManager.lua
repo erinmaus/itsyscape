@@ -361,25 +361,10 @@ function GameManager:receive()
 	Class.ABSTRACT()
 end
 
-local ProFi = require "ProFi"
-ProFi:setGetTimeMethod(love.timer.getTime)
-local COUNT = 0
 function GameManager:update()
-	-- jit.off()
-	-- ProFi:start()
-	PROPS = 0
 	for i = 1, #self.instances do
 		self.instances[i]:update()
 	end
-	print(PROPS)
-	-- ProFi:stop()
-	-- jit.on()
-
-	-- COUNT = COUNT + 1
-	-- if COUNT > 100 then
-	-- 	ProFi:writeReport("itsyscape.log")
-	-- 	os.exit()
-	-- end
 end
 
 function GameManager:getArgs(...)
