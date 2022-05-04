@@ -494,7 +494,7 @@ end
 Utility.ACTION_CACHE = {}
 
 function Utility.getActions(game, resource, scope, filter)
-	do
+	if not filter then
 		local cache = Utility.ACTION_CACHE[resource.id.value]
 		cache = cache and cache[scope or 'all']
 		if cache then
@@ -512,7 +512,7 @@ function Utility.getActions(game, resource, scope, filter)
 		end
 	end
 
-	do
+	if not filter then
 		local cache = Utility.ACTION_CACHE[resource.id.value] or {}
 		cache[scope or 'all'] = actions
 		Utility.ACTION_CACHE[resource.id.value] = cache
