@@ -36,6 +36,8 @@ end
 function RendererPass:setBaseShader(pixel, vertex)
 	self.pixelSource = pixel or self.pixelSource
 	self.vertexSource = vertex or self.vertexSource
+	self.renderer:registerRendererPass(
+		self:getType(), self.vertexSource, self.pixelSource)
 end
 
 -- Loads the base shader from a file.
@@ -76,23 +78,18 @@ end
 --
 -- Generates a Shader from the provided ShaderResource, if necessary.
 function RendererPass:useShader(shader)
-	local s = self.renderer:getCachedShader(self:getType(), shader)
-	if not s then
-		local source = shader:getResource()
-		local finalPixelSource = self.pixelSource .. source:getPixelSource()
-		local finalVertexSource = self.vertexSource .. source:getVertexSource()
-
-		local success, result = pcall(
-			self.renderer.addCachedShader,
-			self.renderer,
-			self:getType(), shader,
-			finalPixelSource, finalVertexSource)
-		if success then
-			s = result
-		else
-			local _, filename = shader:getResource()
-			error(string.format("shader %s:\n\t%s", filename, result))
-		end
+	local success, result = pcall(
+		self.renderer.getCachedShader,
+		self.renderer,
+		self:getType(),
+		shader)
+	if success then
+		s = result
+	else
+		local _, filename = shader:getResource()
+		Log.warn("Vertex source:\n%s", self.vertexSource .. shader:getResource():getVertexSource())
+		Log.warn("Pixel source:\n%s", self.pixelSource .. shader:getResource():getPixelSource())
+		error(string.format("shader %s:\n\t%s", filename, result))
 	end
 
 	self.renderer:setCurrentShader(s)
