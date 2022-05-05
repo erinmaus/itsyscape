@@ -32,6 +32,10 @@ function Resource:new()
 	self._resourceInstance = self:getType().wrap(self)
 end
 
+function Resource:getHandle()
+	return self._resourceInstance
+end
+
 -- Gets the underyling Resource.
 function Resource:getResource()
 	return Class.ABSTRACT()

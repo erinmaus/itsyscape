@@ -18,6 +18,7 @@ local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSc
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 -- Deferred renderer pass.
 --
@@ -218,14 +219,8 @@ function DeferredRendererPass:getLightShader(type)
 		LightShaderResourceCache[type] = shader
 	end
 
-	local compiledShader = self:getRenderer():getCachedShader(self:getType(), shader)
-	if not compiledShader then
-		compiledShader = self.renderer:addCachedShader(
-			self:getType(),
-			shader,
-			shader:getResource():getPixelSource(),
-			shader:getResource():getVertexSource())
-	end
+	local compiledShader = self:getRenderer():getCachedShader(self:getType(), shader, ShaderResource.PRIMITIVE)
+	self:getRenderer():setCurrentShader(compiledShader)
 
 	love.graphics.setShader(compiledShader)
 	return compiledShader

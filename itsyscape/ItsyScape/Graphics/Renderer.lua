@@ -13,6 +13,8 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local NShaderCache = require "nbunny.optimaus.shadercache"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
@@ -34,8 +36,11 @@ function Renderer.PassDebugStats:process(pass, scene, delta)
 end
 
 function Renderer:new(isMobile)
-	self.cachedShaders = {}
 	self.currentShader = false
+
+	self.currentRendererPassID = 1
+	self.rendererPasses = {}
+	self._shaderCache = NShaderCache()
 
 	self.isMobile = isMobile
 	if self.isMobile then
@@ -184,37 +189,43 @@ function Renderer:getCurrentShader(shader)
 	return self.currentShader
 end
 
-function Renderer:getCachedShader(rendererPassType, shader)
-	if not self.cachedShaders[renderPassType] or 
-	   not self.cachedShaders[renderPassType][shader] then
-		return nil
-	end
+function Renderer:registerRendererPass(rendererPassType, vertexSource, pixelSource)
+	local currentID = self.currentRendererPassID
+	self.currentRendererPassID = self.currentRendererPassID + 1
 
-	return self.cachedShaders[renderPassType][shader]
+	self.rendererPasses[rendererPassType] = currentID
+	self._shaderCache:registerRendererPass(currentID, vertexSource, pixelSource)
+
+	return currentID
 end
 
-function Renderer:addCachedShader(rendererPassType, shader, pixelSource, vertexSource)
-	local shaders = self.cachedShaders[rendererPassType] or {}
-	local s = shaders[shader]
+function Renderer:getCachedShader(rendererPassType, shader, type)
+	local rendererPassID = self.rendererPasses[rendererPassType]
 
-	if not s then
-		s = love.graphics.newShader(pixelSource, vertexSource)
-		shaders[shader] = s
+	local source = shader:getResource()
+	if type == ShaderResource.LOW_LEVEL then
+		return self._shaderCache:build(
+			rendererPassID,
+			shader:getHandle(),
+			source:getVertexSource(),
+			source:getPixelSource())
+	elseif type == ShaderResource.PRIMITIVE then
+		return self._shaderCache:buildPrimitive(
+			rendererPassID,
+			shader:getHandle(),
+			source:getVertexSource(),
+			source:getPixelSource())
+	else -- Default is ShaderResource.COMPOSITE
+		return self._shaderCache:buildComposite(
+			rendererPassID,
+			shader:getHandle(),
+			source:getVertexSource(),
+			source:getPixelSource())
 	end
-
-	self.cachedShaders[rendererPassType] = shaders
-
-	return s
 end
 
 function Renderer:releaseCachedShaders()
-	for _, shaders in pairs(self.cachedShaders) do
-		for _, shader in pairs(shaders) do
-			shader:release()
-		end
-	end
-
-	self.cachedShaders = {}
+	self._shaderCache:release()
 end
 
 function Renderer:renderNode(node, delta)
