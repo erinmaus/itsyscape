@@ -23,11 +23,11 @@ int nbunny::Resource::allocate_id()
 
 std::shared_ptr<nbunny::ResourceInstance> nbunny::Resource::instantiate(lua_State* L)
 {
-	return std::make_shared<ResourceInstance>(L, allocate_id(), set_weak_reference(L));
+	return std::make_shared<ResourceInstance>(allocate_id(), set_weak_reference(L));
 }
 
-nbunny::ResourceInstance::ResourceInstance(lua_State* L, int id, int reference) :
-	L(L), id(id), reference(reference)
+nbunny::ResourceInstance::ResourceInstance(int id, int reference) :
+	id(id), reference(reference)
 {
 	// Nothing.
 }
@@ -42,7 +42,7 @@ int nbunny::ResourceInstance::get_reference_key() const
 	return reference;
 }
 
-bool nbunny::ResourceInstance::get_reference() const
+bool nbunny::ResourceInstance::get_reference(lua_State* L) const
 {
 	get_weak_reference(L, reference);
 	return !lua_isnoneornil(L, -1);
@@ -51,7 +51,7 @@ bool nbunny::ResourceInstance::get_reference() const
 static int nbunny_resource_instance_get_resource(lua_State* L)
 {
 	auto& instance = sol::stack::get<nbunny::ResourceInstance>(L, 1);
-	instance.get_reference();
+	instance.get_reference(L);
 
 	return 1;
 }

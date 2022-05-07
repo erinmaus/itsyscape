@@ -11,8 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
-local NSceneNode = require "nbunny.scenenode"
-local NCamera = require "nbunny.camera"
+local NSceneNode = require "nbunny.optimaus.scenenode"
+local NCamera = require "nbunny.optimaus.camera"
 
 -- Represents the base scene node.
 --
@@ -28,6 +28,10 @@ function SceneNode:new()
 	self.min, self.max = Vector(), Vector()
 	self.boundsDirty = true
 	self.willRender = false
+end
+
+function SceneNode:getHandle()
+	return self._handle
 end
 
 function SceneNode:onWillRender(func)
@@ -208,26 +212,16 @@ end
 
 function SceneNode:walkByMaterial(view, projection, delta, enableCull)
 	local camera = NCamera()
-	camera:setView(view:getMatrix())
-	camera:setProjection(projection:getMatrix())
-	if enableCull or enableCull == nil then
-		camera:enableCull()
-	else
-		camera:disableCull()
-	end
+	camera:update(view, projection)
+	camera:setIsCullEnabled(enableCull)
 
 	return self._handle:walkByMaterial(camera, delta)
 end
 
 function SceneNode:walkByPosition(view, projection, delta, enableCull)
 	local camera = NCamera()
-	camera:setView(view:getMatrix())
-	camera:setProjection(projection:getMatrix())
-	if enableCull or enableCull == nil then
-		camera:enableCull()
-	else
-		camera:disableCull()
-	end
+	camera:update(view, projection)
+	camera:setIsCullEnabled(enableCull)
 
 	return self._handle:walkByPosition(camera, delta)
 end
