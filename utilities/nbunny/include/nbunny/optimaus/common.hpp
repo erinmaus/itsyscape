@@ -13,6 +13,13 @@
 #ifndef NBUNNY_OPTIMAUS_COMMON_HPP
 #define NBUNNY_OPTIMAUS_COMMON_HPP
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "nbunny/nbunny.hpp"
 
 namespace nbunny
@@ -26,6 +33,46 @@ namespace nbunny
 
 	// Gets the weak reference table
 	static void get_weak_reference_table(lua_State* L);
+
+	struct BaseType
+	{
+	public:
+		BaseType() = default;
+		virtual ~BaseType() = default;
+
+		virtual const int* get_type_pointer() const = 0;
+
+		virtual bool operator ==(const BaseType& other);
+		virtual bool operator !=(const BaseType& other);
+	};
+
+	template <typename Object>
+	class Type : public BaseType
+	{
+	private:
+		static const int internal_type_pointer = 0;
+
+	public:
+		virtual const int* get_type_pointer() const override
+		{
+			return &internal_type_pointer;
+		}
+	};
+
+	template <typename Object>
+	const int Type<Object>::internal_type_pointer;
+
+	template <typename Object>
+	bool operator ==(const Type<Object>& a, const BaseType& b)
+	{
+		return a.get_type_pointer() == b.get_type_pointer();
+	}
+
+	template <typename Object>
+	bool operator ==(const BaseType& a, const Type<Object>& b)
+	{
+		return a.get_type_pointer() == b.get_type_pointer();
+	}
 }
 
 #endif

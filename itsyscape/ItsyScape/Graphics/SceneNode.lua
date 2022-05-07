@@ -19,8 +19,8 @@ local NCamera = require "nbunny.optimaus.camera"
 -- A scene node renders something.
 local SceneNode = Class()
 
-function SceneNode:new()
-	self._handle = NSceneNode(self)
+function SceneNode:new(NType)
+	self._handle = (NType or NSceneNode)(self)
 	self.transform = SceneNodeTransform(self)
 	self.material = Material(self)
 	self.parent = false
@@ -174,6 +174,7 @@ end
 
 function SceneNode:tick()
 	self.transform:tick()
+	self._handle:tick()
 
 	for child in self:iterate() do
 		child:tick()

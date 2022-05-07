@@ -11,12 +11,13 @@ local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Color = require "ItsyScape.Graphics.Color"
 local Light = require "ItsyScape.Graphics.Light"
+local NLightSceneNode = require "nbunny.optimaus.scenenode.lightscenenode"
 
 -- Basic light Scene Node.
 local LightSceneNode = Class(SceneNode)
 
-function LightSceneNode:new()
-	SceneNode.new(self)
+function LightSceneNode:new(NType)
+	SceneNode.new(self, NType or NLightSceneNode)
 
 	self.previousColor = false
 	self.color = Color(1, 1, 1)
@@ -27,40 +28,45 @@ end
 --
 -- Global lights are always used to light an object (e.g., forward rendering).
 function LightSceneNode:getIsGlobal()
-	return self.isGlobal
+	return self:getHandle():getIsGlobal()
 end
 
 -- Sets if the light is global. See LightSceneNode.getIsGlobal.
 --
 -- The default value is false.
 function LightSceneNode:setIsGlobal(value)
-	if not value then
-		self.isGlobal = false
-	else
-		self.isGlobal = true
-	end
+	self:getHandle():setIsGlobal(value or false)
 end
 
 -- Gets the color of the light.
 --
 -- The default light color is { 1, 1, 1 }. Alpha is ignored.
 function LightSceneNode:getColor()
-	return self.color
+	return Color(self:getHandle():getCurrentColor())
 end
 
 -- Sets the color of the light.
 --
 -- Does nothing if value is falsey.
 function LightSceneNode:setColor(value)
-	self.color = value or self.color
+	return self:getHandle():setCurrentColor((value or Color(1)):get())
+end
+
+function LightSceneNode:getPreviousColor()
+	return Color(self:getHandle():getPreviousColor())
+end
+
+function LightSceneNode:setPreviousColor(value)
+	return self:getHandle():setPreviousColor((value or Color(1)):get())
 end
 
 -- Converts the LightSceneNode to a Light object.
 function LightSceneNode:toLight(delta)
 	local result = Light()
 
-	local previousColor = self.previousColor or self.color
-	local color = previousColor:lerp(self.color, delta)
+	local previousColor = self:getPreviousColor()
+	local currentColor = self:getColor()
+	local color = previousColor:lerp(currentColor, delta)
 	result:setColor(color)
 
 	return result

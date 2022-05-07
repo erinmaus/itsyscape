@@ -13,16 +13,11 @@
 #ifndef NBUNNY_OPTIMAUS_SCENE_HPP
 #define NBUNNY_OPTIMAUS_SCENE_HPP
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include "nbunny/nbunny.hpp"
+#include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/resource.hpp"
 
 namespace nbunny
@@ -75,6 +70,7 @@ namespace nbunny
 		const glm::vec3& get_previous_offset() const;
 
 		void tick();
+		bool get_ticked() const;
 
 		glm::mat4 get_local(float delta) const;
 		glm::mat4 get_global(float delta) const;
@@ -136,12 +132,18 @@ namespace nbunny
 		SceneNodeMaterial material;
 
 	public:
+		static const Type<SceneNode> type_pointer;
+
 		SceneNode(int reference);
 		virtual ~SceneNode();
+
+		virtual const BaseType& get_type() const;
+		bool is_base_type() const;
 
 		bool get_reference(lua_State* L) const;
 
 		virtual void tick();
+		bool get_ticked() const;
 
 		void unset_parent();
 		void set_parent(SceneNode* value);
@@ -213,6 +215,14 @@ namespace nbunny
 
 		bool inside(const SceneNode& node, float delta) const;
 	};
+}
+
+template <typename SceneNode>
+SceneNode* nbunny_scene_node_create(sol::object reference, sol::this_state S)
+{
+	lua_State* L = S;
+	lua_pushvalue(L, 2);
+	return new SceneNode(nbunny::set_weak_reference(L));
 }
 
 #endif

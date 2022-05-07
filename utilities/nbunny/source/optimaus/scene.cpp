@@ -121,6 +121,11 @@ void nbunny::SceneNodeTransform::tick()
 	ticked = true;
 }
 
+bool nbunny::SceneNodeTransform::get_ticked() const
+{
+	return ticked;
+}
+
 glm::mat4 nbunny::SceneNodeTransform::get_local(float delta) const
 {
 	auto pS = ticked ? previous_scale : current_scale;
@@ -286,10 +291,22 @@ bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
 	return false;
 }
 
+const nbunny::Type<nbunny::SceneNode> nbunny::SceneNode::type_pointer;
+
 nbunny::SceneNode::SceneNode(int reference) :
 	reference(reference), transform(*this), material(*this)
 {
 	// Nothing.
+}
+
+const nbunny::BaseType& nbunny::SceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+bool nbunny::SceneNode::is_base_type() const
+{
+	return get_type() == type_pointer;
 }
 
 bool nbunny::SceneNode::get_reference(lua_State* L) const
@@ -315,6 +332,11 @@ void nbunny::SceneNode::tick()
 	{
 		child->tick();
 	}
+}
+
+bool nbunny::SceneNode::get_ticked() const
+{
+	return transform.get_ticked();
 }
 
 void nbunny::SceneNode::unset_parent()
@@ -987,13 +1009,6 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 	return 1;
 }
 
-static nbunny::SceneNode* nbunny_scene_node_create(sol::object reference, sol::this_state S)
-{
-	lua_State* L = S;
-	lua_pushvalue(L, 2);
-	return new nbunny::SceneNode(nbunny::set_weak_reference(L));
-}
-
 static int nbunny_scene_node_get_reference(lua_State* L)
 {
 	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
@@ -1161,7 +1176,7 @@ extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 {
 	sol::usertype<nbunny::SceneNode> T(
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SceneNode>),
 		"getParent", &nbunny_scene_node_get_parent,
 		"setParent", &nbunny_scene_node_set_parent,
 		"getTransform", &nbunny_scene_node_get_transform,
