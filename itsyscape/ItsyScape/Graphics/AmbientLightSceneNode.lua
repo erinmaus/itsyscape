@@ -10,29 +10,36 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
+local NAmbientLightSceneNode = require "nbunny.optimaus.scenenode.ambientlightscenenode"
 
 local AmbientLightSceneNode = Class(LightSceneNode)
 
 function AmbientLightSceneNode:new()
-	LightSceneNode.new(self)
-
-	self.previousAmbience = false
-	self.ambience = 0
+	LightSceneNode.new(self, NAmbientLightSceneNode)
 end
 
 function AmbientLightSceneNode:getAmbience()
-	return self.ambience
+	return self:getHandle():getCurrentAmbience()
 end
 
 function AmbientLightSceneNode:setAmbience(value)
-	self.ambience = value or self.ambience
+	self:getHandle():setCurrentAmbience(value)
+end
+
+function AmbientLightSceneNode:getPreviousAmbience()
+	return self:getHandle():getPreviousAmbience()
+end
+
+function AmbientLightSceneNode:setPreviousAmbience(value)
+	self:getHandle():setPreviousAmbience(value)
 end
 
 function AmbientLightSceneNode:toLight(delta)
 	local result = LightSceneNode.toLight(self, delta)
 
-	local previousAmbience = self.previousAmbience or self.ambience
-	local ambience = previousAmbience * delta + self.ambience * (1 - delta)
+	local currentAmbience = self:getAmbience()
+	local previousAmbience = self:getPreviousAmbience()
+	local ambience = previousAmbience * delta + currentAmbience * (1 - delta)
 
 	result:setAmbience(ambience)
 
@@ -42,13 +49,7 @@ end
 function AmbientLightSceneNode:fromLight(light)
 	LightSceneNode.fromLight(self, light)
 
-	self.ambience = light:getAmbience()
-end
-
-function AmbientLightSceneNode:tick()
-	LightSceneNode.tick(self)
-
-	self.previousAmbience = self.ambience
+	self:setAmbience(light:getAmbience())
 end
 
 return AmbientLightSceneNode

@@ -52,3 +52,13 @@ int nbunny::set_weak_reference(lua_State* L)
 	lua_pushvalue(L, -2);
 	return luaL_ref(L, -2);
 }
+
+bool nbunny::BaseType::operator ==(const BaseType& other)
+{
+	return get_type_pointer() == other.get_type_pointer();
+}
+
+bool nbunny::BaseType::operator !=(const BaseType& other)
+{
+	return !(*this == other);
+}
