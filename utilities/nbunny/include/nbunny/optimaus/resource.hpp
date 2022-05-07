@@ -37,16 +37,16 @@ namespace nbunny
 	class ResourceInstance
 	{
 	private:
-		lua_State* L = nullptr;
 		int reference = 0;
 		int id = 0;
 
 	public:
-		ResourceInstance(lua_State* L, int id, int reference);
+		ResourceInstance() = default;
+		ResourceInstance(int id, int reference);
 
 		int get_id() const;
 		int get_reference_key() const;
-		bool get_reference() const;
+		bool get_reference(lua_State* L) const;
 	};
 }
 
