@@ -9,3 +9,4 @@ itsyscape-android/
 *.make
 *.cache
 *.csv
+.DS_Store
