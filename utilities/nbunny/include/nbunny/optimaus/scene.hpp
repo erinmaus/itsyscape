@@ -87,6 +87,7 @@ namespace nbunny
 		bool is_translucent = false;
 		bool is_full_lit = false;
 		bool is_z_write_disabled = false;
+		bool is_cull_disabled = false;
 		glm::vec4 color = glm::vec4(1.0f);
 
 	public:
@@ -104,6 +105,9 @@ namespace nbunny
 
 		void set_is_z_write_disabled(bool value);
 		bool get_is_z_write_disabled() const;
+
+		void set_is_cull_disabled(bool value);
+		bool get_is_cull_disabled() const;
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);

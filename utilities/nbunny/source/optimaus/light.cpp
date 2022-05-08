@@ -20,7 +20,7 @@ const nbunny::BaseType& nbunny::LightSceneNode::get_type() const
 nbunny::LightSceneNode::LightSceneNode(int reference) :
 	SceneNode(reference)
 {
-	// Nothing.
+	get_material().set_is_cull_disabled(true);
 }
 
 const bool nbunny::LightSceneNode::is_base_light_type() const

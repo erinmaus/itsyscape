@@ -16,8 +16,9 @@
 
 nbunny::LBuffer::LBuffer(
 	love::PixelFormat color_pixel_format,
-	const std::shared_ptr<GBuffer>& g_buffer) :
-	color_pixel_format(color_pixel_format)
+	GBuffer& g_buffer) :
+	color_pixel_format(color_pixel_format),
+	g_buffer(g_buffer)
 {
 	resize(g_buffer);
 }
@@ -27,19 +28,19 @@ nbunny::LBuffer::~LBuffer()
 	release();
 }
 
-const std::shared_ptr<nbunny::GBuffer>& nbunny::LBuffer::get_g_buffer() const
+nbunny::GBuffer& nbunny::LBuffer::get_g_buffer()
 {
 	return g_buffer;
 }
 
 int nbunny::LBuffer::get_width()
 {
-	return g_buffer->get_width();
+	return g_buffer.get_width();
 }
 
 int nbunny::LBuffer::get_height()
 {
-	return g_buffer->get_height();
+	return g_buffer.get_height();
 }
 
 void nbunny::LBuffer::release()
@@ -51,7 +52,7 @@ void nbunny::LBuffer::release()
 	}
 }
 
-void nbunny::LBuffer::resize(const std::shared_ptr<GBuffer>& g_buffer)
+void nbunny::LBuffer::resize(GBuffer& g_buffer)
 {
 	release();
 
@@ -77,7 +78,7 @@ love::graphics::Canvas* nbunny::LBuffer::get_color()
 
 love::graphics::Canvas* nbunny::LBuffer::get_depth_stencil()
 {
-	return g_buffer->get_canvas(0);
+	return g_buffer.get_canvas(0);
 }
 
 void nbunny::LBuffer::use()
@@ -91,9 +92,9 @@ void nbunny::LBuffer::use()
 }
 
 
-static std::shared_ptr<nbunny::LBuffer> nbunny_l_buffer_create(
+nbunny::LBuffer* nbunny_l_buffer_create(
 	const std::string& color_pixel_format_name,
-	const std::shared_ptr<nbunny::GBuffer> g_buffer,
+	nbunny::GBuffer& g_buffer,
 	sol::this_state S)
 {
 	lua_State* L = S;
@@ -104,7 +105,7 @@ static std::shared_ptr<nbunny::LBuffer> nbunny_l_buffer_create(
 		love::luax_enumerror(L, "pixel format", color_pixel_format_name.c_str());
 	}
 
-	return std::make_shared<nbunny::LBuffer>(color_pixel_format, g_buffer);
+	return new nbunny::LBuffer(color_pixel_format, g_buffer);
 }
 
 static int nbunny_l_buffer_get_color(lua_State* L)

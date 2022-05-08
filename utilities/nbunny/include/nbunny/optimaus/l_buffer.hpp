@@ -25,22 +25,22 @@ namespace nbunny
 	private:
 		love::PixelFormat color_pixel_format;
 		love::graphics::Canvas* color = nullptr;
-		std::shared_ptr<GBuffer> g_buffer;
+		GBuffer& g_buffer;
 
 	public:
 		LBuffer(
 			love::PixelFormat color_pixel_format,
-			const std::shared_ptr<GBuffer>& g_buffer);
+			GBuffer& g_buffer);
 		~LBuffer();
 
-		const std::shared_ptr<GBuffer>& get_g_buffer() const;
+		GBuffer& get_g_buffer();
 
 		int get_width();
 		int get_height();
 
 		void release();
 
-		void resize(const std::shared_ptr<GBuffer>& g_buffer);
+		void resize(GBuffer& g_buffer);
 
 		love::graphics::Canvas* get_color();
 		love::graphics::Canvas* get_depth_stencil();

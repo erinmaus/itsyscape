@@ -91,8 +91,7 @@ void nbunny::GBuffer::use()
 	instance->setCanvas(render_targets);
 }
 
-static std::shared_ptr<nbunny::GBuffer> nbunny_g_buffer_create(
-	sol::variadic_args pixel_format_names, sol::this_state S)
+nbunny::GBuffer* nbunny_g_buffer_create(sol::variadic_args pixel_format_names, sol::this_state S)
 {
 	lua_State* L = S;
 
@@ -111,7 +110,7 @@ static std::shared_ptr<nbunny::GBuffer> nbunny_g_buffer_create(
 		pixel_formats.push_back(pixel_format);
 	}
 
-	return std::make_shared<nbunny::GBuffer>(pixel_formats);
+	return new nbunny::GBuffer(pixel_formats);
 }
 
 static int nbunny_g_buffer_get_canvas(lua_State* L)

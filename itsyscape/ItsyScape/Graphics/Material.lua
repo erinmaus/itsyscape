@@ -22,10 +22,6 @@ function Material:new(node, shader, ...)
 	self._handle = node:getHandle():getMaterial()
 	self.shader = shader or false
 	self:setTextures(...)
-	self.isTranslucent = false
-	self.isFullLit = false
-	self.zWriteDisabled = false
-	self.color = Color(1, 1, 1, 1)
 	self.uniforms = {}
 end
 
@@ -98,6 +94,16 @@ end
 
 function Material:setIsZWriteDisabled(value)
 	self._handle:setIsZWriteDisabled(value or false)
+end
+
+-- Returns true if the Material should always be drawn, false otherwise.
+-- Defaults to false (the object will only be drawn if visible).
+function Material:getIsCullDisabled()
+	return self._handle:getIsCullDisabled()
+end
+
+function Material:setIsCullDisabled(value)
+	self._handle:setIsCullDisabled(value or false)
 end
 
 function Material:getColor()
