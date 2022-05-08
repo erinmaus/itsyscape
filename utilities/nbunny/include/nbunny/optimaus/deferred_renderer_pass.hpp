@@ -46,7 +46,8 @@ namespace nbunny
 			BUILTIN_SHADER_POINT_LIGHT       = -4
 		};
 
-		std::vector<SceneNode*> scene_nodes;
+		std::vector<SceneNode*> visible_scene_nodes;
+		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
 		std::vector<LightSceneNode*> fog_scene_nodes;
 

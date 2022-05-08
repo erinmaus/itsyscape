@@ -488,8 +488,8 @@ void nbunny::SceneNode::walk_by_position(
 			result.end(),
 			[&](auto a, auto b)
 			{
-				auto aScreenPosition = screen_positions.find(a);
-				if (aScreenPosition == screen_positions.end())
+				auto a_screen_position = screen_positions.find(a);
+				if (a_screen_position == screen_positions.end())
 				{
 					auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 					auto p = glm::project(
@@ -498,11 +498,11 @@ void nbunny::SceneNode::walk_by_position(
 						camera.get_projection(),
 						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
 					);
-					aScreenPosition = screen_positions.insert(std::make_pair(a, p)).first;
+					a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
 				}
 
-				auto bScreenPosition = screen_positions.find(b);
-				if (bScreenPosition == screen_positions.end())
+				auto b_screen_position = screen_positions.find(b);
+				if (b_screen_position == screen_positions.end())
 				{
 					auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 					auto p = glm::project(
@@ -511,10 +511,10 @@ void nbunny::SceneNode::walk_by_position(
 						camera.get_projection(),
 						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
 					);
-					bScreenPosition = screen_positions.insert(std::make_pair(b, p)).first;
+					b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
 				}
 
-				return glm::floor(aScreenPosition->second.z * 1000) < glm::floor(bScreenPosition->second.z * 1000);
+				return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
 			});
 	}
 }

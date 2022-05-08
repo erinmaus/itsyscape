@@ -33,15 +33,24 @@ nbunny::DeferredRendererPass::DeferredRendererPass() :
 
 void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	scene_nodes.clear();
-	SceneNode::walk_by_material(node, get_renderer()->get_camera(), delta, scene_nodes);
+	visible_scene_nodes.clear();
+	SceneNode::walk_by_material(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+
+	for (auto& visible_scene_node: visible_scene_nodes)
+	{
+		auto& material = visible_scene_node->get_material();
+		if (!material.get_is_translucent() && !material.get_is_full_lit())
+		{
+			drawable_scene_nodes.push_back(visible_scene_node);
+		}
+	}
 }
 
 void nbunny::DeferredRendererPass::walk_visible_lights()
 {
 	light_scene_nodes.clear();
 
-	for (auto node: scene_nodes)
+	for (auto node: visible_scene_nodes)
 	{
 		const auto& node_type = node->get_type();
 		if (node_type == AmbientLightSceneNode::type_pointer ||
@@ -177,15 +186,15 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
+	g_buffer.use();
+
 	auto clear_color = renderer->get_clear_color();
 	graphics->clear(
 		love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
 		0,
 		1.0f);
 
-	g_buffer.use();
-
-	for (auto& scene_node: scene_nodes)
+	for (auto& scene_node: drawable_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
@@ -390,6 +399,24 @@ void nbunny::DeferredRendererPass::attach(Renderer& renderer)
 	RendererPass::attach(renderer);
 
 	load_builtin_shader(
-		"Resources/Renderers/Deferred/Base.frag.glsl",
-		"Resources/Renderers/Deferred/Base.vert.glsl");
+		"Resources/Renderers/Deferred/Base.vert.glsl",
+		"Resources/Renderers/Deferred/Base.frag.glsl");
+}
+
+static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pass_create()
+{
+	return std::make_shared<nbunny::DeferredRendererPass>();
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_deferredrendererpass(lua_State* L)
+{
+	sol::usertype<nbunny::DeferredRendererPass> T(
+		sol::call_constructor, sol::factories(&nbunny_deferred_renderer_pass_create),
+		"getGBuffer", &nbunny::DeferredRendererPass::get_g_buffer,
+		"getCBuffer", &nbunny::DeferredRendererPass::get_output_buffer);
+
+	sol::stack::push(L, T);
+
+	return 1;
 }
