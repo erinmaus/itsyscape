@@ -20,8 +20,9 @@ nbunny::Renderer::Renderer(int reference) :
 	// Nothing.
 }
 
-void nbunny::Renderer::add_renderer_pass(const std::shared_ptr<RendererPass>& renderer_pass)
+void nbunny::Renderer::add_renderer_pass(RendererPass* renderer_pass)
 {
+	renderer_pass->attach(*this);
 	renderer_passes.push_back(renderer_pass);
 }
 

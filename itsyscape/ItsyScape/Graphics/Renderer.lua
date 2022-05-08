@@ -15,6 +15,7 @@ local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local NShaderCache = require "nbunny.optimaus.shadercache"
+local NRenderer = require "nbunny.optimaus.renderer"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
@@ -35,51 +36,37 @@ function Renderer.PassDebugStats:process(pass, scene, delta)
 	pass:endDraw(scene, delta)
 end
 
-function Renderer:new(isMobile)
-	self.currentShader = false
+function Renderer:new()
+	self._renderer = NRenderer(self)
 
-	self.currentRendererPassID = 1
-	self.rendererPasses = {}
-	self._shaderCache = NShaderCache()
+	self.finalDeferredPass = DeferredRendererPass(self)
+	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 
-	self.isMobile = isMobile
-	if self.isMobile then
-		self.mobilePass = MobileRendererPass(self)
-	else
-		self.finalDeferredPass = DeferredRendererPass(self)
-		self.finalForwardPass = ForwardRendererPass(self)
-	end
-
-	self.width = 0
-	self.height = 0
-
-	self.clearColor = Renderer.DEFAULT_CLEAR_COLOR
-
-	self.cull = true
-	self.startTime = love.timer.getTime()
+	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
+	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 end
 
+function Renderer:getHandle()
+	return self._renderer
+end
+
 function Renderer:getCullEnabled()
-	return self.cull
+	return self._renderer:getCamera():getIsCullEnabled()
 end
 
 function Renderer:setCullEnabled(value)
-	if value then
-		self.cull = true
-	else
-		self.cull = false
-	end
+	return self._renderer:getCamera():setIsCullEnabled(value or false)
 end
 
 function Renderer:getClearColor()
-	return self.clearColor
+	return Color(self._renderer:getClearColor())
 end
 
 function Renderer:setClearColor(value)
-	self.clearColor = value or self.clearColor
+	return self._renderer:setClearColor((value or Renderer.DEFAULT_CLEAR_COLOR):get())
 end
 
 function Renderer:getCamera()
@@ -124,29 +111,11 @@ function Renderer:draw(scene, delta, width, height)
 
 	scene:frame(delta)
 
-	if width ~= self.width or height ~= self.height then
-		self.width = width
-		self.height = height
-
-		if self.isMobile then
-			self.mobilePass:resize(width, height)
-		else
-			self.finalDeferredPass:resize(width, height)
-			self.finalForwardPass:resize(width, height)
-		end
-	end
-
-	self:drawFinalStep(scene, delta)
-
-	self:setCurrentShader(false)
+	self._renderer:draw(scene:getHandle(), delta, width, height)
 end
 
 function Renderer:getOutputBuffer()
-	if self.isMobile then
-		return self.mobilePass:getMBuffer()
-	else
-		return self.finalDeferredPass:getCBuffer()
-	end
+	self.finalForwardPass:getHandle():getCBuffer()
 end
 
 function Renderer:present()
@@ -168,64 +137,6 @@ function Renderer:presentCurrent()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.setDepthMode('always', false)
 	love.graphics.draw(buffer:getColor())
-end
-
-function Renderer:setCurrentShader(shader)
-	if not shader then
-		self.currentShader = false
-	else
-		if self.currentShader ~= shader then
-			self.currentShader = shader
-			love.graphics.setShader(shader)
-
-			if shader:hasUniform("scape_Time") then
-				shader:send("scape_Time", love.timer.getTime() - self.startTime)
-			end
-		end
-	end
-end
-
-function Renderer:getCurrentShader(shader)
-	return self.currentShader
-end
-
-function Renderer:registerRendererPass(rendererPassType, vertexSource, pixelSource)
-	local currentID = self.currentRendererPassID
-	self.currentRendererPassID = self.currentRendererPassID + 1
-
-	self.rendererPasses[rendererPassType] = currentID
-	self._shaderCache:registerRendererPass(currentID, vertexSource, pixelSource)
-
-	return currentID
-end
-
-function Renderer:getCachedShader(rendererPassType, shader, type)
-	local rendererPassID = self.rendererPasses[rendererPassType]
-
-	local source = shader:getResource()
-	if type == ShaderResource.LOW_LEVEL then
-		return self._shaderCache:build(
-			rendererPassID,
-			shader:getHandle(),
-			source:getVertexSource(),
-			source:getPixelSource())
-	elseif type == ShaderResource.PRIMITIVE then
-		return self._shaderCache:buildPrimitive(
-			rendererPassID,
-			shader:getHandle(),
-			source:getVertexSource(),
-			source:getPixelSource())
-	else -- Default is ShaderResource.COMPOSITE
-		return self._shaderCache:buildComposite(
-			rendererPassID,
-			shader:getHandle(),
-			source:getVertexSource(),
-			source:getPixelSource())
-	end
-end
-
-function Renderer:releaseCachedShaders()
-	self._shaderCache:release()
 end
 
 function Renderer:renderNode(node, delta)

@@ -43,7 +43,7 @@ namespace nbunny
 
 		glm::vec4 clear_color = glm::vec4(0.39f, 0.58f, 0.93f, 1);
 
-		std::vector<std::shared_ptr<RendererPass>> renderer_passes;
+		std::vector<RendererPass*> renderer_passes;
 
 		love::graphics::Shader* current_shader = nullptr;
 
@@ -51,7 +51,7 @@ namespace nbunny
 		Renderer(int reference);
 		~Renderer() = default;
 
-		void add_renderer_pass(const std::shared_ptr<RendererPass>& renderer_pass);
+		void add_renderer_pass(RendererPass* renderer_pass);
 
 		void set_clear_color(const glm::vec4& color);
 		const glm::vec4& get_clear_color() const;
