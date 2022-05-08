@@ -212,6 +212,16 @@ bool nbunny::SceneNodeMaterial::get_is_z_write_disabled() const
 	return is_z_write_disabled;
 }
 
+void nbunny::SceneNodeMaterial::set_is_cull_disabled(bool value)
+{
+	is_cull_disabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_cull_disabled() const
+{
+	return is_cull_disabled;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_color() const
 {
 	return color;
@@ -430,7 +440,7 @@ void nbunny::SceneNode::walk_by_material(
 	float delta,
 	std::vector<SceneNode*>& result)
 {
-	if (!camera.get_is_cull_enabled() || camera.inside(node, delta))
+	if (!camera.get_is_cull_enabled() || node.get_material().get_is_cull_disabled() || camera.inside(node, delta))
 	{
 		auto p = node.get_transform().get_global(delta) * glm::vec4(0, 0, 0, 1);
 		result.push_back(&node);
@@ -996,6 +1006,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsFullLit", &nbunny::SceneNodeMaterial::get_is_full_lit,
 		"setIsZWriteDisabled", &nbunny::SceneNodeMaterial::set_is_z_write_disabled,
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
+		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
+		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
 		"setColor", &nbunny_scene_node_material_set_color,
 		"getColor", &nbunny_scene_node_material_get_color,
 		"setShader", &nbunny::SceneNodeMaterial::set_shader,

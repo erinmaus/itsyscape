@@ -1,0 +1,395 @@
+////////////////////////////////////////////////////////////////////////////////
+// nbunny/optimaus/deferred_renderer_pass.cpp
+//
+// This file is a part of ItsyScape.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+////////////////////////////////////////////////////////////////////////////////
+
+#include "common/Matrix.h"
+#include "common/Module.h"
+#include "common/pixelformat.h"
+#include "modules/graphics/Graphics.h"
+#include "modules/filesystem/Filesystem.h"
+#include "modules/math/Transform.h"
+#include "nbunny/optimaus/deferred_renderer_pass.hpp"
+
+static const std::string SHADER_DEFAULT           = "Default";
+static const std::string SHADER_AMBIENT_LIGHT     = "AmbientLight";
+static const std::string SHADER_DIRECTIONAL_LIGHT = "DirectionalLight";
+static const std::string SHADER_POINT_LIGHT       = "PointLight";
+
+nbunny::DeferredRendererPass::DeferredRendererPass() :
+	RendererPass(RENDERER_PASS_DEFERRED),
+	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
+	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
+	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
+	output_buffer(love::PIXELFORMAT_RGBA8, g_buffer)
+{
+	// Nothing.
+}
+
+void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
+{
+	scene_nodes.clear();
+	SceneNode::walk_by_material(node, get_renderer()->get_camera(), delta, scene_nodes);
+}
+
+void nbunny::DeferredRendererPass::walk_visible_lights()
+{
+	light_scene_nodes.clear();
+
+	for (auto node: scene_nodes)
+	{
+		const auto& node_type = node->get_type();
+		if (node_type == AmbientLightSceneNode::type_pointer ||
+		    node_type == DirectionalLightSceneNode::type_pointer ||
+		    node_type == PointLightSceneNode::type_pointer)
+		{
+			light_scene_nodes.push_back(reinterpret_cast<LightSceneNode*>(node));
+		}
+	}
+}
+
+void nbunny::DeferredRendererPass::draw_ambient_light(LightSceneNode& node, float delta)
+{
+	auto shader = get_builtin_shader(BUILTIN_SHADER_AMBIENT_LIGHT, SHADER_AMBIENT_LIGHT);
+
+	Light light;
+	node.to_light(light, delta);
+
+	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
+	if (light_ambient_coefficient_uniform)
+	{
+		auto uniform = *light_ambient_coefficient_uniform;
+		uniform.floats = &light.ambient_coefficient;
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
+	if (light_color_uniform)
+	{
+		auto uniform = *light_color_uniform;
+		uniform.floats = glm::value_ptr(light.color);
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::draw_directional_light(LightSceneNode& node, float delta)
+{
+	auto shader = get_builtin_shader(BUILTIN_SHADER_DIRECTIONAL_LIGHT, SHADER_DIRECTIONAL_LIGHT);
+
+	Light light;
+	node.to_light(light, delta);
+
+	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalSpecularTexture");
+	if (normal_map_specular_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_SPECULAR_INDEX));
+		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
+	}
+
+	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
+	if (light_direction_uniform)
+	{
+		auto uniform = *light_direction_uniform;
+		uniform.floats = glm::value_ptr(light.position);
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
+	if (light_color_uniform)
+	{
+		auto uniform = *light_color_uniform;
+		uniform.floats = glm::value_ptr(light.color);
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::draw_point_light(LightSceneNode& node, float delta)
+{
+	auto shader = get_builtin_shader(BUILTIN_SHADER_POINT_LIGHT, SHADER_POINT_LIGHT);
+
+	Light light;
+	node.to_light(light, delta);
+
+	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
+	if (position_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
+		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
+	if (light_direction_uniform)
+	{
+		auto uniform = *light_direction_uniform;
+		uniform.floats = glm::value_ptr(light.position);
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
+	if (light_color_uniform)
+	{
+		auto uniform = *light_color_uniform;
+		uniform.floats = glm::value_ptr(light.color);
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto light_attenuation_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
+	if (light_attenuation_uniform)
+	{
+		auto uniform = *light_attenuation_uniform;
+		uniform.floats = &light.attenuation;
+		shader->updateUniform(&uniform, 1);
+	}
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
+{
+	auto renderer = get_renderer();
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	const auto& camera = renderer->get_camera();
+	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
+	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
+
+	graphics->replaceTransform(&view);
+	graphics->setProjection(projection);
+
+	auto clear_color = renderer->get_clear_color();
+	graphics->clear(
+		love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
+		0,
+		1.0f);
+
+	g_buffer.use();
+
+	for (auto& scene_node: scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		renderer->set_current_shader(shader);
+
+		auto world = scene_node->get_transform().get_global(delta);
+
+		auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
+		if (world_matrix_uniform)
+		{
+			auto uniform = *world_matrix_uniform;
+			uniform.floats = glm::value_ptr(world);
+			shader->updateUniform(&uniform, 1);
+		}
+
+		auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
+		if (normal_matrix_uniform)
+		{
+			auto normal_matrix = glm::inverse(glm::transpose(world));
+			auto uniform = *normal_matrix_uniform;
+			uniform.floats = glm::value_ptr(world);
+			shader->updateUniform(&uniform, 1);
+		}
+
+		renderer->draw_node(L, *scene_node, delta);
+	}
+}
+
+void nbunny::DeferredRendererPass::draw_lights(float delta)
+{
+	light_buffer.use();
+
+	if (light_scene_nodes.empty())
+	{
+		AmbientLightSceneNode full_lit_node(0);
+		full_lit_node.set_current_ambience(1.0f);
+		full_lit_node.set_previous_ambience(1.0f);
+
+		draw_ambient_light(full_lit_node, delta);
+	}
+
+	for (auto light: light_scene_nodes)
+	{
+		const auto& light_type = light->get_type();
+
+		if (light_type == AmbientLightSceneNode::type_pointer)
+		{
+			draw_ambient_light(*light, delta);
+		}
+		else if (light_type == PointLightSceneNode::type_pointer)
+		{
+			draw_point_light(*light, delta);
+		}
+		else if (light_type == PointLightSceneNode::type_pointer)
+		{
+			draw_point_light(*light, delta);
+		}
+	}
+
+	mix_lights();
+}
+
+void nbunny::DeferredRendererPass::draw_fog(float delta)
+{
+	mix_fog();
+}
+
+void nbunny::DeferredRendererPass::mix_lights()
+{
+	output_buffer.use();
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_MULTIPLY, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+	graphics->draw(light_buffer.get_color(), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::mix_fog()
+{
+	// Nothing.
+}
+
+love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(int builtin_id, const std::string& filename, bool is_light)
+{
+	get_renderer()->get_shader_cache().build(
+		get_renderer_pass_id(),
+		builtin_id,
+		[&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
+		{
+			std::string base = "Resources/Renderers/Deferred/";
+			auto vertex_filename = base;
+			if (is_light)
+			{
+				vertex_filename += "Light.vert.glsl";
+			}
+			else
+			{
+				vertex_filename += filename + ".vert.glsl";
+			}
+
+			auto pixel_filename = base + filename + ".frag.glsl";
+
+			auto filesystem = love::Module::getInstance<love::filesystem::Filesystem>(love::Module::M_FILESYSTEM);
+
+			auto vertex_file_data = filesystem->read(vertex_filename.c_str());
+			auto pixel_file_data = filesystem->read(pixel_filename.c_str());
+
+			std::string vertex_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
+			std::string pixel_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
+
+			if (!is_light)
+			{
+				v = base_vertex_source;
+				p = base_pixel_source;
+			}
+
+			v += vertex_source;
+			p += pixel_source;
+		});
+}
+
+love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State* L, const SceneNode& node)
+{
+	auto shader_resource = node.get_material().get_shader();
+	if (!shader_resource)
+	{
+		return get_builtin_shader(BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
+	}
+
+	get_renderer()->get_shader_cache().build(
+		get_renderer_pass_id(),
+		shader_resource->get_id(),
+		[&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
+		{
+			// Get source object from resource
+			// This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
+			// TODO: error handling
+			shader_resource->get_reference(L);
+			lua_getfield(L, -1, "getResource");
+			lua_pushvalue(L, -2);
+			lua_call(L, 1, 1);
+
+			v = base_vertex_source;
+
+			lua_getfield(L, -1, "getVertexSource");
+			lua_pushvalue(L, -2);
+			lua_call(L, 1, 1);
+
+			v += luaL_checkstring(L, -1);
+			lua_pop(L, 1);
+
+			p = base_pixel_source;
+
+			lua_getfield(L, -1, "getPixelSource");
+			lua_pushvalue(L, -2);
+			lua_call(L, 1, 1);
+
+			p += luaL_checkstring(L, -1);
+			lua_pop(L, 1);
+
+			// Pop return value from "getResource" and the reference
+			lua_pop(L, 2);
+		});
+}
+
+nbunny::GBuffer& nbunny::DeferredRendererPass::get_g_buffer()
+{
+	return g_buffer;
+}
+
+nbunny::LBuffer& nbunny::DeferredRendererPass::get_output_buffer()
+{
+	return output_buffer;
+}
+
+void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float delta)
+{
+	walk_all_nodes(node, delta);
+	walk_visible_lights();
+
+	draw_nodes(L, delta);
+	draw_lights(delta);
+	draw_fog(delta);
+}
+
+void nbunny::DeferredRendererPass::resize(int width, int height)
+{
+	g_buffer.resize(width, height);
+	light_buffer.resize(g_buffer);
+	fog_buffer.resize(g_buffer);
+	output_buffer.resize(g_buffer);
+}
+
+void nbunny::DeferredRendererPass::attach(Renderer& renderer)
+{
+	RendererPass::attach(renderer);
+
+	load_builtin_shader(
+		"Resources/Renderers/Deferred/Base.frag.glsl",
+		"Resources/Renderers/Deferred/Base.vert.glsl");
+}
