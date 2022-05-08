@@ -8,93 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local NRendererPass = require "nbunny.optimaus.rendererpass"
 
--- Base renderer pass type. Manages logic for a specific pass.
 local RendererPass = Class()
 
--- Constructs a new RendererPass, using the provided Renderer.
 function RendererPass:new(renderer)
 	self.renderer = renderer
-	self.pixelSource = ""
-	self.vertexSource = ""
-	self.shaders = {}
-end
-
--- Sets the base shader.
---
--- The base shader is combined with Material shaders to form a complete shader.
---
--- Material shaders are expected to have the following methods:
---
--- ```
--- // in the vertex shader
--- vec4 performTransform(mat4 modelViewProjectionMatrix, vec4 position, out vec3 worldPosition);
---
--- // in the pixel shader
--- vec4 performEffect(vec4 color, vec2 textureCoordinates);
--- ```
-function RendererPass:setBaseShader(pixel, vertex)
-	self.pixelSource = pixel or self.pixelSource
-	self.vertexSource = vertex or self.vertexSource
-	self.renderer:registerRendererPass(
-		self:getType(), self.vertexSource, self.pixelSource)
-end
-
--- Loads the base shader from a file.
---
--- See RendererPass.setBaseShader.
-function RendererPass:loadBaseShaderFromFile(pixel, vertex)
-	self:setBaseShader(
-		love.filesystem.read(pixel),
-		love.filesystem.read(vertex))
-end
-
--- Gets the renderer this RendererPass belongs to.
-function RendererPass:getRenderer()
-	return self.renderer
-end
-
--- Begins rendering. Called before RendererPass.draw.
-function RendererPass:beginDraw(delta)
-	-- Nothing.
-end
-
--- Begins rendering. Called after RendererPass.draw.
-function RendererPass:endDraw(delta)
-	-- Nothing.
-end
-
--- Actually performs rendering.
-function RendererPass:draw(delta)
-	-- Nothing.
-end
-
--- Called before RendererPass.begin if the window was resized.
-function RendererPass:resize(width, height)
-	-- Nothing.
-end
-
--- Uses the provided ShaderResource.
---
--- Generates a Shader from the provided ShaderResource, if necessary.
-function RendererPass:useShader(shader)
-	local success, result = pcall(
-		self.renderer.getCachedShader,
-		self.renderer,
-		self:getType(),
-		shader)
-	if success then
-		s = result
-	else
-		local _, filename = shader:getResource()
-		Log.warn("Vertex source:\n%s", self.vertexSource .. shader:getResource():getVertexSource())
-		Log.warn("Pixel source:\n%s", self.pixelSource .. shader:getResource():getPixelSource())
-		error(string.format("shader %s:\n\t%s", filename, result))
-	end
-
-	self.renderer:setCurrentShader(s)
-
-	return s
 end
 
 return RendererPass

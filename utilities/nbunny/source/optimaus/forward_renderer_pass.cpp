@@ -267,18 +267,18 @@ void nbunny::ForwardRendererPass::resize(int width, int height)
 
 void nbunny::ForwardRendererPass::attach(Renderer& renderer)
 {
-	RendererPass:attach(renderer);
+	RendererPass::attach(renderer);
 
 	load_builtin_shader(
-		"Resources/Renderers/Forward/Base.vert.glsl",
-		"Resources/Renderers/Forward/Base.frag.glsl");
+		"Resources/Renderers/Mobile/Base.vert.glsl",
+		"Resources/Renderers/Mobile/Base.frag.glsl");
 }
 
 static std::shared_ptr<nbunny::ForwardRendererPass> nbunny_forward_renderer_pass_create(
 	sol::variadic_args args, sol::this_state S)
 {
 	lua_State* L = S;
-	auto& c_buffer = sol::stack::get<nbunny::LBuffer&>(L, 1);
+	auto& c_buffer = sol::stack::get<nbunny::LBuffer&>(L, 2);
 	return std::make_shared<nbunny::ForwardRendererPass>(c_buffer);
 }
 
@@ -286,6 +286,7 @@ extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_forwardrendererpass(lua_State* L)
 {
 	sol::usertype<nbunny::ForwardRendererPass> T(
+		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		sol::call_constructor, sol::factories(&nbunny_forward_renderer_pass_create));
 
 	sol::stack::push(L, T);

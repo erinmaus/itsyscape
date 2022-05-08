@@ -325,7 +325,7 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(int bui
 love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State* L, const SceneNode& node)
 {
 	auto shader_resource = node.get_material().get_shader();
-	if (!shader_resource)
+	if (!shader_resource || shader_resource->get_id() == 0)
 	{
 		return get_builtin_shader(BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
 	}
@@ -339,6 +339,7 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State*
 			// This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
 			// TODO: error handling
 			shader_resource->get_reference(L);
+
 			lua_getfield(L, -1, "getResource");
 			lua_pushvalue(L, -2);
 			lua_call(L, 1, 1);
@@ -412,6 +413,7 @@ extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_deferredrendererpass(lua_State* L)
 {
 	sol::usertype<nbunny::DeferredRendererPass> T(
+		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		sol::call_constructor, sol::factories(&nbunny_deferred_renderer_pass_create),
 		"getGBuffer", &nbunny::DeferredRendererPass::get_g_buffer,
 		"getCBuffer", &nbunny::DeferredRendererPass::get_output_buffer);
