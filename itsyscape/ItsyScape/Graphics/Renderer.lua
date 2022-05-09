@@ -12,7 +12,8 @@ local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
-local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
+local LBuffer = require "ItsyScape.Graphics.LBuffer"
+local GBuffer = require "ItsyScape.Graphics.GBuffer"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local NShaderCache = require "nbunny.optimaus.shadercache"
 local NRenderer = require "nbunny.optimaus.renderer"
@@ -86,22 +87,11 @@ function Renderer:getPassDebugStats()
 end
 
 function Renderer:clean()
-	self:releaseCachedShaders()
+	-- Nothing.
 end
 
-function Renderer:drawFinalStep(scene, delta)
-	if self.isMobile then
-		self.mobilePass:beginDraw(scene, delta)
-		self.mobilePass:draw(scene, delta)
-		self.mobilePass:endDraw(scene, delta)
-	else
-		self.passDebugStats:measure(self.finalDeferredPass, scene, delta)
-
-		local cBuffer = self.finalDeferredPass:getCBuffer()
-		cBuffer:use()
-
-		self.passDebugStats:measure(self.finalForwardPass, scene, delta)
-	end
+function Renderer:getCurrentShader()
+	return self._renderer:getCurrentShader()
 end
 
 function Renderer:draw(scene, delta, width, height)
@@ -111,11 +101,12 @@ function Renderer:draw(scene, delta, width, height)
 
 	scene:frame(delta)
 
+	self._renderer:getCamera():update(self.camera:getTransforms())
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 end
 
 function Renderer:getOutputBuffer()
-	self.finalForwardPass:getHandle():getCBuffer()
+	return self.finalDeferredPass:getHandle():getCBuffer()
 end
 
 function Renderer:present()

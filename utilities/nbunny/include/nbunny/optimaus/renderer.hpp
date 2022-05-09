@@ -92,6 +92,8 @@ namespace nbunny
 		virtual void load_builtin_shader(
 			const std::string& vertex_filename,
 			const std::string& pixel_filename);
+
+        virtual love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node);
 	};
 }
 

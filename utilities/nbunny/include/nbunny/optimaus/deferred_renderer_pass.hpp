@@ -54,19 +54,18 @@ namespace nbunny
 		void walk_all_nodes(SceneNode& node, float delta);
 		void walk_visible_lights();
 
-		void draw_ambient_light(LightSceneNode& node, float delta);
-		void draw_directional_light(LightSceneNode& node, float delta);
-		void draw_point_light(LightSceneNode& node, float delta);
+		void draw_ambient_light(lua_State* L, LightSceneNode& node, float delta);
+		void draw_directional_light(lua_State* L, LightSceneNode& node, float delta);
+		void draw_point_light(lua_State* L, LightSceneNode& node, float delta);
 
 		void draw_nodes(lua_State* L, float delta);
-		void draw_lights(float delta);
-		void draw_fog(float delta);
+		void draw_lights(lua_State* L, float delta);
+		void draw_fog(lua_State* L, float delta);
 
 		void mix_lights();
 		void mix_fog();
 
-		love::graphics::Shader* get_builtin_shader(int builtin_id, const std::string& filename, bool is_light = true);
-		love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node);
+		love::graphics::Shader* get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light = true);
 
 	public:
 		DeferredRendererPass();
@@ -81,6 +80,8 @@ namespace nbunny
 		void resize(int width, int height) override;
 
 		void attach(Renderer& renderer) override;
+
+        love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node) override;
 	};
 }
 
