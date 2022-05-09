@@ -45,8 +45,6 @@ namespace nbunny
 		void draw_nodes(lua_State* L, float delta);
 		void get_nearby_lights(SceneNode& node, float delta);
 
-		love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node);
-
 		void send_light_property(
 			love::graphics::Shader* shader,
 			int index,
@@ -63,6 +61,8 @@ namespace nbunny
 		void draw(lua_State* L, SceneNode& node, float delta) override;
 		void resize(int width, int height) override;
 		void attach(Renderer& renderer) override;
+
+        love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node) override;
 	};
 }
 

@@ -11,6 +11,7 @@
 #include "common/Matrix.h"
 #include "common/Module.h"
 #include "common/pixelformat.h"
+#include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "modules/filesystem/Filesystem.h"
 #include "modules/math/Transform.h"
@@ -34,6 +35,8 @@ nbunny::DeferredRendererPass::DeferredRendererPass() :
 void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	visible_scene_nodes.clear();
+    drawable_scene_nodes.clear();
+
 	SceneNode::walk_by_material(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
 
 	for (auto& visible_scene_node: visible_scene_nodes)
@@ -62,9 +65,9 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 	}
 }
 
-void nbunny::DeferredRendererPass::draw_ambient_light(LightSceneNode& node, float delta)
+void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNode& node, float delta)
 {
-	auto shader = get_builtin_shader(BUILTIN_SHADER_AMBIENT_LIGHT, SHADER_AMBIENT_LIGHT);
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_AMBIENT_LIGHT, SHADER_AMBIENT_LIGHT);
 
 	Light light;
 	node.to_light(light, delta);
@@ -92,9 +95,9 @@ void nbunny::DeferredRendererPass::draw_ambient_light(LightSceneNode& node, floa
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
-void nbunny::DeferredRendererPass::draw_directional_light(LightSceneNode& node, float delta)
+void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSceneNode& node, float delta)
 {
-	auto shader = get_builtin_shader(BUILTIN_SHADER_DIRECTIONAL_LIGHT, SHADER_DIRECTIONAL_LIGHT);
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_DIRECTIONAL_LIGHT, SHADER_DIRECTIONAL_LIGHT);
 
 	Light light;
 	node.to_light(light, delta);
@@ -129,9 +132,9 @@ void nbunny::DeferredRendererPass::draw_directional_light(LightSceneNode& node, 
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
-void nbunny::DeferredRendererPass::draw_point_light(LightSceneNode& node, float delta)
+void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode& node, float delta)
 {
-	auto shader = get_builtin_shader(BUILTIN_SHADER_POINT_LIGHT, SHADER_POINT_LIGHT);
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_POINT_LIGHT, SHADER_POINT_LIGHT);
 
 	Light light;
 	node.to_light(light, delta);
@@ -214,7 +217,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		{
 			auto normal_matrix = glm::inverse(glm::transpose(world));
 			auto uniform = *normal_matrix_uniform;
-			uniform.floats = glm::value_ptr(world);
+			uniform.floats = glm::value_ptr(normal_matrix);
 			shader->updateUniform(&uniform, 1);
 		}
 
@@ -222,18 +225,18 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	}
 }
 
-void nbunny::DeferredRendererPass::draw_lights(float delta)
+void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 {
 	light_buffer.use();
 
 	if (light_scene_nodes.empty())
-	{
-		AmbientLightSceneNode full_lit_node(0);
-		full_lit_node.set_current_ambience(1.0f);
-		full_lit_node.set_previous_ambience(1.0f);
+    {
+        AmbientLightSceneNode full_lit_node(0);
+        full_lit_node.set_current_ambience(1.0f);
+        full_lit_node.set_previous_ambience(1.0f);
 
-		draw_ambient_light(full_lit_node, delta);
-	}
+        draw_ambient_light(L, full_lit_node, delta);
+    }
 
 	for (auto light: light_scene_nodes)
 	{
@@ -241,22 +244,22 @@ void nbunny::DeferredRendererPass::draw_lights(float delta)
 
 		if (light_type == AmbientLightSceneNode::type_pointer)
 		{
-			draw_ambient_light(*light, delta);
+			draw_ambient_light(L, *light, delta);
+		}
+		else if (light_type == DirectionalLightSceneNode::type_pointer)
+		{
+			draw_directional_light(L, *light, delta);
 		}
 		else if (light_type == PointLightSceneNode::type_pointer)
 		{
-			draw_point_light(*light, delta);
-		}
-		else if (light_type == PointLightSceneNode::type_pointer)
-		{
-			draw_point_light(*light, delta);
+			draw_point_light(L, *light, delta);
 		}
 	}
 
 	mix_lights();
 }
 
-void nbunny::DeferredRendererPass::draw_fog(float delta)
+void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 {
 	mix_fog();
 }
@@ -283,9 +286,9 @@ void nbunny::DeferredRendererPass::mix_fog()
 	// Nothing.
 }
 
-love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(int builtin_id, const std::string& filename, bool is_light)
+love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light)
 {
-	get_renderer()->get_shader_cache().build(
+	return get_renderer()->get_shader_cache().build(
 		get_renderer_pass_id(),
 		builtin_id,
 		[&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
@@ -308,7 +311,7 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(int bui
 			auto vertex_file_data = filesystem->read(vertex_filename.c_str());
 			auto pixel_file_data = filesystem->read(pixel_filename.c_str());
 
-			std::string vertex_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
+			std::string vertex_source(reinterpret_cast<const char*>(vertex_file_data->getData()), vertex_file_data->getSize());
 			std::string pixel_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
 
 			if (!is_light)
@@ -319,6 +322,20 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(int bui
 
 			v += vertex_source;
 			p += pixel_source;
+
+            love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
+
+            lua_pushboolean(L, get_renderer()->get_shader_cache().get_is_mobile());
+            lua_pushlstring(L, v.c_str(), v.size());
+            lua_pushlstring(L, p.c_str(), p.size());
+
+            if (lua_pcall(L, 3, 2, 0) != 0)
+                luaL_error(L, "%s", lua_tostring(L, -1));
+
+            v = luaL_checkstring(L, -2);
+            p = luaL_checkstring(L, -1);
+
+            lua_pop(L, 2);
 		});
 }
 
@@ -327,44 +344,10 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State*
 	auto shader_resource = node.get_material().get_shader();
 	if (!shader_resource || shader_resource->get_id() == 0)
 	{
-		return get_builtin_shader(BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
+		return get_builtin_shader(L, BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
 	}
 
-	get_renderer()->get_shader_cache().build(
-		get_renderer_pass_id(),
-		shader_resource->get_id(),
-		[&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
-		{
-			// Get source object from resource
-			// This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
-			// TODO: error handling
-			shader_resource->get_reference(L);
-
-			lua_getfield(L, -1, "getResource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			v = base_vertex_source;
-
-			lua_getfield(L, -1, "getVertexSource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			v += luaL_checkstring(L, -1);
-			lua_pop(L, 1);
-
-			p = base_pixel_source;
-
-			lua_getfield(L, -1, "getPixelSource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			p += luaL_checkstring(L, -1);
-			lua_pop(L, 1);
-
-			// Pop return value from "getResource" and the reference
-			lua_pop(L, 2);
-		});
+    return RendererPass::get_node_shader(L, node);
 }
 
 nbunny::GBuffer& nbunny::DeferredRendererPass::get_g_buffer()
@@ -383,8 +366,8 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 	walk_visible_lights();
 
 	draw_nodes(L, delta);
-	draw_lights(delta);
-	draw_fog(delta);
+	draw_lights(L, delta);
+	draw_fog(L, delta);
 }
 
 void nbunny::DeferredRendererPass::resize(int width, int height)

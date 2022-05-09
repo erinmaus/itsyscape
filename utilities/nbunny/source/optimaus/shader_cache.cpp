@@ -73,10 +73,15 @@ love::graphics::Shader* nbunny::ShaderCache::build(
 	return nullptr;
 }
 
-static bool isMobile()
+static bool get_is_mobile()
 {
-	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	return graphics->getRenderer() == love::graphics::Graphics::RENDERER_OPENGLES;
+    auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+    return graphics->getRenderer() == love::graphics::Graphics::RENDERER_OPENGLES;
+}
+
+bool nbunny::ShaderCache::get_is_mobile() const
+{
+    return ::get_is_mobile();
 }
 
 static int nbunny_shader_cache_do_build(lua_State* L, const nbunny::ShaderCache::BuildFunc build_func)
@@ -115,7 +120,7 @@ static int nbunny_shader_cache_build_composite(lua_State* L)
 		v = base_vertex_source + vertex_source;
 		p = base_pixel_source + pixel_source;
 
-		lua_pushboolean(L, isMobile());
+		lua_pushboolean(L, get_is_mobile());
 		lua_pushlstring(L, v.data(), v.size());
 		lua_pushlstring(L, p.data(), p.size());
 
@@ -137,7 +142,7 @@ static int nbunny_shader_cache_build_primitive(lua_State* L)
 	{
 		love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
-		lua_pushboolean(L, isMobile());
+		lua_pushboolean(L, get_is_mobile());
 		lua_pushvalue(L, 4);
 		lua_pushvalue(L, 5);
 

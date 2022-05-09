@@ -101,45 +101,12 @@ void nbunny::ForwardRendererPass::get_nearby_lights(SceneNode& node, float delta
 love::graphics::Shader* nbunny::ForwardRendererPass::get_node_shader(lua_State* L, const SceneNode& node)
 {
 	auto shader_resource = node.get_material().get_shader();
-	if (!shader_resource)
+	if (!shader_resource || shader_resource->get_id() == 0)
 	{
 		return nullptr;
 	}
 
-	get_renderer()->get_shader_cache().build(
-		get_renderer_pass_id(),
-		shader_resource->get_id(),
-		[&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
-		{
-			// Get source object from resource
-			// This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
-			// TODO: error handling
-			shader_resource->get_reference(L);
-			lua_getfield(L, -1, "getResource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			v = base_vertex_source;
-
-			lua_getfield(L, -1, "getVertexSource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			v += luaL_checkstring(L, -1);
-			lua_pop(L, 1);
-
-			p = base_pixel_source;
-
-			lua_getfield(L, -1, "getPixelSource");
-			lua_pushvalue(L, -2);
-			lua_call(L, 1, 1);
-
-			p += luaL_checkstring(L, -1);
-			lua_pop(L, 1);
-
-			// Pop return value from "getResource" and the reference
-			lua_pop(L, 2);
-		});
+    return RendererPass::get_node_shader(L, node);
 }
 
 void nbunny::ForwardRendererPass::send_light_property(
@@ -209,7 +176,7 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		{
 			auto normal_matrix = glm::inverse(glm::transpose(world));
 			auto uniform = *normal_matrix_uniform;
-			uniform.floats = glm::value_ptr(world);
+			uniform.floats = glm::value_ptr(normal_matrix);
 			shader->updateUniform(&uniform, 1);
 		}
 

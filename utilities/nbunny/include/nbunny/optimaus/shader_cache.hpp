@@ -50,6 +50,8 @@ namespace nbunny
 		ShaderCache() = default;
 		~ShaderCache();
 
+        bool get_is_mobile() const;
+
 		void release();
 
 		void register_renderer_pass(

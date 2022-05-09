@@ -10,6 +10,7 @@
 
 #include "common/Module.h"
 #include "common/Module.h"
+#include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "modules/filesystem/Filesystem.h"
 #include "nbunny/optimaus/renderer.hpp"
@@ -159,7 +160,7 @@ void nbunny::RendererPass::load_builtin_shader(
 	auto vertex_file_data = filesystem->read(vertex_filename.c_str());
 	auto pixel_file_data = filesystem->read(pixel_filename.c_str());
 
-	std::string vertex_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
+	std::string vertex_source(reinterpret_cast<const char*>(vertex_file_data->getData()), vertex_file_data->getSize());
 	std::string pixel_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
 
 	get_renderer()->get_shader_cache().register_renderer_pass(
@@ -168,14 +169,69 @@ void nbunny::RendererPass::load_builtin_shader(
 		pixel_source);
 }
 
+love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, const SceneNode& node)
+{
+    auto shader_resource = node.get_material().get_shader();
+
+    return get_renderer()->get_shader_cache().build(
+            get_renderer_pass_id(),
+            shader_resource->get_id(),
+            [&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
+            {
+                // Get source object from resource
+                // This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
+                // TODO: error handling
+                shader_resource->get_reference(L);
+
+                lua_getfield(L, -1, "getResource");
+                lua_pushvalue(L, -2);
+                lua_call(L, 1, 1);
+
+                v = base_vertex_source;
+
+                lua_getfield(L, -1, "getVertexSource");
+                lua_pushvalue(L, -2);
+                lua_call(L, 1, 1);
+
+                v += luaL_checkstring(L, -1);
+                lua_pop(L, 1);
+
+                p = base_pixel_source;
+
+                lua_getfield(L, -1, "getPixelSource");
+                lua_pushvalue(L, -2);
+                lua_call(L, 1, 1);
+
+                p += luaL_checkstring(L, -1);
+                lua_pop(L, 1);
+
+                // Pop return value from "getResource" and the reference
+                lua_pop(L, 2);
+
+                love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
+
+                lua_pushboolean(L, get_renderer()->get_shader_cache().get_is_mobile());
+                lua_pushlstring(L, v.c_str(), v.size());
+                lua_pushlstring(L, p.c_str(), p.size());
+
+                if (lua_pcall(L, 3, 2, 0) != 0)
+                    luaL_error(L, "%s", lua_tostring(L, -1));
+
+                v = luaL_checkstring(L, -2);
+                p = luaL_checkstring(L, -1);
+
+                lua_pop(L, 2);
+            });
+}
+
 static std::shared_ptr<nbunny::Renderer> nbunny_renderer_create(sol::variadic_args args, sol::this_state S)
 {
 	lua_State* L = S;
 
 	int reference = 0;
-	if (!lua_isnil(L, 1))
+	if (!lua_isnil(L, 2))
 	{
-		lua_pushvalue(L, 1);
+		lua_pushvalue(L, 2);
 		reference = nbunny::set_weak_reference(L);
 	}
 
@@ -215,14 +271,32 @@ static int nbunny_renderer_set_camera(lua_State* L)
 static int nbunny_renderer_get_camera(lua_State* L)
 {
 	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
-	sol::stack::push(L, renderer->get_camera());
+    auto& camera = renderer->get_camera();
+	sol::stack::push(L, &camera);
 	return 1;
+}
+
+static int nbunny_renderer_get_current_shader(lua_State* L)
+{
+    auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+    auto shader = renderer->get_current_shader();
+    if (shader == nullptr)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        love::luax_pushtype(L, shader);
+    }
+
+    return 1;
 }
 
 static int nbunny_renderer_get_shader_cache(lua_State* L)
 {
 	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
-	sol::stack::push(L, renderer->get_shader_cache());
+    auto& shader_cache = renderer->get_shader_cache();
+	sol::stack::push(L, &shader_cache);
 	return 1;
 }
 
@@ -247,6 +321,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 		"getClearColor", &nbunny_renderer_get_clear_color,
 		"setCamera", &nbunny_renderer_set_camera,
 		"getCamera", &nbunny_renderer_get_camera,
+        "getCurrentShader", &nbunny_renderer_get_current_shader,
 		"getShaderCache", &nbunny_renderer_get_shader_cache,
 		"draw", &nbunny_renderer_draw);
 
