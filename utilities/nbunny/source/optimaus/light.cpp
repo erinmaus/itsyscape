@@ -339,7 +339,11 @@ float nbunny::PointLightSceneNode::get_previous_attenuation() const
 
 void nbunny::PointLightSceneNode::to_light(Light& light, float delta) const
 {
+	auto world = get_transform().get_global(delta);
+	auto position = world * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	LightSceneNode::to_light(light, delta);
+	light.position = glm::vec4(glm::vec3(position), 0.0f);
 	light.attenuation = glm::mix(
 		current_attenuation,
 		get_ticked() ? previous_attenuation : current_attenuation,

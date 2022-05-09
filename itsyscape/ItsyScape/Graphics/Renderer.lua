@@ -44,7 +44,7 @@ function Renderer:new()
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
-	--self._renderer:addRendererPass(self.finalForwardPass:getHandle())
+	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
