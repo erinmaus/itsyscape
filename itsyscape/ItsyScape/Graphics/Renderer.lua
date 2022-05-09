@@ -44,7 +44,7 @@ function Renderer:new()
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
-	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
+	--self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
@@ -101,7 +101,8 @@ function Renderer:draw(scene, delta, width, height)
 
 	scene:frame(delta)
 
-	self._renderer:getCamera():update(self.camera:getTransforms())
+	local projection, view = self.camera:getTransforms()
+	self._renderer:getCamera():update(view, projection)
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 end
 

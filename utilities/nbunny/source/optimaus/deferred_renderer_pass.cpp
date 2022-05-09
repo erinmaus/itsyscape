@@ -68,6 +68,7 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNode& node, float delta)
 {
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_AMBIENT_LIGHT, SHADER_AMBIENT_LIGHT);
+    get_renderer()->set_current_shader(shader);
 
 	Light light;
 	node.to_light(light, delta);
@@ -75,23 +76,18 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
 	if (light_ambient_coefficient_uniform)
 	{
-		auto uniform = *light_ambient_coefficient_uniform;
-		uniform.floats = &light.ambient_coefficient;
-		shader->updateUniform(&uniform, 1);
+        *light_ambient_coefficient_uniform->floats = light.ambient_coefficient;
+		shader->updateUniform(light_ambient_coefficient_uniform, 1);
 	}
 
 	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
 	if (light_color_uniform)
 	{
-		auto uniform = *light_color_uniform;
-		uniform.floats = glm::value_ptr(light.color);
-		shader->updateUniform(&uniform, 1);
+        std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
+		shader->updateUniform(light_color_uniform, 1);
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
-	graphics->origin();
-	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
@@ -126,9 +122,6 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
-	graphics->origin();
-	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
@@ -182,14 +175,16 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	auto renderer = get_renderer();
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
+    g_buffer.use();
+
 	const auto& camera = renderer->get_camera();
-	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
-	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
+    auto view_matrix = camera.get_view();
+    auto projection_matrix = camera.get_projection();
+	love::math::Transform view(love::Matrix4(glm::value_ptr(view_matrix)));
+	love::Matrix4 projection(glm::value_ptr(projection_matrix));
 
-	graphics->replaceTransform(&view);
-	graphics->setProjection(projection);
-
-	g_buffer.use();
+    graphics->replaceTransform(&view);
+    graphics->setProjection(projection);
 
 	auto clear_color = renderer->get_clear_color();
 	graphics->clear(
@@ -202,24 +197,25 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
 
-		auto world = scene_node->get_transform().get_global(delta);
+		auto world = glm::transpose(scene_node->get_transform().get_global(delta));
 
 		auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
 		if (world_matrix_uniform)
 		{
-			auto uniform = *world_matrix_uniform;
-			uniform.floats = glm::value_ptr(world);
-			shader->updateUniform(&uniform, 1);
+			std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
+			shader->updateUniform(world_matrix_uniform, 1);
 		}
 
 		auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
 		if (normal_matrix_uniform)
 		{
 			auto normal_matrix = glm::inverse(glm::transpose(world));
-			auto uniform = *normal_matrix_uniform;
-			uniform.floats = glm::value_ptr(normal_matrix);
-			shader->updateUniform(&uniform, 1);
+            std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
+			shader->updateUniform(normal_matrix_uniform, 1);
 		}
+
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+        graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		renderer->draw_node(L, *scene_node, delta);
 	}
@@ -228,6 +224,15 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 {
 	light_buffer.use();
+
+    auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+    graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+
+    graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
+
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+    graphics->origin();
+    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 
 	if (light_scene_nodes.empty())
     {
@@ -248,11 +253,11 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 		}
 		else if (light_type == DirectionalLightSceneNode::type_pointer)
 		{
-			draw_directional_light(L, *light, delta);
+			//draw_directional_light(L, *light, delta);
 		}
 		else if (light_type == PointLightSceneNode::type_pointer)
 		{
-			draw_point_light(L, *light, delta);
+			//draw_point_light(L, *light, delta);
 		}
 	}
 
@@ -268,17 +273,19 @@ void nbunny::DeferredRendererPass::mix_lights()
 {
 	output_buffer.use();
 
+    get_renderer()->set_current_shader(nullptr);
+
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
 	graphics->origin();
-	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), false);
 
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_MULTIPLY, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-	graphics->draw(light_buffer.get_color(), love::Matrix4());
+	//graphics->setBlendMode(love::graphics::Graphics::BLEND_MULTIPLY, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+	//graphics->draw(light_buffer.get_color(), love::Matrix4());
 }
 
 void nbunny::DeferredRendererPass::mix_fog()
