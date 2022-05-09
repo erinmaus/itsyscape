@@ -49,7 +49,8 @@ namespace nbunny
 			love::graphics::Shader* shader,
 			int index,
 			const std::string& property_name,
-			float* property_value);
+			float* property_value,
+            std::size_t size_bytes);
 		void send_light(love::graphics::Shader* shader, Light& light, int index);
 
 	public:

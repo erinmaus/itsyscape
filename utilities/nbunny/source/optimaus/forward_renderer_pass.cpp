@@ -113,15 +113,15 @@ void nbunny::ForwardRendererPass::send_light_property(
 	love::graphics::Shader* shader,
 	int index,
 	const std::string& property_name,
-	float* property_value)
+	float* property_value,
+    std::size_t size_bytes)
 {
 	std::string uniform_name = std::string("scape_Lights[") + std::to_string(index) + std::string("].") + property_name;
 	auto uniform = shader->getUniformInfo(uniform_name);
 	if (uniform)
 	{
-		auto u = *uniform;
-		u.floats = property_value;
-		shader->updateUniform(&u, 1);
+		std::memcpy(uniform->floats, property_value, size_bytes);
+		shader->updateUniform(uniform, 1);
 	}
 }
 
@@ -130,12 +130,12 @@ void nbunny::ForwardRendererPass::send_light(
 	Light& light,
 	int index)
 {
-	send_light_property(shader, index, "position", glm::value_ptr(light.position));
-	send_light_property(shader, index, "color", glm::value_ptr(light.color));
-	send_light_property(shader, index, "attenuation", &light.attenuation);
-	send_light_property(shader, index, "ambientCoefficient", &light.ambient_coefficient);
-	send_light_property(shader, index, "coneAngle", &light.cone_angle);
-	send_light_property(shader, index, "coneDirection", glm::value_ptr(light.cone_direction));
+	send_light_property(shader, index, "position", glm::value_ptr(light.position), sizeof(glm::vec4));
+	send_light_property(shader, index, "color", glm::value_ptr(light.color), sizeof(glm::vec3));
+	send_light_property(shader, index, "attenuation", &light.attenuation, sizeof(float));
+	send_light_property(shader, index, "ambientCoefficient", &light.ambient_coefficient, sizeof(float));
+	send_light_property(shader, index, "coneAngle", &light.cone_angle, sizeof(float));
+	send_light_property(shader, index, "coneDirection", glm::value_ptr(light.cone_direction), sizeof(glm::vec3));
 }
 
 void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
@@ -147,10 +147,10 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
+    c_buffer.use();
+
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
-
-	c_buffer.use();
 
 	for (auto& scene_node: drawable_scene_nodes)
 	{
@@ -163,22 +163,20 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 
 		auto world = scene_node->get_transform().get_global(delta);
 
-		auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
-		if (world_matrix_uniform)
-		{
-			auto uniform = *world_matrix_uniform;
-			uniform.floats = glm::value_ptr(world);
-			shader->updateUniform(&uniform, 1);
-		}
+        auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
+        if (world_matrix_uniform)
+        {
+            std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
+            shader->updateUniform(world_matrix_uniform, 1);
+        }
 
-		auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
-		if (normal_matrix_uniform)
-		{
-			auto normal_matrix = glm::inverse(glm::transpose(world));
-			auto uniform = *normal_matrix_uniform;
-			uniform.floats = glm::value_ptr(normal_matrix);
-			shader->updateUniform(&uniform, 1);
-		}
+        auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
+        if (normal_matrix_uniform)
+        {
+            auto normal_matrix = glm::inverse(glm::transpose(world));
+            std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
+            shader->updateUniform(normal_matrix_uniform, 1);
+        }
 
 		get_nearby_lights(*scene_node, delta);
 		for (auto i = 0; i < lights.size(); ++i)
@@ -189,20 +187,21 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		auto num_lights_uniform = shader->getUniformInfo("scape_NumLights");
 		if (num_lights_uniform)
 		{
-			auto uniform = *num_lights_uniform;
 			int num_lights = (int)lights.size();
-			uniform.ints = &num_lights;
-			shader->updateUniform(&uniform, 1);
+			*num_lights_uniform->ints = num_lights;
+			shader->updateUniform(num_lights_uniform, 1);
 		}
 
 		auto num_fog_uniform = shader->getUniformInfo("scape_NumFog");
 		if (num_fog_uniform)
 		{
-			auto uniform = *num_fog_uniform;
 			int num_fog = 0;
-			uniform.ints = &num_fog;
-			shader->updateUniform(&uniform, 1);
+			*num_fog_uniform->ints = num_fog;
+			shader->updateUniform(num_fog_uniform, 1);
 		}
+
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+        graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		renderer->draw_node(L, *scene_node, delta);
 	}
