@@ -27,11 +27,12 @@ namespace nbunny
 
 	public:
 		Resource() = default;
+		virtual ~Resource() = default;
 
 		int get_current_id() const;
 		int allocate_id();
 
-		std::shared_ptr<ResourceInstance> instantiate(lua_State* L);
+		virtual std::shared_ptr<ResourceInstance> instantiate(lua_State* L);
 	};
 
 	class ResourceInstance
@@ -43,6 +44,7 @@ namespace nbunny
 	public:
 		ResourceInstance() = default;
 		ResourceInstance(int id, int reference);
+		virtual ~ResourceInstance() = default;
 
 		int get_id() const;
 		int get_reference_key() const;
