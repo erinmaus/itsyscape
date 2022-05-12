@@ -166,7 +166,6 @@ function Skeleton:loadFromTable(t)
 	for i = 1, self:getNumBones() do
 		local bone = self:getBoneByIndex(i)
 		assert(bone:getParentIndex() < bone:getIndex())
-		print("bone", bone:getName(), bone:getIndex(), "child of", bone:getParentName(), bone:getParentIndex())
 	end
 end
 
