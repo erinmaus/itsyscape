@@ -31,10 +31,11 @@ static int nbunny_skeleton_resource_instantiate(lua_State* L)
 }
 
 extern "C"
-NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonrresource(lua_State* L)
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresource(lua_State* L)
 {
 	sol::usertype<nbunny::SkeletonResource> T(
 		sol::base_classes, sol::bases<nbunny::Resource>(),
+		sol::call_constructor, sol::constructors<nbunny::SkeletonResource()>(),
 		"instantiate", &nbunny_skeleton_resource_instantiate);
 
 	sol::stack::push(L, T);
@@ -48,7 +49,7 @@ nbunny::SkeletonInstance::SkeletonInstance(int id, int reference) :
 	// Nothing.
 }
 
-void nbunny::SkeletonInstance::add_bone(
+nbunny::SkeletonBone nbunny::SkeletonInstance::add_bone(
 	const std::string& name,
 	const std::string& parent_name,
 	const glm::mat4& inverse_bind_pose)
@@ -58,33 +59,35 @@ void nbunny::SkeletonInstance::add_bone(
 		throw love::Exception("already has bone '%s'", name.c_str());
 	}
 
-	if (parent_name != "" && !has_bone(name))
+	if (parent_name != "" && !has_bone(parent_name))
 	{
 		throw love::Exception("does not have parent bone '%s'", parent_name.c_str());
 	}
 
 	SkeletonBone bone;
-	bone.parent_index = has_bone(name) ? get_bone_index(parent_name) : SkeletonBone::NO_PARENT;
-	bone.parent_name = name;
+	bone.parent_index = has_bone(parent_name) ? get_bone_index(parent_name) : SkeletonBone::NO_PARENT;
+	bone.parent_name = parent_name;
 	bone.name = name;
 	bone.index = (int)bones.size();
 	bone.inverse_bind_pose = inverse_bind_pose;
 
 	bone_to_index.emplace(name, (int)bones.size());
 	bones.push_back(bone);
+
+	return bone;
 }
 
-const nbunny::SkeletonBone& nbunny::SkeletonInstance::get_bone_by_index(int index) const
+nbunny::SkeletonBone nbunny::SkeletonInstance::get_bone_by_index(int index) const
 {
 	return bones.at((int)index);
 }
 
-const nbunny::SkeletonBone& nbunny::SkeletonInstance::get_bone_by_name(const std::string& name) const
+nbunny::SkeletonBone nbunny::SkeletonInstance::get_bone_by_name(const std::string& name) const
 {
 	return bones.at(bone_to_index.at(name));
 }
 
-int nbunny::SkeletonInstance::get_bone_index(const std::string &name)
+int nbunny::SkeletonInstance::get_bone_index(const std::string& name)
 {
 	return bone_to_index.at(name);
 }
@@ -94,7 +97,7 @@ std::size_t nbunny::SkeletonInstance::get_num_bones() const
 	return bones.size();
 }
 
-bool nbunny::SkeletonInstance::has_bone(const std::string &name)
+bool nbunny::SkeletonInstance::has_bone(const std::string& name)
 {
 	return bone_to_index.find(name) != bone_to_index.end();
 }
@@ -138,7 +141,7 @@ static int nbunny_skeleton_bone_get_inverse_bind_pose(lua_State* L)
 }
 
 extern "C"
-NBUNNY_EXPORT int luopen_nbunny_optimaus_skeletonresourcebone(lua_State* L)
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonbone(lua_State* L)
 {
 	sol::usertype<nbunny::SkeletonBone> T(
 		"getName", &nbunny_skeleton_bone_get_name,
@@ -155,17 +158,19 @@ NBUNNY_EXPORT int luopen_nbunny_optimaus_skeletonresourcebone(lua_State* L)
 static int nbunny_skeleton_instance_add_bone(lua_State* L)
 {
 	auto& skeleton = sol::stack::get<nbunny::SkeletonInstance&>(L, 1);
-	auto transform = love::luax_checktype<love::math::Transform>(L, 2, love::math::Transform::type);
+	auto transform = love::luax_checktype<love::math::Transform>(L, 4, love::math::Transform::type);
 	auto inverse_bind_pose = glm::make_mat4(transform->getMatrix().getElements());
-	skeleton.add_bone(luaL_checkstring(L, 2), luaL_optstring(L, 3, ""), inverse_bind_pose);
-	return 0;
+	auto bone = skeleton.add_bone(luaL_checkstring(L, 2), luaL_optstring(L, 3, ""), inverse_bind_pose);
+	sol::stack::push(L, bone);
+	return 1;
 }
 
 extern "C"
-NBUNNY_EXPORT int luopen_nbunny_optimaus_skeletonresourceinstance(lua_State* L)
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresourceinstance(lua_State* L)
 {
 	sol::usertype<nbunny::SkeletonInstance> T(
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
+		sol::call_constructor, sol::constructors<nbunny::SkeletonInstance()>(),
 		"addBone", &nbunny_skeleton_instance_add_bone,
 		"getBoneByName", &nbunny::SkeletonInstance::get_bone_by_name,
 		"getBoneByIndex", &nbunny::SkeletonInstance::get_bone_by_index,

@@ -143,11 +143,10 @@ function SkeletonAnimation:computeTransform(time, transforms, index, localOnly)
 	transform:reset()
 
 	if bone:getParent() and not localOnly then
-		local parentIndex = self.skeleton:getBoneIndex(bone:getParent())
+		local parentIndex = bone:getParentIndex()
 		transform:apply(transforms[parentIndex])
 	end
 
-	--local duration = boneFrame[#boneFrame].time
 	local duration = self:getDuration()
 	local wrappedTime
 	if duration ~= 0 then

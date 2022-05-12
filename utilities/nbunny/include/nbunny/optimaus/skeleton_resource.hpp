@@ -52,13 +52,13 @@ namespace nbunny
 		SkeletonInstance() = default;
 		SkeletonInstance(int id, int reference);
 
-		void add_bone(
+		SkeletonBone add_bone(
 			const std::string& name,
 			const std::string& parent_name,
 			const glm::mat4& inverse_bind_pose);
 
-		const SkeletonBone& get_bone_by_index(int index) const;
-		const SkeletonBone& get_bone_by_name(const std::string& name) const;
+		SkeletonBone get_bone_by_index(int index) const;
+		SkeletonBone get_bone_by_name(const std::string& name) const;
 		int get_bone_index(const std::string& name);
 		std::size_t get_num_bones() const;
 		bool has_bone(const std::string& name);
