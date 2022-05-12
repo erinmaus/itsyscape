@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// nbunny/optimaus/model_resource.hpp
+// nbunny/optimaus/model.hpp
 //
 // This file is a part of ItsyScape.
 //
@@ -10,27 +10,32 @@
 
 #pragma once
 
-#ifndef NBUNNY_OPTIMAUS_MODEL_RESOURCE_HPP
-#define NBUNNY_OPTIMAUS_MODEL_RESOURCE_HPP
+#ifndef NBUNNY_OPTIMAUS_MODEL_HPP
+#define NBUNNY_OPTIMAUS_MODEL_HPP
 
-#include "common/Data.h"
+#include "common/Object.h"
 #include "modules/graphics/Mesh.h"
 #include "nbunny/optimaus/resource.hpp"
 
 namespace nbunny
 {
-    class ModelResourceInstance : public ResourceInstance
+	class ModelResource : public Resource
+	{
+	public:
+		std::shared_ptr<ResourceInstance> instantiate(lua_State* L) override;
+	};
+
+    class ModelInstance : public ResourceInstance
 	{
 	private:
-		std::vector<love::graphics::Mesh::AttribFormat> model_attributes;
-		std::vector<char> data_buffer;
+		love::StrongRef<love::graphics::Mesh> mesh;
 
     public:
-        ModelResourceInstance(
-			int reference,
-			const std::vector<love::graphics::Mesh::AttribFormat>& attributes,
-			const void* data,
-			std::size_t data_size_bytes);
+		ModelInstance() = default;
+        ModelInstance(int id, int reference);
+
+		void setMesh(love::graphics::Mesh* value);
+		love::graphics::Mesh* getMesh() const;
     };
 }
 
