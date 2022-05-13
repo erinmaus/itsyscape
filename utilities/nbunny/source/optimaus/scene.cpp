@@ -249,7 +249,7 @@ const std::shared_ptr<nbunny::ResourceInstance>& nbunny::SceneNodeMaterial::get_
 	return shader;
 }
 
-void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<ResourceInstance>>& value)
+void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<TextureInstance>>& value)
 {
 	textures = value;
 	std::sort(
@@ -261,7 +261,7 @@ void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<R
 		});
 }
 
-const std::vector<std::shared_ptr<nbunny::ResourceInstance>>& nbunny::SceneNodeMaterial::get_textures() const
+const std::vector<std::shared_ptr<nbunny::TextureInstance>>& nbunny::SceneNodeMaterial::get_textures() const
 {
 	return textures;
 }
@@ -432,6 +432,21 @@ nbunny::SceneNodeMaterial& nbunny::SceneNode::get_material()
 const nbunny::SceneNodeMaterial& nbunny::SceneNode::get_material() const
 {
 	return material;
+}
+
+void nbunny::SceneNode::before_draw(Renderer &renderer, float delta)
+{
+	// Nothing.
+}
+
+void nbunny::SceneNode::draw(Renderer& renderer, float delta)
+{
+	// Nothing.
+}
+
+void nbunny::SceneNode::after_draw(Renderer &renderer, float delta)
+{
+	// Nothing.
 }
 
 void nbunny::SceneNode::walk_by_material(
@@ -971,10 +986,10 @@ static int nbunny_scene_node_material_set_textures(lua_State* L)
 {
 	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
 
-	std::vector<std::shared_ptr<nbunny::ResourceInstance>> textures;
+	std::vector<std::shared_ptr<nbunny::TextureInstance>> textures;
 	for (int i = 2; i <= lua_gettop(L); ++i)
 	{
-		textures.push_back(sol::stack::get<std::shared_ptr<nbunny::ResourceInstance>>(L, i));
+		textures.push_back(sol::stack::get<std::shared_ptr<nbunny::TextureInstance>>(L, i));
 	}
 
 	material->set_textures(textures);

@@ -87,7 +87,6 @@ function IsabelleIsland:update(delta)
 	end
 
 	self.squidActorView:update(delta)
-	self.squidActorView:updateAnimations()
 
 	local squidPosition = TitleScreen.performRotate(
 		Vector(-0.5, 0, 1),
