@@ -413,8 +413,9 @@ function Application:draw()
 	if _DEBUG and self.showDebug then
 		love.graphics.setFont(FONT)
 
+		local drawCalls = love.graphics.getStats().drawcalls
 		local width = love.window.getMode()
-		local r = string.format("FPS: %d\n", love.timer.getFPS())
+		local r = string.format("FPS: %d (%d draws)\n", love.timer.getFPS(), drawCalls)
 		local sum = 0
 		for i = 1, #self.times do
 			r = r .. string.format(
