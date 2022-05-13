@@ -97,7 +97,7 @@ function TreeView:load()
 
 				local idleDuration = self.animations[TreeView.ANIMATION_IDLE]:getDuration()
 
-				self.node:onWillRender(function()
+				root:onWillRender(function()
 					local animation = self:getCurrentAnimation()
 					if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and idleDuration <= 1 / 30) or
 					   self.time <= animation:getDuration()

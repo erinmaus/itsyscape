@@ -98,7 +98,15 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
-	if (!node.is_base_type() || !reference)
+	if (!node.is_base_type())
+	{
+		node.before_draw(*this, delta);
+		node.draw(*this, delta);
+		node.after_draw(*this, delta);
+		return;
+	}
+
+	if (!reference)
 	{
 		return;
 	}

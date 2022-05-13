@@ -19,9 +19,11 @@
 #include "nbunny/nbunny.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/resource.hpp"
+#include "nbunny/optimaus/texture.hpp"
 
 namespace nbunny
 {
+	class Renderer;
 	class SceneNode;
 	class Camera;
 
@@ -82,7 +84,7 @@ namespace nbunny
 		SceneNode& scene_node;
 
 		std::shared_ptr<ResourceInstance> shader = std::make_shared<ResourceInstance>();
-		std::vector<std::shared_ptr<ResourceInstance>> textures;
+		std::vector<std::shared_ptr<TextureInstance>> textures;
 
 		bool is_translucent = false;
 		bool is_full_lit = false;
@@ -115,8 +117,8 @@ namespace nbunny
 		void set_shader(const std::shared_ptr<ResourceInstance>& value);
 		const std::shared_ptr<ResourceInstance>& get_shader() const;
 
-		void set_textures(const std::vector<std::shared_ptr<ResourceInstance>>& textures);
-		const std::vector<std::shared_ptr<ResourceInstance>>& get_textures() const;
+		void set_textures(const std::vector<std::shared_ptr<TextureInstance>>& textures);
+		const std::vector<std::shared_ptr<TextureInstance>>& get_textures() const;
 
 		bool operator <(const SceneNodeMaterial& other) const;
 	};
@@ -167,6 +169,10 @@ namespace nbunny
 
 		SceneNodeMaterial& get_material();
 		const SceneNodeMaterial& get_material() const;
+
+		virtual void before_draw(Renderer& renderer, float delta);
+		virtual void draw(Renderer& renderer, float delta);
+		virtual void after_draw(Renderer& renderer, float delta);
 
 		static void walk_by_material(
 			SceneNode& node,
