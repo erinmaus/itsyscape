@@ -26,9 +26,11 @@ Renderer.NodeDebugStats = Class(DebugStats)
 Renderer.PassDebugStats = Class(DebugStats)
 
 function Renderer.NodeDebugStats:process(node, renderer, delta)
+	prof.push("node:draw()", node:getDebugInfo().shortName)
 	node:beforeDraw(renderer, delta)
 	node:draw(renderer, delta)
 	node:afterDraw(renderer, delta)
+	prof.pop()
 end
 
 function Renderer.PassDebugStats:process(pass, scene, delta)
@@ -99,7 +101,9 @@ function Renderer:draw(scene, delta, width, height)
 		width, height = love.window.getMode()
 	end
 
+	prof.push("scene:frame()")
 	scene:frame(delta)
+	prof.pop()
 
 	local projection, view = self.camera:getTransforms()
 	self._renderer:getCamera():update(view, projection)

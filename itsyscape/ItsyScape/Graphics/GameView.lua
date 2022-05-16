@@ -33,7 +33,9 @@ GameView.MAP_MESH_DIVISIONS = 16
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
+	prof.push("prop:update()", node:getDebugInfo().shortName)
 	node:update(delta)
+	prof.pop()
 end
 
 function GameView:new(game)

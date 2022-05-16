@@ -225,26 +225,8 @@ function WidgetRenderManager:draw(widget, state, cursor)
 end
 
 function WidgetRenderManager:drawChildren(widget, state, cursor)
-	local c = {}
-	for index, child in widget:iterate() do
-		table.insert(c, {
-			index = index,
-			widget = child
-		})
-	end
-
-	table.sort(c, function(a, b)
-		local i = a.widget:getZDepth()
-		local j = b.widget:getZDepth()
-		if i < j then
-			return true
-		elseif i == j then
-			return a.index < b.index
-		end
-	end)
-
-	for i = 1, #c do
-		self:draw(c[i].widget, state, cursor)
+	for _, child in widget:zIterate() do
+		self:draw(child, state, cursor)
 	end
 end
 
