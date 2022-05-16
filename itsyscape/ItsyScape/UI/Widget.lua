@@ -147,7 +147,7 @@ end
 function Widget:addChild(child)
 	if child.parent then
 		child.parent:removeChild(child)
-		child.parent._zDepthDirty = true
+		child.parent:_markZDepthDirty()
 	end
 
 	self.childProperties[child] = {}
@@ -155,7 +155,7 @@ function Widget:addChild(child)
 	child.onZDepthChange:register(self._onZDepthChange, self)
 	child.parent = self
 
-	self._zDepthDirty = true
+	self:_markZDepthDirty()
 end
 
 function Widget:removeChild(child)
@@ -164,6 +164,7 @@ function Widget:removeChild(child)
 			table.remove(self.children, i)
 			child.parent = nil
 			child.onZDepthChange:unregister(self._onZDepthChange)
+			self:_markZDepthDirty()
 			self.childProperties[child] = nil
 			return true
 		end
@@ -218,6 +219,8 @@ function Widget:zIterate()
 		for i = 1, #c do
 			table.insert(self.zSortedChildren, c[i].widget)
 		end
+
+		self._zDepthDirty = false
 	end
 
 	return ipairs(self.zSortedChildren)
@@ -345,7 +348,11 @@ function Widget:getZDepth()
 	return self.zDepth
 end
 
-function Widget._onZDepthChange(child, value)
+function Widget:_onZDepthChange(child, value)
+	self._zDepthDirty = true
+end
+
+function Widget:_markZDepthDirty()
 	self._zDepthDirty = true
 end
 
