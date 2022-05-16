@@ -31,7 +31,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_textureresource(lua_State* L)
 {
 	sol::usertype<nbunny::TextureResource> T(
 		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::constructors<nbunny::TextureResource()>(),
+		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::TextureResource>),
 		"instantiate", &nbunny_texture_resource_instantiate);
 
 	sol::stack::push(L, T);

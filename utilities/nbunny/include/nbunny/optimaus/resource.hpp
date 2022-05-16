@@ -52,4 +52,10 @@ namespace nbunny
 	};
 }
 
+template <typename Resource>
+std::shared_ptr<Resource> nbunny_resource_create()
+{
+	return std::make_shared<Resource>();
+}
+
 #endif

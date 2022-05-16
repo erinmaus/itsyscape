@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local NSkeletonResource = require "nbunny.optimaus.skeletonresource"
+
 local SkeletonResource = Resource(NSkeletonResource)
 
 -- Basic SkeletonResource resource class.

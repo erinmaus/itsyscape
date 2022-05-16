@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 local NSkeletonBone = require "nbunny.optimaus.skeletonbone"
 local NSkeletonResourceInstance = require "nbunny.optimaus.skeletonresourceinstance"
+local NSkeletonTransforms = require "nbunny.optimaus.skeletontransforms"
+local NSkeletonTransformsFilter = require "nbunny.optimaus.skeletontransformsfilter"
 
 local Skeleton = Class()
 Skeleton.Bone = Class()
@@ -52,6 +54,82 @@ function Skeleton.Bone:getInverseBindPose()
 	return self:getHandle():getInverseBindPose()
 end
 
+Skeleton.Transforms = Class()
+function Skeleton.Transforms:new(transforms, skeleton)
+	self._transform = transforms
+	self.skeleton = skeleton
+end
+
+function Skeleton.Transforms:getHandle()
+	return self._transform
+end
+
+function Skeleton.Transforms:getSkeleton()
+	return self.Skeleton
+end
+
+function Skeleton.Transforms:applyTransform(index, transform)
+	self:getHandle():applyTransform(index, transform)
+end
+
+function Skeleton.Transforms:setTransform(index, transform)
+	self:getHandle():setTransform(index, transform)
+end
+
+function Skeleton.Transforms:setIdentity(index)
+	self:getHandle():setIdentity(index)
+end
+
+function Skeleton.Transforms:getTransform(index)
+	return self:getHandle():getTransform(index)
+end
+
+function Skeleton.Transforms:getTransforms()
+	return self:getHandle():getTransforms()
+end
+
+function Skeleton.Transforms:reset()
+	return self:getHandle():reset()
+end
+
+function Skeleton.Transforms:copy(other)
+	self:getHandle():copy(other:getHandle())
+end
+
+Skeleton.TransformsFilter = Class()
+function Skeleton.TransformsFilter:new(filter, skeleton)
+	self._filter = filter
+	self.skeleton = skeleton
+end
+
+function Skeleton.TransformsFilter:getHandle()
+	return self._filter
+end
+
+function Skeleton.TransformsFilter:enableAllBones()
+	self:getHandle():enableAllBones()
+end
+
+function Skeleton.TransformsFilter:disableAllBones()
+	self:getHandle():disableAllBones()
+end
+
+function Skeleton.TransformsFilter:enableBoneAtIndex(index)
+	self:getHandle():enableBoneAtIndex(index)
+end
+
+function Skeleton.TransformsFilter:disableBoneAtIndex(index)
+	self:getHandle():disableBoneAtIndex(index)
+end
+
+function Skeleton.TransformsFilter:isEnabled(index)
+	return self:getHandle():isEnabled(index)
+end
+
+function Skeleton.TransformsFilter:isDisabled(index)
+	return self:getHandle():isDisabled(index)
+end
+
 function Skeleton:new(d, handle)
 	self.bones = {}
 	self.bonesByName = {}
@@ -67,6 +145,14 @@ end
 
 function Skeleton:getHandle()
 	return self._handle
+end
+
+function Skeleton:createTransforms()
+	return Skeleton.Transforms(NSkeletonTransforms(self:getHandle()), self)
+end
+
+function Skeleton:createFilter()
+	return Skeleton.TransformsFilter(NSkeletonTransformsFilter(self:getHandle()), self)
 end
 
 function Skeleton:addBone(name, parent, inverseBindPose)
@@ -91,6 +177,14 @@ end
 
 function Skeleton:getNumBones()
 	return self:getHandle():getNumBones()
+end
+
+function Skeleton:applyTransforms(transforms)
+	self:getHandle():applyTransforms(transforms:getHandle())
+end
+
+function Skeleton:applyBindPose(transforms)
+	self:getHandle():applyBindPose(transforms:getHandle())
 end
 
 function Skeleton:iterate()

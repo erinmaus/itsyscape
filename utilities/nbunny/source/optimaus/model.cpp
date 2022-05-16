@@ -35,7 +35,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresource(lua_State* L)
 {
 	sol::usertype<nbunny::ModelResource> T(
 		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::constructors<nbunny::ModelResource()>(),
+		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::ModelResource>),
 		"instantiate", &nbunny_model_resource_instantiate);
 
 	sol::stack::push(L, T);
