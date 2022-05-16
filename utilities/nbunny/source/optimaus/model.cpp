@@ -137,8 +137,18 @@ void nbunny::ModelSceneNode::set_transforms(const std::vector<glm::mat4>& value)
 	transforms = value;
 }
 
+void nbunny::ModelSceneNode::set_transforms(const std::shared_ptr<nbunny::SkeletonTransforms>& value)
+{
+	skeleton_transforms = value;
+}
+
 const std::vector<glm::mat4>& nbunny::ModelSceneNode::get_transforms() const
 {
+	if (skeleton_transforms)
+	{
+		return skeleton_transforms->get_transforms();
+	}
+
 	return transforms;
 }
 
@@ -154,11 +164,12 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 	auto bones_uniform = shader->getUniformInfo("scape_Bones");
 	if (bones_uniform)
 	{
+		auto& t = get_transforms();
 		std::memcpy(
 			bones_uniform->floats,
-			glm::value_ptr(transforms[0]),
-			std::min(bones_uniform->dataSize, transforms.size() * sizeof(glm::mat4)));
-		shader->updateUniform(bones_uniform, transforms.size());
+			glm::value_ptr(t[0]),
+			std::min(bones_uniform->dataSize, t.size() * sizeof(glm::mat4)));
+		shader->updateUniform(bones_uniform, t.size());
 	}
 
 	const auto& textures = get_material().get_textures();
@@ -211,20 +222,27 @@ static int nbunny_model_scene_node_get_model(lua_State* L)
 static int nbunny_model_scene_node_set_transforms(lua_State* L)
 {
 	auto& node = sol::stack::get<nbunny::ModelSceneNode&>(L, 1);
-	std::size_t length = lua_objlen(L, 2);
 
-	std::vector<glm::mat4> transforms;
-	for (std::size_t i = 1; i <= length; ++i)
+	if (lua_istable(L, 2))
 	{
-		lua_rawgeti(L, 2, i);
+		std::size_t length = lua_objlen(L, 2);
 
-		auto transform = love::luax_checktype<love::math::Transform>(L, -1);
-		transforms.push_back(glm::make_mat4(transform->getMatrix().getElements()));
+		std::vector<glm::mat4> transforms;
+		for (std::size_t i = 1; i <= length; ++i) {
+			lua_rawgeti(L, 2, i);
 
-		lua_pop(L, 1);
+			auto transform = love::luax_checktype<love::math::Transform>(L, -1);
+			transforms.push_back(glm::make_mat4(transform->getMatrix().getElements()));
+
+			lua_pop(L, 1);
+		}
+
+		node.set_transforms(transforms);
 	}
-
-	node.set_transforms(transforms);
+	else
+	{
+		node.set_transforms(sol::stack::get<std::shared_ptr<nbunny::SkeletonTransforms>>(L, 2));
+	}
 
 	return 0;
 }

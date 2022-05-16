@@ -18,6 +18,7 @@
 #include "modules/graphics/Mesh.h"
 #include "nbunny/optimaus/resource.hpp"
 #include "nbunny/optimaus/scene.hpp"
+#include "nbunny/optimaus/skeleton_resource.hpp"
 
 namespace nbunny
 {
@@ -45,6 +46,7 @@ namespace nbunny
 	private:
 		std::shared_ptr<ModelInstance> model;
 		std::vector<glm::mat4> transforms;
+		std::shared_ptr<SkeletonTransforms> skeleton_transforms;
 
 	public:
 		static const Type<ModelSceneNode> type_pointer;
@@ -58,6 +60,7 @@ namespace nbunny
 		const std::shared_ptr<ModelInstance>& get_model() const;
 
 		void set_transforms(const std::vector<glm::mat4>& value);
+		void set_transforms(const std::shared_ptr<nbunny::SkeletonTransforms>& value);
 		const std::vector<glm::mat4>& get_transforms() const;
 
 		void draw(Renderer& renderer, float delta) override;

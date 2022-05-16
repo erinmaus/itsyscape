@@ -349,6 +349,7 @@ function ActorView:applySkin(slotNodes)
 
 						slot.sceneNode:setParent(self.sceneNode)
 						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
+						slot.sceneNode:setTransforms(self.animatable:getTransforms())
 
 						local lights = slot.instance:getLights()
 						if #lights > 0 then
@@ -623,12 +624,6 @@ function ActorView:updateAnimations(delta)
 	local skeleton = self.animatable:getSkeleton()
 	skeleton:applyTransforms(transforms)
 	skeleton:applyBindPose(transforms)
-
-	for model in pairs(self.models) do
-		model:setTransforms(transforms:getTransforms())
-	end
-
-	self.animationsDirty = false
 end
 
 return ActorView
