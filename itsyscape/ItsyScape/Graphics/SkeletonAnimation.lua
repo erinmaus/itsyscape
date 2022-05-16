@@ -115,7 +115,7 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 		end
 
 		if skeleton then
-			self:getHandle():setKeyFrames(skeleton:getBoneIndex(boneName), boneFrameHandles)
+			self:getHandle():setKeyFrames(skeleton:getBoneIndex(boneName) - 1, boneFrameHandles)
 		end
 
 		self.bones[boneName] = boneFrames

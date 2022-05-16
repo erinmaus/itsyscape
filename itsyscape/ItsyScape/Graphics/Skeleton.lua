@@ -69,19 +69,19 @@ function Skeleton.Transforms:getSkeleton()
 end
 
 function Skeleton.Transforms:applyTransform(index, transform)
-	self:getHandle():applyTransform(index, transform)
+	self:getHandle():applyTransform(index - 1, transform)
 end
 
 function Skeleton.Transforms:setTransform(index, transform)
-	self:getHandle():setTransform(index, transform)
+	self:getHandle():setTransform(index - 1, transform)
 end
 
 function Skeleton.Transforms:setIdentity(index)
-	self:getHandle():setIdentity(index)
+	self:getHandle():setIdentity(index - 1)
 end
 
 function Skeleton.Transforms:getTransform(index)
-	return self:getHandle():getTransform(index)
+	return self:getHandle():getTransform(index - 1)
 end
 
 function Skeleton.Transforms:getTransforms()
@@ -115,19 +115,19 @@ function Skeleton.TransformsFilter:disableAllBones()
 end
 
 function Skeleton.TransformsFilter:enableBoneAtIndex(index)
-	self:getHandle():enableBoneAtIndex(index)
+	self:getHandle():enableBoneAtIndex(index - 1)
 end
 
 function Skeleton.TransformsFilter:disableBoneAtIndex(index)
-	self:getHandle():disableBoneAtIndex(index)
+	self:getHandle():disableBoneAtIndex(index - 1)
 end
 
 function Skeleton.TransformsFilter:isEnabled(index)
-	return self:getHandle():isEnabled(index)
+	return self:getHandle():isEnabled(index - 1)
 end
 
 function Skeleton.TransformsFilter:isDisabled(index)
-	return self:getHandle():isDisabled(index)
+	return self:getHandle():isDisabled(index - 1)
 end
 
 function Skeleton:new(d, handle)

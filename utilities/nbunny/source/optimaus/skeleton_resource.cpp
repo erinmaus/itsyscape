@@ -113,7 +113,8 @@ void nbunny::SkeletonInstance::apply_transforms(SkeletonTransforms& transforms) 
 		}
 
 		auto parent_transform = transforms.get_transform(parent_index);
-		transforms.apply_transform(bone.index, parent_transform);
+		auto bone_transform = transforms.get_transform(bone.index);
+		transforms.set_transform(bone.index, parent_transform * bone_transform);
 	}
 }
 
@@ -290,17 +291,20 @@ void nbunny::SkeletonAnimationInstance::compute_local_transform(
 	SkeletonTransforms &transforms) const
 {
 	auto wrapped_time = std::fmod(time, duration);
+
 	auto& key_frames = bones.at(bone_index);
 
 	std::size_t current_index = 0;
-	for (std::size_t j = 0; j < key_frames.size(); ++j)
+	for (std::size_t i = 0; i < key_frames.size(); ++i)
 	{
-		if (wrapped_time > key_frames[j].time)
+		if (wrapped_time > key_frames[i].time)
+		{
+			current_index = i;
+		}
+		else
 		{
 			break;
 		}
-
-		current_index = j;
 	}
 
 	std::size_t next_index = (current_index + 1) % key_frames.size();
