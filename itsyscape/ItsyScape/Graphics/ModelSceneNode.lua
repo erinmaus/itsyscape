@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local NModelSceneNode = require "nbunny.optimaus.scenenode.modelscenenode"
 
 local ModelSceneNode = Class(SceneNode)
@@ -55,7 +56,11 @@ end
 --
 -- Transforms is expected to be an array of love.math.Transform objects.
 function ModelSceneNode:setTransforms(transforms)
-	self:getHandle():setTransforms(transforms)
+	if Class.isCompatibleType(transforms, Skeleton.Transforms) then
+		self:getHandle():setTransforms(transforms:getHandle())
+	else
+		self:getHandle():setTransforms(transforms)
+	end
 end
 
 -- Sets identity bone transforms.
