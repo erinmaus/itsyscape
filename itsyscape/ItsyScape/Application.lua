@@ -131,9 +131,7 @@ end
 
 function Application:measure(name, func, ...)
 	local before = love.timer.getTime()
-	prof.push(name)
 	func(...)
-	prof.pop(name)
 	local after = love.timer.getTime()
 
 	local index
@@ -354,60 +352,98 @@ function Application:getFrameDelta()
 	end
 end
 
-function Application:draw()
+function Application:drawDebug()
+	if not _DEBUG or not self.showDebug then
+		return
+	end
+
+	love.graphics.setFont(FONT)
+
+	local drawCalls = love.graphics.getStats().drawcalls
+	local width = love.window.getMode()
+	local r = string.format("FPS: %d (%d draws, %d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
+	local sum = 0
+	for i = 1, #self.times do
+		r = r .. string.format(
+			"%s: %.04f (%010d)\n",
+			self.times[i].name,
+			self.times[i].value,
+			1 / self.times[i].value)
+		sum = sum + self.times[i].value
+	end
+	if 1 / sum < 60 then
+		r = r .. string.format(
+				"!!! sum: %.04f (%010d)\n",
+				sum,
+				1 / sum)
+	else
+		r = r .. string.format(
+				"sum: %.04f (%010d)\n",
+				sum,
+				1 / sum)
+	end
+
+	love.graphics.printf(
+		r,
+		width - 600,
+		0,
+		600,
+		'right')
+end
+
+function Application:_draw()
 	local width, height = love.window.getMode()
-	local function draw()
-		local delta = self:getFrameDelta()
+	self.camera:setWidth(width)
+	self.camera:setHeight(height)
 
-		self.camera:setWidth(width)
-		self.camera:setHeight(height)
-
-		do
-			if self.show3D then
-				prof.push("gameView:draw()")
-				self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
-				prof.pop()
-			end
-
-			self.gameView:getRenderer():present()
-
-			if self.show2D then
-				self.gameView:getSpriteManager():draw(self.camera, delta)
-			end
+	local delta = self:getFrameDelta()
+	do
+		if self.show3D then
+			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
 		end
 
-		love.graphics.setBlendMode('alpha')
-		love.graphics.origin()
-		love.graphics.ortho(width, height)
+		self.gameView:getRenderer():present()
 
 		if self.show2D then
-			prof.push("uiView:draw()")
-			self.uiView:draw()
-			prof.pop()
-		end
-
-		if self.clickActionTime > 0 then
-			local color
-			if self.clickActionType == Application.CLICK_WALK then
-				color = Color(1, 1, 0, 0.25)
-			else
-				color = Color(1, 0, 0, 0.25)
-			end
-
-			local mu = Tween.powerEaseInOut(
-				self.clickActionTime / Application.CLICK_DURATION,
-				3)
-			local oldColor = { love.graphics.getColor() }
-			love.graphics.setColor(color:get())
-			love.graphics.circle(
-				'fill',
-				self.clickX, self.clickY,
-				mu * Application.CLICK_RADIUS)
-			love.graphics.setColor(unpack(oldColor))
+			self.gameView:getSpriteManager():draw(self.camera, delta)
 		end
 	end
 
-	local s, r = xpcall(function() self:measure('draw', draw) end, debug.traceback)
+	love.graphics.setBlendMode('alpha')
+	love.graphics.origin()
+	love.graphics.ortho(width, height)
+
+	if self.show2D then
+		self.uiView:draw()
+	end
+
+	if self.clickActionTime > 0 then
+		local color
+		if self.clickActionType == Application.CLICK_WALK then
+			color = Color(1, 1, 0, 0.25)
+		else
+			color = Color(1, 0, 0, 0.25)
+		end
+
+		local mu = Tween.powerEaseInOut(
+			self.clickActionTime / Application.CLICK_DURATION,
+			3)
+		local oldColor = { love.graphics.getColor() }
+		love.graphics.setColor(color:get())
+		love.graphics.circle(
+			'fill',
+			self.clickX, self.clickY,
+			mu * Application.CLICK_RADIUS)
+		love.graphics.setColor(unpack(oldColor))
+	end
+end
+
+local function draw()
+	_APP:_draw()
+end
+
+function Application:draw()
+	local s, r = xpcall(self.measure, debug.traceback, self, 'draw', draw)
 	if not s then
 		love.graphics.setBlendMode('alpha')
 		love.graphics.origin()
@@ -416,40 +452,7 @@ function Application:draw()
 		error(r, 0)
 	end
 
-	if _DEBUG and self.showDebug then
-		love.graphics.setFont(FONT)
-
-		local drawCalls = love.graphics.getStats().drawcalls
-		local width = love.window.getMode()
-		local r = string.format("FPS: %d (%d draws, %d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
-		local sum = 0
-		for i = 1, #self.times do
-			r = r .. string.format(
-				"%s: %.04f (%010d)\n",
-				self.times[i].name,
-				self.times[i].value,
-				1 / self.times[i].value)
-			sum = sum + self.times[i].value
-		end
-		if 1 / sum < 60 then
-			r = r .. string.format(
-					"!!! sum: %.04f (%010d)\n",
-					sum,
-					1 / sum)
-		else
-			r = r .. string.format(
-					"sum: %.04f (%010d)\n",
-					sum,
-					1 / sum)
-		end
-
-		love.graphics.printf(
-			r,
-			width - 600,
-			0,
-			600,
-			'right')
-	end
+	self:drawDebug()
 
 	self.frames = self.frames + 1
 	local currentTime = love.timer.getTime()

@@ -1,8 +1,5 @@
 require "bootstrap"
 
-PROF_CAPTURE = true
-prof = require "jprof"
-
 _ARGS = {}
 
 _ANALYTICS = false
@@ -98,8 +95,6 @@ end
 
 function love.update(delta)
 	if _APP then
-		prof.enabled(_DEBUG)
-		prof.push("frame")
 		_APP:update(delta)
 	end
 end
@@ -164,7 +159,6 @@ end
 function love.draw()
 	if _APP then
 		_APP:draw()
-		prof.pop("frame")
 	end
 end
 
@@ -190,10 +184,12 @@ function love.quit()
 	end
 
 	if _DEBUG then
+		local DebugStats = require "ItsyScape.Graphics.DebugStats"
+
 		_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
 		_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
 		_APP:getGameView():dumpStatsToCSV()
-		prof.write("prof.mpack")
+		DebugStats.GLOBAL:dumpStatsToCSV("Global")
 	end
 
 	return result

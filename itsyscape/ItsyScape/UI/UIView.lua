@@ -277,6 +277,7 @@ function UIView:draw()
 	local width, height = self:getMode()
 	self.root:setSize(width, height)
 
+
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.ortho(love.window.getMode())

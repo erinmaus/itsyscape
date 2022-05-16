@@ -560,6 +560,7 @@ function DemoApplication:draw(delta)
 		self.titleScreen:draw()
 
 		self:getUIView():draw()
+		self:drawDebug()
 	else
 		Application.draw(self, delta)
 	end

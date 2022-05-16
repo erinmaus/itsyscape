@@ -80,12 +80,9 @@ function LocalGameManager:receive()
 	repeat
 		e = self.inputChannel:pop()
 		if e then
-			e = buffer.decode(e)
-			table.insert(self.pending, e)
-			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
-				self:flush()
-				return true
-			end
+			self.pending = buffer.decode(e)
+			self:flush()
+			return true
 		end
 	until e == nil
 	return false

@@ -31,6 +31,9 @@ function RemoteGameManager:new(inputChannel, outputChannel, ...)
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
 
+	self.pending = {}
+	self.outgoing = {}
+
 	self:registerInterface("ItsyScape.Game.Model.Actor", RemoteActor)
 	self:registerInterface("ItsyScape.Game.Model.Game", RemoteGame)
 	self:registerInterface("ItsyScape.Game.Model.Stage", RemoteStage)
@@ -72,18 +75,20 @@ function RemoteGameManager:new(inputChannel, outputChannel, ...)
 	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
 	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
-	self.pending = {}
-
 	self.onTick = Callback()
 end
 
 function RemoteGameManager:push(e)
-	self.outputChannel:push(buffer.encode(e))
+	table.insert(self.outgoing, e)
+
+	if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+		self:send()
+	end
 end
 
 function RemoteGameManager:send()
-	-- Nothing for now.
-	-- We immediately send events via 'push' as we receive them.
+	self.outputChannel:push(buffer.encode(self.outgoing))
+	self.outgoing = {}
 end
 
 function RemoteGameManager:receive()
@@ -94,8 +99,8 @@ function RemoteGameManager:receive()
 			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
-				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				self:flush()
+				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				return true
 			end
 		end
