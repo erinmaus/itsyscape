@@ -43,4 +43,8 @@ do
 	B._ROOT = "ItsyScape.Mashina"
 end
 
+do
+	table.clear = require "table.clear"
+end
+
 Log = require "ItsyScape.Common.Log"

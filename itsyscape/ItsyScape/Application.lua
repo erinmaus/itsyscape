@@ -131,7 +131,9 @@ end
 
 function Application:measure(name, func, ...)
 	local before = love.timer.getTime()
+	prof.push(name)
 	func(...)
+	prof.pop(name)
 	local after = love.timer.getTime()
 
 	local index
@@ -362,7 +364,9 @@ function Application:draw()
 
 		do
 			if self.show3D then
+				prof.push("gameView:draw()")
 				self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+				prof.pop()
 			end
 
 			self.gameView:getRenderer():present()
@@ -377,7 +381,9 @@ function Application:draw()
 		love.graphics.ortho(width, height)
 
 		if self.show2D then
+			prof.push("uiView:draw()")
 			self.uiView:draw()
+			prof.pop()
 		end
 
 		if self.clickActionTime > 0 then
@@ -415,7 +421,7 @@ function Application:draw()
 
 		local drawCalls = love.graphics.getStats().drawcalls
 		local width = love.window.getMode()
-		local r = string.format("FPS: %d (%d draws)\n", love.timer.getFPS(), drawCalls)
+		local r = string.format("FPS: %d (%d draws, %d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
 		local sum = 0
 		for i = 1, #self.times do
 			r = r .. string.format(
