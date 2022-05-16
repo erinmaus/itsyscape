@@ -78,7 +78,7 @@ function Animatable:getComposedTransform(attach)
 		until not bone
 
 		for i = 1, #parents do
-			transform:apply(transforms[parents[i]])
+			transform:apply(transforms:getTransform(parents[i]))
 		end
 	end
 

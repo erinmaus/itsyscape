@@ -24,10 +24,14 @@ local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
 function ActorView.Animatable:new(actor)
 	self.actor = actor
-	self.transforms = {}
 	self.animations = {}
 	self.sceneNodes = {}
 	self.sounds = {}
+	self:_newTransforms()
+end
+
+function ActorView.Animatable:_newTransforms()
+	self.transforms = self:getSkeleton():createTransforms()
 end
 
 function ActorView.Animatable:setColor(value)
@@ -91,16 +95,6 @@ function ActorView.Animatable:getResourceManager()
 end
 
 function ActorView.Animatable:getTransforms()
-	local skeleton = self:getSkeleton()
-	local numBones = skeleton:getNumBones()
-	if #self.transforms ~= numBones then
-		for i = 1, numBones do
-			if not self.transforms[i] then
-				self.transforms[i] = love.math.newTransform()
-			end
-		end
-	end
-
 	return self.transforms
 end
 
@@ -112,25 +106,8 @@ function ActorView.Animatable:setTransforms(transforms, animation, time)
 	end
 end
 
-function ActorView.Animatable:getAnimationForBone(index)
-	local a = self.animations[index]
-	if not a then
-		return nil, nil
-	else
-		return unpack(self.animations[index])
-	end
-end
-
-function ActorView.Animatable:setTransform(index, transform, animation, time)
-	for i = 1, index do
-		if self.transforms[index] == nil then
-			self.transforms[index] = love.math.newTransform()
-		end
-	end
-
-	self.transforms[index]:reset()
-	self.transforms[index]:apply(transform)
-	self.animations[index] = { animation, time }
+function ActorView.Animatable:setTransform(index, transform)
+	self.transforms:setTransform(index, transform)
 end
 
 function ActorView.Animatable:update()
@@ -245,6 +222,18 @@ function ActorView:getLayer()
 	return self.layer
 end
 
+function ActorView:sortAnimations()
+	self.sortedAnimations = {}
+	do
+		for slot, animation in pairs(self.animations) do
+			if animation.instance then
+				table.insert(self.sortedAnimations, { value = animation, key = slot })
+			end
+		end
+		table.sort(self.sortedAnimations, function(a, b) return a.value.priority < b.value.priority end)
+	end
+end
+
 function ActorView:playAnimation(slot, animation, priority, time)
 	-- TODO blending
 	local a = self.animations[slot] or {}
@@ -272,6 +261,8 @@ function ActorView:playAnimation(slot, animation, priority, time)
 				a.instance = a.definition:play(self.animatable)
 				a.time = time or 0
 				a.priority = priority or -math.huge
+
+				self:sortAnimations()
 			end
 
 			self.animations[slot] = a
@@ -423,6 +414,9 @@ end
 function ActorView:transmogrify(body)
 	self.body = body:load()
 
+	self.animatable:_newTransforms()
+	self.localTransforms = self.body:getSkeleton():createTransforms()
+
 	for _, slotNodes in pairs(self.skins) do
 		self:applySkin(slotNodes)
 	end
@@ -546,7 +540,11 @@ end
 function ActorView:getLocalBoneTransform(boneName)
 	local transform = love.math.newTransform()
 
-	local transforms = self.localTransforms or {}
+	if not self.localTransforms then
+		return transform
+	end
+
+	local transforms = self.localTransforms
 	local skeleton = self.animatable:getSkeleton()
 	local boneIndex = skeleton:getBoneIndex(boneName)
 
@@ -563,7 +561,7 @@ function ActorView:getLocalBoneTransform(boneName)
 	until not bone
 
 	for i = 1, #parents do
-		local t = transforms[parents[i]]
+		local t = transforms:getTransform(parents[i])
 		if t then
 			transform:apply(t)
 		end
@@ -573,16 +571,10 @@ function ActorView:getLocalBoneTransform(boneName)
 end
 
 function ActorView:updateAnimations(delta)
-	local animations = {}
-	do
-		for slot, animation in pairs(self.animations) do
-			if animation.instance then
-				table.insert(animations, { value = animation, key = slot })
-			end
-		end
-		table.sort(animations, function(a, b) return a.value.priority < b.value.priority end)
-	end
+	local transforms = self.animatable:getTransforms()
+	transforms:reset()
 
+	local animations = self.sortedAnimations or {}
 	for index, a in ipairs(animations) do
 		local animation = a.value
 		local slot = a.key
@@ -624,33 +616,16 @@ function ActorView:updateAnimations(delta)
 		end
 	end
 
-	local transforms = self.animatable:getTransforms()
-	do
-		self.localTransforms = {}
-		for i = 1, #transforms do
-			self.localTransforms[i] = love.math.newTransform()
-			self.localTransforms[i]:apply(transforms[i])
-		end
+	if self.localTransforms then
+		transforms:copy(self.localTransforms)
 	end
 
-	do
-		for i = 1, #transforms do
-			local animation, time = self.animatable:getAnimationForBone(i)
-			if animation then
-				animation:computeTransform(time, transforms, i)
-			end
-		end
-
-		for i = 1, #transforms do
-			local animation, time = self.animatable:getAnimationForBone(i)
-			if animation then
-				animation:applyBindPose(time, transforms, i)
-			end
-		end
-	end
+	local skeleton = self.animatable:getSkeleton()
+	skeleton:applyTransforms(transforms)
+	skeleton:applyBindPose(transforms)
 
 	for model in pairs(self.models) do
-		model:setTransforms(self.animatable:getTransforms())
+		model:setTransforms(transforms:getTransforms())
 	end
 
 	self.animationsDirty = false
