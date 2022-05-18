@@ -276,17 +276,7 @@ function PlayerSelect:newPlayer(player)
 	storage:getRoot():set("filename", filename)
 
 	game:getPlayer():spawn(storage)
-	game:tick()
-
-	game:getStage():movePeep(
-		game:getPlayer():getActor():getPeep(),
-		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
-		"jenkins_state=1," ..
-		"i=16," ..
-		"j=16," ..
-		"shore=IsabelleIsland_FarOcean_Cutscene," ..
-		"shoreAnchor=Anchor_Spawn",
-		"Anchor_Spawn")
+	game:getPlayer():newGame()
 
 	self.application:closeTitleScreen()
 

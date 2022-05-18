@@ -479,6 +479,10 @@ function Peep:ready(director, game)
 	self.finalized = true
 end
 
+function Peep:getIsReady()
+	return self.isReady
+end
+
 -- Returns true if the Peep was poofed, false otherwise.
 function Peep:wasPoofed()
 	return self.poofed == true

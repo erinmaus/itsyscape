@@ -14,6 +14,7 @@ local Property = require "ItsyScape.Game.RPC.Property"
 local PlayerProxy = {}
 
 PlayerProxy.spawn = Event.ClientToServerRPC(Event.Argument("storage"))
+PlayerProxy.newGame = Event.ClientToServerRPC()
 PlayerProxy.save = Event.ClientToServerRPC()
 
 PlayerProxy.getActor = Property()
