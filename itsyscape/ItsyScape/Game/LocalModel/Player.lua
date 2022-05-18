@@ -44,7 +44,7 @@ function LocalPlayer:new(game, stage)
 	self.id = 0
 end
 
-function LocalPlayer:spawn(storage)
+function LocalPlayer:spawn(storage, newGame)
 	self.id = self.id + 1
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
@@ -59,20 +59,33 @@ function LocalPlayer:spawn(storage)
 		p.id = self.id
 
 		actor:getPeep():listen('finalize', function()
-			Utility.UI.openGroup(actor:getPeep(), Utility.UI.Groups.WORLD)
-			local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
-			if storage:hasSection("Location") then
-				local location = storage:getSection("Location")
-				if location:get("name") then
-					self.stage:movePeep(
-						actor:getPeep(),
-						location:get("name"),
-						Vector(
-							location:get("x"),
-							location:get("y"),
-							location:get("z")),
-						true)
-					return
+			if newGame then
+				self.stage:movePeep(
+					actor:getPeep(),
+					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
+					"jenkins_state=1," ..
+					"i=16," ..
+					"j=16," ..
+					"shore=IsabelleIsland_FarOcean_Cutscene," ..
+					"shoreAnchor=Anchor_Spawn",
+					"Anchor_Spawn")
+				actor:getPeep():pushPoke('bootstrapComplete')
+			else
+				local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
+				if storage:hasSection("Location") then
+					local location = storage:getSection("Location")
+					if location:get("name") then
+						self.stage:movePeep(
+							actor:getPeep(),
+							location:get("name"),
+							Vector(
+								location:get("x"),
+								location:get("y"),
+								location:get("z")),
+							true)
+							actor:getPeep():pushPoke('bootstrapComplete')
+						return
+					end
 				end
 			end
 		end)
@@ -83,18 +96,6 @@ function LocalPlayer:spawn(storage)
 	end
 
 	self:changeCamera("Default")
-end
-
-function LocalPlayer:newGame()
-	self.game:getStage():movePeep(
-		self:getActor():getPeep(),
-		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
-		"jenkins_state=1," ..
-		"i=16," ..
-		"j=16," ..
-		"shore=IsabelleIsland_FarOcean_Cutscene," ..
-		"shoreAnchor=Anchor_Spawn",
-		"Anchor_Spawn")
 end
 
 function Player:save()
