@@ -10,6 +10,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+uniform Image scape_ColorTexture;
 uniform Image scape_PositionTexture;
 
 uniform vec2 scape_FogParameters;
@@ -22,7 +23,7 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	float alpha = Texel(texture, textureCoordinate).a;
+	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz - scape_CameraEye;
 	float length = length(position);
 	float factor = 1.0 - clamp((scape_FogParameters.y - length) / (scape_FogParameters.y - scape_FogParameters.x), 0.0, 1.0);
