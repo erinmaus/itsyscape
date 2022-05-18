@@ -81,9 +81,9 @@ function PlayerInventory:setNumItems(value)
 				local button = DraggableButton()
 				local icon = ItemIcon()
 				icon:setData('index', i)
-				icon:bind("itemID", "items[{index}].id")
-				icon:bind("itemCount", "items[{index}].count")
-				icon:bind("itemIsNoted", "items[{index}].noted")
+				--icon:bind("itemID", "items[{index}].id")
+				--icon:bind("itemCount", "items[{index}].count")
+				--icon:bind("itemIsNoted", "items[{index}].noted")
 				icon:setSize(
 					PlayerInventory.ICON_SIZE,
 					PlayerInventory.ICON_SIZE)

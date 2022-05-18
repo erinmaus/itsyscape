@@ -27,6 +27,8 @@ namespace nbunny
 		float ambient_coefficient = 0.0f;
 		float cone_angle = 360.0f;
 		glm::vec3 cone_direction = glm::vec3(0, 1, 0);
+		float near_distance = 0.0f;
+		float far_distance = 0.0f;
 	};
 
 	class LightSceneNode : public SceneNode
@@ -122,6 +124,47 @@ namespace nbunny
 		float get_current_attenuation() const;
 		void set_previous_attenuation(float value);
 		float get_previous_attenuation() const;
+
+		void to_light(Light& light, float delta) const override;
+
+		void tick() override;
+	};
+
+	class FogSceneNode : public LightSceneNode
+	{
+	public:
+		enum FollowMode
+		{
+			FOLLOW_MODE_EYE    = 0,
+			FOLLOW_MODE_TARGET = 1
+		};
+
+	private:
+		float current_near_distance = 0.0f;
+		float previous_near_distance = 0.0f;
+		float current_far_distance = 100.0f;
+		float previous_far_distance = 100.0f;
+		FollowMode follow_mode = FOLLOW_MODE_EYE;
+
+	public:
+		static const Type<FogSceneNode> type_pointer;
+		const BaseType& get_type() const override;
+
+		FogSceneNode(int reference);
+		virtual ~FogSceneNode() = default;
+
+		void set_current_near_distance(float value);
+		float get_current_near_distance() const;
+		void set_previous_near_distance(float value);
+		float get_previous_near_distance() const;
+
+		void set_current_far_distance(float value);
+		float get_current_far_distance() const;
+		void set_previous_far_distance(float value);
+		float get_previous_far_distance() const;
+
+		void set_follow_mode(FollowMode value);
+		FollowMode get_follow_mode() const;
 
 		void to_light(Light& light, float delta) const override;
 

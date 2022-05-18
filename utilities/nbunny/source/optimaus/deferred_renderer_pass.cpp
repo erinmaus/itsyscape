@@ -21,6 +21,7 @@ static const std::string SHADER_DEFAULT           = "Default";
 static const std::string SHADER_AMBIENT_LIGHT     = "AmbientLight";
 static const std::string SHADER_DIRECTIONAL_LIGHT = "DirectionalLight";
 static const std::string SHADER_POINT_LIGHT       = "PointLight";
+static const std::string SHADER_FOG               = "Fog";
 
 nbunny::DeferredRendererPass::DeferredRendererPass() :
 	RendererPass(RENDERER_PASS_DEFERRED),
@@ -52,6 +53,7 @@ void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 void nbunny::DeferredRendererPass::walk_visible_lights()
 {
 	light_scene_nodes.clear();
+	fog_scene_nodes.clear();
 
 	for (auto node: visible_scene_nodes)
 	{
@@ -61,6 +63,10 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 		    node_type == PointLightSceneNode::type_pointer)
 		{
 			light_scene_nodes.push_back(reinterpret_cast<LightSceneNode*>(node));
+		}
+		else if (node_type == FogSceneNode::type_pointer)
+		{
+			fog_scene_nodes.push_back(reinterpret_cast<FogSceneNode*>(node));
 		}
 	}
 }
@@ -164,6 +170,50 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
+void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, float delta)
+{
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_FOG, SHADER_FOG);
+	get_renderer()->set_current_shader(shader);
+
+	Light light;
+	node.to_light(light, delta);
+
+	auto fog_parameters = glm::vec2(light.near_distance, light.far_distance);
+	auto fog_parameters_uniform = shader->getUniformInfo("scape_FogParameters");
+	if (fog_parameters_uniform)
+	{
+		std::memcpy(fog_parameters_uniform->floats, glm::value_ptr(fog_parameters), sizeof(glm::vec2));
+		shader->updateUniform(fog_parameters_uniform, 1);
+	}
+
+	auto camera_eye = node.get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
+		get_renderer()->get_camera().get_eye_position() :
+		get_renderer()->get_camera().get_target_position();	
+	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
+	if (camera_eye_uniform)
+	{
+		std::memcpy(camera_eye_uniform->floats, glm::value_ptr(camera_eye), sizeof(glm::vec3));
+		shader->updateUniform(camera_eye_uniform, 1);
+	}
+
+	auto fog_color_uniform = shader->getUniformInfo("scape_FogColor");
+	if (fog_color_uniform)
+	{
+		std::memcpy(fog_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
+		shader->updateUniform(fog_color_uniform, 1);
+	}
+
+	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
+	if (position_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
+		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
 void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
@@ -260,13 +310,34 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 
 void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 {
+	if (fog_scene_nodes.empty())
+	{
+		return;
+	}
+
+	fog_buffer.use();
+
+    auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
+
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), false);
+	graphics->setBlendMode(
+		love::graphics::Graphics::BLEND_ALPHA,
+		love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+
+	for (auto fog: fog_scene_nodes)
+	{
+		draw_fog(L, *fog, delta);
+	}
+
 	mix_fog();
 }
 
 void nbunny::DeferredRendererPass::mix_lights()
 {
 	output_buffer.use();
-
     get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -284,7 +355,17 @@ void nbunny::DeferredRendererPass::mix_lights()
 
 void nbunny::DeferredRendererPass::mix_fog()
 {
-	// Nothing.
+	output_buffer.use();
+    get_renderer()->set_current_shader(nullptr);
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), false);
+
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+    graphics->draw(fog_buffer.get_color(), love::Matrix4());
 }
 
 love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light)

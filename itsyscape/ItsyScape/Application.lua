@@ -447,7 +447,7 @@ function Application:draw()
 	if not s then
 		love.graphics.setBlendMode('alpha')
 		love.graphics.origin()
-		love.graphics.ortho(width, height)
+		love.graphics.ortho(love.window.getMode())
 
 		error(r, 0)
 	end
