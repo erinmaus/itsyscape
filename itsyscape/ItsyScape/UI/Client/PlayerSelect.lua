@@ -275,8 +275,7 @@ function PlayerSelect:newPlayer(player)
 	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
 
-	game:getPlayer():spawn(storage)
-	game:getPlayer():newGame()
+	game:getPlayer():spawn(storage, true)
 
 	self.application:closeTitleScreen()
 
