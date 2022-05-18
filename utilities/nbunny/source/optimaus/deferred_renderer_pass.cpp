@@ -69,6 +69,14 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 			fog_scene_nodes.push_back(reinterpret_cast<FogSceneNode*>(node));
 		}
 	}
+
+	std::stable_sort(
+		fog_scene_nodes.begin(),
+		fog_scene_nodes.end(),
+		[&](auto a, auto b)
+		{
+			return a->get_current_far_distance() < b->get_current_far_distance();
+		});
 }
 
 void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNode& node, float delta)
@@ -188,7 +196,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 
 	auto camera_eye = node.get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
 		get_renderer()->get_camera().get_eye_position() :
-		get_renderer()->get_camera().get_target_position();	
+		get_renderer()->get_camera().get_target_position();
 	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
 	if (camera_eye_uniform)
 	{
@@ -208,6 +216,13 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
 		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
+	if (color_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
+		shader->sendTextures(color_texture_uniform, &texture, 1);
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -231,6 +246,12 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
     graphics->setProjection(projection);
 
 	auto clear_color = renderer->get_clear_color();
+	if (!fog_scene_nodes.empty())
+	{
+		Light light;
+		fog_scene_nodes.back()->to_light(light, delta);
+		clear_color = glm::vec4(light.color, 1.0f);
+	}
 	graphics->clear(
 		love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
 		0,
@@ -241,7 +262,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
 
-		auto world = glm::transpose(scene_node->get_transform().get_global(delta));
+		auto world = scene_node->get_transform().get_global(delta);
 
 		auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
 		if (world_matrix_uniform)
@@ -351,6 +372,8 @@ void nbunny::DeferredRendererPass::mix_lights()
 
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_MULTIPLY, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 	graphics->draw(light_buffer.get_color(), love::Matrix4());
+
+	graphics->setCanvas();
 }
 
 void nbunny::DeferredRendererPass::mix_fog()
@@ -366,6 +389,8 @@ void nbunny::DeferredRendererPass::mix_fog()
 
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
     graphics->draw(fog_buffer.get_color(), love::Matrix4());
+
+	graphics->setCanvas();
 }
 
 love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light)
