@@ -43,13 +43,14 @@ namespace nbunny
 			BUILTIN_SHADER_DEFAULT           = -1,
 			BUILTIN_SHADER_AMBIENT_LIGHT     = -2,
 			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
-			BUILTIN_SHADER_POINT_LIGHT       = -4
+			BUILTIN_SHADER_POINT_LIGHT       = -4,
+			BUILTIN_SHADER_FOG               = -5
 		};
 
 		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
-		std::vector<LightSceneNode*> fog_scene_nodes;
+		std::vector<FogSceneNode*> fog_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void walk_visible_lights();
@@ -57,6 +58,7 @@ namespace nbunny
 		void draw_ambient_light(lua_State* L, LightSceneNode& node, float delta);
 		void draw_directional_light(lua_State* L, LightSceneNode& node, float delta);
 		void draw_point_light(lua_State* L, LightSceneNode& node, float delta);
+		void draw_fog(lua_State* L, FogSceneNode& node, float delta);
 
 		void draw_nodes(lua_State* L, float delta);
 		void draw_lights(lua_State* L, float delta);

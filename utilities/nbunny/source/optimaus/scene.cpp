@@ -485,7 +485,7 @@ void nbunny::SceneNode::walk_by_position(
 	float delta,
 	std::vector<SceneNode*>& result)
 {
-	if (!camera.get_is_cull_enabled() || camera.inside(node, delta))
+	if (!camera.get_is_cull_enabled() || node.get_material().get_is_cull_disabled() || camera.inside(node, delta))
 	{
 		result.push_back(&node);
 	}
@@ -668,11 +668,27 @@ const glm::mat4& nbunny::Camera::get_projection() const
 	return projection;
 }
 
+const glm::vec3& nbunny::Camera::get_eye_position() const
+{
+	return eye_position;
+}
+
+const glm::vec3& nbunny::Camera::get_target_position() const
+{
+	return target_position;
+}
+
 void nbunny::Camera::update(const glm::mat4& view, const glm::mat4& projection)
 {
 	this->view = view;
 	this->projection = projection;
 	is_dirty = true;
+}
+
+void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target_position)
+{
+	this->eye_position = eye_position;
+	this->target_position = target_position;
 }
 
 bool nbunny::Camera::inside(const SceneNode& node, float delta) const
@@ -1285,6 +1301,30 @@ static int nbunny_camera_update(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_move_target(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+
+	camera->move(camera->get_eye_position(), glm::vec3(x, y, z));
+
+	return 0;
+}
+
+static int nbunny_camera_move_eye(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+
+	camera->move(glm::vec3(x, y, z), camera->get_target_position());
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
@@ -1295,6 +1335,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 		"getView", &nbunny_camera_get_view,
 		"getProjection", &nbunny_camera_get_projection,
 		"update", &nbunny_camera_update,
+		"moveTarget", &nbunny_camera_move_target,
+		"moveEye", &nbunny_camera_move_eye,
 		"inside", &nbunny::Camera::inside);
 
 	sol::stack::push(L, T);

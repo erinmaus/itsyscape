@@ -11,7 +11,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform Image scape_PositionTexture;
-uniform Image scape_ColorTexture;
 
 uniform vec2 scape_FogParameters;
 uniform vec3 scape_FogColor;
@@ -23,7 +22,7 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	float alpha = Texel(texture, textureCoordinate).a;
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz - scape_CameraEye;
 	float length = length(position);
 	float factor = 1.0 - clamp((scape_FogParameters.y - length) / (scape_FogParameters.y - scape_FogParameters.x), 0.0, 1.0);

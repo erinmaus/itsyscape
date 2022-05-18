@@ -217,7 +217,7 @@ std::shared_ptr<nbunny::ResourceInstance> nbunny::SkeletonAnimationResource::ins
 
 static int nbunny_skeleton_animation_resource_instantiate(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::SkeletonResource&>(L, 1);
+	auto& resource = sol::stack::get<nbunny::SkeletonAnimationResource&>(L, 1);
 	lua_pushvalue(L, 2);
 	auto instance = resource.instantiate(L);
 	sol::stack::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonAnimationInstance>(instance));
@@ -288,9 +288,9 @@ void nbunny::SkeletonAnimationInstance::compute_local_transforms(
 void nbunny::SkeletonAnimationInstance::compute_local_transform(
 	float time,
 	int bone_index,
-	SkeletonTransforms &transforms) const
+	SkeletonTransforms& transforms) const
 {
-	auto wrapped_time = std::fmod(time, duration);
+	auto wrapped_time = time > duration ? std::fmod(time, duration) : time;
 
 	auto& key_frames = bones.at(bone_index);
 

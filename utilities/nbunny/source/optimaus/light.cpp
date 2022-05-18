@@ -372,3 +372,112 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_pointlightscenenode(lua_Stat
 
 	return 1;
 }
+
+const nbunny::Type<nbunny::FogSceneNode> nbunny::FogSceneNode::type_pointer;
+
+const nbunny::BaseType& nbunny::FogSceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+nbunny::FogSceneNode::FogSceneNode(int reference) :
+	LightSceneNode(reference)
+{
+	set_is_global(true);
+}
+
+void nbunny::FogSceneNode::set_current_near_distance(float value)
+{
+	current_near_distance = value;
+}
+
+float nbunny::FogSceneNode::get_current_near_distance() const
+{
+	return current_near_distance;
+}
+
+void nbunny::FogSceneNode::set_previous_near_distance(float value)
+{
+	previous_near_distance = value;
+}
+
+float nbunny::FogSceneNode::get_previous_near_distance() const
+{
+	return previous_near_distance;
+}
+
+void nbunny::FogSceneNode::set_current_far_distance(float value)
+{
+	current_far_distance = value;
+}
+
+float nbunny::FogSceneNode::get_current_far_distance() const
+{
+	return current_far_distance;
+}
+
+void nbunny::FogSceneNode::set_previous_far_distance(float value)
+{
+	previous_far_distance = value;
+}
+
+float nbunny::FogSceneNode::get_previous_far_distance() const
+{
+	return previous_far_distance;
+}
+
+void nbunny::FogSceneNode::set_follow_mode(FollowMode value)
+{
+	follow_mode = value;
+}
+
+nbunny::FogSceneNode::FollowMode nbunny::FogSceneNode::get_follow_mode() const
+{
+	return follow_mode;
+}
+
+void nbunny::FogSceneNode::to_light(Light& light, float delta) const
+{
+	LightSceneNode::to_light(light, delta);
+
+	light.near_distance = glm::mix(
+		get_ticked() ? previous_near_distance : current_near_distance,
+		current_near_distance,
+		delta);
+
+	light.far_distance = glm::mix(
+		get_ticked() ? previous_far_distance : current_far_distance,
+		current_far_distance,
+		delta);
+}
+
+void nbunny::FogSceneNode::tick()
+{
+	LightSceneNode::tick();
+
+	previous_near_distance = current_near_distance;
+	previous_far_distance = current_far_distance;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_fogscenenode(lua_State* L)
+{
+	sol::usertype<nbunny::FogSceneNode> T(
+		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::FogSceneNode>),
+		"setCurrentNearDistance", &nbunny::FogSceneNode::set_current_near_distance,
+		"getCurrentNearDistance", &nbunny::FogSceneNode::get_current_near_distance,
+		"setPreviousNearDistance", &nbunny::FogSceneNode::set_previous_near_distance,
+		"getPreviousNearDistance", &nbunny::FogSceneNode::get_previous_near_distance,
+		"setCurrentFarDistance", &nbunny::FogSceneNode::set_current_far_distance,
+		"getCurrentFarDistance", &nbunny::FogSceneNode::get_current_far_distance,
+		"setPreviousFarDistance", &nbunny::FogSceneNode::set_previous_far_distance,
+		"getPreviousFarDistance", &nbunny::FogSceneNode::get_previous_far_distance,
+		"setFollowMode", &nbunny::FogSceneNode::set_follow_mode,
+		"getFollowMode", &nbunny::FogSceneNode::get_follow_mode,
+		"tick", &nbunny::FogSceneNode::tick);
+
+	sol::stack::push(L, T);
+
+	return 1;
+}

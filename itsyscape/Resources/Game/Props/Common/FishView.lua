@@ -120,7 +120,6 @@ function FishView:update(delta)
 	root:getTransform():setLocalTranslation(translation)
 	root:getTransform():setLocalRotation(rotation)
 	root:getTransform():setLocalScale(scale)
-	root:getTransform():setPreviousTransform(translation, rotation, scale)
 end
 
 return FishView

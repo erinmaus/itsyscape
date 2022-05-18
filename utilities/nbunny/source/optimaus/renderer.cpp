@@ -9,7 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "common/Module.h"
-#include "common/Module.h"
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "modules/filesystem/Filesystem.h"

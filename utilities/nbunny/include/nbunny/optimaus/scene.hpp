@@ -192,6 +192,9 @@ namespace nbunny
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 
+		glm::vec3 eye_position = glm::vec3(0.0f);
+		glm::vec3 target_position = glm::vec3(0.0f);
+
 		bool is_cull_enabled = true;
 
 		static const int NUM_PLANES = 6;
@@ -219,9 +222,16 @@ namespace nbunny
 		const glm::mat4& get_view() const;
 		const glm::mat4& get_projection() const;
 
+		const glm::vec3& get_eye_position() const;
+		const glm::vec3& get_target_position() const;
+
 		void update(
 			const glm::mat4& view,
 			const glm::mat4& projection);
+
+		void move(
+			const glm::vec3& eye_position,
+			const glm::vec3& target_position);
 
 		bool inside(const SceneNode& node, float delta) const;
 	};
