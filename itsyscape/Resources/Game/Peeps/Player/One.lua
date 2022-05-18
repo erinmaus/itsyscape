@@ -456,7 +456,7 @@ function One:onActionPerformed(e)
 end
 
 function One:interruptUI()
-	if not self:hasBehavior(DisabledBehavior) then
+	if self:getIsReady() and not self:hasBehavior(DisabledBehavior) then
 		local game = self:getDirector():getGameInstance()
 		game:getUI():interrupt(self)
 	end

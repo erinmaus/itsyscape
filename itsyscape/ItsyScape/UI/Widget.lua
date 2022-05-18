@@ -147,7 +147,6 @@ end
 function Widget:addChild(child)
 	if child.parent then
 		child.parent:removeChild(child)
-		child.parent:_markZDepthDirty()
 	end
 
 	self.childProperties[child] = {}

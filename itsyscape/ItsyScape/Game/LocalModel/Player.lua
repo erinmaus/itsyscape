@@ -85,6 +85,18 @@ function LocalPlayer:spawn(storage)
 	self:changeCamera("Default")
 end
 
+function LocalPlayer:newGame()
+	self.game:getStage():movePeep(
+		self:getActor():getPeep(),
+		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
+		"jenkins_state=1," ..
+		"i=16," ..
+		"j=16," ..
+		"shore=IsabelleIsland_FarOcean_Cutscene," ..
+		"shoreAnchor=Anchor_Spawn",
+		"Anchor_Spawn")
+end
+
 function Player:save()
 	local playerActor = self.actor
 	local playerPeep = playerActor and playerActor:getPeep()
