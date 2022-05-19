@@ -8,12 +8,20 @@
 -- file, You can obtain one at http//mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local WidgetRenderManager = Class()
+
+WidgetRenderManager.DebugStats = Class(DebugStats)
+
+function WidgetRenderManager.DebugStats:process(renderer, widget, state)
+	renderer:draw(widget, state)
+end
+
 WidgetRenderManager.TOOL_TIP_DURATION = 0.5
 
 function WidgetRenderManager:new(inputProvider)
@@ -22,6 +30,11 @@ function WidgetRenderManager:new(inputProvider)
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
 	self.input = inputProvider
 	self.toolTips = {}
+	self.debugStats = WidgetRenderManager.DebugStats()
+end
+
+function WidgetRenderManager:getDebugStats()
+	return self.debugStats
 end
 
 function WidgetRenderManager:getCursor()
@@ -213,7 +226,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer
 	if renderer then
-		renderer:draw(widget, state)
+		self.debugStats:measure(renderer, widget, state)
 	end
 
 	local scrollX, scrollY = widget:getScroll()
