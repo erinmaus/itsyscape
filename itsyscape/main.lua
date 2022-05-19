@@ -189,6 +189,7 @@ function love.quit()
 		_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
 		_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
 		_APP:getGameView():dumpStatsToCSV()
+		_APP:getUIView():getRenderManager():getDebugStats():dumpStatsToCSV("Widget_Renderer")
 		DebugStats.GLOBAL:dumpStatsToCSV("Global")
 	end
 
