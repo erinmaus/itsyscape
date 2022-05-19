@@ -21,6 +21,12 @@ require "love.timer"
 
 require "bootstrap"
 
+local function init(t)
+	_DEBUG = t._DEBUG
+end
+
+init(...)
+
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"

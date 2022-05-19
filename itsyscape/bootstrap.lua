@@ -48,3 +48,6 @@ do
 end
 
 Log = require "ItsyScape.Common.Log"
+function Log.analytic(...)
+	Log.warnOnce("Analytics not installed.")
+end

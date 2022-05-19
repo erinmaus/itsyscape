@@ -109,6 +109,8 @@ function UIView:new(gameView)
 	self.pokeMenu = false
 
 	self.keyBinds = {}
+
+	self.pokes = {}
 end
 
 function UIView:release()
@@ -173,13 +175,13 @@ function UIView:close(ui, interfaceID, index)
 end
 
 function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
-	local interfaces = self.interfaces[interfaceID]
-	if interfaces then
-		local interface = interfaces[index]
-		if interface then
-			interface:poke(actionID, actionIndex, e)
-		end
-	end
+	table.insert(self.pokes, {
+		interfaceID = interfaceID,
+		index = index,
+		actionID = actionID,
+		actionIndex = actionIndex,
+		e = e
+	})
 end
 
 function UIView:examine(a, b)
@@ -265,6 +267,19 @@ function UIView:findWidgetByID(id, topLevelWidget)
 end
 
 function UIView:update(delta)
+	for i = 1, #self.pokes do
+		local poke = self.pokes[i]
+
+		local interfaces = self.interfaces[poke.interfaceID]
+		if interfaces then
+			local interface = interfaces[poke.index]
+			if interface then
+				interface:poke(poke.actionID, poke.actionIndex, poke.e)
+			end
+		end
+	end
+	table.clear(self.pokes)
+
 	self.root:update(delta)
 
 	local toolTips = self.renderManager:getToolTips()

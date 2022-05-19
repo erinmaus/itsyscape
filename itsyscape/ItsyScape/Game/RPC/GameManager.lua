@@ -401,6 +401,7 @@ function GameManager:newInstance(interface, id, obj)
 	table.insert(self.instances, instance)
 
 	self:pushCreate(interface, id)
+	return instance
 end
 
 function GameManager:destroyInstance(interface, id)

@@ -212,6 +212,10 @@ function ActorView:poof()
 	for sprite in pairs(self.sprites) do
 		self.game:getSpriteManager():poof(sprite)
 	end
+
+	if self.healthBar and self.healthBar:getIsSpawned() then
+		self.game:getSpriteManager():poof(self.healthBar)
+	end
 end
 
 function ActorView:getSceneNode()
@@ -498,8 +502,8 @@ function ActorView:face(direction, rotation)
 end
 
 function ActorView:damage(damageType, damage)
-	local sprite = self.game:getSpriteManager()
-	sprite:add("Damage", self.sceneNode, Vector(0, 1, 0), damageType, damage)
+	local spriteManager = self.game:getSpriteManager()
+	local sprite = spriteManager:add("Damage", self.sceneNode, Vector(0, 1, 0), damageType, damage)
 
 	self.sprites[sprite] = true
 
@@ -515,9 +519,7 @@ function ActorView:damage(damageType, damage)
 end
 
 function ActorView:flash(message, anchor, ...)
-	local sprite = self.game:getSpriteManager()
-
-	self.sprites[sprite] = true
+	local spriteManager = self.game:getSpriteManager()
 
 	if type(anchor) == 'number' then
 		anchor = Vector(0, anchor, 0)
@@ -526,7 +528,8 @@ function ActorView:flash(message, anchor, ...)
 	local min, max = self.actor:getBounds()
 	local size = max - min
 
-	sprite:add(message, self.sceneNode, size * anchor, ...)
+	local sprite = spriteManager:add(message, self.sceneNode, size * anchor, ...)
+	self.sprites[sprite] = true
 end
 
 function ActorView:tick()
