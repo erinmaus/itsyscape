@@ -812,7 +812,6 @@ function LocalStage:loadStage(path)
 		local director = self.game:getDirector()
 		local player = self.game:getPlayer():getActor():getPeep()
 		director:movePeep(player, filename)
-		print(">>>>>>>>>> moving player", filename)
 
 		local resource = director:getGameDB():getResource(filename, "Map")
 

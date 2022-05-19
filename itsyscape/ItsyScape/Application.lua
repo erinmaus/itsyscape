@@ -100,7 +100,9 @@ function Application:new(multiThreaded)
 
 	else
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
-		self.gameThread:start()
+		self.gameThread:start({
+			_DEBUG = _DEBUG
+		})
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
 	end
 
