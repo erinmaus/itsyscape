@@ -167,7 +167,7 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 		shader->updateUniform(light_color_uniform, 1);
 	}
 
-	auto light_attenuation_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
+	auto light_attenuation_uniform = shader->getUniformInfo("scape_LightAttenuation");
 	if (light_attenuation_uniform)
 	{
 		*light_attenuation_uniform->floats = light.attenuation;
