@@ -36,22 +36,26 @@ namespace nbunny
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> global_light_scene_nodes;
 		std::vector<LightSceneNode*> local_light_scene_nodes;
-		std::vector<LightSceneNode*> fog_scene_nodes;
+		std::vector<FogSceneNode*> fog_scene_nodes;
+		std::vector<Light> fog;
 		std::vector<Light> lights;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void walk_visible_lights();
+		void prepare_fog(float delta);
 
 		void draw_nodes(lua_State* L, float delta);
 		void get_nearby_lights(SceneNode& node, float delta);
 
 		void send_light_property(
 			love::graphics::Shader* shader,
+			const std::string& array,
 			int index,
 			const std::string& property_name,
 			float* property_value,
             std::size_t size_bytes);
 		void send_light(love::graphics::Shader* shader, Light& light, int index);
+		void send_fog(love::graphics::Shader* shader, Light& light, int index);
 
 	public:
 		ForwardRendererPass(LBuffer& c_buffer);

@@ -32,6 +32,7 @@ void nbunny::ForwardRendererPass::walk_visible_lights()
 {
 	global_light_scene_nodes.clear();
 	local_light_scene_nodes.clear();
+	fog_scene_nodes.clear();
 
 	for (auto node: visible_scene_nodes)
 	{
@@ -49,6 +50,42 @@ void nbunny::ForwardRendererPass::walk_visible_lights()
 			{
 				local_light_scene_nodes.push_back(light_node);
 			}
+		}
+		else if (node_type == FogSceneNode::type_pointer)
+		{
+			fog_scene_nodes.push_back(reinterpret_cast<FogSceneNode*>(node));
+		}
+	}
+}
+
+void nbunny::ForwardRendererPass::prepare_fog(float delta)
+{
+	std::stable_sort(
+		fog_scene_nodes.begin(),
+		fog_scene_nodes.end(),
+		[&](auto a, auto b)
+		{
+			return a->get_current_far_distance() < b->get_current_far_distance();
+		});
+
+	fog.clear();
+	for (auto fog_scene_node: fog_scene_nodes)
+	{
+		Light light;
+		fog_scene_node->to_light(light, delta);
+
+		auto camera_eye = fog_scene_node->get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
+			get_renderer()->get_camera().get_eye_position() :
+			get_renderer()->get_camera().get_target_position();
+		light.position = glm::vec4(camera_eye, 1.0f);
+
+		if (fog.size() < MAX_FOG)
+		{
+			fog.push_back(light);
+		}
+		else
+		{
+			break;
 		}
 	}
 }
@@ -111,12 +148,13 @@ love::graphics::Shader* nbunny::ForwardRendererPass::get_node_shader(lua_State* 
 
 void nbunny::ForwardRendererPass::send_light_property(
 	love::graphics::Shader* shader,
+	const std::string& array,
 	int index,
 	const std::string& property_name,
 	float* property_value,
     std::size_t size_bytes)
 {
-	std::string uniform_name = std::string("scape_Lights[") + std::to_string(index) + std::string("].") + property_name;
+	std::string uniform_name = array + std::string("[") + std::to_string(index) + std::string("].") + property_name;
 	auto uniform = shader->getUniformInfo(uniform_name);
 	if (uniform)
 	{
@@ -130,12 +168,23 @@ void nbunny::ForwardRendererPass::send_light(
 	Light& light,
 	int index)
 {
-	send_light_property(shader, index, "position", glm::value_ptr(light.position), sizeof(glm::vec4));
-	send_light_property(shader, index, "color", glm::value_ptr(light.color), sizeof(glm::vec3));
-	send_light_property(shader, index, "attenuation", &light.attenuation, sizeof(float));
-	send_light_property(shader, index, "ambientCoefficient", &light.ambient_coefficient, sizeof(float));
-	send_light_property(shader, index, "coneAngle", &light.cone_angle, sizeof(float));
-	send_light_property(shader, index, "coneDirection", glm::value_ptr(light.cone_direction), sizeof(glm::vec3));
+	send_light_property(shader, "scape_Lights", index, "position", glm::value_ptr(light.position), sizeof(glm::vec4));
+	send_light_property(shader, "scape_Lights", index, "color", glm::value_ptr(light.color), sizeof(glm::vec3));
+	send_light_property(shader, "scape_Lights", index, "attenuation", &light.attenuation, sizeof(float));
+	send_light_property(shader, "scape_Lights", index, "ambientCoefficient", &light.ambient_coefficient, sizeof(float));
+	send_light_property(shader, "scape_Lights", index, "coneAngle", &light.cone_angle, sizeof(float));
+	send_light_property(shader, "scape_Lights", index, "coneDirection", glm::value_ptr(light.cone_direction), sizeof(glm::vec3));
+}
+
+void nbunny::ForwardRendererPass::send_fog(
+	love::graphics::Shader* shader,
+	Light& light,
+	int index)
+{
+	send_light_property(shader, "scape_Fog", index, "near", &light.near_distance, sizeof(float));
+	send_light_property(shader, "scape_Fog", index, "far", &light.far_distance, sizeof(float));
+	send_light_property(shader, "scape_Fog", index, "color", glm::value_ptr(light.color), sizeof(glm::vec3));
+	send_light_property(shader, "scape_Fog", index, "position", glm::value_ptr(light.position), sizeof(glm::vec3));
 }
 
 void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
@@ -192,10 +241,15 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(num_lights_uniform, 1);
 		}
 
-		auto num_fog_uniform = shader->getUniformInfo("scape_NumFog");
+		for (auto i = 0; i < fog.size(); ++i)
+		{
+			send_fog(shader, fog[i], i);
+		}
+
+		auto num_fog_uniform = shader->getUniformInfo("scape_NumFogs");
 		if (num_fog_uniform)
 		{
-			int num_fog = 0;
+			int num_fog = (int)fog.size();
 			*num_fog_uniform->ints = num_fog;
 			shader->updateUniform(num_fog_uniform, 1);
 		}
@@ -222,6 +276,7 @@ void nbunny::ForwardRendererPass::draw(lua_State* L, SceneNode& node, float delt
 {
 	walk_all_nodes(node, delta);
 	walk_visible_lights();
+	prepare_fog(delta);
 
 	draw_nodes(L, delta);
 }
