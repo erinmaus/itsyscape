@@ -22,10 +22,13 @@ namespace nbunny
 	struct DecorationFeature
 	{
 		std::string tile_id;
-		glm::vec3 position;
-		glm::quat rotation;
-		glm::vec3 scale;
-		glm::vec4 color;
+		glm::vec3 position = glm::vec3(0.0f);
+		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		glm::vec3 scale = glm::vec3(1.0f);
+		glm::vec4 color = glm::vec4(1.0f);
+
+		DecorationFeature() = default;
+		DecorationFeature(const DecorationFeature& other) = default;
 	};
 
 	class Decoration
@@ -37,12 +40,7 @@ namespace nbunny
 		Decoration() = default;
 		~Decoration() = default;
 
-		DecorationFeature* add_feature(
-			const std::string& tile_id,
-			const glm::vec3& position,
-			const glm::quat& rotation,
-			const glm::vec3& scale,
-			const glm::vec4& color);
+		DecorationFeature* add_feature(const DecorationFeature& description);
 		bool remove_feature(DecorationFeature* feature);
 
 		std::size_t get_num_features() const;
