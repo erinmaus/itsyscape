@@ -21,13 +21,19 @@ function CastleLerper:getNextDecorationName()
 	return "Resources/Game/Maps/Sailing_RuinsOfRhysilk/Decorations/Castle2.ldeco"
 end
 
+function CastleLerper:tick()
+	DecorationLerpView.tick(self)
+
+	if self.mu then
+		self:lerp(self.mu)
+	end
+end
+
 function CastleLerper:update(delta)
 	DecorationLerpView.update(self, delta)
 
 	self.time = (self.time or 0) + delta
-	local mu = math.abs(math.sin(self.time * CastleLerper.TIME_MULTIPLIER))
-
-	self:lerp(mu)
+	self.mu = math.abs(math.sin(self.time * CastleLerper.TIME_MULTIPLIER))
 end
 
 return CastleLerper
