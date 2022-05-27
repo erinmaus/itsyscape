@@ -14,8 +14,11 @@
 #define NBUNNY_OPTIMAUS_DECORATION_HPP
 
 #include <memory>
+#include "modules/graphics/Mesh.h"
 #include "nbunny/nbunny.hpp"
 #include "nbunny/optimaus/resource.hpp"
+#include "nbunny/optimaus/scene.hpp"
+#include "nbunny/optimaus/static_mesh.hpp"
 
 namespace nbunny
 {
@@ -45,6 +48,54 @@ namespace nbunny
 
 		std::size_t get_num_features() const;
 		DecorationFeature* get_feature_by_index(std::size_t index) const;
+	};
+
+	class DecorationSceneNode : public SceneNode
+	{
+	private:
+		love::graphics::Mesh* mesh = nullptr;
+		std::vector<love::graphics::Mesh::AttribFormat> mesh_attribs;
+
+		struct Vertex
+		{
+			glm::vec3 position;
+			glm::vec3 normal;
+			glm::vec2 texture;
+			glm::vec4 color;
+		};
+
+		enum
+		{
+			MIN_POSITION_COMPONENTS = 3,
+			MIN_NORMAL_COMPONENTS = 3,
+			MIN_TEXTURE_COMPONENTS = 2,
+			MIN_COLOR_COMPONENTS = 4
+		};
+
+	public:
+		static const Type<DecorationSceneNode> type_pointer;
+		const BaseType& get_type() const override;
+
+		DecorationSceneNode(int reference);
+		virtual ~DecorationSceneNode();
+
+		void from_decoration(Decoration& decoration, StaticMeshInstance& static_mesh);
+		void from_group(const std::string& group, StaticMeshInstance& static_mesh);
+		void from_lerp(
+			StaticMeshInstance& static_mesh,
+			const std::string& from,
+			const std::string& to,
+			float delta);
+
+		bool can_lerp() const;
+
+		static void lerp(
+			DecorationSceneNode& result,
+			DecorationSceneNode& from,
+			DecorationSceneNode& to,
+			float delta);
+
+		void draw(Renderer& renderer, float delta) override;
 	};
 }
 
