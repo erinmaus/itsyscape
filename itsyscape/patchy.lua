@@ -189,33 +189,32 @@ local function draw(p, x, y, w, h, content_box)
 	-- Content Box
 	local cx, cy, cw, ch = get_content_box(p, x, y, w, h, true)
 
-	if not skip_update then
-		-- Divide size by scale area
-		local pax, pay = x, y
-		local sax, say = w / p.dynamic.x, h / p.dynamic.y
+	-- Divide size by scale area
+	local pax, pay = x, y
+	local sax, say = w / p.dynamic.x, h / p.dynamic.y
 
-		local row, col = 1, 1
-		for i=1, #p.areas do
-			if p.areas[i].row > row then
-				row = p.areas[i].row
-				pax = pax + p.areas[i - 1].w * (p.areas[i - 1].sx and sax or 1)
-			end
+	local row, col = 1, 1
+	for i=1, #p.areas do
+		if p.areas[i].row > row then
+			row = p.areas[i].row
+			pax = pax + p.areas[i - 1].w * (p.areas[i - 1].sx and sax or 1)
+		end
 
-			if p.areas[i].col > col then
-				col = p.areas[i].col
-				pay = pay + p.areas[i - 1].h * (p.areas[i - 1].sy and say or 1)
-			elseif p.areas[i].col == 1 then
-				col = p.areas[i].col
-				pay = y
-			end
+		if p.areas[i].col > col then
+			col = p.areas[i].col
+			pay = pay + p.areas[i - 1].h * (p.areas[i - 1].sy and say or 1)
+		elseif p.areas[i].col == 1 then
+			col = p.areas[i].col
+			pay = y
+		end
 
-			if p.areas[i].id then
-				p.batch:set(p.areas[i].id, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
-			end
+		if p.areas[i].id then
+			--p.batch:set(p.areas[i].id, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
+			itsyrealm.graphics.drawq(p.image, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
 		end
 	end
 
-	love.graphics.draw(p.batch)
+	--love.graphics.draw(p.batch)
 
 	if debug_draw then
 		love.graphics.setColor(255, 0, 0, 255)

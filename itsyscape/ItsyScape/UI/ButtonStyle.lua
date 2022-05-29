@@ -99,7 +99,7 @@ function ButtonStyle:draw(widget)
 		local y = height * self.iconY
 		local scaleX = self.iconWidth / self.icon:getWidth()
 		local scaleY = self.iconHeight / self.icon:getHeight()
-		love.graphics.draw(
+		itsyrealm.graphics.draw(
 			self.icon,
 			x, y,
 			0,
