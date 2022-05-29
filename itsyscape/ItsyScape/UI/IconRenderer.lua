@@ -58,7 +58,7 @@ function IconRenderer:draw(widget, state)
 			scaleY = height / icon:getHeight()
 		end
 
-		love.graphics.draw(icon, 0, 0, 0, scaleX, scaleY)
+		itsyrealm.graphics.draw(icon, 0, 0, 0, scaleX, scaleY)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)

@@ -78,7 +78,7 @@ function ItemIconRenderer:draw(widget, state)
 			itemScaleX = scaleX * 0.8
 			itemScaleY = scaleY * 0.8
 
-			love.graphics.draw(
+			itsyrealm.graphics.draw(
 				self.note,
 				originX, originY,
 				0,
@@ -94,7 +94,7 @@ function ItemIconRenderer:draw(widget, state)
 			love.graphics.setColor(0.3, 0.3, 0.3, 1)
 		end
 
-		love.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
+		itsyrealm.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
 
 		if isDisabled then
 			love.graphics.setColor(1, 1, 1, 1)

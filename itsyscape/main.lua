@@ -1,5 +1,9 @@
 require "bootstrap"
 
+itsyrealm = {
+	graphics = {}
+}
+
 _ARGS = {}
 
 _ANALYTICS = false

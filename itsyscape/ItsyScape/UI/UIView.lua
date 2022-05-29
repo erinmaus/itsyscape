@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local DynamicAtlas = require "atlas.dynamicSize"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Button = require "ItsyScape.UI.Button"
@@ -70,6 +71,68 @@ function love.graphics.getScaledPoint(x, y)
 	y = y / sy
 
 	return x, y
+end
+
+local graphicsState = {
+	currentTextures = {},
+	previousTextures = {},
+	atlas = DynamicAtlas.new(0, 1, 0),
+	quads = {}
+}
+
+graphicsState.atlas.maxWidth = 2048
+graphicsState.atlas.maxHeight = 2048
+
+function itsyrealm.graphics.start()
+	--graphicsState.previousTextures = graphicsState.currentTextures
+	--graphicsState.currentTextures = {}
+end
+
+function itsyrealm.graphics.stop()
+	-- for texture in pairs(graphicsState.previousTextures) do
+	-- 	if not graphicsState.currentTextures[texture] then
+	-- 		graphicsState.atlas:remove(texture)
+	-- 	end
+	-- end
+end
+
+function itsyrealm.graphics.drawq(image, quad, ...)
+	graphicsState.currentTextures[image] = true
+	if not graphicsState.previousTextures[image] then
+		graphicsState.atlas:add(image, image, true)
+		graphicsState.previousTextures[image] = true
+	end
+
+	local atlas = graphicsState.atlas.image
+	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
+	local atlasQuad = graphicsState.atlas.quads[image]
+
+	local qx, qy, qw, qh = quad:getViewport()
+	local ax, ay, aw, ah = atlasQuad:getViewport()
+	local tw, th = atlasQuad:getTextureDimensions()
+	if not graphicsState.quad then
+		graphicsState.quad = love.graphics.newQuad(
+			ax + qx, ay + qy, qw, qh, tw, th)
+	else
+		graphicsState.quad:setViewport(
+			ax + qx, ay + qy, qw, qh, tw, th)
+	end
+
+	love.graphics.drawLayer(atlas, atlasImage.layer, graphicsState.quad, ...)
+end
+
+function itsyrealm.graphics.draw(image, ...)
+	graphicsState.currentTextures[image] = true
+	if not graphicsState.previousTextures[image] then
+		graphicsState.atlas:add(image, image, true)
+		graphicsState.previousTextures[image] = true
+		love.graphics.flushBatch()
+	end
+
+	local atlas = graphicsState.atlas.image
+	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
+	local atlasQuad = graphicsState.atlas.quads[image]
+	love.graphics.drawLayer(atlas, atlasImage.layer, atlasQuad, ...)
 end
 
 function UIView:new(gameView)
@@ -292,14 +355,15 @@ function UIView:draw()
 	local width, height = self:getMode()
 	self.root:setSize(width, height)
 
-
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.ortho(love.window.getMode())
 
+	itsyrealm.graphics.start()
 	self.renderManager:start()
 	self.renderManager:draw(self.root)
 	self.renderManager:stop()
+	itsyrealm.graphics.stop()
 end
 
 function UIView:getMode()
