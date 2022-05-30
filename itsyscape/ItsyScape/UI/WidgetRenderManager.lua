@@ -152,6 +152,8 @@ function WidgetRenderManager:start()
 			self.hovered[widget] = false
 		end
 	end
+
+	itsyrealm.graphics.resetPseudoScissor()
 end
 
 function WidgetRenderManager:stop()
@@ -212,15 +214,22 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		state = widget:getState()
 	end
 
-	love.graphics.push('all')
-	love.graphics.translate(widget:getPosition())
+	local widgetX, widgetY = widget:getPosition()
+
+	love.graphics.translate(widgetX, widgetY)
 
 	local cornerX, cornerY = love.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
 			local _, _, scaleX, scaleY = love.graphics.getScaledMode()
-			love.graphics.intersectScissor(cornerX, cornerY, w * scaleX, h * scaleY)
+			itsyrealm.graphics.intersectPseudoScissor(cornerX, cornerY, w * scaleX, h * scaleY)
+		end
+
+		local sw, sh = widget:getScrollSize()
+		local sx, sy = widget:getScroll()
+		if sw > w or sh > h or sx > 0 or sy > 0 then
+			itsyrealm.graphics.applyPseudoScissor()
 		end
 	end
 
@@ -234,7 +243,21 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	self:drawChildren(widget, state, cursor)
 
-	love.graphics.pop()
+	if not widget:getOverflow() then
+		local w, h = widget:getSize()
+		if w > 0 and h > 0 then
+			itsyrealm.graphics.popPseudoScissor()
+		end
+
+		local sw, sh = widget:getScrollSize()
+		local sx, sy = widget:getScroll()
+		if sw > w or sh > h or sx > 0 or sy > 0 then
+			love.graphics.setScissor()
+		end
+	end
+
+	love.graphics.translate(scrollX, scrollY)
+	love.graphics.translate(-widgetX, -widgetY)
 end
 
 function WidgetRenderManager:drawChildren(widget, state, cursor)

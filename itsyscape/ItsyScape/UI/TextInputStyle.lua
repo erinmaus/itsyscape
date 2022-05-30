@@ -76,6 +76,8 @@ function TextButtonStyle:draw(widget)
 		self.states['inactive'](width, height)
 	end
 
+	itsyrealm.graphics.applyPseudoScissor()
+
 	do
 		local x, y = love.graphics.getScissor()
 		love.graphics.intersectScissor(
@@ -175,6 +177,8 @@ function TextButtonStyle:draw(widget)
 			love.graphics.line(2, 0, 2, font:getHeight())
 		end
 	end
+
+	love.graphics.setScissor()
 end
 
 return TextButtonStyle
