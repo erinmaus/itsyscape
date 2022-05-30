@@ -33,7 +33,6 @@ function IconRenderer:stop()
 	WidgetRenderer.stop(self)
 
 	for icon in pairs(self.unvisitedIcons) do
-		self.icons[icon]:release()
 		self.icons[icon] = nil
 	end
 end

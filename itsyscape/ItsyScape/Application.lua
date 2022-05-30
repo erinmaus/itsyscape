@@ -363,7 +363,7 @@ function Application:drawDebug()
 
 	local drawCalls = love.graphics.getStats().drawcalls
 	local width = love.window.getMode()
-	local r = string.format("FPS: %d (%d draws, %d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
+	local r = string.format("FPS: %03d (%03d draws, %03d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(

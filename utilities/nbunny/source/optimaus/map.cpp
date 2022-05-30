@@ -239,7 +239,7 @@ void nbunny::RainWeather::update(const WeatherMap& weather_map, float delta)
 
 	std::size_t vertex_index = 0;
 	for (auto& particle: particles)
-	{
+	{e
 		if (particle.length <= 0)
 		{
 			auto s = rng->random() * weather_map.get_cell_size();

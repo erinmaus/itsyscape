@@ -75,33 +75,69 @@ end
 
 local graphicsState = {
 	currentTextures = {},
-	previousTextures = {},
+	textureTimeoutSeconds = 5,
 	atlas = DynamicAtlas.new(0, 1, 0),
-	quads = {}
+	transform = love.math.newTransform(),
+	pseudoScissor = {}
 }
 
-graphicsState.atlas.maxWidth = 2048
-graphicsState.atlas.maxHeight = 2048
+do
+	graphicsState.atlas.maxWidth = 2048
+	graphicsState.atlas.maxHeight = 2048
+
+	local w, h = love.window.getMode()
+	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+end
 
 function itsyrealm.graphics.start()
-	--graphicsState.previousTextures = graphicsState.currentTextures
-	--graphicsState.currentTextures = {}
+	-- Nothing.
 end
 
 function itsyrealm.graphics.stop()
-	-- for texture in pairs(graphicsState.previousTextures) do
-	-- 	if not graphicsState.currentTextures[texture] then
-	-- 		graphicsState.atlas:remove(texture)
-	-- 	end
-	-- end
+	local currentTime = love.timer.getTime()
+	for texture, textureTime in pairs(graphicsState.currentTextures) do
+		local staleSeconds = currentTime - textureTime
+		if staleSeconds > graphicsState.textureTimeoutSeconds then
+			graphicsState.atlas:remove(texture)
+			graphicsState.currentTextures[texture] = nil
+		end
+	end
+end
+
+function itsyrealm.graphics.resetPseudoScissor()
+	local w, h = love.window.getMode()
+	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+end
+
+function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
+	local pseudoScissor = graphicsState.pseudoScissor[#graphicsState.pseudoScissor]
+	local x1 = math.max(pseudoScissor[1], x)
+	local y1 = math.max(pseudoScissor[2], y)
+	local x2 = math.min(
+		pseudoScissor[1] + pseudoScissor[3],
+		x + w)
+	local y2 = math.min(
+		pseudoScissor[2] + pseudoScissor[4],
+		y + h)
+
+	local newPseudoScissor = { x1, y1, math.max(0, x2 - x1), math.max(0, y2 - y1) }
+
+	table.insert(graphicsState.pseudoScissor, newPseudoScissor)
+end
+
+function itsyrealm.graphics.popPseudoScissor()
+	table.remove(graphicsState.pseudoScissor)
+end
+
+function itsyrealm.graphics.applyPseudoScissor()
+	love.graphics.setScissor(unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
 end
 
 function itsyrealm.graphics.drawq(image, quad, ...)
-	graphicsState.currentTextures[image] = true
-	if not graphicsState.previousTextures[image] then
+	if not graphicsState.currentTextures[image] then
 		graphicsState.atlas:add(image, image, true)
-		graphicsState.previousTextures[image] = true
 	end
+	graphicsState.currentTextures[image] = love.timer.getTime()
 
 	local atlas = graphicsState.atlas.image
 	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
@@ -122,16 +158,15 @@ function itsyrealm.graphics.drawq(image, quad, ...)
 end
 
 function itsyrealm.graphics.draw(image, ...)
-	graphicsState.currentTextures[image] = true
-	if not graphicsState.previousTextures[image] then
+	if not graphicsState.currentTextures[image] then
 		graphicsState.atlas:add(image, image, true)
-		graphicsState.previousTextures[image] = true
-		love.graphics.flushBatch()
 	end
+	graphicsState.currentTextures[image] = love.timer.getTime()
 
 	local atlas = graphicsState.atlas.image
 	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
 	local atlasQuad = graphicsState.atlas.quads[image]
+
 	love.graphics.drawLayer(atlas, atlasImage.layer, atlasQuad, ...)
 end
 
