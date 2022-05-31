@@ -92,6 +92,8 @@ function LabelStyle:draw(widget, state)
 
 		oldLineHeight = font:setLineHeight(oldLineHeight)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return LabelStyle

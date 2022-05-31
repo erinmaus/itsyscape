@@ -212,7 +212,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	itsyrealm.graphics.translate(widgetX, widgetY)
 
-	local cornerX, cornerY = love.graphics.transformPoint(0, 0)
+	local cornerX, cornerY = itsyrealm.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
