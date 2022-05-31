@@ -25,6 +25,7 @@ function ButtonStyle:new(t, resources)
 				self.states[state] = function(width, height)
 					love.graphics.setColor(self.colors[state]:get())
 					itsyrealm.graphics.rectangle('fill', 0, 0, width, height)
+					love.graphics.setColor(1, 1, 1, 1)
 				end
 			elseif type(t[state]) == 'string' then
 				self.images[state] = resources:load(patchy.load, t[state])

@@ -97,12 +97,14 @@ end
 function itsyrealm.graphics.impl.captureRenderState()
 	return {
 		color = { love.graphics.getColor() },
-		font = love.graphics.getFont()
+		font = love.graphics.getFont(),
+		lineWidth = love.graphics.getLineWidth()
 	}
 end
 
 function itsyrealm.graphics.impl.setRenderState(renderState)
 	love.graphics.setColor(renderState.color)
+	love.graphics.setLineWidth(renderState.lineWidth)
 end
 
 function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
@@ -280,6 +282,14 @@ function itsyrealm.graphics.rectangle(...)
 		love.graphics.rectangle, ...)
 end
 
+function itsyrealm.graphics.circle(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		love.graphics.circle, ...)
+end
+
 function itsyrealm.graphics.uncachedDraw(...)
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.uncachedDraw,
@@ -442,6 +452,16 @@ function UIView:release()
 	local ui = self:getUI()
 	ui.onOpen:unregister(self.open)
 	ui.onClose:unregister(self.close)
+end
+
+function UIView:getIsFullscreen()
+	for _, child in self.root:iterate() do
+		if child and child.getIsFullscreen and child:getIsFullscreen() then
+			return true
+		end
+	end
+
+	return false
 end
 
 function UIView:getGame()
@@ -623,9 +643,9 @@ function UIView:draw()
 
 	itsyrealm.graphics.start()
 	love.graphics.push("all")
-	self.renderManager:start()
-	self.renderManager:draw(self.root)
-	self.renderManager:stop()
+	DebugStats.GLOBAL:measure("WidgetRenderManager.start", self.renderManager.start, self.renderManager)
+	DebugStats.GLOBAL:measure("WidgetRenderManager.draw", self.renderManager.draw, self.renderManager, self.root)
+	DebugStats.GLOBAL:measure("WidgetRenderManager.stop", self.renderManager.stop, self.renderManager)
 	love.graphics.pop()
 	DebugStats.GLOBAL:measure("itsyrealm.graphics.stop()", itsyrealm.graphics.stop)
 end

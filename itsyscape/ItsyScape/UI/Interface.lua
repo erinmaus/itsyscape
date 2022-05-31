@@ -142,4 +142,8 @@ function Interface:examineItem(widget, inventory, index)
 	widget:setToolTip(unpack(toolTip))
 end
 
+function Interface:getIsFullscreen()
+	return false
+end
+
 return Interface
