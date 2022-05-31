@@ -14,7 +14,7 @@ local DebugStats = Class()
 local GlobalDebugStats = Class(DebugStats)
 
 function GlobalDebugStats:process(node, func, ...)
-	pcall(func, ...)
+	func(...)
 end
 
 function DebugStats:new()
