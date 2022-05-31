@@ -25,7 +25,7 @@ function TextButtonStyle:new(t, resources)
 				self.colors[state] = Color(t[state]:get())
 				self.states[state] = function(width, height)
 					love.graphics.setColor(self.colors[state]:get())
-					love.graphics.rectangle('fill', 0, 0, width, height)
+					itsyrealm.graphics.rectangle('fill', 0, 0, width, height)
 				end
 			elseif type(t[state]) == 'string' then
 				self.images[state] = resources:load(patchy.load, t[state])
@@ -66,7 +66,7 @@ function TextButtonStyle:new(t, resources)
 end
 
 function TextButtonStyle:draw(widget)
-	if widget then return end
+	--if widget then return end
 	local width, height = widget:getSize()
 
 	if widget:getIsFocused() and self.states['active'] then
@@ -77,15 +77,14 @@ function TextButtonStyle:draw(widget)
 		self.states['inactive'](width, height)
 	end
 
-	itsyrealm.graphics.applyPseudoScissor()
-
 	do
 		local x, y = itsyrealm.graphics.getPseudoScissor()
 		itsyrealm.graphics.intersectPseudoScissor(
 			x + self.padding, y + self.padding,
 			width - self.padding * 2,
 			height - self.padding * 2)
-		love.graphics.translate(self.padding, self.padding)
+		itsyrealm.graphics.applyPseudoScissor()
+		itsyrealm.graphics.translate(self.padding, self.padding)
 	end
 
 	if #widget:getText() > 0 then
@@ -139,7 +138,7 @@ function TextButtonStyle:draw(widget)
 
 		if selectionWidth > 0 then
 			love.graphics.setColor(self.selectionColor:get())
-			love.graphics.rectangle(
+			itsyrealm.graphics.rectangle(
 				'fill',
 				selectionX, selectionY,
 				selectionWidth, font:getHeight())
@@ -166,7 +165,7 @@ function TextButtonStyle:draw(widget)
 		if widget:getIsFocused() then
 			local alpha = math.abs(math.sin(love.timer.getTime() * math.pi))
 			love.graphics.setColor(self.color.r, self.color.b, self.color.g, alpha)
-			love.graphics.line(cursorX, cursorY, cursorX, cursorY + font:getHeight())
+			itsyrealm.graphics.line(cursorX, cursorY, cursorX, cursorY + font:getHeight())
 		end
 
 		love.graphics.setFont(previousFont)
@@ -175,11 +174,14 @@ function TextButtonStyle:draw(widget)
 			local font = self.font or love.graphics.getFont()
 			local alpha = math.abs(math.sin(love.timer.getTime() * math.pi))
 			love.graphics.setColor(self.color.r, self.color.b, self.color.g, alpha)
-			love.graphics.line(2, 0, 2, font:getHeight())
+			itsyrealm.graphics.line(2, 0, 2, font:getHeight())
 		end
 	end
 
-	love.graphics.setScissor()
+	itsyrealm.graphics.translate(-self.padding, -self.padding)
+	itsyrealm.graphics.popPseudoScissor()
+	itsyrealm.graphics.resetPseudoScissor()
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return TextButtonStyle

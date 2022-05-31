@@ -68,6 +68,7 @@ Application.CLICK_ACTION = 1
 Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
+Application.DEBUG_DRAW_THRESHOLD = 160
 
 function Application:new(multiThreaded)
 	self.camera = ThirdPersonCamera()
@@ -391,6 +392,10 @@ function Application:drawDebug()
 		0,
 		600,
 		'right')
+
+	if drawCalls > Application.DEBUG_DRAW_THRESHOLD then
+		Log.info("Debug draws exceeded threshold: %d calls in frame.", drawCalls)
+	end
 end
 
 function Application:_draw()

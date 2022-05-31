@@ -10,6 +10,7 @@
 local DynamicAtlas = require "atlas.dynamicSize"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Button = require "ItsyScape.UI.Button"
 local ButtonRenderer = require "ItsyScape.UI.ButtonRenderer"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
@@ -100,6 +101,10 @@ function itsyrealm.graphics.impl.captureRenderState()
 	}
 end
 
+function itsyrealm.graphics.impl.setRenderState(renderState)
+	love.graphics.setColor(renderState.color)
+end
+
 function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
 	local atlas = graphicsState.atlas.image
 	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
@@ -155,7 +160,7 @@ function itsyrealm.graphics.impl.clearScissor()
 end
 
 function itsyrealm.graphics.start()	
-	-- Nothing.
+	graphicsState.transform:reset()
 end
 
 function itsyrealm.graphics.stop()
@@ -176,7 +181,7 @@ function itsyrealm.graphics.stop()
 		local draw = graphicsState.drawQueue[i]
 		draw.command(unpack(draw, 1, draw.n))
 	end
-	graphicsState.drawQueue = {}
+	table.clear(graphicsState.drawQueue)
 	love.graphics.pop()
 end
 
@@ -257,6 +262,22 @@ function itsyrealm.graphics.draw(image, ...)
 		itsyrealm.graphics.impl.captureRenderState(),
 		image,
 		...)
+end
+
+function itsyrealm.graphics.line(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		love.graphics.line, ...)
+end
+
+function itsyrealm.graphics.rectangle(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		love.graphics.rectangle, ...)
 end
 
 function itsyrealm.graphics.uncachedDraw(...)
@@ -358,12 +379,22 @@ function itsyrealm.graphics.translate(...)
 	itsyrealm.graphics.impl.push(
 		love.graphics.translate,
 		...)
+	graphicsState.transform:translate(...)
 end
 
 function itsyrealm.graphics.scale(...)
 	itsyrealm.graphics.impl.push(
 		love.graphics.scale,
 		...)
+	graphicsState.transform:scale(...)
+end
+
+function itsyrealm.graphics.transformPoint(...)
+	return graphicsState.transform:transformPoint(...)
+end
+
+function itsyrealm.graphics.inverseTransformPoint(...)
+	return graphicsState.transform:inverseTransformPoint(...)
 end
 
 function UIView:new(gameView)
@@ -596,7 +627,7 @@ function UIView:draw()
 	self.renderManager:draw(self.root)
 	self.renderManager:stop()
 	love.graphics.pop()
-	itsyrealm.graphics.stop()
+	DebugStats.GLOBAL:measure("itsyrealm.graphics.stop()", itsyrealm.graphics.stop)
 end
 
 function UIView:getMode()
