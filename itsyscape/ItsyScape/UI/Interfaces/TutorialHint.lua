@@ -46,6 +46,7 @@ function TutorialHint.Circle:draw()
 	itsyrealm.graphics.circle('line', 1, 1, self.radius)
 	love.graphics.setColor(1, 1, 0, alpha)
 	itsyrealm.graphics.circle('line', 0, 0, self.radius)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 TutorialHint.Rectangle = Class(Drawable)
@@ -65,6 +66,7 @@ function TutorialHint.Rectangle:draw()
 	itsyrealm.graphics.rectangle('line', 1, 1, w, h, 4, 4)
 	love.graphics.setColor(1, 1, 0, alpha)
 	itsyrealm.graphics.rectangle('line', 0, 0, w, h, 4, 4)
+	love.graphics.setColor(1 ,1, 1, 1)
 end
 
 function TutorialHint:new(id, index, ui)

@@ -98,6 +98,7 @@ function itsyrealm.graphics.impl.captureRenderState()
 	return {
 		color = { love.graphics.getColor() },
 		font = love.graphics.getFont(),
+		lineHeight = love.graphics.getFont():getLineHeight(),
 		lineWidth = love.graphics.getLineWidth()
 	}
 end
@@ -105,6 +106,7 @@ end
 function itsyrealm.graphics.impl.setRenderState(renderState)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setLineWidth(renderState.lineWidth)
+	love.graphics.setBlendMode("alpha")
 end
 
 function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
@@ -144,13 +146,21 @@ end
 function itsyrealm.graphics.impl.print(renderState, text, ...)
 	love.graphics.setFont(renderState.font)
 	love.graphics.setColor(renderState.color)
+	local oldLineHeight = renderState.font:getLineHeight()
+	renderState.font:setLineHeight(renderState.lineHeight)
+	love.graphics.setBlendMode("alpha")
 	love.graphics.print(text, ...)
+	renderState.font:setLineHeight(oldLineHeight)
 end
 
 function itsyrealm.graphics.impl.printf(renderState, text, ...)
 	love.graphics.setFont(renderState.font)
 	love.graphics.setColor(renderState.color)
+	local oldLineHeight = renderState.font:getLineHeight()
+	renderState.font:setLineHeight(renderState.lineHeight)
+	love.graphics.setBlendMode("alpha")
 	love.graphics.printf(text, ...)
+	renderState.font:setLineHeight(oldLineHeight)
 end
 
 function itsyrealm.graphics.impl.setScissor(x, y, w, h)
