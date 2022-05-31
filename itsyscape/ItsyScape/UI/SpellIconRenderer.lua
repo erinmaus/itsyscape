@@ -33,7 +33,6 @@ function SpellIconRenderer:stop()
 	WidgetRenderer.stop(self)
 
 	for icon in pairs(self.unvisitedIcons) do
-		self.icons[icon]:release()
 		self.icons[icon] = nil
 	end
 end
@@ -56,7 +55,7 @@ function SpellIconRenderer:drawIcon(widget, state, x, y)
 			scaleY = height / icon:getHeight()
 		end
 
-		love.graphics.draw(
+		itsyrealm.graphics.draw(
 			icon,
 			(x or 0) * scaleX,
 			(y or 0) * scaleY,
@@ -98,7 +97,7 @@ function SpellIconRenderer:draw(widget, state)
 
 		love.graphics.setColor(0, 1, 0, 1)
 		local w, h = widget:getSize()
-		love.graphics.rectangle(
+		itsyrealm.graphics.rectangle(
 			'line',
 			LINE_WIDTH, LINE_WIDTH,
 			w - LINE_WIDTH * 2, h - LINE_WIDTH * 2,

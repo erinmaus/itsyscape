@@ -260,16 +260,15 @@ function ActorView:playAnimation(slot, animation, priority, time)
 					a.instance:stop()
 				end
 
-				a.cacheRef = cacheRef
+				a.cacheRef = animation
 				a.definition = definition:getResource()
 				a.instance = a.definition:play(self.animatable)
 				a.time = time or 0
 				a.priority = priority or -math.huge
-
-				self:sortAnimations()
 			end
 
 			self.animations[slot] = a
+			self:sortAnimations()
 		end)
 
 		self.animations[slot] = a
