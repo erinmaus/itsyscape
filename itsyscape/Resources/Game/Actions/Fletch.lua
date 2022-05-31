@@ -20,8 +20,8 @@ function Fletch:perform(state, player)
 	local flags = { ['item-inventory'] = true }
 
 	if self:canPerform(state, flags) then
-		local a = WaitCommand(self:getActionDuration(5))
-		local b = CallbackCommand(self.make, self, state, player)
+		local a = CallbackCommand(self.make, self, state, player)
+		local b = WaitCommand(self:getActionDuration())
 
 		local queue = player:getCommandQueue()
 		return queue:push(CompositeCommand(nil, a, b))

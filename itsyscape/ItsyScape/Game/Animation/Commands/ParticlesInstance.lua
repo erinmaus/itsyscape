@@ -67,7 +67,7 @@ function ParticlesInstance:play(animatable, time)
 				until not bone
 
 				for i = 1, #parents do
-					transform:apply(transforms[parents[i]])
+					transform:apply(transforms:getTransform(parents[i]))
 				end
 			end
 

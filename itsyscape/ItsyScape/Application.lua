@@ -392,10 +392,6 @@ function Application:drawDebug()
 		0,
 		600,
 		'right')
-
-	if drawCalls > Application.DEBUG_DRAW_THRESHOLD then
-		Log.info("Debug draws exceeded threshold: %d calls in frame.", drawCalls)
-	end
 end
 
 function Application:_draw()
