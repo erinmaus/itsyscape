@@ -76,9 +76,11 @@ end
 local graphicsState = {
 	currentTextures = {},
 	textureTimeoutSeconds = 5,
+	text = {},
 	atlas = DynamicAtlas.new(0, 1, 0),
 	transform = love.math.newTransform(),
-	pseudoScissor = {}
+	pseudoScissor = {},
+	drawQueue = {}
 }
 
 do
@@ -87,9 +89,72 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+
+	setmetatable(graphicsState.text, { __mode = 'k' })
 end
 
-function itsyrealm.graphics.start()
+function itsyrealm.graphics.impl.captureRenderState()
+	return {
+		color = { love.graphics.getColor() },
+		font = love.graphics.getFont()
+	}
+end
+
+function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
+	local atlas = graphicsState.atlas.image
+	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
+	local atlasQuad = graphicsState.atlas.quads[image]
+
+	local qx, qy, qw, qh = quad:getViewport()
+	local ax, ay, aw, ah = atlasQuad:getViewport()
+	local tw, th = atlasQuad:getTextureDimensions()
+	if not graphicsState.quad then
+		graphicsState.quad = love.graphics.newQuad(
+			ax + qx, ay + qy, qw, qh, tw, th)
+	else
+		graphicsState.quad:setViewport(
+			ax + qx, ay + qy, qw, qh, tw, th)
+	end
+
+	love.graphics.setColor(renderState.color)
+	love.graphics.drawLayer(atlas, atlasImage.layer, graphicsState.quad, ...)
+end
+
+function itsyrealm.graphics.impl.draw(renderState, image, ...)
+	local atlas = graphicsState.atlas.image
+	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
+	local atlasQuad = graphicsState.atlas.quads[image]
+
+	love.graphics.setColor(renderState.color)
+	love.graphics.drawLayer(atlas, atlasImage.layer, atlasQuad, ...)
+end
+
+function itsyrealm.graphics.impl.uncachedDraw(renderState, image, ...)
+	love.graphics.setColor(renderState.color)
+	love.graphics.draw(image, ...)
+end
+
+function itsyrealm.graphics.impl.print(renderState, text, ...)
+	love.graphics.setFont(renderState.font)
+	love.graphics.setColor(renderState.color)
+	love.graphics.print(text, ...)
+end
+
+function itsyrealm.graphics.impl.printf(renderState, text, ...)
+	love.graphics.setFont(renderState.font)
+	love.graphics.setColor(renderState.color)
+	love.graphics.printf(text, ...)
+end
+
+function itsyrealm.graphics.impl.setScissor(x, y, w, h)
+	love.graphics.setScissor(x, y, w, h)
+end
+
+function itsyrealm.graphics.impl.clearScissor()
+	love.graphics.setScissor()
+end
+
+function itsyrealm.graphics.start()	
 	-- Nothing.
 end
 
@@ -102,11 +167,39 @@ function itsyrealm.graphics.stop()
 			graphicsState.currentTextures[texture] = nil
 		end
 	end
+
+	graphicsState.atlas:bake()
+
+	love.graphics.push('all')
+	love.graphics.setBlendMode('alpha', 'premultiplied')
+	for i = 1, #graphicsState.drawQueue do
+		local draw = graphicsState.drawQueue[i]
+		draw.command(unpack(draw, 1, draw.n))
+	end
+	graphicsState.drawQueue = {}
+	love.graphics.pop()
+end
+
+function itsyrealm.graphics.clearPseudoScissor()
+	local w, h = love.window.getMode()
+	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+end
+
+function itsyrealm.graphics.impl.push(command, ...)
+	table.insert(
+		graphicsState.drawQueue,
+		{
+			command = command,
+			n = select('#', ...),
+			...
+		})
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
 	local w, h = love.window.getMode()
-	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setScissor,
+		0, 0, w, h)
 end
 
 function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
@@ -130,44 +223,147 @@ function itsyrealm.graphics.popPseudoScissor()
 end
 
 function itsyrealm.graphics.applyPseudoScissor()
-	love.graphics.setScissor(unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setScissor,
+		unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
+end
+
+function itsyrealm.graphics.getPseudoScissor()
+	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
 end
 
 function itsyrealm.graphics.drawq(image, quad, ...)
 	if not graphicsState.currentTextures[image] then
-		graphicsState.atlas:add(image, image, true)
+		graphicsState.atlas:add(image, image)
 	end
 	graphicsState.currentTextures[image] = love.timer.getTime()
 
-	local atlas = graphicsState.atlas.image
-	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
-	local atlasQuad = graphicsState.atlas.quads[image]
-
-	local qx, qy, qw, qh = quad:getViewport()
-	local ax, ay, aw, ah = atlasQuad:getViewport()
-	local tw, th = atlasQuad:getTextureDimensions()
-	if not graphicsState.quad then
-		graphicsState.quad = love.graphics.newQuad(
-			ax + qx, ay + qy, qw, qh, tw, th)
-	else
-		graphicsState.quad:setViewport(
-			ax + qx, ay + qy, qw, qh, tw, th)
-	end
-
-	love.graphics.drawLayer(atlas, atlasImage.layer, graphicsState.quad, ...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.drawq,
+		itsyrealm.graphics.impl.captureRenderState(),
+		image,
+		quad,
+		...)
 end
 
 function itsyrealm.graphics.draw(image, ...)
 	if not graphicsState.currentTextures[image] then
-		graphicsState.atlas:add(image, image, true)
+		graphicsState.atlas:add(image, image)
 	end
 	graphicsState.currentTextures[image] = love.timer.getTime()
 
-	local atlas = graphicsState.atlas.image
-	local atlasImage = graphicsState.atlas.images[graphicsState.atlas.ids[image]]
-	local atlasQuad = graphicsState.atlas.quads[image]
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.draw,
+		itsyrealm.graphics.impl.captureRenderState(),
+		image,
+		...)
+end
 
-	love.graphics.drawLayer(atlas, atlasImage.layer, atlasQuad, ...)
+function itsyrealm.graphics.uncachedDraw(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.uncachedDraw,
+		itsyrealm.graphics.impl.captureRenderState(),
+		...)
+end
+
+function itsyrealm.graphics.print(text, ...)
+	if type(text) == 'table' then
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.print,
+			itsyrealm.graphics.impl.captureRenderState(),
+			text,
+			...)
+	else
+		local font = love.graphics.getFont()
+		local fontTexts = graphicsState.text[font] or {}
+		local fontTextCanvas = fontTexts[text]
+		if not fontTextCanvas then
+			local width = font:getWidth(text)
+			local height = font:getHeight()
+
+			if width == 0 or height == 0 then
+				return
+			end
+
+			love.graphics.push('all')
+			local canvas = love.graphics.newCanvas(width, height)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setScissor()
+			love.graphics.origin()
+			love.graphics.setBlendMode("alpha")
+			love.graphics.setCanvas(canvas)
+			love.graphics.print(text, 0, 0)
+			love.graphics.pop()
+
+			fontTextCanvas = {
+				image = canvas,
+				time = love.timer.getTime()
+			}
+
+			fontTexts[text] = fontTextCanvas
+		end
+
+		graphicsState.text[font] = fontTexts
+		itsyrealm.graphics.draw(fontTextCanvas.image, ...)
+	end
+end
+
+function itsyrealm.graphics.printf(text, x, y, width, align, ...)
+	if type(text) == 'table' then
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.printf,
+			itsyrealm.graphics.impl.captureRenderState(),
+			text,
+			x,
+			y,
+			width,
+			align,
+			...)
+	else
+		local font = love.graphics.getFont()
+		local fontTexts = graphicsState.text[font] or {}
+		local fontTextCanvas = fontTexts[text]
+		if not fontTextCanvas then
+			local _, lines = font:getWrap(text, width)
+			local height = font:getHeight() * font:getLineHeight() * #lines
+
+			if width == 0 or height == 0 then
+				return
+			end
+
+			love.graphics.push('all')
+			local canvas = love.graphics.newCanvas(width, height)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setScissor()
+			love.graphics.origin()
+			love.graphics.setBlendMode("alpha", "premultiplied")
+			love.graphics.setCanvas(canvas)
+			love.graphics.printf(text, 0, 0, width, align)
+			love.graphics.pop()
+
+			fontTextCanvas = {
+				image = canvas,
+				time = love.timer.getTime()
+			}
+
+			fontTexts[text] = fontTextCanvas
+		end
+
+		graphicsState.text[font] = fontTexts
+		itsyrealm.graphics.draw(fontTextCanvas.image, x, y, ...)
+	end
+end
+
+function itsyrealm.graphics.translate(...)
+	itsyrealm.graphics.impl.push(
+		love.graphics.translate,
+		...)
+end
+
+function itsyrealm.graphics.scale(...)
+	itsyrealm.graphics.impl.push(
+		love.graphics.scale,
+		...)
 end
 
 function UIView:new(gameView)
@@ -395,9 +591,11 @@ function UIView:draw()
 	love.graphics.ortho(love.window.getMode())
 
 	itsyrealm.graphics.start()
+	love.graphics.push("all")
 	self.renderManager:start()
 	self.renderManager:draw(self.root)
 	self.renderManager:stop()
+	love.graphics.pop()
 	itsyrealm.graphics.stop()
 end
 
