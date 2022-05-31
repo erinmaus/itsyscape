@@ -73,7 +73,7 @@ function TextureRenderer:draw(widget, state)
 		x = x / 2
 		y = y / 2
 
-		love.graphics.draw(
+		itsyrealm.graphics.uncachedDraw(
 			texture, quad.q,
 			x, y,
 			widget:getRotation(),
