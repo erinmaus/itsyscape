@@ -292,6 +292,10 @@ function Bank:new(id, index, ui)
 	self.withdrawXCount = 1000
 end
 
+function Bank:getIsFullscreen()
+	return true
+end
+
 function Bank:changeWithdrawXAmount(textInput)
 	-- Remove all non-number values
 	value = string.gsub(textInput:getText(), "[^%d]", "")

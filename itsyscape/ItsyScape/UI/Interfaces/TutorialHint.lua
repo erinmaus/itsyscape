@@ -43,9 +43,9 @@ function TutorialHint.Circle:draw()
 	love.graphics.setLineWidth(4)
 
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.circle('line', 1, 1, self.radius)
+	itsyrealm.graphics.circle('line', 1, 1, self.radius)
 	love.graphics.setColor(1, 1, 0, alpha)
-	love.graphics.circle('line', 0, 0, self.radius)
+	itsyrealm.graphics.circle('line', 0, 0, self.radius)
 end
 
 TutorialHint.Rectangle = Class(Drawable)
@@ -62,9 +62,9 @@ function TutorialHint.Rectangle:draw()
 
 	local w, h = self:getSize()
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.rectangle('line', 1, 1, w, h, 4, 4)
+	itsyrealm.graphics.rectangle('line', 1, 1, w, h, 4, 4)
 	love.graphics.setColor(1, 1, 0, alpha)
-	love.graphics.rectangle('line', 0, 0, w, h, 4, 4)
+	itsyrealm.graphics.rectangle('line', 0, 0, w, h, 4, 4)
 end
 
 function TutorialHint:new(id, index, ui)

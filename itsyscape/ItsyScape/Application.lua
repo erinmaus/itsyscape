@@ -405,7 +405,7 @@ function Application:_draw()
 
 	local delta = self:getFrameDelta()
 	do
-		if self.show3D then
+		if self.show3D and not self.uiView:getIsFullscreen() then
 			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
 		end
 
