@@ -10,6 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Button = require "ItsyScape.UI.Button"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Label = require "ItsyScape.UI.Label"
@@ -143,7 +144,7 @@ function NewMapInterface:createMap()
 				map:getHeight() / 2 * map:getCellSize())
 			self.application:getCamera():setPosition(center)
 
-			gameView:getMapSceneNode(1):setParent(gameView:getScene())
+			stage:onMapMoved(1, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 
 			self.onSubmit(self)
 			self:close()

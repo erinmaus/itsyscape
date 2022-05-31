@@ -873,9 +873,7 @@ function MapEditorApplication:load(filename, preferExisting)
 			stage:newMap(
 				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID)
 			stage:updateMap(layer, map)
-
-			local gameView = self:getGameView()
-			gameView:getMapSceneNode(layer):setParent(gameView:getScene())
+			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
 	end
 

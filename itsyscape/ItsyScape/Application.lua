@@ -161,7 +161,7 @@ function Application:getGameDB()
 end
 
 function Application:getGame()
-	return self.game
+	return self.localGame or self.game
 end
 
 function Application:getGameView()
