@@ -1,7 +1,9 @@
 require "bootstrap"
 
 itsyrealm = {
-	graphics = {}
+	graphics = {
+		impl = {}
+	}
 }
 
 _ARGS = {}

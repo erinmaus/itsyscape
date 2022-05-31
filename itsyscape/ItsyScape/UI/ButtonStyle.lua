@@ -129,7 +129,7 @@ function ButtonStyle:draw(widget)
 
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(
+			itsyrealm.graphics.printf(
 				widget:getText(),
 				x + 1,
 				y + 1,
@@ -138,7 +138,7 @@ function ButtonStyle:draw(widget)
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(
+		itsyrealm.graphics.printf(
 			widget:getText(),
 			x,
 			y,

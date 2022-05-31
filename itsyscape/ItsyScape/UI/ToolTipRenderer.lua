@@ -46,10 +46,10 @@ function ToolTipRenderer:layout(widget)
 				love.graphics.setFont(self.headerFont)
 				if value.shadow then
 					love.graphics.setColor(0, 0, 0, 1)
-					love.graphics.printf(value.text, 1, textY + 1, maxWidth)
+					itsyrealm.graphics.printf(value.text, 1, textY + 1, maxWidth)
 				end
 				love.graphics.setColor(value.color:get())
-				love.graphics.printf(value.text, 0, textY, maxWidth)
+				itsyrealm.graphics.printf(value.text, 0, textY, maxWidth)
 			end)
 
 			height = #lines * self.headerFont:getLineHeight() * self.headerFont:getHeight()
@@ -74,10 +74,10 @@ function ToolTipRenderer:layout(widget)
 				love.graphics.setFont(self.textFont)
 				if shadow then
 					love.graphics.setColor(0, 0, 0, 1)
-					love.graphics.printf(text, 1, textY + 1, maxWidth)
+					itsyrealm.graphics.printf(text, 1, textY + 1, maxWidth)
 				end
 				love.graphics.setColor(color:get())
-				love.graphics.printf(text, 0, textY, maxWidth, 'left')
+				itsyrealm.graphics.printf(text, 0, textY, maxWidth, 'left')
 			end)
 
 			height = #lines * self.textFont:getLineHeight() * self.textFont:getHeight()
@@ -103,13 +103,13 @@ function ToolTipRenderer:draw(widget, state)
 	sy = sy / scale
 
 	if sx + width > screenWidth then
-		love.graphics.translate(screenWidth - (sx + width), 0)
+		itsyrealm.graphics.translate(screenWidth - (sx + width), 0)
 	end
 	if sy + height > screenHeight then
-		love.graphics.translate(0, screenHeight - (sy + height))
+		itsyrealm.graphics.translate(0, screenHeight - (sy + height))
 	end
 
-	love.graphics.translate(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)
+	itsyrealm.graphics.translate(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)
 
 	local image
 	do

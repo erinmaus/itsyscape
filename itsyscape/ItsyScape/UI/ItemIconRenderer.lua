@@ -112,10 +112,10 @@ function ItemIconRenderer:draw(widget, state)
 		local textWidth = self.font:getWidth(text) * scaleX
 
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.print(text, width - textWidth, 2 * scaleX, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth, 2 * scaleX, 0, scaleX, scaleX)
 
 		love.graphics.setColor(unpack(color))
-		love.graphics.print(text, width - textWidth - 2 * scaleX, 0, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth - 2 * scaleX, 0, 0, scaleX, scaleX)
 
 		love.graphics.setFont(oldFont)
 		love.graphics.setColor(1, 1, 1, 1)

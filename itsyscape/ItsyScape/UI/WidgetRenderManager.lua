@@ -142,7 +142,7 @@ function WidgetRenderManager:start()
 
 	do
 		local _, _, sx, sy = love.graphics.getScaledMode()
-		love.graphics.scale(sx, sy)
+		itsyrealm.graphics.scale(sx, sy)
 	end
 
 	local currentTime = love.timer.getTime()
@@ -153,16 +153,14 @@ function WidgetRenderManager:start()
 		end
 	end
 
-	itsyrealm.graphics.resetPseudoScissor()
+	itsyrealm.graphics.clearPseudoScissor()
 end
 
 function WidgetRenderManager:stop()
 	if self.cursor.widget then
-		love.graphics.push('all')
-		love.graphics.translate(self.cursor.x, self.cursor.y)
-		love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
+		itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 		self:draw(self.cursor.widget, self.cursor.state, true)
-		love.graphics.pop()
 	end
 
 	local toolTips = self:getToolTips()
@@ -172,18 +170,14 @@ function WidgetRenderManager:stop()
 		if toolTip:getDuration() < 0.5 then
 			self.toolTips[toolTip] = nil
 		else
-			love.graphics.push('all')
 			self:draw(toolTip, {}, true)
-			love.graphics.pop()
 		end
 	end
 
 	for widget, toolTip in pairs(self.hovered) do
 		if toolTip then
-			love.graphics.push('all')
-			love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+			itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 			self:draw(toolTip.w, toolTip.s, true)
-			love.graphics.pop()
 		end
 	end
 
@@ -216,7 +210,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	local widgetX, widgetY = widget:getPosition()
 
-	love.graphics.translate(widgetX, widgetY)
+	itsyrealm.graphics.translate(widgetX, widgetY)
 
 	local cornerX, cornerY = love.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
@@ -239,7 +233,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	end
 
 	local scrollX, scrollY = widget:getScroll()
-	love.graphics.translate(-scrollX, -scrollY)
+	itsyrealm.graphics.translate(-scrollX, -scrollY)
 
 	self:drawChildren(widget, state, cursor)
 
@@ -252,12 +246,12 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		local sw, sh = widget:getScrollSize()
 		local sx, sy = widget:getScroll()
 		if sw > w or sh > h or sx > 0 or sy > 0 then
-			love.graphics.setScissor()
+			itsyrealm.graphics.resetPseudoScissor()
 		end
 	end
 
-	love.graphics.translate(scrollX, scrollY)
-	love.graphics.translate(-widgetX, -widgetY)
+	itsyrealm.graphics.translate(scrollX, scrollY)
+	itsyrealm.graphics.translate(-widgetX, -widgetY)
 end
 
 function WidgetRenderManager:drawChildren(widget, state, cursor)
