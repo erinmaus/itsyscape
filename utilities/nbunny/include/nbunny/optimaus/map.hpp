@@ -56,8 +56,14 @@ namespace nbunny
 		std::vector<love::graphics::Mesh::AttribFormat> mesh_attribs;
 		love::graphics::Mesh* mesh = nullptr;
 
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::vec3> quad;
+		struct Vertex
+		{
+			glm::vec3 position;
+			glm::vec3 normal;
+		};
+
+		std::vector<Vertex> vertices;
+		std::vector<Vertex> quad;
 
 		struct Particle
 		{
@@ -123,6 +129,7 @@ namespace nbunny
 		struct Vertex
 		{
 			glm::vec3 position;
+			glm::vec3 normal;
 			glm::vec2 texture;
 			glm::vec4 color;
 		};

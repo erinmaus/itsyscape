@@ -101,21 +101,22 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_weathermap(lua_State* L)
 
 nbunny::RainWeather::RainWeather() :
 	quad({
-		{ -1,  0,  0 },
-		{  1,  0,  0 },
-		{  1,  1,  0 },
-		{ -1,  0,  0 },
-		{  1,  1,  0 },
-		{ -1,  1,  0 },
-		{  0,  0, -1 },
-		{  0,  1, -1 },
-		{  0,  1,  1 },
-		{  0,  0, -1 },
-		{  0,  1,  1 },
-		{  0,  0,  1 },
+		{ { -1,  0,  0 }, { 0, 0, 1 } },
+		{ {  1,  0,  0 }, { 0, 0, 1 } },
+		{ {  1,  1,  0 }, { 0, 0, 1 } },
+		{ { -1,  0,  0 }, { 0, 0, 1 } },
+		{ {  1,  1,  0 }, { 0, 0, 1 } },
+		{ { -1,  1,  0 }, { 0, 0, 1 } },
+		{ {  0,  0, -1 }, { 0, 0, 1 } },
+		{ {  0,  1, -1 }, { 0, 0, 1 } },
+		{ {  0,  1,  1 }, { 0, 0, 1 } },
+		{ {  0,  0, -1 }, { 0, 0, 1 } },
+		{ {  0,  1,  1 }, { 0, 0, 1 } },
+		{ {  0,  0,  1 }, { 0, 0, 1 } },
 	}),
 	mesh_attribs({
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 	})
 {
 	// Nothing.
@@ -280,9 +281,11 @@ void nbunny::RainWeather::update(const WeatherMap& weather_map, float delta)
 			}
 		}
 
-		for (auto& position: quad)
+		for (auto& input_vertex: quad)
 		{
-			vertices.at(vertex_index++) = position * size + particle.position + position.y * direction * particle.length;
+			auto& output_vertex = vertices.at(vertex_index++);
+			output_vertex.position = input_vertex.position * size + particle.position + input_vertex.position.y * direction * particle.length;
+			output_vertex.normal = input_vertex.normal;
 		}
 	}
 
@@ -297,7 +300,7 @@ void nbunny::RainWeather::update(const WeatherMap& weather_map, float delta)
 		mesh = graphics->newMesh(
 			mesh_attribs,
 			&vertices[0],
-			sizeof(glm::vec3) * vertices.size(),
+			sizeof(Vertex) * vertices.size(),
 			love::graphics::PRIMITIVE_TRIANGLES,
 			love::graphics::vertex::USAGE_STREAM);
 		mesh->flush();
@@ -422,22 +425,22 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_rainweather(lua_State* L)
 
 nbunny::FungalWeather::FungalWeather() :
 	quad({
-		{ {-1, -1,  0 }, { 0, 0 }, { 1, 1, 1, 1 } },
-		{ { 1, -1,  0 }, { 1, 0 }, { 1, 1, 1, 1 } },
-		{ { 1,  1,  0 }, { 1, 1 }, { 1, 1, 1, 1 } },
-		{ {-1, -1,  0 }, { 0, 0 }, { 1, 1, 1, 1 } },
-		{ { 1,  1,  0 }, { 1, 1 }, { 1, 1, 1, 1 } },
-		{ {-1,  1,  0 }, { 0, 1 }, { 1, 1, 1, 1 } },
-
-		{ { 0, -1, -1 }, { 0, 0 }, { 1, 1, 1, 1 } },
-		{ { 0,  1, -1 }, { 1, 0 }, { 1, 1, 1, 1 } },
-		{ { 0,  1,  1 }, { 1, 1 }, { 1, 1, 1, 1 } },
-		{ { 0, -1, -1 }, { 0, 0 }, { 1, 1, 1, 1 } },
-		{ { 0,  1,  1 }, { 1, 1 }, { 1, 1, 1, 1 } },
-		{ { 0, -1,  1 }, { 0, 1 }, { 1, 1, 1, 1 } },
+		{ { -1, -1,  0 }, { 0, 0, 1 }, { 0, 0 }, { 1, 1, 1, 1 } },
+		{ {  1, -1,  0 }, { 0, 0, 1 }, { 1, 0 }, { 1, 1, 1, 1 } },
+		{ {  1,  1,  0 }, { 0, 0, 1 }, { 1, 1 }, { 1, 1, 1, 1 } },
+		{ { -1, -1,  0 }, { 0, 0, 1 }, { 0, 0 }, { 1, 1, 1, 1 } },
+		{ {  1,  1,  0 }, { 0, 0, 1 }, { 1, 1 }, { 1, 1, 1, 1 } },
+		{ { -1,  1,  0 }, { 0, 0, 1 }, { 0, 1 }, { 1, 1, 1, 1 } },
+		{ {  0, -1, -1 }, { 0, 0, 1 }, { 0, 0 }, { 1, 1, 1, 1 } },
+		{ {  0,  1, -1 }, { 0, 0, 1 }, { 1, 0 }, { 1, 1, 1, 1 } },
+		{ {  0,  1,  1 }, { 0, 0, 1 }, { 1, 1 }, { 1, 1, 1, 1 } },
+		{ {  0, -1, -1 }, { 0, 0, 1 }, { 0, 0 }, { 1, 1, 1, 1 } },
+		{ {  0,  1,  1 }, { 0, 0, 1 }, { 1, 1 }, { 1, 1, 1, 1 } },
+		{ {  0, -1,  1 }, { 0, 0, 1 }, { 0, 1 }, { 1, 1, 1, 1 } },
 	}),
 	mesh_attribs({
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	})
@@ -628,6 +631,7 @@ void nbunny::FungalWeather::update(const WeatherMap& weather_map, float delta)
 			auto& output_vertex = vertices.at(vertex_index++);
 
 			output_vertex.position = input_vertex.position * particle.size + particle.position + position_offset;
+			output_vertex.normal = input_vertex.normal;
 			output_vertex.texture = input_vertex.texture;
 			output_vertex.color = color;
 		}
