@@ -13,43 +13,11 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
-local Weather = require "ItsyScape.Graphics.Weather"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local Weather = require "ItsyScape.Graphics.Weather"
+local NFungalWeather = require "nbunny.optimaus.fungalweather"
 
 local FungalWeather = Class(Weather)
-
-FungalWeather.MESH_FORMAT = {
-	{ "VertexPosition", 'float', 3 },
-	{ 'VertexTexture', 'float', 2 },
-	{ "VertexColor", 'float', 4 }
-}
-
-FungalWeather.QUAD = {
-	{ -1, -1,  0, 0, 0, 1, 1, 1, 1 },
-	{  1, -1,  0, 1, 0, 1, 1, 1, 1 },
-	{  1,  1,  0, 1, 1, 1, 1, 1, 1 },
-	{ -1, -1,  0, 0, 0, 1, 1, 1, 1 },
-	{  1,  1,  0, 1, 1, 1, 1, 1, 1 },
-	{ -1,  1,  0, 0, 1, 1, 1, 1, 1 },
-
-	{  0, -1, -1, 0, 0, 1, 1, 1, 1 },
-	{  0,  1, -1, 1, 0, 1, 1, 1, 1 },
-	{  0,  1,  1, 1, 1, 1, 1, 1, 1 },
-	{  0, -1, -1, 0, 0, 1, 1, 1, 1 },
-	{  0,  1,  1, 1, 1, 1, 1, 1, 1 },
-	{  0, -1,  1, 0, 1, 1, 1, 1, 1 },
-}
-
-ffi.cdef [[
-	typedef struct {
-		float x, y, z;
-		float size;
-		float age;
-		float alpha;
-		int color;
-		bool moving;
-	} scape_SporeParticle;	
-]]
 
 FungalWeather.SceneNode = Class(SceneNode)
 FungalWeather.SceneNode.SHADER = ShaderResource()
@@ -84,7 +52,7 @@ function FungalWeather.SceneNode:new(weather)
 end
 
 function FungalWeather.SceneNode:draw(renderer, delta)
-	local mesh = self.weather.mesh
+	local mesh = self.weather:getMesh()
 
 	local shader = renderer:getCurrentShader()
 	local diffuseTexture = self:getMaterial():getTexture(1)
@@ -96,6 +64,7 @@ function FungalWeather.SceneNode:draw(renderer, delta)
 
 	if mesh then
 		love.graphics.push('all')
+		love.graphics.setBlendMode('alpha')
 		love.graphics.setMeshCullMode('none')
 		love.graphics.setDepthMode('lequal', false)
 		love.graphics.draw(mesh)
@@ -112,46 +81,21 @@ function FungalWeather:new(gameView, layer, map, props)
 
 	local width, height = map:getSize()
 
-	self.gravity = Vector(unpack(props.gravity or { 0, -20, 0 }))
-	self.wind = Vector(unpack(props.wind or { 0, 0, 0 }))
-	self.heaviness = math.floor(math.max(props.heaviness or 0.0, 0.0) * width * height)
-	self.minHeight = props.minHeight or 10
-	self.maxHeight = props.maxHeight or 30
-	self.minSize = props.minSize or 2
-	self.maxSize = props.maxSize or 4
-	self.ceiling = props.ceiling or 0
-
-	self.colors = {}
-	do
-		local colors = props.colors or {
-			{ 1, 1, 1, 1 }
-		}
-		for i = 1, #colors do
-			self.colors[i] = Color(unpack(colors[i]))
-		end
-	end
-
-	self.particles = ffi.new("scape_SporeParticle[?]", self.heaviness)
-
-	self.vertices = {}
-	self.vertexCount = self.heaviness * 12 -- 6 per quad, 2 quads per rain streak
-	for i = 1, self.vertexCount do
-		table.insert(self.vertices, { 0, 0, 0 })
-	end
-
-	self.mesh = love.graphics.newMesh(
-		FungalWeather.MESH_FORMAT,
-		self.vertices,
-		'triangles',
-		'dynamic')
-	self.mesh:setAttributeEnabled("VertexPosition", true)
-	self.mesh:setAttributeEnabled("VertexTexture", true)
-	self.mesh:setAttributeEnabled("VertexColor", true)
+	self._handle = NFungalWeather()
+	self._handle:setGravity(unpack(props.gravity or { 0, -20, 0 }))
+	self._handle:setWind(unpack(props.wind or { 0, 0, 0 }))
+	self._handle:setHeaviness(math.max(props.heaviness or 0.0, 0))
+	self._handle:setMinHeight(props.minHeight or 30)
+	self._handle:setMaxHeight(props.maxHeight or 50)
+	self._handle:setMinSize(props.minSize or 2)
+	self._handle:setMaxSize(props.maxSize or 4)
+	self._handle:setCeiling(props.ceiling or 0.0)
+	self._handle:setColors(props.color or { { 1.0, 1.0, 1.0, 1.0 } })
 
 	self.node = FungalWeather.SceneNode(self)
 	self.node:setParent(gameView:getMapSceneNode(layer))
 
-	if props.init == nil or props.init then
+	if props.init then
 		for i = 1, props.steps or 100 do
 			self:update(1)
 		end
@@ -160,88 +104,101 @@ function FungalWeather:new(gameView, layer, map, props)
 	end
 end
 
+function FungalWeather:getMesh()
+	return self._handle:getMesh()
+end
+
+function FungalWeather:getGravity()
+	return Vector(self._handle:getGravity())
+end
+
+function FungalWeather:setGravity(value)
+	self._handle:setGravity(value:get())
+end
+
+function FungalWeather:getWind()
+	return Vector(self._handle:getWind())
+end
+
+function FungalWeather:setWind(value)
+	self._handle:setWind(value:get())
+end
+
+function FungalWeather:getHeaviness()
+	return self._handle:getHeaviness()
+end
+
+function FungalWeather:setHeaviness(value)
+	self._handle:setHeaviness(value)
+end
+
+function FungalWeather:getMinHeight()
+	return self._handle:getMinHeight()
+end
+
+function FungalWeather:setMinHeight(value)
+	self._handle:setMinHeight(value)
+end
+
+function FungalWeather:getMaxHeight()
+	return self._handle:getMaxHeight()
+end
+
+function FungalWeather:setMaxHeight(value)
+	self._handle:setMaxHeight(value)
+end
+
+function FungalWeather:getMinSize()
+	return self._handle:getMinSize()
+end
+
+function FungalWeather:setMinSize(value)
+	self._handle:setMinSize(value)
+end
+
+function FungalWeather:getMaxSize()
+	return self._handle:getMaxSize()
+end
+
+function FungalWeather:setMaxSize(value)
+	self._handle:setMaxSize(value)
+end
+
+function FungalWeather:getCeiling()
+	return self._handle:getCeiling()
+end
+
+function FungalWeather:setCeiling(value)
+	self._handle:setCeiling(value)
+end
+
+function FungalWeather:getColors()
+	local colors = self._handle:getColors()
+	local c = {}
+	for i = 1, #c do
+		c[i] = Color(colors[i])
+	end
+
+	return c
+end
+
+function FungalWeather:setColors(colors)
+	local c = {}
+	for i = 1, #colors do
+		c[i] = { colors[i]:get() }
+	end
+
+	self._handle:setColors(c)
+end
+
 function FungalWeather:update(delta)
 	Weather.update(self, delta)
 
+	self._handle:update(self:getMap():getHandle(), delta)
+
 	local map = self:getMap()
 	local startI, startJ = map:getPosition()
-	local mapWidth, mapHeight = map:getSize()
 	local cellSize = map:getCellSize()
-	local gravity = self.gravity
-	local velocity = (gravity + self.wind) * delta
-	local speed = gravity:getLength() * delta
-	local direction = -(gravity + self.wind):getNormal()
-	local size = self.size
-	local ceiling = self.ceiling
-	local vertexIndex = 1
-	local vertices = FungalWeather.QUAD
-
-	for i = 1, self.heaviness do
-		local p = self.particles + (i - 1)
-
-		if p.alpha >= p.size then
-			local s, t = math.random(), math.random()
-			do
-				s = s * cellSize
-				t = t * cellSize
-			end
-
-
-			local i, j = math.random(startI, startI + mapWidth), math.random(startJ, startJ + mapHeight)
-			local x = (i - 1) * cellSize + s
-			local y = math.random() * (self.maxHeight - self.minHeight) + self.minHeight
-			local z = (j - 1) * cellSize + t
-			local s = math.random() * (self.maxSize - self.minSize) + self.minSize
-
-			p.x, p.y, p.z = x, y, z
-			p.alpha = 0
-			p.age = 0
-			p.size = s / 10
-			p.moving = true
-			p.color = math.random(#self.colors)
-		else
-			p.age = p.age + delta
-
-			if p.moving then
-				local i = math.floor(p.x / cellSize + 1)
-				local j = math.floor(p.z / cellSize + 1)
-
-				local height = math.max(map:getHeightAt(i, j), 0)
-				if p.y <= height and gravity.y <= 0 then
-					p.moving = false
-				elseif p.y >= height + ceiling and gravity.y >= 0 then
-					p.moving = false
-				else
-					p.x = p.x + velocity.x
-					p.y = p.y + velocity.y
-					p.z = p.z + velocity.z
-				end
-			else
-				p.alpha = p.alpha + speed
-			end
-		end
-
-		for j = 1, #vertices do
-			local input = vertices[j]
-			local output = self.vertices[vertexIndex]
-			local r, g, b = self.colors[p.color]:get()
-			local a = 1 - math.max(math.min(p.alpha / p.size,  1), 0)
-
-			output[1] = input[1] * p.size + p.x + math.cos(p.age) * p.size * 2
-			output[2] = input[2] * p.size + p.y + math.sin(p.age) * p.size * 2
-			output[3] = input[3] * p.size + p.z
-			output[4] = input[4]
-			output[5] = input[5]
-			output[6] = r
-			output[7] = g
-			output[8] = b
-			output[9] = a
-
-			vertexIndex = vertexIndex + 1
-		end
-	end
-
-	self.mesh:setVertices(self.vertices)
 	self.node:getTransform():setLocalTranslation(Vector(startI * cellSize, 0, startJ * cellSize))
 end
 
