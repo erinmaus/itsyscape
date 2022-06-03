@@ -61,6 +61,7 @@ function BookView:load()
 		self:getResourcePath("Book.lskel"),
 		function(skeleton)
 			self.skeleton = skeleton
+			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
 				SkeletonAnimationResource,
@@ -133,9 +134,15 @@ function BookView:update(delta)
 	PropView.update(self, delta)
 
 	if self.spawned then
-		self.time = math.min(self.time + delta, self:getCurrentAnimation():getDuration())
-		self:getCurrentAnimation():computeTransforms(self.time, self.transforms)
-		self.node:setTransforms(self.transforms)
+		local animation = self:getCurrentAnimation()
+		local skeleton = self.skeleton:getResource()
+
+		self.time = math.min(self.time + delta, animation:getDuration())
+
+		self.transforms:reset()
+		animation:computeFilteredTransforms(self.time, self.transforms)
+		skeleton:applyTransforms(self.transforms)
+		skeleton:applyBindPose(self.transforms)
 	end
 end
 
