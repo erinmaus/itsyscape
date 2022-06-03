@@ -168,7 +168,7 @@ function LocalProp:getActions(scope)
 		--
 		-- However, we only want to return 'scope' actions, so we have to look-up
 		-- the actions *again*.
-		local actions = Utility.getActions(self.game, mapObject)
+		local actions = Utility.getActions(self.game, mapObject, scope or 'world')
 		if #actions > 0 then
 			return Utility.getActions(self.game, mapObject, scope or 'world')
 		end

@@ -20,11 +20,13 @@ function Property.Actions:filter(actions)
 	local result = {}
 	for i = 1, #actions do
 		local action = actions[i]
-		table.insert(result, {
-			id = action.id,
-			type = action.type,
-			verb = action.verb
-		})
+		if action.instance.SCOPES['world'] then
+			table.insert(result, {
+				id = action.id,
+				type = action.type,
+				verb = action.verb
+			})
+		end
 	end
 
 	return result
