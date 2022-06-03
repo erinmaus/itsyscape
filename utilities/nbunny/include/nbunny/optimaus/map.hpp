@@ -113,6 +113,80 @@ namespace nbunny
 
 		void update(const WeatherMap& weather_map, float delta);
 	};
+
+	class FungalWeather
+	{
+	private:
+		std::vector<love::graphics::Mesh::AttribFormat> mesh_attribs;
+		love::graphics::Mesh* mesh = nullptr;
+
+		struct Vertex
+		{
+			glm::vec3 position;
+			glm::vec2 texture;
+			glm::vec4 color;
+		};
+
+		std::vector<Vertex> vertices;
+		std::vector<Vertex> quad;
+
+		struct Particle
+		{
+			glm::vec3 position = glm::vec3(0.0f);
+			float size = 0.0f;
+			float age = 0.0f;
+			float alpha = 0.0f;
+			bool is_moving = false;
+			glm::vec4 color = glm::vec4(1.0f);
+		};
+
+		std::vector<Particle> particles;
+
+		glm::vec3 gravity = glm::vec3(0.0f, -20.0f, 0.0f);
+		glm::vec3 wind = glm::vec3(0.0f);
+		float heaviness = 0.0f;
+		float min_height = 30.0f;
+		float max_height = 50.0f;
+		float min_size = 2.0f;
+		float max_size = 4.0f;
+		float ceiling = 0.0f;
+		std::vector<glm::vec4> colors = { glm::vec4(1.0f) };
+
+	public:
+		FungalWeather();
+		~FungalWeather();
+
+		love::graphics::Mesh* get_mesh();
+
+		void set_gravity(const glm::vec3& value);
+		const glm::vec3& get_gravity() const;
+
+		void set_wind(const glm::vec3& value);
+		const glm::vec3& get_wind() const;
+
+		void set_heaviness(float value);
+		float get_heaviness() const;
+
+		void set_min_height(float value);
+		float get_min_height() const;
+
+		void set_max_height(float value);
+		float get_max_height() const;
+
+		void set_min_size(float value);
+		float get_min_size() const;
+
+		void set_max_size(float value);
+		float get_max_size() const;
+
+		void set_ceiling(float value);
+		float get_ceiling() const;
+
+		void set_colors(const std::vector<glm::vec4>& value);
+		const std::vector<glm::vec4>& get_colors() const;
+
+		void update(const WeatherMap& weather_map, float delta);
+	};
 }
 
 #endif
