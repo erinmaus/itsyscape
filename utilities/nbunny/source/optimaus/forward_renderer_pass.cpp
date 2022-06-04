@@ -96,6 +96,15 @@ void nbunny::ForwardRendererPass::get_nearby_lights(SceneNode& node, float delta
 	auto position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	lights.clear();
+	if (node.get_material().get_is_full_lit())
+	{
+		Light light;
+		light.ambient_coefficient = 1.0f;
+
+		lights.push_back(light);
+		return;
+	}
+
 	for (auto global_light: global_light_scene_nodes)
 	{
 		if (lights.size() >= MAX_LIGHTS)

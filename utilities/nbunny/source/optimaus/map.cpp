@@ -651,6 +651,7 @@ void nbunny::FungalWeather::update(const WeatherMap& weather_map, float delta)
 			sizeof(Vertex) * vertices.size(),
 			love::graphics::PRIMITIVE_TRIANGLES,
 			love::graphics::vertex::USAGE_STREAM);
+
 		mesh->flush();
 	}
 	else
