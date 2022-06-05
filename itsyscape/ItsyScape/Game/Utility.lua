@@ -2136,13 +2136,15 @@ function Utility.Peep.face3D(self)
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-			local xzTilePosition = tilePosition * Vector.PLANE_XZ
+			if map then
+				local selfPosition = Utility.Peep.getAbsolutePosition(self)
+				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+				local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
-			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
-			return true
+				rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+				return true
+			end
 		end
 	end
 
