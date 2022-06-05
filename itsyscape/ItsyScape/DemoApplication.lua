@@ -35,7 +35,7 @@ DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
-	--"TitleScreen_EmptyRuins",
+	"TitleScreen_EmptyRuins",
 	"TitleScreen_RuinsOfRhysilk"
 }
 

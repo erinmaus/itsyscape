@@ -20,6 +20,7 @@ DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - ma
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
+DefaultCameraController.DEFAULT_DISTANCE = 30
 
 DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
@@ -38,6 +39,7 @@ function DefaultCameraController:new(...)
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
 	self:getCamera():setVerticalRotation(
 		DefaultCameraController.CAMERA_VERTICAL_ROTATION)
+	self:getCamera():setDistance(DefaultCameraController.DEFAULT_DISTANCE)
 
 	self.targetDistance = self:getCamera():getDistance()
 
