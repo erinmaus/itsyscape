@@ -96,7 +96,7 @@ void nbunny::ForwardRendererPass::get_nearby_lights(SceneNode& node, float delta
 	auto position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	lights.clear();
-	if (node.get_material().get_is_full_lit())
+	if (node.get_material().get_is_full_lit() || (global_light_scene_nodes.empty() && local_light_scene_nodes.empty()))
 	{
 		Light light;
 		light.ambient_coefficient = 1.0f;
@@ -265,6 +265,7 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 		renderer->draw_node(L, *scene_node, delta);
 	}
