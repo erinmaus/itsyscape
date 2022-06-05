@@ -90,7 +90,7 @@ function FungalWeather:new(gameView, layer, map, props)
 	self._handle:setMinSize(props.minSize or 2)
 	self._handle:setMaxSize(props.maxSize or 4)
 	self._handle:setCeiling(props.ceiling or 0.0)
-	self._handle:setColors(props.color or { { 1.0, 1.0, 1.0, 1.0 } })
+	self._handle:setColors(props.colors or { { 1.0, 1.0, 1.0, 1.0 } })
 
 	self.node = FungalWeather.SceneNode(self)
 	self.node:setParent(gameView:getMapSceneNode(layer))
