@@ -260,26 +260,24 @@ function Application:update(delta)
 end
 
 function Application:tickSingleThread()
-	if not self.paused then
-		self:measure('gameView:tick()', function() self.gameView:tick() end)
-		self:measure('game:tick()', function() self.localGame:tick() end)
-		self:measure('localGameManager:update()', function() self.localGameManager:update() end)
-		self.localGameManager:pushTick()
+	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self:measure('game:tick()', function() self.localGame:tick() end)
+	self:measure('localGameManager:update()', function() self.localGameManager:update() end)
+	self.localGameManager:pushTick()
 
-		self:measure('remoteGameManager:receive()', function()
-			while not self.remoteGameManager:receive() do
-				Log.debug("Remote receive pending.")
-			end
-		end)
+	self:measure('remoteGameManager:receive()', function()
+		while not self.remoteGameManager:receive() do
+			Log.debug("Remote receive pending.")
+		end
+	end)
 
-		self.remoteGameManager:pushTick()
+	self.remoteGameManager:pushTick()
 
-		self:measure('localGameManager:receive()', function()
-			while not self.localGameManager:receive() do
-				Log.debug("Local receive pending.")
-			end
-		end)
-	end
+	self:measure('localGameManager:receive()', function()
+		while not self.localGameManager:receive() do
+			Log.debug("Local receive pending.")
+		end
+	end)
 end
 
 function Application:tickMultiThread()

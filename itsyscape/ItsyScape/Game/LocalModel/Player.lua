@@ -83,8 +83,10 @@ function LocalPlayer:spawn(storage, newGame)
 								location:get("y"),
 								location:get("z")),
 							true)
+
+						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
-						return
+						end
 					end
 				end
 			end
@@ -290,7 +292,7 @@ function LocalPlayer:changeCamera(cameraType)
 end
 
 function LocalPlayer:pokeCamera(event, ...)
-	self.onPokeCamera(event, ...)
+	self.onPokeCamera(self, event, ...)
 end
 
 return LocalPlayer

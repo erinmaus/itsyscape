@@ -10,8 +10,10 @@
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
 local Renderer = require "ItsyScape.Graphics.Renderer"
@@ -32,6 +34,10 @@ DemoApplication.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
+DemoApplication.TITLE_SCREENS = {
+	--"TitleScreen_EmptyRuins",
+	"TitleScreen_RuinsOfRhysilk"
+}
 
 function DemoApplication:new()
 	Application.new(self, true)
@@ -64,7 +70,7 @@ function DemoApplication:changeCamera(_, cameraType)
 	end
 end
 
-function DemoApplication:pokeCamera(event, ...)
+function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
 end
 
@@ -78,30 +84,38 @@ end
 
 function DemoApplication:closeTitleScreen()
 	self:setIsPaused(false)
+	self.titleScreen = nil
 
 	self:closeMainMenu()
-
-	if self.titleScreen then
-		self.titleScreen = nil
-	end
 end
 
 function DemoApplication:openTitleScreen()
 	self:setIsPaused(true)
-	local TitleScreen = require "Resources.Game.TitleScreens.IsabelleIsland.Title"
-	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
+	self.titleScreen = TitleScreen(self:getGameView())
+	self.titleScreen:load()
 
+	local mapName = DemoApplication.TITLE_SCREENS[math.random(#DemoApplication.TITLE_SCREENS)]
+
+	local storage = PlayerStorage()
+	storage:getRoot():set({
+		Location = {
+			x = 1,
+			y = 0,
+			z = 1,
+			name = mapName or "TitleScreen_EmptyRuins",
+			isTitleScreen = true
+		}
+	})
+
+	self:getGame():getPlayer():spawn(storage, false)
 	self:getGameView():playMusic('main', "IsabelleIsland")
 end
 
 function DemoApplication:quit()
-	if not self.titleScreen then
-		local Resource = require "ItsyScape.Graphics.Resource"
-		Resource.quit()
+	local Resource = require "ItsyScape.Graphics.Resource"
+	Resource.quit()
 
-		self:getGame():quit()
-		Log.analytic("END_GAME")
-	end
+	Application.quit()
 
 	return false
 end
@@ -241,6 +255,10 @@ function DemoApplication:openMainMenu()
 	self.mainMenu:addChild(closeButton)
 
 	self:getUIView():getRoot():addChild(self.mainMenu)
+
+	if self.titleScreen then
+		self.titleScreen:enableLogo()
+	end
 end
 
 function DemoApplication:openOptionsScreen(Type, callback)
@@ -251,14 +269,12 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	self.optionsScreen = Type(self)
 	self.optionsScreen.onClose:register(callback)
 	self.mainMenu:addChild(self.optionsScreen)
+
+	self.titleScreen:disableLogo()
 end
 
 function DemoApplication:mousePress(x, y, button)
 	if self.titleScreen and not self.mainMenu then
-		self:openMainMenu()
-
-		self.titleScreen:suppressTitle()
-
 		if _ANALYTICS and not _ANALYTICS:getAcked() and not _ARGS["anonymous"] then
 			local WIDTH = 480
 			local HEIGHT = 240
@@ -546,23 +562,24 @@ function DemoApplication:update(delta)
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)
 
+	self.cameraController:update(delta)
+
 	if self.titleScreen then
 		self.titleScreen:update(delta)
-	end
 
-	self.cameraController:update(delta)
+		if not self.mainMenu and self.titleScreen:isReady() then
+			self:openMainMenu()
+		end
+	end
 end
 
 function DemoApplication:draw(delta)
 	self.cameraController:draw()
 
+	Application.draw(self, delta)
+
 	if self.titleScreen then
 		self.titleScreen:draw()
-
-		self:getUIView():draw()
-		self:drawDebug()
-	else
-		Application.draw(self, delta)
 	end
 end
 
