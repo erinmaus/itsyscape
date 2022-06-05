@@ -186,7 +186,7 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	love::Matrix4 matrix(glm::value_ptr(get_transform().get_global(delta)));
-	matrix.rotate(1, 0, 0, -M_PI / 2);
+	matrix.rotate(1, 0, 0, -LOVE_M_PI / 2);
 	graphics->draw(model->get_mesh(), matrix);
 }
 

@@ -534,7 +534,7 @@ static int mar_clone(lua_State* L)
     return 1;
 }
 
-static const luaL_reg R[] =
+static const luaL_Reg R[] =
 {
     {"encode",      mar_encode},
     {"decode",      mar_decode},
@@ -542,7 +542,13 @@ static const luaL_reg R[] =
     {NULL,	    NULL}
 };
 
-int luaopen_nbunny_marshal(lua_State *L)
+#ifdef NBUNNY_BUILDING_WINDOWS
+	#define NBUNNY_EXPORT __declspec(dllexport)
+#else
+	#define NBUNNY_EXPORT
+#endif
+
+NBUNNY_EXPORT int luaopen_nbunny_marshal(lua_State *L)
 {
     lua_newtable(L);
     luaL_register(L, NULL, R);

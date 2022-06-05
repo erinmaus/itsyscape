@@ -63,7 +63,7 @@ solution "ItsyScape.Utilities"
 			targetdir "bin"
 		configuration "windows"
 			defines { "NBUNNY_BUILDING_WINDOWS" }
-			links { "lua51", "discord_game_sdk" }
+			links { "lua51", "discord_game_sdk", "love" }
 		configuration {}
 			runtime "release"
 
@@ -77,6 +77,7 @@ solution "ItsyScape.Utilities"
 		includedirs {
 			"nbunny/include/",
 			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include"),
+			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include", "modules"),
 		}
 
 		libdirs {
