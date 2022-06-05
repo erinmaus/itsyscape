@@ -315,12 +315,14 @@ end
 -- This process should be the same client/server.
 function GameManager:processCallback(e)
 	local instance = self:getInstance(e.interface, e.id)
-	local obj = instance:getInstance()
-	local event = obj[e.callback]
+	if instance then
+		local obj = instance:getInstance()
+		local event = obj[e.callback]
 
-	if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-		local args = self.state:deserialize(e.value)
-		event(obj, unpack(args, 1, table.maxn(args)))
+		if Class.isCompatibleType(event, Callback) or type(event) == "function" then
+			local args = self.state:deserialize(e.value)
+			event(obj, unpack(args, 1, table.maxn(args)))
+		end
 	end
 end
 
