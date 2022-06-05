@@ -28,7 +28,7 @@ function ShopWindowController:new(peep, director, shop)
 	if self.shop then
 		for action in brochure:findActionsByResource(shop) do
 			local actionType = brochure:getActionDefinitionFromAction(action)
-			local a, ActionType = Utility.getAction(game, action, 'buy')
+			local a, ActionType = Utility.getAction(game, action, 'buy', true)
 			if a and ActionType then
 				local actionInstance = ActionType(game, action)
 				if actionInstance:is('buy') then
