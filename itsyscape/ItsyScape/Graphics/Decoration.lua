@@ -12,58 +12,74 @@ local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
+local NDecoration = require "nbunny.optimaus.decoration"
+local NDecorationFeature = require "nbunny.optimaus.decorationfeature"
 
 local Decoration = Class()
 Decoration.Feature = Class()
 
-function Decoration.Feature:new(tileID, position, rotation, scale, color)
-	self.tileID = tileID or false
-	self.position = position or Vector(0)
-	self.rotation = rotation or Quaternion(0)
-	self.scale = scale or Vector(1)
-	self.color = color or Color()
+function Decoration.Feature:new(handle)
+	self._handle = handle
+end
+
+function Decoration.Feature:getHandle()
+	return self._handle
+end
+
+function Decoration.Feature:setID(value)
+	self:getHandle():setID(value)
 end
 
 function Decoration.Feature:getID()
-	return self.tileID
+	return self:getHandle():getID()
 end
 
 function Decoration.Feature:getPosition()
-	return self.position
+	return Vector(self:getHandle():getPosition())
 end
 
 function Decoration.Feature:setPosition(value)
-	self.position = value or self.position
+	self:getHandle():setPosition(value:get())
 end
 
 function Decoration.Feature:getRotation()
-	return self.rotation
+	return Quaternion(self:getHandle():getRotation())
 end
 
 function Decoration.Feature:setRotation(value)
-	self.rotation = value or self.rotation
+	self:getHandle():setRotation(value:get())
 end
 
 function Decoration.Feature:getScale()
-	return self.scale
+	return Vector(self:getHandle():getScale())
 end
 
 function Decoration.Feature:setScale(value)
-	self.scale = value or self.scale
+	self:getHandle():setScale(value:get())
 end
 
 function Decoration.Feature:getColor()
-	return self.color
+	return Color(self:getHandle():getColor())
 end
 
 function Decoration.Feature:setColor(value)
-	self.color = value or self.color
+	self:getHandle():setColor(value:get())
 end
 
+function Decoration.Feature:serialize()
+	return {
+		id = self:getID(),
+		position = { self:getHandle():getPosition() },
+		rotation = { self:getHandle():getRotation() },
+		scale = { self:getHandle():getScale() },
+		color = { self:getHandle():getColor() }
+	}
+end
 
 function Decoration:new(d)
 	self.tileSetID = false
 	self.features = {}
+	self._handle = NDecoration()
 
 	if type(d) == 'string' then
 		self:loadFromFile(d)
@@ -72,6 +88,10 @@ function Decoration:new(d)
 	else
 		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
+end
+
+function Decoration:getHandle()
+	return self._handle
 end
 
 function Decoration:loadFromFile(filename)
@@ -91,24 +111,20 @@ function Decoration:loadFromTable(t)
 		local rotation = Quaternion(unpack(feature.rotation or { 0, 0, 0, 1 }))
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
-		table.insert(self.features, Decoration.Feature(
-			feature.id,
-			position,
-			rotation,
-			scale,
-			color
-		))
+		self:add(feature.id, position, rotation, scale, color)
 	end
 end
 
 function Decoration:add(id, position, rotation, scale, color)
-	local feature = Decoration.Feature(
-			id,
-			position,
-			rotation,
-			scale,
-			color
-		)
+	local description = Decoration.Feature(NDecorationFeature())
+	description:setID(id)
+	description:setPosition(position or Vector(0))
+	description:setRotation(rotation or Quaternion(0))
+	description:setScale(scale or Vector(1))
+	description:setColor(color or Color(1))
+
+	local feature = Decoration.Feature(self:getHandle():addFeature(description:getHandle()))
+
 	table.insert(self.features, feature)
 
 	return feature
@@ -118,11 +134,11 @@ function Decoration:remove(feature)
 	for i = 1, #self.features do
 		if self.features[i] == feature then
 			table.remove(self.features, i)
-			return true
+			break
 		end
 	end
 
-	return false
+	return self:getHandle():removeFeature(feature:getHandle())
 end
 
 function Decoration:toString()
@@ -157,6 +173,7 @@ function Decoration:toString()
 			r:pushFormatLine(
 				"scale = { %f, %f, %f },",
 				scale.x, scale.y, scale.z)
+			r:pushIndent(2)
 			r:pushFormatLine(
 				"color = { %f, %f, %f, %f },",
 				color.r, color.g, color.b, color.a)
@@ -167,6 +184,18 @@ function Decoration:toString()
 	r:pushLine("}")
 
 	return r:toString()
+end
+
+function Decoration:serialize()
+	local result = {
+		tileSetID = self:getTileSetID()
+	}
+
+	for i = 1, #self.features do
+		table.insert(result, self.features[i]:serialize())
+	end
+
+	return result
 end
 
 Decoration.RAY_TEST_RESULT_FEATURE = 1

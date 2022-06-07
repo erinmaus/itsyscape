@@ -10,13 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
 local Resource = require "ItsyScape.Graphics.Resource"
+local NStaticMeshResource = require "nbunny.optimaus.staticmeshresource"
 
-local StaticMeshResource = Resource()
+local StaticMeshResource = Resource(NStaticMeshResource)
 
 function StaticMeshResource:new(mesh)
 	Resource.new(self)
 
-	self.skeleton = skeleton or false
 	self.mesh = mesh or false
 end
 
@@ -33,7 +33,7 @@ end
 
 function StaticMeshResource:loadFromFile(filename)
 	local file = Resource.readLua(filename)
-	self.mesh = StaticMesh(file, self.skeleton)
+	self.mesh = StaticMesh(file, self:getHandle())
 end
 
 function StaticMeshResource:getIsReady()

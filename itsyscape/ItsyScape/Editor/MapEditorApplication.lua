@@ -43,13 +43,13 @@ MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
 
--- ew
-do
-	local GameView = require "ItsyScape.Graphics.GameView"
-	GameView.MAP_MESH_DIVISIONS = 1024
-end
-
 function MapEditorApplication:new()
+	-- ew
+	do
+		local GameView = require "ItsyScape.Graphics.GameView"
+		GameView.MAP_MESH_DIVISIONS = 1024
+	end
+
 	EditorApplication.new(self)
 
 	self.currentDecorationTileSet = "RumbridgeCabin"
@@ -873,9 +873,7 @@ function MapEditorApplication:load(filename, preferExisting)
 			stage:newMap(
 				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID)
 			stage:updateMap(layer, map)
-
-			local gameView = self:getGameView()
-			gameView:getMapSceneNode(layer):setParent(gameView:getScene())
+			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
 	end
 

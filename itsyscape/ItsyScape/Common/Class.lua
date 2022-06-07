@@ -74,6 +74,29 @@ function Class.isDerived(a, b)
 	return false
 end
 
+local function getType(self)
+	return Class.getType(self)
+end
+
+local function isType(self, type)
+	return self:getType() == type
+end
+
+local function isCompatibleType(self, type)
+	return Class.isCompatibleType(self, type)
+end
+
+local function getDebugInfo(self)
+	return self:getType()._DEBUG
+end
+
+local Common = {
+	getType = getType,
+	isType = isType,
+	isCompatibleType = isCompatibleType,
+	getDebugInfo = getDebugInfo
+}
+
 -- Creates a class, optionally from a parent.
 --
 -- To add a property or method to the class, add add the property or method to
@@ -83,7 +106,7 @@ end
 local function __call(self, parent)
 	local C = Class
 
-	local Type = { __index = parent or {}, __parent = parent, __c = Class }
+	local Type = { __index = parent or Common, __parent = parent, __c = Class }
 	local Class = setmetatable({}, Type)
 	local Metatable = { __index = Class, __type = Class }
 	Class._METATABLE = Metatable
@@ -120,21 +143,6 @@ local function __call(self, parent)
 
 	function Type.__call(self, ...)
 		local result = setmetatable({}, Metatable)
-		function result:getType()
-			return Class
-		end
-
-		function result:isType(type)
-			return self:getType() == type
-		end
-
-		function result:isCompatibleType(type)
-			return C.isCompatibleType(self, type)
-		end
-
-		function result:getDebugInfo()
-			return Class._DEBUG
-		end
 
 		if Class.new then
 			Class.new(result, ...)

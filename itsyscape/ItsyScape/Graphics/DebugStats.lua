@@ -11,25 +11,58 @@ local Class = require "ItsyScape.Common.Class"
 
 local DebugStats = Class()
 
+local GlobalDebugStats = Class(DebugStats)
+
+function GlobalDebugStats:process(node, func, ...)
+	func(...)
+end
+
 function DebugStats:new()
 	self.debugStats = {}
 end
 
 function DebugStats:measure(node, ...)
-	local nodeName = node:getDebugInfo().shortName
-	local stat = self.debugStats[nodeName] or { min = math.huge, max = -math.huge, currentTotal = 0, samples = 0 }
-
-	local duration
-	do
-		local before = love.timer.getTime()
+	if not _DEBUG then
 		self:process(node, ...)
-		local after = love.timer.getTime()
-		duration = after - before
+		return
 	end
 
-	stat.min = math.min(stat.min, duration)
-	stat.max = math.max(stat.max, duration)
-	stat.currentTotal = stat.currentTotal + duration
+	local nodeName
+	if type(node) == "string" then
+		nodeName = node
+	else
+		nodeName = node:getDebugInfo().shortName
+	end
+
+	local stat = self.debugStats[nodeName] or {
+		minTime = math.huge,
+		maxTime = -math.huge,
+		minMemory = math.huge,
+		maxMemory = -math.huge,
+		currentTimeTotal = 0,
+		currentMemoryTotal = 0,
+		samples = 0 
+	}
+
+	local duration, memory
+	do
+		local beforeTime = love.timer.getTime()
+		collectgarbage("stop")
+		local beforeMemory = collectgarbage("count")
+		self:process(node, ...)
+		local afterTime = love.timer.getTime()
+		local afterMemory = collectgarbage("count")
+		collectgarbage("restart")
+		duration = afterTime - beforeTime
+		memory = afterMemory - beforeMemory
+	end
+
+	stat.minTime = math.min(stat.minTime, duration)
+	stat.maxTime = math.max(stat.maxTime, duration)
+	stat.minMemory = math.min(stat.minMemory, memory)
+	stat.maxMemory = math.max(stat.maxMemory, memory)
+	stat.currentTimeTotal = stat.currentTimeTotal + duration
+	stat.currentMemoryTotal = stat.currentMemoryTotal + memory
 	stat.samples = stat.samples + 1
 
 	self.debugStats[nodeName] = stat
@@ -59,14 +92,23 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
-	table.insert(stringifiedStats, "Node, Min (secs), Max (secs), Total (secs), Samples, Avg (secs)")
+	table.insert(stringifiedStats, "Node, Min Time (secs), Max Time (secs), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (secs), Avg Mem (kb)")
 
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
 		local nodeName = sortedDebugStats[i].nodeName
 		local f = string.format(
-			"%s, %f, %f, %f, %f, %f",
-			nodeName, stats.min, stats.max, stats.currentTotal, stats.samples, stats.currentTotal / stats.samples)
+			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+			nodeName,
+			stats.minTime,
+			stats.maxTime,
+			stats.minMemory,
+			stats.maxMemory,
+			stats.currentTimeTotal,
+			stats.currentMemoryTotal,
+			stats.samples,
+			stats.currentTimeTotal / stats.samples,
+			stats.currentMemoryTotal / stats.samples)
 		table.insert(stringifiedStats, f)
 	end
 
@@ -80,5 +122,7 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 	Log.info("Dumped stats for topic '%s' to \"%s\".", topic, url)
 end
+
+DebugStats.GLOBAL = GlobalDebugStats()
 
 return DebugStats

@@ -10,8 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Model = require "ItsyScape.Graphics.Model"
 local Resource = require "ItsyScape.Graphics.Resource"
+local NModelResource = require "nbunny.optimaus.modelresource"
 
-local ModelResource = Resource()
+local ModelResource = Resource(NModelResource)
 
 function ModelResource:new(skeleton, model)
 	Resource.new(self)
@@ -33,7 +34,7 @@ end
 
 function ModelResource:loadFromFile(filename, _, skeleton)
 	local file = Resource.readLua(filename)
-	self.model = Model(file, skeleton or self.skeleton)
+	self.model = Model(file, skeleton or self.skeleton, self:getHandle())
 end
 
 function ModelResource:getIsReady()

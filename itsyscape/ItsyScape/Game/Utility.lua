@@ -414,7 +414,7 @@ function Utility.performAction(game, resource, id, scope, ...)
 	return foundAction
 end
 
-function Utility.getAction(game, action, scope)
+function Utility.getAction(game, action, scope, filter)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	local definition = brochure:getActionDefinitionFromAction(action)
@@ -429,9 +429,12 @@ function Utility.getAction(game, action, scope)
 			local t = {
 				id = action.id.value,
 				type = definition.name,
-				verb = a:getVerb() or a:getName(),
-				instance = ActionType(game, action)
+				verb = a:getVerb() or a:getName()
 			}
+
+			if not filter then
+				t.instance = ActionType(game, action)
+			end
 
 			return t, ActionType
 		end
@@ -488,15 +491,31 @@ function Utility.getActionConstraints(game, action)
 	return result
 end
 
-function Utility.getActions(game, resource, scope)
+Utility.ACTION_CACHE = {}
+
+function Utility.getActions(game, resource, scope, filter)
+	if not filter then
+		local cache = Utility.ACTION_CACHE[resource.id.value]
+		cache = cache and cache[scope or 'all']
+		if cache then
+			return cache
+		end
+	end
+
 	local actions = {}
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	for action in brochure:findActionsByResource(resource) do
-		local action = Utility.getAction(game, action, scope)
+		local action = Utility.getAction(game, action, scope, filter)
 		if action then
 			table.insert(actions, action)
 		end
+	end
+
+	if not filter then
+		local cache = Utility.ACTION_CACHE[resource.id.value] or {}
+		cache[scope or 'all'] = actions
+		Utility.ACTION_CACHE[resource.id.value] = cache
 	end
 
 	return actions
@@ -2117,13 +2136,15 @@ function Utility.Peep.face3D(self)
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-			local xzTilePosition = tilePosition * Vector.PLANE_XZ
+			if map then
+				local selfPosition = Utility.Peep.getAbsolutePosition(self)
+				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+				local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
-			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
-			return true
+				rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+				return true
+			end
 		end
 	end
 

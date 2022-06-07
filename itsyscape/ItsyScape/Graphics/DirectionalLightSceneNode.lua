@@ -10,30 +10,36 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
+local NDirectionalLightSceneNode = require "nbunny.optimaus.scenenode.directionallightscenenode"
 
 local DirectionalLightSceneNode = Class(LightSceneNode)
 
 function DirectionalLightSceneNode:new()
-	LightSceneNode.new(self)
-
-	self.previousDirection = false
-	self.direction = Vector(1, 0, 1):getNormal()
+	LightSceneNode.new(self, NDirectionalLightSceneNode)
 end
 
 function DirectionalLightSceneNode:getDirection()
-	return self.direction
+	return Vector(self:getHandle():getCurrentDirection())
 end
 
 function DirectionalLightSceneNode:setDirection(value)
-	self.direction = value or self.direction
+	self:getHandle():setCurrentDirection(value:getNormal():get())
+end
+
+function DirectionalLightSceneNode:getPreviousDirection()
+	return Vector(self:getHandle():getPreviousDirection())
+end
+
+function DirectionalLightSceneNode:setPreviousDirection(value)
+	self:getHandle():setPreviousDirection(value:getNormal():get())
 end
 
 function DirectionalLightSceneNode:toLight(delta)
 	local result = LightSceneNode.toLight(self, delta)
 
-	local previousDirection = self.previousDirection or self.direction
-	result:setDirectional()
-	result:setPosition(previousDirection:lerp(self.direction, delta))
+	local previousDirection = self:getPreviousDirection()
+	local currentDirection = self:getDirection()
+	result:setPosition(previousDirection:lerp(currentDirection, delta))
 
 	return result
 end

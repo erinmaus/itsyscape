@@ -22,30 +22,52 @@ Tile.IMPASSABLE_FLAGS = {
 	'door'
 }
 
-function Tile:new()
+Tile.EMPTY_ARGS = {}
+
+function Tile:new(t)
+	t = t or Tile.EMPTY_ARGS
+
 	-- The edge texture index. Defaults to the first edge texture.
-	self.edge = 1
+	self.edge = t.edge or 1
 
 	-- The flat texture index. Defaults to the first flat texture.
-	self.flat = 1
+	self.flat = t.flat or 1
 
 	-- Decals. Corresponds to textures.
-	self.decals = {}
+	self.decals = t.decals or {}
 
 	-- The heights at the four corners of the tile.
-	self.topLeft = 0
-	self.topRight = 0
-	self.bottomLeft  = 0
-	self.bottomRight = 0
+	self.topLeft = t.topLeft or 0
+	self.topRight = t.topRight or 0
+	self.bottomLeft  = t.bottomLeft  or 0
+	self.bottomRight = t.bottomRight or 0
 
-	self.flags = {}
-	self.runtimeFlags = {}
-	self.data = {}
-	self.links = {}
+	self.flags = t.flags or {}
+	self.runtimeFlags = t.runtimeFlags or {}
+	self.data = t.data or {}
+	self.links = t.links or {}
 
-	self.red = 1
-	self.green = 1
-	self.blue = 1
+	self.red = t.red or 1
+	self.green = t.green or 1
+	self.blue = t.blue or 1
+end
+
+function Tile:serialize()
+	return {
+		edge = self.edge,
+		flat = self.flat,
+		decals = self.decals,
+		topLeft = self.topLeft,
+		topRight = self.topRight,
+		bottomLeft = self.bottomLeft,
+		bottomRight = self.bottomRight,
+		flags = self.flags,
+		runtimeFlags = self.runtimeFlags,
+		data = self.data,
+		red = self.red,
+		green = self.green,
+		blue = self.blue,
+	}
 end
 
 function Tile:addLink(link)

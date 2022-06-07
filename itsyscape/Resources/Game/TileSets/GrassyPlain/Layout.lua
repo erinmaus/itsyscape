@@ -161,7 +161,7 @@
 
 	{
 		x = 128,
-		y = 512,
+		y = 256,
 		width = 128,
 		height = 128,
 		name = "invisible"

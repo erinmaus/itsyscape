@@ -10,8 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
 local Resource = require "ItsyScape.Graphics.Resource"
+local NSkeletonAnimationResource = require "nbunny.optimaus.skeletonanimationresource"
+local NSkeletonAnimationResourceInstance = require "nbunny.optimaus.skeletonanimationresourceinstance"
 
-local SkeletonAnimationResource = Resource()
+local SkeletonAnimationResource = Resource(NSkeletonAnimationResource)
 
 function SkeletonAnimationResource:new(skeleton, animation)
 	Resource.new(self)
@@ -32,7 +34,7 @@ end
 
 function SkeletonAnimationResource:loadFromFile(filename, _, skeleton)
 	local file = Resource.readLua(filename)
-	self.animation = SkeletonAnimation(file, skeleton or self.skeleton)
+	self.animation = SkeletonAnimation(file, skeleton or self.skeleton, self:getHandle())
 end
 
 function SkeletonAnimationResource:getIsReady()

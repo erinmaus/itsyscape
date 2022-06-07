@@ -251,7 +251,6 @@ end
 function PlayerSelect:loadPlayer(player)
 	local game = self.application:getGame()
 	game:getPlayer():spawn(player.storage)
-	game:tick()
 
 	self.application:closeTitleScreen()
 
@@ -276,18 +275,7 @@ function PlayerSelect:newPlayer(player)
 	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
 
-	game:getPlayer():spawn(storage)
-	game:tick()
-
-	game:getStage():movePeep(
-		game:getPlayer():getActor():getPeep(),
-		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
-		"jenkins_state=1," ..
-		"i=16," ..
-		"j=16," ..
-		"shore=IsabelleIsland_FarOcean_Cutscene," ..
-		"shoreAnchor=Anchor_Spawn",
-		"Anchor_Spawn")
+	game:getPlayer():spawn(storage, true)
 
 	self.application:closeTitleScreen()
 
@@ -299,7 +287,6 @@ function PlayerSelect:update(delta)
 
 	for i = 1, #self.players do
 		self.players[i].view:update(delta)
-		self.players[i].view:updateAnimations()
 	end
 end
 

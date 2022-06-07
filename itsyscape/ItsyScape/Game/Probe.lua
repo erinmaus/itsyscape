@@ -101,6 +101,12 @@ end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
+	if not self.game:getPlayer() or not self.game:getPlayer():getActor() then
+		Log.warn("Player not ready.")
+		callback()
+		return
+	end
+
 	local layer
 	do
 		local i, j, k = self.game:getPlayer():getActor():getTile()
@@ -123,7 +129,7 @@ function Probe:all(callback)
 	local tests = self.tests or Probe.TESTS
 
 	if tests['loot'] or tests['walk'] then
-		self.game:getStage():testMap(layer, ray, function(result)
+		self.gameView:testMap(layer, ray, function(result)
 			self:getTile(result, layer)
 			self:walk()
 			self:loot()
@@ -217,6 +223,8 @@ function Probe:loot()
 		local items = self.game:getStage():getItemsAtTile(i, j, k)
 
 		for _, item in pairs(items) do
+			item = item.item
+
 			local name, description
 			do
 				-- TODO: [LANG]
@@ -254,7 +262,7 @@ function Probe:loot()
 				object = object,
 				description = description,
 				callback = function()
-					self.game:getStage():takeItem(i, j, k, item.ref)
+					self.game:getPlayer():takeItem(i, j, k, item.ref)
 				end,
 				depth = position.z - (i / #items) -- This ensures items remain stable.
 			}
@@ -297,7 +305,7 @@ function Probe:actors()
 					object = actor:getName(),
 					description = actor:getDescription(),
 					callback = function()
-						actor:poke(actions[i].id, 'world')
+						self.game:getPlayer():poke(actions[i].id, actor, 'world')
 					end,
 					depth = -p.z + ((i / #actions) / 100)
 				}
@@ -364,7 +372,7 @@ function Probe:props()
 					suppress = i > 1 or isHidden,
 					description = prop:getDescription(),
 					callback = function()
-						prop:poke(actions[i].id, 'world')
+						self.game:getPlayer():poke(actions[i].id, prop, 'world')
 					end,
 					depth = -p.z + ((i / #actions) / 100)
 				}

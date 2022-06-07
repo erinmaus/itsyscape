@@ -10,14 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
-local NSceneNodeTransform = require "nbunny.scenenodetransform"
+local NSceneNodeTransform = require "nbunny.optimaus.scenenodetransform"
 
 -- Represents a hierarchal transform of a SceneNode.
 local SceneNodeTransform = Class()
 
 -- Constructs an identity scene transform.
 function SceneNodeTransform:new(node)
-	self._handle = node._handle:getTransform()
+	self._handle = node:getHandle():getTransform()
 	self.translation = Vector.ZERO
 	self.scale = Vector.ONE
 	self.rotation = Quaternion.IDENTITY
@@ -32,6 +32,10 @@ function SceneNodeTransform:new(node)
 	self.globalDeltaTransform = love.math.newTransform()
 
 	self.parentTransform = false
+end
+
+function SceneNodeTransform:getHandle(node)
+	return self._handle
 end
 
 -- Gets the parent transform.
@@ -190,8 +194,8 @@ function SceneNodeTransform:scale(value)
 end
 
 function SceneNodeTransform:updateTransform()
-	self.localTransform:setMatrix(self._handle:getLocalDeltaTransform(0.0))
-	self.globalTransform:setMatrix(self._handle:getGlobalDeltaTransform(0.0))
+	self._handle:getLocalDeltaTransform(0.0, self.localTransform)
+	self._handle:getGlobalDeltaTransform(0.0, self.globalTransform)
 	self.isTransformDirty = false
 end
 
@@ -205,7 +209,7 @@ function SceneNodeTransform:getLocalTransform()
 end
 
 function SceneNodeTransform:getLocalDeltaTransform(delta)
-	self.localDeltaTransform:setMatrix(self._handle:getLocalDeltaTransform(delta))
+	self._handle:getLocalDeltaTransform(delta, self.localDeltaTransform)
 	return self.localDeltaTransform
 end
 
@@ -219,7 +223,7 @@ function SceneNodeTransform:getGlobalTransform()
 end
 
 function SceneNodeTransform:getGlobalDeltaTransform(delta)
-	self.globalDeltaTransform:setMatrix(self._handle:getGlobalDeltaTransform(delta))
+	self._handle:getGlobalDeltaTransform(delta, self.globalDeltaTransform)
 	return self.globalDeltaTransform
 end
 

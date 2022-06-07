@@ -108,8 +108,8 @@ local ITEMS = {
 	}
 }
 
-for name, metal in pairs(METALS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, metal in spairs(METALS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 

@@ -9,8 +9,10 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
+local NTextureResource = require "nbunny.optimaus.textureresource"
+local NTextureResourceInstance = require "nbunny.optimaus.textureresourceinstance"
 
-local LayerTextureResource = Resource()
+local LayerTextureResource = Resource(NTextureResource)
 
 LayerTextureResource.TYPE_NONE  = 'none'
 LayerTextureResource.TYPE_CUBE  = 'cube'
@@ -30,37 +32,35 @@ LayerTextureResource.INDEXES = {
 
 function LayerTextureResource:new(image)
 	Resource.new(self)
-
-	if image then
-		self.image = image
-	else
-		self.image = false
-	end
+	self:getHandle():setTexture(image)
 end
 
 function LayerTextureResource:getResource()
-	return self.image
+	return self:getHandle():getTexture()
 end
 
 function LayerTextureResource:getWidth()
-	if self.image then
-		return self.image:getWidth()
+	local image = self:getResource()
+	if image then
+		return image:getWidth()
 	else
 		return 0
 	end
 end
 
 function LayerTextureResource:getHeight()
-	if self.image then
-		return self.image:getHeight()
+	local image = self:getResource()
+	if image then
+		return image:getHeight()
 	else
 		return 0
 	end
 end
 
 function LayerTextureResource:getLayerCount()
-	if self.image then
-		return self.image:getLayerCount()
+	local image = self:getResource()
+	if image then
+		return image:getLayerCount()
 	else
 		return 0
 	end
@@ -71,11 +71,7 @@ function LayerTextureResource:getLayerType()
 end
 
 function LayerTextureResource:release()
-	if self.image then
-		self.image:release()
-		self.image = false
-		self.layerType = nil
-	end
+	self:getHandle():setTexture(nil)
 end
 
 function LayerTextureResource:loadFromFile(filename, resourceManager)
@@ -126,9 +122,10 @@ function LayerTextureResource:loadFromFile(filename, resourceManager)
 
 	local settings = e.settings or nil
 
-	self.image = love.graphics.newArrayImage(t, settings)
-	self.image:setFilter('nearest', 'nearest')
+	local image = love.graphics.newArrayImage(t, settings)
+	image:setFilter('nearest', 'nearest')
 	self.layerType = e.type or LayerTextureResource.TYPE_ARRAY	
+	self:getHandle():setTexture(image)
 end
 
 function LayerTextureResource:getIsReady()

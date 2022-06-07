@@ -153,7 +153,7 @@ function BankController:pullItemMeta(itemID)
 		return meta
 	end
 
-	meta.actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource)
+	meta.actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, true)
 
 	local categories = gameDB:getRecords("ResourceCategory", { Resource = itemResource })
 	for i = 1, #categories do
@@ -307,7 +307,8 @@ function BankController:pullActions(item, serializedItem)
 		serializedItem.actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
-			'bank')
+			'bank',
+			true)
 	else
 		serializedItem.actions = {}
 	end

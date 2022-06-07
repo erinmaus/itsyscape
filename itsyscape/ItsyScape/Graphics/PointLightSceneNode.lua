@@ -10,29 +10,37 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local LightSceneNode = require "ItsyScape.Graphics.LightSceneNode"
+local NPointLightSceneNode = require "nbunny.optimaus.scenenode.pointlightscenenode"
 
 local PointLightSceneNode = Class(LightSceneNode)
 
 function PointLightSceneNode:new()
-	LightSceneNode.new(self)
-
-	self.attenuation = 1
+	LightSceneNode.new(self, NPointLightSceneNode)
 end
 
 function PointLightSceneNode:getAttenuation()
-	return self.attenuation
+	return self:getHandle():getCurrentAttenuation()
 end
 
 function PointLightSceneNode:setAttenuation(value)
-	self.attenuation = value or self.attenuation
+	self:getHandle():setCurrentAttenuation(value)
+end
+
+function PointLightSceneNode:getPreviousAttenuation()
+	return self:getHandle():getPreviousAttenuation()
+end
+
+function PointLightSceneNode:setPreviousAttenuation(value)
+	self:getHandle():setPreviousAttenuation(value)
 end
 
 function PointLightSceneNode:toLight(delta)
 	local result = LightSceneNode.toLight(self, delta)
 	local x, y, z = self:getTransform():getGlobalDeltaTransform(delta):transformPoint(0, 0, 0)
 
-	local previousAttenutation = self.previousAttenutation or self.attenuation
-	local attenuation = self.attenuation * (1 - delta) + previousAttenutation * delta
+	local previousAttenutation = self:getPreviousAttenuation()
+	local currentAttenuation = self:getAttenuation()
+	local attenuation = currentAttenuation * (1 - delta) + previousAttenutation * delta
 	result:setAttenuation(attenuation)
 	result:setPosition(Vector(x, y, z))
 	result:setPoint()
@@ -42,13 +50,7 @@ end
 
 function PointLightSceneNode:fromLight(light)
 	LightSceneNode.fromLight(self, light)
-	self.attenuation = light:getAttenuation()
-end
-
-function PointLightSceneNode:tick()
-	LightSceneNode.tick(self)
-
-	self.previousAttenutation = self.attenuation
+	self:setAttenuation(light:getAttenuation())
 end
 
 return PointLightSceneNode

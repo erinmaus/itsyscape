@@ -83,7 +83,7 @@ function UndeadSquidInk:update(elapsed)
 						"ItsyScape.Graphics.AnimationResource",
 						"Resources/Game/Animations/UndeadSquid_Target_Inking/Script.lua")
 
-					target:playAnimation('x-undead-squid', 1, animation)
+					target:onAnimationPlayed('x-undead-squid', 1, animation)
 					self.inked = true
 				end
 			end

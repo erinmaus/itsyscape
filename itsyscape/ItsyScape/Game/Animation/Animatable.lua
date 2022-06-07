@@ -72,15 +72,13 @@ function Animatable:getComposedTransform(attach)
 			if bone then
 				table.insert(parents, boneIndex)
 
-				local parentBoneIndex = skeleton:getBoneIndex(bone:getParent())
-
-				boneIndex = parentBoneIndex
-				bone = skeleton:getBoneByIndex(parentBoneIndex)
+				boneIndex = bone:getParentIndex()
+				bone = skeleton:getBoneByIndex(boneIndex)
 			end
 		until not bone
 
 		for i = 1, #parents do
-			transform:apply(transforms[parents[i]])
+			transform:apply(transforms:getTransform(parents[i]))
 		end
 	end
 

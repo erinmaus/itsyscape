@@ -55,7 +55,7 @@ local TREES = {
 
 local DEFAULT_FACTOR = 1.5
 
-for name, tree in pairs(TREES) do
+for name, tree in spairs(TREES) do
 	local TreeName = string.format("%sTree_Default", name)
 	local Tree = ItsyScape.Resource.Prop(TreeName)
 

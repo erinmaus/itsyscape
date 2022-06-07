@@ -75,7 +75,7 @@ end
 
 function LocalStage:notifyTakeItem(item, key)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+	self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
 end
 
 function LocalStage:notifyDropItem(item, key, source)
@@ -90,7 +90,8 @@ function LocalStage:notifyDropItem(item, key, source)
 
 	self.onDropItem(
 		self,
-		{ ref = ref, id = item:getID(), noted = item:isNoted() },
+		ref,
+		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
 		{ i = key.i, j = key.j, layer = key.layer },
 		position)
 end
@@ -455,12 +456,6 @@ function LocalStage:updateMap(layer, map)
 			self.game:getDirector():setMap(layer, map)
 		end
 
-		love.thread.getChannel('ItsyScape.Map::input'):push({
-			type = 'load',
-			key = layer,
-			data = self.map[layer]:toString()
-		})
-
 		self.onMapModified(self, self.map[layer], layer)
 	end
 end
@@ -470,11 +465,6 @@ function LocalStage:unloadMap(layer)
 		self.onUnloadMap(self, self.map[layer], layer)
 		self.map[layer] = nil
 		self.game:getDirector():setMap(layer, nil)
-
-		love.thread.getChannel('ItsyScape.Map::input'):push({
-			type = 'unload',
-			key = layer
-		})
 	end
 end
 
@@ -840,24 +830,6 @@ function LocalStage:getMap(layer)
 	return self.map[layer]
 end
 
-function LocalStage:testMap(layer, ray, callback)
-	local id = self.tests.id
-	self.tests.id = id + 1
-
-	self.tests[id] = {
-		layer = layer,
-		callback = callback
-	}
-
-	love.thread.getChannel('ItsyScape.Map::input'):push({
-		type = 'probe',
-		id = id,
-		key = layer,
-		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
-		direction = { ray.direction.x, ray.direction.y, ray.direction.z }
-	})
-end
-
 function LocalStage:getLayers()
 	local layers = {}
 	for index in pairs(self.map) do
@@ -922,7 +894,7 @@ function LocalStage:dropItem(item, count, owner)
 	transaction:commit()
 end
 
-function LocalStage:takeItem(i, j, layer, ref)
+function LocalStage:takeItem(i, j, layer, ref, player)
 	local inventory = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
 	if inventory then
 		local key = GroundInventoryProvider.Key(i, j, layer)
@@ -937,7 +909,6 @@ function LocalStage:takeItem(i, j, layer, ref)
 		end
 
 		if targetItem then
-			local player = self.game:getPlayer()
 			local path = player:findPath(i, j, layer)
 			if path then
 				local queue = player:getActor():getPeep():getCommandQueue()
@@ -1008,7 +979,7 @@ function LocalStage:collectItems()
 
 
 					local ref = broker:getItemRef(item)
-					self.onTakeItem(self, { ref = ref, id = item:getID(), noted = item:isNoted() })
+					self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
 				end
 			end
 		end
@@ -1045,13 +1016,23 @@ function LocalStage:fireProjectile(projectileID, source, destination)
 end
 
 function LocalStage:forecast(layer, name, id, props)
-	self.onForecast(self, layer, name, id, props)
-	self.weathers[name] = true
+	if not props then
+		self.onStopForecast(self, layer, name)
+		self.weathers[name] = nil
+	else
+		self.onForecast(self, layer, name, id, props)
+		self.weathers[name] = true
+	end
 end
 
 function LocalStage:decorate(group, decoration, layer)
-	self.onDecorate(self, group, decoration, layer or 1)
-	self.decorations[group] = decoration
+	if not decoration then
+		self.onUndecorate(self, group, layer or 1)
+		self.decorations[group] = nil
+	else
+		self.onDecorate(self, group, decoration, layer or 1)
+		self.decorations[group] = decoration
+	end
 end
 
 function LocalStage:iterateActors()
@@ -1109,34 +1090,7 @@ function LocalStage:tick()
 end
 
 function LocalStage:update(delta)
-	local m = love.thread.getChannel('ItsyScape.Map::output'):pop()
-	while m do
-		if m.type == 'probe' then
-			local test = self.tests[m.id]
-			if test then
-				local map = self:getMap(test.layer)
-				if map then
-					self.tests[m.id] = nil
-					local results = {}
-
-					for i = 1, #m.tiles do
-						local tile = m.tiles[i]
-						local result = {
-							[Map.RAY_TEST_RESULT_TILE] = map:getTile(tile.i, tile.j),
-							[Map.RAY_TEST_RESULT_I] = tile.i,
-							[Map.RAY_TEST_RESULT_J] = tile.j,
-							[Map.RAY_TEST_RESULT_POSITION] = Vector(unpack(tile.position))
-						}
-
-						table.insert(results, result)
-					end
-
-					test.callback(results)
-				end
-			end
-		end
-		m = love.thread.getChannel('ItsyScape.Map::output'):pop()
-	end
+	-- Nothing.
 end
 
 return LocalStage

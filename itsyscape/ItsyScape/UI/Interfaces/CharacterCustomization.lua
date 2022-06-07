@@ -519,6 +519,10 @@ function CharacterCustomization:new(id, index, ui)
 	self.peepSnippet:setCamera(self.camera)
 end
 
+function CharacterCustomization:getIsFullscreen()
+	return true
+end
+
 function CharacterCustomization:update(...)
 	Interface.update(self, ...)
 

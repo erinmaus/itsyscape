@@ -48,7 +48,7 @@ function Interface:poke(actionID, actionIndex, e)
 	if actionIndex == nil then
 		local func = self[actionID]
 		if func then
-			local s, r = pcall(func, self, unpack(e, e.n))
+			local s, r = pcall(func, self, unpack(e, 1, e.n))
 			if not s then
 				io.stderr:write("error: ", r, "\n")
 				self:sendPoke("$error", 1, { actionID = actionID, message = r })
@@ -140,6 +140,10 @@ function Interface:examineItem(widget, inventory, index)
 	end
 
 	widget:setToolTip(unpack(toolTip))
+end
+
+function Interface:getIsFullscreen()
+	return false
 end
 
 return Interface

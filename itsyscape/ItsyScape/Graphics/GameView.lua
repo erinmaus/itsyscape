@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -23,6 +24,7 @@ local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
+local Map = require "ItsyScape.World.Map"
 local TileSet = require "ItsyScape.World.TileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 
@@ -42,6 +44,7 @@ function GameView:new(game)
 	self.propViewDebugStats = GameView.PropViewDebugStats()
 
 	local stage = game:getStage()
+
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		self:addMap(map, layer, tileSetID)
 	end
@@ -82,12 +85,12 @@ function GameView:new(game)
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
 
-	self._onDropItem = function(_, item, tile, position)
+	self._onDropItem = function(_, ref, item, tile, position)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
-	self._onTakeItem = function(_, item)
+	self._onTakeItem = function(_, ref, item)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
@@ -96,6 +99,11 @@ function GameView:new(game)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
+
+	self._onUndecorate = function(_, group, layer)
+		self:decorate(group, nil, layer)
+	end
+	stage.onUndecorate:register(self._onUndecorate)
 
 	self._onWaterFlood = function(_, key, water, layer)
 		self:flood(key, water, layer)
@@ -112,6 +120,11 @@ function GameView:new(game)
 		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
+
+	self._onStopForecast = function(_, layer, key)
+		self:forecast(layer, key, nil)
+	end
+	stage.onStopForecast:register(self._onStopForecast)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
 		self:fireProjectile(projectileID, source, destination, time)
@@ -130,6 +143,7 @@ function GameView:new(game)
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+	self.tests = { id = 1 }
 
 	self.music = {}
 
@@ -199,9 +213,11 @@ function GameView:release()
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
 	stage.onDecorate:unregister(self._onDecorate)
+	stage.onUndecorate:unregister(self._onUndecorate)
 	stage.onWaterFlood:unregister(self._onWaterFlood)
 	stage.onWaterDrain:unregister(self._onWaterDrain)
 	stage.onForecast:unregister(self._onForecast)
+	stage.onStopForecast:unregister(self._onStopForecast)
 	stage.onProjectile:unregister(self._onProjectile)
 	stage.onPlayMusic:unregister(self._onPlayMusic)
 	stage.onStopMusic:unregister(self._onStopMusic)
@@ -245,6 +261,11 @@ function GameView:removeMap(layer)
 		m.weatherMap:removeMap(m.map)
 
 		self.mapMeshes[layer] = nil
+
+		love.thread.getChannel('ItsyScape.Map::input'):push({
+			type = 'unload',
+			key = layer
+		})
 	end
 end
 
@@ -274,9 +295,39 @@ function GameView:updateGroundDecorations(m)
 	end
 end
 
+function GameView:testMap(layer, ray, callback)
+	local id = self.tests.id
+	self.tests.id = id + 1
+
+	self.tests[id] = {
+		layer = layer,
+		callback = callback
+	}
+
+	love.thread.getChannel('ItsyScape.Map::input'):push({
+		type = 'probe',
+		id = id,
+		key = layer,
+		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
+		direction = { ray.direction.x, ray.direction.y, ray.direction.z }
+	})
+end
+
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
+		do
+			local before = love.timer.getTime()
+			love.thread.getChannel('ItsyScape.Map::input'):push({
+				type = 'load',
+				key = layer,
+				data = buffer.encode(m.map:serialize())
+			})
+			local after = love.timer.getTime()
+
+			Log.debug("Updated layer '%d' in %d ms.", layer, (after - before) * 1000)
+		end
+
 		if map then
 			m.map = map
 		end
@@ -373,6 +424,13 @@ function GameView:getMapTileSet(layer)
 	end
 end
 
+function GameView:getMap(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.map
+	end
+end
+
 function GameView:addActor(actorID, actor)
 	local view = ActorView(actor, actorID)
 	view:attach(self)
@@ -433,7 +491,7 @@ function GameView:getView(instance)
 end
 
 function GameView:spawnItem(item, tile)
-	local map = self.game:getStage():getMap(tile.layer)
+	local map = self:getMap(tile.layer)
 	if map then
 		position = map:getTileCenter(tile.i, tile.j)
 	end
@@ -539,7 +597,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	local node = WaterMeshSceneNode()
-	local map = self.game:getStage():getMap(water.layer or 1)
+	local map = self:getMap(water.layer or 1)
 	node:generate(
 		map,
 		water.i or 1,
@@ -685,6 +743,10 @@ function GameView:getDecorationSceneNodes()
 	return result, count
 end
 
+function GameView:updateResourceManager()
+	self.resourceManager:update()
+end
+
 function GameView:updateActors(delta)
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
@@ -754,17 +816,48 @@ function GameView:updateMusic(delta)
 	end
 end
 
-function GameView:update(delta)
-	self.resourceManager:update()
+function GameView:updateMapQueries(delta)
+	local m
+	repeat
+		m = love.thread.getChannel('ItsyScape.Map::output'):pop()
+		if m and m.type == 'probe' then
+			local test = self.tests[m.id]
+			if test then
+				local mapMesh = self.mapMeshes[test.layer]
+				if mapMesh then
+					self.tests[m.id] = nil
+					local results = {}
 
+					for i = 1, #m.tiles do
+						local tile = m.tiles[i]
+						local result = {
+							[Map.RAY_TEST_RESULT_TILE] = mapMesh.map:getTile(tile.i, tile.j),
+							[Map.RAY_TEST_RESULT_I] = tile.i,
+							[Map.RAY_TEST_RESULT_J] = tile.j,
+							[Map.RAY_TEST_RESULT_POSITION] = Vector(unpack(tile.position))
+						}
+
+						table.insert(results, result)
+					end
+
+					test.callback(results)
+				end
+			end
+		end
+	until m == nil
+end
+
+function GameView:update(delta)
+	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
 	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
 	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
 	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)
 	_APP:measure("gameView:updateWeather()", GameView.updateWeather, self, delta)
 	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)
 	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
+	_APP:measure("gameView:updateMapQueries()", GameView.updateMapQueries, self, delta)
 
-	do
+	do 
 		local actor = self:getActor(self.game:getPlayer():getActor())
 		if actor then
 			player = actor:getSceneNode()
