@@ -10,8 +10,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-uniform Image scape_PositionTexture;
 uniform Image scape_ColorTexture;
+uniform Image scape_PositionTexture;
 
 uniform vec2 scape_FogParameters;
 uniform vec3 scape_FogColor;

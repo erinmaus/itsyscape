@@ -112,7 +112,10 @@ function GatherResourceCommand:hideTool(peep)
 		if actor and actor.actor then
 			actor = actor.actor
 
-			actor:unsetSkin(self.slot, self.skin)
+			actor:unsetSkin(
+				self.slot,
+				Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE,
+				self.skin)
 		end
 	end
 end

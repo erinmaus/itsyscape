@@ -22,6 +22,7 @@ extern "C"
 #define SOL_SAFE_FUNCTION 1
 #define SOL_CHECK_ARGUMENTS 1
 #define SOL_SAFE_GETTER 1
+#define SOL_EXCEPTIONS_SAFE_PROPAGATION 1
 
 #include "deps/sol.hpp"
 #include "skeleton.hpp"

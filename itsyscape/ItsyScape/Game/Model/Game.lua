@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 
 -- Represents a high-level view of the Game.
 --
@@ -19,7 +20,7 @@ local Class = require "ItsyScape.Common.Class"
 local Game = Class()
 
 function Game:new()
-	-- Nothing.
+	self.onQuit = Callback()
 end
 
 -- Gets the GameDB.
@@ -63,7 +64,12 @@ end
 --
 -- This value is the same as 1.0 / self:getTicks().
 function Game:getDelta()
-	return 1.0 / self:getTicks()
+	local ticks = self:getTicks()
+	if ticks then
+		return 1.0 / ticks
+	else
+		return nil
+	end
 end
 
 -- Gets the current tick since the beginning of the game instance.

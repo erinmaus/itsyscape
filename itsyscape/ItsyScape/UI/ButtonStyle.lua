@@ -24,7 +24,8 @@ function ButtonStyle:new(t, resources)
 				self.colors[state] = Color(t[state]:get())
 				self.states[state] = function(width, height)
 					love.graphics.setColor(self.colors[state]:get())
-					love.graphics.rectangle('fill', 0, 0, width, height)
+					itsyrealm.graphics.rectangle('fill', 0, 0, width, height)
+					love.graphics.setColor(1, 1, 1, 1)
 				end
 			elseif type(t[state]) == 'string' then
 				self.images[state] = resources:load(patchy.load, t[state])
@@ -99,7 +100,7 @@ function ButtonStyle:draw(widget)
 		local y = height * self.iconY
 		local scaleX = self.iconWidth / self.icon:getWidth()
 		local scaleY = self.iconHeight / self.icon:getHeight()
-		love.graphics.draw(
+		itsyrealm.graphics.draw(
 			self.icon,
 			x, y,
 			0,
@@ -129,7 +130,7 @@ function ButtonStyle:draw(widget)
 
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
-			love.graphics.printf(
+			itsyrealm.graphics.printf(
 				widget:getText(),
 				x + 1,
 				y + 1,
@@ -138,7 +139,7 @@ function ButtonStyle:draw(widget)
 		end
 
 		love.graphics.setColor(self.color:get())
-		love.graphics.printf(
+		itsyrealm.graphics.printf(
 			widget:getText(),
 			x,
 			y,
@@ -146,7 +147,9 @@ function ButtonStyle:draw(widget)
 			self.textAlign)
 
 		love.graphics.setFont(previousFont)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
+
 end
 
 return ButtonStyle

@@ -64,8 +64,8 @@ local SHIELDS = {
 	}
 }
 
-for name, leather in pairs(LEATHERS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, leather in spairs(LEATHERS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 
@@ -150,7 +150,7 @@ for name, leather in pairs(LEATHERS) do
 	end
 end
 
-for name, itemProps in pairs(SHIELDS) do
+for name, itemProps in spairs(SHIELDS) do
 	local leather = LEATHERS[name]
 	local ItemName = string.format("%sBuckler", name)
 	local Item = ItsyScape.Resource.Item(ItemName)

@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local NResource = require "nbunny.optimaus.resource"
+local NResourceInstance = require "nbunny.optimaus.resourceinstance"
 
 -- Constructs a Resource type.
 --
@@ -17,16 +19,21 @@ local Class = require "ItsyScape.Common.Class"
 -- Instead, derived types should be instantiated.
 --
 -- A Resource has a few static fields and methods:
---  * CURRENT_ID: The ID of the next resource. In this sense, CURRENT_ID
---                represents the *pending* current ID.
---  * allocateID: Returns and post-increments CURRENT_ID. CURRENT_ID should be
---                one more than the return value. For example, if allocateID()
---                returns 1, CURRENT_ID will now be 2.
+--  * getCurrentID: The ID of the next resource. In this sense, CURRENT_ID
+--                  represents the *pending* current ID.
+--  * allocateID:   Returns and post-increments getCurrentID. getCurrentID should be
+--                  one more than the return value. For example, if allocateID()
+--                  returns 1, getCurrentID will now be 2.
+--  * wrap:         Wraps the provided resource instance. This is an impl detail.
 local Resource = Class()
 
 -- Constructor. Allocates a new ID for the Resource, bumping CURRENT_ID.
 function Resource:new()
-	self.id = self:getType().allocateID()
+	self._resourceInstance = self:getType().wrap(self)
+end
+
+function Resource:getHandle()
+	return self._resourceInstance
 end
 
 -- Gets the underyling Resource.
@@ -103,18 +110,26 @@ end
 -- The resource ID is an incrementing value, never re-used, that represents
 -- a loaded resource.
 function Resource:getID()
-	return self.id
+	return self._resourceInstance:getID()
 end
 
 -- Override the constructor to create a new type, not a new instance.
-local function __call(self, ...)
+local function __call(self, NBunnyResource, ...)
 	local DerivedResource = Class(Resource, ...)
-	DerivedResource.CURRENT_ID = 1
-	function DerivedResource.allocateID()
-		local result = DerivedResource.CURRENT_ID
-		DerivedResource.CURRENT_ID = DerivedResource.CURRENT_ID + 1
+	local nbunnyResource = (NBunnyResource or NResource)()
 
-		return result
+	DerivedResource.RESOURCE = nbunnyResource
+
+	function DerivedResource.getCurrentID()
+		return nbunnyResource:getCurrentID()
+	end
+
+	function DerivedResource.allocateID()
+		return nbunnyResource:allocateID()
+	end
+
+	function DerivedResource.wrap(r)
+		return nbunnyResource:instantiate(r)
 	end
 
 	return DerivedResource

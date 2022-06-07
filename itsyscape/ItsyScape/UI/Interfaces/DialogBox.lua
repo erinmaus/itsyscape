@@ -139,6 +139,8 @@ function DialogBox:new(id, index, ui)
 	self.camera:setDistance(2.5)
 	self.camera:setUp(Vector(0, -1, 0))
 	self.speakerIcon:setCamera(self.camera)
+
+	self:next()
 end
 
 function DialogBox:getOverflow()
@@ -159,8 +161,8 @@ function DialogBox:select(index)
 	self:sendPoke("select", nil, { index = index })
 end
 
-function DialogBox:next()
-	local state = self:getState()
+function DialogBox:next(state)
+	state = state or self:getState()
 
 	for i = 1, #self.options do
 		self:removeChild(self.options[i])

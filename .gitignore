@@ -9,3 +9,7 @@ itsyscape-android/
 *.make
 *.cache
 *.csv
+.DS_Store
+.idea
+itsyrealm.love
+cmake*

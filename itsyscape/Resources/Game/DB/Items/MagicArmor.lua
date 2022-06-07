@@ -72,8 +72,8 @@ local ITEMS = {
 	},
 }
 
-for name, fabric in pairs(FABRICS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, fabric in spairs(FABRICS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 
@@ -175,7 +175,7 @@ for name, fabric in pairs(FABRICS) do
 	end
 end
 
-for name, itemProps in pairs(SHIELDS) do
+for name, itemProps in spairs(SHIELDS) do
 	local fabric = FABRICS[name]
 	local ItemName = string.format("%sShield", name)
 	local Item = ItsyScape.Resource.Item(ItemName)

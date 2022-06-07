@@ -64,7 +64,7 @@ local LOGS = {
 	}
 }
 
-for name, log in pairs(LOGS) do
+for name, log in spairs(LOGS) do
 	local ItemName = string.format("%sLogs", name)
 	local Log = ItsyScape.Resource.Item(ItemName)
 

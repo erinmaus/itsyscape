@@ -59,7 +59,6 @@ function MoltenColumnView:flicker()
 		local scaleWidth = MoltenColumnView.MAX_SCALE - MoltenColumnView.MIN_SCALE
 		local scale = math.abs(math.sin(self.time * math.pi)) * scaleWidth + MoltenColumnView.MIN_SCALE
 		self.decoration:getTransform():setLocalScale(Vector(1, scale, 1))
-		self.decoration:getTransform():setPreviousTransform(nil, nil, Vector(1, scale, 1))
 	end
 end
 

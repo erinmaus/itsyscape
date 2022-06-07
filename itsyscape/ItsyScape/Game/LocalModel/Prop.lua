@@ -168,7 +168,7 @@ function LocalProp:getActions(scope)
 		--
 		-- However, we only want to return 'scope' actions, so we have to look-up
 		-- the actions *again*.
-		local actions = Utility.getActions(self.game, mapObject)
+		local actions = Utility.getActions(self.game, mapObject, scope or 'world')
 		if #actions > 0 then
 			return Utility.getActions(self.game, mapObject, scope or 'world')
 		end
@@ -181,9 +181,8 @@ function LocalProp:getActions(scope)
 	return {}
 end
 
-function LocalProp:poke(action, scope)
+function LocalProp:poke(action, scope, player)
 	if self.resource then
-		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,

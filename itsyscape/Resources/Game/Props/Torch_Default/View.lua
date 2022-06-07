@@ -137,7 +137,6 @@ function TorchView:update(delta)
 		local scale = previousScale:lerp(currentScale, mu)
 
 		self.flames:getTransform():setLocalScale(scale)
-		self.flames:getTransform():setPreviousTransform(nil, nil, scale)
 	end
 end
 

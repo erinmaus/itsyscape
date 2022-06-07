@@ -23,6 +23,7 @@ function Actor:new()
 	self.onAnimationPlayed = Callback()
 	self.onTransmogrified = Callback()
 	self.onSkinChanged = Callback()
+	self.onSkinRemoved = Callback()
 	self.onMapChanged = Callback()
 
 	-- Called with 'damageType' (string) and 'damage'.
@@ -190,9 +191,8 @@ end
 --
 -- skin should be CacheRef to an ItsyScape.Game.Skin-derived object.
 --
--- Should invoke Actor.onSkinChanged with the slot, priority (false), and skin.
--- A priority of false means the skin is to be removed.
-function Actor:unsetSkin(slot, skin)
+-- Should invoke Actor.onSkinRemoved with the slot, priority, and skin.
+function Actor:unsetSkin(slot, priority, skin)
 	Class.ABSTRACT()
 end
 

@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
+local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
+local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -42,7 +44,7 @@ function LocalPlayer:new(game, stage)
 	self.id = 0
 end
 
-function LocalPlayer:spawn(storage)
+function LocalPlayer:spawn(storage, newGame)
 	self.id = self.id + 1
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
@@ -57,19 +59,35 @@ function LocalPlayer:spawn(storage)
 		p.id = self.id
 
 		actor:getPeep():listen('finalize', function()
-			local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
-			if storage:hasSection("Location") then
-				local location = storage:getSection("Location")
-				if location:get("name") then
-					self.stage:movePeep(
-						actor:getPeep(),
-						location:get("name"),
-						Vector(
-							location:get("x"),
-							location:get("y"),
-							location:get("z")),
-						true)
-					return
+			if newGame then
+				self.stage:movePeep(
+					actor:getPeep(),
+					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
+					"jenkins_state=1," ..
+					"i=16," ..
+					"j=16," ..
+					"shore=IsabelleIsland_FarOcean_Cutscene," ..
+					"shoreAnchor=Anchor_Spawn",
+					"Anchor_Spawn")
+				actor:getPeep():pushPoke('bootstrapComplete')
+			else
+				local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
+				if storage:hasSection("Location") then
+					local location = storage:getSection("Location")
+					if location:get("name") then
+						self.stage:movePeep(
+							actor:getPeep(),
+							location:get("name"),
+							Vector(
+								location:get("x"),
+								location:get("y"),
+								location:get("z")),
+							true)
+
+						if not location:get("isTitleScreen") then
+							actor:getPeep():pushPoke('bootstrapComplete')
+						end
+					end
 				end
 			end
 		end)
@@ -80,6 +98,47 @@ function LocalPlayer:spawn(storage)
 	end
 
 	self:changeCamera("Default")
+end
+
+function Player:save()
+	local playerActor = self.actor
+	local playerPeep = playerActor and playerActor:getPeep()
+	if playerPeep then
+		local storage = self.game:getDirector():getPlayerStorage(playerPeep)
+		local root = storage:getRoot()
+
+		local hasLocation = root:hasSection("Location")
+		if not hasLocation then
+			local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
+			local startedQuest = playerPeep:getState():has('KeyItem', "PreTutorial_Start")
+
+			local map, anchor
+			if finishedQuest then
+				map = "IsabelleIsland_Tower_Floor5"
+				anchor = "Anchor_StartGame"
+			elseif startedQuest then
+				map = "PreTutorial_MansionFloor1"
+				anchor = "Anchor_Spawn"
+			end
+
+			if map and anchor then
+				local x, y, z = Utility.Map.getAnchorPosition(self, map, anchor)
+				local locationSection = root:getSection("Location")
+				locationSection:set({
+					name = map,
+					x = x,
+					y = y,
+					z = z,
+					layer = 1
+				})
+			end
+		end
+
+		hasLocation = root:hasSection("Location")
+		if hasLocation then
+			Utility.save(playerPeep, false)
+		end
+	end
 end
 
 function LocalPlayer:onPlayerActionPerformed(_, p)
@@ -124,6 +183,18 @@ function LocalPlayer:getTarget()
 	else
 		return nil
 	end
+end
+
+function LocalPlayer:poke(id, obj, scope)
+	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
+		obj:poke(id, scope, self.actor:getPeep())
+	elseif Class.isType(obj) then
+		Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
+	end
+end
+
+function LocalPlayer:takeItem(i, j, layer, ref)
+	self.stage:takeItem(i, j, layer, ref, self)
 end
 
 function LocalPlayer:findPath(i, j, k)
@@ -221,7 +292,7 @@ function LocalPlayer:changeCamera(cameraType)
 end
 
 function LocalPlayer:pokeCamera(event, ...)
-	self.onPokeCamera(event, ...)
+	self.onPokeCamera(self, event, ...)
 end
 
 return LocalPlayer
