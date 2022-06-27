@@ -97,8 +97,8 @@ do
 		ColorRed = 0,
 		ColorGreen = 0,
 		ColorBlue = 0,
-		NearDistance = 10,
-		FarDistance = 20,
+		NearDistance = 100,
+		FarDistance = 100,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
@@ -113,6 +113,31 @@ do
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Gammon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local ROTATION = ItsyScape.Utility.Quaternion.fromAxisAngle(
+		ItsyScape.Utility.Vector.UNIT_Y,
+		math.pi / 4)
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1.5,
+		PositionZ = 33,
+		RotationX = ROTATION.x,
+		RotationY = ROTATION.y,
+		RotationZ = ROTATION.z,
+		RotationW = ROTATION.w,
+		Name = "Gammon",
+		Map = M._MAP,
+		Resource = M["Gammon"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Gammon_Base",
+		MapObject = M["Gammon"]
 	}
 end
 
