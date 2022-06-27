@@ -11,11 +11,44 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local Probe = require "ItsyScape.Peep.Probe"
 
 local Dream = Class(Map)
 
 function Dream:new(resource, name, ...)
 	Map.new(self, resource, name or 'Dream_Teaser', ...)
+end
+
+function Dream:initGammon()
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('rezzGammon')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_2", actionCallback, openCallback)
+end
+
+function Dream:onRezzGammon()
+	local gammon
+	do
+		local hits = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.namedMapObject("Gammon"))
+		gammon = hits[1]
+	end
+
+	if gammon then
+		gammon:poke('resurrect')
+	end
 end
 
 function Dream:onLoad(filename, args, layer)
@@ -51,6 +84,8 @@ function Dream:onLoad(filename, args, layer)
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+
+	self:initGammon()
 end
 
 function Dream:onPlayCutscene()

@@ -39,7 +39,7 @@ end
 function PlayAnimationInstance:pending(time, windingDown)
 	if self.animation then
 		return (self.command:getRepeatAnimation() and not windingDown) or
-		       time < self.animation:getDuration()
+		       time < (self.command:getDurationOverride() or self.animation:getDuration())
 	end
 end
 
@@ -47,7 +47,7 @@ function PlayAnimationInstance:getDuration(windingDown)
 	if self.command:getRepeatAnimation() then
 		return math.huge
 	else
-		return self.command:getDuration()
+		return self.command:getDurationOverride() or self.animation:getDuration()
 	end
 end
 
