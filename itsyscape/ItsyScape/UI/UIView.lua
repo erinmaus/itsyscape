@@ -308,6 +308,14 @@ function itsyrealm.graphics.arc(...)
 		love.graphics.arc, ...)
 end
 
+function itsyrealm.graphics.polygon(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		love.graphics.polygon, ...)
+end
+
 function itsyrealm.graphics.uncachedDraw(...)
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.uncachedDraw,
