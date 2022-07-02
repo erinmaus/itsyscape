@@ -443,6 +443,16 @@ function GameView:getActor(actor)
 	return self.actors[actor]
 end
 
+function GameView:getActorByID(id)
+	for actor in pairs(self.actors) do
+		if actor:getID() == id then
+			return actor
+		end
+	end
+
+	return nil
+end
+
 function GameView:removeActor(actor)
 	if self.actors[actor] then
 		local view = self.actors[actor]
