@@ -112,7 +112,7 @@ function Application:new(multiThreaded)
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.gameView)
 
-	self.game.onQuit:register(self.quitGame, self)
+	self.game.onLeave:register(self.quitGame, self)
 
 	self.times = {}
 
@@ -287,6 +287,12 @@ function Application:tickMultiThread()
 end
 
 function Application:quit()
+	if self.multiThreaded then
+		self.game:quit()
+		self.remoteGameManager:pushTick()
+		self.gameThread:wait()
+	end
+
 	return false
 end
 

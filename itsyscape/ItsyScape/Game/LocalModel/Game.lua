@@ -86,16 +86,22 @@ function LocalGame:update(delta)
 end
 
 function LocalGame:quit()
+	self:leave()
+
+	self.player:poof()
+	self:tick()
+
+	self.onQuit(self)
+end
+
+function LocalGame:leave()
 	self.stage:collectItems()
 	self.player:save()
 
 	self.stage:unloadAll()
 	self:tick()
 
-	self.player:poof()
-	self:tick()
-
-	self.onQuit(self)
+	self:onLeave()
 end
 
 return LocalGame
