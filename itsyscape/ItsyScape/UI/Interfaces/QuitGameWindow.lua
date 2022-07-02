@@ -52,11 +52,13 @@ function QuitGameWindow:new(id, index, ui)
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 		fontSize = 24,
 		color = { 1, 1, 1, 1 },
+		width = QuitGameWindow.DEFAULT_WIDTH - QuitGameWindow.PADDING * 2,
 		textShadow = true
 	}, ui:getResources()))
 	self.messageLabel:setText(
-		"Are you sure you wish to quit the game? " ..
-		"Any unsaved progress will be lost.")
+		"If you quit now, the game will be saved. " ..
+		"When you play again, you will start at the last bed you slept at. " ..
+		"Is that okay?")
 	self:addChild(self.messageLabel)
 
 	self.cancelButton = Button()
