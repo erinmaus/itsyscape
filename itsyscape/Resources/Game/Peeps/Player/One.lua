@@ -86,6 +86,7 @@ function One:new(...)
 	self:addPoke('transferItemFrom')
 	self:addPoke('travel')
 	self:addPoke('walk')
+	self:addPoke('bootstrapComplete')
 end
 
 function One:onChangeWardrobe(e)
@@ -456,10 +457,14 @@ function One:onActionPerformed(e)
 end
 
 function One:interruptUI()
-	if not self:hasBehavior(DisabledBehavior) then
+	if self:getIsReady() and not self:hasBehavior(DisabledBehavior) then
 		local game = self:getDirector():getGameInstance()
 		game:getUI():interrupt(self)
 	end
+end
+
+function One:onBootstrapComplete()
+	Utility.UI.openGroup(self, Utility.UI.Groups.WORLD)
 end
 
 return One

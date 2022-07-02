@@ -15,6 +15,12 @@ local METALS = {
 		hammer = "Hammer"
 	},
 
+	["Iron"] = {
+		tier = 10,
+		weight = 15,
+		hammer = "Hammer"
+	},
+
 	["Adamant"] = {
 		tier = 40,
 		weight = 12.5,
@@ -28,7 +34,7 @@ local METALS = {
 	}
 }
 
-for name, metal in pairs(METALS) do
+for name, metal in spairs(METALS) do
 	local ItemName = string.format("%sHatchet", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
 

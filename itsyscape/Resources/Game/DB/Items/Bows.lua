@@ -43,8 +43,8 @@ local ITEMS = {
 }
 
 
-for name, log in pairs(LOGS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, log in spairs(LOGS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", log.style, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
 
@@ -59,7 +59,7 @@ for name, log in pairs(LOGS) do
 
 		local FletchAction = ItsyScape.Action.Fletch() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Fletching",
+				Resource = ItsyScape.Resource.Skill "Engineering",
 				Count = ItsyScape.Utility.xpForLevel(math.max(log.tier + itemProps.tier - 1, 1))
 			},
 
@@ -74,7 +74,7 @@ for name, log in pairs(LOGS) do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Fletching",
+				Resource = ItsyScape.Resource.Skill "Engineering",
 				Count = ItsyScape.Utility.xpForResource(log.tier + itemProps.tier) * 2
 			},
 

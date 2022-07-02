@@ -62,7 +62,7 @@ local ARMOR = {
 	}
 }
 
-for name, armor in pairs(ARMOR) do
+for name, armor in spairs(ARMOR) do
 	for _, itemProps in ipairs(armor.items) do
 		local ItemName = string.format("%s%s", armor.name, itemProps.name)
 		local Item = ItsyScape.Resource.Item(ItemName)

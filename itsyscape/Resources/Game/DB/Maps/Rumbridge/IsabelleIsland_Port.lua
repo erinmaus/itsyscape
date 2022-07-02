@@ -68,7 +68,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid" {
-		ItsyScape.Action.Attack()
+		-- Nothing.
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -103,6 +103,11 @@ do
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Sailing",
 		Value = ItsyScape.Utility.xpForLevel(99),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 

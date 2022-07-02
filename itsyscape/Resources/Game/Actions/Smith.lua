@@ -15,13 +15,14 @@ local Make = require "Resources.Game.Actions.Make"
 
 local Smith = Class(Make)
 Smith.SCOPES = { ['craft'] = true }
+Smith.PAUSE = 2
 
 function Smith:perform(state, player, prop)
 	local flags = { ['item-inventory'] = true }
 
 	if self:canPerform(state, flags) then
-		local a = WaitCommand(self:getActionDuration(10))
-		local b = CallbackCommand(self.make, self, state, player, prop)
+		local a = CallbackCommand(self.make, self, state, player)
+		local b = WaitCommand(self:getActionDuration(10))
 
 		local queue = player:getCommandQueue()
 		return queue:push(CompositeCommand(nil, a, b))

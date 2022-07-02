@@ -32,6 +32,7 @@ function PlayAnimation:new(filename)
 	self.repeatAnimation = false
 	self.bones = {}
 	self.duration = false
+	self.durationOverride = false
 	self.keep = false
 	self.reverse = false
 end
@@ -44,6 +45,7 @@ function Metatable:__call(t)
 	self:setRepeatAnimation(t.repeatAnimation)
 	self:setBones(t.bones)
 	self:setReverse(t.reverse)
+	self:setDurationOverride(t.duration)
 
 	return self
 end
@@ -130,6 +132,14 @@ function PlayAnimation:getDuration(windingDown)
 	end
 
 	return self.duration
+end
+
+function PlayAnimation:setDurationOverride(value)
+	self.durationOverride = value or self.durationOverride
+end
+
+function PlayAnimation:getDurationOverride()
+	return self.durationOverride
 end
 
 return PlayAnimation

@@ -10,8 +10,10 @@
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
 local Renderer = require "ItsyScape.Graphics.Renderer"
@@ -32,9 +34,13 @@ DemoApplication.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
+DemoApplication.TITLE_SCREENS = {
+	"TitleScreen_EmptyRuins",
+	"TitleScreen_RuinsOfRhysilk"
+}
 
 function DemoApplication:new()
-	Application.new(self)
+	Application.new(self, true)
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
@@ -64,7 +70,7 @@ function DemoApplication:changeCamera(_, cameraType)
 	end
 end
 
-function DemoApplication:pokeCamera(event, ...)
+function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
 end
 
@@ -78,30 +84,38 @@ end
 
 function DemoApplication:closeTitleScreen()
 	self:setIsPaused(false)
+	self.titleScreen = nil
 
 	self:closeMainMenu()
-
-	if self.titleScreen then
-		self.titleScreen = nil
-	end
-
-	local playerPeep = self:getGame():getPlayer():getActor():getPeep()
-	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 end
 
 function DemoApplication:openTitleScreen()
 	self:setIsPaused(true)
-	local TitleScreen = require "Resources.Game.TitleScreens.IsabelleIsland.Title"
-	self.titleScreen = TitleScreen(self:getGameView(), "IsabelleIsland")
+	self.titleScreen = TitleScreen(self:getGameView())
+	self.titleScreen:load()
 
+	local mapName = DemoApplication.TITLE_SCREENS[math.random(#DemoApplication.TITLE_SCREENS)]
+
+	local storage = PlayerStorage()
+	storage:getRoot():set({
+		Location = {
+			x = 1,
+			y = 0,
+			z = 1,
+			name = mapName or "TitleScreen_EmptyRuins",
+			isTitleScreen = true
+		}
+	})
+
+	self:getGame():getPlayer():spawn(storage, false)
 	self:getGameView():playMusic('main', "IsabelleIsland")
 end
 
 function DemoApplication:quit()
-	if not self.titleScreen then
-		self:getGame():quit()
-		Log.analytic("END_GAME")
-	end
+	local Resource = require "ItsyScape.Graphics.Resource"
+	Resource.quit()
+
+	Application.quit()
 
 	return false
 end
@@ -219,30 +233,32 @@ function DemoApplication:openMainMenu()
 	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	self.mainMenu:addChild(soundButton)
 
-	if _CONF.fullscreen then
-		local closeButton = Button()
-		closeButton:setStyle(ButtonStyle({
-			pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
-			inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
-			hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
-			color = { 1, 1, 1, 1 },
-			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-			fontSize = 24,
-			textShadow = true,
-			}, self:getUIView():getResources()))
-		closeButton:setText("X")
-		closeButton.onClick:register(function()
-			love.event.quit()
-		end)
-		closeButton:setPosition(
-			w - BUTTON_SIZE - PADDING,
-			PADDING)
-		closeButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
-		closeButton:setToolTip(ToolTip.Text("Quit the game."))
-		self.mainMenu:addChild(closeButton)
-	end
+	local closeButton = Button()
+	closeButton:setStyle(ButtonStyle({
+		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+		inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+		color = { 1, 1, 1, 1 },
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		fontSize = 24,
+		textShadow = true,
+		}, self:getUIView():getResources()))
+	closeButton:setText("X")
+	closeButton.onClick:register(function()
+		love.event.quit()
+	end)
+	closeButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		PADDING)
+	closeButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	closeButton:setToolTip(ToolTip.Text("Quit the game."))
+	self.mainMenu:addChild(closeButton)
 
 	self:getUIView():getRoot():addChild(self.mainMenu)
+
+	if self.titleScreen then
+		self.titleScreen:enableLogo()
+	end
 end
 
 function DemoApplication:openOptionsScreen(Type, callback)
@@ -253,14 +269,12 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	self.optionsScreen = Type(self)
 	self.optionsScreen.onClose:register(callback)
 	self.mainMenu:addChild(self.optionsScreen)
+
+	self.titleScreen:disableLogo()
 end
 
 function DemoApplication:mousePress(x, y, button)
 	if self.titleScreen and not self.mainMenu then
-		self:openMainMenu()
-
-		self.titleScreen:suppressTitle()
-
 		if _ANALYTICS and not _ANALYTICS:getAcked() and not _ARGS["anonymous"] then
 			local WIDTH = 480
 			local HEIGHT = 240
@@ -483,63 +497,89 @@ function DemoApplication:updatePlayerMovement()
 	end
 end
 
-function DemoApplication:update(delta)
-	Application.update(self, delta)
+function DemoApplication:hideToolTip()
+	if self.toolTipWidget then
+		local renderer = self:getUIView():getRenderManager()
+		renderer:unsetToolTip(self.toolTipWidget)
+		self.toolTipWidget = nil
+		self.toolTip = nil
+		self.showingToolTip = false
+		self.lastToolTipObject = false
+	end
+end
 
-	self:updatePlayerMovement()
+function DemoApplication:updateToolTip(delta)
+	local isUIBlocking = self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition())
 
 	self.toolTipTick = self.toolTipTick - delta
 	if self.mouseMoved and self.toolTipTick < 0 then
-		self:probe(self.mouseX, self.mouseY, false, function(probe)
-			local action = probe:toArray()[1]
-			local renderer = self:getUIView():getRenderManager()
-			if action and (action.type ~= 'examine' and not action.suppress) then
-				local text = string.format("%s %s", action.verb, action.object)
-				self.showingToolTip = true
-				if self.lastToolTipObject ~= action.id then
-					self.toolTip = {
-						ToolTip.Header(text),
-						ToolTip.Text(action.description)
-					}
-					self.lastToolTipObject = action.id
-				end
-			else
-				if renderer:getToolTip() == self.toolTipWidget then
-					renderer:unsetToolTip()
-					self.toolTip = nil
-					self.showingToolTip = false
-					self.lastToolTipObject = false
-				end
-			end
-		end, { ['actors'] = true, ['props'] = true })
+		if isUIBlocking then
+			self:hideToolTip()
+		else
+			self:probe(self.mouseX, self.mouseY, false, function(probe)
+				local action = probe:toArray()[1]
+				local renderer = self:getUIView():getRenderManager()
+				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
+					local text = string.format("%s %s", action.verb, action.object)
+					self.showingToolTip = true
+					if self.lastToolTipObject ~= action.id or not self.showingToolTip then
+						self.toolTip = {
+							ToolTip.Header(text),
+							ToolTip.Text(action.description)
+						}
+						self.lastToolTipObject = action.id
 
-		self.mouseMoved = false
-		self.toolTipTick = DemoApplication.PROBE_TICK
+						renderer:unsetToolTip(self.toolTipWidget)
+						self.toolTipWidget = nil
+					end
+				else
+					self:hideToolTip()
+				end
+			end, { ['actors'] = true, ['props'] = true, ['loot'] = true })
+
+			self.mouseMoved = false
+			self.toolTipTick = DemoApplication.PROBE_TICK
+		end
 	end
 
 	if self.showingToolTip then
 		local renderer = self:getUIView():getRenderManager()
-		self.toolTipWidget = renderer:setToolTip(
-			math.huge,
-			unpack(self.toolTip))
+		if not self.toolTipWidget then
+			self.toolTipWidget = renderer:setToolTip(math.huge, unpack(self.toolTip))
+		else
+			if self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition()) then
+				self:hideToolTip()
+			else
+				self.toolTipWidget:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+			end
+		end
 	end
+end
+
+function DemoApplication:update(delta)
+	Application.update(self, delta)
+
+	self:updatePlayerMovement()
+	self:updateToolTip(delta)
+
+	self.cameraController:update(delta)
 
 	if self.titleScreen then
 		self.titleScreen:update(delta)
-	end
 
-	self.cameraController:update(delta)
+		if not self.mainMenu and self.titleScreen:isReady() then
+			self:openMainMenu()
+		end
+	end
 end
 
 function DemoApplication:draw(delta)
 	self.cameraController:draw()
 
+	Application.draw(self, delta)
+
 	if self.titleScreen then
 		self.titleScreen:draw()
-
-		self:getUIView():draw()
-	else
-		Application.draw(self, delta)
 	end
 end
 

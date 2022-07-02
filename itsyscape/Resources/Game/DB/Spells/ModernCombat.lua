@@ -309,3 +309,53 @@ ItsyScape.Meta.CombatSpell {
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "AirBlast", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "AirBlast", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "AirBlast", "magic_combat_spell")
+
+ItsyScape.Meta.ResourceName {
+	Value = "Lightning",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Lightning"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Summons lightning to strike your foe. Yendorians claim this spell was given to the world by Yendor. They use it to smite heathens.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Lightning"
+}
+
+ItsyScape.Resource.Spell "Lightning" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(70)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 20
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 20
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "CosmicRune",
+			Count = 10
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 500
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 100,
+	Resource = ItsyScape.Resource.Spell "Lightning"
+}
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_modern_spell")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_combat_spell")

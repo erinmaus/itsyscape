@@ -61,24 +61,21 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		stats = false
 	end
 
-	-- TODO: combat multipliers
 	local style = weapon:getStyle()
-	local bonus, level
+	local bonusType, level, bonuses
 	do
 		if style == Weapon.STYLE_MAGIC then
-			bonus = 'StrengthMagic'
+			bonusType = 'StrengthMagic'
 		elseif style == Weapon.STYLE_ARCHERY then
-			bonus = 'StrengthRanged'
+			bonusType = 'StrengthRanged'
 		elseif style == Weapon.STYLE_MELEE then
-			bonus = 'StrengthMelee'
+			bonusType = 'StrengthMelee'
 		end
 
 		local success, skill = weapon:getSkill(purpose)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
-
-		self.stat = skill
 	end
 
 	if purpose == Weapon.PURPOSE_KILL then
@@ -90,15 +87,32 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 				level = (level or 1) + 8
 			end
 		end
+
+		self.stat = skill
+
+		bonuses = Utility.Peep.getEquipmentBonuses(peep)
+		self.bonus = (bonuses[bonusType] or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
+		self.bonus = 0
+
+		local gameDB = peep:getDirector():getGameDB()
+		local itemResource = gameDB:getResource(weapon:getID(), "Item")
+		if itemResource then
+			local equipmentRecord = gameDB:getRecord("Equipment", {
+				Resource = itemResource
+			})
+
+			if equipmentRecord then
+				self.bonus = equipmentRecord:get(bonusType)
+				bonuses = { [bonusType] = self.bonus }
+			end
+		end
+
 		level = (level or 1) + 8
 	end
 
-	self.bonusType = bonus
+	self.bonusType = bonusType
 	self.level = level
-
-	local bonuses = Utility.Peep.getEquipmentBonuses(peep)
-	self.bonus = (bonuses[bonus] or 0)
 
 	if target and target:hasBehavior(PlayerBehavior) then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
@@ -394,8 +408,14 @@ function Weapon:rollAttack(peep, target, bonus)
 	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
+function Weapon:previewDamageRoll(roll)
+	-- Nothing.
+end
+
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	self:previewDamageRoll(roll)
+
 	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 		effect:applySelfToDamage(roll, purpose)
 	end
@@ -424,11 +444,18 @@ function Weapon:onAttackHit(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = damage,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep, target)
 	})
 
-	target:poke('receiveAttack', attack)
-	peep:poke('initiateAttack', attack)
+	if damage < 0 then
+		target:poke('heal', {
+			hitPoints = -damage
+		})
+	else
+		target:poke('receiveAttack', attack)
+		peep:poke('initiateAttack', attack)
+	end
 
 	self:applyCooldown(peep)
 
@@ -440,7 +467,8 @@ function Weapon:onAttackMiss(peep, target)
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = 0,
-		aggressor = peep
+		aggressor = peep,
+		delay = self:getDelay(peep, target)
 	})
 
 	target:poke('receiveAttack', attack)
@@ -501,6 +529,14 @@ end
 
 function Weapon:getWeaponType()
 	return 'none'
+end
+
+function Weapon:getDelay(peep, target)
+	if peep:hasBehavior(PlayerBehavior) then
+		return 0
+	else
+		return 0.5
+	end
 end
 
 function Weapon:getCooldown(peep)

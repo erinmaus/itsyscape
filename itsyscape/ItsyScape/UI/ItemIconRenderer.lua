@@ -35,7 +35,6 @@ function ItemIconRenderer:stop()
 	WidgetRenderer.stop(self)
 
 	for icon in pairs(self.unvisitedIcons) do
-		self.icons[icon]:release()
 		self.icons[icon] = nil
 	end
 end
@@ -78,7 +77,7 @@ function ItemIconRenderer:draw(widget, state)
 			itemScaleX = scaleX * 0.8
 			itemScaleY = scaleY * 0.8
 
-			love.graphics.draw(
+			itsyrealm.graphics.draw(
 				self.note,
 				originX, originY,
 				0,
@@ -94,7 +93,7 @@ function ItemIconRenderer:draw(widget, state)
 			love.graphics.setColor(0.3, 0.3, 0.3, 1)
 		end
 
-		love.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
+		itsyrealm.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
 
 		if isDisabled then
 			love.graphics.setColor(1, 1, 1, 1)
@@ -113,10 +112,10 @@ function ItemIconRenderer:draw(widget, state)
 		local textWidth = self.font:getWidth(text) * scaleX
 
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.print(text, width - textWidth, 2 * scaleX, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth, 2 * scaleX, 0, scaleX, scaleX)
 
 		love.graphics.setColor(unpack(color))
-		love.graphics.print(text, width - textWidth - 2 * scaleX, 0, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth - 2 * scaleX, 0, 0, scaleX, scaleX)
 
 		love.graphics.setFont(oldFont)
 		love.graphics.setColor(1, 1, 1, 1)

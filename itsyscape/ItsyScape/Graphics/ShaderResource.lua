@@ -15,6 +15,11 @@ local Resource = require "ItsyScape.Graphics.Resource"
 -- This object can be sorted by values returned by getID.
 local ShaderResource = Resource()
 
+ShaderResource.PRIMITIVE = 1
+ShaderResource.LOW_LEVEL = 2
+ShaderResource.COMPOSITE = 3
+ShaderResource.DEFAULT   = ShaderResource.COMPOSITE
+
 ShaderResource.Source = Class()
 function ShaderResource.Source:new(pixel, vertex)
 	self.pixel = pixel

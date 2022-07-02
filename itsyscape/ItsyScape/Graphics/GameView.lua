@@ -7,9 +7,11 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
@@ -22,19 +24,27 @@ local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
+local Map = require "ItsyScape.World.Map"
 local TileSet = require "ItsyScape.World.TileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
 
+GameView.PropViewDebugStats = Class(DebugStats)
+function GameView.PropViewDebugStats:process(node, delta)
+	node:update(delta)
+end
+
 function GameView:new(game)
 	self.game = game
 	self.actors = {}
 	self.props = {}
 	self.views = {}
+	self.propViewDebugStats = GameView.PropViewDebugStats()
 
 	local stage = game:getStage()
+
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		self:addMap(map, layer, tileSetID)
 	end
@@ -75,12 +85,12 @@ function GameView:new(game)
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
 
-	self._onDropItem = function(_, item, tile, position)
+	self._onDropItem = function(_, ref, item, tile, position)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
-	self._onTakeItem = function(_, item)
+	self._onTakeItem = function(_, ref, item)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
@@ -89,6 +99,11 @@ function GameView:new(game)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
+
+	self._onUndecorate = function(_, group, layer)
+		self:decorate(group, nil, layer)
+	end
+	stage.onUndecorate:register(self._onUndecorate)
 
 	self._onWaterFlood = function(_, key, water, layer)
 		self:flood(key, water, layer)
@@ -105,6 +120,11 @@ function GameView:new(game)
 		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
+
+	self._onStopForecast = function(_, layer, key)
+		self:forecast(layer, key, nil)
+	end
+	stage.onStopForecast:register(self._onStopForecast)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
 		self:fireProjectile(projectileID, source, destination, time)
@@ -123,6 +143,7 @@ function GameView:new(game)
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+	self.tests = { id = 1 }
 
 	self.music = {}
 
@@ -192,9 +213,11 @@ function GameView:release()
 	stage.onTakeItem:unregister(self._onTakeItem)
 	stage.onDropItem:unregister(self._onDropItem)
 	stage.onDecorate:unregister(self._onDecorate)
+	stage.onUndecorate:unregister(self._onUndecorate)
 	stage.onWaterFlood:unregister(self._onWaterFlood)
 	stage.onWaterDrain:unregister(self._onWaterDrain)
 	stage.onForecast:unregister(self._onForecast)
+	stage.onStopForecast:unregister(self._onStopForecast)
 	stage.onProjectile:unregister(self._onProjectile)
 	stage.onPlayMusic:unregister(self._onPlayMusic)
 	stage.onStopMusic:unregister(self._onStopMusic)
@@ -238,6 +261,11 @@ function GameView:removeMap(layer)
 		m.weatherMap:removeMap(m.map)
 
 		self.mapMeshes[layer] = nil
+
+		love.thread.getChannel('ItsyScape.Map::input'):push({
+			type = 'unload',
+			key = layer
+		})
 	end
 end
 
@@ -267,9 +295,39 @@ function GameView:updateGroundDecorations(m)
 	end
 end
 
+function GameView:testMap(layer, ray, callback)
+	local id = self.tests.id
+	self.tests.id = id + 1
+
+	self.tests[id] = {
+		layer = layer,
+		callback = callback
+	}
+
+	love.thread.getChannel('ItsyScape.Map::input'):push({
+		type = 'probe',
+		id = id,
+		key = layer,
+		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
+		direction = { ray.direction.x, ray.direction.y, ray.direction.z }
+	})
+end
+
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
+		do
+			local before = love.timer.getTime()
+			love.thread.getChannel('ItsyScape.Map::input'):push({
+				type = 'load',
+				key = layer,
+				data = buffer.encode(m.map:serialize())
+			})
+			local after = love.timer.getTime()
+
+			Log.debug("Updated layer '%d' in %d ms.", layer, (after - before) * 1000)
+		end
+
 		if map then
 			m.map = map
 		end
@@ -366,6 +424,13 @@ function GameView:getMapTileSet(layer)
 	end
 end
 
+function GameView:getMap(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.map
+	end
+end
+
 function GameView:addActor(actorID, actor)
 	local view = ActorView(actor, actorID)
 	view:attach(self)
@@ -426,7 +491,7 @@ function GameView:getView(instance)
 end
 
 function GameView:spawnItem(item, tile)
-	local map = self.game:getStage():getMap(tile.layer)
+	local map = self:getMap(tile.layer)
 	if map then
 		position = map:getTileCenter(tile.i, tile.j)
 	end
@@ -532,7 +597,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	local node = WaterMeshSceneNode()
-	local map = self.game:getStage():getMap(water.layer or 1)
+	local map = self:getMap(water.layer or 1)
 	node:generate(
 		map,
 		water.i or 1,
@@ -541,6 +606,15 @@ function GameView:flood(key, water, layer)
 		water.height or (map:getHeight() - ((water.j or 1) - 1) + 1),
 		water.y,
 		water.finesse)
+
+	if water.timeScale then
+		node:setTextureTimeScale(water.timeScale)
+	end
+
+	if water.yOffset then
+		node:setYOffset(water.yOffset)
+	end
+
 	if water.isTranslucent then
 		node:getMaterial():setIsTranslucent(true)
 	end
@@ -655,17 +729,37 @@ function GameView:getDecorations()
 	return result, count
 end
 
-function GameView:update(delta)
-	self.resourceManager:update()
+function GameView:getDecorationSceneNodes()
+	local result = {}
+	local count = 0
+	for k, v in pairs(self.decorations) do
+		-- Only return "drawable" nodes
+		if v.sceneNode and v.sceneNode:canLerp() then
+			result[v.name] = v.sceneNode
+			count = count + 1
+		end
+	end
 
+	return result, count
+end
+
+function GameView:updateResourceManager()
+	self.resourceManager:update()
+end
+
+function GameView:updateActors(delta)
 	for _, actor in pairs(self.actors) do
 		actor:update(delta)
 	end
+end
 
+function GameView:updateProps(delta)
 	for _, prop in pairs(self.props) do
-		prop:update(delta)
+		self.propViewDebugStats:measure(prop, delta)
 	end
+end
 
+function GameView:updateProjectiles(delta)
 	local finishedProjectiles = {}
 	for projectile in pairs(self.projectiles) do
 		projectile:update(delta)
@@ -679,22 +773,19 @@ function GameView:update(delta)
 		finishedProjectiles[i]:poof()
 		self.projectiles[finishedProjectiles[i]] = nil
 	end
+end
 
+function GameView:updateWeather(delta)
 	for _, weather in pairs(self.weather) do
 		weather:update(delta)
 	end
+end
 
+function GameView:updateSprites(delta)
 	self.spriteManager:update(delta)
+end
 
-	do
-		local actor = self:getActor(self.game:getPlayer():getActor())
-		if actor then
-			player = actor:getSceneNode()
-			local transform = player:getTransform():getGlobalDeltaTransform(0, 0, 0)
-			love.audio.setPosition(transform:transformPoint(0, 0, 0))
-		end
-	end
-
+function GameView:updateMusic(delta)
 	for track, songs in pairs(self.music) do
 		local index = 1
 		while index < #songs do
@@ -725,6 +816,57 @@ function GameView:update(delta)
 	end
 end
 
+function GameView:updateMapQueries(delta)
+	local m
+	repeat
+		m = love.thread.getChannel('ItsyScape.Map::output'):pop()
+		if m and m.type == 'probe' then
+			local test = self.tests[m.id]
+			if test then
+				local mapMesh = self.mapMeshes[test.layer]
+				if mapMesh then
+					self.tests[m.id] = nil
+					local results = {}
+
+					for i = 1, #m.tiles do
+						local tile = m.tiles[i]
+						local result = {
+							[Map.RAY_TEST_RESULT_TILE] = mapMesh.map:getTile(tile.i, tile.j),
+							[Map.RAY_TEST_RESULT_I] = tile.i,
+							[Map.RAY_TEST_RESULT_J] = tile.j,
+							[Map.RAY_TEST_RESULT_POSITION] = Vector(unpack(tile.position))
+						}
+
+						table.insert(results, result)
+					end
+
+					test.callback(results)
+				end
+			end
+		end
+	until m == nil
+end
+
+function GameView:update(delta)
+	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
+	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
+	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
+	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)
+	_APP:measure("gameView:updateWeather()", GameView.updateWeather, self, delta)
+	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)
+	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
+	_APP:measure("gameView:updateMapQueries()", GameView.updateMapQueries, self, delta)
+
+	do 
+		local actor = self:getActor(self.game:getPlayer():getActor())
+		if actor then
+			player = actor:getSceneNode()
+			local transform = player:getTransform():getGlobalDeltaTransform(0, 0, 0)
+			love.audio.setPosition(transform:transformPoint(0, 0, 0))
+		end
+	end
+end
+
 function GameView:tick()
 	self.scene:tick()
 
@@ -739,6 +881,10 @@ function GameView:tick()
 	for projectile in pairs(self.projectiles) do
 		projectile:tick()
 	end
+end
+
+function GameView:dumpStatsToCSV()
+	self.propViewDebugStats:dumpStatsToCSV("GameView_PropView_Update")
 end
 
 return GameView

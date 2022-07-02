@@ -15,22 +15,7 @@ local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
 local EquipmentInventoryProvider = Class(InventoryProvider)
-EquipmentInventoryProvider.STATS = {
-	"AccuracyStab",
-	"AccuracySlash",
-	"AccuracyCrush",
-	"AccuracyMagic",
-	"AccuracyRanged",
-	"DefenseStab",
-	"DefenseSlash",
-	"DefenseCrush",
-	"DefenseMagic",
-	"DefenseRanged",
-	"StrengthMelee",
-	"StrengthRanged",
-	"StrengthMagic",
-	"Prayer"
-}
+EquipmentInventoryProvider.STATS = Equipment.STATS
 
 function EquipmentInventoryProvider:new(peep, slots)
 	InventoryProvider.new(self)
@@ -151,7 +136,7 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 			local ref = CacheRef(
 				equipModelTag:get("Type"),
 				equipModelTag:get("Filename"))
-			actor:unsetSkin(equipSlotTag, ref)
+			actor:unsetSkin(equipSlotTag, Equipment.SKIN_PRIORITY_EQUIPMENT, ref)
 		end
 	end
 end

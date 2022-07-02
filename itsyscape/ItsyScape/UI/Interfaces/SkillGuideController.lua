@@ -38,8 +38,8 @@ function SkillGuideController:new(peep, director, skill)
 					if a then
 						local action = a.instance:getAction()
 						if not gameDB:getRecord("HiddenFromSkillGuide", { Action = action }) then
-							table.insert(self.state.actions, a)
-							self.actionsByID[a.id] = action
+							table.insert(self.state.actions, { id = a.id })
+							self.actionsByID[a.id] = a
 						end
 					end
 				end
@@ -95,7 +95,7 @@ end
 function SkillGuideController:sort()
 	local index = 1
 	while index <= #self.state.actions do
-		local action = self.state.actions[index]
+		local action = self.actionsByID[self.state.actions[index].id]
 		if not self:findActionXPRequirement(action.instance:getAction()) then
 			table.remove(self.state.actions, index)
 			self.actionsByID[action.instance:getAction().id] = nil
@@ -105,8 +105,8 @@ function SkillGuideController:sort()
 	end
 
 	table.sort(self.state.actions, function(a, b)
-		a = a.instance:getAction()
-		b = b.instance:getAction()
+		a = self.actionsByID[a.id].instance:getAction()
+		b = self.actionsByID[b.id].instance:getAction()
 
 		local aReqXP, bReqXP = self:findActionXPRequirement(a), self:findActionXPRequirement(b)
 		local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)
@@ -152,7 +152,7 @@ function SkillGuideController:select(e)
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
 
-	local action = self.actionsByID[e.id]
+	local action = self.actionsByID[e.id].instance:getAction()
 	local result = Utility.getActionConstraints(self:getDirector():getGameInstance(), action)
 
 	director:getGameInstance():getUI():sendPoke(

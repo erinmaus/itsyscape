@@ -43,13 +43,13 @@ MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
 
--- ew
-do
-	local GameView = require "ItsyScape.Graphics.GameView"
-	GameView.MAP_MESH_DIVISIONS = 1024
-end
-
 function MapEditorApplication:new()
+	-- ew
+	do
+		local GameView = require "ItsyScape.Graphics.GameView"
+		GameView.MAP_MESH_DIVISIONS = 1024
+	end
+
 	EditorApplication.new(self)
 
 	self.currentDecorationTileSet = "RumbridgeCabin"
@@ -332,23 +332,25 @@ function MapEditorApplication:mousePress(x, y, button)
 						motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
 						local t, i, j = motion:getTile()
-						local y = t:getInterpolatedHeight(0.5, 0.5)
-						local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
-						local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+						if t then
+							local y = t:getInterpolatedHeight(0.5, 0.5)
+							local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
-						local rotation, scale
-						if self.lastDecorationFeature then
-							rotation = self.lastDecorationFeature:getRotation()
-							scale = self.lastDecorationFeature:getScale()
+							local rotation, scale
+							if self.lastDecorationFeature then
+								rotation = self.lastDecorationFeature:getRotation()
+								scale = self.lastDecorationFeature:getScale()
+							end
+
+							self.lastDecorationFeature = decoration:add(
+								tile,
+								Vector(x, y, z),
+								rotation,
+								scale,
+								self.currentDecorationColor)
+							self:getGame():getStage():decorate(group, decoration)
 						end
-
-						self.lastDecorationFeature = decoration:add(
-							tile,
-							Vector(x, y, z),
-							rotation,
-							scale,
-							self.currentDecorationColor)
-						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
@@ -871,9 +873,7 @@ function MapEditorApplication:load(filename, preferExisting)
 			stage:newMap(
 				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID)
 			stage:updateMap(layer, map)
-
-			local gameView = self:getGameView()
-			gameView:getMapSceneNode(layer):setParent(gameView:getScene())
+			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
 	end
 

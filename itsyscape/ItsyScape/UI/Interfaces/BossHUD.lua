@@ -89,17 +89,17 @@ function BossHUD.StatBar:draw(resources, state)
 	local cornerRadius = math.min(w, h) / 4
 
 	love.graphics.setColor(self.inColor:get())
-	love.graphics.rectangle('fill', 0, 0, w, h, cornerRadius)
+	itsyrealm.graphics.rectangle('fill', 0, 0, w, h, cornerRadius)
 
 	local outWidth = w * (1 - (self.current / self.max))
 	if outWidth >= 1 then
 		love.graphics.setColor(self.outColor:get())
-		love.graphics.rectangle('fill', w - outWidth, 0, outWidth, h, cornerRadius)
+		itsyrealm.graphics.rectangle('fill', w - outWidth, 0, outWidth, h, cornerRadius)
 	end
 
 	love.graphics.setLineWidth(self.BORDER_THICKNESS)
 	love.graphics.setColor(0, 0, 0, 0.5)
-	love.graphics.rectangle('line', 0, 0, w, h, cornerRadius)
+	itsyrealm.graphics.rectangle('line', 0, 0, w, h, cornerRadius)
 
 	love.graphics.setLineWidth(1)
 	love.graphics.setColor(1, 1, 1, 1)

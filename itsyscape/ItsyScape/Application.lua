@@ -14,30 +14,14 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
+local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
 local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local UIView = require "ItsyScape.UI.UIView"
-
-local function createGameDB()
-	local t = {
-		"Resources/Game/DB/Init.lua"
-	}
-
-	for _, item in ipairs(love.filesystem.getDirectoryItems("Resources/Game/Maps/")) do
-		local f1 = "Resources/Game/Maps/" .. item .. "/DB/Main.lua"
-		local f2 = "Resources/Game/Maps/" .. item .. "/DB/Default.lua"
-		if love.filesystem.getInfo(f1) then
-			table.insert(t, f1)
-		elseif love.filesystem.getInfo(f2) then
-			table.insert(t, f2)
-		end
-	end
-
-	return GameDB.create(t, ":memory:")
-end
 
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
@@ -84,8 +68,9 @@ Application.CLICK_ACTION = 1
 Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
+Application.DEBUG_DRAW_THRESHOLD = 160
 
-function Application:new()
+function Application:new(multiThreaded)
 	self.camera = ThirdPersonCamera()
 	do
 		self.camera:setDistance(30)
@@ -101,8 +86,29 @@ function Application:new()
 	self.frames = 0
 	self.frameTime = 0
 
-	self.gameDB = createGameDB()
-	self.game = LocalGame(self.gameDB)
+	self.gameDB = GameDB.create()
+
+	self.multiThreaded = multiThreaded or false
+
+	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
+	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
+
+	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
+
+	if not self.multiThreaded then
+		self.localGame = LocalGame(self.gameDB)
+		self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
+
+	else
+		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
+		self.gameThread:start({
+			_DEBUG = _DEBUG
+		})
+		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
+	end
+
+
+	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	self.gameView = GameView(self.game)
 	self.uiView = UIView(self.gameView)
 
@@ -143,9 +149,7 @@ function Application:measure(name, func, ...)
 end
 
 function Application:initialize()
-	self:getGame():getStage():newMap(1, 1, 1)
-
-	self:tick()
+	-- Nothing.
 end
 
 function Application:getCamera()
@@ -157,7 +161,7 @@ function Application:getGameDB()
 end
 
 function Application:getGame()
-	return self.game
+	return self.localGame or self.game
 end
 
 function Application:getGameView()
@@ -233,28 +237,53 @@ function Application:update(delta)
 	self.time = self.time + delta
 
 	-- Only update at the specified intervals.
-	while self.time > self.game:getDelta() do
-		self:tick()
+	if not self.multiThreaded then
+		while self.time > self.localGame:getDelta() do
+			self:tickSingleThread()
 
-		-- Handle cases where 'delta' exceeds TICK_RATE
-		self.time = self.time - self.game:getDelta()
+			-- Handle cases where 'delta' exceeds TICK_RATE
+			self.time = self.time - self.localGame:getDelta()
 
-		-- Store the previous frame time.
-		self.previousTickTime = love.timer.getTime()
+			-- Store the previous frame time.
+			self.previousTickTime = love.timer.getTime()
+		end
+
+		self:measure('game:update()', function() self.localGame:update(delta) end)
+	else
+		self.remoteGameManager:receive()
 	end
 
-	self:measure('game:update()', function() self.game:update(delta) end)
 	self:measure('gameView:update()', function() self.gameView:update(delta) end)
 	self:measure('uiView:update()', function() self.uiView:update(delta) end)
 
 	self.clickActionTime = self.clickActionTime - delta
 end
 
-function Application:tick()
-	if not self.paused then
-		self:measure('gameView:tick()', function() self.gameView:tick() end)
-		self:measure('game:tick()', function() self.game:tick() end)
-	end
+function Application:tickSingleThread()
+	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self:measure('game:tick()', function() self.localGame:tick() end)
+	self:measure('localGameManager:update()', function() self.localGameManager:update() end)
+	self.localGameManager:pushTick()
+
+	self:measure('remoteGameManager:receive()', function()
+		while not self.remoteGameManager:receive() do
+			Log.debug("Remote receive pending.")
+		end
+	end)
+
+	self.remoteGameManager:pushTick()
+
+	self:measure('localGameManager:receive()', function()
+		while not self.localGameManager:receive() do
+			Log.debug("Local receive pending.")
+		end
+	end)
+end
+
+function Application:tickMultiThread()
+	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self.remoteGameManager:pushTick()
+	self.previousTickTime = love.timer.getTime()
 end
 
 function Application:quit()
@@ -314,102 +343,117 @@ function Application:getFrameDelta()
 	local currentTime = love.timer.getTime()
 	local previousTime = self.previousTickTime
 
-	-- Generate a delta (0 .. 1 inclusive) between the current and previous
-	-- frames
-	return (currentTime - previousTime) / self.game:getDelta()
+	local gameDelta = self.game:getDelta()
+	if not gameDelta then
+		return 0
+	else
+		-- Generate a delta (0 .. 1 inclusive) between the current and previous
+		-- frames'
+		return (currentTime - previousTime) / gameDelta
+	end
 end
 
-function Application:draw()
+function Application:drawDebug()
+	if not _DEBUG or not self.showDebug then
+		return
+	end
+
+	love.graphics.setFont(FONT)
+
+	local drawCalls = love.graphics.getStats().drawcalls
+	local width = love.window.getMode()
+	local r = string.format("FPS: %03d (%03d draws, %03d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
+	local sum = 0
+	for i = 1, #self.times do
+		r = r .. string.format(
+			"%s: %.04f (%010d)\n",
+			self.times[i].name,
+			self.times[i].value,
+			1 / self.times[i].value)
+		sum = sum + self.times[i].value
+	end
+	if 1 / sum < 60 then
+		r = r .. string.format(
+				"!!! sum: %.04f (%010d)\n",
+				sum,
+				1 / sum)
+	else
+		r = r .. string.format(
+				"sum: %.04f (%010d)\n",
+				sum,
+				1 / sum)
+	end
+
+	love.graphics.printf(
+		r,
+		width - 600,
+		0,
+		600,
+		'right')
+end
+
+function Application:_draw()
 	local width, height = love.window.getMode()
-	local function draw()
-		local delta = self:getFrameDelta()
+	self.camera:setWidth(width)
+	self.camera:setHeight(height)
 
-		self.camera:setWidth(width)
-		self.camera:setHeight(height)
-
-		do
-			if self.show3D then
-				self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
-			end
-
-			self.gameView:getRenderer():present()
-
-			if self.show2D then
-				self.gameView:getSpriteManager():draw(self.camera, delta)
-			end
+	local delta = self:getFrameDelta()
+	do
+		if self.show3D and not self.uiView:getIsFullscreen() then
+			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
 		end
 
-		love.graphics.setBlendMode('alpha')
-		love.graphics.origin()
-		love.graphics.ortho(width, height)
+		self.gameView:getRenderer():present()
 
 		if self.show2D then
-			self.uiView:draw()
-		end
-
-		if self.clickActionTime > 0 then
-			local color
-			if self.clickActionType == Application.CLICK_WALK then
-				color = Color(1, 1, 0, 0.25)
-			else
-				color = Color(1, 0, 0, 0.25)
-			end
-
-			local mu = Tween.powerEaseInOut(
-				self.clickActionTime / Application.CLICK_DURATION,
-				3)
-			local oldColor = { love.graphics.getColor() }
-			love.graphics.setColor(color:get())
-			love.graphics.circle(
-				'fill',
-				self.clickX, self.clickY,
-				mu * Application.CLICK_RADIUS)
-			love.graphics.setColor(unpack(oldColor))
+			self.gameView:getSpriteManager():draw(self.camera, delta)
 		end
 	end
 
-	local s, r = xpcall(function() self:measure('draw', draw) end, debug.traceback)
+	love.graphics.setBlendMode('alpha')
+	love.graphics.origin()
+	love.graphics.ortho(width, height)
+
+	if self.show2D then
+		self.uiView:draw()
+	end
+
+	if self.clickActionTime > 0 then
+		local color
+		if self.clickActionType == Application.CLICK_WALK then
+			color = Color(1, 1, 0, 0.25)
+		else
+			color = Color(1, 0, 0, 0.25)
+		end
+
+		local mu = Tween.powerEaseInOut(
+			self.clickActionTime / Application.CLICK_DURATION,
+			3)
+		local oldColor = { love.graphics.getColor() }
+		love.graphics.setColor(color:get())
+		love.graphics.circle(
+			'fill',
+			self.clickX, self.clickY,
+			mu * Application.CLICK_RADIUS)
+		love.graphics.setColor(unpack(oldColor))
+	end
+end
+
+local function draw()
+	_APP:_draw()
+end
+
+function Application:draw()
+	local s, r = xpcall(self.measure, debug.traceback, self, 'draw', draw)
 	if not s then
 		love.graphics.setBlendMode('alpha')
 		love.graphics.origin()
-		love.graphics.ortho(width, height)
+		love.graphics.ortho(love.window.getMode())
 
 		error(r, 0)
 	end
 
-	if _DEBUG and self.showDebug then
-		love.graphics.setFont(FONT)
-
-		local width = love.window.getMode()
-		local r = string.format("FPS: %d\n", love.timer.getFPS())
-		local sum = 0
-		for i = 1, #self.times do
-			r = r .. string.format(
-				"%s: %.04f (%010d)\n",
-				self.times[i].name,
-				self.times[i].value,
-				1 / self.times[i].value)
-			sum = sum + self.times[i].value
-		end
-		if 1 / sum < 60 then
-			r = r .. string.format(
-					"!!! sum: %.04f (%010d)\n",
-					sum,
-					1 / sum)
-		else
-			r = r .. string.format(
-					"sum: %.04f (%010d)\n",
-					sum,
-					1 / sum)
-		end
-
-		love.graphics.printf(
-			r,
-			width - 300,
-			0,
-			300,
-			'right')
-	end
+	self:drawDebug()
 
 	self.frames = self.frames + 1
 	local currentTime = love.timer.getTime()

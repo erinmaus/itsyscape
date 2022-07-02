@@ -81,7 +81,8 @@ function PlayerInventoryController:pullActions(item, serializedItem)
 		serializedItem.actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
-			'inventory')
+			'inventory',
+			true)
 	else
 		serializedItem.actions = {}
 	end

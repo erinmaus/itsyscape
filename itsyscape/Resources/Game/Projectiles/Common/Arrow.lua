@@ -64,7 +64,7 @@ function Arrow:tick()
 		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
 		self.hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
 
-		self.duration = math.max((self.spawnPosition - self.hitPosition):getLength() / self.SPEED, 0.5)
+		self.duration = math.max((self.spawnPosition - self.hitPosition):getLength() / self.SPEED, 0.25)
 	end
 end
 

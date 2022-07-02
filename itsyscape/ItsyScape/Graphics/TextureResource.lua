@@ -9,30 +9,28 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
+local NTextureResource = require "nbunny.optimaus.textureresource"
+local NTextureResourceInstance = require "nbunny.optimaus.textureresourceinstance"
 
-local TextureResource = Resource()
+local TextureResource = Resource(NTextureResource)
 
 -- Basic TextureResource resource class.
 --
 -- Stores a Love2D image.
 function TextureResource:new(image)
 	Resource.new(self)
-
-	if image then
-		self.image = image
-	else
-		self.image = false
-	end
+	self:getHandle():setTexture(image)
 end
 
 function TextureResource:getResource()
-	return self.image
+	return self:getHandle():getTexture()
 end
 
 -- Gets the width of the TextureResource.
 function TextureResource:getWidth()
-	if self.image then
-		return self.image:getWidth()
+	local image = self:getResource()
+	if image then
+		return image:getWidth()
 	else
 		return 0
 	end
@@ -40,32 +38,26 @@ end
 
 -- Gets the height of the TextureResource.
 function TextureResource:getHeight()
-	if self.image then
-		return self.image:getHeight()
+	local image = self:getResource()
+	if image then
+		return image:getHeight()
 	else
 		return 0
 	end
 end
 
 function TextureResource:release()
-	if self.image then
-		self.image:release()
-		self.image = false
-	end
+	self:getHandle():setTexture()
 end
 
 function TextureResource:loadFromFile(filename, resourceManager)
-	self:release()
-	self.image = love.graphics.newImage(filename)
-	self.image:setFilter('nearest', 'nearest')
+	local image = love.graphics.newImage(filename) 
+	image:setFilter('nearest', 'nearest')
+	self:getHandle():setTexture(image)
 end
 
 function TextureResource:getIsReady()
-	if self.image then
-		return true
-	else
-		return false
-	end
+	return self:getHandle():getTexture() ~= nil
 end
 
 return TextureResource

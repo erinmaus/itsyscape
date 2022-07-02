@@ -25,10 +25,12 @@ Equipment.PLAYER_SLOT_QUIVER = 10
 Equipment.PLAYER_SLOT_EFFECT = 11
 Equipment.PLAYER_SLOTS_MAX   = 11
 
-Equipment.AMMO_NONE  = 0
-Equipment.AMMO_ARROW = 1
-Equipment.AMMO_BOLT  = 2
-Equipment.AMMO_ANY   = 100
+Equipment.AMMO_NONE   = 0
+Equipment.AMMO_ARROW  = 1
+Equipment.AMMO_BOLT   = 2
+Equipment.AMMO_BULLET = 3
+Equipment.AMMO_THROWN = 4
+Equipment.AMMO_ANY    = 100
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND  = 21
@@ -38,6 +40,46 @@ Equipment.SKIN_PRIORITY_BASE               = 0
 Equipment.SKIN_PRIORITY_ACCENT             = 10
 Equipment.SKIN_PRIORITY_EQUIPMENT          = 100
 Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE = 1000
+
+Equipment.STATS = {
+	"AccuracyStab",
+	"AccuracySlash",
+	"AccuracyCrush",
+	"AccuracyMagic",
+	"AccuracyRanged",
+	"DefenseStab",
+	"DefenseSlash",
+	"DefenseCrush",
+	"DefenseMagic",
+	"DefenseRanged",
+	"StrengthMelee",
+	"StrengthRanged",
+	"StrengthMagic",
+	"Prayer"
+}
+
+Equipment.OFFENSIVE_STATS = {
+	["AccuracyStab"] = "Stab",
+	["AccuracySlash"] = "Slash",
+	["AccuracyCrush"] = "Crush",
+	["AccuracyMagic"] = "Magic",
+	["AccuracyRanged"] = "Ranged",
+	["StrengthMelee"] = "Melee strength",
+	["StrengthRanged"] = "Ranged strength",
+	["StrengthMagic"] = "Magic strength"
+}
+
+Equipment.DEFENSIVE_STATS = {
+	["DefenseStab"] = "Stab",
+	["DefenseSlash"] = "Slash",
+	["DefenseCrush"] = "Crush",
+	["DefenseMagic"] = "Magic",
+	["DefenseRanged"] = "Ranged"
+}
+
+Equipment.MISC_STATS = {
+	["Prayer"] = "Divinity"
+}
 
 function Equipment:onEquip(peep)
 	-- Nothing.

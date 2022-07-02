@@ -11,6 +11,22 @@
 local debug = require "debug"
 local Log = {}
 
+function Log.profile(...)
+	local DebugStats = require "ItsyScape.Graphics.DebugStats"
+	DebugStats.GLOBAL:measure(...)
+end
+
+function Log.debug(format, ...)
+	if not _DEBUG then
+		return
+	end
+
+	local s, r = pcall(string.format, format, ...)
+	if s then
+		Log.print("debug", r)
+	end
+end
+
 function Log.error(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then

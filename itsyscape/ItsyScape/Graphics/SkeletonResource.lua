@@ -10,8 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local NSkeletonResource = require "nbunny.optimaus.skeletonresource"
 
-local SkeletonResource = Resource()
+local SkeletonResource = Resource(NSkeletonResource)
 
 -- Basic SkeletonResource resource class.
 --
@@ -40,7 +41,7 @@ function SkeletonResource:loadFromFile(filename, resourceManager)
 	self:release()
 
 	local file = Resource.readLua(filename)
-	self.skeleton = Skeleton(filename)
+	self.skeleton = Skeleton(file, self:getHandle())
 end
 
 function SkeletonResource:getIsReady()

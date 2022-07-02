@@ -53,7 +53,7 @@ local BARS = {
 	}
 }
 
-for name, bar in pairs(BARS) do
+for name, bar in spairs(BARS) do
 	local ItemName = string.format("%sBar", name)
 	local Bar = ItsyScape.Resource.Item(ItemName)
 

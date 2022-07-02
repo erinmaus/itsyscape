@@ -124,11 +124,21 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53,
+		PositionX = 57,
 		PositionY = 2,
 		PositionZ = 79,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Trailer_Svalbard_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Svalbard",
+		Cutscene = Cutscene,
+		Resource = M["Svalbard"]
 	}
 end

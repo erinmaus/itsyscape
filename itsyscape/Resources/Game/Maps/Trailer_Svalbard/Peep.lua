@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Svalbard = Class(Map)
@@ -30,6 +31,39 @@ function Svalbard:onLoad(filename, args, layer)
 		maxHeight = 25,
 		heaviness = 0.25
 	})
+
+	self:prepareDebugCutscene()
+end
+
+function Svalbard:prepareDebugCutscene()
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Svalbard:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
+	local cutscene = Utility.Map.playCutscene(self, "Trailer_Svalbard_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self)
+end
+
+function Svalbard:onFinishCutscene()
+	Utility.UI.openGroup(
+		Utility.Peep.getPlayer(self),
+		Utility.UI.Groups.WORLD)
 end
 
 return Svalbard

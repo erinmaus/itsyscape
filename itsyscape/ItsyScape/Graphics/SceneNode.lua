@@ -11,16 +11,16 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
-local NSceneNode = require "nbunny.scenenode"
-local NCamera = require "nbunny.camera"
+local NSceneNode = require "nbunny.optimaus.scenenode"
+local NCamera = require "nbunny.optimaus.camera"
 
 -- Represents the base scene node.
 --
 -- A scene node renders something.
 local SceneNode = Class()
 
-function SceneNode:new()
-	self._handle = NSceneNode(self)
+function SceneNode:new(NType)
+	self._handle = (NType or NSceneNode)(self)
 	self.transform = SceneNodeTransform(self)
 	self.material = Material(self)
 	self.parent = false
@@ -28,6 +28,10 @@ function SceneNode:new()
 	self.min, self.max = Vector(), Vector()
 	self.boundsDirty = true
 	self.willRender = false
+end
+
+function SceneNode:getHandle()
+	return self._handle
 end
 
 function SceneNode:onWillRender(func)
@@ -43,6 +47,10 @@ function SceneNode:getBounds()
 end
 
 function SceneNode:_debugDrawBounds(renderer, delta)
+	if not Class.isCompatibleType(self, require "ItsyScape.Graphics.ParticleSceneNode") then
+		return
+	end
+
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('lequal', true)
 
@@ -166,6 +174,7 @@ end
 
 function SceneNode:tick()
 	self.transform:tick()
+	self._handle:tick()
 
 	for child in self:iterate() do
 		child:tick()
@@ -204,26 +213,16 @@ end
 
 function SceneNode:walkByMaterial(view, projection, delta, enableCull)
 	local camera = NCamera()
-	camera:setView(view:getMatrix())
-	camera:setProjection(projection:getMatrix())
-	if enableCull or enableCull == nil then
-		camera:enableCull()
-	else
-		camera:disableCull()
-	end
+	camera:update(view, projection)
+	camera:setIsCullEnabled(enableCull)
 
 	return self._handle:walkByMaterial(camera, delta)
 end
 
 function SceneNode:walkByPosition(view, projection, delta, enableCull)
 	local camera = NCamera()
-	camera:setView(view:getMatrix())
-	camera:setProjection(projection:getMatrix())
-	if enableCull or enableCull == nil then
-		camera:enableCull()
-	else
-		camera:disableCull()
-	end
+	camera:update(view, projection)
+	camera:setIsCullEnabled(enableCull)
 
 	return self._handle:walkByPosition(camera, delta)
 end

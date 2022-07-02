@@ -15,6 +15,20 @@ local FABRICS = {
 		weight = 0.5,
 		thread = "PlainThread",
 		rune = "AirRune"
+	},
+
+	["CottonCloth"] = {
+		name = "White cotton",
+		tier = 10,
+		weight = 0,
+		thread = "PlainThread",
+		rune = "AirRune",
+
+		["Slippers"] = {
+			niceName = "%s socks",
+			slot = "Slippers",
+			fabric = 1
+		}
 	}
 }
 
@@ -22,6 +36,12 @@ local SHIELDS = {
 	["BlueCotton"] = {
 		name = "Blue book",
 		logs = "CommonLogs",
+		fabric = 3
+	},
+
+	["CottonCloth"] = {
+		name = "Boo book",
+		logs = "WillowLogs",
 		fabric = 3
 	}
 }
@@ -52,10 +72,12 @@ local ITEMS = {
 	},
 }
 
-for name, fabric in pairs(FABRICS) do
-	for itemName, itemProps in pairs(ITEMS) do
+for name, fabric in spairs(FABRICS) do
+	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
+
+		itemProps = fabric[itemName] or itemProps
 
 		local EquipAction = ItsyScape.Action.Equip() {
 			Requirement {
@@ -153,7 +175,7 @@ for name, fabric in pairs(FABRICS) do
 	end
 end
 
-for name, itemProps in pairs(SHIELDS) do
+for name, itemProps in spairs(SHIELDS) do
 	local fabric = FABRICS[name]
 	local ItemName = string.format("%sShield", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
@@ -343,20 +365,94 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlueCottonShield"
 	}
+end
 
+-- Cotton cloth
+do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(5, 0.2),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5, 0.2),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5, 0.3),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
-		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
-		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(13, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "CottonClothGloves"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Passive aggressive moo.",
+		Value = "Are these made out of socks...?",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
+		Resource = ItsyScape.Resource.Item "CottonClothGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(11, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(11, 0.8),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "CottonClothSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "...socks? Really?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CottonClothSlippers"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(12, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(12, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(12, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12, 0.4),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.3),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(13, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "CottonClothHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Stinks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CottonClothHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(13, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "CottonClothRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This is just made out of a bunch of socks patched together...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CottonClothRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1.0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(20, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "CottonClothShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wow, what a scary book.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CottonClothShield"
 	}
 end
+

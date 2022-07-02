@@ -1,8 +1,15 @@
 razmatazz/
 workspace/
-tools/
+/tools
 design/
 media/
 itsyscape-android/
 *.trace
 *.log
+*.make
+*.cache
+*.csv
+.DS_Store
+.idea
+itsyrealm.love
+cmake*

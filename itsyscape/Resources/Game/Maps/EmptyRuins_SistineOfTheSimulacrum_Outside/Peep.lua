@@ -26,13 +26,15 @@ function Sistine:onLoad(filename, args, layer)
 			gravity = { 0, 3, 0 },
 			wind = { 0, 0, 0 },
 			colors = {
-				{ 0.0, 0.0, 0.0, 1.0 },
 				{ 0.7, 0.8, 0.2, 1.0 },
+				{ 0.0, 0.0, 0.0, 1.0 },
 			},
 			minHeight = -10,
-			maxHeight = 0,
-			ceiling = 20,
-			heaviness = 0.5
+			maxHeight = 5,
+			ceiling = 80,
+			heaviness = 0.5,
+			init = true,
+			steps = 100
 		})
 	end
 end

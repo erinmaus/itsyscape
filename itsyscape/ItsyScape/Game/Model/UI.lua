@@ -19,6 +19,10 @@ function UI:new()
 	-- Arguments are (interfaceID, index).
 	self.onOpen = Callback()
 
+	-- Called when a top-level interface pushes new state.
+	-- Arguments are (interfaceID, index, state).
+	self.onPush = Callback()
+
 	-- Called when a top-level interface is closed.
 	--
 	-- Arguments are (interfaceID, index).

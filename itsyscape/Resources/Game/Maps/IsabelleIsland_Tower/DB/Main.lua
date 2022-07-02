@@ -577,4 +577,14 @@ do
 	}
 end
 
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Orlando",
+		Cutscene = Cutscene,
+		Resource = M["Orlando"]
+	}
+end
+
 return M

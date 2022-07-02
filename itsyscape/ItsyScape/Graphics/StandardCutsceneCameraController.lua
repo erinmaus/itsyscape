@@ -16,6 +16,7 @@ local StandardCutsceneCameraController = Class(CameraController)
 StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 StandardCutsceneCameraController.ZOOM = 20
+StandardCutsceneCameraController.TRANSLATION = Vector.ZERO
 
 function StandardCutsceneCameraController:new(...)
 	CameraController.new(self, ...)
@@ -25,19 +26,29 @@ function StandardCutsceneCameraController:new(...)
 	self.targetVerticalRotation = StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION
 	self.currentVerticalRotationTime = 1
 	self.targetVerticalRotationTime = 1
-	self.verticalRotationTween = 'linear'
+	self.verticalRotationTween = 'expEaseOut'
+
 	self.currentHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.previousHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.targetHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.currentHorizontalRotationTime = 1
 	self.targetHorizontalRotationTime = 1
-	self.horizontalRotationTween = 'linear'
+	self.horizontalRotationTween = 'expEaseOut'
+
 	self.currentZoom = StandardCutsceneCameraController.ZOOM
 	self.previousZoom = StandardCutsceneCameraController.ZOOM
 	self.targetZoom = StandardCutsceneCameraController.ZOOM
 	self.currentZoomTime = 1
 	self.targetZoomTime = 1
-	self.zoomTween = 'linear'
+	self.zoomTween = 'sineEaseOut'
+
+	self.currentTranslation = StandardCutsceneCameraController.TRANSLATION
+	self.previousTranslation = StandardCutsceneCameraController.TRANSLATION
+	self.targetTranslation = StandardCutsceneCameraController.TRANSLATION
+	self.currentTranslationTime = 1
+	self.targetTranslationTime = 1
+	self.translationTween = 'expEaseOut'
+
 	self.targetActor = self:getGame():getPlayer():getActor()
 end
 
@@ -66,6 +77,23 @@ function StandardCutsceneCameraController:update(delta)
 	self.currentZoom = (self.targetZoom - self.previousZoom) * Tween[self.zoomTween](self.currentZoomTime / self.targetZoomTime) + self.previousZoom
 	self.currentHorizontalRotation = (self.targetHorizontalRotation - self.previousHorizontalRotation) * Tween[self.horizontalRotationTween](self.currentHorizontalRotationTime / self.targetHorizontalRotationTime) + self.previousHorizontalRotation
 	self.currentVerticalRotation = (self.targetVerticalRotation - self.previousVerticalRotation) * Tween[self.verticalRotationTween](self.currentVerticalRotationTime / self.targetVerticalRotationTime) + self.previousVerticalRotation
+
+	self.currentTranslationTime = math.min(self.currentTranslationTime + delta, self.targetTranslationTime)
+	self.currentTranslation = self.previousTranslation:lerp(self.targetTranslation, Tween[self.translationTween](self.currentTranslationTime / self.targetTranslationTime))
+end
+
+function StandardCutsceneCameraController:onTranslate(position, duration)
+	self.previousTranslation = self.currentTranslation
+	self.targetTranslation = position
+
+	if duration == 0 then
+		self.currentTranslationTime = 1
+		self.targetTranslationTime = 1
+		self.currentTranslation = self.targetTranslation
+	else
+		self.currentTranslationTime = 0
+		self.targetTranslationTime = duration
+	end
 end
 
 function StandardCutsceneCameraController:onTargetActor(actorID)
@@ -88,6 +116,7 @@ function StandardCutsceneCameraController:onZoom(distance, duration)
 	if duration == 0 then
 		self.currentZoomTime = 1
 		self.targetZoomTime = 1
+		self.currentZoom = self.targetZoom
 	else
 		self.currentZoomTime = 0
 		self.targetZoomTime = duration
@@ -97,12 +126,11 @@ end
 function StandardCutsceneCameraController:onVerticalRotate(angle, duration)
 	self.previousVerticalRotation = self.currentVerticalRotation
 	self.targetVerticalRotation = angle
-	self.currentVerticalRotationTime = 0
-	self.targetVerticalRotationTime = duration
 
 	if duration == 0 then
 		self.currentVerticalRotationTime = 1
 		self.targetVerticalRotationTime = 1
+		self.currentVerticalRotation = self.targetVerticalRotation
 	else
 		self.currentVerticalRotationTime = 0
 		self.targetVerticalRotationTime = duration
@@ -112,12 +140,11 @@ end
 function StandardCutsceneCameraController:onHorizontalRotate(angle, duration)
 	self.previousHorizontalRotation = self.currentHorizontalRotation
 	self.targetHorizontalRotation = angle
-	self.currentHorizontalRotationTime = 0
-	self.targetHorizontalRotationTime = duration
 
 	if duration == 0 then
 		self.currentHorizontalRotationTime = 1
 		self.targetHorizontalRotationTime = 1
+		self.currentHorizontalRotation = self.targetHorizontalRotation
 	else
 		self.currentHorizontalRotationTime = 0
 		self.targetHorizontalRotationTime = duration
@@ -128,7 +155,7 @@ function StandardCutsceneCameraController:draw()
 	self:getCamera():setDistance(self.currentZoom)
 	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation)
 	self:getCamera():setVerticalRotation(self.currentVerticalRotation)
-	self:getCamera():setPosition(self:getTargetPosition())
+	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation)
 end
 
 return StandardCutsceneCameraController

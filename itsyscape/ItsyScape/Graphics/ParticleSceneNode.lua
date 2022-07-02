@@ -197,8 +197,9 @@ function ParticleSceneNode:frame(delta)
 			index = index + #ParticleSceneNode.MESH_DATA
 
 			local particlePosition = Vector(particle.positionX, particle.positionY, particle.positionZ)
-			self.min:min(particlePosition)
-			self.max:max(particlePosition)
+
+			self.min = self.min:min(particlePosition)
+			self.max = self.max:max(particlePosition)
 		end
 	end
 

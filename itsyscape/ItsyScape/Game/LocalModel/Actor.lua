@@ -235,43 +235,18 @@ function LocalActor:getTile()
 	end
 end
 
-function LocalActor:getCurrentHealth()
-	if not self.peep then
-		return 1
-	end
-
-	local status = self.peep:getBehavior(CombatStatusBehavior)
-	if status then
-		return status.currentHitpoints
-	else
-		return 1
-	end
-end
-
-function LocalActor:getMaximumHealth()
-	if not self.peep then
-		return 1
-	end
-
-	local status = self.peep:getBehavior(CombatStatusBehavior)
-	if status then
-		return status.maxHitpoints
-	else
-		return 1
-	end
-end
-
 function LocalActor:getBounds()
 	if not self.peep then
 		return Vector.ZERO, Vector.ZERO, 1, 0
 	end
 
 	local position = self:getPosition()
+	local scale = self:getScale()
 
 	local size = self.peep:getBehavior(SizeBehavior)
 	if size then
-		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2)
-		local ySize = Vector(0, size.size.y, 0)
+		local xzSize = Vector(size.size.x / 2, 0, size.size.z / 2) * scale 
+		local ySize = Vector(0, size.size.y, 0) * scale
 		local min = position - xzSize
 		local max = position + xzSize + ySize
 
@@ -291,28 +266,30 @@ function LocalActor:getActions(scope)
 		return {}
 	end
 
-	if self:getResource() and self:getCurrentHealth() > 0 then
+	local result = {}
+	if self:getResource() then
 		local actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
+		for i = 1, #actions do
+			result[i] = actions[i]
+		end
+
 		if self.peep then
 			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
 				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
 
 				for i = 1, #proxyActions do
-					table.insert(actions, proxyActions[i])
+					table.insert(result, proxyActions[i])
 				end
 			end
 		end
-
-		return actions
-	else
-		return {}
 	end
+
+	return result
 end
 
-function LocalActor:poke(action, scope)
+function LocalActor:poke(action, scope, player)
 	if self:getResource() then
-		local player = self.game:getPlayer():getActor():getPeep()
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,
@@ -349,7 +326,7 @@ function LocalActor:playAnimation(slot, priority, animation, force, time)
 		return true
 	else
 		local s = self.animations[slot] or { priority = -math.huge, animation = false }
-		if (s.priority <= priority and s.animation ~= animation) or force then
+		if s.priority <= priority or force then
 			s.priority = priority
 			s.animation = animation
 
@@ -385,13 +362,15 @@ function LocalActor:setSkin(slot, priority, skin)
 	self.onSkinChanged(self, slot, priority, skin)
 end
 
-function LocalActor:unsetSkin(slot, skin)
+function LocalActor:unsetSkin(slot, priority, skin)
 	local s = self.skin[slot]
 	if s then
 		for i = 1, #s do
-			if s[i].skin == skin then
+			if s[i].skin == skin and s[i].priority == priority then
+				local priority = s[i].priority
+
 				table.remove(s, i)
-				self.onSkinChanged(self, slot, false, skin)
+				self.onSkinRemoved(self, slot, priority, skin)
 				break
 			end
 		end

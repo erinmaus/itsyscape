@@ -10,7 +10,7 @@ newoption {
 
 solution "ItsyScape.Utilities"
 	configurations { "Debug", "Release" }
-	platforms { "x86", "x64" }
+	platforms { "x86", "x64", "ARM64" }
 
 	configuration "Debug"
 		defines { "DEBUG" }
@@ -61,22 +61,23 @@ solution "ItsyScape.Utilities"
 		configuration "Release"
 			objdir "obj/release"
 			targetdir "bin"
-		configuration {}
-			runtime "release"
 		configuration "windows"
 			defines { "NBUNNY_BUILDING_WINDOWS" }
-
-		links { "lua51", "discord_game_sdk" }
+			links { "lua51", "discord_game_sdk", "love" }
+		configuration {}
+			runtime "release"
 
 		files {
 			"nbunny/include/**.hpp",
 			"nbunny/include/**.h",
-			"nbunny/source/**.cpp"
+			"nbunny/source/**.cpp",
+			"nbunny/source/**.c"
 		}
 
 		includedirs {
 			"nbunny/include/",
 			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include"),
+			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include", "modules"),
 		}
 
 		libdirs {

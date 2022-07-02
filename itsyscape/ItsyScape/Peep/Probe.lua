@@ -53,7 +53,7 @@ function Probe.resource(resourceType, resourceName)
 				return t.name:lower() == resourceType:lower() and
 				       resourceName:lower() == resource.name:lower()
 			else
-				return resource.id == resourceType.id
+				return resource.id.value == resourceType.id.value
 			end
 		end
 

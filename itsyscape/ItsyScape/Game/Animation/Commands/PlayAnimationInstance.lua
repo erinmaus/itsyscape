@@ -22,13 +22,24 @@ function PlayAnimationInstance:bind(animatable)
 		local skeleton = animatable:getSkeleton()
 		self.skeleton = skeleton
 		self.animation = self.command:load(skeleton)
+
+		self.filter = skeleton:createFilter()
+		local bones = self.command:getBones()
+		if #bones == 0 then
+			self.filter:enableAllBones()
+		else
+			for i = 1, #bones do
+				local boneIndex = skeleton:getBoneIndex(bones[i])
+				self.filter:enableBoneAtIndex(boneIndex)
+			end
+		end
 	end
 end
 
 function PlayAnimationInstance:pending(time, windingDown)
 	if self.animation then
 		return (self.command:getRepeatAnimation() and not windingDown) or
-		       time < self.animation:getDuration()
+		       time < (self.command:getDurationOverride() or self.animation:getDuration())
 	end
 end
 
@@ -36,7 +47,7 @@ function PlayAnimationInstance:getDuration(windingDown)
 	if self.command:getRepeatAnimation() then
 		return math.huge
 	else
-		return self.command:getDuration()
+		return self.command:getDurationOverride() or self.animation:getDuration()
 	end
 end
 
@@ -54,19 +65,7 @@ function PlayAnimationInstance:play(animatable, time)
 	end
 
 	if self.animation then
-		self.animation:computeTransforms(time, self.transforms, true)
-
-		local bones = self.command:getBones()
-		if #bones == 0 then
-			animatable:setTransforms(self.transforms, self.animation, time)
-		else
-			for i = 1, #bones do
-				local boneIndex = self.skeleton:getBoneIndex(bones[i])
-				if boneIndex then
-					animatable:setTransform(boneIndex, self.transforms[boneIndex], self.animation, time)
-				end
-			end
-		end
+		self.animation:computeFilteredTransforms(time, animatable:getTransforms(), self.filter)
 	end
 end
 

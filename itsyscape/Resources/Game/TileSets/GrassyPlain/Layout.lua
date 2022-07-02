@@ -3,7 +3,7 @@
 		['invert-y'] = true
 	},
 
-	texture = "Resources/Game/TileSets/GrassyPlain/Texture.png",
+	texture = "Resources/Game/TileSets/GrassyPlain/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 
@@ -161,9 +161,17 @@
 
 	{
 		x = 128,
-		y = 512,
+		y = 256,
 		width = 128,
 		height = 128,
 		name = "invisible"
+	},
+
+	{
+		x = 128,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "sand"
 	}
 }

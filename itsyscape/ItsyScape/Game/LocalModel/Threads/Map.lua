@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Map = require "ItsyScape.World.Map"
@@ -17,7 +18,7 @@ local m
 repeat
 	m = love.thread.getChannel('ItsyScape.Map::input'):demand()
 	if m.type == 'load' then
-		MAPS[m.key] = Map.loadFromString(m.data)
+		MAPS[m.key] = Map.loadFromTable(buffer.decode(m.data))
 	elseif m.type == 'unload' then
 		MAPS[m.key] = nil
 	elseif m.type == 'probe' then

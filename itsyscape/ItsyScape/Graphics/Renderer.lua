@@ -9,52 +9,65 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
-local MobileRendererPass = require "ItsyScape.Graphics.MobileRendererPass"
+local LBuffer = require "ItsyScape.Graphics.LBuffer"
+local GBuffer = require "ItsyScape.Graphics.GBuffer"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local NShaderCache = require "nbunny.optimaus.shadercache"
+local NRenderer = require "nbunny.optimaus.renderer"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
+Renderer.DEFAULT_CLEAR_COLOR = Color(0.39, 0.58, 0.93, 1)
 
-function Renderer:new(isMobile)
-	self.cachedShaders = {}
-	self.currentShader = false
+Renderer.NodeDebugStats = Class(DebugStats)
+Renderer.PassDebugStats = Class(DebugStats)
 
-	self.isMobile = isMobile
-	if self.isMobile then
-		self.mobilePass = MobileRendererPass(self)
-	else
-		self.finalDeferredPass = DeferredRendererPass(self)
-		self.finalForwardPass = ForwardRendererPass(self)
-	end
+function Renderer.NodeDebugStats:process(node, renderer, delta)
+	node:beforeDraw(renderer, delta)
+	node:draw(renderer, delta)
+	node:afterDraw(renderer, delta)
+end
 
-	self.width = 0
-	self.height = 0
+function Renderer.PassDebugStats:process(pass, scene, delta)
+	pass:beginDraw(scene, delta)
+	pass:draw(scene, delta)
+	pass:endDraw(scene, delta)
+end
 
-	self.clearColor = Color(0.39, 0.58, 0.93, 1)
+function Renderer:new()
+	self._renderer = NRenderer(self)
 
-	self.cull = true
-	self.startTime = love.timer.getTime()
+	self.finalDeferredPass = DeferredRendererPass(self)
+	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
+
+	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
+	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
+
+	self.nodeDebugStats = Renderer.NodeDebugStats()
+	self.passDebugStats = Renderer.PassDebugStats()
+end
+
+function Renderer:getHandle()
+	return self._renderer
 end
 
 function Renderer:getCullEnabled()
-	return self.cull
+	return self._renderer:getCamera():getIsCullEnabled()
 end
 
 function Renderer:setCullEnabled(value)
-	if value then
-		self.cull = true
-	else
-		self.cull = false
-	end
+	return self._renderer:getCamera():setIsCullEnabled(value or false)
 end
 
 function Renderer:getClearColor()
-	return self.clearColor
+	return Color(self._renderer:getClearColor())
 end
 
 function Renderer:setClearColor(value)
-	self.clearColor = value or self.clearColor
+	return self._renderer:setClearColor((value or Renderer.DEFAULT_CLEAR_COLOR):get())
 end
 
 function Renderer:getCamera()
@@ -65,27 +78,20 @@ function Renderer:setCamera(value)
 	self.camera = value or self.camera
 end
 
-function Renderer:clean()
-	self:releaseCachedShaders()
+function Renderer:getNodeDebugStats()
+	return self.nodeDebugStats
 end
 
-function Renderer:drawFinalStep(scene, delta)
-	if self.isMobile then
-		self.mobilePass:beginDraw(scene, delta)
-		self.mobilePass:draw(scene, delta)
-		self.mobilePass:endDraw(scene, delta)
-	else
-		self.finalDeferredPass:beginDraw(scene, delta)
-		self.finalDeferredPass:draw(scene, delta)
-		self.finalDeferredPass:endDraw(scene, delta)
+function Renderer:getPassDebugStats()
+	return self.passDebugStats
+end
 
-		local cBuffer = self.finalDeferredPass:getCBuffer()
+function Renderer:clean()
+	-- Nothing.
+end
 
-		cBuffer:use()
-		self.finalForwardPass:beginDraw(scene, delta)
-		self.finalForwardPass:draw(scene, delta)
-		self.finalForwardPass:endDraw(scene, delta)
-	end
+function Renderer:getCurrentShader()
+	return self._renderer:getCurrentShader()
 end
 
 function Renderer:draw(scene, delta, width, height)
@@ -95,29 +101,16 @@ function Renderer:draw(scene, delta, width, height)
 
 	scene:frame(delta)
 
-	if width ~= self.width or height ~= self.height then
-		self.width = width
-		self.height = height
-
-		if self.isMobile then
-			self.mobilePass:resize(width, height)
-		else
-			self.finalDeferredPass:resize(width, height)
-			self.finalForwardPass:resize(width, height)
-		end
-	end
-
-	self:drawFinalStep(scene, delta)
-
-	self:setCurrentShader(false)
+	local projection, view = self.camera:getTransforms()
+	local eye, target = self.camera:getEye(), self.camera:getPosition()
+	self._renderer:getCamera():update(view, projection)
+	self._renderer:getCamera():moveEye(eye:get())
+	self._renderer:getCamera():moveTarget(target:get())
+	self._renderer:draw(scene:getHandle(), delta, width, height)
 end
 
 function Renderer:getOutputBuffer()
-	if self.isMobile then
-		return self.mobilePass:getMBuffer()
-	else
-		return self.finalDeferredPass:getCBuffer()
-	end
+	return self.finalDeferredPass:getHandle():getCBuffer()
 end
 
 function Renderer:present()
@@ -141,56 +134,8 @@ function Renderer:presentCurrent()
 	love.graphics.draw(buffer:getColor())
 end
 
-function Renderer:setCurrentShader(shader)
-	if not shader then
-		self.currentShader = false
-	else
-		if self.currentShader ~= shader then
-			self.currentShader = shader
-			love.graphics.setShader(shader)
-
-			if shader:hasUniform("scape_Time") then
-				shader:send("scape_Time", love.timer.getTime() - self.startTime)
-			end
-		end
-	end
-end
-
-function Renderer:getCurrentShader(shader)
-	return self.currentShader
-end
-
-function Renderer:getCachedShader(rendererPassType, shader)
-	if not self.cachedShaders[renderPassType] or 
-	   not self.cachedShaders[renderPassType][shader] then
-		return nil
-	end
-
-	return self.cachedShaders[renderPassType][shader]
-end
-
-function Renderer:addCachedShader(rendererPassType, shader, pixelSource, vertexSource)
-	local shaders = self.cachedShaders[rendererPassType] or {}
-	local s = shaders[shader]
-
-	if not s then
-		s = love.graphics.newShader(pixelSource, vertexSource)
-		shaders[shader] = s
-	end
-
-	self.cachedShaders[rendererPassType] = shaders
-
-	return s
-end
-
-function Renderer:releaseCachedShaders()
-	for _, shaders in pairs(self.cachedShaders) do
-		for _, shader in pairs(shaders) do
-			shader:release()
-		end
-	end
-
-	self.cachedShaders = {}
+function Renderer:renderNode(node, delta)
+	self.nodeDebugStats:measure(node, self, delta)
 end
 
 return Renderer

@@ -11,6 +11,7 @@ local ffi = require "ffi"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local NWeatherMap = require "nbunny.optimaus.weathermap"
 
 local WeatherMap = Class()
 
@@ -30,7 +31,14 @@ function WeatherMap:new(layer, i, j, cellSize, width, height)
 	self.position = Vector(0, 0, 0)
 	self.isDirty = true
 
-	self.tiles = false
+	self._handle = NWeatherMap()
+	self._handle:move(self.realI, self.realJ)
+	self._handle:resize(self.width, self.height)
+	self._handle:setCellSize(cellSize)
+end
+
+function WeatherMap:getHandle()
+	return self._handle
 end
 
 function WeatherMap:getCellSize()
@@ -48,12 +56,14 @@ end
 function WeatherMap:move(i, j)
 	self.i = i or self.i
 	self.j = j or self.j
+	self._handle:move(i, j)
 	self.isDirty = true
 end
 
 function WeatherMap:resize(width, height)
 	self.width = width or self.width
 	self.height = height or self.height
+	self._handle:resize(width, height)
 	self.isDirty = true
 end
 
@@ -115,8 +125,6 @@ end
 
 function WeatherMap:update()
 	if self.isDirty then
-		self.tiles = ffi.new("float[?]", self.width * self.height, -math.huge)
-
 		local t = self.tiles
 		local transform = love.math.newTransform()
 
@@ -144,7 +152,7 @@ function WeatherMap:update()
 						y = math.huge
 					end
 
-					t[index] = y
+					self._handle:setHeightAt(i, j, y)
 				end
 			end
 		end
@@ -164,7 +172,7 @@ function WeatherMap:getHeightAt(i, j)
 	local max = self.width * self.height
 	local index = j * self.width + i
 	if index >= 0 and index < max then
-		return self.tiles[index]
+		return self._handle:getHeightAt(i, j)
 	end
 
 	return math.huge

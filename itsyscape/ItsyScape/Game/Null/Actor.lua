@@ -97,8 +97,8 @@ function NullActor:setSkin(slot, priority, skin)
 	self.onSkinChanged(self, slot, priority, skin)
 end
 
-function NullActor:unsetSkin(slot, skin)
-	self.onSkinChanged(self, slot, false, skin)
+function NullActor:unsetSkin(slot, priority, skin)
+	self.onSkinRemoved(self, slot, priority, skin)
 end
 
 function NullActor:getSkin(slot)
