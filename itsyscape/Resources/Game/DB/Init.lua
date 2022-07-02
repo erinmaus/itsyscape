@@ -903,6 +903,7 @@ include "Resources/Game/DB/Peeps/Svalbard.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
+include "Resources/Game/DB/Gods/Gammon.lua"
 
 -- Shops
 include "Resources/Game/DB/Shops/GeneralStore.lua"

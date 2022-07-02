@@ -262,7 +262,9 @@ void exportMesh(const aiScene* scene, FILE* output)
 				else
 				{
 					auto bone = mesh->mBones[vertex.boneIndex[j]];
-					std::fprintf(output, "\"%s\", ", bone->mName.C_Str());
+					std::string name = bone->mName.C_Str();
+					std::replace(name.begin(), name.end(), '_', '.');
+					std::fprintf(output, "\"%s\", ", name.c_str());
 				}
 			}
 
