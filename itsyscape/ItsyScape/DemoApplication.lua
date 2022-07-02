@@ -115,7 +115,7 @@ function DemoApplication:quit()
 	local Resource = require "ItsyScape.Graphics.Resource"
 	Resource.quit()
 
-	Application.quit()
+	Application.quit(self)
 
 	return false
 end
