@@ -76,7 +76,7 @@ function CombatStatusHUD.EffectBorder:draw(resources, state)
 
 	love.graphics.setColor(self.color:get())
 	love.graphics.setLineWidth(2)
-	love.graphics.rectangle('line', 0, 0, w, h)
+	itsyrealm.graphics.rectangle('line', 0, 0, w, h)
 
 	love.graphics.setLineWidth(1)
 	love.graphics.setColor(1, 1, 1, 1)

@@ -46,9 +46,9 @@ function StrategyBar.Pending:draw(resources, state)
 	love.graphics.setLineWidth(4)
 
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.arc('line', 'open', w / 2 + 1, h / 2 + 1, math.min(w, h) / 4, startAngle, endAngle, 16)
+	itsyrealm.graphics.arc('line', 'open', w / 2 + 1, h / 2 + 1, math.min(w, h) / 4, startAngle, endAngle, 16)
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.arc('line', 'open', w / 2, h / 2, math.min(w, h) / 4, startAngle, endAngle, 16)
+	itsyrealm.graphics.arc('line', 'open', w / 2, h / 2, math.min(w, h) / 4, startAngle, endAngle, 16)
 
 	love.graphics.setLineWidth(1)
 end
