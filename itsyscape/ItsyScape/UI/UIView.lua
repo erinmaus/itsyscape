@@ -185,7 +185,7 @@ function itsyrealm.graphics.stop()
 		end
 	end
 
-	graphicsState.atlas:bake()
+	graphicsState.atlas:bake("width")
 
 	love.graphics.push('all')
 	love.graphics.setBlendMode('alpha', 'premultiplied')
@@ -298,6 +298,14 @@ function itsyrealm.graphics.circle(...)
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
 		love.graphics.circle, ...)
+end
+
+function itsyrealm.graphics.arc(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		love.graphics.arc, ...)
 end
 
 function itsyrealm.graphics.uncachedDraw(...)
