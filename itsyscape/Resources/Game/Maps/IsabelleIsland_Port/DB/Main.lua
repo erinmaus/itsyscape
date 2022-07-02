@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_Port/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_Port.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Port Isabelle",
 	Language = "en-US",
@@ -356,5 +361,49 @@ do
 
 	M["TrapDoor_ToHighChambersYendor"] {
 		TravelAction
+	}
+end
+
+M["Anchor_Sailor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25.0,
+		PositionY = 30.0,
+		PositionZ = 35.0,
+		Name = "Anchor_Sailor",
+		Map = M._MAP,
+		Resource = M["Anchor_Sailor"]
+	}
+end
+
+M["Sailor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Sailor",
+		Map = M._MAP,
+		Resource = M["Sailor"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Sailor"],
+		Name = "Sailor",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_Port/Dialog/IsabelleIslandSailor_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Sailor_Panicked",
+		MapObject = M["Sailor"]
+	}
+
+	M["Sailor"] {
+		TalkAction
 	}
 end

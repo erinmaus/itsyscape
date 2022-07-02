@@ -22,7 +22,8 @@ function BaseMaggot:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Maggot_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2, 8, 2)
+	size.size = Vector(1.5, 8, 1.5)
+	size.offset = Vector(-1, 0, 0)
 end
 
 function BaseMaggot:ready(director, game)
@@ -55,6 +56,8 @@ function BaseMaggot:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Maggot/Maggot.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+
+	Utility.Peep.equipXWeapon(self, "MaggotSmash")
 
 	Creep.ready(self, director, game)
 end

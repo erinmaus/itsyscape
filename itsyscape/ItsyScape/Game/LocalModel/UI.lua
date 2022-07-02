@@ -33,7 +33,7 @@ end
 function LocalUI:sendPoke(interface, actionID, actionIndex, e)
 	local i = self.controllers[interface]
 	if i then
-		self.onPoke(i.id, i.index, actionID, actionIndex, e)
+		self.onPoke(self, i.id, i.index, actionID, actionIndex, e)
 	end
 end
 
@@ -140,7 +140,8 @@ function LocalUI:open(peep, interfaceID, ...)
 	self.interfaces[interfaceID] = i
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
-	self.onOpen(interfaceID, i.n)
+	self.onPush(self, interfaceID, i.n, controller:pull())
+	self.onOpen(self, interfaceID, i.n)
 
 	return interfaceID, i.n, controller
 end
@@ -189,7 +190,7 @@ function LocalUI:close(interfaceID, index)
 	self.interfaces[interfaceID].v[index] = nil
 	self.controllers[controller] = nil
 
-	self.onClose(interfaceID, index)
+	self.onClose(self, interfaceID, index)
 end
 
 function LocalUI:closeInstance(instance)
@@ -203,6 +204,7 @@ function LocalUI:update(delta)
 	for id, interfaces in pairs(self.interfaces) do
 		for n, interface in pairs(interfaces.v) do
 			interface:update(delta)
+			self.onPush(self, id, n, interface:pull())
 		end
 	end
 end

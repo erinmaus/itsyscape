@@ -414,7 +414,7 @@ function Utility.performAction(game, resource, id, scope, ...)
 	return foundAction
 end
 
-function Utility.getAction(game, action, scope)
+function Utility.getAction(game, action, scope, filter)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	local definition = brochure:getActionDefinitionFromAction(action)
@@ -429,9 +429,12 @@ function Utility.getAction(game, action, scope)
 			local t = {
 				id = action.id.value,
 				type = definition.name,
-				verb = a:getVerb() or a:getName(),
-				instance = ActionType(game, action)
+				verb = a:getVerb() or a:getName()
 			}
+
+			if not filter then
+				t.instance = ActionType(game, action)
+			end
 
 			return t, ActionType
 		end
@@ -488,15 +491,31 @@ function Utility.getActionConstraints(game, action)
 	return result
 end
 
-function Utility.getActions(game, resource, scope)
+Utility.ACTION_CACHE = {}
+
+function Utility.getActions(game, resource, scope, filter)
+	if not filter then
+		local cache = Utility.ACTION_CACHE[resource.id.value]
+		cache = cache and cache[scope or 'all']
+		if cache then
+			return cache
+		end
+	end
+
 	local actions = {}
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
 	for action in brochure:findActionsByResource(resource) do
-		local action = Utility.getAction(game, action, scope)
+		local action = Utility.getAction(game, action, scope, filter)
 		if action then
 			table.insert(actions, action)
 		end
+	end
+
+	if not filter then
+		local cache = Utility.ACTION_CACHE[resource.id.value] or {}
+		cache[scope or 'all'] = actions
+		Utility.ACTION_CACHE[resource.id.value] = cache
 	end
 
 	return actions
@@ -979,6 +998,28 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.getStats(id, gameDB)
+	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
+
+	local itemResource = gameDB:getResource(id, "Item")
+	local statsRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+
+	if statsRecord then
+		local stats = {}
+		for i = 1, #EquipmentInventoryProvider.STATS do
+			local statName = EquipmentInventoryProvider.STATS[i]
+			local statValue = statsRecord:get(statName)
+			if statValue ~= 0 then
+				table.insert(stats, { name = statName, value = statValue })
+			end
+		end
+
+		return stats
+	end
+
+	return nil
+end
+
 function Utility.Item.getInfo(id, gameDB, lang)
 	lang = lang or "en-US"
 
@@ -992,7 +1033,35 @@ function Utility.Item.getInfo(id, gameDB, lang)
 		description = string.format("It's %s, as if you didn't know.", object)
 	end
 
-	return name, description
+	stats = Utility.Item.getStats(id, gameDB)
+
+	return name, description, stats
+end
+
+function Utility.Item.groupStats(stats)
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local offensive, defensive, other = {}, {}, {}
+	for i = 1, #stats do
+		local stat = stats[i]
+
+		if Equipment.OFFENSIVE_STATS[stat.name] then
+			table.insert(offensive, stat)
+			stat.niceName = Equipment.OFFENSIVE_STATS[stat.name]
+		elseif Equipment.DEFENSIVE_STATS[stat.name] then
+			table.insert(defensive, stat)
+			stat.niceName = Equipment.DEFENSIVE_STATS[stat.name]
+		else
+			table.insert(other, stat)
+			stat.niceName = Equipment.MISC_STATS[stat.name] or stat.name
+		end
+	end
+
+	return {
+		offensive = offensive,
+		defensive = defensive,
+		other = other
+	}
 end
 
 function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
@@ -1600,6 +1669,97 @@ function Utility.Peep.getEquippedItem(peep, slot)
 	end
 end
 
+function Utility.Peep.canEquipItem(peep, itemResource)
+	local director = peep:getDirector()
+
+	if type(itemResource) == 'string' then
+		itemResource = director:getGameDB():getResource(itemResource, "Item")
+	end
+
+	local actions = Utility.getActions(director:getGameInstance(), itemResource, 'inventory')
+
+	for i = 1, #actions do
+		if actions[i].instance:is("equip") then
+			return actions[i].instance:canPerform(peep:getState())
+		end
+	end
+
+	return false
+end
+
+function Utility.Peep.getToolsFromInventory(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local inventory = peep:getBehavior(InventoryBehavior)
+	if inventory and inventory.inventory then
+		inventory = inventory.inventory
+	else
+		return {}
+	end
+
+	local itemBroker = peep:getDirector():getItemBroker()
+	local itemManager = peep:getDirector():getItemManager()
+
+	local tools = {}
+	for item in itemBroker:iterateItems(inventory) do
+		local logic = itemManager:getLogic(item:getID())
+		local isLogicWeapon = Class.isCompatibleType(logic, Weapon)
+		local isToolOfType = isLogicWeapon and logic:getWeaponType() == toolType
+		local canEquipTool = Utility.Peep.canEquipItem(peep, item:getID())
+
+		if isToolOfType and canEquipTool then
+			table.insert(tools, {
+				item = item,
+				logic = logic
+			})
+		end
+	end
+
+	return tools
+end
+
+function Utility.Peep.getEquippedTool(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local logic, item = Utility.Peep.getEquippedWeapon(peep, true)
+	local isLogicWeapon = Class.isCompatibleType(logic, Weapon)
+	local isToolOfType = isLogicWeapon and logic:getWeaponType() == toolType
+
+	if isToolOfType then
+		return item, logic
+	end
+
+	return nil, nil
+end
+
+function Utility.Peep.getBestTool(peep, toolType)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local tools
+	do
+		tools = Utility.Peep.getToolsFromInventory(peep, toolType)
+		local equippedItem, equippedLogic = Utility.Peep.getEquippedTool(peep, toolType)
+		if equippedItem and equippedLogic then
+			table.insert(tools, {
+				item = equippedItem,
+				logic = equippedLogic
+			})
+		end
+	end
+
+	if #tools < 1 then
+		return nil
+	end
+
+	for i = 1, #tools do
+		local roll = tools[i].logic:rollDamage(peep, Weapon.PURPOSE_TOOL)
+		tools[i].maxHit = roll:getMaxHit()
+	end
+
+	table.sort(tools, function(a, b) return a.maxHit > b.maxHit end)
+	return tools[1].logic
+end
+
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
@@ -1608,7 +1768,7 @@ function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	if weapon then
 		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
 		if logic then
-			return logic
+			return logic, weapon
 		end
 	end
 
@@ -1880,11 +2040,15 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
+		Log.info("Peep '%s' can't walk because they don't have a position or movement behavior.", peep:getName())
 		return nil, "missing walking behaviors"
 	end
 
 	local position = peep:getBehavior(PositionBehavior)
 	if position.layer ~= k then
+		Log.info(
+			"Peep '%s' is on a different map (on layer %d, can't move to layer %d).",
+			peep:getName(), position.layer, k)
 		return nil, "different map"
 	else
 		position = position.position
@@ -1892,6 +2056,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	local map = peep:getDirector():getMap(k)
 	if not map then
+		Log.info("Peep '%s' doesn't have a map.", peep:getName())
 		return false, "no map"
 	end
 
@@ -1940,41 +2105,53 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
-function Utility.Peep.face3D(self)
+function Utility.Peep.lookAt(self, target)
 	local rotation = self:getBehavior(RotationBehavior)
+	if rotation then
+		local selfPosition = Utility.Peep.getAbsolutePosition(self)
+		local peepPosition = Utility.Peep.getAbsolutePosition(target)
+		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
+
+		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+		return true
+	end
+
+	return false
+end
+
+function Utility.Peep.face3D(self)
 	local combatTarget = self:getBehavior(CombatTargetBehavior)
 	if combatTarget and combatTarget.actor then
 		local actor = combatTarget.actor
 		local peep = actor:getPeep()
 
 		if peep then
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
-			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-			local xzPeepPosition = peepPosition * Vector.PLANE_XZ
-
-			rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+			return Utility.Peep.lookAt(self, peep)
 		end
 	else
+		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
-		if targetTile and targetTile.pathNode then
+		if rotation and targetTile and targetTile.pathNode then
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-			local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-			local xzTilePosition = tilePosition * Vector.PLANE_XZ
+			if map then
+				local selfPosition = Utility.Peep.getAbsolutePosition(self)
+				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+				local xzTilePosition = tilePosition * Vector.PLANE_XZ
 
-			rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
-		else
-			rotation.rotation = Quaternion.IDENTITY
+				rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+				return true
+			end
 		end
 	end
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.facing = MovementBehavior.FACING_RIGHT
 	movement.targetFacing = MovementBehavior.FACING_LEFT
+	return false
 end
 
 function Utility.Peep.attack(peep, other, distance)
@@ -2505,11 +2682,12 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		weaponType = p:getWeaponType(),
 		damageType = p:getDamageType(),
 		damage = damage,
-		aggressor = p:getAggressor()
+		aggressor = p:getAggressor(),
+		delay = p:getDelay()
 	})
 
 	local target = self:getBehavior(CombatTargetBehavior)
-	if not target then
+	if not target and p:getAggressor() then
 		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			if self:getCommandQueue():interrupt(AttackCommand()) then
@@ -2536,14 +2714,36 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 		end
 	end
 
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
+
 	if damage > 0 then
-		self:poke('hit', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('hit', attack)
+		end
 	else
-		self:poke('miss', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('miss', attack)
+		end
 	end
 end
 
 function Utility.Peep.Attackable:onReceiveAttack(p)
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
@@ -2552,13 +2752,28 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 		weaponType = p:getWeaponType(),
 		damageType = p:getDamageType(),
 		damage = damage,
-		aggressor = p:getAggressor()
+		aggressor = p:getAggressor(),
+		delay = p:getDelay()
 	})
 
 	if damage > 0 then
-		self:poke('hit', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('hit', attack)
+		end
 	else
-		self:poke('miss', attack)
+		if p:getDelay() > 0 then
+			local queue = self:getParallelCommandQueue('hit')
+			local a = WaitCommand(p:getDelay(), false)
+			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
+			queue:push(CompositeCommand(true, a, b))
+		else
+			self:poke('miss', attack)
+		end
 	end
 end
 
@@ -2576,6 +2791,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if combat.currentHitpoints == 0 or combat.isDead then
+		return
+	end
+
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
 
 	if math.floor(combat.currentHitpoints) == 0 then
@@ -2791,6 +3010,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Walk_1/Script.lua")
 	peep:addResource("animation-walk", walkAnimation)
+	local walkBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_WalkBlunderbuss_1/Script.lua")
+	peep:addResource("animation-walk-blunderbuss", walkBlunderbussAnimation)
+	peep:addResource("animation-walk-musket", walkBlunderbussAnimation)
 	local walkCaneAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_WalkCane_1/Script.lua")
@@ -2811,18 +3035,58 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleZweihander_1/Script.lua")
 	peep:addResource("animation-idle-zweihander", idleZweihanderAnimation)
+	local idleBlunderbussAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_IdleBlunderbuss_1/Script.lua")
+	peep:addResource("animation-idle-blunderbuss", idleBlunderbussAnimation)
+	peep:addResource("animation-idle-musket", idleBlunderbussAnimation)
 	local idleFishingRodAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFishingRod_1/Script.lua")
 	peep:addResource("animation-idle-fishing-rod", idleFishingRodAnimation)
+<<<<<<< HEAD
 	local idleFlamethrowerAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFlamethrower_1/Script.lua")
 	peep:addResource("animation-idle-flamethrower", idleFlamethrowerAnimation)
+=======
+	local actionBury = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
+	peep:addResource("animation-action-bury", actionBury)
+	local actionCook = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-cook", actionCook)
+	local actionCraft = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
+	peep:addResource("animation-action-craft", actionCraft)
+	local actionEnchant = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionEnchant_1/Script.lua")
+	peep:addResource("animation-action-enchant", actionEnchant)
+	local actionFletch = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionFletch_1/Script.lua")
+	peep:addResource("animation-action-fletch", actionFletch)
+	local actionMix = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionMix_1/Script.lua")
+	peep:addResource("animation-action-mix", actionMix)
+>>>>>>> 6e46ddfa9f224fd3edcb8467aa8c81ff52ff10bc
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
 	peep:addResource("animation-action-shake", actionShake)
+	local actionSmelt = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionSmelt_1/Script.lua")
+	peep:addResource("animation-action-smelt", actionSmelt)
+	local actionSmith = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionSmith_1/Script.lua")
+	peep:addResource("animation-action-smith", actionSmith)
 	local defendShieldRightAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_Defend_Shield_Right_1/Script.lua")
@@ -2847,6 +3111,11 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-bow", attackAnimationBowRanged)
+	local attackAnimationBlunderbussRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-blunderbuss", attackAnimationBlunderbussRanged)
+	peep:addResource("animation-attack-ranged-musket", attackAnimationBlunderbussRanged)
 	local attackAnimationLongbowRanged = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackBowRanged_1/Script.lua")
@@ -2855,6 +3124,14 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackFlamethrowerRanged_1/Script.lua")
 	peep:addResource("animation-attack-ranged-flamethrower", attackAnimationFlamethrowerRanged)
+	local attackAnimationGrenadeRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackGrenadeRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-grenade", attackAnimationGrenadeRanged)
+	local attackAnimationPistolRanged = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackPistolRanged_1/Script.lua")
+	peep:addResource("animation-attack-ranged-pistol", attackAnimationPistolRanged)
 	local attackAnimationStaffCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffCrush_1/Script.lua")

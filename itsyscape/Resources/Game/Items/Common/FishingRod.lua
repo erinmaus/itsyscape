@@ -23,7 +23,7 @@ function FishingRod:getBonusForStance(peep)
 end
 
 function FishingRod:getWeaponType()
-	return 'pickaxe'
+	return 'fishing-rod'
 end
 
 function FishingRod:getSkill(purpose)

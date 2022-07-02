@@ -96,7 +96,6 @@ function Ribbon:addButton(tab, icon)
 			self:sendPoke("open", nil, { tab = tab })
 		else
 			self:sendPoke("close", nil, {})
-			self.activeButton = false
 		end
 	end)
 

@@ -32,6 +32,11 @@ function SleepingDraconic:ready(director, game)
 		"Resources/Game/Animations/Human_Idle_SleepingInVat/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Idle_SleepingInVat/Script.lua")
+	self:addResource("animation-walk", walkAnimation)
+
 	local actor = self:getBehavior(ActorReferenceBehavior).actor
 	actor:playAnimation(
 		'main',

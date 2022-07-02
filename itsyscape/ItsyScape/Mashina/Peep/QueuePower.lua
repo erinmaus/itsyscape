@@ -15,6 +15,7 @@ local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehav
 local QueuePower = B.Node("QueuePower")
 QueuePower.POWER = B.Reference()
 QueuePower.CLEAR_COOL_DOWN = B.Reference()
+QueuePower.REQUIRE_NO_COOLDOWN = B.Reference()
 
 function QueuePower:update(mashina, state, executor)
 	local gameDB = mashina:getDirector():getGameDB()
@@ -23,6 +24,19 @@ function QueuePower:update(mashina, state, executor)
 	if not powerResource then
 		Log.warn("Unknown power: %s.", tostring(state[self.POWER]))
 		return B.Status.Failure
+	end
+
+	local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
+	if coolDown then
+		local clearCoolDown = state[self.CLEAR_COOL_DOWN] or false
+		local requireNoCooldown = state[self.REQUIRE_NO_COOLDOWN] or false
+		if clearCoolDown then
+			coolDown.powers[powerResource.id.value] = nil
+		elseif requireNoCooldown then
+			if coolDown.powers[powerResource.id.value] then
+				return B.Status.Failure
+			end
+		end
 	end
 
 	local power
@@ -37,14 +51,6 @@ function QueuePower:update(mashina, state, executor)
 
 		local _, b = mashina:addBehavior(PendingPowerBehavior)
 		b.power = power
-	end
-
-	local clearCoolDown = state[self.CLEAR_COOL_DOWN] or false
-	if clearCoolDown then
-		local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
-		if coolDown then
-			coolDown.powers[powerResource.id.value] = nil
-		end
 	end
 
 	return B.Status.Success

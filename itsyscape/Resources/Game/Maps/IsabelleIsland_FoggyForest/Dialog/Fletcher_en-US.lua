@@ -61,7 +61,7 @@ do
 			local NO  = option "No!"
 
 			message {
-				"Wanna see the fletching skill guide?"
+				"Wanna see the engineering skill guide?"
 			}
 
 			local openSkillGuide = select {
@@ -70,7 +70,7 @@ do
 			}
 
 			if openSkillGuide == YES then
-				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Fletching")
+				Utility.UI.openInterface(_TARGET, "Engineering", true, "Fletching")
 				result = QUIT
 			else
 				message "Gotcha."

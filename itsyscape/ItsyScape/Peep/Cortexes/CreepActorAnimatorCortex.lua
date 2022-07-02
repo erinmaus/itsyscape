@@ -19,7 +19,7 @@ local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CreepActorAnimatorCortex = Class(Cortex)
 CreepActorAnimatorCortex.WALK_PRIORITY = 1
 CreepActorAnimatorCortex.SKILL_PRIORITY = 5
-CreepActorAnimatorCortex.ATTACK_PRIORITY = math.huge
+CreepActorAnimatorCortex.ATTACK_PRIORITY = 1000
 CreepActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function CreepActorAnimatorCortex:new()
@@ -39,6 +39,7 @@ function CreepActorAnimatorCortex:addPeep(peep)
 	peep:listen('initiateAttack', self.onInitiateAttack, self)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
+	peep:listen('resurrect', self.onResurect, self)
 end
 
 function CreepActorAnimatorCortex:removePeep(peep)
@@ -47,6 +48,7 @@ function CreepActorAnimatorCortex:removePeep(peep)
 	peep:silence('initiateAttack', self.onInitiateAttack)
 	peep:silence('receiveAttack', self.onReceiveAttack)
 	peep:silence('die', self.onDie)
+	peep:silence('resurrect', self.onResurect)
 
 	self.walking[peep] = nil
 	self.idling[peep] = nil
@@ -97,6 +99,18 @@ end
 function CreepActorAnimatorCortex:onDie(peep, p)
 	local resource = peep:getResource(
 		"animation-die",
+		"ItsyScape.Graphics.AnimationResource")
+	if resource then
+		self:playAnimation(
+			peep,
+			CreepActorAnimatorCortex.ATTACK_PRIORITY,
+			resource)
+	end
+end
+
+function CreepActorAnimatorCortex:onResurect(peep, p)
+	local resource = peep:getResource(
+		"animation-resurrect",
 		"ItsyScape.Graphics.AnimationResource")
 	if resource then
 		self:playAnimation(

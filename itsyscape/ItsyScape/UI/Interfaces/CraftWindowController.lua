@@ -75,7 +75,7 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 		for action in brochure:findActionsByResource(resource) do
 			local actionType = brochure:getActionDefinitionFromAction(action)
 			if actionType.name == actionTypeFilter or actionTypeFilter == "" then
-				local a, ActionType = Utility.getAction(game, action, 'craft')
+				local a, ActionType = Utility.getAction(game, action, 'craft', true)
 				if ActionType then
 					local actionInstance = ActionType(game, action)
 					local canPerform = actionInstance:canPerform(peep:getState(), flags)
@@ -143,8 +143,8 @@ function CraftWindowController:sort()
 	for i = 1, #self.state.groups do
 		local group = self.state.groups[i]
 		table.sort(group, function(a, b)
-			a = a.instance:getAction()
-			b = b.instance:getAction()
+			a = self.actionsByID[a.id]:getAction()
+			b = self.actionsByID[b.id]:getAction()
 
 			local aReqXP, bReqXP = self:findActionLevelRequirement(a), self:findActionLevelRequirement(b)
 			local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)

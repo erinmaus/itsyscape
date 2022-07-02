@@ -24,8 +24,6 @@ LocalGame.TICKS_PER_SECOND = 10
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
 
-	self.onQuit = Callback()
-
 	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
 	self.stage = LocalStage(self)
@@ -87,50 +85,9 @@ function LocalGame:update(delta)
 	self.stage:update(delta)
 end
 
-function LocalGame:saveGame()
-	local playerActor = self.player:getActor()
-	local playerPeep = playerActor and playerActor:getPeep()
-	if playerPeep then
-		local storage = self.director:getPlayerStorage(playerPeep)
-		local root = storage:getRoot()
-
-		local hasLocation = root:hasSection("Location")
-		if not hasLocation then
-			local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
-			local startedQuest = playerPeep:getState():has('KeyItem', "PreTutorial_Start")
-
-			local map, anchor
-			if finishedQuest then
-				map = "IsabelleIsland_Tower_Floor5"
-				anchor = "Anchor_StartGame"
-			elseif startedQuest then
-				map = "PreTutorial_MansionFloor1"
-				anchor = "Anchor_Spawn"
-			end
-
-			if map and anchor then
-				local x, y, z = Utility.Map.getAnchorPosition(self, map, anchor)
-				local locationSection = root:getSection("Location")
-				locationSection:set({
-					name = map,
-					x = x,
-					y = y,
-					z = z,
-					layer = 1
-				})
-			end
-		end
-
-		hasLocation = root:hasSection("Location")
-		if hasLocation then
-			Utility.save(playerPeep, false)
-		end
-	end
-end
-
 function LocalGame:quit()
 	self.stage:collectItems()
-	self:saveGame()
+	self.player:save()
 
 	self.stage:unloadAll()
 	self:tick()

@@ -1,44 +1,11 @@
-_MOBILE = false
+require "bootstrap"
 
-do
-	if love.system.getOS() == "Android" then
-		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
+itsyrealm = {
+	graphics = {
+		impl = {}
+	}
+}
 
-		local cpath = package.cpath
-		package.cpath = string.format(
-			"%s/lib/lib?.so;%s/lib?.so;%s",
-			sourceDirectory,
-			sourceDirectory,
-			cpath)
-
-		_DEBUG = true
-		_MOBILE = true
-	else
-		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
-
-		local cpath = package.cpath
-		package.cpath = string.format(
-			"%s/ext/?.dll;%s/ext/?.so;%s",
-			sourceDirectory,
-			sourceDirectory,
-			cpath)
-
-		local path = package.path
-		package.path = string.format(
-			"%s/ext/?.lua;%s/ext/?/init.lua;%s",
-			sourceDirectory,
-			sourceDirectory,
-			cpath)
-	end
-end
-
-do
-	local B = require "B"
-	B._ROOT = "ItsyScape.Mashina"
-end
-
-Log = require "ItsyScape.Common.Log"
-_APP = false
 _ARGS = {}
 
 _ANALYTICS = false
@@ -74,7 +41,7 @@ function love.load(args)
 	_DEBUG = _DEBUG or _CONF.debug or false
 
 	do
-		if not _MOBILE then
+		if not _ANALYTICS_DISABLED then
 			local AnalyticsClient = require "ItsyScape.Analytics.Client"
 			_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
 		end
@@ -220,6 +187,16 @@ function love.quit()
 		local serializedConf = serpent.block(_CONF, { comment = false })
 
 		love.filesystem.write("settings.cfg", serializedConf)
+	end
+
+	if _DEBUG then
+		local DebugStats = require "ItsyScape.Graphics.DebugStats"
+
+		_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
+		_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
+		_APP:getGameView():dumpStatsToCSV()
+		_APP:getUIView():getRenderManager():getDebugStats():dumpStatsToCSV("Widget_Renderer")
+		DebugStats.GLOBAL:dumpStatsToCSV("Global")
 	end
 
 	return result

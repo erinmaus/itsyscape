@@ -16,7 +16,7 @@ local METALS = {
 	}
 }
 
-for name, metal in pairs(METALS) do
+for name, metal in spairs(METALS) do
 	local ItemName = string.format("%sArrow", name)
 	local Item = ItsyScape.Resource.Item(ItemName)
 
@@ -34,7 +34,7 @@ for name, metal in pairs(METALS) do
 
 	local FletchAction15 = ItsyScape.Action.Fletch() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = ItsyScape.Utility.xpForLevel(metal.tier)
 		},
 
@@ -59,14 +59,14 @@ for name, metal in pairs(METALS) do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = math.max(ItsyScape.Utility.xpForResource(metal.tier + 1), 15)
 		}
 	}
 
 	local FletchAction1 = ItsyScape.Action.Fletch() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = ItsyScape.Utility.xpForLevel(metal.tier)
 		},
 
@@ -91,7 +91,7 @@ for name, metal in pairs(METALS) do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Fletching",
+			Resource = ItsyScape.Resource.Skill "Engineering",
 			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(metal.tier + 1) / 15), 1)
 		}
 	}

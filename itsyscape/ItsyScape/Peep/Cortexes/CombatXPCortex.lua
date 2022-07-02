@@ -34,7 +34,6 @@ end
 
 function CombatXPCortex:onHit(peep, p)
 	if not p:getAggressor() then
-		Log.info("'%s' hit %d damage without aggressor.", peep:getName(), p:getDamage())
 		return
 	end
 

@@ -12,19 +12,37 @@ local ORES = {
 	["Copper"] = {
 		tier = 0,
 		weight = 10.5,
-		health = 8
+		health = 8,
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
+		}
 	},
 
 	["Tin"] = {
 		tier = 0,
 		weight = 9.1,
-		health = 8
+		health = 8,
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
+		}
 	},
 
 	["Iron"] = {
 		tier = 10,
 		weight = 11.5,
-		health = 20
+		health = 20,
+		variants = {
+			"DeepSlate"
+		},
+		secondaries = {
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrunblySulfur"
+		}
 	},
 
 	["Adamant"] = {
@@ -46,7 +64,7 @@ local ORES = {
 	}
 }
 
-for name, ore in pairs(ORES) do
+for name, ore in spairs(ORES) do
 	local ItemName = string.format("%sOre", name)
 	local Ore = ItsyScape.Resource.Item(ItemName)
 
@@ -108,11 +126,61 @@ for name, ore in pairs(ORES) do
 
 	Rock { MineAction }
 
+	local SecondaryActions = {}
+	if ore.secondaries then
+		for i = 1, #ore.secondaries do
+			local Action = ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = ItsyScape.Resource.Item(ore.secondaries[i]),
+					Count = 1
+				}
+			}
+
+			ItsyScape.Meta.HiddenFromSkillGuide {
+				Action = Action
+			}
+			
+			table.insert(SecondaryActions, Action)
+		end
+	end
+
+	Rock(SecondaryActions)
+
 	ItsyScape.Meta.ResourceName {
 		Value = string.format("%s rock", name),
 		Language = "en-US",
 		Resource = Rock
 	}
+
+	if ore.variants then
+		for i = 1, #ore.variants do
+			local VariantRockName = string.format("%sRock_%s", name, ore.variants[i])
+			local VariantRock = ItsyScape.Resource.Prop(VariantRockName)
+
+			VariantRock {
+				MineAction
+			}
+
+			VariantRock(SecondaryActions)
+
+			ItsyScape.Meta.ResourceName {
+				Value = string.format("%s rock", name),
+				Language = "en-US",
+				Resource = VariantRock
+			}
+
+			ItsyScape.Meta.PeepID {
+				Value = "Resources.Game.Peeps.Props.BasicRock",
+				Resource = VariantRock
+			}
+
+			ItsyScape.Meta.GatherableProp {
+				Health = ore.health,
+				SpawnTime = ore.tier + 10,
+				Resource = VariantRock
+			}
+		end
+	end
 end
 
 ItsyScape.Meta.ResourceDescription {
@@ -167,6 +235,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Contains iron ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "IronRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains iron ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronRock_DeepSlate"
 }
 
 ItsyScape.Meta.ResourceDescription {

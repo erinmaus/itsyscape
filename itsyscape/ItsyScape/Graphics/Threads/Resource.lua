@@ -20,9 +20,21 @@ while true do
 				local s = love.filesystem.read(request.filename)
 				output:push(s)
 			elseif request.type == 'lua' then
-				local s = "return " .. love.filesystem.read(request.filename)
-				local l = assert(setfenv(loadstring(s), {}))()
+				local s
+				do
+					local cacheFilename = request.filename .. ".cache"
+					local hasCache = love.filesystem.getInfo(cacheFilename)
+					if hasCache then
+						s = load(love.filesystem.read(cacheFilename))
+					else
+						s = loadstring("return " .. love.filesystem.read(request.filename))
+					end
+				end
+
+				local l = assert(setfenv(s, {}))()
 				output:push(l)
+			elseif request.type == 'quit' then
+				return
 			end
 		end
 	until not request

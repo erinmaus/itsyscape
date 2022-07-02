@@ -97,8 +97,8 @@ do
 		ColorRed = 0,
 		ColorGreen = 0,
 		ColorBlue = 0,
-		NearDistance = 10,
-		FarDistance = 20,
+		NearDistance = 100,
+		FarDistance = 100,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
@@ -113,6 +113,31 @@ do
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Gammon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local ROTATION = ItsyScape.Utility.Quaternion.fromAxisAngle(
+		ItsyScape.Utility.Vector.UNIT_Y,
+		math.pi / 4)
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 1.5,
+		PositionZ = 33,
+		RotationX = ROTATION.x,
+		RotationY = ROTATION.y,
+		RotationZ = ROTATION.z,
+		RotationW = ROTATION.w,
+		Name = "Gammon",
+		Map = M._MAP,
+		Resource = M["Gammon"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Gammon_Base",
+		MapObject = M["Gammon"]
 	}
 end
 
@@ -139,71 +164,12 @@ do
 	}
 end
 
-M["AncientSkeleton"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
-		PositionY = 1,
-		PositionZ = 35,
-		Name = "AncientSkeleton",
-		Map = M._MAP,
-		Resource = M["AncientSkeleton"]
-	}
+	local Cutscene = ItsyScape.Resource.Cutscene "Dream_Teaser_TheEmptyKing"
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "AncientSkeleton",
-		MapObject = M["AncientSkeleton"]
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "TheEmptyKing",
+		Cutscene = Cutscene,
+		Resource = M["TheEmptyKing"]
 	}
 end
-
-M["PrestigiousAncientSkeleton"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
-		PositionY = 1,
-		PositionZ = 39,
-		Name = "PrestigiousAncientSkeleton",
-		Map = M._MAP,
-		Resource = M["PrestigiousAncientSkeleton"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "PrestigiousAncientSkeleton",
-		MapObject = M["PrestigiousAncientSkeleton"]
-	}
-end
-
-M["Mummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 39,
-		PositionY = 1,
-		PositionZ = 35,
-		Name = "Mummy",
-		Map = M._MAP,
-		Resource = M["Mummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Mummy",
-		MapObject = M["Mummy"]
-	}
-end
-
-M["PrestigiousMummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 39,
-		PositionY = 1,
-		PositionZ = 39,
-		Name = "PrestigiousMummy",
-		Map = M._MAP,
-		Resource = M["PrestigiousMummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "PrestigiousMummy",
-		MapObject = M["PrestigiousMummy"]
-	}
-end
-

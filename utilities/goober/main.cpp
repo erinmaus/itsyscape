@@ -12,6 +12,7 @@
 #include <cmath>
 #include <map>
 #include <assimp/Importer.hpp>
+#include <assimp/config.h>
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include <assimp/postprocess.h>
@@ -19,6 +20,8 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+#define ANIMATION_VERSION 2
 
 void exportAnimation(const aiScene* scene, FILE* output)
 {
@@ -30,6 +33,8 @@ void exportAnimation(const aiScene* scene, FILE* output)
 
 	auto animation = scene->mAnimations[0];
 	std::fprintf(output, "{\n");
+	std::fprintf(output, "\t_version = %d,\n", ANIMATION_VERSION);
+
 	for (int i = 0; i < animation->mNumChannels; ++i)
 	{
 		auto channel = animation->mChannels[i];
@@ -43,7 +48,7 @@ void exportAnimation(const aiScene* scene, FILE* output)
 			std::fprintf(
 				output,
 				"\t\t\t{ time = %f, %f, %f, %f },\n",
-				positionKey->mTime,
+				positionKey->mTime / animation->mTicksPerSecond,
 				positionKey->mValue.x,
 				positionKey->mValue.y,
 				positionKey->mValue.z);
@@ -57,7 +62,7 @@ void exportAnimation(const aiScene* scene, FILE* output)
 			std::fprintf(
 				output,
 				"\t\t\t{ time = %f, %f, %f, %f, %f },\n",
-				rotationKey->mTime,
+				rotationKey->mTime / animation->mTicksPerSecond,
 				rotationKey->mValue.x,
 				rotationKey->mValue.y,
 				rotationKey->mValue.z,
@@ -72,7 +77,7 @@ void exportAnimation(const aiScene* scene, FILE* output)
 			std::fprintf(
 				output,
 				"\t\t\t{ time = %f, %f, %f, %f },\n",
-				scaleKey->mTime,
+				scaleKey->mTime / animation->mTicksPerSecond,
 				scaleKey->mValue.x,
 				scaleKey->mValue.y,
 				scaleKey->mValue.z);
@@ -257,7 +262,9 @@ void exportMesh(const aiScene* scene, FILE* output)
 				else
 				{
 					auto bone = mesh->mBones[vertex.boneIndex[j]];
-					std::fprintf(output, "\"%s\", ", bone->mName.C_Str());
+					std::string name = bone->mName.C_Str();
+					std::replace(name.begin(), name.end(), '_', '.');
+					std::fprintf(output, "\"%s\", ", name.c_str());
 				}
 			}
 
@@ -353,6 +360,9 @@ int main(int argc, const char* argv[])
 	}
 
 	Assimp::Importer importer;
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_COLLADA_USE_COLLADA_NAMES, true);
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_COLLADA_IGNORE_UP_DIRECTION, true);
+
 	auto scene = importer.ReadFile(argv[2], aiProcess_Triangulate);
 	if (!scene)
 	{

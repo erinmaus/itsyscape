@@ -13,7 +13,7 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local NotificationController = Class(Controller)
 NotificationController.TIMEOUT = 1.0
-NotificationController.STEP = 0.5
+NotificationController.STEP = 1
 
 function NotificationController:new(peep, director, constraints)
 	Controller.new(self, peep, director)

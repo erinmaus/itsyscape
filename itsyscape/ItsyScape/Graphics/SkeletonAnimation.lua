@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local NSkeletonKeyFrame = require "nbunny.skeletonkeyframe"
+local NSkeletonAnimationResourceInstance = require "nbunny.optimaus.skeletonanimationresourceinstance"
 
 local SkeletonAnimation = Class()
 SkeletonAnimation.KeyFrame = Class()
@@ -36,6 +37,10 @@ function SkeletonAnimation.KeyFrame:new(time, s, r, t)
 	self._transform = love.math.newTransform()
 end
 
+function SkeletonAnimation.KeyFrame:getHandle()
+	return self._handle
+end
+
 -- Interpolates this key frame with another, storing the result in 'transform'.
 function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 	self._transform:setMatrix(self._handle:interpolate(other._handle, time))
@@ -44,8 +49,9 @@ function SkeletonAnimation.KeyFrame:interpolate(other, time, transform)
 	return transform
 end
 
-function SkeletonAnimation:new(d, skeleton)
+function SkeletonAnimation:new(d, skeleton, animation)
 	self.duration = 0
+	self._animation = animation or NSkeletonAnimationResourceInstance()
 
 	if type(d) == 'string' then
 		self:loadFromFile(d, skeleton)
@@ -54,6 +60,10 @@ function SkeletonAnimation:new(d, skeleton)
 	else
 		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
+end
+
+function SkeletonAnimation:getHandle()
+	return self._animation
 end
 
 function SkeletonAnimation:loadFromFile(filename, skeleton)
@@ -83,6 +93,7 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 		       "Properties must have same number of frames (because NYI)")
 
 		local boneFrames = {}
+		local boneFrameHandles = {}
 		local count = #boneFramesDefinition.translation
 		for i = 1, count do
 			assert(boneFramesDefinition.scale[i].time == boneFramesDefinition.rotation[i].time and
@@ -98,8 +109,13 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 
 			local keyFrame = SkeletonAnimation.KeyFrame(time, scale, rotation, translation)
 			table.insert(boneFrames, keyFrame)
+			table.insert(boneFrameHandles, keyFrame:getHandle())
 
 			duration = math.max(duration, time)
+		end
+
+		if skeleton then
+			self:getHandle():setKeyFrames(skeleton:getBoneIndex(boneName) - 1, boneFrameHandles)
 		end
 
 		self.bones[boneName] = boneFrames
@@ -120,7 +136,19 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 end
 
 function SkeletonAnimation:getDuration()
-	return self.duration
+	if self.skeleton then
+		return self:getHandle():getDuration()
+	else
+		return self.duration
+	end
+end
+
+function SkeletonAnimation:computeFilteredTransforms(time, transforms, filter)
+	if filter then
+		self:getHandle():computeLocalTransforms(time, transforms:getHandle(), filter:getHandle())
+	else
+		self:getHandle():computeLocalTransforms(time, transforms:getHandle())
+	end
 end
 
 function SkeletonAnimation:computeTransforms(time, transforms, localOnly)
@@ -143,11 +171,10 @@ function SkeletonAnimation:computeTransform(time, transforms, index, localOnly)
 	transform:reset()
 
 	if bone:getParent() and not localOnly then
-		local parentIndex = self.skeleton:getBoneIndex(bone:getParent())
+		local parentIndex = bone:getParentIndex()
 		transform:apply(transforms[parentIndex])
 	end
 
-	--local duration = boneFrame[#boneFrame].time
 	local duration = self:getDuration()
 	local wrappedTime
 	if duration ~= 0 then

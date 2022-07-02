@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
 local Behavior = require "ItsyScape.Peep.Behavior"
 local CommandQueue = require "ItsyScape.Peep.CommandQueue"
+local ParallelCommandQueue = require "ItsyScape.Peep.ParallelCommandQueue"
 
 -- Peep type. All objects (static or otherwise) are instances of this type.
 --
@@ -279,6 +280,22 @@ function Peep:getCommandQueue(channel)
 	return queue
 end
 
+function Peep:getParallelCommandQueue(channel)
+	assert(channel ~= nil, "cannot get default parallel command queue")
+
+	local queue = self.commandQueues[channel]
+	if not queue then
+		queue = ParallelCommandQueue(self)
+		self.commandQueues[channel] = queue
+	end
+
+	if not Class.isCompatibleType(queue, ParallelCommandQueue) then
+		Log.error("Queue on channel '%s' already exists and is not parallel.", channel)
+	end
+
+	return queue
+end
+
 -- Interrupts all command queues.
 --
 -- This is the same as calling 'clear' on all the command queues.
@@ -460,6 +477,10 @@ function Peep:ready(director, game)
 	self:poke('ready', director, game)
 	self:poke('finalize', director, game)
 	self.finalized = true
+end
+
+function Peep:getIsReady()
+	return self.isReady
 end
 
 -- Returns true if the Peep was poofed, false otherwise.

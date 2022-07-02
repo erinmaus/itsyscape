@@ -31,12 +31,18 @@ function Snipe:perform(peep, target)
 		local scale = math.min(((level - 10) / 50) + 0.9, 1.8)
 		local damage = math.floor(maxHit * scale + 0.5)
 
+		roll:setMinHit(maxHit)
+		roll:setMaxHit(maxHit)
+
 		local attack = AttackPoke({
 			attackType = self:getBonusForStance(peep):lower(),
 			weaponType = self:getWeaponType(),
-			damage = damage,
+			damage = roll:roll(),
 			aggressor = peep
 		})
+
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("SnipeSplosion", peep, target)
 
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)

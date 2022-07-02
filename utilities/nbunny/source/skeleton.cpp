@@ -11,6 +11,34 @@
 #include "nbunny/nbunny.hpp"
 #include "nbunny/skeleton.hpp"
 
+glm::mat4 nbunny::KeyFrame::interpolate(const KeyFrame& self, const KeyFrame& other, float time)
+{
+	static const float E = 0.001f;
+	float timeDifference = std::max(time - self.time, 0.0f);
+	float frameDifference = other.time - self.time;
+
+	float delta;
+	if (frameDifference <= E)
+	{
+		delta = 1.0f;
+	}
+	else
+	{
+		delta = timeDifference / frameDifference;
+	}
+
+	auto rotation = glm::slerp(self.rotation, other.rotation, delta);
+	auto scale = glm::mix(self.scale, other.scale, delta);
+	auto translation = glm::mix(self.translation, other.translation, delta);
+
+	auto r = glm::toMat4(rotation);
+	auto s = glm::scale(glm::mat4(1), scale);
+	auto t = glm::translate(glm::mat4(1), translation);
+	auto result = t * r * s;
+
+	return result;
+}
+
 static int nbunny_keyframe_get_time(lua_State* L)
 {
 	auto& keyFrame = sol::stack::get<nbunny::KeyFrame>(L, 1);

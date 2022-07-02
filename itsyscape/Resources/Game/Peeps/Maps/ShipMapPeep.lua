@@ -37,6 +37,7 @@ function ShipMapPeep:new(resource, name, ...)
 	self:addPoke('hit')
 	self:addPoke('sink')
 	self:addPoke('sunk')
+	self:addPoke('beach')
 
 	self:addPoke('leak')
 	self.leaks = 0
@@ -44,6 +45,7 @@ function ShipMapPeep:new(resource, name, ...)
 	self.isSinking = false
 	self.isSunk = false
 	self.sinkTime = 0
+	self.beached = false
 end
 
 function ShipMapPeep:getPrefix()
@@ -210,6 +212,10 @@ function ShipMapPeep:onLeak(p)
 	self.leaks = self.leaks + 1
 end
 
+function ShipMapPeep:onBeach()
+	self.beached = true
+end
+
 function ShipMapPeep:updateFoam()
 	if not self.boatFoamProp or not self.boatFoamTrailProp then
 		return
@@ -287,12 +293,19 @@ function ShipMapPeep:update(director, game)
 			yScale = 1
 		end
 
-		position.position = Vector(
-			position.position.x,
-			(math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
-			position.position.z) + (position.offset or Vector.ZERO)
-		if self.isSinking then
-			position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
+		if self.beached then
+			position.position = Vector(
+				position.position.x,
+				position.offset.y,
+				position.position.z)
+		else
+			position.position = Vector(
+				position.position.x,
+				(math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
+				position.position.z) + (position.offset or Vector.ZERO)
+			if self.isSinking then
+				position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
+			end
 		end
 	end
 

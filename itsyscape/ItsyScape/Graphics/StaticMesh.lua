@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local NStaticMeshResourceInstance = require "nbunny.optimaus.staticmeshresourceinstance"
 
 local StaticMesh = Class()
 StaticMesh.DEFAULT_FORMAT = {
@@ -17,24 +18,29 @@ StaticMesh.DEFAULT_FORMAT = {
 	{ 'VertexColor', 'float', 4 }
 }
 
-function StaticMesh:new(d, skeleton)
+function StaticMesh:new(d, handle)
 	self.groups = {}
+	self._handle = handle or NStaticMeshResourceInstance()
 
 	if type(d) == 'string' then
-		self:loadFromFile(d, skeleton)
+		self:loadFromFile(d)
 	elseif type(d) == 'table' then
-		self:loadFromTable(d, skeleton)
+		self:loadFromTable(d)
 	else
 		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
 end
 
-function StaticMesh:loadFromFile(filename, skeleton)
+function StaticMesh:getHandle()
+	return self._handle
+end
+
+function StaticMesh:loadFromFile(filename)
 	local data = "return " .. (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
 	local result = setfenv(chunk, {})() or {}
 
-	self:loadFromTable(result, skeleton)
+	self:loadFromTable(result)
 end
 
 function StaticMesh:loadFromTable(t)
@@ -70,6 +76,8 @@ function StaticMesh:generate(t)
 	for _, element in ipairs(self.format) do
 		m.mesh:setAttributeEnabled(element[1], true)
 	end
+
+	self:getHandle():setMesh(t.name, m.mesh)
 
 	return true
 end

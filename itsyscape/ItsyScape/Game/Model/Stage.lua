@@ -32,6 +32,7 @@ function Stage:new()
 	self.onWaterFlood = Callback()
 	self.onWaterDrain = Callback()
 	self.onForecast = Callback()
+	self.onStopForecast = Callback()
 	self.onPlayMusic = Callback()
 	self.onStopMusic = Callback()
 
@@ -40,6 +41,7 @@ function Stage:new()
 
 	-- (group, value [nil/Decoration])
 	self.onDecorate = Callback()
+	self.onUndecorate = Callback()
 end
 
 -- Spawns an Actor.

@@ -78,11 +78,11 @@ function ScrollBar:scroll(direction)
 		parentScrollSizeX = parentScrollSizeX - parentWidth
 		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
-		if self:getIsVertical() then
+		if self:getIsVertical() and parentScrollSizeY ~= 0 then
 			local y = parentScrollY + direction * self.scrollTick
 			p:setScroll(parentScrollX, math.max(math.min(y, parentScrollSizeY), 0))
 			self.onScroll(self, y / parentScrollSizeY)
-		else
+		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 then
 			local x = parentScrollX + direction * self.scrollTick
 			p:setScroll(math.max(math.min(x, parentScrollSizeX), 0), parentScrollY)
 			self.onScroll(self, x / parentScrollSizeX)
@@ -98,7 +98,7 @@ function ScrollBar:drag(button, x, y)
 		parentScrollSizeX = parentScrollSizeX - parentWidth
 		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
-		if self:getIsVertical() then
+		if self:getIsVertical() and parentScrollSizeY ~= 0 then
 			if not self.dragStart then
 				self.dragStart = (parentScrollY / parentScrollSizeY) * self.scrollArea
 			end
@@ -106,7 +106,7 @@ function ScrollBar:drag(button, x, y)
 			local s = math.max(math.min((y + self.dragStart) / self.scrollArea, 1), 0) * parentScrollSizeY
 			p:setScroll(parentScrollX, s)
 			self.onScroll(self, s / parentScrollY)
-		else
+		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 then
 			if not self.dragStart then
 				self.dragStart = (parentScrollX / parentScrollSizeX) * self.scrollArea
 			end
@@ -164,21 +164,22 @@ function ScrollBar:performLayout()
 			if p then
 				local parentWidth, parentHeight = p:getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
+				if parentScrollSizeY ~= 0 then
+					local ratio = parentHeight / parentScrollSizeY
 
-				local ratio = parentHeight / parentScrollSizeY
+					local remainingHeight = height - buttonHeight * 2
+					local scrollButtonHeight = math.max(
+						remainingHeight * ratio,
+						remainingHeight / 16,
+						1)
 
-				local remainingHeight = height - buttonHeight * 2
-				local scrollButtonHeight = math.max(
-					remainingHeight * ratio,
-					remainingHeight / 16,
-					1)
+					self:addChild(self.scrollButton)
+					self.scrollButton:setSize(width, scrollButtonHeight)
 
-				self:addChild(self.scrollButton)
-				self.scrollButton:setSize(width, scrollButtonHeight)
-
-				self.scrollAreaStart = buttonHeight
-				self.scrollAreaEnd = height - buttonHeight - scrollButtonHeight
-				self.scrollArea = self.scrollAreaEnd - self.scrollAreaStart
+					self.scrollAreaStart = buttonHeight
+					self.scrollAreaEnd = height - buttonHeight - scrollButtonHeight
+					self.scrollArea = self.scrollAreaEnd - self.scrollAreaStart
+				end
 			end
 		else
 			self:removeChild(self.scrollButton)
@@ -197,20 +198,22 @@ function ScrollBar:performLayout()
 			if p then
 				local parentWidth, parentHeight = p:getSize()
 				local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
-				local ratio = parentHeight / parentScrollSizeX
+				if parentScrollSizeX ~= 0 then
+					local ratio = parentHeight / parentScrollSizeX
 
-				local remainingWidth = width - buttonWidth * 2
-				local scrollButtonWidth = math.max(
-					remainingWidth * ratio,
-					remainingWidth / 16,
-					1)
+					local remainingWidth = width - buttonWidth * 2
+					local scrollButtonWidth = math.max(
+						remainingWidth * ratio,
+						remainingWidth / 16,
+						1)
 
-				self:addChild(self.scrollButton)
-				self.scrollButton:setSize(scrollButtonWidth, height)
+					self:addChild(self.scrollButton)
+					self.scrollButton:setSize(scrollButtonWidth, height)
 
-				self.scrollAreaStart = buttonWidth
-				self.scrollAreaEnd = width - buttonWidth - scrollButtonWidth
-				self.scrollArea = self.scrollAreaEnd - self.scrollAreaStart
+					self.scrollAreaStart = buttonWidth
+					self.scrollAreaEnd = width - buttonWidth - scrollButtonWidth
+					self.scrollArea = self.scrollAreaEnd - self.scrollAreaStart
+				end
 			end
 		else
 			self:removeChild(self.scrollButton)
@@ -229,11 +232,19 @@ function ScrollBar:update(...)
 		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
 		if self:getIsVertical() then
-			local y = math.floor(parentScrollY / parentScrollSizeY * self.scrollArea) + self.scrollAreaStart
-			self.scrollButton:setPosition(x, math.floor(y))
+			if parentScrollY ~= 0 then
+				local y = math.floor(parentScrollY / parentScrollSizeY * self.scrollArea) + self.scrollAreaStart
+				self.scrollButton:setPosition(x, math.floor(y))
+			else
+				self:removeChild(self.scrollButton)
+			end
 		else
-			local x = math.floor(parentScrollX / parentScrollSizeX * self.scrollArea) + self.scrollAreaStart
-			self.scrollButton:setPosition(math.floor(x), y)
+			if parentScrollX ~= 0 then
+				local x = math.floor(parentScrollX / parentScrollSizeX * self.scrollArea) + self.scrollAreaStart
+				self.scrollButton:setPosition(math.floor(x), y)
+			else
+				self:removeChild(self.scrollButton)
+			end
 		end
 	end
 

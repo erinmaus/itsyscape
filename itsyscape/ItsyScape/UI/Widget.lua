@@ -25,6 +25,7 @@ function Widget:new()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
+	self.onZDepthChange = Callback()
 	self.id = false
 	self.text = ""
 	self.isFocused = false
@@ -38,6 +39,7 @@ function Widget:new()
 	self.scrollHeight = 0
 	self.zDepth = 1
 	self.children = {}
+	self.zSortedChildren = {}
 	self.parent = false
 	self.style = false
 	self.properties = {}
@@ -149,7 +151,10 @@ function Widget:addChild(child)
 
 	self.childProperties[child] = {}
 	table.insert(self.children, child)
+	child.onZDepthChange:register(self._onZDepthChange, self)
 	child.parent = self
+
+	self:_markZDepthDirty()
 end
 
 function Widget:removeChild(child)
@@ -157,6 +162,8 @@ function Widget:removeChild(child)
 		if self.children[i] == child then
 			table.remove(self.children, i)
 			child.parent = nil
+			child.onZDepthChange:unregister(self._onZDepthChange)
+			self:_markZDepthDirty()
 			self.childProperties[child] = nil
 			return true
 		end
@@ -183,6 +190,39 @@ function Widget:getChildProperty(child, key, default)
 	end
 
 	return default
+end
+
+function Widget:zIterate()
+	if self._zDepthDirty then
+		local c = {}
+		for index, child in self:iterate() do
+			table.insert(c, {
+				index = index,
+				widget = child
+			})
+		end
+
+		table.sort(c, function(a, b)
+			local i = a.widget:getZDepth()
+			local j = b.widget:getZDepth()
+			if i < j then
+				return true
+			elseif i > j then
+				return false
+			elseif i == j then
+				return a.index < b.index
+			end
+		end)
+
+		table.clear(self.zSortedChildren)
+		for i = 1, #c do
+			table.insert(self.zSortedChildren, c[i].widget)
+		end
+
+		self._zDepthDirty = false
+	end
+
+	return ipairs(self.zSortedChildren)
 end
 
 function Widget:iterate()
@@ -307,8 +347,20 @@ function Widget:getZDepth()
 	return self.zDepth
 end
 
+function Widget:_onZDepthChange(child, value)
+	self._zDepthDirty = true
+end
+
+function Widget:_markZDepthDirty()
+	self._zDepthDirty = true
+end
+
 function Widget:setZDepth(value)
+	local oldValue = self.zDepth
 	self.zDepth = value or self.zDepth
+	if oldValue ~= self.zDepth then
+		self:onZDepthChange(value)
+	end
 end
 
 function Widget:getToolTip()

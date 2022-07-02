@@ -8,12 +8,20 @@
 -- file, You can obtain one at http//mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Interface = require "ItsyScape.UI.Interface"
 local Widget = require "ItsyScape.UI.Widget"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local WidgetRenderManager = Class()
+
+WidgetRenderManager.DebugStats = Class(DebugStats)
+
+function WidgetRenderManager.DebugStats:process(renderer, widget, state)
+	renderer:draw(widget, state)
+end
+
 WidgetRenderManager.TOOL_TIP_DURATION = 0.5
 
 function WidgetRenderManager:new(inputProvider)
@@ -21,7 +29,12 @@ function WidgetRenderManager:new(inputProvider)
 	self.defaultRenderer = WidgetRenderer()
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
 	self.input = inputProvider
-	self.toolTip = false
+	self.toolTips = {}
+	self.debugStats = WidgetRenderManager.DebugStats()
+end
+
+function WidgetRenderManager:getDebugStats()
+	return self.debugStats
 end
 
 function WidgetRenderManager:getCursor()
@@ -50,19 +63,28 @@ function WidgetRenderManager:setCursor(widget)
 end
 
 function WidgetRenderManager:setToolTip(duration, ...)
-	self.toolTip = ToolTip(...)
-	self.toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
-	self.toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+	local toolTip = ToolTip(...)
+	toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
+	toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
 
-	return self.toolTip
+	self.toolTips[toolTip] = true
+
+	return toolTip
 end
 
-function WidgetRenderManager:unsetToolTip()
-	self.toolTip = false
+function WidgetRenderManager:unsetToolTip(toolTip)
+	if toolTip then
+		self.toolTips[toolTip] = nil
+	end
 end
 
-function WidgetRenderManager:getToolTip()
-	return self.toolTip
+function WidgetRenderManager:getToolTips()
+	local toolTips = {}
+	for toolTip in pairs(self.toolTips) do
+		table.insert(toolTips, toolTip)
+	end
+
+	return toolTips
 end
 
 function WidgetRenderManager:hasRenderer(widgetType)
@@ -120,7 +142,7 @@ function WidgetRenderManager:start()
 
 	do
 		local _, _, sx, sy = love.graphics.getScaledMode()
-		love.graphics.scale(sx, sy)
+		itsyrealm.graphics.scale(sx, sy)
 	end
 
 	local currentTime = love.timer.getTime()
@@ -130,33 +152,32 @@ function WidgetRenderManager:start()
 			self.hovered[widget] = false
 		end
 	end
+
+	itsyrealm.graphics.clearPseudoScissor()
 end
 
 function WidgetRenderManager:stop()
 	if self.cursor.widget then
-		love.graphics.push('all')
-		love.graphics.translate(self.cursor.x, self.cursor.y)
-		love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
+		itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 		self:draw(self.cursor.widget, self.cursor.state, true)
-		love.graphics.pop()
 	end
 
-	if self.toolTip then
-		if self.toolTip:getDuration() < 0.5 then
-			self.toolTip = false
+	local toolTips = self:getToolTips()
+	for i = 1, #toolTips do
+		local toolTip = toolTips[i]
+
+		if toolTip:getDuration() < 0.5 then
+			self.toolTips[toolTip] = nil
 		else
-			love.graphics.push('all')
-			self:draw(self.toolTip, {}, true)
-			love.graphics.pop()
+			self:draw(toolTip, {}, true)
 		end
 	end
 
 	for widget, toolTip in pairs(self.hovered) do
 		if toolTip then
-			love.graphics.push('all')
-			love.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+			itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
 			self:draw(toolTip.w, toolTip.s, true)
-			love.graphics.pop()
 		end
 	end
 
@@ -187,52 +208,55 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		state = widget:getState()
 	end
 
-	love.graphics.push('all')
-	love.graphics.translate(widget:getPosition())
+	local widgetX, widgetY = widget:getPosition()
 
-	local cornerX, cornerY = love.graphics.transformPoint(0, 0)
+	itsyrealm.graphics.translate(widgetX, widgetY)
+
+	local cornerX, cornerY = itsyrealm.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
 			local _, _, scaleX, scaleY = love.graphics.getScaledMode()
-			love.graphics.intersectScissor(cornerX, cornerY, w * scaleX, h * scaleY)
+			itsyrealm.graphics.intersectPseudoScissor(cornerX, cornerY, w * scaleX, h * scaleY)
+		end
+
+		local sw, sh = widget:getScrollSize()
+		local sx, sy = widget:getScroll()
+		if sw > w or sh > h or sx > 0 or sy > 0 then
+			itsyrealm.graphics.applyPseudoScissor()
 		end
 	end
 
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer
 	if renderer then
-		renderer:draw(widget, state)
+		self.debugStats:measure(renderer, widget, state)
 	end
 
 	local scrollX, scrollY = widget:getScroll()
-	love.graphics.translate(-scrollX, -scrollY)
+	itsyrealm.graphics.translate(-scrollX, -scrollY)
 
 	self:drawChildren(widget, state, cursor)
 
-	love.graphics.pop()
+	if not widget:getOverflow() then
+		local w, h = widget:getSize()
+		if w > 0 and h > 0 then
+			itsyrealm.graphics.popPseudoScissor()
+		end
+
+		local sw, sh = widget:getScrollSize()
+		local sx, sy = widget:getScroll()
+		if sw > w or sh > h or sx > 0 or sy > 0 then
+			itsyrealm.graphics.resetPseudoScissor()
+		end
+	end
+
+	itsyrealm.graphics.translate(scrollX, scrollY)
+	itsyrealm.graphics.translate(-widgetX, -widgetY)
 end
 
 function WidgetRenderManager:drawChildren(widget, state, cursor)
-	local c = {}
-	for index, child in widget:iterate() do
-		table.insert(c, {
-			index = index,
-			widget = child
-		})
-	end
-
-	table.sort(c, function(a, b)
-		local i = a.widget:getZDepth()
-		local j = b.widget:getZDepth()
-		if i < j then
-			return true
-		elseif i == j then
-			return a.index < b.index
-		end
-	end)
-
-	for i = 1, #c do
-		self:draw(c[i].widget, state, cursor)
+	for _, child in widget:zIterate() do
+		self:draw(child, state, cursor)
 	end
 end
 

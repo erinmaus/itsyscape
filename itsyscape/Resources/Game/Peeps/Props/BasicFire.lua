@@ -24,6 +24,10 @@ function BasicFire:new(resource, name, ...)
 	self.duration = math.huge
 end
 
+function BasicFire:getDuration()
+	return self.duration
+end
+
 function BasicFire:onSpawnedByAction(instigator)
 	local resource = Utility.Peep.getResource(self)
 	if resource then
@@ -38,6 +42,13 @@ function BasicFire:onSpawnedByAction(instigator)
 			level = level / 20
 			if spawnTime then
 				self.duration = spawnTime * (level + 1)
+
+				local x, y, z = Utility.Peep.getPosition(self):get()
+				local charcoal = Utility.spawnPropAtPosition(self, "Charcoal", x, y, z, 0.5)
+				if charcoal then
+					local charcoalPeep = charcoal:getPeep()
+					charcoalPeep:poke('spawnedByFire', self, self.duration)
+				end
 			end
 		end
 	end

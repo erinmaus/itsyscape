@@ -13,6 +13,24 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local GameDB = Class()
 
+local function createGameDBInputs()
+	local t = {
+		"Resources/Game/DB/Init.lua"
+	}
+
+	for _, item in ipairs(love.filesystem.getDirectoryItems("Resources/Game/Maps/")) do
+		local f1 = "Resources/Game/Maps/" .. item .. "/DB/Main.lua"
+		local f2 = "Resources/Game/Maps/" .. item .. "/DB/Default.lua"
+		if love.filesystem.getInfo(f1) then
+			table.insert(t, f1)
+		elseif love.filesystem.getInfo(f2) then
+			table.insert(t, f2)
+		end
+	end
+
+	return t
+end
+
 function GameDB.create(inputFilename, outputFilename)
 	local _load = love.filesystem.load
 	local _setfenv = setfenv
@@ -24,7 +42,7 @@ function GameDB.create(inputFilename, outputFilename)
 		return chunk()
 	end, S)
 
-	local packages = {}
+	local packages = { ["debug"] = require "debug" }
 	S.require = setfenv(function(filename)
 		if not packages[filename] then
 			local r = S.include(filename:gsub("%.", "/") .. ".lua")
@@ -51,6 +69,26 @@ function GameDB.create(inputFilename, outputFilename)
 	S.Resource = S.require "ItsyScape.GameDB.Commands.Resource"
 	S.ResourceType = S.require "ItsyScape.GameDB.Commands.ResourceType"
 
+	local p = pairs
+	S.spairs = function(t)
+		local keys = {}
+		for key in p(t) do
+			if type(key) == "string" then
+				table.insert(keys, key)
+			end
+		end
+
+		table.sort(keys)
+		local index = 0
+
+		return function()
+			index = index + 1
+			local key = keys[index]
+			local value = t[key]
+			return key, value
+		end
+	end
+
 	local game
 	do
 		local inputs
@@ -59,7 +97,7 @@ function GameDB.create(inputFilename, outputFilename)
 		elseif type(inputFilename) == 'table' then
 			inputs = inputFilename
 		else
-			error("exepcted filename or table of filenames")
+			inputs = createGameDBInputs()
 		end
 
 		for i = 1, #inputs do

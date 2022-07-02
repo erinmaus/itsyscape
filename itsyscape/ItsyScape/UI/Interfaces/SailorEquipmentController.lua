@@ -164,7 +164,8 @@ function SailorEquipmentController:pullActions(item, serializedItem, scope)
 		serializedItem.actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
-			scope)
+			scope,
+			true)
 	else
 		serializedItem.actions = {}
 	end

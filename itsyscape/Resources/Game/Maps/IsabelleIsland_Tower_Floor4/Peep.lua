@@ -28,6 +28,47 @@ function Tower:onLoad(filename, args, layer)
 
 	local offset = self:getBehavior(MapOffsetBehavior)
 	offset.offset = Vector(0, 12.3, 0)
+
+	self:prepareDebugCutscene()
+end
+
+function Tower:prepareDebugCutscene()
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene')
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_2", actionCallback, openCallback)
+end
+
+function Tower:onPlayCutscene()
+	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+
+	local cutscene = Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Floor4_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self)
+end
+
+function Tower:onFinishCutscene()
+	Utility.UI.openGroup(
+		Utility.Peep.getPlayer(self),
+		Utility.UI.Groups.WORLD)
+end
+
+function Tower:onWriteLine(line)
+	local _, _, ui = Utility.UI.openInterface(
+		Utility.Peep.getPlayer(self),
+		"DramaticText",
+		false,
+		{ line })
 end
 
 return Tower

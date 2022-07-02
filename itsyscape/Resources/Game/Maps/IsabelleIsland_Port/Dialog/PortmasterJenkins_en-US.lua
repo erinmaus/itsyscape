@@ -135,6 +135,12 @@ repeat
 			message "Wet feet, aye? Har har har!"
 		end
 	elseif result == RUMBRIDGE then
+		if _TARGET:getState():has("Quest", "CalmBeforeTheStorm") then
+			local stage = _TARGET:getDirector():getGameInstance():getStage()
+			stage:movePeep(_TARGET, "Rumbridge_Port", "Anchor_Spawn")
+			return
+		end
+
 		message {
 			"AAAAAH! Earthquake!" 
 		}

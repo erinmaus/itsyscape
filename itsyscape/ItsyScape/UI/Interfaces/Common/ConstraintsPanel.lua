@@ -26,6 +26,12 @@ ConstraintsPanel.BLACKLIST = {
 	['prop'] = true
 }
 
+local function formatQuantity(number)
+  local i, j, minus, int, fraction = tostring(number):find('([-]?)(%d+)([.]?%d*)')
+  int = int:reverse():gsub("(%d%d%d)", "%1,")
+  return minus .. int:reverse():gsub("^,", "") .. fraction
+end
+
 function ConstraintsPanel:new(view)
 	Widget.new(self)
 
@@ -133,7 +139,7 @@ function ConstraintsPanel:performLayout(doLogic)
 					local text = string.format("Lvl %d %s", level, c.name)
 					right:setText(text)
 				else
-					local text = string.format("+%d %s XP", math.floor(c.count), c.name)
+					local text = string.format("+%s %s XP", formatQuantity(math.floor(c.count)), c.name)
 					right:setText(text)
 				end
 			elseif c.type:lower() == 'item' then
@@ -141,7 +147,7 @@ function ConstraintsPanel:performLayout(doLogic)
 				if c.count <= 1 then
 					text = c.name
 				else
-					text = string.format("%.0fx %s", c.count, c.name)
+					text = string.format("%s %s", formatQuantity(math.floor(c.count)), c.name)
 				end
 				right:setText(text)
 			elseif c.type:lower() == 'keyitem' then
@@ -151,7 +157,7 @@ function ConstraintsPanel:performLayout(doLogic)
 				if c.count <= 1 then
 					text = c.name
 				else
-					text = string.format("%d %s", c.count, c.name)
+					text = string.format("%s %s", formatQuantity(c.count), c.name)
 				end
 				right:setText(text)
 			end

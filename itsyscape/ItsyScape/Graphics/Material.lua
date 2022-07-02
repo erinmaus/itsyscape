@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
-local NMaterial = require "nbunny.scenenodematerial"
+local NMaterial = require "nbunny.optimaus.scenenodematerial"
 
 local Material, Metatable = Class()
 
@@ -19,14 +19,14 @@ local Material, Metatable = Class()
 --
 -- Nil values in textures are ignored.
 function Material:new(node, shader, ...)
-	self._handle = node._handle:getMaterial()
+	self._handle = node:getHandle():getMaterial()
 	self.shader = shader or false
 	self:setTextures(...)
-	self.isTranslucent = false
-	self.isFullLit = false
-	self.zWriteDisabled = false
-	self.color = Color(1, 1, 1, 1)
 	self.uniforms = {}
+end
+
+function Material:getHandle()
+	return self._handle
 end
 
 -- Gets the shader this Material uses.
@@ -40,7 +40,7 @@ end
 function Material:setShader(value)
 	self.shader = value or self.shader
 	if self.shader then
-		self._handle:setShader(self.shader:getID())
+		self._handle:setShader(self.shader:getHandle())
 	end
 end
 
@@ -68,40 +68,50 @@ end
 
 -- Gets a boolean indicating if the Material is translucent.
 function Material:getIsTranslucent()
-	return self.isTranslucent or self.color.a < 1
+	return self._handle:getIsTranslucent()
 end
 
 -- Gets a boolean indicating if the Material is translucent.
 --
 -- Defaults to 'false'.
 function Material:setIsTranslucent(value)
-	self.isTranslucent = value or false
+	self._handle:setIsTranslucent(value or false)
 end
 
 -- Returns true if the Material should be fully lit, false otherwise.
-function Material:getIsFullLit(value)
-	return self.isFullLit
+function Material:getIsFullLit()
+	return self._handle:getIsFullLit()
 end
 
 function Material:setIsFullLit(value)
-	self.isFullLit = value or false
+	self._handle:setIsFullLit(value or false)
 end
 
 -- Returns true if the Material should not write to the depth buffer, false otherwise.
-function Material:getIsZWriteDisabled(value)
-	return self.zWriteDisabled
+function Material:getIsZWriteDisabled()
+	return self._handle:getIsZWriteDisabled()
 end
 
 function Material:setIsZWriteDisabled(value)
-	self.zWriteDisabled = value or false
+	self._handle:setIsZWriteDisabled(value or false)
+end
+
+-- Returns true if the Material should always be drawn, false otherwise.
+-- Defaults to false (the object will only be drawn if visible).
+function Material:getIsCullDisabled()
+	return self._handle:getIsCullDisabled()
+end
+
+function Material:setIsCullDisabled(value)
+	self._handle:setIsCullDisabled(value or false)
 end
 
 function Material:getColor()
-	return self.color
+	return Color(self._handle:getColor())
 end
 
 function Material:setColor(value)
-	self.color = value or self.color
+	self._handle:setColor((value or Color(1)):get())
 end
 
 -- Gets the number of textures.
@@ -124,7 +134,7 @@ function Material:setTextures(...)
 	self.textures = { n = {} }
 	for i = 1, t.n do
 		table.insert(self.textures, t[i])
-		table.insert(self.textures.n, t[i]:getID())
+		table.insert(self.textures.n, t[i]:getHandle())
 	end
 
 	self._handle:setTextures(unpack(self.textures.n))
@@ -143,7 +153,7 @@ function Material:setTexture(index, value)
 	index = math.min(#self.textures, index) + 1
 
 	self.textures[index] = value or self.textures[index]
-	self.textures.n[index] = self.textures[index]:getID()
+	self.textures.n[index] = self.textures[index]
 
 	self._handle:setTextures(unpack(self.textures.n))
 end

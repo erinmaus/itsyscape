@@ -9,9 +9,12 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local NModelResourceInstance = require "nbunny.optimaus.modelresourceinstance"
 
 local Model = Class()
-function Model:new(d, skeleton)
+function Model:new(d, skeleton, handle)
+	self._handle = handle or NModelResourceInstance()
+
 	if type(d) == 'string' then
 		self:loadFromFile(d, skeleton)
 	elseif type(d) == 'table' then
@@ -19,6 +22,10 @@ function Model:new(d, skeleton)
 	else
 		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
+end
+
+function Model:getHandle()
+	return self._handle
 end
 
 function Model:loadFromFile(filename, skeleton)
@@ -84,15 +91,12 @@ function Model:bindSkeleton(skeleton)
 		max = max:max(p)
 	end
 
-	-- Generate mesh.
-	if self.mesh then
-		self.mesh:release()
+	local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
+	for _, element in ipairs(self.format) do
+		mesh:setAttributeEnabled(element[1], true)
 	end
 
-	self.mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
-	for _, element in ipairs(self.format) do
-		self.mesh:setAttributeEnabled(element[1], true)
-	end
+	self:getHandle():setMesh(mesh)
 
 	self.min = min
 	self.max = max
@@ -125,7 +129,7 @@ function Model:getSkeleton()
 end
 
 function Model:getMesh()
-	return self.mesh
+	return self:getHandle():getMesh()
 end
 
 function Model:getFormat()
@@ -133,10 +137,7 @@ function Model:getFormat()
 end
 
 function Model:release()
-	if self.mesh then
-		self.mesh:release()
-		self.mesh = false
-	end
+	self:getHandle():setMesh()
 end
 
 return Model

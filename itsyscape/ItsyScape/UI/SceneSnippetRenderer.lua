@@ -53,10 +53,7 @@ function SceneSnippetRenderer:draw(widget)
 			love.graphics.pop()
 		end
 
-		love.graphics.ortho(love.window.getMode())
-		renderer:presentCurrent()
-
-		love.graphics.setBlendMode('alpha')
+		itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor())
 	end
 end
 

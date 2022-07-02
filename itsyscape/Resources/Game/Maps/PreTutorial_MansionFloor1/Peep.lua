@@ -80,6 +80,8 @@ function Mansion:boom()
 end
 
 function Mansion:update(director, game)
+	Map.update(self, director, game)
+
 	local delta = game:getDelta()
 
 	if self.lightningTime > 0 then

@@ -3,7 +3,7 @@
 		['invert-y'] = true
 	},
 
-	texture = "Resources/Game/TileSets/CommonShip_Map/Texture.png",
+	texture = "Resources/Game/TileSets/CommonShip_Map/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 

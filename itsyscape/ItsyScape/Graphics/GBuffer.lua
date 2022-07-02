@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local NGBuffer = require "nbunny.optimaus.gbuffer"
 
 local GBuffer = Class()
 
@@ -28,39 +29,29 @@ GBuffer.DEPTH_STENCIL_FORMAT = 'depth24stencil8'
 --
 -- The dimensions are clamped to at least 1.
 function GBuffer:new(width, height)
+	self._buffer = NGBuffer(GBuffer.COLOR_FORMAT, GBuffer.POSITION_FORMAT, GBuffer.NORMAL_SPECULAR_FORMAT);
 	self:resize(width, height)
+end
+
+function GBuffer:getHandle()
+	return self._buffer
 end
 
 -- Resizes the GBuffer. The previous contents are lost.
 --
 -- The dimensions are clamped to at least 1.
 function GBuffer:resize(width, height)
-	self:release()
-
-	width = math.max(width, 1)
-	height = math.max(height, 1)
-
-	self.width = width
-	self.height = height
-
-	self.color = love.graphics.newCanvas(
-		width, height, { format = GBuffer.COLOR_FORMAT })
-	self.position = love.graphics.newCanvas(
-		width, height, { format = GBuffer.POSITION_FORMAT })
-	self.normalSpecular = love.graphics.newCanvas(
-		width, height, { format = GBuffer.NORMAL_SPECULAR_FORMAT })
-	self.depthStencil = love.graphics.newCanvas(
-		width, height, { format = GBuffer.DEPTH_STENCIL_FORMAT })
+	self._buffer:resize(width, height)
 end
 
 -- Gets the depth of the GBuffer.
 function GBuffer:getWidth()
-	return self.width
+	return self._buffer:getWidth()
 end
 
 -- Gets the height of the GBuffer.
 function GBuffer:getHeight()
-	return self.height
+	return self._buffer:getHeight()
 end
 
 -- Frees all resources held by the GBuffer.
@@ -70,59 +61,34 @@ end
 -- The contents are lost and the GBuffer cannot be used. Call GBuffer.resize to
 -- return to a good state.
 function GBuffer:release()
-	if self.color then
-		self.color:release()
-		self.color = false
-	end
-
-	if self.position then
-		self.position:release()
-		self.position = false
-	end
-
-	if self.normalSpecular then
-		self.normalSpecular:release()
-		self.normalSpecular = false
-	end
-
-	if self.depthStencil then
-		self.depthStencil:release()
-		self.depthStencil = false
-	end
-
-	self.width = 0
-	self.height = 0
+	self._buffer:release()
 end
 
 -- Binds the GBuffer.
 --
 -- All rendering will now occur on the GBuffer.
 function GBuffer:use()
-	love.graphics.setCanvas({
-		self.color,
-		self.position,
-		self.normalSpecular,
-		depthstencil = self.depthStencil })
+	self._buffer:use()
 end
 
 -- Gets the color binding of the GBuffer.
 function GBuffer:getColor()
-	return self.color
+	return self._buffer:getCanvas(GBuffer.COLOR_INDEX)
 end
 
 -- Gets the position binding of the GBuffer.
 function GBuffer:getPosition()
-	return self.position
+	return self._buffer:getCanvas(GBuffer.POSITION_INDEX)
 end
 
 -- Gets the normal/specular binding of the GBuffer.
 function GBuffer:getNormalSpecular()
-	return self.normalSpecular
+	return self._buffer:getCanvas(GBuffer.NORMAL_SPECULAR_INDEX)
 end
 
 -- Gets the depth/stencil binding of the GBuffer.
 function GBuffer:getDepthStencil()
-	return self.depthStencil
+	return self._buffer:getDepthStencil()
 end
 
 return GBuffer

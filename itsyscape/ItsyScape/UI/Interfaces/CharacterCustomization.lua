@@ -46,9 +46,9 @@ CharacterCustomization.TITLE_LABEL_STYLE = {
 }
 
 CharacterCustomization.BUTTON_STYLE = {
-	inactive = "Resources/Renderers/Widget/Button/Purple-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/Purple-Hover.9.png",
-	pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png",
+	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 	fontSize = 24
 }
@@ -78,8 +78,8 @@ CharacterCustomization.DESCRIPTION_STYLE = {
 
 CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE = {
 	inactive = Color(0, 0, 0, 0),
-	pressed = Color(82 / 255, 45 / 255, 81 / 255, 1),
-	hover = Color(196 / 255, 149 / 255, 194 / 255, 1),
+	hover = Color(0.7, 0.6, 0.5),
+	active = Color(0.5, 0.4, 0.3),
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 	fontSize = 24,
 	textX = 0.0,
@@ -89,9 +89,9 @@ CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE = {
 }
 
 CharacterCustomization.SELECT_ACTIVE_BOX_BUTTON_STYLE = {
-	inactive = Color(182 / 255, 125 / 255, 183 / 255, 1),
-	pressed = Color(82 / 255, 46 / 255, 81 / 255, 1),
-	hover = Color(196 / 255, 149 / 255, 194 / 255, 1),
+	inactive = Color(0.7, 0.6, 0.5),
+	hover = Color(0.7, 0.6, 0.5),
+	active = Color(0.5, 0.4, 0.3),
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 	fontSize = 24,
 	textX = 0.0,
@@ -108,9 +108,9 @@ CharacterCustomization.VALUE_STYLE = {
 }
 
 CharacterCustomization.TEXT_INPUT_STYLE = {
-	inactive = "Resources/Renderers/Widget/TextInput/Purple-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/TextInput/Purple-Hover.9.png",
-	active = "Resources/Renderers/Widget/TextInput/Purple-Active.9.png",
+	inactive = "Resources/Renderers/Widget/TextInput/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/TextInput/Default-Hover.9.png",
+	active = "Resources/Renderers/Widget/TextInput/Default-Active.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 	fontSize = 24,
 	color = Color(1, 1, 1, 1),
@@ -149,7 +149,7 @@ function CharacterCustomization:new(id, index, ui)
 	self.panel = Panel()
 	self.panel:setSize(w, h)
 	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/FullscreenInterface.9.png"
+		image = "Resources/Renderers/Widget/Panel/Default.9.png"
 	}, ui:getResources()))
 	self:addChild(self.panel)
 
@@ -517,6 +517,10 @@ function CharacterCustomization:new(id, index, ui)
 	self.camera:setDistance(2.5)
 	self.camera:setUp(Vector(0, -1, 0))
 	self.peepSnippet:setCamera(self.camera)
+end
+
+function CharacterCustomization:getIsFullscreen()
+	return true
 end
 
 function CharacterCustomization:update(...)

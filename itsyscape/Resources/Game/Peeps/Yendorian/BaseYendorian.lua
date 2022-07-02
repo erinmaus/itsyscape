@@ -46,6 +46,16 @@ function BaseYendorian:ready(director, game)
 		"Resources/Game/Animations/Yendorian_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	local defendAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Yendorian_Defend/Script.lua")
+	self:addResource("animation-defend", defendAnimation)
+
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Yendorian_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
+
 	Creep.ready(self, director, game)
 end
 
