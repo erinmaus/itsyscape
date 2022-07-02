@@ -26,7 +26,7 @@ function QuitGameWindowController:poke(actionID, actionIndex, e)
 end
 
 function QuitGameWindowController:confirm(e)
-	self:getGame():quit()
+	self:getGame():leave()
 	self:getGame():getUI():closeInstance(self)
 	Log.analytic("END_GAME")
 end

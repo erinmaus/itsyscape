@@ -63,3 +63,4 @@ while isRunning do
 	end
 end
 
+Log.info("Game thread exiting...")

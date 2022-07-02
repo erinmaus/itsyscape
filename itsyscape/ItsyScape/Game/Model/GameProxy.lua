@@ -17,6 +17,9 @@ GameProxy._quit = Event.ServerToClientRPC()
 GameProxy._quit:link("onQuit")
 GameProxy.quit = Event.ClientToServerRPC()
 
+GameProxy.onLeave = Event.ServerToClientRPC()
+GameProxy.onLeave:link("onLeave")
+
 GameProxy.getTicks = Property()
 GameProxy.getCurrentTick = Property()
 
