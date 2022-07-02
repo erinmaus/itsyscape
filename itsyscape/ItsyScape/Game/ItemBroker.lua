@@ -1129,7 +1129,7 @@ function ItemBroker:itemFromStorage(provider, storage)
 
 	if count ~= nil and id ~= nil and noted ~= nil then
 		local item = self:addItem(provider, id, count, noted)
-		item:setUserdata(userdata)
+		item:setUserdata(userdata:get())
 
 		if key then
 			self:setItemKey(item, key)
