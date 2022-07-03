@@ -23,10 +23,12 @@ function NullView:load()
 
 	self.cube = DebugCubeSceneNode()
 
-	local min, max = self:getProp():getBounds()
-	local scale = (max - min) / 2
-	self.cube:getTransform():setLocalScale(scale)
-	self.cube:getTransform():setLocalTranslation(Vector(0, scale.y, 0))
+	resources:queueEvent(function()
+		local min, max = self:getProp():getBounds()
+		local scale = (max - min) / 2
+		self.cube:getTransform():setLocalScale(scale)
+		self.cube:getTransform():setLocalTranslation(Vector(0, scale.y, 0))
+	end)
 
 	self.cube:setParent(root)
 end
