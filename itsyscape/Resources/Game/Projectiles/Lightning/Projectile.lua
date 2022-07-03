@@ -119,7 +119,7 @@ function Lightning:zapTarget()
 					"ItsyScape.Graphics.AnimationResource",
 					"Resources/Game/Animations/Spell_Lightning_Zap/Script.lua")
 
-				target:playAnimation('x-undead-squid', 1, animation)
+				target:onAnimationPlayed('x-spell-lightning', 1, animation)
 				self.zapped = true
 			end
 		end
