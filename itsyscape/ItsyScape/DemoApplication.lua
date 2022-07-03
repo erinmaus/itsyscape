@@ -349,7 +349,7 @@ function DemoApplication:keyDown(key, ...)
 	local isCtrlDown = love.keyboard.isDown('lctrl') or
 	                   love.keyboard.isDown('rctrl')
 
-	if key == 'printscreen' then
+	if key == 'printscreen' or key == 'f10' then
 		if isCtrlDown then
 			self:snapshotPlayerPeep()
 		elseif isShiftDown then
