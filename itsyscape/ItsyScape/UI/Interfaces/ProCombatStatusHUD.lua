@@ -12,6 +12,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
@@ -26,6 +28,11 @@ ProCombatStatusHUD.NUM_EFFECTS_PER_ROW = 4
 ProCombatStatusHUD.TARGET_OFFSET_X = 256
 ProCombatStatusHUD.TARGET_OFFSET_Y = 128
 ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS = 10
+ProCombatStatusHUD.BUTTON_SIZE = 48
+ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 5
+ProCombatStatusHUD.BUTTON_PADDING = 8
+ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW
+ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
 
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
@@ -91,6 +98,8 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self:addChild(self.prayerPoints)
 
 	self.effectsPanel:setSize(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.HEIGHT)
+
+	self.buttons = {}
 end
 
 function ProCombatStatusHUD.Target:getEffects()
@@ -149,7 +158,7 @@ function ProCombatStatusHUD.Target:draw(resources, state)
 	itsyrealm.graphics.translate(1, 1)
 	self:drawTarget(actorPosition)
 
-	love.graphics.setColor(Color.fromHexString("ffcc00", 1):get())
+	love.graphics.setColor(ProCombatStatusHUD.SPECIAL_COLOR:get())
 	itsyrealm.graphics.translate(-1, -1)
 	self:drawTarget(actorPosition)
 end
@@ -271,10 +280,227 @@ function ProCombatStatusHUD.EffectBorder:draw(resources, state)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
+ProCombatStatusHUD.RadialMenu = Class(Drawable)
+ProCombatStatusHUD.MIN_ZOOM = 10
+ProCombatStatusHUD.MAX_ZOOM = 60
+ProCombatStatusHUD.MIN_RADIUS = 128
+ProCombatStatusHUD.MAX_RADIUS = 256
+
+function ProCombatStatusHUD.RadialMenu:new(hud)
+	Drawable.new(self)
+	self.hud = hud
+
+	self:updateRadius()
+end
+
+function ProCombatStatusHUD.RadialMenu:getOverflow()
+	return true
+end
+
+function ProCombatStatusHUD.RadialMenu:draw()
+	love.graphics.setLineWidth(ProCombatStatusHUD.Target.HEIGHT)
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+	itsyrealm.graphics.circle('line', screenWidth / 2, screenHeight / 2, self.radius)
+end
+
+function ProCombatStatusHUD.RadialMenu:updateRadius()
+	local camera = self.hud:getView():getGameView():getRenderer():getCamera()
+	local clampedZoom = math.max(math.min(camera:getDistance(), ProCombatStatusHUD.MAX_ZOOM), ProCombatStatusHUD.MIN_ZOOM)
+	local zoomMultiplier = 1 - ((clampedZoom - ProCombatStatusHUD.MIN_ZOOM) / (ProCombatStatusHUD.MAX_ZOOM - ProCombatStatusHUD.MIN_ZOOM))
+
+	local oldRadius = self.radius
+	local newRadius = math.floor(zoomMultiplier * (ProCombatStatusHUD.MAX_RADIUS - ProCombatStatusHUD.MIN_RADIUS) + ProCombatStatusHUD.MIN_RADIUS)
+
+	if oldRadius ~= newRadius then
+		self.radius = newRadius
+		self:performLayout()
+	end
+end
+
+function ProCombatStatusHUD.RadialMenu:update(...)
+	Drawable.update(self, ...)
+
+	self:updateRadius()
+end
+
+function ProCombatStatusHUD.RadialMenu:performLayout()
+	local numChildren = self:getNumChildren()
+	if numChildren > 0 then
+		local step = (math.pi * 2) / numChildren
+
+		local current = 0
+		for i = 1, numChildren do
+			local child = self:getChildAt(i)
+			local childWidth, childHeight = child:getSize()
+			local screenWidth, screenHeight = love.graphics.getScaledMode()
+
+			local x = screenWidth / 2 + math.cos(current) * self.radius - (childWidth / 2)
+			local y = screenHeight / 2 + math.sin(current) * self.radius - (childHeight / 2)
+
+			child:setPosition(x, y)
+
+			current = current + step
+		end
+	end
+end
+
+ProCombatStatusHUD.Pending = Class(Drawable)
+function ProCombatStatusHUD.Pending:draw(resources, state)
+	local w, h = self:getSize()
+	local time = love.timer.getTime() * math.pi * 2
+	local startAngle = time
+	local endAngle = startAngle + math.pi * 2 * (3 / 4)
+
+	startAngle = startAngle % (math.pi * 2)
+	endAngle = endAngle % (math.pi * 2)
+
+	if startAngle > endAngle then
+		startAngle = startAngle - math.pi * 2
+	end
+
+	love.graphics.setLineWidth(4)
+
+	love.graphics.setColor(0, 0, 0, 1)
+	itsyrealm.graphics.arc('line', 'open', w / 2 + 1, h / 2 + 1, math.min(w, h) / 4, startAngle, endAngle, 16)
+	love.graphics.setColor(1, 1, 1, 1)
+	itsyrealm.graphics.arc('line', 'open', w / 2, h / 2, math.min(w, h) / 4, startAngle, endAngle, 16)
+
+	love.graphics.setLineWidth(1)
+end
+
 function ProCombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	self.targetWidgets = {}
+
+	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
+	self:prepareRadialMenu()
+	self:addChild(self.radialMenu)
+
+	self.pending = ProCombatStatusHUD.Pending()
+	self.pending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+end
+
+function ProCombatStatusHUD:showThingies(buttons)
+	local thingies = GridLayout()
+	thingies:setUniformSize(true, ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	thingies:setPadding(ProCombatStatusHUD.BUTTON_PADDING, ProCombatStatusHUD.BUTTON_PADDING)
+	thingies:setWrapContents(true)
+	thingies:setSize(ProCombatStatusHUD.THINGIES_WIDTH, 0)
+
+	for i = 1, #buttons do
+		thingies:addChild(buttons[i])
+	end
+
+	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local width, height = thingies:getSize()
+
+	thingies:setPosition(
+		mouseX - width / 2,
+		mouseY - height / 2)
+
+	self:addChild(thingies)
+end
+
+function ProCombatStatusHUD:createPowerButtons(powers, onClick)
+	local buttons = {}
+	for i = 1, #powers do
+		local button = Button()
+
+		button:setStyle(ButtonStyle({
+			inactive = "Resources/Renderers/Widget/Button/Ability.9.png",
+			hover = "Resources/Renderers/Widget/Button/Ability.9.png",
+			pressed = "Resources/Renderers/Widget/Button/Ability.9.png"
+		}, self:getView():getResources()))
+
+		local icon = Icon()
+		icon:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+		button:setData('icon', icon)
+		button:addChild(icon)
+
+		button.onClick:register(onClick, self, i)
+
+		local coolDown = Label()
+		coolDown:setStyle(LabelStyle({
+			font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
+			color = { 1, 1, 0, 1 },
+			fontSize = 22,
+			textShadow = true
+		}, self:getView():getResources()))
+		coolDown:setPosition(ProCombatStatusHUD.BUTTON_PADDING, ProCombatStatusHUD.BUTTON_SIZE - 22 - ProCombatStatusHUD.BUTTON_PADDING)
+		button:setData('coolDown', coolDown)
+		button:addChild(coolDown)
+
+		table.insert(buttons, button)
+	end
+
+	return buttons
+end
+
+function ProCombatStatusHUD:addOffensivePowersButton()
+	local offensivePowersButton = Button()
+	offensivePowersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	local offensivePowersButtonIcon = Icon()
+	offensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Attack"))
+	offensivePowersButton:addChild(offensivePowersButtonIcon)
+
+	offensivePowersButtonIcon.onMouseEnter:register(self.onHoverOffensivePowers, self)
+
+	self.radialMenu:addChild(offensivePowersButton)
+
+	self:initOffensivePowers()
+end
+
+function ProCombatStatusHUD:onActivateOffensivePower(index)
+	self:sendPoke("activateOffensivePower", nil, {
+		index = index
+	})
+end
+
+function ProCombatStatusHUD:initOffensivePowers()
+	local state = self:getState()
+	local powers = state.powers.offensive
+
+	self.offensivePowersButtons = self:createPowerButtons(powers, self.onActivateOffensivePower)
+end
+
+function ProCombatStatusHUD:onHoverOffensivePowers()
+	self:showThingies(self.offensivePowersButtons)
+end
+
+function ProCombatStatusHUD:addDefensivePowersButton()
+	local defensivePowersButton = Button()
+	defensivePowersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	local defensivePowersButtonIcon = Icon()
+	defensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Defense"))
+	defensivePowersButton:addChild(defensivePowersButtonIcon)
+
+	defensivePowersButtonIcon.onMouseEnter:register(self.onHoverDefensivePowers, self)
+
+	self.radialMenu:addChild(defensivePowersButton)
+
+	self:initDefensivePowers()
+end
+
+function ProCombatStatusHUD:onActivateDefensivePower(index)
+	self:sendPoke("activateDefensivePower", nil, {
+		index = index
+	})
+end
+
+function ProCombatStatusHUD:initDefensivePowers()
+	local state = self:getState()
+	local powers = state.powers.defensive
+
+	self.defensivePowersButtons = self:createPowerButtons(powers, self.onActivateDefensivePower)
+end
+
+function ProCombatStatusHUD:prepareRadialMenu()
+	self:addOffensivePowersButton()
+	self:addDefensivePowersButton()
 end
 
 function ProCombatStatusHUD:getOverflow()
@@ -471,6 +697,42 @@ function ProCombatStatusHUD:updateTarget(targetWidget, state)
 	self:updateTargetEffects(targetWidget, state)
 end
 
+function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID)
+	for i = 1, #powers do
+		local power = powers[i]
+		local button = buttons[i]
+
+		local coolDown = button:getData('coolDown')
+		local icon = button:getData('icon')
+
+		icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+
+		local description = {}
+		for i = 1, #power.description do
+			table.insert(description, ToolTip.Text(power.description[i]))
+		end
+
+		local toolTip = {
+			ToolTip.Header(power.name),
+			unpack(power.description)
+		}
+
+		button:setToolTip(unpack(toolTip))
+
+		if power.coolDown then
+			coolDown:setText(tostring(power.coolDown))
+		else
+			coolDown:setText("")
+		end
+
+		if pendingID == power.id then
+			button:addChild(self.pending)
+		else
+			button:removeChild(self.pending)
+		end
+	end
+end
+
 function ProCombatStatusHUD:update(...)
 	Interface.update(self, ...)
 
@@ -492,6 +754,16 @@ function ProCombatStatusHUD:update(...)
 			self:removeChild(targetWidget)
 		end
 	end
+
+	self:updatePowers(self.offensivePowersButtons, state.powers.offensive, state.powers.pendingID)
+	self:updatePowers(self.defensivePowersButtons, state.powers.defensive, state.powers.pendingID)
+
+	local player = self:getView():getGame():getPlayer()
+	--if player:getIsEngaged() and not self.radialMenu:getParent() then
+	--	self:addChild(self.radialMenu)
+	--elseif not player:getIsEngaged() and self.radialMenu:getParent() then
+	--	self:removeChild(self.radialMenu)
+	--end
 end
 
 return ProCombatStatusHUD
