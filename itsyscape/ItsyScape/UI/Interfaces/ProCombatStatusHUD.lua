@@ -312,6 +312,7 @@ function ProCombatStatusHUD.RadialMenu:draw()
 	love.graphics.setLineWidth(ProCombatStatusHUD.Target.HEIGHT)
 
 	local screenWidth, screenHeight = love.graphics.getScaledMode()
+	love.graphics.setColor(ProCombatStatusHUD.SPECIAL_COLOR:get())
 	itsyrealm.graphics.circle('line', screenWidth / 2, screenHeight / 2, self.radius)
 end
 
