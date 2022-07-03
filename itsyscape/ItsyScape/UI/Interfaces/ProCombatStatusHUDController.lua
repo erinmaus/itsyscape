@@ -44,10 +44,35 @@ function ProCombatStatusHUDController:bindToPlayer(peep)
 end
 
 function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
-	if actionID == "toggle" then
-		self:toggle()
+	if actionID == "activateOffensivePower" then
+		self:activate(self.state.powers.offensive, e)
+	elseif actionID == "activateDefensivePower" then
+		self:activate(self.state.powers.defensive, e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
+	end
+end
+
+function ProCombatStatusHUDController:activate(powers, e)
+	local power = powers[e.index]
+	if power then
+		local peep = self:getPeep()
+		local gameDB = self:getDirector():getGameDB()
+
+		if power.id == self.state.powers.pendingID then
+			peep:removeBehavior(PendingPowerBehavior)
+		else
+			local powerResource = gameDB:getResource(power.id, "Power")
+			if powerResource then
+				local PowerType = Utility.Peep.getPowerType(powerResource, gameDB)
+				if PowerType then
+					local power = PowerType(self:getGame(), powerResource)
+
+					local _, b = peep:addBehavior(PendingPowerBehavior)
+					b.power = power
+				end
+			end
+		end
 	end
 end
 
