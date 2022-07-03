@@ -13,7 +13,6 @@ local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Button = require "ItsyScape.UI.Button"
-local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
@@ -31,7 +30,7 @@ ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS = 10
 ProCombatStatusHUD.BUTTON_SIZE = 48
 ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 5
 ProCombatStatusHUD.BUTTON_PADDING = 8
-ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW
+ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW + ProCombatStatusHUD.BUTTON_PADDING
 ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
 
 ProCombatStatusHUD.Target = Class(Drawable)
@@ -369,6 +368,12 @@ function ProCombatStatusHUD.Pending:draw(resources, state)
 	love.graphics.setLineWidth(1)
 end
 
+ProCombatStatusHUD.ThingiesLayout = Class(GridLayout)
+
+function ProCombatStatusHUD.ThingiesLayout:getIsFocusable()
+	return true
+end
+
 function ProCombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -382,8 +387,8 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.pending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 end
 
-function ProCombatStatusHUD:showThingies(buttons)
-	local thingies = GridLayout()
+function ProCombatStatusHUD:showThingies(buttons, target)
+	local thingies = ProCombatStatusHUD.ThingiesLayout()
 	thingies:setUniformSize(true, ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 	thingies:setPadding(ProCombatStatusHUD.BUTTON_PADDING, ProCombatStatusHUD.BUTTON_PADDING)
 	thingies:setWrapContents(true)
@@ -393,12 +398,17 @@ function ProCombatStatusHUD:showThingies(buttons)
 		thingies:addChild(buttons[i])
 	end
 
-	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local targetX, targetY = target:getAbsolutePosition()
+	local targetWidth, targetHeight = target:getSize()
 	local width, height = thingies:getSize()
 
 	thingies:setPosition(
-		mouseX - width / 2,
-		mouseY - height / 2)
+		targetX - (width / 2 - targetWidth / 2),
+		targetY - height - ProCombatStatusHUD.BUTTON_PADDING)
+
+	thingies.onMouseLeave:register(function()
+		self:removeChild(thingies)
+	end)
 
 	self:addChild(thingies)
 end
@@ -407,12 +417,6 @@ function ProCombatStatusHUD:createPowerButtons(powers, onClick)
 	local buttons = {}
 	for i = 1, #powers do
 		local button = Button()
-
-		button:setStyle(ButtonStyle({
-			inactive = "Resources/Renderers/Widget/Button/Ability.9.png",
-			hover = "Resources/Renderers/Widget/Button/Ability.9.png",
-			pressed = "Resources/Renderers/Widget/Button/Ability.9.png"
-		}, self:getView():getResources()))
 
 		local icon = Icon()
 		icon:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
@@ -466,8 +470,8 @@ function ProCombatStatusHUD:initOffensivePowers()
 	self.offensivePowersButtons = self:createPowerButtons(powers, self.onActivateOffensivePower)
 end
 
-function ProCombatStatusHUD:onHoverOffensivePowers()
-	self:showThingies(self.offensivePowersButtons)
+function ProCombatStatusHUD:onHoverOffensivePowers(button)
+	self:showThingies(self.offensivePowersButtons, button)
 end
 
 function ProCombatStatusHUD:addDefensivePowersButton()
@@ -496,6 +500,10 @@ function ProCombatStatusHUD:initDefensivePowers()
 	local powers = state.powers.defensive
 
 	self.defensivePowersButtons = self:createPowerButtons(powers, self.onActivateDefensivePower)
+end
+
+function ProCombatStatusHUD:onHoverDefensivePowers(button)
+	self:showThingies(self.defensivePowersButtons, button)
 end
 
 function ProCombatStatusHUD:prepareRadialMenu()

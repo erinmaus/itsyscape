@@ -66,9 +66,10 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow
 
 	local wx, wy = widget:getPosition()
 	local ww, wh = widget:getSize()
+	local ox, oy = px, py
 
-	if (x >= px + wx and x < px + wx + ww and
-	   y >= py + wy and y < py + wy + wh)
+	if (x >= ox + wx and x < ox + wx + ww and
+	   y >= oy + wy and y < oy + wy + wh)
 	   or (overflow and widget:getOverflow())
 	then
 		local sx, sy = widget:getScroll()
@@ -83,17 +84,19 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow
 				result)
 		end
 
-		table.insert(result, 1, widget)
-		result[widget] = true
+		if not widget:getOverflow() then
+			table.insert(result, 1, widget)
+			result[widget] = true
+		end
 	end
 
 	return result
 end
 
-function WidgetInputProvider:isBlocking(x, y, overflow)
+function WidgetInputProvider:isBlocking(x, y)
 	x, y = love.graphics.getScaledPoint(x, y)
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, overflow)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, true)
 	return widget ~= self.root and widget
 end
 
@@ -132,13 +135,13 @@ function WidgetInputProvider:mousePress(x, y, button)
 		return w:getIsFocusable()
 	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, false)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
 	if widget then
 		self.clickedWidgets[button] = widget
 		widget:mousePress(x, y, button)
 	end
 
-	local focusedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f)
+	local focusedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
 	if focusedWidget ~= self.focusedWidget then
 		local oldFocusedWidget = self:getFocusedWidget()
 		if oldFocusedWidget then
@@ -155,7 +158,7 @@ end
 
 function WidgetInputProvider:mouseRelease(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
-	local widget = self:getWidgetUnderPoint(x, y)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, true)
 	if widget then
 		widget:mouseRelease(x, y, button)
 	end

@@ -137,7 +137,8 @@ function WidgetRenderManager:start()
 			0, 0, nil,
 			function(w)
 				return w:getIsFocusable() or w:getToolTip()
-			end)
+			end,
+			true)
 	end
 
 	do
