@@ -307,7 +307,6 @@ function ProCombatStatusHUD:getActorPosition(actorID)
 
 		actorPosition = Vector(completeTransform:transformPoint(0, 0, 0))
 		actorPosition = (actorPosition + Vector(1)) * Vector(0.5) * Vector(camera:getWidth(), camera:getHeight(), 1)
-		actorPosition.y = camera:getHeight() - actorPosition.y
 	end
 
 	return actorPosition
