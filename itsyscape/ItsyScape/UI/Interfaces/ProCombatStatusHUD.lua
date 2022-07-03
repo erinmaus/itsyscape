@@ -282,14 +282,26 @@ end
 ProCombatStatusHUD.RadialMenu = Class(Drawable)
 ProCombatStatusHUD.MIN_ZOOM = 10
 ProCombatStatusHUD.MAX_ZOOM = 60
-ProCombatStatusHUD.MIN_RADIUS = 128
-ProCombatStatusHUD.MAX_RADIUS = 256
+ProCombatStatusHUD.MIN_RADIUS = 64
+ProCombatStatusHUD.MAX_RADIUS = 128
 
 function ProCombatStatusHUD.RadialMenu:new(hud)
 	Drawable.new(self)
 	self.hud = hud
 
 	self:updateRadius()
+end
+
+function ProCombatStatusHUD.RadialMenu:addChild(...)
+	Drawable.addChild(self, ...)
+
+	self:performLayout()
+end
+
+function ProCombatStatusHUD.RadialMenu:removeChild(...)
+	Drawable.removeChild(self, ...)
+
+	self:performLayout()
 end
 
 function ProCombatStatusHUD.RadialMenu:getOverflow()
@@ -380,6 +392,7 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.targetWidgets = {}
 
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
+	self.radialMenu:setZDepth(1000)
 	self:prepareRadialMenu()
 	self:addChild(self.radialMenu)
 
@@ -409,6 +422,8 @@ function ProCombatStatusHUD:showThingies(buttons, target)
 	thingies.onMouseLeave:register(function()
 		self:removeChild(thingies)
 	end)
+
+	thingies:setZDepth(2000)
 
 	self:addChild(thingies)
 end
