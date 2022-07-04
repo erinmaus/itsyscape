@@ -34,6 +34,8 @@ function ProCombatStatusHUDController:new(peep, director)
 	self.isDirty = true
 
 	self.spells = {}
+	self.castableSpells = {}
+	self.offensiveSpells = {}
 
 	self:update(0)
 end
@@ -291,9 +293,7 @@ function ProCombatStatusHUDController:updateSpells()
 				self.spells[resource.name] = spell
 			end
 
-			local canCast = spell:canCast(self:getPeep()):good()
-
-			if Class.isCompatibleType(spell, CombatSpell) and canCast then
+			if Class.isCompatibleType(spell, CombatSpell) then
 				local action = spell:getAction()
 				local items = {}
 				local z = 0
@@ -322,7 +322,6 @@ function ProCombatStatusHUDController:updateSpells()
 
 					zValues[resource.name] = z
 					table.insert(spells, {
-						enabled = canCast,
 						active = activeSpellID == spell:getID(),
 						id = resource.name,
 						name = Utility.getName(resource, gameDB),
@@ -340,6 +339,34 @@ function ProCombatStatusHUDController:updateSpells()
 	self.offensiveSpells = spells
 end
 
+function ProCombatStatusHUDController:updateCastableSpells()
+	local spells = {}
+	for i = 1, #self.offensiveSpells do
+		local spell = self.offensiveSpells[i]
+		local spellInstance = self.spells[spell.id]
+		if spellInstance then
+			local canCast = spellInstance:canCast(self:getPeep()):good()
+
+			if canCast then
+				table.insert(spells, spell)
+			end
+		end
+	end
+
+	if #spells ~= #self.castableSpells then
+		self.isDirty = true
+	else
+		for i = 1, #self.castableSpells do
+			if self.castableSpells[i].id ~= spells[i].id then
+				self.isDirty = true
+				break
+			end
+		end
+	end
+
+	self.castableSpells = spells
+end
+
 function ProCombatStatusHUDController:updateState()
 	local director = self:getDirector()
 
@@ -350,12 +377,12 @@ function ProCombatStatusHUDController:updateState()
 			defensive = self.currentDefensivePowers,
 			pendingID = self:getPendingPowerID()
 		},
-		spells = self.offensiveSpells,
+		spells = self.castableSpells,
 		style = self.style
 	}
 
 	self.combatantsByID = {}
-	self.targetsByID = {} 
+	self.targetsByID = {}
 
 	local attackers = director:probe(
 		self:getPeep():getLayerName(),
@@ -518,16 +545,24 @@ function ProCombatStatusHUDController:updatePowers()
 	self.currentDefensivePowers = defensivePowers
 end
 
+function ProCombatStatusHUDController:sendRefresh()
+	local ui = self:getDirector():getGameInstance():getUI()
+	ui:sendPoke(self, "refresh", nil, {})
+end
+
 function ProCombatStatusHUDController:update(delta)
 	Controller.update(self, delta)
 
 	self:updateStyle()
+	self:updateCastableSpells()
+	self:updateActiveSpell()
+
 	if self.isDirty then
 		self:updatePowers()
 		self:updateSpells()
 		self.isDirty = false
-	else
-		self:updateActiveSpell()
+
+		self:sendRefresh()
 	end
 
 	self:updateState()
