@@ -28,10 +28,13 @@ ProCombatStatusHUD.TARGET_OFFSET_X = 256
 ProCombatStatusHUD.TARGET_OFFSET_Y = 128
 ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS = 10
 ProCombatStatusHUD.BUTTON_SIZE = 48
-ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 5
+ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 4
 ProCombatStatusHUD.BUTTON_PADDING = 8
 ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW + ProCombatStatusHUD.BUTTON_PADDING
 ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
+
+ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS = 1
+ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS = 2
 
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
@@ -281,9 +284,9 @@ end
 
 ProCombatStatusHUD.RadialMenu = Class(Drawable)
 ProCombatStatusHUD.MIN_ZOOM = 10
-ProCombatStatusHUD.MAX_ZOOM = 60
-ProCombatStatusHUD.MIN_RADIUS = 64
-ProCombatStatusHUD.MAX_RADIUS = 128
+ProCombatStatusHUD.MAX_ZOOM = 50
+ProCombatStatusHUD.MIN_RADIUS = 96
+ProCombatStatusHUD.MAX_RADIUS = 256
 
 function ProCombatStatusHUD.RadialMenu:new(hud)
 	Drawable.new(self)
@@ -391,6 +394,8 @@ function ProCombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	self.targetWidgets = {}
+	self.openThingies = {}
+	self.thingies = {}
 
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
 	self.radialMenu:setZDepth(1000)
@@ -401,7 +406,13 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.pending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 end
 
-function ProCombatStatusHUD:showThingies(buttons, target)
+function ProCombatStatusHUD:showThingies(type, buttons, target)
+	if self.openThingies[type] then
+		self:removeChild(self.openThingies[type])
+		self.openThingies[type] = nil
+		return
+	end
+
 	local thingies = ProCombatStatusHUD.ThingiesLayout()
 	thingies:setUniformSize(true, ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 	thingies:setPadding(ProCombatStatusHUD.BUTTON_PADDING, ProCombatStatusHUD.BUTTON_PADDING)
@@ -420,13 +431,20 @@ function ProCombatStatusHUD:showThingies(buttons, target)
 		targetX - (width / 2 - targetWidth / 2),
 		targetY - height - ProCombatStatusHUD.BUTTON_PADDING)
 
-	thingies.onMouseLeave:register(function()
-		self:removeChild(thingies)
-	end)
-
 	thingies:setZDepth(2000)
 
 	self:addChild(thingies)
+
+	self.openThingies[type] = thingies
+end
+
+function ProCombatStatusHUD:registerThingies(type, openFunc)
+	self.thingies[type] = openFunc
+end
+
+function ProCombatStatusHUD:openRegisteredThingies(type)
+	local openFunc = self.thingies[type]
+	openFunc(self)
 end
 
 function ProCombatStatusHUD:createPowerButtons(powers, onClick)
@@ -466,11 +484,13 @@ function ProCombatStatusHUD:addOffensivePowersButton()
 	offensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Attack"))
 	offensivePowersButton:addChild(offensivePowersButtonIcon)
 
-	offensivePowersButtonIcon.onMouseEnter:register(self.onHoverOffensivePowers, self)
+	offensivePowersButton.onClick:register(self.onShowOffensivePowers, self)
+	self:registerThingies(self.onShowOffensivePowers)
 
 	self.radialMenu:addChild(offensivePowersButton)
 
 	self:initOffensivePowers()
+	self.offensivePowersButton = offensivePowersButton
 end
 
 function ProCombatStatusHUD:onActivateOffensivePower(index)
@@ -486,8 +506,11 @@ function ProCombatStatusHUD:initOffensivePowers()
 	self.offensivePowersButtons = self:createPowerButtons(powers, self.onActivateOffensivePower)
 end
 
-function ProCombatStatusHUD:onHoverOffensivePowers(button)
-	self:showThingies(self.offensivePowersButtons, button)
+function ProCombatStatusHUD:onShowOffensivePowers(button)
+	self:showThingies(
+		ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS,
+		self.offensivePowersButtons,
+		button or self.offensivePowersButton)
 end
 
 function ProCombatStatusHUD:addDefensivePowersButton()
@@ -497,12 +520,14 @@ function ProCombatStatusHUD:addDefensivePowersButton()
 	local defensivePowersButtonIcon = Icon()
 	defensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Defense"))
 	defensivePowersButton:addChild(defensivePowersButtonIcon)
+	self:registerThingies(self.onShowDefensivePowers)
 
-	defensivePowersButtonIcon.onMouseEnter:register(self.onHoverDefensivePowers, self)
+	defensivePowersButton.onClick:register(self.onShowDefensivePowers, self)
 
 	self.radialMenu:addChild(defensivePowersButton)
 
 	self:initDefensivePowers()
+	self.defensivePowersButton = defensivePowersButton
 end
 
 function ProCombatStatusHUD:onActivateDefensivePower(index)
@@ -518,8 +543,11 @@ function ProCombatStatusHUD:initDefensivePowers()
 	self.defensivePowersButtons = self:createPowerButtons(powers, self.onActivateDefensivePower)
 end
 
-function ProCombatStatusHUD:onHoverDefensivePowers(button)
-	self:showThingies(self.defensivePowersButtons, button)
+function ProCombatStatusHUD:onShowDefensivePowers(button)
+	self:showThingies(
+		ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS,
+		self.defensivePowersButtons,
+		button or self.defensivePowersButtons)
 end
 
 function ProCombatStatusHUD:prepareRadialMenu()
