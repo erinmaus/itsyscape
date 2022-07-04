@@ -402,8 +402,10 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self:prepareRadialMenu()
 	self:addChild(self.radialMenu)
 
-	self.pending = ProCombatStatusHUD.Pending()
-	self.pending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	self.subPending = ProCombatStatusHUD.Pending()
+	self.subPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	self.mainPending = ProCombatStatusHUD.Pending()
+	self.mainPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 end
 
 function ProCombatStatusHUD:showThingies(type, buttons, target)
@@ -749,7 +751,9 @@ function ProCombatStatusHUD:updateTarget(targetWidget, state)
 	self:updateTargetEffects(targetWidget, state)
 end
 
-function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID)
+function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID, radialButton)
+	local pendingIndex
+
 	for i = 1, #powers do
 		local power = powers[i]
 		local button = buttons[i]
@@ -778,10 +782,28 @@ function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID)
 		end
 
 		if pendingID == power.id then
-			button:addChild(self.pending)
+			button:addChild(self.subPending)
+			pendingIndex = i
 		else
-			button:removeChild(self.pending)
+			button:removeChild(self.subPending)
 		end
+	end
+
+	if pendingIndex and not radialButton:getData('pending') then
+		local power = powers[pendingIndex]
+		local icon = radialButton:getChildAt(1)
+		icon:setData('previousIcon', icon:getIcon())
+		icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+
+		icon:addChild(self.mainPending)
+
+		radialButton:setData('pending', true)
+	elseif not pendingIndex and radialButton:getData('pending') then
+		local icon = radialButton:getChildAt(1)
+		icon:removeChild(self.mainPending)
+		icon:setIcon(icon:getData('previousIcon'))
+
+		radialButton:setData('pending', false)
 	end
 end
 
@@ -807,8 +829,21 @@ function ProCombatStatusHUD:update(...)
 		end
 	end
 
-	self:updatePowers(self.offensivePowersButtons, state.powers.offensive, state.powers.pendingID)
-	self:updatePowers(self.defensivePowersButtons, state.powers.defensive, state.powers.pendingID)
+	self:updatePowers(
+		self.offensivePowersButtons,
+		state.powers.offensive,
+		state.powers.pendingID,
+		self.offensivePowersButton)
+	self:updatePowers(
+		self.defensivePowersButtons,
+		state.powers.defensive,
+		state.powers.pendingID,
+		self.defensivePowersButton)
+
+	if not self.offensivePowersButton:getData('pending') then
+		local icon = self.offensivePowersButton:getChildAt(1)
+		icon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", state.style))
+	end
 
 	local player = self:getView():getGame():getPlayer()
 	--if player:getIsEngaged() and not self.radialMenu:getParent() then
