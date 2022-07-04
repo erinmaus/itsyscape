@@ -418,7 +418,10 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 	if self.openThingies[type] then
 		self:removeChild(self.openThingies[type])
 		self.openThingies[type] = nil
-		return
+		
+		if not self.isRefreshing then
+			return
+		end
 	end
 
 	local thingies = ProCombatStatusHUD.ThingiesLayout()
@@ -493,7 +496,9 @@ function ProCombatStatusHUD:addOffensivePowersButton()
 	offensivePowersButton:addChild(offensivePowersButtonIcon)
 
 	offensivePowersButton.onClick:register(self.onShowOffensivePowers, self)
-	self:registerThingies(self.onShowOffensivePowers)
+	self:registerThingies(
+		ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS,
+		self.onShowOffensivePowers)
 
 	self.radialMenu:addChild(offensivePowersButton)
 
@@ -528,7 +533,9 @@ function ProCombatStatusHUD:addDefensivePowersButton()
 	local defensivePowersButtonIcon = Icon()
 	defensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Defense"))
 	defensivePowersButton:addChild(defensivePowersButtonIcon)
-	self:registerThingies(self.onShowDefensivePowers)
+	self:registerThingies(
+		ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS,
+		self.onShowDefensivePowers)
 
 	defensivePowersButton.onClick:register(self.onShowDefensivePowers, self)
 
@@ -569,7 +576,9 @@ function ProCombatStatusHUD:addSpellsButton()
 	spellsButton:addChild(spellsButtonIcon)
 
 	spellsButton.onClick:register(self.onShowSpells, self)
-	self:registerThingies(self.onShowSpells)
+	self:registerThingies(
+		ProCombatStatusHUD.THINGIES_SPELLS,
+		self.onShowSpells)
 
 	self.radialMenu:addChild(spellsButton)
 
@@ -911,6 +920,20 @@ function ProCombatStatusHUD:updateSpells()
 		radialSpellsButtonIcon:setSpellID("FireBlast")
 		radialSpellsButtonIcon:setSpellActive(false)
 	end
+end
+
+function ProCombatStatusHUD:refresh()
+	self.isRefreshing = true
+
+	self:initSpells()
+	self:initOffensivePowers()
+	self:initDefensivePowers()
+
+	for thingyType in pairs(self.openThingies) do
+		self:openRegisteredThingies(thingyType)
+	end
+
+	self.isRefreshing = false
 end
 
 function ProCombatStatusHUD:update(...)
