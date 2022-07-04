@@ -17,6 +17,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local ProCombatStatusHUD = Class(Interface)
@@ -35,6 +36,7 @@ ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
 
 ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS = 1
 ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS = 2
+ProCombatStatusHUD.THINGIES_SPELLS           = 3
 
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
@@ -556,9 +558,82 @@ function ProCombatStatusHUD:onShowDefensivePowers(button)
 		button or self.defensivePowersButtons)
 end
 
+function ProCombatStatusHUD:addSpellsButton()
+	local spellsButton = Button()
+	spellsButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	local spellsButtonIcon = SpellIcon()
+	spellsButtonIcon:setSpellID("FireBlast")
+	spellsButtonIcon:setSpellEnabled(true)
+	spellsButtonIcon:setSpellActive(false)
+	spellsButton:addChild(spellsButtonIcon)
+
+	spellsButton.onClick:register(self.onShowSpells, self)
+	self:registerThingies(self.onShowSpells)
+
+	self.radialMenu:addChild(spellsButton)
+
+	self:initSpells()
+	self.spellsButton = spellsButton
+end
+
+function ProCombatStatusHUD:onActivateSpell(id)
+	self:sendPoke("castSpell", nil, {
+		id = id
+	})
+end
+
+function ProCombatStatusHUD:initSpells()
+	local state = self:getState()
+	local spells = state.spells
+
+	self.spellButtons = {}
+	for i = 1, #spells do
+		local spell = spells[i]
+
+		local button = Button()
+		button.onClick:register(self.onActivateSpell, self, spell.id)
+
+		local icon = SpellIcon()
+		icon:setSpellID(spell.id)
+		icon:setSpellEnabled(true)
+		icon:setSpellActive(spells[i].active)
+		button:addChild(icon)
+
+		local runes = {}
+		for j = 1, #spell.items do
+			local s = string.format("- %dx %s", spell.items[j].count, spell.items[j].name)
+			table.insert(runes, ToolTip.Text(s))
+		end
+
+		if #runes == 0 then
+			button:setToolTip(
+				ToolTip.Header(spell.name),
+				ToolTip.Text(spell.description),
+				ToolTip.Text(string.format("Requires level %d Magic.", spell.level)))
+		else
+			button:setToolTip(
+				ToolTip.Header(spell.name),
+				ToolTip.Text(spell.description),
+				ToolTip.Text(string.format("Requires level %d Magic and:", spell.level)),
+				unpack(runes))
+		end
+
+		table.insert(self.spellButtons, button)
+	end
+end
+
+function ProCombatStatusHUD:onShowSpells(button)
+	self:showThingies(
+		ProCombatStatusHUD.THINGIES_SPELLS,
+		self.spellButtons,
+		button or self.spellsButton)
+end
+
 function ProCombatStatusHUD:prepareRadialMenu()
 	self:addOffensivePowersButton()
 	self:addDefensivePowersButton()
+	self:addSpellsButton()
 end
 
 function ProCombatStatusHUD:getOverflow()
@@ -811,6 +886,33 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 	end
 end
 
+function ProCombatStatusHUD:updateSpells()
+	local radialSpellsButtonIcon = self.spellsButton:getChildAt(1)
+	local hasActiveSpell = false
+
+	local spells = self:getState().spells
+	for i = 1, #spells do
+		local spell = spells[i]
+		local button = self.spellButtons[i]
+
+		if spell.active then
+			button:getChildAt(1):setSpellActive(true)
+
+			radialSpellsButtonIcon:setSpellID(spell.id)
+			radialSpellsButtonIcon:setSpellActive(true)
+
+			hasActiveSpell = true
+		else
+			button:getChildAt(1):setSpellActive(false)
+		end
+	end
+
+	if not hasActiveSpell then
+		radialSpellsButtonIcon:setSpellID("FireBlast")
+		radialSpellsButtonIcon:setSpellActive(false)
+	end
+end
+
 function ProCombatStatusHUD:update(...)
 	Interface.update(self, ...)
 
@@ -845,6 +947,7 @@ function ProCombatStatusHUD:update(...)
 		state.powers.defensive,
 		state.powers.pendingID,
 		self.defensivePowersButton)
+	self:updateSpells()
 
 	if not self.offensivePowersButton:getData('pending') then
 		local icon = self.offensivePowersButton:getChildAt(1)

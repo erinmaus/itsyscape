@@ -8,17 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Spell = require "ItsyScape.Game.Spell"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local Controller = require "ItsyScape.UI.Controller"
 local Effect = require "ItsyScape.Peep.Effect"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local ProCombatStatusHUDController = Class(Controller)
 
@@ -27,6 +32,8 @@ function ProCombatStatusHUDController:new(peep, director)
 
 	self:bindToPlayer(peep)
 	self.isDirty = true
+
+	self.spells = {}
 
 	self:update(0)
 end
@@ -48,6 +55,8 @@ function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 		self:activate(self.state.powers.offensive, e)
 	elseif actionID == "activateDefensivePower" then
 		self:activate(self.state.powers.defensive, e)
+	elseif actionID == "castSpell" then
+		self:castSpell(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -70,6 +79,34 @@ function ProCombatStatusHUDController:activate(powers, e)
 
 					local _, b = peep:addBehavior(PendingPowerBehavior)
 					b.power = power
+				end
+			end
+		end
+	end
+end
+
+function ProCombatStatusHUDController:castSpell(e)
+	local spell = self.spells[e.id]
+	local peep = self:getPeep()
+	if spell and spell:isCompatibleType(CombatSpell) then
+		local s, b = peep:addBehavior(ActiveSpellBehavior)
+		if s then
+			if b.spell and b.spell:getID() == self.spells[e.id]:getID() then
+				peep:removeBehavior(ActiveSpellBehavior)
+			else
+				b.spell = self.spells[e.id]
+			end
+		end
+
+		local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
+		if equippedWeapon and peep:hasBehavior(ActiveSpellBehavior) then
+			local logic = self:getDirector():getItemManager():getLogic(equippedWeapon:getID())
+			if logic:isCompatibleType(Weapon) then
+				if logic:getStyle() == Weapon.STYLE_MAGIC then
+					local s, b = peep:addBehavior(StanceBehavior)
+					if s then
+						b.useSpell = true
+					end
 				end
 			end
 		end
@@ -207,6 +244,102 @@ function ProCombatStatusHUDController:updatePowersState(powers)
 	end
 end
 
+function ProCombatStatusHUDController:updateActiveSpell()
+	local activeSpellID
+	do
+		local activeSpell = self:getPeep():getBehavior(ActiveSpellBehavior)
+		if activeSpell and activeSpell.spell then
+			activeSpellID = activeSpell.spell:getID()
+		end
+	end
+
+	for i = 1, #self.offensiveSpells do
+		local spell = self.offensiveSpells[i]
+		if spell.id == activeSpellID then
+			spell.active = true
+		else
+			spell.active = false
+		end
+	end
+end
+
+function ProCombatStatusHUDController:updateSpells()
+	local spells = {}
+
+	do
+		local peep = self:getPeep()
+		local gameDB = self:getDirector():getGameDB()
+		local brochure = gameDB:getBrochure()
+		local resourceType = Mapp.ResourceType()
+		brochure:tryGetResourceType("Spell", resourceType)
+
+		local activeSpellID
+		do
+			local activeSpell = self:getPeep():getBehavior(ActiveSpellBehavior)
+			if activeSpell and activeSpell.spell then
+				activeSpellID = activeSpell.spell:getID()
+			end
+		end
+
+		local zValues = {}
+		for resource in brochure:findResourcesByType(resourceType) do
+			local spell = self.spells[resource.name]
+			if not spell then
+				local TypeName = string.format("Resources.Game.Spells.%s.Spell", resource.name)
+				local Type = require(TypeName)
+				spell = Type(resource.name, self:getGame())
+				self.spells[resource.name] = spell
+			end
+
+			local canCast = spell:canCast(self:getPeep()):good()
+
+			if Class.isCompatibleType(spell, CombatSpell) and canCast then
+				local action = spell:getAction()
+				local items = {}
+				local z = 0
+				if action then
+					for requirement in brochure:getRequirements(action) do
+						local resource = brochure:getConstraintResource(requirement)
+						local resourceType = brochure:getResourceTypeFromResource(resource)
+						if resourceType.name == "Skill" and resource.name == "Magic" then
+							z = requirement.count
+						end
+					end
+
+					for input in brochure:getInputs(action) do
+						local resource = brochure:getConstraintResource(input)
+						local resourceType = brochure:getResourceTypeFromResource(resource)
+
+						if resourceType.name == "Item" then
+							local item = {
+								count = input.count,
+								name = Utility.getName(resource, gameDB)
+							}
+
+							table.insert(items, item)
+						end
+					end
+
+					zValues[resource.name] = z
+					table.insert(spells, {
+						enabled = canCast,
+						active = activeSpellID == spell:getID(),
+						id = resource.name,
+						name = Utility.getName(resource, gameDB),
+						description = Utility.getDescription(resource, gameDB),
+						level = Curve.XP_CURVE:getLevel(z),
+						items = items
+					})
+				end
+			end
+		end
+
+		table.sort(spells, function(a, b) return zValues[a.id] < zValues[b.id] end)
+	end
+
+	self.offensiveSpells = spells
+end
+
 function ProCombatStatusHUDController:updateState()
 	local director = self:getDirector()
 
@@ -217,6 +350,7 @@ function ProCombatStatusHUDController:updateState()
 			defensive = self.currentDefensivePowers,
 			pendingID = self:getPendingPowerID()
 		},
+		spells = self.offensiveSpells,
 		style = self.style
 	}
 
@@ -390,7 +524,10 @@ function ProCombatStatusHUDController:update(delta)
 	self:updateStyle()
 	if self.isDirty then
 		self:updatePowers()
+		self:updateSpells()
 		self.isDirty = false
+	else
+		self:updateActiveSpell()
 	end
 
 	self:updateState()

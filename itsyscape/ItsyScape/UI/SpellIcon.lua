@@ -40,7 +40,7 @@ function SpellIcon:getSpellEnabled()
 end
 
 function SpellIcon:setSpellActive(value)
-	self.spellActive = value or self.spellActive
+	self.spellActive = value or false
 end
 
 function SpellIcon:getSpellActive()

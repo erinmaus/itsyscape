@@ -104,6 +104,7 @@ function SpellIconRenderer:draw(widget, state)
 			w / 8, h / 8)
 
 		love.graphics.setLineWidth(1)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 end
 
