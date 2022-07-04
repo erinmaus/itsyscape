@@ -408,6 +408,10 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.mainPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 end
 
+function ProCombatStatusHUD:isThingyOpen(type)
+	return self.openThingies[type] ~= nil
+end
+
 function ProCombatStatusHUD:showThingies(type, buttons, target)
 	if self.openThingies[type] then
 		self:removeChild(self.openThingies[type])
@@ -751,7 +755,7 @@ function ProCombatStatusHUD:updateTarget(targetWidget, state)
 	self:updateTargetEffects(targetWidget, state)
 end
 
-function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID, radialButton)
+function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radialButton)
 	local pendingIndex
 
 	for i = 1, #powers do
@@ -789,7 +793,7 @@ function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID, radialButto
 		end
 	end
 
-	if pendingIndex and not radialButton:getData('pending') then
+	if pendingIndex and not self:isThingyOpen(type) and not radialButton:getData('pending') then
 		local power = powers[pendingIndex]
 		local icon = radialButton:getChildAt(1)
 		icon:setData('previousIcon', icon:getIcon())
@@ -798,7 +802,7 @@ function ProCombatStatusHUD:updatePowers(buttons, powers, pendingID, radialButto
 		icon:addChild(self.mainPending)
 
 		radialButton:setData('pending', true)
-	elseif not pendingIndex and radialButton:getData('pending') then
+	elseif (not pendingIndex or self:isThingyOpen(type)) and radialButton:getData('pending') then
 		local icon = radialButton:getChildAt(1)
 		icon:removeChild(self.mainPending)
 		icon:setIcon(icon:getData('previousIcon'))
@@ -830,11 +834,13 @@ function ProCombatStatusHUD:update(...)
 	end
 
 	self:updatePowers(
+		ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS,
 		self.offensivePowersButtons,
 		state.powers.offensive,
 		state.powers.pendingID,
 		self.offensivePowersButton)
 	self:updatePowers(
+		ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS,
 		self.defensivePowersButtons,
 		state.powers.defensive,
 		state.powers.pendingID,
