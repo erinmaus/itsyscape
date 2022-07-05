@@ -19,6 +19,7 @@ ItsyScape.Resource.Effect "MetalSkin" {
 
 ItsyScape.Meta.Prayer {
 	Drain = 4,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "MetalSkin"
 }
 
@@ -57,6 +58,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 4,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "IronWill"
 }
 
@@ -83,6 +85,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 4,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "TimeErosion"
 }
 
@@ -97,6 +100,7 @@ ItsyScape.Resource.Effect "WayOfTheWarrior" {
 
 ItsyScape.Meta.Prayer {
 	Drain = 6,
+	Style = "Attack",
 	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
 }
 
@@ -135,6 +139,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 6,
+	Style = "Magic",
 	Resource = ItsyScape.Resource.Effect "PathOfLight"
 }
 
@@ -161,6 +166,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 6,
+	Style = "Archery",
 	Resource = ItsyScape.Resource.Effect "HawksEye"
 }
 
@@ -175,6 +181,7 @@ ItsyScape.Resource.Effect "GammonsReckoning" {
 
 ItsyScape.Meta.Prayer {
 	Drain = 12,
+	Style = "Attack",
 	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
 }
 
@@ -213,6 +220,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 12,
+	Style = "Magic",
 	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
 }
 
@@ -239,5 +247,6 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.Prayer {
 	Drain = 12,
+	Style = "Archery",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
 }

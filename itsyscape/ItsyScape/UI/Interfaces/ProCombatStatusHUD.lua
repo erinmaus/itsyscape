@@ -37,6 +37,7 @@ ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
 ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS = 1
 ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS = 2
 ProCombatStatusHUD.THINGIES_SPELLS           = 3
+ProCombatStatusHUD.THINGIES_PRAYERS          = 4
 
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
@@ -639,10 +640,66 @@ function ProCombatStatusHUD:onShowSpells(button)
 		button or self.spellsButton)
 end
 
+function ProCombatStatusHUD:addPrayersButton()
+	local prayersButton = Button()
+	prayersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	local prayersButtonIcon = Icon()
+	prayersButtonIcon:setIcon("Resources/Game/UI/Icons/Skills/Faith.png")
+	prayersButton:addChild(prayersButtonIcon)
+
+	prayersButton.onClick:register(self.onShowPrayers, self)
+	self:registerThingies(
+		ProCombatStatusHUD.THINGIES_PRAYERS,
+		self.onShowPrayers)
+
+	self.radialMenu:addChild(prayersButton)
+
+	self:initPrayers()
+	self.prayersButton = prayersButton
+end
+
+function ProCombatStatusHUD:onActivatePrayer(id)
+	self:sendPoke("pray", nil, {
+		id = id
+	})
+end
+
+function ProCombatStatusHUD:initPrayers()
+	local state = self:getState()
+	local prayers = state.prayers
+
+	self.prayerButtons = {}
+	for i = 1, #prayers do
+		local prayer = prayers[i]
+
+		local button = Button()
+		button.onClick:register(self.onActivatePrayer, self, prayer.id)
+
+		local icon = Icon()
+		icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.id))
+		button:addChild(icon)
+
+		button:setToolTip(
+			ToolTip.Header(prayer.name),
+			ToolTip.Text(prayer.description))
+
+		table.insert(self.prayerButtons, button)
+	end
+end
+
+function ProCombatStatusHUD:onShowPrayers(button)
+	self:showThingies(
+		ProCombatStatusHUD.THINGIES_PRAYERS,
+		self.prayerButtons,
+		button or self.prayersButton)
+end
+
 function ProCombatStatusHUD:prepareRadialMenu()
 	self:addOffensivePowersButton()
 	self:addDefensivePowersButton()
 	self:addSpellsButton()
+	self:addPrayersButton()
 end
 
 function ProCombatStatusHUD:getOverflow()
@@ -925,9 +982,10 @@ end
 function ProCombatStatusHUD:refresh()
 	self.isRefreshing = true
 
-	self:initSpells()
 	self:initOffensivePowers()
 	self:initDefensivePowers()
+	self:initSpells()
+	self:initPrayers()
 
 	for thingyType in pairs(self.openThingies) do
 		self:openRegisteredThingies(thingyType)
