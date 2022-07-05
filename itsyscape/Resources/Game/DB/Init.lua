@@ -260,6 +260,8 @@ Game "ItsyScape"
 
 	Meta "Prayer" {
 		Drain = Meta.TYPE_INTEGER,
+		IsNonCombat = Meta.TYPE_INTEGER,
+		Style = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

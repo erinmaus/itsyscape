@@ -37,6 +37,10 @@ function ProCombatStatusHUDController:new(peep, director)
 	self.castableSpells = {}
 	self.offensiveSpells = {}
 
+	self.prayers = {}
+	self.offensivePrayers = {}
+	self.usablePrayers = {}
+
 	self:update(0)
 end
 
@@ -367,6 +371,112 @@ function ProCombatStatusHUDController:updateCastableSpells()
 	self.castableSpells = spells
 end
 
+function ProCombatStatusHUDController:updatePrayers()
+	local prayers = {}
+
+	do
+		local game = self:getDirector():getGameInstance()
+		local gameDB = self:getDirector():getGameDB()
+		local brochure = gameDB:getBrochure()
+		local resourceType = Mapp.ResourceType()
+		brochure:tryGetResourceType("Effect", resourceType)
+
+		local zValues = {}
+		local index = 1
+		for resource in brochure:findResourcesByType(resourceType) do
+			local action
+			do
+				local actions = Utility.getActions(game, resource, 'prayer')
+				if #actions >= 1 then
+					action = actions[1].instance
+
+					if not self.prayers[resource.name] then
+						self.prayers[resource.name] = action
+					end
+				end
+			end
+
+			if action then
+				local z = 0
+				if action then
+					for requirement in brochure:getRequirements(action:getAction()) do
+						local resource = brochure:getConstraintResource(requirement)
+						local resourceType = brochure:getResourceTypeFromResource(resource)
+						if resourceType.name == "Skill" and resource.name == "Faith" then
+							z = requirement.count
+						end
+					end
+				end
+
+				local style, isNonCombat
+				do
+					local record = gameDB:getRecord("Prayer", {
+						Resource = resource
+					})
+
+					if record then
+						style = record:get("Style")
+						isNonCombat = record:get("IsNonCombat") ~= 0
+					end
+				end
+
+				zValues[resource.name] = { z = Curve.XP_CURVE:getLevel(z), i = index }
+				table.insert(prayers, {
+					id = resource.name,
+					name = Utility.getName(resource, gameDB),
+					description = Utility.getDescription(resource, gameDB),
+					style = style,
+					isNonCombat = isNonCombat,
+					level = Curve.XP_CURVE:getLevel(z)
+				})
+
+				index = index + 1
+			end
+		end
+
+		table.sort(prayers, function(a, b)
+			if math.floor(zValues[a.id].z) < math.floor(zValues[b.id].z) then
+				return true
+			elseif math.floor(zValues[a.id].z) == math.floor(zValues[b.id].z) then
+				return zValues[a.id].i < zValues[b.id].i
+			else
+				return false
+			end
+		end)
+	end
+
+	self.offensivePrayers = prayers
+end
+
+function ProCombatStatusHUDController:updateUsablePrayers()
+	local prayers = {}
+	for i = 1, #self.offensivePrayers do
+		local prayer = self.offensivePrayers[i]
+		local prayerAction = self.prayers[prayer.id]
+		if prayerAction then
+			local usable = prayerAction:canPerform(self:getPeep():getState())
+			local isCorrectStyle = prayer.style == self.style or prayer.style == "All"
+			local isCombatPrayer = not prayer.isNonCombat
+			if usable and isCorrectStyle and isCombatPrayer then
+				table.insert(prayers, prayer)
+			end
+		end
+	end
+
+	if #prayers ~= #self.usablePrayers then
+		self.isDirty = true
+	else
+		for i = 1, #self.usablePrayers do
+			if self.usablePrayers[i].id ~= prayers[i].id then
+				self.isDirty = true
+				break
+			end
+		end
+	end
+
+	self.usablePrayers = prayers
+end
+
 function ProCombatStatusHUDController:updateState()
 	local director = self:getDirector()
 
@@ -378,6 +488,7 @@ function ProCombatStatusHUDController:updateState()
 			pendingID = self:getPendingPowerID()
 		},
 		spells = self.castableSpells,
+		prayers = self.usablePrayers,
 		style = self.style
 	}
 
@@ -555,11 +666,13 @@ function ProCombatStatusHUDController:update(delta)
 
 	self:updateStyle()
 	self:updateCastableSpells()
+	self:updateUsablePrayers()
 	self:updateActiveSpell()
 
 	if self.isDirty then
 		self:updatePowers()
 		self:updateSpells()
+		self:updatePrayers()
 		self.isDirty = false
 
 		self:sendRefresh()
