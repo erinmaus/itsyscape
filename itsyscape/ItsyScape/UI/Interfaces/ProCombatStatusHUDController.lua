@@ -38,6 +38,7 @@ function ProCombatStatusHUDController:new(peep, director)
 	self.offensiveSpells = {}
 
 	self.prayers = {}
+	self.prayerEffects = {}
 	self.offensivePrayers = {}
 	self.usablePrayers = {}
 
@@ -63,6 +64,8 @@ function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 		self:activate(self.state.powers.defensive, e)
 	elseif actionID == "castSpell" then
 		self:castSpell(e)
+	elseif actionID == "pray" then
+		self:pray(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -116,6 +119,14 @@ function ProCombatStatusHUDController:castSpell(e)
 				end
 			end
 		end
+	end
+end
+
+function ProCombatStatusHUDController:pray(e)
+	local prayer = self.prayers[e.id]
+	local peep = self:getPeep()
+	if prayer then
+		prayer:perform(peep:getState(), peep)
 	end
 end
 
@@ -449,17 +460,32 @@ function ProCombatStatusHUDController:updatePrayers()
 end
 
 function ProCombatStatusHUDController:updateUsablePrayers()
+	local gameDB = self:getDirector():getGameDB()
+
 	local prayers = {}
 	for i = 1, #self.offensivePrayers do
 		local prayer = self.offensivePrayers[i]
 		local prayerAction = self.prayers[prayer.id]
 		if prayerAction then
+			local isActive
+			do
+				local resource = gameDB:getResource(prayer.id, "Effect")
+				if resource then
+					local type = Utility.Peep.getEffectType(resource, gameDB)
+					isActive = self:getPeep():getEffect(type) ~= nil
+				end
+
+				isActive = isActive or false
+			end
+
 			local usable = prayerAction:canPerform(self:getPeep():getState())
 			local isCorrectStyle = prayer.style == self.style or prayer.style == "All"
 			local isCombatPrayer = not prayer.isNonCombat
-			if usable and isCorrectStyle and isCombatPrayer then
+			if (usable and isCorrectStyle and isCombatPrayer) or isActive then
 				table.insert(prayers, prayer)
 			end
+
+			prayer.active = isActive
 		end
 	end
 
