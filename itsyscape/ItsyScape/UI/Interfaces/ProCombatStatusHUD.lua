@@ -979,6 +979,21 @@ function ProCombatStatusHUD:updateSpells()
 	end
 end
 
+function ProCombatStatusHUD:updatePrayers()
+	local prayers = self:getState().prayers
+	for i = 1, #prayers do
+		local prayer = prayers[i]
+		local button = self.prayerButtons[i]
+		local icon = button:getChildAt(1)
+
+		if prayer.active then
+			icon:setColor(Color(1, 1, 1, 1))
+		else
+			icon:setColor(Color(0.3, 0.3, 0.3))
+		end
+	end
+end
+
 function ProCombatStatusHUD:refresh()
 	self.isRefreshing = true
 
@@ -1029,6 +1044,7 @@ function ProCombatStatusHUD:update(...)
 		state.powers.pendingID,
 		self.defensivePowersButton)
 	self:updateSpells()
+	self:updatePrayers()
 
 	if not self.offensivePowersButton:getData('pending') then
 		local icon = self.offensivePowersButton:getChildAt(1)
