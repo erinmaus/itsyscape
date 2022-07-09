@@ -86,6 +86,8 @@ function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 		self:castSpell(e)
 	elseif actionID == "pray" then
 		self:pray(e)
+	elseif actionID == "deleteEquipment" then
+		self:deleteEquipment(e)
 	elseif actionID == "saveEquipment" then
 		self:saveEquipment(e)
 	elseif actionID == "addEquipmentSlot" then
@@ -160,6 +162,13 @@ function ProCombatStatusHUDController:pray(e)
 	end
 end
 
+function ProCombatStatusHUDController:deleteEquipment(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	equipmentStorage:getSection(e.index):removeSection(e.slot)
+
+	self.isDirty = true
+end
+
 function ProCombatStatusHUDController:saveEquipment(e)
 	local equipmentStorage = self:getStorage("Equipment")
 	local slotsStorage = equipmentStorage:getSection(e.index)
@@ -188,6 +197,10 @@ function ProCombatStatusHUDController:saveEquipment(e)
 		})
 
 		index = index + 1
+	end
+
+	if e.icon then
+		slotStorage:set("icon", e.icon)
 	end
 
 	if index == 1 then
@@ -236,8 +249,6 @@ function ProCombatStatusHUDController:equip(e)
 		local itemID = item:get("id")
 		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
 		local itemResource = gameDB:getResource(itemID, "Item")
-
-		print(itemInstance and itemInstance:getID(), itemResource and itemResource.name)
 
 		if itemInstance and itemResource then
 			local actions = Utility.getActions(
