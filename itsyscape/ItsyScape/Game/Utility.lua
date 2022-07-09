@@ -1073,6 +1073,23 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 	return peep:getState():give("Item", item, quantity, flags)
 end
 
+function Utility.Item.getItemInPeepInventory(peep, itemID)
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+
+	if not inventory then
+		return nil
+	end
+
+	for item in inventory:getBroker():iterateItems(inventory) do
+		if item:getID() == itemID then
+			return item
+		end
+	end
+
+	return nil
+end
+
 Utility.Map = {}
 
 function Utility.Map.playCutscene(peep, resource, cameraName)
