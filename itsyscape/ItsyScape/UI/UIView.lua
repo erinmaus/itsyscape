@@ -188,9 +188,9 @@ function itsyrealm.graphics.stop()
 	graphicsState.atlas:bake("width")
 
 	love.graphics.push('all')
-	love.graphics.setBlendMode('alpha', 'premultiplied')
 	for i = 1, #graphicsState.drawQueue do
 		local draw = graphicsState.drawQueue[i]
+		love.graphics.setBlendMode('alpha', 'premultiplied')
 		draw.command(unpack(draw, 1, draw.n))
 	end
 	table.clear(graphicsState.drawQueue)
