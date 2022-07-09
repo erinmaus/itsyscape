@@ -630,6 +630,55 @@ function ProCombatStatusHUDController:updateUsablePrayers()
 	self.usablePrayers = prayers
 end
 
+function ProCombatStatusHUDController:getCurrentEquipment(e)
+	local peep = self:getPeep()
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+
+	if not equipment then
+		return {}
+	end
+
+	local broker = equipment:getBroker()
+	if not broker then
+		return {}
+	end
+
+	local result = {
+		items = {},
+		stats = {}
+	}
+
+	for item in broker:iterateItems(equipment) do
+		local itemState = {
+			id = item:getID(),
+			count = item:getCount()
+		}
+
+		local key = broker:getItemKey(item)
+		if key == Equipment.PLAYER_SLOT_TWO_HANDED then
+			key = Equipment.PLAYER_SLOT_RIGHT_HAND
+		end
+
+		result.items[key] = itemState
+	end
+
+	result.items.n = equipment:getMaxInventorySpace()
+
+	for name, value in equipment:getStats() do
+		result.stats[name] = value
+	end
+
+	return result
+end
+
+function ProCombatStatusHUDController:getEquipment()
+	local result = self:getStorage("Equipment"):get()
+	result.current = self:getCurrentEquipment()
+
+	return result
+end
+
 function ProCombatStatusHUDController:updateState()
 	local director = self:getDirector()
 
@@ -642,7 +691,7 @@ function ProCombatStatusHUDController:updateState()
 		},
 		spells = self.castableSpells,
 		prayers = self.usablePrayers,
-		equipment = self:getStorage("Equipment"):get(),
+		equipment = self:getEquipment(),
 		style = self.style
 	}
 
