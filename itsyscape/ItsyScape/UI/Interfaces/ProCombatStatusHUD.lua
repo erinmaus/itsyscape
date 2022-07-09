@@ -302,8 +302,8 @@ end
 ProCombatStatusHUD.RadialMenu = Class(Drawable)
 ProCombatStatusHUD.MIN_ZOOM = 10
 ProCombatStatusHUD.MAX_ZOOM = 50
-ProCombatStatusHUD.MIN_RADIUS = 96
-ProCombatStatusHUD.MAX_RADIUS = 256
+ProCombatStatusHUD.MIN_RADIUS = 228
+ProCombatStatusHUD.MAX_RADIUS = 228
 ProCombatStatusHUD.RADIUS_FUDGE = 16
 
 function ProCombatStatusHUD.RadialMenu:new(hud)
@@ -1015,6 +1015,39 @@ function ProCombatStatusHUD:deleteEquipment(index, slot)
 	})
 end
 
+function ProCombatStatusHUD:addEquipmentSlot()
+	self:sendPoke("addEquipmentSlot", nil, {})
+	self.equipmentSlot = self.equipmentSlot + 1
+end
+
+function ProCombatStatusHUD:nextEquipmentSlot()
+	local equipment = self:getState().equipment
+
+	self.equipmentSlot = self.equipmentSlot + 1
+
+	if self.equipmentSlot > #equipment then
+		self.equipmentSlot = 1
+	end
+
+	self.isRefreshing = true
+	self:onShowEquipment()
+	self.isRefreshing = false
+end
+
+function ProCombatStatusHUD:previousEquipmentSlot()
+	local equipment = self:getState().equipment
+
+	self.equipmentSlot = self.equipmentSlot - 1
+
+	if self.equipmentSlot < 1 then
+		self.equipmentSlot = #equipment
+	end
+
+	self.isRefreshing = true
+	self:onShowEquipment()
+	self.isRefreshing = false
+end
+
 function ProCombatStatusHUD:onShowEquipment()
 	local equipment = self:getState().equipment or {}
 	local equipmentSlot = equipment[self.equipmentSlot] or {}
@@ -1075,27 +1108,29 @@ function ProCombatStatusHUD:onShowEquipment()
 	do
 		if self.previousEquipmentButton then
 			self.previousEquipmentButton:getParent():removeChild(self.previousEquipmentButton)
+			self.previousEquipmentButton = nil
 		end
 
 		if self.equipmentSlot > 1 then
 			self.previousEquipmentButton = Button()
 			self.previousEquipmentButton:setText("<")
-			self.previousEquipmentButton.onClick:register(self.previousEquipmentSlot)
+			self.previousEquipmentButton.onClick:register(self.previousEquipmentSlot, self)
 		end
 
-		if self.previousEquipmentButton then
-			if thingies then
-				local x, y = thingies:getPosition()
-				local w, h = thingies:getSize()
+		if self.previousEquipmentButton and thingies then
+			local x, y = thingies:getPosition()
+			local w, h = thingies:getSize()
 
-				self.previousEquipmentButton:setPosition(
-					x + w + ProCombatStatusHUD.BUTTON_PADDING,
-					y)
-				self.previousEquipmentButton:setSize(
-					ProCombatStatusHUD.BUTTON_SIZE,
-					h)
-			end
+			self.previousEquipmentButton:setPosition(
+				x - ProCombatStatusHUD.BUTTON_PADDING - ProCombatStatusHUD.BUTTON_SIZE,
+				y)
+			self.previousEquipmentButton:setSize(
+				ProCombatStatusHUD.BUTTON_SIZE,
+				h)
+
 			self:addChild(self.previousEquipmentButton)
+		else
+			self.previousEquipmentButton = nil
 		end
 
 		if self.nextEquipmentButton then
@@ -1112,21 +1147,45 @@ function ProCombatStatusHUD:onShowEquipment()
 			self.nextEquipmentButton.onClick:register(self.addEquipmentSlot, self)
 		end
 
-		if self.nextEquipmentButton then
-			if thingies then
-				local x, y = thingies:getPosition()
-				local w, h = thingies:getSize()
+		if self.nextEquipmentButton and thingies then
+			local x, y = thingies:getPosition()
+			local w, h = thingies:getSize()
 
-				self.nextEquipmentButton:setPosition(
-					x + w + ProCombatStatusHUD.BUTTON_PADDING,
-					y)
-				self.nextEquipmentButton:setSize(
-					ProCombatStatusHUD.BUTTON_SIZE,
-					h)
-			end
+			self.nextEquipmentButton:setPosition(
+				x + w + ProCombatStatusHUD.BUTTON_PADDING,
+				y)
+			self.nextEquipmentButton:setSize(
+				ProCombatStatusHUD.BUTTON_SIZE,
+				h)
+
 			self:addChild(self.nextEquipmentButton)
+		else
+			self.nextEquipmentButton = nil
 		end
 	end
+end
+
+function ProCombatStatusHUD:flee()
+	local game = self:getView():getGame()
+	local player = game:getPlayer()
+	player:flee()
+end
+
+function ProCombatStatusHUD:addFleeButton()
+	local fleeButton = Button()
+	fleeButton:setSize(
+		ProCombatStatusHUD.BUTTON_SIZE,
+		ProCombatStatusHUD.BUTTON_SIZE)
+	fleeButton.onClick:register(self.flee, self)
+	fleeButton:setToolTip(ToolTip.Text("Flee from combat with current target."))
+
+	local icon = Icon()
+	icon:setIcon("Resources/Game/UI/Icons/Concepts/Flee.png")
+	fleeButton:addChild(icon)
+
+	self.radialMenu:addChild(fleeButton)
+
+	self.fleeButton = fleeButton
 end
 
 function ProCombatStatusHUD:prepareRadialMenu()
@@ -1135,6 +1194,7 @@ function ProCombatStatusHUD:prepareRadialMenu()
 	self:addSpellsButton()
 	self:addPrayersButton()
 	self:addEquipmentButton()
+	self:addFleeButton()
 end
 
 function ProCombatStatusHUD:getOverflow()

@@ -819,8 +819,7 @@ Utility.UI = {}
 Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
-		"ProCombatStatusHUD",
-		"StrategyBar"
+		"ProCombatStatusHUD"
 	}
 }
 
