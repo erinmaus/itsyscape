@@ -20,6 +20,7 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local Keybinds = require "ItsyScape.UI.Keybinds"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
@@ -678,7 +679,6 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
 	self.radialMenu:setZDepth(1000)
 	self:prepareRadialMenu()
-	self:addChild(self.radialMenu)
 
 	self.subPending = ProCombatStatusHUD.Pending()
 	self.subPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
@@ -686,6 +686,9 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.mainPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 
 	self:loadConfig()
+
+	self.radialMenuKeybind = Keybinds["PLAYER_1_FOCUS"]
+	self.isRadialMenuKeybindDown = self.radialMenuKeybind:isDown()
 end
 
 function ProCombatStatusHUD:loadConfig()
@@ -1706,12 +1709,18 @@ function ProCombatStatusHUD:update(...)
 		icon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", state.style))
 	end
 
-	local player = self:getView():getGame():getPlayer()
-	--if player:getIsEngaged() and not self.radialMenu:getParent() then
-	--	self:addChild(self.radialMenu)
-	--elseif not player:getIsEngaged() and self.radialMenu:getParent() then
-	--	self:removeChild(self.radialMenu)
-	--end
+	local isDown = self.radialMenuKeybind:isDown()
+	if isDown and not self.isRadialMenuKeybindDown then
+		self.isRadialMenuOpen = not self.isRadialMenuOpen
+	end
+
+	self.isRadialMenuKeybindDown = isDown
+
+	if self.isRadialMenuOpen and not self.radialMenu:getParent() then
+		self:addChild(self.radialMenu)
+	elseif not self.isRadialMenuOpen and self.radialMenu:getParent() then
+		self:removeChild(self.radialMenu)
+	end
 end
 
 return ProCombatStatusHUD
