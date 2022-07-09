@@ -684,6 +684,44 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.subPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 	self.mainPending = ProCombatStatusHUD.Pending()
 	self.mainPending:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	self:loadConfig()
+end
+
+function ProCombatStatusHUD:loadConfig()
+	local config = self:getState().config
+
+	self.equipmentSlot = config.equipmentSlot or 1
+
+	local openThingies = config.openThingies or {}
+	for i = 1, #openThingies do
+		self:openRegisteredThingies(openThingies[i])
+	end
+
+	if config.activeSpellID then
+		self:sendPoke("castSpell", nil, {
+			id = config.activeSpellID
+		})
+	end
+end
+
+function ProCombatStatusHUD:saveConfig(config)
+	local config = config or {
+		openThingies = {}
+	}
+
+	config.openThingies = {}
+	for thingie in pairs(self.openThingies) do
+		print("thingie", thingie, "open")
+		table.insert(config.openThingies, thingie)
+	end
+
+	config.equipmentSlot = config.equipmentSlot or self.equipmentSlot
+	config.activeSpellID = config.activeSpellID or self:getState().config.activeSpellID
+
+	self:sendPoke("setConfig", nil, {
+		config = config
+	})
 end
 
 function ProCombatStatusHUD:isThingyOpen(type)
@@ -696,6 +734,7 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 		self.openThingies[type] = nil
 		
 		if not self.isRefreshing then
+			self:saveConfig()
 			return
 		end
 	end
@@ -724,6 +763,8 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 
 	self.openThingies[type] = thingies
 
+	self:saveConfig()
+
 	return thingies
 end
 
@@ -733,7 +774,9 @@ end
 
 function ProCombatStatusHUD:openRegisteredThingies(type)
 	local openFunc = self.thingies[type]
-	openFunc(self)
+	if openFunc then
+		openFunc(self)
+	end
 end
 
 function ProCombatStatusHUD:createPowerButtons(powers, onClick)
@@ -840,7 +883,7 @@ function ProCombatStatusHUD:onShowDefensivePowers(button)
 	self:showThingies(
 		ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS,
 		self.defensivePowersButtons,
-		button or self.defensivePowersButtons)
+		button or self.defensivePowersButton)
 end
 
 function ProCombatStatusHUD:addSpellsButton()
@@ -867,6 +910,10 @@ end
 function ProCombatStatusHUD:onActivateSpell(id)
 	self:sendPoke("castSpell", nil, {
 		id = id
+	})
+
+	self:saveConfig({
+		activeSpellID = id
 	})
 end
 

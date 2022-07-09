@@ -98,6 +98,8 @@ function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 		self:deleteEquipmentSlot(e)
 	elseif actionID == "equip" then
 		self:equip(e)
+	elseif actionID == "setConfig" then
+		self:setConfig(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -266,6 +268,14 @@ function ProCombatStatusHUDController:equip(e)
 			end
 		end
 	end
+end
+
+function ProCombatStatusHUDController:setConfig(e)
+	local configStorage = self:getStorage("Config")
+	configStorage:set({
+		config = e.config
+	})
+	print(">>>>>>>>>>>>> SET")
 end
 
 function ProCombatStatusHUDController:pull(e)
@@ -703,6 +713,7 @@ function ProCombatStatusHUDController:updateState()
 		spells = self.castableSpells,
 		prayers = self.usablePrayers,
 		equipment = self:getEquipment(),
+		config = self:getStorage("Config"):get().config or {},
 		style = self.style
 	}
 
