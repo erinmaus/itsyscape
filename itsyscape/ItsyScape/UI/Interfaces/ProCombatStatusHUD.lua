@@ -14,13 +14,17 @@ local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local Widget = require "ItsyScape.UI.Widget"
 
 local ProCombatStatusHUD = Class(Interface)
 ProCombatStatusHUD.EFFECT_SIZE = 48
@@ -396,6 +400,222 @@ function ProCombatStatusHUD.ThingiesLayout:getIsFocusable()
 	return true
 end
 
+ProCombatStatusHUD.Equipment = Class(Widget)
+
+ProCombatStatusHUD.Equipment.ACCURACY = {
+	{ "AccuracyStab", "Stab" },
+	{ "AccuracySlash", "Slash" },
+	{ "AccuracyCrush", "Crush" },
+	{ "AccuracyMagic", "Magic" },
+	{ "AccuracyRanged", "Ranged" }
+}
+
+ProCombatStatusHUD.Equipment.DEFENSE = {
+	{ "DefenseStab", "Stab" },
+	{ "DefenseSlash", "Slash" },
+	{ "DefenseCrush", "Crush" },
+	{ "DefenseMagic", "Magic" },
+	{ "DefenseRanged", "Ranged" }
+}
+
+ProCombatStatusHUD.Equipment.STRENGTH = {
+	{ "StrengthMelee", "Melee" },
+	{ "StrengthMagic", "Magic" },
+	{ "StrengthRanged", "Ranged" }
+}
+
+ProCombatStatusHUD.Equipment.MISC = {
+	{ "Prayer", "Divinity" }
+}
+
+ProCombatStatusHUD.Equipment.PANEL_WIDTH = 248
+ProCombatStatusHUD.Equipment.PANEL_HEIGHT = 428
+ProCombatStatusHUD.Equipment.BUTTON_PADDING = 2
+ProCombatStatusHUD.Equipment.BUTTON_SIZE = ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2
+ProCombatStatusHUD.Equipment.PADDING = 8
+
+function ProCombatStatusHUD.Equipment:new(hud)
+	Widget.new(self)
+
+	self.hud = hud
+
+	local width = ProCombatStatusHUD.Equipment.PANEL_WIDTH + ProCombatStatusHUD.BUTTON_PADDING * 2
+	local height = ProCombatStatusHUD.Equipment.PANEL_HEIGHT + ProCombatStatusHUD.BUTTON_PADDING * 3 + ProCombatStatusHUD.BUTTON_SIZE
+
+	local panel = Panel()
+	panel:setSize(width, height)
+	self:addChild(panel)
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+	self:setPosition(
+		screenWidth / 2 - width / 2,
+		screenHeight / 2 - height / 2)
+	self:setSize(width, height)
+
+	local equipmentPanelBackground = Panel()
+	equipmentPanelBackground:setStyle(PanelStyle({
+		image = "Resources/Renderers/Widget/Panel/Group.9.png"
+	}, self.hud:getView():getResources()))
+	equipmentPanelBackground:setSize(
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH,
+		ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+	equipmentPanelBackground:setPosition(
+		ProCombatStatusHUD.BUTTON_PADDING,
+		ProCombatStatusHUD.BUTTON_PADDING)
+	self:addChild(equipmentPanelBackground)
+
+	self.content = equipmentPanelBackground
+
+	self:initEquipment()
+	self:initStats()
+	self:initButtons()
+
+	self:setZDepth(3000)
+end
+
+function ProCombatStatusHUD.Equipment:initStats()
+	local statLayout = GridLayout()
+	statLayout:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH, ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 2 + ProCombatStatusHUD.Equipment.PADDING * 4)
+	statLayout:setPadding(2)
+	statLayout:setUniformSize(
+		true,
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.Equipment.PADDING / 2,
+		ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4 + 8)
+	statLayout:setPosition(
+		ProCombatStatusHUD.Equipment.BUTTON_PADDING,
+		ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 2 - 32)
+
+	local function emitLayout(t, title)
+		local panel = Panel()
+		panel:setStyle(PanelStyle({ image = false }))
+		local titleLabel = Label()
+		panel:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.Equipment.PADDING / 2, ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4)
+		titleLabel:setText(title)
+		titleLabel:setPosition(
+			ProCombatStatusHUD.Equipment.PADDING / 2,
+			ProCombatStatusHUD.Equipment.PADDING / 2)
+		titleLabel:setStyle(LabelStyle({
+			fontSize = 16,
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			textShadow = true
+		}, self.hud:getView():getResources()))
+		panel:addChild(titleLabel)
+
+		local layout = GridLayout()
+		layout:setPadding(ProCombatStatusHUD.Equipment.PADDING / 2)
+		layout:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2, ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4)
+		layout:setUniformSize(true, ProCombatStatusHUD.Equipment.PANEL_WIDTH / 4 - ProCombatStatusHUD.Equipment.PADDING, 8)
+		layout:setPosition(ProCombatStatusHUD.Equipment.PADDING / 2, 20)
+		panel:addChild(layout)
+
+		for i = 1, #t do
+			local style = LabelStyle({
+				fontSize = 12,
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				textShadow = true
+			}, self.hud:getView():getResources())
+
+			local left = Label()
+			left:setText(t[i][2])
+			left:setStyle(style)
+			layout:addChild(left)
+
+			local right = Label()
+			right:setData('stat', t[i][1])
+			right:setStyle(style)
+			right:bind("text", "equipment.current.stats[{stat}]")
+			layout:addChild(right)
+		end
+
+		statLayout:addChild(panel)
+	end
+
+	emitLayout(ProCombatStatusHUD.Equipment.ACCURACY, "Accuracy")
+	emitLayout(ProCombatStatusHUD.Equipment.DEFENSE, "Defense")
+	emitLayout(ProCombatStatusHUD.Equipment.STRENGTH, "Strength")
+	emitLayout(ProCombatStatusHUD.Equipment.MISC, "Misc")
+
+	self.content:addChild(statLayout)
+end
+
+function ProCombatStatusHUD.Equipment:setIcon(slot)
+	self.iconSlot = slot
+end
+
+function ProCombatStatusHUD.Equipment:initEquipment()
+	self.equipmentLayout = GridLayout()
+	self.equipmentLayout:setPadding(
+		ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2,
+		ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2)
+	self.equipmentLayout:setUniformSize(
+		true,
+		ProCombatStatusHUD.Equipment.BUTTON_SIZE,
+		ProCombatStatusHUD.Equipment.BUTTON_SIZE)
+	self.equipmentLayout:setSize(
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH,
+		ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+	self.equipmentLayout:setPosition(
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - (ProCombatStatusHUD.Equipment.BUTTON_PADDING * 5 * 2 + ProCombatStatusHUD.Equipment.BUTTON_SIZE * 4) / 2,
+		ProCombatStatusHUD.BUTTON_PADDING)
+	self.content:addChild(self.equipmentLayout)
+
+	for i = 1, #Equipment.SLOTS do
+		local button = Button()
+		local icon = ItemIcon()
+		icon:setData('index', Equipment.SLOTS[i])
+		icon:bind("itemID", "equipment.current.items[{index}].id")
+		icon:bind("itemCount", "equipment.current.items[{index}].count")
+		icon:setPosition(
+			ProCombatStatusHUD.Equipment.BUTTON_PADDING,
+			ProCombatStatusHUD.Equipment.BUTTON_PADDING)
+
+		button:setStyle(ButtonStyle({
+			inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+			pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
+		}, self.hud:getView():getResources()))
+
+		button:addChild(icon)
+		button:setData('icon', icon)
+		button.onClick:register(self.setIcon, self, Equipment.SLOTS[i])
+
+		self.equipmentLayout:addChild(button)
+	end
+end
+
+function ProCombatStatusHUD.Equipment:close()
+	self:getParent():removeChild(self)
+end
+
+function ProCombatStatusHUD.Equipment:confirm()
+	self.hud:saveEquipment()
+	self:close()
+end
+
+function ProCombatStatusHUD.Equipment:initButtons()
+	local cancel = Button()
+	cancel:setText("Cancel")
+	cancel:setPosition(
+		ProCombatStatusHUD.BUTTON_PADDING,
+		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+	cancel:setSize(
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
+		ProCombatStatusHUD.BUTTON_SIZE)
+	cancel.onClick:register(self.close, self)
+	self:addChild(cancel)
+
+	local confirm = Button()
+	confirm:setText("Confirm")
+	confirm:setPosition(
+		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2,
+		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+	confirm:setSize(
+		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
+		ProCombatStatusHUD.BUTTON_SIZE)
+	confirm.onClick:register(self.confirm, self)
+	self:addChild(confirm)
+end
+
 function ProCombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -734,6 +954,11 @@ function ProCombatStatusHUD:equip(index, slot)
 	})
 end
 
+function ProCombatStatusHUD:confirmSaveEquipment()
+	local equipment = ProCombatStatusHUD.Equipment(self)
+	self:addChild(equipment)
+end
+
 function ProCombatStatusHUD:saveEquipment()
 	self:sendPoke("saveEquipment", nil, {
 		index = self.equipmentSlot
@@ -778,7 +1003,7 @@ function ProCombatStatusHUD:onShowEquipment()
 
 	do
 		local button = Button()
-		button.onClick:register(self.saveEquipment, self)
+		button.onClick:register(self.confirmSaveEquipment, self)
 
 		local icon = Icon()
 		icon:setIcon("Resources/Game/UI/Icons/Concepts/Add.png")
