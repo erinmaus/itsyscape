@@ -128,6 +128,22 @@ function ProCombatStatusHUDController:activate(powers, e)
 	end
 end
 
+function ProCombatStatusHUDController:useSpell()
+	local peep = self:getPeep()
+	local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
+	if equippedWeapon and peep:hasBehavior(ActiveSpellBehavior) then
+		local logic = self:getDirector():getItemManager():getLogic(equippedWeapon:getID())
+		if logic:isCompatibleType(Weapon) then
+			if logic:getStyle() == Weapon.STYLE_MAGIC then
+				local s, b = peep:addBehavior(StanceBehavior)
+				if s then
+					b.useSpell = true
+				end
+			end
+		end
+	end
+end
+
 function ProCombatStatusHUDController:castSpell(e)
 	local spell = self.spells[e.id]
 	local peep = self:getPeep()
@@ -141,18 +157,7 @@ function ProCombatStatusHUDController:castSpell(e)
 			end
 		end
 
-		local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
-		if equippedWeapon and peep:hasBehavior(ActiveSpellBehavior) then
-			local logic = self:getDirector():getItemManager():getLogic(equippedWeapon:getID())
-			if logic:isCompatibleType(Weapon) then
-				if logic:getStyle() == Weapon.STYLE_MAGIC then
-					local s, b = peep:addBehavior(StanceBehavior)
-					if s then
-						b.useSpell = true
-					end
-				end
-			end
-		end
+		self:useSpell()
 	end
 end
 
@@ -426,6 +431,8 @@ function ProCombatStatusHUDController:updateActiveSpell()
 			spell.active = false
 		end
 	end
+
+	self.activeSpellID = activeSpellID
 end
 
 function ProCombatStatusHUDController:updateSpells()
@@ -871,6 +878,10 @@ function ProCombatStatusHUDController:updateStyle()
 
 	if self.style ~= oldStyle then
 		self.isDirty = true
+
+		if self.style == "Magic" then
+			self:useSpell()
+		end
 	end
 end
 
