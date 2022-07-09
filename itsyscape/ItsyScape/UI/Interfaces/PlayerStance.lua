@@ -106,6 +106,7 @@ function PlayerStance:new(id, index, ui)
 		end)
 
 		button:setData('stance', stance)
+		button:setID("PlayerStance-" .. name)
 
 		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
 
@@ -126,6 +127,7 @@ function PlayerStance:new(id, index, ui)
 		end)
 		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
 		button:setData('active', false)
+		button:setID("PlayerStance-UseSpell")
 
 		button:setText("Use Spell")
 		button:setToolTip(
@@ -146,6 +148,7 @@ function PlayerStance:new(id, index, ui)
 		button:setStyle(ButtonStyle(
 			PlayerStance.INACTIVE_STYLE("Shockwave", "Resources/Game/Powers/%s/Icon.png"),
 			self:getView():getResources()))
+		button:setID("PlayerStance-ToggleHUD")
 
 		button:setText("Toggle HUD")
 		button:setToolTip(

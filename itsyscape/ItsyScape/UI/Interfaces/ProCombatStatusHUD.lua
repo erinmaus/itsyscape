@@ -743,6 +743,7 @@ function ProCombatStatusHUD:saveConfig(config)
 
 	config.equipmentSlot = config.equipmentSlot or self.equipmentSlot
 	config.activeSpellID = config.activeSpellID or self:getState().config.activeSpellID
+	config.isRadialMenuOpen = config.isRadialMenuOpen == nil and self.isRadialMenuOpen or config.isRadialMenuOpen
 
 	self:sendPoke("setConfig", nil, {
 		config = config
@@ -845,6 +846,7 @@ end
 function ProCombatStatusHUD:addOffensivePowersButton()
 	local offensivePowersButton = Button()
 	offensivePowersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	offensivePowersButton:setID("ProCombatStatusHUD-OffensivePowers")
 
 	local offensivePowersButtonIcon = Icon()
 	offensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Attack"))
@@ -884,6 +886,7 @@ end
 function ProCombatStatusHUD:addDefensivePowersButton()
 	local defensivePowersButton = Button()
 	defensivePowersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	defensivePowersButton:setID("ProCombatStatusHUD-DefensivePowers")
 
 	local defensivePowersButtonIcon = Icon()
 	defensivePowersButtonIcon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", "Defense"))
@@ -923,6 +926,7 @@ end
 function ProCombatStatusHUD:addSpellsButton()
 	local spellsButton = Button()
 	spellsButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	spellsButton:setID("ProCombatStatusHUD-Spells")
 
 	local spellsButtonIcon = SpellIcon()
 	spellsButtonIcon:setSpellID("FireBlast")
@@ -1001,6 +1005,7 @@ end
 function ProCombatStatusHUD:addPrayersButton()
 	local prayersButton = Button()
 	prayersButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	prayersButton:setID("ProCombatStatusHUD-Prayers")
 
 	local prayersButtonIcon = Icon()
 	prayersButtonIcon:setIcon("Resources/Game/UI/Icons/Skills/Faith.png")
@@ -1056,6 +1061,7 @@ end
 function ProCombatStatusHUD:addEquipmentButton()
 	local equipmentButton = Button()
 	equipmentButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+	equipmentButton:setID("ProCombatStatusHUD-Equipment")
 
 	local equipmentButtonIcon = Icon()
 	equipmentButtonIcon:setIcon("Resources/Game/UI/Icons/Common/Equipment.png")
@@ -1372,6 +1378,7 @@ function ProCombatStatusHUD:addFleeButton()
 		ProCombatStatusHUD.BUTTON_SIZE)
 	fleeButton.onClick:register(self.flee, self)
 	fleeButton:setToolTip(ToolTip.Text("Flee from combat with current target."))
+	fleeButton:setID("ProCombatStatusHUD-Flee")
 
 	local icon = Icon()
 	icon:setIcon("Resources/Game/UI/Icons/Concepts/Flee.png")
@@ -1611,6 +1618,8 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 			coolDown:setText("")
 		end
 
+		button:setID("ProCombatStatusHUD-Power" .. power.id)
+
 		if pendingID == power.id then
 			button:addChild(self.subPending)
 			pendingIndex = i
@@ -1656,6 +1665,8 @@ function ProCombatStatusHUD:updateSpells()
 		else
 			button:getChildAt(1):setSpellActive(false)
 		end
+
+		button:setID("ProCombatStatusHUD-Spell" .. spell.id)
 	end
 
 	if not hasActiveSpell then
@@ -1676,6 +1687,8 @@ function ProCombatStatusHUD:updatePrayers()
 		else
 			icon:setColor(Color(0.3, 0.3, 0.3))
 		end
+
+		button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
 	end
 end
 
@@ -1704,6 +1717,9 @@ end
 
 function ProCombatStatusHUD:toggleRadialMenu()
 	self.isRadialMenuOpen = not self.isRadialMenuOpen
+	self:saveConfig({
+		isRadialMenuOpen = self.isRadialMenuOpen
+	})
 end
 
 function ProCombatStatusHUD:update(...)

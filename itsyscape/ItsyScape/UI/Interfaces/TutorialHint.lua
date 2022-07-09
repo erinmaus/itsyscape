@@ -41,7 +41,7 @@ function TutorialHint.Circle:draw()
 	local alpha = math.sin(time * math.pi * 2)
 
 	love.graphics.setLineWidth(4)
-
+	love.graphics.setBlendMode('alpha')
 	love.graphics.setColor(0, 0, 0, alpha)
 	itsyrealm.graphics.circle('line', 1, 1, self.radius)
 	love.graphics.setColor(1, 1, 0, alpha)
