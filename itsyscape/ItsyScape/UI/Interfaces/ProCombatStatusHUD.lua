@@ -40,6 +40,13 @@ ProCombatStatusHUD.BUTTON_PADDING = 8
 ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW + ProCombatStatusHUD.BUTTON_PADDING
 ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
 
+ProCombatStatusHUD.ITEM_ICON_PRIORITY = {
+	Equipment.PLAYER_SLOT_RIGHT_HAND,
+	Equipment.PLAYER_SLOT_TWO_HANDED,
+	Equipment.PLAYER_SLOT_LEFT_HAND,
+	Equipment.PLAYER_SLOT_HEAD
+}
+
 ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS = 1
 ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS = 2
 ProCombatStatusHUD.THINGIES_SPELLS           = 3
@@ -463,8 +470,11 @@ function ProCombatStatusHUD.Equipment:new(hud)
 		ProCombatStatusHUD.BUTTON_PADDING,
 		ProCombatStatusHUD.BUTTON_PADDING)
 	self:addChild(equipmentPanelBackground)
-
 	self.content = equipmentPanelBackground
+
+	self.starIcon = Icon()
+	self.starIcon:setSize(24, 24)
+	self.starIcon:setIcon("Resources/Game/UI/Icons/Concepts/Star.png")
 
 	self:initEquipment()
 	self:initStats()
@@ -538,8 +548,14 @@ function ProCombatStatusHUD.Equipment:initStats()
 	self.content:addChild(statLayout)
 end
 
-function ProCombatStatusHUD.Equipment:setIcon(slot)
-	self.iconSlot = slot
+function ProCombatStatusHUD.Equipment:setIcon(slot, button)
+	if self.iconSlot == slot then
+		self.iconSlot = nil
+		button:removeChild(self.starIcon)
+	else
+		self.iconSlot = slot
+		button:addChild(self.starIcon)
+	end
 end
 
 function ProCombatStatusHUD.Equipment:initEquipment()
@@ -588,7 +604,7 @@ function ProCombatStatusHUD.Equipment:close()
 end
 
 function ProCombatStatusHUD.Equipment:confirm()
-	self.hud:saveEquipment()
+	self.hud:saveEquipment(self.iconSlot)
 	self:close()
 end
 
@@ -602,6 +618,7 @@ function ProCombatStatusHUD.Equipment:initButtons()
 		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
 		ProCombatStatusHUD.BUTTON_SIZE)
 	cancel.onClick:register(self.close, self)
+	cancel:setToolTip("Don't save the equipment to a new slot.")
 	self:addChild(cancel)
 
 	local confirm = Button()
@@ -613,6 +630,10 @@ function ProCombatStatusHUD.Equipment:initButtons()
 		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
 		ProCombatStatusHUD.BUTTON_SIZE)
 	confirm.onClick:register(self.confirm, self)
+	confirm:setToolTip(
+		"Save the equipment load out to a new slot.",
+		"The icon will be the item you click on here.",
+		"If you don't click on an item, a good default will be selected.")
 	self:addChild(confirm)
 end
 
@@ -940,18 +961,34 @@ function ProCombatStatusHUD:addEquipmentButton()
 	self.equipmentButton = equipmentButton
 end
 
-local ITEM_ICON_PRIORITY = {
-	Equipment.PLAYER_SLOT_RIGHT_HAND,
-	Equipment.PLAYER_SLOT_TWO_HANDED,
-	Equipment.PLAYER_SLOT_LEFT_HAND,
-	Equipment.PLAYER_SLOT_HEAD
-}
+function ProCombatStatusHUD:equip(index, slot, _, mouseButton)
+	if mouseButton == 1 or not mouseButton then
+		self:sendPoke("equip", nil, {
+			index = index,
+			slot = slot
+		})
+	elseif mouseButton == 2 then
+		local actions = {
+			{
+				id = "Equip",
+				verb = "Equip",
+				object = string.format("Slot %d", slot),
+				callback = function()
+					self:equip(index, slot)
+				end
+			},
+			{
+				id = "Clear",
+				verb = "Clear",
+				object = string.format("Slot %d", slot),
+				callback = function()
+					self:deleteEquipment(index, slot)
+				end
+			}
+		}
 
-function ProCombatStatusHUD:equip(index, slot)
-	self:sendPoke("equip", nil, {
-		index = index,
-		slot = slot
-	})
+		self:getView():probe(actions)
+	end
 end
 
 function ProCombatStatusHUD:confirmSaveEquipment()
@@ -959,9 +996,17 @@ function ProCombatStatusHUD:confirmSaveEquipment()
 	self:addChild(equipment)
 end
 
-function ProCombatStatusHUD:saveEquipment()
+function ProCombatStatusHUD:saveEquipment(icon)
 	self:sendPoke("saveEquipment", nil, {
-		index = self.equipmentSlot
+		index = self.equipmentSlot,
+		icon = icon
+	})
+end
+
+function ProCombatStatusHUD:deleteEquipment(index, slot)
+	self:sendPoke("deleteEquipment", nil, {
+		index = index,
+		slot = slot
 	})
 end
 
@@ -984,8 +1029,13 @@ function ProCombatStatusHUD:onShowEquipment()
 		for j = 1, #equipmentSlot[i] do
 			local item = equipmentSlot[i][j]
 
-			for k = 1, #ITEM_ICON_PRIORITY do
-				if item.slot == ITEM_ICON_PRIORITY[k] and iconItemPriority >= k then
+			if item.slot == equipmentSlot[i].icon then
+				iconItemID = item.id
+				iconItemPriority = 0
+			end
+
+			for k = 1, #ProCombatStatusHUD.ITEM_ICON_PRIORITY do
+				if item.slot == ProCombatStatusHUD.ITEM_ICON_PRIORITY[k] and iconItemPriority >= k then
 					iconItemID = item.id
 					iconItemPriority = k
 				end
