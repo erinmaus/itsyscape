@@ -215,7 +215,7 @@ function ProCombatStatusHUDController:addEquipmentSlot(e)
 	local equipmentStorage = self:getStorage("Equipment")
 	local slotsStorage = equipmentStorage:getSection(equipmentStorage:length() + 1)
 	slotsStorage:set({
-		name = "Unammed"
+		name = string.format("Slot %d", equipmentStorage:length())
 	})
 
 	self.isDirty = true

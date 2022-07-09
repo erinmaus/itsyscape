@@ -23,6 +23,8 @@ local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
+local TextInput = require "ItsyScape.UI.TextInput"
+local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -39,6 +41,28 @@ ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 4
 ProCombatStatusHUD.BUTTON_PADDING = 8
 ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW + ProCombatStatusHUD.BUTTON_PADDING
 ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
+
+ProCombatStatusHUD.SECTION_TITLE_STYLE = {
+	inactive = Color(0, 0, 0, 0),
+	hover = Color(0.7, 0.6, 0.5),
+	active = Color(0.5, 0.4, 0.3),
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 22,
+	color = Color(1, 1, 1, 1),
+	textShadow = true,
+	padding = 2
+}
+
+ProCombatStatusHUD.TEXT_INPUT_STYLE = {
+	inactive = "Resources/Renderers/Widget/TextInput/Default-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/TextInput/Default-Hover.9.png",
+	active = "Resources/Renderers/Widget/TextInput/Default-Active.9.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 22,
+	color = Color(1, 1, 1, 1),
+	textShadow = true,
+	padding = 4
+}
 
 ProCombatStatusHUD.ITEM_ICON_PRIORITY = {
 	Equipment.PLAYER_SLOT_RIGHT_HAND,
@@ -1048,6 +1072,59 @@ function ProCombatStatusHUD:previousEquipmentSlot()
 	self.isRefreshing = false
 end
 
+function ProCombatStatusHUD:renameEquipmentSlot(index, textInput)
+	self:sendPoke("renameEquipmentSlot", nil, {
+		index = index,
+		name = textInput:getText()
+	})
+
+	self.isEditingEquipmentTitle = false
+end
+
+function ProCombatStatusHUD:deleteEquipmentSlot(index)
+	self:sendPoke("deleteEquipmentSlot", nil, {
+		index = index
+	})
+
+	if self.equipmentSlot >= index then
+		self.equipmentSlot = self.equipmentSlot - 1
+	end
+
+	if self.equipmentSlot < 1 then
+		self.equipmentSlot = 1
+	end
+end
+
+function ProCombatStatusHUD:editEquipmentSlot(index, button, mouseButton)
+	if mouseButton == 1 or not mouseButton then
+		self.isEditingEquipmentTitle = true
+		self.isRefreshing = true
+		self:onShowEquipment()
+		self.isRefreshing = false
+	elseif mouseButton == 2 then
+		local actions = {
+			{
+				id = "Edit-Title",
+				verb = "Edit-Title",
+				object = button:getText(),
+				callback = function()
+					self:editEquipmentSlot(index)
+				end
+			},
+			{
+				id = "Delete",
+				verb = "Delete",
+				object = button:getText(),
+				callback = function()
+					self:deleteEquipmentSlot(index, slot)
+				end
+			}
+		}
+
+		self:getView():probe(actions)
+	end
+end
+
 function ProCombatStatusHUD:onShowEquipment()
 	local equipment = self:getState().equipment or {}
 	local equipmentSlot = equipment[self.equipmentSlot] or {}
@@ -1161,6 +1238,42 @@ function ProCombatStatusHUD:onShowEquipment()
 			self:addChild(self.nextEquipmentButton)
 		else
 			self.nextEquipmentButton = nil
+		end
+
+		if self.title then
+			self.title:getParent():removeChild(self.title)
+		end
+
+		if self.isEditingEquipmentTitle then
+			self.title = TextInput()
+			self.title:setStyle(TextInputStyle(ProCombatStatusHUD.TEXT_INPUT_STYLE, self:getView():getResources()))
+			self.title:setText(equipmentSlot.name)
+			self.title.onBlur:register(self.renameEquipmentSlot, self, self.equipmentSlot)
+			self.title.onSubmit:register(function()
+				self:getView():getInputProvider():setFocusedWidget(nil)
+			end)
+
+		else
+			self.title = Button()
+			self.title:setStyle(ButtonStyle(ProCombatStatusHUD.SECTION_TITLE_STYLE, self:getView():getResources()))
+			self.title:setText(equipmentSlot.name)
+			self.title.onClick:register(self.editEquipmentSlot, self, self.equipmentSlot)
+		end
+
+		if self.title and thingies then
+			local x, y = thingies:getPosition()
+			local w, h = thingies:getSize()
+
+			self.title:setPosition(x, y - ProCombatStatusHUD.BUTTON_SIZE - ProCombatStatusHUD.BUTTON_PADDING)
+			self.title:setSize(w, ProCombatStatusHUD.BUTTON_SIZE)
+
+			self:addChild(self.title)
+
+			if self.isEditingEquipmentTitle then
+				self:getView():getInputProvider():setFocusedWidget(self.title)
+			end
+		else
+			self.title = nil
 		end
 	end
 end
