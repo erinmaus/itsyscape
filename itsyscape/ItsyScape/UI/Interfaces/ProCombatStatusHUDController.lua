@@ -280,7 +280,6 @@ function ProCombatStatusHUDController:setConfig(e)
 	configStorage:set({
 		config = e.config
 	})
-	print(">>>>>>>>>>>>> SET")
 end
 
 function ProCombatStatusHUDController:pull(e)

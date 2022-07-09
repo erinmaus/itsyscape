@@ -671,6 +671,7 @@ function ProCombatStatusHUD:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	self.targetWidgets = {}
+	self.openThingieHandles = {}
 	self.openThingies = {}
 	self.thingies = {}
 
@@ -715,7 +716,6 @@ function ProCombatStatusHUD:saveConfig(config)
 
 	config.openThingies = {}
 	for thingie in pairs(self.openThingies) do
-		print("thingie", thingie, "open")
 		table.insert(config.openThingies, thingie)
 	end
 
@@ -728,18 +728,26 @@ function ProCombatStatusHUD:saveConfig(config)
 end
 
 function ProCombatStatusHUD:isThingyOpen(type)
-	return self.openThingies[type] ~= nil
+	return self.openThingieHandles[type] ~= nil
 end
 
 function ProCombatStatusHUD:showThingies(type, buttons, target)
+	if self.openThingieHandles[type] then
+		self:removeChild(self.openThingieHandles[type])
+		self.openThingieHandles[type] = nil
+	end
+
 	if self.openThingies[type] then
-		self:removeChild(self.openThingies[type])
-		self.openThingies[type] = nil
-		
 		if not self.isRefreshing then
+			self.openThingies[type] = nil
 			self:saveConfig()
 			return
 		end
+	end
+
+	if not self.isRadialMenuOpen then
+		self.openThingies[type] = true
+		return
 	end
 
 	local thingies = ProCombatStatusHUD.ThingiesLayout()
@@ -764,7 +772,8 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 
 	self:addChild(thingies)
 
-	self.openThingies[type] = thingies
+	self.openThingieHandles[type] = thingies
+	self.openThingies[type] = true
 
 	self:saveConfig()
 
@@ -1660,10 +1669,18 @@ function ProCombatStatusHUD:refresh()
 	self:initSpells()
 	self:initPrayers()
 
-	for thingyType in pairs(self.openThingies) do
-		self:openRegisteredThingies(thingyType)
+	for thingie in pairs(self.openThingies) do
+		self:openRegisteredThingies(thingie)
 	end
 
+	self.isRefreshing = false
+end
+
+function ProCombatStatusHUD:resetRadialMenu()
+	self.isRefreshing = true
+	for thingie in pairs(self.openThingies) do
+		self:openRegisteredThingies(thingie)
+	end
 	self.isRefreshing = false
 end
 
@@ -1718,8 +1735,10 @@ function ProCombatStatusHUD:update(...)
 
 	if self.isRadialMenuOpen and not self.radialMenu:getParent() then
 		self:addChild(self.radialMenu)
+		self:resetRadialMenu()
 	elseif not self.isRadialMenuOpen and self.radialMenu:getParent() then
 		self:removeChild(self.radialMenu)
+		self:resetRadialMenu()
 	end
 end
 
