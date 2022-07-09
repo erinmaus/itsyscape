@@ -1702,6 +1702,10 @@ function ProCombatStatusHUD:resetRadialMenu()
 	self.isRefreshing = false
 end
 
+function ProCombatStatusHUD:toggleRadialMenu()
+	self.isRadialMenuOpen = not self.isRadialMenuOpen
+end
+
 function ProCombatStatusHUD:update(...)
 	Interface.update(self, ...)
 
