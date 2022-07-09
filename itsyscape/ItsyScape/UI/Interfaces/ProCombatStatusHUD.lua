@@ -18,6 +18,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
@@ -402,6 +403,8 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.openThingies = {}
 	self.thingies = {}
 
+	self.equipmentSlot = 1
+
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
 	self.radialMenu:setZDepth(1000)
 	self:prepareRadialMenu()
@@ -714,7 +717,6 @@ function ProCombatStatusHUD:addEquipmentButton()
 
 	self.radialMenu:addChild(equipmentButton)
 
-	self:initEquipment()
 	self.equipmentButton = equipmentButton
 end
 
@@ -725,15 +727,17 @@ local ITEM_ICON_PRIORITY = {
 	Equipment.PLAYER_SLOT_HEAD
 }
 
-function ProCombatStatusHUD:equip(slot, index)
+function ProCombatStatusHUD:equip(index, slot)
 	self:sendPoke("equip", nil, {
-		slot = slot,
-		index = index
+		index = index,
+		slot = slot
 	})
 end
 
 function ProCombatStatusHUD:saveEquipment()
-	self:sendPoke("saveEquipment", nil, {})
+	self:sendPoke("saveEquipment", nil, {
+		index = self.equipmentSlot
+	})
 end
 
 function ProCombatStatusHUD:onShowEquipment()
@@ -747,11 +751,11 @@ function ProCombatStatusHUD:onShowEquipment()
 			self.equip,
 			self,
 			self.equipmentSlot,
-			self.equipmentButton)
+			i)
 
 		local toolTipText = {}
 		local iconItemID
-		local iconItemPriority
+		local iconItemPriority = math.huge
 		for j = 1, #equipmentSlot[i] do
 			local item = equipmentSlot[i][j]
 
@@ -800,15 +804,17 @@ function ProCombatStatusHUD:onShowEquipment()
 		end
 
 		if self.previousEquipmentButton then
-			local x, y = thingies:getPosition()
-			local w, h = thingies:getSize()
+			if thingies then
+				local x, y = thingies:getPosition()
+				local w, h = thingies:getSize()
 
-			self.previousEquipmentButton:setPosition(
-				x + w + ProCombatStatusHUD.BUTTON_PADDING,
-				y)
-			self.previousEquipmentButton:setSize(
-				ProCombatStatusHUD.BUTTON_SIZE,
-				h)
+				self.previousEquipmentButton:setPosition(
+					x + w + ProCombatStatusHUD.BUTTON_PADDING,
+					y)
+				self.previousEquipmentButton:setSize(
+					ProCombatStatusHUD.BUTTON_SIZE,
+					h)
+			end
 			self:addChild(self.previousEquipmentButton)
 		end
 
@@ -827,15 +833,17 @@ function ProCombatStatusHUD:onShowEquipment()
 		end
 
 		if self.nextEquipmentButton then
-			local x, y = thingies:getPosition()
-			local w, h = thingies:getSize()
+			if thingies then
+				local x, y = thingies:getPosition()
+				local w, h = thingies:getSize()
 
-			self.nextEquipmentButton:setPosition(
-				x + w + ProCombatStatusHUD.BUTTON_PADDING,
-				y)
-			self.nextEquipmentButton:setSize(
-				ProCombatStatusHUD.BUTTON_SIZE,
-				h)
+				self.nextEquipmentButton:setPosition(
+					x + w + ProCombatStatusHUD.BUTTON_PADDING,
+					y)
+				self.nextEquipmentButton:setSize(
+					ProCombatStatusHUD.BUTTON_SIZE,
+					h)
+			end
 			self:addChild(self.nextEquipmentButton)
 		end
 	end

@@ -74,7 +74,7 @@ end
 
 function ProCombatStatusHUDController:getStorage(section)
 	local storage = self:getDirector():getPlayerStorage(self:getPeep())
-	return storage:getroot():getSection("ProCombatStatusHUD"):getSection(section)
+	return storage:getRoot():getSection("ProCombatStatusHUD"):getSection(section)
 end
 
 function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
@@ -163,7 +163,7 @@ end
 function ProCombatStatusHUDController:saveEquipment(e)
 	local equipmentStorage = self:getStorage("Equipment")
 	local slotsStorage = equipmentStorage:getSection(e.index)
-	local slotStorage = slotsSection:get(slotsStorage:length() + 1)
+	local slotStorage = slotsStorage:getSection(slotsStorage:length() + 1)
 
 	local peep = self:getPeep()
 	local equipment = peep:getBehavior(EquipmentBehavior)
@@ -227,7 +227,7 @@ end
 
 function ProCombatStatusHUDController:equip(e)
 	local equipmentStorage = self:getStorage("Equipment")
-	local slotStorage = equipmentStorage:getSection(e.index):get(e.slot)
+	local slotStorage = equipmentStorage:getSection(e.index):getSection(e.slot)
 
 	local peep = self:getPeep()
 	local gameDB = self:getDirector():getGameDB()
@@ -235,7 +235,9 @@ function ProCombatStatusHUDController:equip(e)
 	for _, item in slotStorage:iterateSections() do
 		local itemID = item:get("id")
 		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
-		local itemResource = gameDB:getRecord(itemID, "Item")
+		local itemResource = gameDB:getResource(itemID, "Item")
+
+		print(itemInstance and itemInstance:getID(), itemResource and itemResource.name)
 
 		if itemInstance and itemResource then
 			local actions = Utility.getActions(
