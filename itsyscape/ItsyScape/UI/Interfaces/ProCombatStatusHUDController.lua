@@ -21,6 +21,7 @@ local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavio
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -57,6 +58,25 @@ function ProCombatStatusHUDController:bindToPlayer(peep)
 	end
 end
 
+function ProCombatStatusHUDController:unbindToPlayer(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	if stats and stats.stats then
+		stats = stats.stats
+
+		stats.onLevelUp:unregister(self._onLevelUp)
+	end
+end
+
+function ProCombatStatusHUDController:close()
+	Controller.close(self)
+	self:unbindToPlayer(self:getPeep())
+end
+
+function ProCombatStatusHUDController:getStorage(section)
+	local storage = self:getDirector():getPlayerStorage(self:getPeep())
+	return storage:getroot():getSection("ProCombatStatusHUD"):getSection(section)
+end
+
 function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 	if actionID == "activateOffensivePower" then
 		self:activate(self.state.powers.offensive, e)
@@ -66,6 +86,16 @@ function ProCombatStatusHUDController:poke(actionID, actionIndex, e)
 		self:castSpell(e)
 	elseif actionID == "pray" then
 		self:pray(e)
+	elseif actionID == "saveEquipment" then
+		self:saveEquipment(e)
+	elseif actionID == "addEquipmentSlot" then
+		self:addEquipmentSlot(e)
+	elseif actionID == "renameEquipmentSlot" then
+		self:renameEquipmentSlot(e)
+	elseif actionID == "deleteEquipmentSlot" then
+		self:deleteEquipmentSlot(e)
+	elseif actionID == "equip" then
+		self:equip(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -127,6 +157,101 @@ function ProCombatStatusHUDController:pray(e)
 	local peep = self:getPeep()
 	if prayer then
 		prayer:perform(peep:getState(), peep)
+	end
+end
+
+function ProCombatStatusHUDController:saveEquipment(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotsStorage = equipmentStorage:getSection(e.index)
+	local slotStorage = slotsSection:get(slotsStorage:length() + 1)
+
+	local peep = self:getPeep()
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+
+	if not equipment then
+		Log.warn("Peep '%s' does not equipment.", peep:getName())
+		return
+	end
+
+	local broker = equipment:getBroker()
+	if not broker then
+		Log.warn("Peep '%s' has equipment, but equipment doesn't have an item broker.", peep:getName())
+		return
+	end
+
+	local index = 1
+	for item in broker:iterateItems(equipment) do
+		slotStorage:set(index, {
+			id = item:getID(),
+			slot = broker:getItemKey(item)
+		})
+
+		index = index + 1
+	end
+
+	if index == 1 then
+		-- No items were added. Undo changes.
+		slotsStorage:removeSection(slotsStorage:length())
+	else
+		self.isDirty = true
+	end
+end
+
+function ProCombatStatusHUDController:addEquipmentSlot(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotsStorage = equipmentStorage:getSection(equipmentStorage:length() + 1)
+	slotsStorage:set({
+		name = "Unammed"
+	})
+
+	self.isDirty = true
+end
+
+function ProCombatStatusHUDController:renameEquipmentSlot(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotsStorage = equipmentStorage:getSection(e.index)
+	slotsStorage:set({
+		name = e.name
+	})
+
+	self.isDirty = true
+end
+
+function ProCombatStatusHUDController:deleteEquipmentSlot(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	equipmentStorage:removeSection(e.index)
+
+	self.isDirty = true
+end
+
+function ProCombatStatusHUDController:equip(e)
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotStorage = equipmentStorage:getSection(e.index):get(e.slot)
+
+	local peep = self:getPeep()
+	local gameDB = self:getDirector():getGameDB()
+
+	for _, item in slotStorage:iterateSections() do
+		local itemID = item:get("id")
+		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
+		local itemResource = gameDB:getRecord(itemID, "Item")
+
+		if itemInstance and itemResource then
+			local actions = Utility.getActions(
+				self:getDirector():getGameInstance(),
+				itemResource,
+				'inventory')
+			for i = 1, #actions do
+				local actionInstance = actions[i].instance
+				if actionInstance:is("equip") then
+					actionInstance:perform(
+						peep:getState(),
+						peep,
+						itemInstance)
+				end
+			end
+		end
 	end
 end
 
@@ -515,6 +640,7 @@ function ProCombatStatusHUDController:updateState()
 		},
 		spells = self.castableSpells,
 		prayers = self.usablePrayers,
+		equipment = self:getStorage("Equipment"):get(),
 		style = self.style
 	}
 

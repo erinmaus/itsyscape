@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -38,6 +39,7 @@ ProCombatStatusHUD.THINGIES_OFFENSIVE_POWERS = 1
 ProCombatStatusHUD.THINGIES_DEFENSIVE_POWERS = 2
 ProCombatStatusHUD.THINGIES_SPELLS           = 3
 ProCombatStatusHUD.THINGIES_PRAYERS          = 4
+ProCombatStatusHUD.THINGIES_EQUIPMENT        = 5
 
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
@@ -448,6 +450,8 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 	self:addChild(thingies)
 
 	self.openThingies[type] = thingies
+
+	return thingies
 end
 
 function ProCombatStatusHUD:registerThingies(type, openFunc)
@@ -695,11 +699,154 @@ function ProCombatStatusHUD:onShowPrayers(button)
 		button or self.prayersButton)
 end
 
+function ProCombatStatusHUD:addEquipmentButton()
+	local equipmentButton = Button()
+	equipmentButton:setSize(ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
+
+	local equipmentButtonIcon = Icon()
+	equipmentButtonIcon:setIcon("Resources/Game/UI/Icons/Common/Equipment.png")
+	equipmentButton:addChild(equipmentButtonIcon)
+
+	equipmentButton.onClick:register(self.onShowEquipment, self)
+	self:registerThingies(
+		ProCombatStatusHUD.THINGIES_EQUIPMENT,
+		self.onShowEquipment)
+
+	self.radialMenu:addChild(equipmentButton)
+
+	self:initEquipment()
+	self.equipmentButton = equipmentButton
+end
+
+local ITEM_ICON_PRIORITY = {
+	Equipment.PLAYER_SLOT_RIGHT_HAND,
+	Equipment.PLAYER_SLOT_TWO_HANDED,
+	Equipment.PLAYER_SLOT_LEFT_HAND,
+	Equipment.PLAYER_SLOT_HEAD
+}
+
+function ProCombatStatusHUD:equip(slot, index)
+	self:sendPoke("equip", nil, {
+		slot = slot,
+		index = index
+	})
+end
+
+function ProCombatStatusHUD:saveEquipment()
+	self:sendPoke("saveEquipment", nil, {})
+end
+
+function ProCombatStatusHUD:onShowEquipment()
+	local equipment = self:getState().equipment or {}
+	local equipmentSlot = equipment[self.equipmentSlot] or {}
+
+	local buttons = {}
+	for i = 1, #equipmentSlot do
+		local button = Button()
+		button.onClick:register(
+			self.equip,
+			self,
+			self.equipmentSlot,
+			self.equipmentButton)
+
+		local toolTipText = {}
+		local iconItemID
+		local iconItemPriority
+		for j = 1, #equipmentSlot[i] do
+			local item = equipmentSlot[i][j]
+
+			for k = 1, #ITEM_ICON_PRIORITY do
+				if item.slot == ITEM_ICON_PRIORITY[k] and iconItemPriority >= k then
+					iconItemID = item.id
+					iconItemPriority = k
+				end
+			end
+		end
+
+		iconItemID = iconItemID or equipmentSlot[i][1] or "Null"
+
+		local icon = ItemIcon()
+		icon:setItemID(iconItemID)
+		button:addChild(icon)
+
+		table.insert(buttons, button)
+	end
+
+	do
+		local button = Button()
+		button.onClick:register(self.saveEquipment, self)
+
+		local icon = Icon()
+		icon:setIcon("Resources/Game/UI/Icons/Concepts/Add.png")
+		button:addChild(icon)
+
+		table.insert(buttons, button)
+	end
+
+	local thingies = self:showThingies(
+		ProCombatStatusHUD.THINGIES_EQUIPMENT,
+		buttons,
+		self.equipmentButton)
+
+	do
+		if self.previousEquipmentButton then
+			self.previousEquipmentButton:getParent():removeChild(self.previousEquipmentButton)
+		end
+
+		if self.equipmentSlot > 1 then
+			self.previousEquipmentButton = Button()
+			self.previousEquipmentButton:setText("<")
+			self.previousEquipmentButton.onClick:register(self.previousEquipmentSlot)
+		end
+
+		if self.previousEquipmentButton then
+			local x, y = thingies:getPosition()
+			local w, h = thingies:getSize()
+
+			self.previousEquipmentButton:setPosition(
+				x + w + ProCombatStatusHUD.BUTTON_PADDING,
+				y)
+			self.previousEquipmentButton:setSize(
+				ProCombatStatusHUD.BUTTON_SIZE,
+				h)
+			self:addChild(self.previousEquipmentButton)
+		end
+
+		if self.nextEquipmentButton then
+			self.nextEquipmentButton:getParent():removeChild(self.nextEquipmentButton)
+		end
+
+		if self.equipmentSlot < #equipment then
+			self.nextEquipmentButton = Button()
+			self.nextEquipmentButton:setText(">")
+			self.nextEquipmentButton.onClick:register(self.nextEquipmentSlot, self)
+		elseif #buttons > 1 then
+			self.nextEquipmentButton = Button()
+			self.nextEquipmentButton:setText("+")
+			self.nextEquipmentButton.onClick:register(self.addEquipmentSlot, self)
+		end
+
+		if self.nextEquipmentButton then
+			local x, y = thingies:getPosition()
+			local w, h = thingies:getSize()
+
+			self.nextEquipmentButton:setPosition(
+				x + w + ProCombatStatusHUD.BUTTON_PADDING,
+				y)
+			self.nextEquipmentButton:setSize(
+				ProCombatStatusHUD.BUTTON_SIZE,
+				h)
+			self:addChild(self.nextEquipmentButton)
+		end
+	end
+end
+
 function ProCombatStatusHUD:prepareRadialMenu()
 	self:addOffensivePowersButton()
 	self:addDefensivePowersButton()
 	self:addSpellsButton()
 	self:addPrayersButton()
+	self:addEquipmentButton()
 end
 
 function ProCombatStatusHUD:getOverflow()
