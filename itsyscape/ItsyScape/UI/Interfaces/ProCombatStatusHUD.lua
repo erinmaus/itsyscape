@@ -34,8 +34,8 @@ ProCombatStatusHUD.EFFECT_SIZE = 48
 ProCombatStatusHUD.EFFECT_PADDING = 4
 ProCombatStatusHUD.SCREEN_PADDING = 32
 ProCombatStatusHUD.NUM_EFFECTS_PER_ROW = 4
-ProCombatStatusHUD.TARGET_OFFSET_X = 256
-ProCombatStatusHUD.TARGET_OFFSET_Y = 128
+ProCombatStatusHUD.TARGET_OFFSET_X = 128
+ProCombatStatusHUD.TARGET_OFFSET_Y = 64
 ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS = 10
 ProCombatStatusHUD.BUTTON_SIZE = 48
 ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 4
@@ -246,7 +246,7 @@ function ProCombatStatusHUD.Target:update(...)
 			self.hitPointsLabel:setText(string.format("%d/%d", actorState.stats.hitpoints.current, actorState.stats.hitpoints.max))
 			self.hitPoints:setCurrent(actorState.stats.hitpoints.current)
 			self.hitPoints:setMax(actorState.stats.hitpoints.max)
-			self.prayerPointsLabel:setText(string.format("%d/%d", actorState.stats.hitpoints.current, actorState.stats.prayer.max))
+			self.prayerPointsLabel:setText(string.format("%d/%d", actorState.stats.prayer.current, actorState.stats.prayer.max))
 			self.prayerPoints:setCurrent(actorState.stats.prayer.current)
 			self.prayerPoints:setMax(actorState.stats.prayer.max)
 		end
@@ -1454,18 +1454,6 @@ function ProCombatStatusHUD:positionTarget(targetWidget, actorID)
 	local screenWidth, screenHeight = love.graphics.getScaledMode()
 	local targetWidgetWidth, targetWidgetHeight = ProCombatStatusHUD.Target.PSEUDO_WIDTH, ProCombatStatusHUD.Target.PSEUDO_HEIGHT
 
-	if actorPosition.x < ProCombatStatusHUD.SCREEN_PADDING then
-		actorPosition.x = ProCombatStatusHUD.SCREEN_PADDING
-	elseif actorPosition.x + targetWidgetWidth > screenWidth then
-		actorPosition.x = screenWidth - targetWidgetWidth - ProCombatStatusHUD.SCREEN_PADDING
-	end
-
-	if actorPosition.y < ProCombatStatusHUD.SCREEN_PADDING then
-		actorPosition.y = ProCombatStatusHUD.SCREEN_PADDING
-	elseif actorPosition.y + targetWidgetHeight > screenHeight then
-		actorPosition.y = screenHeight - targetWidgetHeight - ProCombatStatusHUD.SCREEN_PADDING
-	end
-
 	local isCollision = false
 	local fudge = 1
 	local iterations = ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS
@@ -1487,9 +1475,9 @@ function ProCombatStatusHUD:positionTarget(targetWidget, actorID)
 				local overlapY = otherTargetWidgetHeight - (actorPosition.y - otherTargetWidgetY)
 
 				if math.abs(overlapX) > math.abs(overlapY) then
-					actorPosition.y = actorPosition.y + overlapY * fudge
-				else
 					actorPosition.x = actorPosition.x + overlapX * fudge
+				else
+					actorPosition.y = actorPosition.y + overlapY * fudge
 				end
 
 				fudge = fudge * 1.1
@@ -1498,6 +1486,18 @@ function ProCombatStatusHUD:positionTarget(targetWidget, actorID)
 
 		iterations = iterations - 1
 	until not isCollision or iterations <= 0
+
+	if actorPosition.x < ProCombatStatusHUD.SCREEN_PADDING then
+		actorPosition.x = ProCombatStatusHUD.SCREEN_PADDING
+	elseif actorPosition.x + targetWidgetWidth > screenWidth then
+		actorPosition.x = screenWidth - targetWidgetWidth - ProCombatStatusHUD.SCREEN_PADDING
+	end
+
+	if actorPosition.y < ProCombatStatusHUD.SCREEN_PADDING then
+		actorPosition.y = ProCombatStatusHUD.SCREEN_PADDING
+	elseif actorPosition.y + targetWidgetHeight > screenHeight then
+		actorPosition.y = screenHeight - targetWidgetHeight - ProCombatStatusHUD.SCREEN_PADDING
+	end
 
 	targetWidget:setPosition(actorPosition.x, actorPosition.y)
 end
