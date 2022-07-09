@@ -304,6 +304,7 @@ ProCombatStatusHUD.MIN_ZOOM = 10
 ProCombatStatusHUD.MAX_ZOOM = 50
 ProCombatStatusHUD.MIN_RADIUS = 96
 ProCombatStatusHUD.MAX_RADIUS = 256
+ProCombatStatusHUD.RADIUS_FUDGE = 16
 
 function ProCombatStatusHUD.RadialMenu:new(hud)
 	Drawable.new(self)
@@ -329,11 +330,15 @@ function ProCombatStatusHUD.RadialMenu:getOverflow()
 end
 
 function ProCombatStatusHUD.RadialMenu:draw()
-	love.graphics.setLineWidth(ProCombatStatusHUD.Target.HEIGHT)
-
 	local screenWidth, screenHeight = love.graphics.getScaledMode()
 	love.graphics.setColor(ProCombatStatusHUD.SPECIAL_COLOR:get())
+
+	love.graphics.setLineWidth(ProCombatStatusHUD.Target.HEIGHT)
 	itsyrealm.graphics.circle('line', screenWidth / 2, screenHeight / 2, self.radius)
+
+	local fudge = math.sin(love.timer.getTime() * math.pi / 4) * ProCombatStatusHUD.RADIUS_FUDGE
+	love.graphics.setLineWidth(ProCombatStatusHUD.Target.HEIGHT / 2)
+	itsyrealm.graphics.circle('line', screenWidth / 2, screenHeight / 2, self.radius + fudge)
 end
 
 function ProCombatStatusHUD.RadialMenu:updateRadius()
