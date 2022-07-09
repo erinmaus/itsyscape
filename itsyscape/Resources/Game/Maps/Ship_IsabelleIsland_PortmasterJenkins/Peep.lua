@@ -82,9 +82,48 @@ Ship.COMBAT_HINT = {
 		end
 	},
 	{
+		position = 'up',
+		id = "PlayerStance-ToggleHUD",
+		message = "Click here to toggle the combat HUD.",
+		open = function(target)
+			return function()
+				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
+				if isOpen and index then
+					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
+					local config = interface:pull().config
+					return config.isRadialMenuOpen
+				end
+				return true
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "ProCombatStatusHUD-OffensivePowers",
+		message = "Click here to view your available Powers.",
+		open = function(target)
+			return function()
+				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
+				if isOpen and index then
+					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
+					local config = interface:pull().config
+					for _, thingie in pairs(config.openThingies or {}) do
+						print(thingie)
+						if thingie == interface.THINGIES_OFFENSIVE_POWERS then
+							return true
+						end
+					end
+
+					return false
+				end
+				return true
+			end
+		end
+	},
+	{
 		position = 'down',
-		id = "StrategyBar",
-		message = "This is your strategy bar.\nClick on the power 'Backstab' to activate it on your next attack.\n(Remember, right-click on a spot to bind different powers.)\nThen attack a pirate to continue!",
+		id = "ProCombatStatusHUD-PowerBackstab",
+		message = "Click 'Backstab', then click on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
 			return function()
 				local power = target:getBehavior(PendingPowerBehavior)

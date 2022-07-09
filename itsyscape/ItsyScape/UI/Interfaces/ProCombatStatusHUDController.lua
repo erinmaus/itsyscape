@@ -28,6 +28,12 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local ProCombatStatusHUDController = Class(Controller)
 
+ProCombatStatusHUDController.THINGIES_OFFENSIVE_POWERS = 1
+ProCombatStatusHUDController.THINGIES_DEFENSIVE_POWERS = 2
+ProCombatStatusHUDController.THINGIES_SPELLS           = 3
+ProCombatStatusHUDController.THINGIES_PRAYERS          = 4
+ProCombatStatusHUDController.THINGIES_EQUIPMENT        = 5
+
 function ProCombatStatusHUDController:new(peep, director)
 	Controller.new(self, peep, director)
 
@@ -282,7 +288,7 @@ function ProCombatStatusHUDController:setConfig(e)
 	})
 end
 
-function ProCombatStatusHUDController:pull(e)
+function ProCombatStatusHUDController:pull()
 	return self.state
 end
 
