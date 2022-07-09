@@ -161,17 +161,39 @@ end
 function ProCombatStatusHUD.Target:drawTarget(target)
 	local x, y = self:getPosition()
 
+
 	itsyrealm.graphics.translate(-x, -y)
-	itsyrealm.graphics.rectangle(
-		'fill',
-		x, y,
-		ProCombatStatusHUD.Target.WIDTH,
-		ProCombatStatusHUD.Target.HEIGHT)
-	itsyrealm.graphics.polygon(
-		'fill',
-		x + ProCombatStatusHUD.Target.WIDTH, y,
-		x + ProCombatStatusHUD.Target.WIDTH, y + ProCombatStatusHUD.Target.HEIGHT,
-		target.x, target.y)
+	if target.x < x then
+		local direction = (target * Vector.PLANE_XY) - Vector(x, y, 0)
+		local length = direction:getLength()
+		direction = direction / length
+		itsyrealm.graphics.rectangle(
+			'fill',
+			x, y,
+			ProCombatStatusHUD.Target.WIDTH,
+			ProCombatStatusHUD.Target.HEIGHT)
+		itsyrealm.graphics.polygon(
+			'fill',
+			x, y,
+			x + direction.x * length, y + direction.y * length,
+			x + direction.x * length, y + ProCombatStatusHUD.Target.HEIGHT + direction.y * length,
+			x, y + ProCombatStatusHUD.Target.HEIGHT)
+	else
+		local direction = (target * Vector.PLANE_XY) - Vector(x + ProCombatStatusHUD.Target.WIDTH, y, 0)
+		local length = direction:getLength()
+		direction = direction / length
+		itsyrealm.graphics.rectangle(
+			'fill',
+			x, y,
+			ProCombatStatusHUD.Target.WIDTH,
+			ProCombatStatusHUD.Target.HEIGHT)
+		itsyrealm.graphics.polygon(
+			'fill',
+			x + ProCombatStatusHUD.Target.WIDTH, y,
+			x + ProCombatStatusHUD.Target.WIDTH + direction.x * length, y + direction.y * length,
+			x + ProCombatStatusHUD.Target.WIDTH + direction.x * length, y + ProCombatStatusHUD.Target.HEIGHT + direction.y * length,
+			x + ProCombatStatusHUD.Target.WIDTH, y + ProCombatStatusHUD.Target.HEIGHT)
+	end
 	itsyrealm.graphics.translate(x, y)
 end
 
@@ -1383,11 +1405,7 @@ function ProCombatStatusHUD:getActorPosition(actorID)
 
 	local actorPosition
 	do
-		local headTransform = actorView:getLocalBoneTransform("head")
-		local feetTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		local worldTransform = love.math.newTransform()
-		worldTransform:apply(feetTransform)
-		worldTransform:apply(headTransform)
+		local worldTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
 
 		local camera = gameView:getRenderer():getCamera()
 		local projectionTransform, viewTransform = camera:getTransforms()
