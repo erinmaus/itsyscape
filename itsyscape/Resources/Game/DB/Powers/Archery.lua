@@ -239,3 +239,100 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Snipe"
 }
+
+ItsyScape.Resource.Power "TrickShot" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 30,
+	MinLevel = 20,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Resource.Effect "Power_TrickShotDaze" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Daze",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers your accuracy and damage by 10%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Trick Shot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Take a trick shot, dazing the enemy. Always hits, dealing up to 200% damage, but accuracy affects damage. A dazed enemy will have 10% reduced accuracy and damage for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+-- ItsyScape.Resource.Power "SoulStrike" {
+-- 	ItsyScape.Action.Activate() {
+-- 		Requirement {
+-- 			Resource = ItsyScape.Resource.Skill "Archery",
+-- 			Count = ItsyScape.Utility.xpForLevel(30)
+-- 		},
+
+-- 		Output {
+-- 			Resource = ItsyScape.Resource.Skill "Archery",
+-- 			Count = ItsyScape.Utility.xpForResource(21)
+-- 		},
+
+-- 		Output {
+-- 			Resource = ItsyScape.Resource.Skill "Dexterity",
+-- 			Count = ItsyScape.Utility.xpForResource(21)
+-- 		}
+-- 	}
+-- }
+
+-- ItsyScape.Meta.CombatPowerCoolDown {
+-- 	BaseCoolDown = 120,
+-- 	MaxReduction = 60,
+-- 	MinLevel = 30,
+-- 	MaxLevel = 80,
+-- 	Skill = ItsyScape.Resource.Skill "Archery",
+-- 	Resource = ItsyScape.Resource.Power "SoulStrike"
+-- }
+
+-- ItsyScape.Meta.ResourceName {
+-- 	Value = "Soul Strike",
+-- 	Language = "en-US",
+-- 	Resource = ItsyScape.Resource.Power "SoulStrike"
+-- }
+
+-- ItsyScape.Meta.ResourceDescription {
+-- 	Value = "Debuffs stats directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuff.",
+-- 	Language = "en-US",
+-- 	Resource = ItsyScape.Resource.Power "SoulStrike"
+-- }
+
