@@ -60,7 +60,7 @@ function Power:isDone(time)
 end
 
 function Power:draw(position, time)
-	if not self.ready then
+	if not self.ready or not self.icon then
 		return
 	end
 
