@@ -62,7 +62,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	end
 
 	local style = weapon:getStyle()
-	local bonusType, level, bonuses
+	local bonusType, level, bonuses, skill
 	do
 		if style == Weapon.STYLE_MAGIC then
 			bonusType = 'StrengthMagic'
@@ -72,7 +72,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			bonusType = 'StrengthMelee'
 		end
 
-		local success, skill = weapon:getSkill(purpose)
+		local success
+		success, skill = weapon:getSkill(purpose)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
@@ -174,7 +175,7 @@ function Weapon.DamageRoll:getDamageStat()
 end
 
 function Weapon.DamageRoll:setLevel(value)
-	self.level = self.level or value
+	self.level = value or self.level
 end
 
 function Weapon.DamageRoll:getBonus()
@@ -186,7 +187,7 @@ function Weapon.DamageRoll:getBonusType()
 end
 
 function Weapon.DamageRoll:setBonus(value)
-	self.bonus = self.bonus or value
+	self.bonus = value or self.bonus
 end
 
 function Weapon.DamageRoll:getMaxHit()
@@ -338,7 +339,7 @@ function Weapon.AttackRoll:getDefenseLevel()
 end
 
 function Weapon.AttackRoll:setDefenseLevel(value)
-	self.defenseLevel = self.defenseLevel or value
+	self.defenseLevel = value or self.defenseLevel
 end
 
 function Weapon.AttackRoll:getAccuracyStat()
@@ -350,7 +351,7 @@ function Weapon.AttackRoll:getAttackLevel()
 end
 
 function Weapon.AttackRoll:setAttackLevel(value)
-	self.attackLevel = self.attackLevel or value
+	self.attackLevel = value or self.attackLevel
 end
 
 function Weapon.AttackRoll:getDefenseBonus()
@@ -358,7 +359,7 @@ function Weapon.AttackRoll:getDefenseBonus()
 end
 
 function Weapon.AttackRoll:setDefenseBonus(value)
-	self.defenseBonus = self.defenseBonus or value
+	self.defenseBonus = value or self.defenseBonus
 end
 
 function Weapon.AttackRoll:getDefenseBonusType()
@@ -370,7 +371,7 @@ function Weapon.AttackRoll:getAccuracyBonus()
 end
 
 function Weapon.AttackRoll:setAccuracyBonus(value)
-	self.accuracyBonus = self.accuracyBonus or value
+	self.accuracyBonus = value or self.accuracyBonus
 end
 
 function Weapon.AttackRoll:getAccuracyBonusType()
@@ -408,23 +409,39 @@ function Weapon:rollAttack(peep, target, bonus)
 	return Weapon.AttackRoll(self, peep, target, bonus)
 end
 
+function Weapon:applyAttackModifiers(roll)
+	do
+		for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToAttack(roll)
+		end
+	end
+	do
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToAttack(roll)
+		end
+	end
+end
+
 function Weapon:previewDamageRoll(roll)
 	-- Nothing.
 end
 
-function Weapon:rollDamage(peep, purpose, target)
-	local roll = Weapon.DamageRoll(self, peep, purpose, target)
-	self:previewDamageRoll(roll)
-
-	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+function Weapon:applyDamageModifiers(roll, purpose)
+	for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 		effect:applySelfToDamage(roll, purpose)
 	end
 
 	if target then
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 			effect:applyTargetToDamage(roll, purpose)
 		end
 	end
+end
+
+function Weapon:rollDamage(peep, purpose, target)
+	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	self:applyDamageModifiers(roll)
+	self:previewDamageRoll(roll)
 
 	return roll
 end
@@ -489,16 +506,7 @@ end
 
 function Weapon:perform(peep, target)
 	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
-	do
-		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			effect:applySelfToAttack(roll)
-		end
-	end
-	do
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			effect:applyTargetToAttack(roll)
-		end
-	end
+	self:applyAttackModifiers(roll)
 
 	local s, a, d = roll:roll()
 	if s then
