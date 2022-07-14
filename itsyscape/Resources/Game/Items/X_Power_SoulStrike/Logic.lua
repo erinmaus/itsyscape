@@ -62,7 +62,6 @@ function SoulStrike:perform(peep, target)
 		Log.info("Damage multiplier is %d%%.", ratio * 100)
 
 		local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_KILL, target)
-		logic:applyDamageModifiers(damageRoll)
 
 		local maxHit = damageRoll:getMaxHit()
 		local hit = math.floor(math.max(maxHit * ratio, 1) + 0.5)

@@ -19,10 +19,7 @@ function TrickShot:perform(peep, target)
 	local logic = self:getLogic()
 	if logic then
 		local attackRoll = logic:rollAttack(peep, target, logic:getBonusForStance(peep))
-		logic:applyAttackModifiers(attackRoll)
-
 		local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_KILL, target)
-		logic:applyDamageModifiers(damageRoll)
 
 		local maxAttackRoll = attackRoll:getMaxAttackRoll()
 		local maxDefenseRoll = attackRoll:getMaxDefenseRoll()

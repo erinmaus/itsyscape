@@ -316,8 +316,8 @@ ItsyScape.Resource.Power "SoulStrike" {
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 2,
-	MaxReduction = 1,
+	BaseCoolDown = 120,
+	MaxReduction = 60,
 	MinLevel = 30,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -334,4 +334,44 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Debuffs offensive stats and defense directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuffs.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Resource.Power "Headshot" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 90,
+	MaxReduction = 30,
+	MinLevel = 40,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Headshot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Aim for the head. Less accurate shot, but damage ranges from 200% - 400% upon a successful. This attack deals an extra 100% damage to undead.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Headshot"
 }

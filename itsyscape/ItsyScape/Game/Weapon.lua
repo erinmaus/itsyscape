@@ -406,7 +406,15 @@ end
 
 -- Rolls an attack.
 function Weapon:rollAttack(peep, target, bonus)
-	return Weapon.AttackRoll(self, peep, target, bonus)
+	local roll = Weapon.AttackRoll(self, peep, target, bonus)
+	self:applyAttackModifiers(roll)
+	self:previewAttackRoll(roll)
+
+	return roll
+end
+
+function Weapon:previewAttackRoll(roll)
+	-- Nothing.
 end
 
 function Weapon:applyAttackModifiers(roll)
@@ -506,7 +514,6 @@ end
 
 function Weapon:perform(peep, target)
 	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
-	self:applyAttackModifiers(roll)
 
 	local s, a, d = roll:roll()
 	if s then
