@@ -351,7 +351,7 @@ function ActorView:applySkin(slotNodes)
 						slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
 
 						slot.sceneNode:setParent(self.sceneNode)
-						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
+						slot.sceneNode:getMaterial():setTextures(self.game:getTranslucentTexture())
 						slot.sceneNode:setTransforms(self.animatable:getTransforms())
 
 						local lights = slot.instance:getLights()

@@ -79,6 +79,9 @@ function SoulStrike:perform(peep, target)
 
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)
+
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("SoulStrike", peep, target)
 	else
 		return ProxyXWeapon.perform(self, peep, target)
 	end

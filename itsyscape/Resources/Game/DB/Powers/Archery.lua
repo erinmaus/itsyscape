@@ -316,8 +316,8 @@ ItsyScape.Resource.Power "SoulStrike" {
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+	BaseCoolDown = 2,
+	MaxReduction = 1,
 	MinLevel = 30,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
