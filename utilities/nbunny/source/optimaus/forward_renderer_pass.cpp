@@ -267,7 +267,12 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
 

@@ -282,7 +282,12 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
 
