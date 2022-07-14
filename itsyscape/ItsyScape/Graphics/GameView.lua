@@ -163,8 +163,12 @@ function GameView:new(game)
 		"Resources/Game/Items/ItemBagIcon.lmesh")
 	self.items = {}
 
+	local translucentTextureImageData = love.image.newImageData(1, 1)
+	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
+	self.translucentTexture = TextureResource(love.graphics.newImage(translucentTextureImageData))
+
 	local whiteTextureImageData = love.image.newImageData(1, 1)
-	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
+	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
 
 	local itemTextureImageData = love.image.newImageData(1, 1)
@@ -498,6 +502,14 @@ end
 
 function GameView:getView(instance)
 	return self.views[instance]
+end
+
+function GameView:getWhiteTexture()
+	return self.whiteTexture
+end
+
+function GameView:getTranslucentTexture()
+	return self.translucentTexture
 end
 
 function GameView:spawnItem(item, tile)
