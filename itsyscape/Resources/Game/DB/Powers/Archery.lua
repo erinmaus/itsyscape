@@ -296,43 +296,42 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "TrickShot"
 }
 
--- ItsyScape.Resource.Power "SoulStrike" {
--- 	ItsyScape.Action.Activate() {
--- 		Requirement {
--- 			Resource = ItsyScape.Resource.Skill "Archery",
--- 			Count = ItsyScape.Utility.xpForLevel(30)
--- 		},
+ItsyScape.Resource.Power "SoulStrike" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
 
--- 		Output {
--- 			Resource = ItsyScape.Resource.Skill "Archery",
--- 			Count = ItsyScape.Utility.xpForResource(21)
--- 		},
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
 
--- 		Output {
--- 			Resource = ItsyScape.Resource.Skill "Dexterity",
--- 			Count = ItsyScape.Utility.xpForResource(21)
--- 		}
--- 	}
--- }
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
 
--- ItsyScape.Meta.CombatPowerCoolDown {
--- 	BaseCoolDown = 120,
--- 	MaxReduction = 60,
--- 	MinLevel = 30,
--- 	MaxLevel = 80,
--- 	Skill = ItsyScape.Resource.Skill "Archery",
--- 	Resource = ItsyScape.Resource.Power "SoulStrike"
--- }
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 60,
+	MinLevel = 30,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
 
--- ItsyScape.Meta.ResourceName {
--- 	Value = "Soul Strike",
--- 	Language = "en-US",
--- 	Resource = ItsyScape.Resource.Power "SoulStrike"
--- }
+ItsyScape.Meta.ResourceName {
+	Value = "Soul Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
 
--- ItsyScape.Meta.ResourceDescription {
--- 	Value = "Debuffs stats directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuff.",
--- 	Language = "en-US",
--- 	Resource = ItsyScape.Resource.Power "SoulStrike"
--- }
-
+ItsyScape.Meta.ResourceDescription {
+	Value = "Debuffs offensive stats and defense directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
