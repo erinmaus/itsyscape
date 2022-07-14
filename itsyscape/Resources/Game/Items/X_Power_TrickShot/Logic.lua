@@ -27,6 +27,11 @@ function TrickShot:perform(peep, target)
 		local maxAttackRoll = attackRoll:getMaxAttackRoll()
 		local maxDefenseRoll = attackRoll:getMaxDefenseRoll()
 
+		Log.info(
+			"Trick Shot '%s' max attack roll = %d, '%s' max defense roll = %d.",
+			peep:getName(), maxAttackRoll,
+			target:getName(), maxDefenseRoll)
+
 		local ratio
 		if maxDefenseRoll == 0 then
 			ratio = 2
@@ -34,11 +39,13 @@ function TrickShot:perform(peep, target)
 			ratio = math.max(math.min(maxAttackRoll / maxDefenseRoll, 0), 2)
 		end
 
+		Log.info("Damage ratio is %d%%.", ratio * 100)
+
 		local maxHit = damageRoll:getMaxHit()
 		local hit = math.floor(math.max(maxHit * ratio, 1) + 0.5)
 
-		damageRoll:setMinHit(maxHit)
-		damageRoll:setMaxHit(maxHit)
+		damageRoll:setMinHit(hit)
+		damageRoll:setMaxHit(hit)
 
 		local attack = AttackPoke({
 			attackType = self:getBonusForStance(peep):lower(),
