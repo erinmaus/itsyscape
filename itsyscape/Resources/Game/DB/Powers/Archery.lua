@@ -415,3 +415,65 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Hesitate"
 }
+
+ItsyScape.Resource.Power "Nuke" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(60)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Dynamite",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(25)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(25)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 300,
+	MaxReduction = 60,
+	MinLevel = 60,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Nuke!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Using a stick of radioactive dynamite, cause a nuclear explosion at the feet of your target, damaging anyone within the blast with up to 500% damage. Afflicted targets will become radioactive for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Resource.Effect "Radioactive" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Radioactive",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Radioactive"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases damage and accuracy by 20%. Can spread to others within melee distance.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Radioactive"
+}
+
