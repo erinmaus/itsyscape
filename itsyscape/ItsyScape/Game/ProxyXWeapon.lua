@@ -12,10 +12,13 @@ local Weapon = require "ItsyScape.Game.Weapon"
 
 local ProxyXWeapon = Class(Weapon)
 ProxyXWeapon.PATCH = {
+	"applyDamageModifiers",
 	"previewDamageRoll",
+	"applyAttackModifiers",
 	"previewAttackRoll",
 	"onAttackHit",
-	"onAttackMiss"
+	"onAttackMiss",
+	"getDelay"
 }
 
 function ProxyXWeapon:new(id, manager, logic)
@@ -33,7 +36,7 @@ function ProxyXWeapon:new(id, manager, logic)
 
 				self.patches[methodName] = originalMethod
 				self.logic[methodName] = function(s, ...)
-					self[methodName](self, ...)
+					return self[methodName](self, ...)
 				end
 			end
 		end
@@ -52,11 +55,11 @@ function ProxyXWeapon:rollAttack(peep, target, bonus)
 	end
 end
 
-function ProxyXWeapon:applyAttackModifiers(roll)
-	if self.logic then
-		return self.logic:applyAttackModifiers(roll)
+function ProxyXWeapon:applyAttackModifiers(...)
+	if self.patches.applyAttackModifiers then
+		return self.patches.applyAttackModifiers(self.logic, ...)
 	else
-		return Weapon.applyAttackModifiers(self, roll)
+		return Weapon.applyAttackModifiers(self, ...)
 	end
 end
 
@@ -76,11 +79,11 @@ function ProxyXWeapon:rollDamage(peep, purpose, target)
 	end
 end
 
-function ProxyXWeapon:applyDamageModifiers(roll)
-	if self.logic then
-		return self.logic:applyDamageModifiers(roll)
+function ProxyXWeapon:applyDamageModifiers(...)
+	if self.patches.applyDamageModifiers then
+		return self.patches.applyDamageModifiers(self.logic, ...)
 	else
-		return Weapon.applyDamageModifiers(self, roll)
+		return Weapon.applyDamageModifiers(self, ...)
 	end
 end
 
@@ -102,7 +105,7 @@ end
 
 function ProxyXWeapon:onAttackHit(...)
 	if self.patches.onAttackHit then
-		self.patches.onAttackHit(self.logic, ...)
+		return self.patches.onAttackHit(self.logic, ...)
 	else
 		return Weapon.onAttackHit(self, ...)
 	end
@@ -110,7 +113,7 @@ end
 
 function ProxyXWeapon:onAttackMiss(...)
 	if self.patches.onAttackMiss then
-		self.patches.onAttackMiss(self.logic, ...)
+		return self.patches.onAttackMiss(self.logic, ...)
 	else
 		return Weapon.onAttackMiss(self, ...)
 	end
@@ -161,6 +164,14 @@ function ProxyXWeapon:getProjectile(peep)
 		return self.logic:getProjectile(peep)
 	else
 		return Weapon.getProjectile(self, peep)
+	end
+end
+
+function ProxyXWeapon:getDelay(...)
+	if self.patches.getDelay then
+		return self.patches.getDelay(self.logic, ...)
+	else
+		return Weapon.getDelay(self, ...)
 	end
 end
 

@@ -375,3 +375,43 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Headshot"
 }
+
+ItsyScape.Resource.Power "Hesitate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(23)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(23)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 50,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hesitate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Take your time before your next shot. Damage is delayed, but accuracy is greatly increased. Deals upwards of 100% damage, ignoring most defenses, buffs, and debuffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
