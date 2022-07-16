@@ -22,7 +22,7 @@ Radioactive.OFFENSE_MULTIPLIER = 1.2
 Radioactive.TICK = 6
 Radioactive.DAMAGE_PER_TICK = 0.01
 Radioactive.MAX_DAMAGE_PER_TICK = 20
-Radioactive.SPREAD_CHANCE = 1
+Radioactive.SPREAD_CHANCE = 0.2
 Radioactive.SPREAD_DISTANCE = 1
 
 function Radioactive:new(activator)
