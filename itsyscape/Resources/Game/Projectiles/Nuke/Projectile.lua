@@ -68,7 +68,7 @@ Nuke.PARTICLE_SYSTEM_TOP = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 50, 75 },
 		delay = { 0.125 },
-		duration = { 1.5 }
+		duration = { 1 }
 	}
 }
 
@@ -134,6 +134,7 @@ Nuke.PARTICLE_SYSTEM_BOTTOM = {
 }
 
 Nuke.DURATION = 2.5
+Nuke.SPAWN_MUSHROOM_TOP_TIME = 0.4
 
 function Nuke:load()
 	Projectile.load(self)
@@ -142,7 +143,6 @@ function Nuke:load()
 	local root = self:getRoot()
 
 	self.particleSystemTop = ParticleSceneNode()
-	self.particleSystemTop:setParent(root)
 	self.particleSystemTop:initParticleSystemFromDef(Nuke.PARTICLE_SYSTEM_TOP, resources)
 	self.particleSystemTop:getTransform():setLocalTranslation(Vector.UNIT_Y * 8)
 
@@ -167,6 +167,12 @@ function Nuke:update(elapsed)
 	if self.spawnPosition then
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
+
+		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME and
+		   not self.particleSystemTop:getParent()
+		then
+			self.particleSystemTop:setParent(root)
+		end
 	end
 end
 
