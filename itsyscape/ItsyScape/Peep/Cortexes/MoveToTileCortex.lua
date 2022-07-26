@@ -37,6 +37,14 @@ function MoveToTileCortex:removePeep(peep)
 	self.speed[peep] = nil
 end
 
+function MoveToTileCortex:accumulateVelocity(peep, value)
+	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.MovementEffect") do
+		value = effect:applyToVelocity(value)
+	end
+
+	return value
+end
+
 function MoveToTileCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
@@ -66,7 +74,10 @@ function MoveToTileCortex:update(delta)
 					movement.facing = MovementBehavior.FACING_RIGHT
 				end
 
-				position.position = position.position + offset * delta * MoveToTileCortex.SPEED_MULTIPLIER
+				local velocity = offset * MoveToTileCortex.SPEED_MULTIPLIER
+				velocity = self:accumulateVelocity(peep, velocity)
+
+				position.position = position.position + velocity * delta 
 
 				local distance = ((position.position * Vector.PLANE_XZ) - targetPosition):getLength()
 				if distance < 0.5 then

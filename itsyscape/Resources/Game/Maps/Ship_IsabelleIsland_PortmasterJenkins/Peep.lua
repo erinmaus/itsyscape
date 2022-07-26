@@ -108,7 +108,6 @@ Ship.COMBAT_HINT = {
 					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
 					local config = interface:pull().config
 					for _, thingie in pairs(config.openThingies or {}) do
-						print(thingie)
 						if thingie == interface.THINGIES_OFFENSIVE_POWERS then
 							return true
 						end

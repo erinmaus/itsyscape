@@ -54,6 +54,26 @@ local function clampVector(v)
 	end
 end
 
+function MovementCortex.accumulateAcceleration(effect, acceleration)
+	return effect:applyToAcceleration(acceleration)
+end
+
+function MovementCortex.accumulateVelocity(effect, velocity)
+	return effect:applyToVelocity(velocity)
+end
+
+function MovementCortex.accumulatePosition(effect, position, elevation)
+	return effect:applyToPosition(position, elevation)
+end
+
+function MovementCortex:accumulate(peep, func, value, ...)
+	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.MovementEffect") do
+		value = func(effect, value)
+	end
+
+	return value
+end
+
 function MovementCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local gravity = game:getStage():getGravity()
@@ -80,7 +100,10 @@ function MovementCortex:update(delta)
 				end
 			end
 
+
 			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier + movement.additionalAcceleration
+			acceleration = self:accumulate(peep, self.accumulateAcceleration, acceleration)
+
 			movement.velocity = movement.velocity + acceleration * multiplier
 			clampVector(movement.velocity)
 
@@ -99,6 +122,8 @@ function MovementCortex:update(delta)
 			local oldTile, oldI, oldJ = map:getTileAt(oldPosition.x, oldPosition.z)
 
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
+			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
+
 			position.position = position.position + velocity * multiplier
 
 			local newTile, newI, newJ = map:getTileAt(position.position.x, position.position.z)
@@ -165,6 +190,8 @@ function MovementCortex:update(delta)
 			else
 				position.position.y = math.max(position.position.y, y)
 			end
+
+			position.position = self:accumulate(peep, self.accumulatePosition, position.position, y)
 
 			local stepY = position.position.y - oldPosition.y 
 			if stepY > movement.maxStepHeight then

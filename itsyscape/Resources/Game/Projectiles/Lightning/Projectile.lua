@@ -33,8 +33,6 @@ Lightning.COLORS = {
 	Color.fromHexString("00ccff", 0.5)
 }
 
-print(Color.fromHexString("ff9900", 0.5):get())
-
 function Lightning:load()
 	Projectile.load(self)
 

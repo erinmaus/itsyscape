@@ -31,7 +31,6 @@ function GhostBindersRing:isUndead(resource)
 
 	local peep = self:getPeep()
 	if not peep then
-		print ('no peep')
 		return false
 	end
 
