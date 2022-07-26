@@ -286,3 +286,60 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }
+
+ItsyScape.Resource.Power "Hexagram" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 20,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Resource.Effect "Power_Hexagram" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hexagram",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Hexagram"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Prevents you from escaping the hexagram.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Hexagram"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hexagram",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Binds the foe to a hexagram, preventing them from moving outside of it.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
