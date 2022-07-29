@@ -68,7 +68,7 @@ end
 
 function MovementCortex:accumulate(peep, func, value, ...)
 	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.MovementEffect") do
-		value = func(effect, value)
+		value = func(effect, value, ...)
 	end
 
 	return value

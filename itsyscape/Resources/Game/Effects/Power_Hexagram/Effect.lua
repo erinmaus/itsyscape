@@ -8,25 +8,19 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Effect = require "ItsyScape.Peep.Effect"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local MovementEffect = require "ItsyScape.Peep.Effects.MovementEffect"
 
 -- Binds the foe to the hexagram for 30 - 60 levels based on Wisdom level.
 local Hexagram = Class(MovementEffect)
-Hexagram.DURATION = 30
 Hexagram.DISTANCE = 4.5
+Hexagram.PLAYER_DURATION = 10
+Hexagram.OTHER_DURATION  = 20 
 
-function Hexagram:new(activator)
-	local level = activator:getState():count(
-		"Skill",
-		"Wisdom",
-		{ ['skill-as-level'] = true })
-
-	local width = math.min(math.max(level - 20, 0), 40)
-	local percent = width / 40
-	self.DURATION = percent * 30 + 30
-
+function Hexagram:new()
 	MovementEffect.new(self)
 end
 
@@ -37,16 +31,21 @@ end
 function Hexagram:enchant(peep)
 	MovementEffect.enchant(self, peep)
 	self.center = Utility.Peep.getAbsolutePosition(peep)
+
+	if peep:hasBehavior(PlayerBehavior) then
+		self:setDu
 end
 
-function Hexagram:applyToVelocity(velocity)
-	local currentPosition = Utility.Peep.getAbsolutePosition(self:getPeep())
-	local centerPosition = self.center
+function Hexagram:applyToPosition(position)
+	local difference = (position - self.center)
+	local distance = difference:getLength()
 
-	local distance = (currentPosition - centerPosition):getLength()
-	local delta = 1 - (math.min(distance, Hexagram.DISTANCE) / Hexagram.DISTANCE)
-
-	return velocity * delta
+	if distance >= Hexagram.DISTANCE then
+		local normal = difference:getNormal()
+		return normal * Hexagram.DISTANCE + self.center
+	else
+		return position
+	end
 end
 
 return Hexagram
