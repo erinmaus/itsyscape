@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local Utility = require "ItsyScape.Game.Utility"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local Hexagram = Class(CombatPower)
 
@@ -18,13 +19,18 @@ function Hexagram:new(...)
 
 	local gameDB = self:getGame():getGameDB()
 	self.effectResource = gameDB:getResource("Power_Hexagram", "Effect")
-
-	self:setXWeaponID("Power_Hexagram")
 end
 
 function Hexagram:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 	Utility.Peep.applyEffect(target, self.effectResource, true, activator)
+
+	local stage = activator:getDirector():getGameInstance():getStage()
+	if target:hasBehavior(PlayerBehavior) then
+		stage:fireProjectile("Power_HexagramVsPlayer", activator, target)
+	else
+		stage:fireProjectile("Power_Hexagram", activator, target)
+	end
 end
 
 return Hexagram
