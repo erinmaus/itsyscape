@@ -33,7 +33,10 @@ function Hexagram:enchant(peep)
 	self.center = Utility.Peep.getAbsolutePosition(peep)
 
 	if peep:hasBehavior(PlayerBehavior) then
-		self:setDu
+		self:setDuration(Hexagram.PLAYER_DURATION)
+	else
+		self:setDuration(Hexagram.OTHER_DURATION)
+	end
 end
 
 function Hexagram:applyToPosition(position)
