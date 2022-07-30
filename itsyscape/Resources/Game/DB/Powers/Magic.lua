@@ -374,3 +374,60 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Hexagram"
 }
 
+ItsyScape.Resource.Power "IceBarrage" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 90,
+	MaxReduction = 30,
+	MinLevel = 30,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Resource.Effect "Power_IceBarrage" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your movement speed by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Unleash a damaging elemental attack, slowing the foe by 50% for 30 to 60 seconds based on Wisdom level. Deals 100% - 300% damage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+
