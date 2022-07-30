@@ -56,6 +56,15 @@ function CombatCortex:removePeep(peep)
 	self.pendingResume[peep] = nil
 end
 
+function CombatCortex:resetPeep(peep)
+	self.walking[peep] = nil
+	self.strafing[peep] = nil
+	self.pendingResume[peep] = nil
+
+	peep:removeBehavior(CombatTargetBehavior)
+	peep:getCommandQueue(CombatCortex.QUEUE):clear()
+end
+
 function CombatCortex:resume(peep, target)
 	local actor = target:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -376,16 +385,19 @@ function CombatCortex:update(delta)
 				end
 			end
 		else
+			local success
+
 			local power = peep:getBehavior(PendingPowerBehavior)
 			if power then
 				power = power.power
 
 				if not power:getRequiresTarget() then
-					self:usePower(peep, nil, logic)
+					success = self:usePower(peep, nil, logic)
 				end
-			elseif peep:hasBehavior(CombatTargetBehavior) then
-				peep:removeBehavior(CombatTargetBehavior)
-				peep:getCommandQueue(CombatCortex.QUEUE):clear()
+			end
+
+			if not success then
+				self:resetPeep(peep)
 			end
 		end
 	end
