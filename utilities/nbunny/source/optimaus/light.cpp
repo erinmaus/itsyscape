@@ -440,6 +440,11 @@ void nbunny::FogSceneNode::to_light(Light& light, float delta) const
 {
 	LightSceneNode::to_light(light, delta);
 
+	auto transform = get_transform().get_global(delta);
+	auto position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	light.position = glm::vec4(glm::vec3(position), 1.0f);
+
 	light.near_distance = glm::mix(
 		get_ticked() ? previous_near_distance : current_near_distance,
 		current_near_distance,

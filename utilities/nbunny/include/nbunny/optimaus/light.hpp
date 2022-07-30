@@ -136,7 +136,8 @@ namespace nbunny
 		enum FollowMode
 		{
 			FOLLOW_MODE_EYE    = 0,
-			FOLLOW_MODE_TARGET = 1
+			FOLLOW_MODE_TARGET = 1,
+			FOLLOW_MODE_SELF   = 2
 		};
 
 	private:
