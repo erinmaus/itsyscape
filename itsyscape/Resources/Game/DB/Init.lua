@@ -487,6 +487,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PowerSpec" {
+		IsInstant = Meta.TYPE_INTEGER,
+		IsQuick = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Rotate"
 	Meta "RotateActionDirection" {
 		RotationX = Meta.TYPE_REAL,

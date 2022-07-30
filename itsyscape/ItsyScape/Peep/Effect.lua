@@ -28,8 +28,8 @@ function Effect:getResource()
 	return self.resource
 end
 
-function Effect:setDuration()
-	return self.duration
+function Effect:setDuration(value)
+	self.duration = value
 end
 
 function Effect:getDuration()

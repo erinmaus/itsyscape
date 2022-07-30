@@ -20,6 +20,15 @@ function Power:new(game, resource, ...)
 	self.name = Utility.getName(resource, gameDB)
 	self.description = Utility.getDescription(resource, gameDB)
 
+	local spec = gameDB:getRecord("PowerSpec", {
+		Resource = resource
+	})
+
+	if spec then
+		self.isInstant = spec:get("IsInsant") ~= 0
+		self.isQuick = spec:get("IsQuick") ~= 0
+	end
+
 	local actions = Utility.getActions(game, resource, 'self')
 	for i = 1, #actions do
 		if actions[i].instance:is("Activate") then
@@ -46,6 +55,14 @@ end
 
 function Power:getAction()
 	return self.action or false
+end
+
+function Power:getIsQuick()
+	return self.isQuick or false
+end
+
+function Power:getIsInstant()
+	return self.isInstant or false
 end
 
 function Power:perform(activator, target)
