@@ -26,7 +26,18 @@ vec4 effect(
 	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz - scape_CameraEye;
 	float length = length(position);
-	float factor = 1.0 - clamp((scape_FogParameters.y - length) / (scape_FogParameters.y - scape_FogParameters.x), 0.0, 1.0);
+	float near = scape_FogParameters.x;
+	float far = scape_FogParameters.y;
+
+	float factor = 0.0f;
+	if (near <= far)
+	{
+		factor = 1.0 - clamp((far - length) / (far - near), 0.0, 1.0);
+	}
+	else
+	{
+		factor = clamp((near - length) / (near - far), 0.0, 1.0);
+	}
 
 	return vec4(scape_FogColor * factor * alpha, factor * alpha);
 }

@@ -74,9 +74,21 @@ void nbunny::ForwardRendererPass::prepare_fog(float delta)
 		Light light;
 		fog_scene_node->to_light(light, delta);
 
-		auto camera_eye = fog_scene_node->get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
-			get_renderer()->get_camera().get_eye_position() :
-			get_renderer()->get_camera().get_target_position();
+		glm::vec3 camera_eye;
+		switch (fog_scene_node->get_follow_mode())
+		{
+			case FogSceneNode::FOLLOW_MODE_EYE:
+			default:
+				camera_eye = get_renderer()->get_camera().get_eye_position();
+				break;
+			case FogSceneNode::FOLLOW_MODE_TARGET:
+				camera_eye = get_renderer()->get_camera().get_target_position();
+				break;
+			case FogSceneNode::FOLLOW_MODE_SELF:
+				camera_eye = glm::vec3(light.position);
+				break;
+		}
+
 		light.position = glm::vec4(camera_eye, 1.0f);
 
 		if (fog.size() < MAX_FOG)

@@ -194,9 +194,21 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 		shader->updateUniform(fog_parameters_uniform, 1);
 	}
 
-	auto camera_eye = node.get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
-		get_renderer()->get_camera().get_eye_position() :
-		get_renderer()->get_camera().get_target_position();
+	glm::vec3 camera_eye;
+	switch (node.get_follow_mode())
+	{
+		case FogSceneNode::FOLLOW_MODE_EYE:
+		default:
+			camera_eye = get_renderer()->get_camera().get_eye_position();
+			break;
+		case FogSceneNode::FOLLOW_MODE_TARGET:
+			camera_eye = get_renderer()->get_camera().get_target_position();
+			break;
+		case FogSceneNode::FOLLOW_MODE_SELF:
+			camera_eye = light.position;
+			break;
+	}
+
 	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
 	if (camera_eye_uniform)
 	{

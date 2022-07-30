@@ -83,7 +83,15 @@ vec3 scapeApplyFog(
 {
 	vec3 relativePosition = fog.position - position.xyz;
 	float length = length(relativePosition);
-	float factor = 1.0 - clamp((fog.far - length) / (fog.far - fog.near), 0.0, 1.0);
+	float factor = 0.0f;
+	if (fog.near <= fog.far)
+	{
+		factor = 1.0 - clamp((fog.far - length) / (fog.far - fog.near), 0.0, 1.0);
+	}
+	else
+	{
+		factor = clamp((fog.near - length) / (fog.near - fog.far), 0.0, 1.0);
+	}
 
 	return mix(color, fog.color, factor);
 }
