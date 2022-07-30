@@ -418,12 +418,16 @@ function Weapon:previewAttackRoll(roll)
 end
 
 function Weapon:applyAttackModifiers(roll)
-	for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-		effect:applySelfToAttack(roll)
+	if roll:getSelf() then
+		for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToAttack(roll)
+		end
 	end
 
-	for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-		effect:applyTargetToAttack(roll)
+	if roll:getTarget() then
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToAttack(roll)
+		end
 	end
 end
 
@@ -432,12 +436,16 @@ function Weapon:previewDamageRoll(roll)
 end
 
 function Weapon:applyDamageModifiers(roll, purpose)
-	for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-		effect:applySelfToDamage(roll, purpose)
+	if roll:getSelf() then
+		for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToDamage(roll, purpose)
+		end
 	end
 
-	for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-		effect:applyTargetToDamage(roll, purpose)
+	if roll:getTarget() then
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToDamage(roll, purpose)
+		end
 	end
 end
 
