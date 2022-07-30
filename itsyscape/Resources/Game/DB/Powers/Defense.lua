@@ -22,6 +22,13 @@ ItsyScape.Resource.Power "Prepare" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Prepare"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 20,
@@ -71,6 +78,13 @@ ItsyScape.Resource.Power "Absorb" {
 			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Absorb"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
@@ -124,6 +138,13 @@ ItsyScape.Resource.Power "IronSkin" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 180,
 	MaxReduction = 60,
@@ -175,6 +196,13 @@ ItsyScape.Resource.Power "Freedom" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Freedom"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 30,
@@ -208,6 +236,13 @@ ItsyScape.Resource.Power "Bash" {
 			Count = ItsyScape.Utility.xpForResource(15)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Bash"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {

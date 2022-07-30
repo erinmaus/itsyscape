@@ -490,6 +490,7 @@ Game "ItsyScape"
 	Meta "PowerSpec" {
 		IsInstant = Meta.TYPE_INTEGER,
 		IsQuick = Meta.TYPE_INTEGER,
+		NoTarget = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
