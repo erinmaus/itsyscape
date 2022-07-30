@@ -48,7 +48,7 @@ end
 
 function IceBarrage:tick()
 	if not self.position or not self.size then
-		self.position = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+		self.position = self:getTargetPosition(self:getDestination())
 
 		local min, max = self:getDestination():getBounds()
 		local x = max.x - min.z

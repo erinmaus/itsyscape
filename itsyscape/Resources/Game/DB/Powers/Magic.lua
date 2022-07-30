@@ -430,4 +430,42 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "IceBarrage"
 }
 
+ItsyScape.Resource.Power "Gravity" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
 
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 150,
+	MaxReduction = 30,
+	MinLevel = 40,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gravity",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deals up to 300% damage. Applies a 10% to 20% debuff directly to the Constitution stat based on damage dealt.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
