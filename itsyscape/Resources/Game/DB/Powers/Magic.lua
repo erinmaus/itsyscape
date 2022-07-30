@@ -27,6 +27,12 @@ ItsyScape.Resource.Power "Confuse" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Confuse"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 20,
@@ -83,6 +89,12 @@ ItsyScape.Resource.Power "Weaken" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Weaken"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 20,
@@ -137,6 +149,12 @@ ItsyScape.Resource.Power "Curse" {
 			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Curse"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
@@ -259,6 +277,13 @@ ItsyScape.Meta.CombatPowerCoolDown {
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
+
 ItsyScape.Resource.Effect "Power_Nirvana" {
 	-- Nothing.
 }
@@ -304,6 +329,12 @@ ItsyScape.Resource.Power "Hexagram" {
 			Count = ItsyScape.Utility.xpForResource(20)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Hexagram"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {

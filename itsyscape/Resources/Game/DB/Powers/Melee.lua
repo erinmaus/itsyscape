@@ -123,6 +123,13 @@ ItsyScape.Resource.Power "Parry" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 120,
 	MaxReduction = 30,
@@ -217,6 +224,13 @@ ItsyScape.Resource.Power "Riposte" {
 			Count = ItsyScape.Utility.xpForResource(15)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Riposte"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
