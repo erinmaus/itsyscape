@@ -270,7 +270,7 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		auto num_fog_uniform = shader->getUniformInfo("scape_NumFogs");
 		if (num_fog_uniform)
 		{
-			int num_fog = (int)fog.size();
+			int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
 			*num_fog_uniform->ints = num_fog;
 			shader->updateUniform(num_fog_uniform, 1);
 		}

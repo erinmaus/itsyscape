@@ -28,7 +28,8 @@ Gravity.FOG_NEAR_MAX = 5
 Gravity.FOG_NEAR_MIN = 0
 Gravity.FOG_FAR      = 2.5
 
-Gravity.COLOR = Color(0)
+Gravity.SINGULARITY_COLOR   = Color(0)
+Gravity.EVENT_HORIZON_COLOR = Color.fromHexString("ff9f29")
 
 Gravity.PARTICLE_SYSTEM = {
 	numParticles = 100,
@@ -89,8 +90,11 @@ function Gravity:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	self.decoration = DecorationSceneNode()
-	self.decoration:setParent(root)
+	self.singularity = DecorationSceneNode()
+	self.singularity:setParent(root)
+
+	self.eventHorizon = DecorationSceneNode()
+	self.eventHorizon:setParent(root)
 
 	self.fog = FogSceneNode()
 	self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_SELF)
@@ -103,11 +107,22 @@ function Gravity:load()
 		StaticMeshResource,
 		"Resources/Game/Projectiles/Power_Gravity/Model.lstatic",
 		function(model)
-			local material = self.decoration:getMaterial()
-			material:setTextures(self:getGameView():getWhiteTexture())
-			material:setIsTranslucent(true)
+			do
+				local material = self.singularity:getMaterial()
+				material:setTextures(self:getGameView():getWhiteTexture())
+				material:setIsTranslucent(true)
 
-			self.decoration:fromGroup(model:getResource(), "Singularity")
+				self.singularity:fromGroup(model:getResource(), "Singularity")
+			end
+
+			do
+				local material = self.eventHorizon:getMaterial()
+				material:setTextures(self:getGameView():getWhiteTexture())
+				material:setIsTranslucent(true)
+				material:setIsFullLit(true)
+
+				self.eventHorizon:fromGroup(model:getResource(), "EventHorizon")
+			end
 		end)
 end
 
@@ -136,14 +151,20 @@ function Gravity:update(elapsed)
 		local fogValue = alpha * (Gravity.FOG_NEAR_MAX - Gravity.FOG_NEAR_MIN) + Gravity.FOG_NEAR_MIN
 		self.fog:setNearDistance(fogValue + Gravity.FOG_FAR)
 		self.fog:setFarDistance(fogValue)
-		self.fog:setColor(Gravity.COLOR)
+		self.fog:setColor(Gravity.SINGULARITY_COLOR)
 		self.fog:getHandle():tick()
 		self.fog:setParent(root)
 
-		self.decoration:getMaterial():setColor(Color(
-			Gravity.COLOR.r,
-			Gravity.COLOR.g,
-			Gravity.COLOR.b,
+		self.singularity:getMaterial():setColor(Color(
+			Gravity.SINGULARITY_COLOR.r,
+			Gravity.SINGULARITY_COLOR.g,
+			Gravity.SINGULARITY_COLOR.b,
+			alpha))
+
+		self.eventHorizon:getMaterial():setColor(Color(
+			Gravity.EVENT_HORIZON_COLOR.r,
+			Gravity.EVENT_HORIZON_COLOR.g,
+			Gravity.EVENT_HORIZON_COLOR.b,
 			alpha))
 	end
 end
