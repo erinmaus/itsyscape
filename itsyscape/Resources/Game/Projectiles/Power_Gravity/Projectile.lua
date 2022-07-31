@@ -19,9 +19,9 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 
 local Gravity = Class(Projectile)
-Gravity.DURATION = 2.5
+Gravity.DURATION = 4
 
-Gravity.ALPHA_MULTIPLIER = 2
+Gravity.ALPHA_MULTIPLIER = 2.5
 Gravity.MAX_SIZE = 2
 
 Gravity.FOG_NEAR_MAX = 5
@@ -80,7 +80,7 @@ Gravity.PARTICLE_SYSTEM = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 25, 50 },
 		delay = { 0.125 },
-		duration = { 1.5 }
+		duration = { 2 }
 	}
 }
 
