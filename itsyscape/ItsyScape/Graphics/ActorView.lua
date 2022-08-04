@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
@@ -542,6 +543,7 @@ end
 
 function ActorView:getLocalBoneTransform(boneName)
 	local transform = love.math.newTransform()
+	transform:applyQuaternion((-Quaternion.X_90):get())
 
 	if not self.localTransforms then
 		return transform
