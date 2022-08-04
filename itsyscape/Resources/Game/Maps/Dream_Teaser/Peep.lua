@@ -54,20 +54,20 @@ end
 function Dream:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local stage = self:getDirector():getGameInstance():getStage()
-	stage:forecast(layer, 'Dream_Teaser_Bubbles', 'Fungal', {
-		gravity = { 0, 3, 0 },
-		wind = { 0, 0, 0 },
-		colors = {
-			{ 0.0, 0.0, 0.0, 1.0 },
-			{ 0.0, 0.0, 0.0, 1.0 },
-			{ 1.0, 1.0, 1.0, 1.0 },
-		},
-		minHeight = -10,
-		maxHeight = 0,
-		ceiling = 20,
-		heaviness = 0.5
-	})
+	-- local stage = self:getDirector():getGameInstance():getStage()
+	-- stage:forecast(layer, 'Dream_Teaser_Bubbles', 'Fungal', {
+	-- 	gravity = { 0, 3, 0 },
+	-- 	wind = { 0, 0, 0 },
+	-- 	colors = {
+	-- 		{ 0.0, 0.0, 0.0, 1.0 },
+	-- 		{ 0.0, 0.0, 0.0, 1.0 },
+	-- 		{ 1.0, 1.0, 1.0, 1.0 },
+	-- 	},
+	-- 	minHeight = -10,
+	-- 	maxHeight = 0,
+	-- 	ceiling = 20,
+	-- 	heaviness = 0.5
+	-- })
 
 	local function actionCallback(action)
 		if action == "pressed" then
