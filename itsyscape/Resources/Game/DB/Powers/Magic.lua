@@ -253,7 +253,7 @@ ItsyScape.Resource.Power "Nirvana" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(5)
+			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
 		Output {

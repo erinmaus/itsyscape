@@ -371,7 +371,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Aim for the head. Less accurate shot, but damage ranges from 200% - 400% upon a successful. This attack deals an extra 100% damage to undead.",
+	Value = "Aim for the head. Less accurate shot, but damage ranges from 200% - 400% upon a successful hit. This attack deals an extra 100% damage to undead.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Headshot"
 }

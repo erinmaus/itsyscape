@@ -269,3 +269,43 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Riposte"
 }
+
+ItsyScape.Resource.Power "Decapitate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 20,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Decapitate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Attempt to cut off the foe's head. Less accurate attack, but damage ranges from 200% - 400% upon a successful blow. This attack deals an extra 100% damage to undead.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
