@@ -33,7 +33,7 @@ Gravity.EVENT_HORIZON_COLOR = Color.fromHexString("ff9f29")
 
 Gravity.PARTICLE_SYSTEM = {
 	numParticles = 100,
-	texture = "Resources/Game/Projectiles/BoomBombSplosion/Particle.png",
+	texture = "Resources/Game/Projectiles/Power_Gravity/Particle.png",
 	columns = 4,
 
 	emitters = {

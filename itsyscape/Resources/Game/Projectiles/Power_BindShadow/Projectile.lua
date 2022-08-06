@@ -16,7 +16,7 @@ local BindShadow = Class(Projectile)
 
 BindShadow.PARTICLE_SYSTEM = {
 	numParticles = 50,
-	texture = "Resources/Game/Projectiles/SnipeSplosion/Particle.png",
+	texture = "Resources/Game/Projectiles/Power_BindShadow/Particle.png",
 	columns = 4,
 
 	emitters = {
