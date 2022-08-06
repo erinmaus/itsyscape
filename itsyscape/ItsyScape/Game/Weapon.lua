@@ -394,12 +394,22 @@ function Weapon.AttackRoll:setMaxDefenseRoll(value)
 	self.maxDefenseRoll = value or false
 end
 
+function Weapon.AttackRoll:setAlwaysHits(value)
+	self.alwaysHits = value or false
+end
+
 function Weapon.AttackRoll:roll()
 	local maxAttackRoll = self:getMaxAttackRoll()
 	local maxDefenseRoll = self:getMaxDefenseRoll()
 
-	local attackRoll = math.floor(math.random(0, maxAttackRoll))
-	local defenseRoll = math.floor(math.random(0, maxDefenseRoll))
+	local attackRoll, defenseRoll
+	if self.alwaysHits then
+		attackRoll = math.floor(math.random(0, maxAttackRoll))
+		defenseRoll = math.floor(math.random(0, maxDefenseRoll))
+	else
+		attackRoll = 1
+		defenseRoll = 0
+	end
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end

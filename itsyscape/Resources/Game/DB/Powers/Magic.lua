@@ -469,3 +469,44 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Gravity"
 }
+
+ItsyScape.Resource.Power "BindShadow" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(23)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(23)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 60,
+	MinLevel = 50,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bind Shadow",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Bind the shadow of the opponent to attack, dealing 200% of your opponent's damage against itself.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
