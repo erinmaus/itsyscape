@@ -12,6 +12,8 @@ local Weapon = require "ItsyScape.Game.Weapon"
 
 local ProxyXWeapon = Class(Weapon)
 ProxyXWeapon.PATCH = {
+	"rollDamage",
+	"rollAttack",
 	"applyDamageModifiers",
 	"previewDamageRoll",
 	"applyAttackModifiers",
@@ -48,8 +50,8 @@ function ProxyXWeapon:getLogic()
 end
 
 function ProxyXWeapon:rollAttack(peep, target, bonus)
-	if self.logic then
-		return self.logic:rollAttack(peep, target, bonus)
+	if self.patches.rollAttack then
+		return self.patches.rollAttack(self.logic, peep, target, bonus)
 	else
 		return Weapon.rollAttack(self, peep, target, bonus)
 	end
@@ -72,8 +74,8 @@ function ProxyXWeapon:previewAttackRoll(roll)
 end
 
 function ProxyXWeapon:rollDamage(peep, purpose, target)
-	if self.logic then
-		return self.logic:rollDamage(peep, purpose, target)
+	if self.patches.rollDamage then
+		return self.patches.rollDamage(self.logic, peep, purpose, target)
 	else
 		return Weapon.rollDamage(self, peep, purpose, target)
 	end
