@@ -42,8 +42,8 @@ function Earthquake:hitSurroundingPeeps(peep, target)
 			return false
 		end
 
-		local targetPosition = Utility.Peep.getAbsolutePosition(p)
-		return (targetPosition - targetPosition):getLength() <= range
+		local position = Utility.Peep.getAbsolutePosition(p)
+		return (targetPosition - position):getLength() <= range
 	end)
 
 	for i = 1, #hits do
