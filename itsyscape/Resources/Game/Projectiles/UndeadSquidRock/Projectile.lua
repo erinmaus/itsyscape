@@ -30,7 +30,6 @@ function UndeadSquidRock:update(delta)
 
 	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, angle)
 	root:getTransform():setLocalRotation(rotation)
-	root:getTransform():setPreviousTransform(nil, rotation)
 end
 
 return UndeadSquidRock

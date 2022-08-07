@@ -92,9 +92,7 @@ function UndeadSquidInk:update(elapsed)
 		local scale = Vector(0.5 + 1 * Tween.sineEaseOut(delta))
 
 		root:getTransform():setLocalTranslation(position)
-		root:getTransform():setPreviousTransform(position)
 		root:getTransform():setLocalScale(scale)
-		root:getTransform():setPreviousTransform(nil, nil, scale)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
 	end

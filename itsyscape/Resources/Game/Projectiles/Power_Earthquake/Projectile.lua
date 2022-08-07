@@ -19,8 +19,8 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local Earthquake = Class(Projectile)
-Earthquake.DURATION = 2
-Earthquake.ALPHA_MULTIPLIER = 1.75
+Earthquake.DURATION = 3
+Earthquake.ALPHA_MULTIPLIER = 2.25
 Earthquake.COLOR = Color(1)
 Earthquake.POSITION_OFFSET = Vector(0, 2, -1)
 

@@ -162,7 +162,6 @@ function Grenade:update(elapsed)
 
 			root:getTransform():setLocalTranslation(position)
 			root:getTransform():setLocalRotation(rotation)
-			root:getTransform():setPreviousTransform(position, rotation)
 		else
 			local delta = 1 - (self:getTime() - Grenade.DESPAWN_BOMB_TIME) / (Grenade.DURATION - Grenade.DESPAWN_BOMB_TIME)
 			self.grenade:getMaterial():setColor(Color(1, 1, 1, delta))
