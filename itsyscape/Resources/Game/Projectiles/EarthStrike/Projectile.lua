@@ -90,7 +90,6 @@ function EarthStrike:update(elapsed)
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
-		root:getTransform():setPreviousTransform(position, rotation, nil)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
 

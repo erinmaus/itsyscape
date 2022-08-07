@@ -82,7 +82,6 @@ function Axe:update(elapsed)
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
-		root:getTransform():setPreviousTransform(position, rotation)
 	end
 end
 
