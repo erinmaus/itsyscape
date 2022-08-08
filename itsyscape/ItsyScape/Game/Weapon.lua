@@ -404,11 +404,11 @@ function Weapon.AttackRoll:roll()
 
 	local attackRoll, defenseRoll
 	if self.alwaysHits then
-		attackRoll = math.floor(math.random(0, maxAttackRoll))
-		defenseRoll = math.floor(math.random(0, maxDefenseRoll))
-	else
 		attackRoll = 1
 		defenseRoll = 0
+	else
+		attackRoll = math.floor(math.random(0, maxAttackRoll))
+		defenseRoll = math.floor(math.random(0, maxDefenseRoll))
 	end
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
