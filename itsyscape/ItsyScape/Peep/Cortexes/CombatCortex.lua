@@ -57,10 +57,6 @@ function CombatCortex:removePeep(peep)
 end
 
 function CombatCortex:resetPeep(peep)
-	self.walking[peep] = nil
-	self.strafing[peep] = nil
-	self.pendingResume[peep] = nil
-
 	peep:removeBehavior(CombatTargetBehavior)
 	peep:getCommandQueue(CombatCortex.QUEUE):clear()
 end
@@ -140,6 +136,7 @@ function CombatCortex:update(delta)
 
 	for peep, target in pairs(self.pendingResume) do
 		self:resume(peep, target)
+		self.pendingResume[peep] = nil
 	end
 
 	for peep in self:iterate() do
@@ -397,7 +394,12 @@ function CombatCortex:update(delta)
 			end
 
 			if not success then
-				self:resetPeep(peep)
+				local isWalking = self.walking[peep]
+				local isStrafing = self.strafing[peep]
+
+				if not isWalking and not isStrafing then
+					self:resetPeep(peep)
+				end
 			end
 		end
 	end
