@@ -359,27 +359,23 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 end
 
 function ProCombatStatusHUDController:isAttacking()
+	local playerTarget
+	do
+		local target = self:getPeep():getBehavior(CombatTargetBehavior)
+		if target and target.actor then
+			playerTarget = target.actor:getPeep()
+		end
+	end
+
 	return function(peep)
 		local status = peep:getBehavior(CombatStatusBehavior)
 		local target = peep:getBehavior(CombatTargetBehavior)
 
-		local hasTarget = target and target.actor
+		local hasTarget = target and target.actor and target.actor:getPeep() == playerTarget
+		local isPlayerTarget = peep == playerTarget
 		local isAlive = status and not status.dead
 
-		return hasTarget and isAlive
-	end
-end
-
-function ProCombatStatusHUDController:isBeingAttacked()
-	return function(peep)
-		local actor = peep:getBehavior(ActorReferenceBehavior)
-		if not actor or not actor.actor then
-			return false
-		end
-
-		if self.targetsByID[actor.actor:getID()] then
-			return true
-		end
+		return (hasTarget or isPlayerTarget) and isAlive
 	end
 end
 
@@ -738,25 +734,16 @@ function ProCombatStatusHUDController:updateState()
 
 	for i = 1, #attackers do
 		local r = self:pullStateForPeep(attackers[i])
-		self.targetsByID[r.targetID] = true
+
+		if r.targetID then
+			self.targetsByID[r.targetID] = true
+		end
+
 		self.combatantsByID[r.actorID] = true
 
 		table.insert(result.combatants, r)
 
-		if r.actorID == director:getGameInstance():getPlayer():getActor():getID() then
-			result.player = r
-		end
-	end
-
-	local victims = director:probe(
-		self:getPeep():getLayerName(),
-		self:isBeingAttacked())
-
-	for i = 1, #victims do
-		local r = self:pullStateForPeep(victims[i])
-		table.insert(result.combatants, r)
-
-		if r.actorID == director:getGameInstance():getPlayer():getActor():getID() then
+		if attackers[i] == self:getPeep() then
 			result.player = r
 		end
 	end
