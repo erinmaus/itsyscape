@@ -75,6 +75,9 @@ function Counter:onSelfHit(aggressor)
 
 	aggressor:poke('receiveAttack', attack)
 
+	local stage = peep:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("Power_Counter", peep, aggressor)
+
 	peep:removeEffect(self)
 end
 
