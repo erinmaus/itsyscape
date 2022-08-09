@@ -238,13 +238,6 @@ ItsyScape.Resource.Power "Bash" {
 	}
 }
 
-ItsyScape.Meta.PowerSpec {
-	IsInstant = 1,
-	IsQuick = 1,
-	NoTarget = 1,
-	Resource = ItsyScape.Resource.Power "Bash"
-}
-
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 90,
 	MaxReduction = 30,
