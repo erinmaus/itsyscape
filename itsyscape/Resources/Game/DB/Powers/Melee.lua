@@ -349,3 +349,67 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Earthquake"
 }
+
+ItsyScape.Resource.Power "Counter" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 40,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wait for an opening to counter the enemy's attack. The next opponent's next successful attack will result in punishing them for 200-400% damage based on Strength level. Pierces most defenses and buffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Resource.Effect "Power_Counter" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Counter"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The next attack the opponent lands will be countered for up to 400% damage, based on Strength level. Pierces most defenses and buffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Counter"
+}
+
