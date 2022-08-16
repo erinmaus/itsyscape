@@ -1777,6 +1777,24 @@ function Utility.Peep.getBestTool(peep, toolType)
 	return tools[1].logic
 end
 
+function Utility.Peep.getEquippedShield(peep, includeXShield)
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local shield = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
+	if shield then
+		local logic = peep:getDirector():getItemManager():getLogic(shield:getID())
+		if logic then
+			return logic, shield
+		end
+	end
+
+	if includeXShield then
+		Log.errorOnce("XShield not yet implemented; peep '%s' doesn't have a shield.", peep:getName())
+	end
+
+	return nil
+end
+
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 

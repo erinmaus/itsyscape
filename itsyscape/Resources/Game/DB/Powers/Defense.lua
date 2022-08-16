@@ -317,3 +317,60 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Deflect"
 }
 
+ItsyScape.Resource.Power "Fury" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Fury"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 300,
+	MaxReduction = 150,
+	MinLevel = 30,
+	MaxLevel = 99,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Resource = ItsyScape.Resource.Power "Fury"
+}
+
+ItsyScape.Resource.Effect "Power_Fury" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fury",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Fury"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Every attempted hit against you increases your minimum and maximum damage by 10%, up to 100%, as long as you keep your shield equipped. If the shield is removed, fades after 10 - 20 seconds, based on defense level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Fury"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fury",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Fury"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Channel your fury, increasing your minimum and maximum damage after every hit, successful or not.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Fury"
+}
