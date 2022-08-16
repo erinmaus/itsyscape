@@ -21,7 +21,7 @@ function Prepare:new(activator)
 
 	local level = activator:getState():count(
 		"Skill",
-		"Wisdom",
+		"Defense",
 		{ ['skill-as-level'] = true })
 
 	self.damageMultiplier = 1 - (math.min(level / 50, 0.5) + 0.5)
