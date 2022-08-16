@@ -162,7 +162,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "You are ready to parry the next melee attack.",
+	Value = "You are ready to parry the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Parry"
 }
@@ -249,7 +249,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Counter the next melee attack.",
+	Value = "Counter the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Riposte"
 }
@@ -265,7 +265,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "You are ready to counter the next melee attack.",
+	Value = "You are ready to counter the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Riposte"
 }
