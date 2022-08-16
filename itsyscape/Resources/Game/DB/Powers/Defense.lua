@@ -374,3 +374,46 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Fury"
 }
+
+ItsyScape.Resource.Power "Meditate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Meditate"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 30,
+	MinLevel = 40,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Resource = ItsyScape.Resource.Power "Meditate"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Meditate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Meditate"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Clears attack cooldown instantly and removes all movement debuffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Meditate"
+}
+
