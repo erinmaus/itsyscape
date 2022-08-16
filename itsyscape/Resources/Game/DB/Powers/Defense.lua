@@ -258,3 +258,62 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Bash"
 }
+
+ItsyScape.Resource.Power "Deflect" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Deflect"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 30,
+	MinLevel = 1,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Resource = ItsyScape.Resource.Power "Deflect"
+}
+
+ItsyScape.Resource.Effect "Power_Deflect" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Deflect",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Deflect"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deflect 50% of all damage received back on the attacker.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Deflect"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Deflect",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Deflect"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deflect 50% of all damage received back on the attacker for 15 - 30 seconds, based on defense level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Deflect"
+}
+
