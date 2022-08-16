@@ -118,6 +118,28 @@ Damage.PARTICLES = {
 		},
 		x = 8,
 		y = 16
+	},
+	['deflect'] = {
+		{
+			EmissionArea = { 'ellipse', 16, 4 },
+			Direction = { math.rad(0) },
+			Spread = { math.rad(135) },
+			LinearAcceleration = { 0, 128, 0, 160 },
+			ParticleLifetime = { 0.5, 1.25 },
+			Sizes = { 0.25, 1 },
+			Speed = { 32, 48 },
+			Colors = {
+				{ 1, 1, 1, 0 },
+				{ 1, 1, 1, 1 },
+				{ 1, 1, 1, 1 },
+				{ 1, 1, 1, 0 }
+			},
+
+			min = 20,
+			max = 40
+		},
+		x = 0,
+		y = -16
 	}
 }
 
