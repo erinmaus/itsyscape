@@ -25,7 +25,9 @@ function TheEmptyKing:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = math.huge
-	status.maxHitpoints = math.huge
+	status.maximumHitpoints = math.huge
+	status.currentPrayer = math.huge
+	status.maximumPrayer = math.huge
 	status.maxChaseDistance = math.huge
 
 	local size = self:getBehavior(SizeBehavior)
