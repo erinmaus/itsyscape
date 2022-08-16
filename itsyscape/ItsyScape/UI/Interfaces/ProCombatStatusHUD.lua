@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -119,7 +120,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.hitPoints:setSize(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.STAT_HEIGHT)
 	self.hitPointsLabel = Label()
 	self.hitPointsLabel:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		fontSize = 16,
 		textShadow = true,
 		color = { 1, 1, 1, 1 }
@@ -135,7 +136,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.prayerPoints:setSize(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.STAT_HEIGHT)
 	self.prayerPointsLabel = Label()
 	self.prayerPointsLabel:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		fontSize = 16,
 		textShadow = true,
 		color = { 1, 1, 1, 1 }
@@ -242,14 +243,23 @@ function ProCombatStatusHUD.Target:update(...)
 
 	local actor = self.hud:getView():getGameView():getActorByID(self.actorID)
 	if actor then
-		self.label:setText(actor:getName())
+		self.label:setText(actor:getName():gsub(Utility.Text.INFINITY, "infinite"))
 
 		local actorState = self:getActorState(self.hud:getState())
 		if actorState then
-			self.hitPointsLabel:setText(string.format("%d/%d", actorState.stats.hitpoints.current, actorState.stats.hitpoints.max))
+			local hitPointsLabel = string.format(
+				"%s/%s",
+				Utility.Text.prettyNumber(actorState.stats.hitpoints.current),
+				Utility.Text.prettyNumber(actorState.stats.hitpoints.max))
+			self.hitPointsLabel:setText(hitPointsLabel)
 			self.hitPoints:setCurrent(actorState.stats.hitpoints.current)
 			self.hitPoints:setMax(actorState.stats.hitpoints.max)
-			self.prayerPointsLabel:setText(string.format("%d/%d", actorState.stats.prayer.current, actorState.stats.prayer.max))
+
+			local prayerLabel = string.format(
+				"%s/%s",
+				Utility.Text.prettyNumber(actorState.stats.prayer.current),
+				Utility.Text.prettyNumber(actorState.stats.prayer.max))
+			self.prayerPointsLabel:setText(prayerLabel)
 			self.prayerPoints:setCurrent(actorState.stats.prayer.current)
 			self.prayerPoints:setMax(actorState.stats.prayer.max)
 		end

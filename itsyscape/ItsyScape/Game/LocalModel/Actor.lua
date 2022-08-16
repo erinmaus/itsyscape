@@ -90,7 +90,7 @@ function LocalActor:getName()
 
 	if isAttackable or self.peep:hasBehavior(PlayerBehavior) then
 		local combatLevel = Utility.Combat.getCombatLevel(self.peep)
-		name = string.format("%s (Lvl %d)", name, combatLevel)
+		name = string.format("%s (Lvl %s)", name, Utility.Text.prettyNumber(combatLevel))
 	end
 
 	return name
