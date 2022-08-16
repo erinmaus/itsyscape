@@ -133,16 +133,19 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local defenseBonusName = "Defense" .. styleBonus
 		local defenseBonus = targetBonuses[defenseBonusName]
 
-		local defenseLevel
+		local defenseLevel, maxDefenseLevel
 		if stats then
-			defenseLevel = targetStats:getSkill("Defense"):getBaseLevel()
+			local defenseSkill = targetStats:getSkill("Defense")
+			defenseLevel = defenseSkill:getBaseLevel()
+			maxDefenseLevel = defenseSkill:getMaxLevel()
 		else
 			defenseLevel = 1
+			maxDefenseLevel = 99
 		end
 
-		local defenseMultiplier = (defenseLevel / 150) ^ 0.5
-		local multiplier = ((defenseMultiplier * defenseBonus - accuracyBonus * 2) / 150)
-		local clampedMultiplier = math.min(math.max(multiplier, 0), 1)
+		local defenseLevelMultiplier = math.min(math.max(defenseLevel / maxDefenseLevel, 0), 1) * 0.5
+		local statMultiplier = math.max(math.min((defenseBonus - accuracyBonus) / 100, 1), 0) * 0.5
+		local clampedMultiplier = math.min(math.max(defenseLevelMultiplier + statMultiplier, 0), 0.99)
 
 		self.damageMultiplier = 1 - clampedMultiplier
 	else

@@ -110,6 +110,10 @@ function Stats.Skill:getBaseLevel()
 	return self.level
 end
 
+function Stats.Skill:getMaxLevel()
+	return self.max
+end
+
 -- Gets the working level.
 --
 -- This is the sum of baseLevel + levelBoost, clamped to zero.
