@@ -21,6 +21,13 @@ local LEATHERS = {
 		tier = 10,
 		weight = 1.5,
 		thread = "PlainThread"
+	},
+
+	["RobinFeather"] = {
+		name = "Robin feather",
+		tier = 20,
+		weight = 0.25,
+		thread = "PlainThread"
 	}
 }
 
@@ -374,8 +381,6 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
-		AccuracySlash =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
@@ -406,5 +411,90 @@ do
 		Value = "At least the leg doesn't twitch anymore...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
+	}
+end
+
+-- Robin feather
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "RobinFeatherGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Light and breathable!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(21, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gives you a little pep in your step.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(22, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(26, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "RobinFeatherCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Poor birdy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(27, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wings are for angels, not mortals, according to Bastiel's followers.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 0.4),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not sure how feathers can protected you...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
 	}
 end
