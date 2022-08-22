@@ -68,6 +68,12 @@ local SHIELDS = {
 		name = "Chocoroach chitin",
 		hides = 3,
 		logs = "WillowLogs"
+	},
+
+	["RobinFeather"] = {
+		name = "Robin feather buckler",
+		hides = 3,
+		logs = "OakLogs"
 	}
 }
 
