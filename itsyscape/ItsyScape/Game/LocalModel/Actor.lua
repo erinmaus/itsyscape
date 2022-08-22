@@ -319,25 +319,7 @@ function LocalActor:setBody(body)
 end
 
 function LocalActor:playAnimation(slot, priority, animation, force, time)
-	if not priority then
-		self.animations[slot] = nil
-		self.onAnimationPlayed(self, slot, priority, animation, time)
-
-		return true
-	else
-		local s = self.animations[slot] or { priority = -math.huge, animation = false }
-		if s.priority <= priority or force then
-			s.priority = priority
-			s.animation = animation
-
-			self.onAnimationPlayed(self, slot, priority, animation, time)
-			self.animations[slot] = s
-
-			return true
-		end
-	end
-
-	return false
+	self.onAnimationPlayed(self, slot, priority, animation, force, time)
 end
 
 function LocalActor:setSkin(slot, priority, skin)

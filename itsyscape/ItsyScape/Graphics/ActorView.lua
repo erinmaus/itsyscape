@@ -142,7 +142,7 @@ function ActorView:new(actor, actorID)
 	self.layer = false
 
 	self.animations = {}
-	self._onAnimationPlayed = function(_, slot, priority, animation, time)
+	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
 		self:playAnimation(slot, animation, priority, time or 0)
 	end
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
@@ -275,6 +275,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		self.animations[slot] = a
 	else
 		self.animations[slot] = nil
+		self:sortAnimations()
 	end
 end
 
@@ -587,6 +588,7 @@ function ActorView:updateAnimations(delta)
 		animation.time = animation.time + delta
 		if animation.done then
 			if animation.next then
+				animation.cacheRef = animation.next.cacheRef
 				animation.definition = animation.next.definition
 				animation.instance = animation.definition:play(self.animatable)
 				animation.time = animation.next.time or 0
