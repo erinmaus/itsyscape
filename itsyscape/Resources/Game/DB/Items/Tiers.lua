@@ -159,6 +159,14 @@ do
 		Name = "Ancient karadon scale",
 		Tier = 40
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Leather",
+		Value = "GreenDragonhide",
+		Language = "en-US",
+		Name = "Green dragonhide",
+		Tier = 50
+	}
 end
 
 -- Fabrics
