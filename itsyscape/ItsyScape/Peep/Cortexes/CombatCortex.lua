@@ -38,7 +38,6 @@ function CombatCortex:new()
 	Cortex.new(self)
 
 	self:require(ActorReferenceBehavior)
-	self:require(CombatTargetBehavior)
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
 	self:require(SizeBehavior)
@@ -57,6 +56,11 @@ function CombatCortex:removePeep(peep)
 	self.pendingResume[peep] = nil
 end
 
+function CombatCortex:resetPeep(peep)
+	peep:removeBehavior(CombatTargetBehavior)
+	peep:getCommandQueue(CombatCortex.QUEUE):clear()
+end
+
 function CombatCortex:resume(peep, target)
 	local actor = target:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -73,12 +77,66 @@ function CombatCortex:resume(peep, target)
 	end
 end
 
+function CombatCortex:usePower(peep, target, logic)
+	local game = self:getDirector():getGameInstance()
+
+	local power = peep:getBehavior(PendingPowerBehavior)
+	if power then
+		power = power.power
+	end
+
+	local coolDowns = peep:getBehavior(PowerCoolDownBehavior)
+	if not coolDowns then
+		peep:addBehavior(PowerCoolDownBehavior)
+		coolDowns = peep:getBehavior(PowerCoolDownBehavior)
+	end
+
+	local logicOverride
+	if power and power:isCompatibleType(CombatPower) then
+		local canUseAbility = true
+
+		local id = power:getResource().id.value
+		local time = game:getCurrentTick() * game:getDelta()
+		if coolDowns.powers[id] then
+			canUseAbility = time > coolDowns.powers[id]
+		end
+
+		if canUseAbility then
+			canUseAbility = power:perform(peep, target)
+		end
+
+		if canUseAbility then
+			power:activate(peep, target)
+
+			if not power:getIsQuick() and logic and logic:isCompatibleType(Weapon) then
+				logic:applyCooldown(peep)
+			end
+
+			logicOverride = power:getXWeapon(peep)
+
+			coolDowns.powers[id] = time + power:getCoolDown(peep)
+
+			local actor = peep:getBehavior(ActorReferenceBehavior)
+			if actor and actor.actor then
+				actor.actor:flash("Power", 0.5, power:getResource().name, power:getName())
+			end
+		end
+
+		peep:removeBehavior(PendingPowerBehavior)
+
+		return true, logicOverride
+	end
+
+	return false, logic
+end
+
 function CombatCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local itemManager = self:getDirector():getItemManager()
 
 	for peep, target in pairs(self.pendingResume) do
 		self:resume(peep, target)
+		self.pendingResume[peep] = nil
 	end
 
 	for peep in self:iterate() do
@@ -283,52 +341,10 @@ function CombatCortex:update(delta)
 							end
 						end
 
+						logic = logic or self.defaultWeapon
 						if canAttack then
-							logic = logic or self.defaultWeapon
-
-							local power = peep:getBehavior(PendingPowerBehavior)
-							if power then
-								power = power.power
-							end
-
-							local coolDowns = peep:getBehavior(PowerCoolDownBehavior)
-							if not coolDowns then
-								peep:addBehavior(PowerCoolDownBehavior)
-								coolDowns = peep:getBehavior(PowerCoolDownBehavior)
-							end
-							
-							if power and power:isCompatibleType(CombatPower) then
-								local canUseAbility = true
-
-								local id = power:getResource().id.value
-								local time = game:getCurrentTick() * game:getDelta()
-								if coolDowns.powers[id] then
-									canUseAbility = time > coolDowns.powers[id]
-								end
-
-								if canUseAbility then
-									canUseAbility = power:perform(peep, target)
-								end
-
-								if canUseAbility then
-									power:activate(peep, target)
-
-									if logic and logic:isCompatibleType(Weapon) then
-										logic:applyCooldown(peep)
-									end
-
-									logic = power:getXWeapon(peep)
-
-									coolDowns.powers[id] = time + power:getCoolDown(peep)
-
-									local actor = peep:getBehavior(ActorReferenceBehavior)
-									if actor and actor.actor then
-										actor.actor:flash("Power", 0.5, power:getResource().name, power:getName())
-									end
-								end
-
-								peep:removeBehavior(PendingPowerBehavior)
-							end
+							local _
+							_, logic = self:usePower(peep, target, logic)
 
 							if logic and logic:isCompatibleType(Weapon) then
 								local success = logic:perform(peep, target)
@@ -339,6 +355,15 @@ function CombatCortex:update(delta)
 										local stage = game:getStage()
 										stage:fireProjectile(projectile, peep, target)
 									end
+								end
+							end
+						else
+							local power = peep:getBehavior(PendingPowerBehavior)
+							if power then
+								power = power.power
+
+								if power:getIsInstant() then
+									self:usePower(peep, target, logic)
 								end
 							end
 						end
@@ -357,8 +382,25 @@ function CombatCortex:update(delta)
 				end
 			end
 		else
-			peep:removeBehavior(CombatTargetBehavior)
-			peep:getCommandQueue(CombatCortex.QUEUE):clear()
+			local success
+
+			local power = peep:getBehavior(PendingPowerBehavior)
+			if power then
+				power = power.power
+
+				if not power:getRequiresTarget() then
+					success = self:usePower(peep, nil, logic)
+				end
+			end
+
+			if not success then
+				local isWalking = self.walking[peep]
+				local isStrafing = self.strafing[peep]
+
+				if not isWalking and not isStrafing then
+					self:resetPeep(peep)
+				end
+			end
 		end
 	end
 end -- oh my god

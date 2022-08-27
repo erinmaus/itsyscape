@@ -16,6 +16,7 @@ Meta "Fog" {
 	NearDistance = Meta.TYPE_REAL,
 	FarDistance = Meta.TYPE_REAL,
 	FollowTarget = Meta.TYPE_INTEGER,
+	FollowSelf = Meta.TYPE_INTEGER,
 	Resource = Meta.TYPE_RESOURCE
 }
 

@@ -35,6 +35,8 @@ function Fog:tick()
 		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_TARGET)
 	elseif state.followEye then
 		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_EYE)
+	elseif state.followSelf then
+		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_SELF)
 	end
 end
 

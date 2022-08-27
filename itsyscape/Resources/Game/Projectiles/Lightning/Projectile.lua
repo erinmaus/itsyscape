@@ -33,8 +33,6 @@ Lightning.COLORS = {
 	Color.fromHexString("00ccff", 0.5)
 }
 
-print(Color.fromHexString("ff9900", 0.5):get())
-
 function Lightning:load()
 	Projectile.load(self)
 
@@ -119,7 +117,7 @@ function Lightning:zapTarget()
 					"ItsyScape.Graphics.AnimationResource",
 					"Resources/Game/Animations/Spell_Lightning_Zap/Script.lua")
 
-				target:playAnimation('x-undead-squid', 1, animation)
+				target:onAnimationPlayed('x-spell-lightning', 1, animation)
 				self.zapped = true
 			end
 		end

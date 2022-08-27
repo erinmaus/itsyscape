@@ -123,6 +123,13 @@ ItsyScape.Resource.Power "Parry" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 120,
 	MaxReduction = 30,
@@ -155,7 +162,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "You are ready to parry the next melee attack.",
+	Value = "You are ready to parry the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Parry"
 }
@@ -219,6 +226,13 @@ ItsyScape.Resource.Power "Riposte" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Riposte"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 120,
 	MaxReduction = 30,
@@ -235,7 +249,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Counter the next melee attack.",
+	Value = "Counter the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Riposte"
 }
@@ -251,7 +265,151 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "You are ready to counter the next melee attack.",
+	Value = "You are ready to counter the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Riposte"
 }
+
+ItsyScape.Resource.Power "Decapitate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 20,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Decapitate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Attempt to cut off the foe's head. Less accurate attack, but damage ranges from 200% - 400% upon a successful blow. This attack deals an extra 100% damage to undead.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Resource.Power "Earthquake" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 60,
+	MinLevel = 30,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Earthquake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smash the ground, causing an earthquake around the target. The larger the target, the bigger the earthquake. Damages enemies near the target.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Resource.Power "Counter" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 40,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wait for an opening to counter the enemy's attack. The next opponent's next successful attack will result in punishing them for 200-400% damage based on Strength level. Pierces most defenses and buffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Resource.Effect "Power_Counter" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Counter",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Counter"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The next attack the opponent lands will be countered for up to 400% damage, based on Strength level. Pierces most defenses and buffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Counter"
+}
+

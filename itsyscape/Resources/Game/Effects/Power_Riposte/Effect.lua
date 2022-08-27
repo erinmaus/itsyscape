@@ -12,6 +12,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Effect = require "ItsyScape.Peep.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 -- Blocks 25%-50% of next melee attack, dealing 100%-300% damage back in return.
 local Riposte = Class(CombatEffect)
@@ -34,8 +35,9 @@ function Riposte:getBuffType()
 end
 
 function Riposte:applyTargetToDamage(roll)
-	local _, _, style = roll:getWeapon():getSkill(Weapon.PURPOSE_KILL)
-	if style == "Attack" then
+	local target = self:getPeep():getBehavior(CombatTargetBehavior)
+	target = target and target.actor
+	if target:getPeep() == roll:getSelf() then 
 		local damage = roll:roll()
 		roll:setMaxHit(math.floor(damage * self.damageMultiplier))
 		roll:setMinHit(math.floor(damage * self.damageMultiplier))

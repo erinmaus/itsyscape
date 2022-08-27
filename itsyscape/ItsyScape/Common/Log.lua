@@ -27,6 +27,23 @@ function Log.debug(format, ...)
 	end
 end
 
+local ERRORS = {}
+function Log.errorOnce(format, ...)
+	local traceback = debug.traceback("...", 2)
+	local s, r = pcall(string.format, format, ...)
+	if s then
+		local key = r .. traceback
+		if not ERRORS[key] then
+			Log.print("error", r)
+			Log.print("traceback", traceback)
+		end
+	else
+		-- At least print something
+		Log.print("error", format)
+		Log.print("traceback", traceback)
+	end
+end
+
 function Log.error(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then

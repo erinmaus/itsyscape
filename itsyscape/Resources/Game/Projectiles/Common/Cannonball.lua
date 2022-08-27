@@ -70,7 +70,6 @@ function Cannonball:update(elapsed)
 		end
 
 		root:getTransform():setLocalTranslation(position)
-		root:getTransform():setPreviousTransform(position)
 	end
 end
 

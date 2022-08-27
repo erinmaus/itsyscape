@@ -150,7 +150,6 @@ function YendorianDoorView:update(delta)
 
 			self.swirl:getTransform():setLocalScale(scale)
 			self.swirl:getTransform():setLocalRotation(rotation)
-			self.swirl:getTransform():setPreviousTransform(nil, rotation, scale)
 		end
 	end
 end

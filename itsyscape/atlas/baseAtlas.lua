@@ -84,6 +84,10 @@ baseAtlas.add = function(self, image, id, bake, ...)
   return self
 end
 
+baseAtlas.markDirty = function(self)
+  self._dirty = true
+end
+
 -- TA:remove("foo", true)
 -- TA:remove(68513)
 baseAtlas.remove = function(self, id, bake, ...)

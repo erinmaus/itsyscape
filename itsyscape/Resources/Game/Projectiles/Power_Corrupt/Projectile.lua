@@ -102,7 +102,6 @@ function Power_Corrupt:update(elapsed)
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
-		root:getTransform():setPreviousTransform(position, rotation, nil)
 
 		for i = 1, #self.quads do
 			self.quads[i]:getMaterial():setColor(Color(1, 1, 1, alpha))

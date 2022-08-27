@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Effect = require "ItsyScape.Peep.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 -- Prevents damage from the next melee attack.
 local Parry = Class(CombatEffect)
@@ -25,8 +26,9 @@ function Parry:getBuffType()
 end
 
 function Parry:applyTargetToDamage(roll)
-	local _, _, style = roll:getWeapon():getSkill(Weapon.PURPOSE_KILL)
-	if style == "Attack" then
+	local target = self:getPeep():getBehavior(CombatTargetBehavior)
+	target = target and target.actor
+	if target:getPeep() == roll:getSelf() then 
 		roll:setMaxHit(0)
 		roll:setMinHit(0)
 

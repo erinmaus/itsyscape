@@ -105,14 +105,12 @@ function Bubbles:update(elapsed)
 			local y = bubble.y + bubble.speed * self:getTime()
 			local position = Vector(x, y, 0)
 			bubble.node:getTransform():setLocalTranslation(position)
-			bubble.node:getTransform():setPreviousTransform(position)
 	
 			local alpha = Tween.sineEaseOut(1 - self:getDelta())
 			bubble.node:getMaterial():setColor(Color(1, 1, 1, alpha))
 		end
 
 		self:getRoot():getTransform():setLocalTranslation(self.spawnPosition)
-		self:getRoot():getTransform():setPreviousTransform(self.spawnPosition)
 	end
 end
 

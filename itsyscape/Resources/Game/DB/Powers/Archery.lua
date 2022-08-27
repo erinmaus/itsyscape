@@ -239,3 +239,241 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Snipe"
 }
+
+ItsyScape.Resource.Power "TrickShot" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 30,
+	MinLevel = 20,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Resource.Effect "Power_TrickShotDaze" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Daze",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers your accuracy and damage by 10%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Trick Shot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Take a trick shot, dazing the enemy. Always hits, dealing up to 200% damage, but accuracy affects damage. A dazed enemy will have 10% reduced accuracy and damage for 30 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Resource.Power "SoulStrike" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 60,
+	MinLevel = 30,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Soul Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Debuffs offensive stats and defense directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Resource.Power "Headshot" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 90,
+	MaxReduction = 30,
+	MinLevel = 40,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Headshot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Aim for the head. Less accurate shot, but damage ranges from 200% - 400% upon a successful hit. This attack deals an extra 100% damage to undead.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Resource.Power "Hesitate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(23)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(23)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 50,
+	MaxLevel = 80,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hesitate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Take your time before your next shot. Damage is delayed, but accuracy is greatly increased. Deals upwards of 100% damage, ignoring most defenses, buffs, and debuffs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Resource.Power "Nuke" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForLevel(60)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Dynamite",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Archery",
+			Count = ItsyScape.Utility.xpForResource(25)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Count = ItsyScape.Utility.xpForResource(25)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 300,
+	MaxReduction = 60,
+	MinLevel = 60,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Nuke!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Using a stick of radioactive dynamite, cause a nuclear explosion at the feet of your target, damaging anyone within the blast with up to 500% damage. Afflicted targets will become radioactive for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Resource.Effect "Radioactive" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Radioactive",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Radioactive"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases damage and accuracy by 20%. Can spread to others within melee distance.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Radioactive"
+}
+

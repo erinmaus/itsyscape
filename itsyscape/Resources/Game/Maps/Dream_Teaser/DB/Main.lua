@@ -116,31 +116,6 @@ do
 	}
 end
 
-M["Gammon"] = ItsyScape.Resource.MapObject.Unique()
-do
-	local ROTATION = ItsyScape.Utility.Quaternion.fromAxisAngle(
-		ItsyScape.Utility.Vector.UNIT_Y,
-		math.pi / 4)
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 1.5,
-		PositionZ = 33,
-		RotationX = ROTATION.x,
-		RotationY = ROTATION.y,
-		RotationZ = ROTATION.z,
-		RotationW = ROTATION.w,
-		Name = "Gammon",
-		Map = M._MAP,
-		Resource = M["Gammon"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Gammon_Base",
-		MapObject = M["Gammon"]
-	}
-end
-
 M["TheEmptyKing"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

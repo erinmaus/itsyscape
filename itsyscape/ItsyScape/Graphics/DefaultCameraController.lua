@@ -44,7 +44,7 @@ function DefaultCameraController:new(...)
 	self.targetDistance = self:getCamera():getDistance()
 
 	self.isTargetting = _CONF.targetCameraMode or false
-	self.isFocusDown = Keybinds['PLAYER_1_FOCUS']:isDown()
+	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	self.targetOpponentDistance = 0
 end
 
@@ -225,7 +225,7 @@ function DefaultCameraController:update(delta)
 		self:debugUpdate(delta)
 	end
 
-	local isFocusDown = Keybinds['PLAYER_1_FOCUS']:isDown()
+	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if isFocusDown ~= self.isFocusDown and isFocusDown then
 		self.isTargetting = not self.isTargetting
 		if self.isTargetting then

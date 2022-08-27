@@ -21,6 +21,34 @@ local LEATHERS = {
 		tier = 10,
 		weight = 1.5,
 		thread = "PlainThread"
+	},
+
+	["RobinFeather"] = {
+		name = "Robin feather",
+		tier = 20,
+		weight = 0.25,
+		thread = "PlainThread"
+	},
+
+	["WhiteWolfHide"] = {
+		name = "White wolf hide",
+		tier = 30,
+		weight = 1.7,
+		thread = "PlainThread"
+	},
+
+	["AncientKaradon"] = {
+		name = "Ancient karadon scale",
+		tier = 40,
+		weight = 3,
+		thread = "PlainThread"
+	},
+
+	["GreenDragonhide"] = {
+		name = "Green dragonhide",
+		tier = 50,
+		weight = 3,
+		thread = "PlainThread"
 	}
 }
 
@@ -58,9 +86,33 @@ local SHIELDS = {
 	},
 
 	["BugGuts"] = {
-		name = "Chocoroach chitin",
+		name = "Chocoroach chitin buckler",
 		hides = 3,
 		logs = "WillowLogs"
+	},
+
+	["RobinFeather"] = {
+		name = "Robin feather buckler",
+		hides = 3,
+		logs = "OakLogs"
+	},
+
+	["WhiteWolfHide"] = {
+		name = "White wolf hide buckler",
+		hides = 3,
+		logs = "MapleLogs"
+	},
+
+	["AncientKaradon"] = {
+		name = "Ancient karadon scale buckler",
+		hides = 3,
+		logs = "YewLogs"
+	},
+
+	["GreenDragonhide"] = {
+		name = "Green dragonhide buckler",
+		hides = 3,
+		logs = "PetrifiedSpiderLogs"
 	}
 }
 
@@ -374,8 +426,6 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
-		AccuracySlash =ItsyScape.Utility.styleBonusForWeapon(1, 0.3),
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.3),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
@@ -406,5 +456,345 @@ do
 		Value = "At least the leg doesn't twitch anymore...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
+	}
+end
+
+-- Robin feather
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "RobinFeatherGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Light and breathable!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(21, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gives you a little pep in your step.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(22, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(26, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "RobinFeatherCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Poor birdy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(27, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wings are for angels, not mortals, according to Bastiel's followers.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 0.4),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not sure how feathers can protected you...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
+	}
+end
+
+-- White wolf hide
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(35, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps your fingers toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(31, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(35, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps your toes toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(32, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(36, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Unlike the rest of the armor, this doesn't keep your head toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(2, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Might be too toasty for the most of the Realm...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(36, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(36, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(36, 0.4),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(34, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A decent bucker offering good protection, especially against crushing blows.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
+	}
+end
+
+-- Ancient karadon scales
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(13),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "AncientKaradonGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slimy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(41, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slippery when wet. Or dry.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(42, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(46, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "AncientKaradonCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Smells fishy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not just wizards can wear robes!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(46, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(46, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(44, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Weapons, spells, and projectiles just slide off this buckler. Because it's made of slimy fish scales. Get it?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBuckler"
+	}
+end
+
+-- Green dragonhide
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(16),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Those are some pretty tough gloves!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(51, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The finest dragon leather boots this side of the Realm.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(52, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(56, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Aerodynamic.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Provides the protection of dragon leather, granting amazing defenses against magic.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(56, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(56, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(54, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Some say those skilled enough can bounce spells off this buckler toward the foe... But don't believe everything you hear!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBuckler"
 	}
 end

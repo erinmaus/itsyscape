@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
@@ -141,7 +142,7 @@ function ActorView:new(actor, actorID)
 	self.layer = false
 
 	self.animations = {}
-	self._onAnimationPlayed = function(_, slot, priority, animation, time)
+	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
 		self:playAnimation(slot, animation, priority, time or 0)
 	end
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
@@ -274,6 +275,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		self.animations[slot] = a
 	else
 		self.animations[slot] = nil
+		self:sortAnimations()
 	end
 end
 
@@ -351,7 +353,7 @@ function ActorView:applySkin(slotNodes)
 						slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
 
 						slot.sceneNode:setParent(self.sceneNode)
-						slot.sceneNode:getMaterial():setTextures(self.game.whiteTexture)
+						slot.sceneNode:getMaterial():setTextures(self.game:getTranslucentTexture())
 						slot.sceneNode:setTransforms(self.animatable:getTransforms())
 
 						local lights = slot.instance:getLights()
@@ -542,6 +544,7 @@ end
 
 function ActorView:getLocalBoneTransform(boneName)
 	local transform = love.math.newTransform()
+	transform:applyQuaternion((-Quaternion.X_90):get())
 
 	if not self.localTransforms then
 		return transform
@@ -585,6 +588,7 @@ function ActorView:updateAnimations(delta)
 		animation.time = animation.time + delta
 		if animation.done then
 			if animation.next then
+				animation.cacheRef = animation.next.cacheRef
 				animation.definition = animation.next.definition
 				animation.instance = animation.definition:play(self.animatable)
 				animation.time = animation.next.time or 0

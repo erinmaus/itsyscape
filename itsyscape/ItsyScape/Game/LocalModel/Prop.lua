@@ -71,7 +71,10 @@ end
 
 function LocalProp:getResourceName()
 	if self.peep then
-		return Utility.Peep.getResource(self.peep).name
+		local resource = Utility.Peep.getResource(self.peep)
+		if resource then 
+			return resource.name
+		end
 	end
 
 	return nil

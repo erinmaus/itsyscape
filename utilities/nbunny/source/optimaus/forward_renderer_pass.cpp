@@ -74,9 +74,21 @@ void nbunny::ForwardRendererPass::prepare_fog(float delta)
 		Light light;
 		fog_scene_node->to_light(light, delta);
 
-		auto camera_eye = fog_scene_node->get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
-			get_renderer()->get_camera().get_eye_position() :
-			get_renderer()->get_camera().get_target_position();
+		glm::vec3 camera_eye;
+		switch (fog_scene_node->get_follow_mode())
+		{
+			case FogSceneNode::FOLLOW_MODE_EYE:
+			default:
+				camera_eye = get_renderer()->get_camera().get_eye_position();
+				break;
+			case FogSceneNode::FOLLOW_MODE_TARGET:
+				camera_eye = get_renderer()->get_camera().get_target_position();
+				break;
+			case FogSceneNode::FOLLOW_MODE_SELF:
+				camera_eye = glm::vec3(light.position);
+				break;
+		}
+
 		light.position = glm::vec4(camera_eye, 1.0f);
 
 		if (fog.size() < MAX_FOG)
@@ -258,7 +270,7 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		auto num_fog_uniform = shader->getUniformInfo("scape_NumFogs");
 		if (num_fog_uniform)
 		{
-			int num_fog = (int)fog.size();
+			int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
 			*num_fog_uniform->ints = num_fog;
 			shader->updateUniform(num_fog_uniform, 1);
 		}
@@ -267,7 +279,12 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
 

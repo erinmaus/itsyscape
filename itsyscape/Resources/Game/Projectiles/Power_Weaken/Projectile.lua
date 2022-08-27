@@ -83,7 +83,6 @@ function Weaken:update(elapsed)
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
 		root:getTransform():setLocalScale(scale)
-		root:getTransform():setPreviousTransform(position, rotation, scale)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
 
