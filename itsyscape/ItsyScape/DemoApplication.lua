@@ -170,6 +170,8 @@ function DemoApplication:openMainMenu()
 				})
 
 				_DEBUG = _CONF.debug
+
+				itsyrealm.graphics.dirty()
 			end
 
 			self:closeMainMenu()
