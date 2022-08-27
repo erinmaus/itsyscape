@@ -151,6 +151,14 @@ do
 		Name = "White wolf hide",
 		Tier = 30
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Leather",
+		Value = "AncientKaradon",
+		Language = "en-US",
+		Name = "Ancient karadon scale",
+		Tier = 40
+	}
 end
 
 -- Fabrics

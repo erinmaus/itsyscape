@@ -35,6 +35,13 @@ local LEATHERS = {
 		tier = 30,
 		weight = 1.7,
 		thread = "PlainThread"
+	},
+
+	["AncientKaradon"] = {
+		name = "Ancient karadon scale",
+		tier = 40,
+		weight = 3,
+		thread = "PlainThread"
 	}
 }
 
@@ -87,6 +94,12 @@ local SHIELDS = {
 		name = "White wolf hide buckler",
 		hides = 3,
 		logs = "MapleLogs"
+	},
+
+	["AncientKaradon"] = {
+		name = "Ancient karadon scale buckler",
+		hides = 3,
+		logs = "YewLogs"
 	}
 }
 
@@ -602,3 +615,89 @@ do
 		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
 	}
 end
+
+-- Ancient karadon scales
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(13),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "AncientKaradonGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slimy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(41, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Slippery when wet. Or dry.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(42, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(46, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "AncientKaradonCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Smells fishy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(41, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not just wizards can wear robes!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(46, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(46, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(44, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "AncientKaradonBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Weapons, spells, and projectiles just slide off this buckler. Because it's made of slimy fish scales. Get it?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonBuckler"
+	}
+end
+
