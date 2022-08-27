@@ -42,6 +42,13 @@ local LEATHERS = {
 		tier = 40,
 		weight = 3,
 		thread = "PlainThread"
+	},
+
+	["GreenDragonhide"] = {
+		name = "Green dragonhide",
+		tier = 50,
+		weight = 3,
+		thread = "PlainThread"
 	}
 }
 
@@ -100,6 +107,12 @@ local SHIELDS = {
 		name = "Ancient karadon scale buckler",
 		hides = 3,
 		logs = "YewLogs"
+	},
+
+	["GreenDragonhide"] = {
+		name = "Green dragonhide buckler",
+		hides = 3,
+		logs = "PetrifiedSpiderLogs"
 	}
 }
 
@@ -701,3 +714,87 @@ do
 	}
 end
 
+-- Green dragonhide
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(16),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Those are some pretty tough gloves!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(51, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The finest dragon leather boots this side of the Realm.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(52, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(56, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Aerodynamic.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(51, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Provides the protection of dragon leather, granting amazing defenses against magic.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(56, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(56, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(54, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Some say those skilled enough can bounce spells off this buckler toward the foe... But don't believe everything you hear!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GreenDragonhideBuckler"
+	}
+end
