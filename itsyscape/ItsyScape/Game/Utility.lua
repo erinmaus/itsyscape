@@ -799,28 +799,28 @@ function Utility.Text.getEnglishBe(peep)
 	return g
 end
 
+Utility.Text.INFINITY = require("utf8").char(8734)
+
 function Utility.Text.prettyNumber(value)
-	local input = tostring(value)
-	local result = {}
-
-	local remainder = #input % 3
-	for i = remainder + 1, #input, 3 do
-		table.insert(result, input:sub(i, i + 2))
+	if value == math.huge then
+		return Utility.Text.INFINITY
+	elseif value == -math.huge then
+		return "-" .. Utility.Text.INFINITY
+	elseif value ~= value then -- Not a number
+		return "???"
 	end
 
-	if remainder > 0 then
-		table.insert(result, 1, input:sub(1, remainder))
-	end
+	local i, j, minus, int, fraction = tostring(value):find('([-]?)(%d+)([.]?%d*)')
+	int = int:reverse():gsub("(%d%d%d)", "%1,")
 
-	return table.concat(result, ",")
+	return minus .. int:reverse():gsub("^,", "") .. fraction
 end
 
 Utility.UI = {}
 Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
-		"CombatStatusHUD",
-		"StrategyBar"
+		"ProCombatStatusHUD"
 	}
 }
 
@@ -1071,6 +1071,23 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 	end
 
 	return peep:getState():give("Item", item, quantity, flags)
+end
+
+function Utility.Item.getItemInPeepInventory(peep, itemID)
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+
+	if not inventory then
+		return nil
+	end
+
+	for item in inventory:getBroker():iterateItems(inventory) do
+		if item:getID() == itemID then
+			return item
+		end
+	end
+
+	return nil
 end
 
 Utility.Map = {}
@@ -1758,6 +1775,24 @@ function Utility.Peep.getBestTool(peep, toolType)
 
 	table.sort(tools, function(a, b) return a.maxHit > b.maxHit end)
 	return tools[1].logic
+end
+
+function Utility.Peep.getEquippedShield(peep, includeXShield)
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local shield = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
+	if shield then
+		local logic = peep:getDirector():getItemManager():getLogic(shield:getID())
+		if logic then
+			return logic, shield
+		end
+	end
+
+	if includeXShield then
+		Log.errorOnce("XShield not yet implemented; peep '%s' doesn't have a shield.", peep:getName())
+	end
+
+	return nil
 end
 
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)

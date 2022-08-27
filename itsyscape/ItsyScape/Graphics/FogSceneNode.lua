@@ -15,6 +15,7 @@ local NFogSceneNode = require "nbunny.optimaus.scenenode.fogscenenode"
 local FogSceneNode = Class(LightSceneNode)
 FogSceneNode.FOLLOW_MODE_EYE    = 0
 FogSceneNode.FOLLOW_MODE_TARGET = 1
+FogSceneNode.FOLLOW_MODE_SELF   = 2
 
 function FogSceneNode:new()
 	LightSceneNode.new(self, NFogSceneNode)

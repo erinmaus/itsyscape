@@ -81,6 +81,21 @@ Equipment.MISC_STATS = {
 	["Prayer"] = "Divinity"
 }
 
+Equipment.SLOTS = {
+	Equipment.PLAYER_SLOT_RIGHT_HAND,
+	Equipment.PLAYER_SLOT_LEFT_HAND,
+	Equipment.PLAYER_SLOT_HEAD,
+	Equipment.PLAYER_SLOT_NECK,
+	Equipment.PLAYER_SLOT_BODY,
+	Equipment.PLAYER_SLOT_LEGS,
+	Equipment.PLAYER_SLOT_FEET,
+	Equipment.PLAYER_SLOT_HANDS,
+	Equipment.PLAYER_SLOT_BACK,
+	Equipment.PLAYER_SLOT_FINGER,
+	Equipment.PLAYER_SLOT_POCKET,
+	Equipment.PLAYER_SLOT_QUIVER,
+}
+
 function Equipment:onEquip(peep)
 	-- Nothing.
 end

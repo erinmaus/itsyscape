@@ -80,11 +80,9 @@ function Confuse:update(elapsed)
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
-		root:getTransform():setPreviousTransform(position, rotation, nil)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
 		self.quad:getTransform():setLocalTranslation(Vector.UNIT_Y * height)
-		self.quad:getTransform():setPreviousTransform(Vector.UNIT_Y * height, nil, nil)
 
 		self.light:setColor(Color(1, 1, 0, 1))
 		self.light:setAttenuation(alpha * 2 + 2)

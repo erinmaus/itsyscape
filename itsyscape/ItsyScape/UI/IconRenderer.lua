@@ -45,7 +45,13 @@ function IconRenderer:draw(widget, state)
 	local icon = widget:get("icon", state)
 	if icon then
 		if not self.icons[icon] then
-			self.icons[icon] = love.graphics.newImage(icon)
+			local s, r = pcall(love.graphics.newImage, icon)
+			if not s then
+				Log.warnOnce("Couldn't load icon '%s'.", icon)
+				return
+			end
+
+			self.icons[icon] = r
 		end
 		self.unvisitedIcons[icon] = nil
 

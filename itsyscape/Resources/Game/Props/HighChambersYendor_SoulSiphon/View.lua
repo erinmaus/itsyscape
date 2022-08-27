@@ -71,7 +71,6 @@ function SoulSiphon:update(delta)
 			xzWidth * mu + SoulSiphon.MIN_SCALE_XZ)
 
 		self.decoration:getTransform():setLocalScale(scale)
-		self.decoration:getTransform():setPreviousTransform(nil, nil, scale)
 	end
 end
 

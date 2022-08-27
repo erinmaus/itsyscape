@@ -106,7 +106,31 @@ end
 function itsyrealm.graphics.impl.setRenderState(renderState)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setLineWidth(renderState.lineWidth)
+end
+
+function itsyrealm.graphics.impl.line(...)
 	love.graphics.setBlendMode("alpha")
+	love.graphics.line(...)
+end
+
+function itsyrealm.graphics.impl.rectangle(...)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.rectangle(...)
+end
+
+function itsyrealm.graphics.impl.circle(...)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.circle(...)
+end
+
+function itsyrealm.graphics.impl.arc(...)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.arc(...)
+end
+
+function itsyrealm.graphics.impl.polygon(...)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.polygon(...)
 end
 
 function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
@@ -171,6 +195,11 @@ function itsyrealm.graphics.impl.clearScissor()
 	love.graphics.setScissor()
 end
 
+function itsyrealm.graphics.dirty()
+	graphicsState.atlas:markDirty()
+	table.clear(graphicsState.text)
+end
+
 function itsyrealm.graphics.start()	
 	graphicsState.transform:reset()
 end
@@ -188,9 +217,9 @@ function itsyrealm.graphics.stop()
 	graphicsState.atlas:bake("width")
 
 	love.graphics.push('all')
-	love.graphics.setBlendMode('alpha', 'premultiplied')
 	for i = 1, #graphicsState.drawQueue do
 		local draw = graphicsState.drawQueue[i]
+		love.graphics.setBlendMode('alpha', 'premultiplied')
 		draw.command(unpack(draw, 1, draw.n))
 	end
 	table.clear(graphicsState.drawQueue)
@@ -281,7 +310,7 @@ function itsyrealm.graphics.line(...)
 		itsyrealm.graphics.impl.setRenderState,
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
-		love.graphics.line, ...)
+		itsyrealm.graphics.impl.line, ...)
 end
 
 function itsyrealm.graphics.rectangle(...)
@@ -289,7 +318,7 @@ function itsyrealm.graphics.rectangle(...)
 		itsyrealm.graphics.impl.setRenderState,
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
-		love.graphics.rectangle, ...)
+		itsyrealm.graphics.impl.rectangle, ...)
 end
 
 function itsyrealm.graphics.circle(...)
@@ -297,7 +326,7 @@ function itsyrealm.graphics.circle(...)
 		itsyrealm.graphics.impl.setRenderState,
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
-		love.graphics.circle, ...)
+		itsyrealm.graphics.impl.circle, ...)
 end
 
 function itsyrealm.graphics.arc(...)
@@ -305,7 +334,15 @@ function itsyrealm.graphics.arc(...)
 		itsyrealm.graphics.impl.setRenderState,
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
-		love.graphics.arc, ...)
+		itsyrealm.graphics.impl.arc, ...)
+end
+
+function itsyrealm.graphics.polygon(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.setRenderState,
+		itsyrealm.graphics.impl.captureRenderState())
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.polygon, ...)
 end
 
 function itsyrealm.graphics.uncachedDraw(...)

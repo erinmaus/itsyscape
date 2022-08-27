@@ -229,6 +229,14 @@ function Widget:iterate()
 	return ipairs(self.children)
 end
 
+function Widget:getNumChildren()
+	return #self.children
+end
+
+function Widget:getChildAt(index)
+	return self.children[index]
+end
+
 function Widget:hasParent(p)
 	local current = self.parent
 	while current do

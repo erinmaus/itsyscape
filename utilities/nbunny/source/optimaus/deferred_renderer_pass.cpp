@@ -194,9 +194,21 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 		shader->updateUniform(fog_parameters_uniform, 1);
 	}
 
-	auto camera_eye = node.get_follow_mode() == FogSceneNode::FOLLOW_MODE_EYE ?
-		get_renderer()->get_camera().get_eye_position() :
-		get_renderer()->get_camera().get_target_position();
+	glm::vec3 camera_eye;
+	switch (node.get_follow_mode())
+	{
+		case FogSceneNode::FOLLOW_MODE_EYE:
+		default:
+			camera_eye = get_renderer()->get_camera().get_eye_position();
+			break;
+		case FogSceneNode::FOLLOW_MODE_TARGET:
+			camera_eye = get_renderer()->get_camera().get_target_position();
+			break;
+		case FogSceneNode::FOLLOW_MODE_SELF:
+			camera_eye = light.position;
+			break;
+	}
+
 	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
 	if (camera_eye_uniform)
 	{
@@ -282,7 +294,12 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
 

@@ -62,7 +62,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	end
 
 	local style = weapon:getStyle()
-	local bonusType, level, bonuses
+	local bonusType, level, bonuses, skill
 	do
 		if style == Weapon.STYLE_MAGIC then
 			bonusType = 'StrengthMagic'
@@ -72,7 +72,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			bonusType = 'StrengthMelee'
 		end
 
-		local success, skill = weapon:getSkill(purpose)
+		local success
+		success, skill = weapon:getSkill(purpose)
 		if success and stats and stats:hasSkill(skill) then
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
@@ -132,16 +133,19 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local defenseBonusName = "Defense" .. styleBonus
 		local defenseBonus = targetBonuses[defenseBonusName]
 
-		local defenseLevel
+		local defenseLevel, maxDefenseLevel
 		if stats then
-			defenseLevel = targetStats:getSkill("Defense"):getBaseLevel()
+			local defenseSkill = targetStats:getSkill("Defense")
+			defenseLevel = defenseSkill:getBaseLevel()
+			maxDefenseLevel = defenseSkill:getMaxLevel()
 		else
 			defenseLevel = 1
+			maxDefenseLevel = 99
 		end
 
-		local defenseMultiplier = (defenseLevel / 150) ^ 0.5
-		local multiplier = ((defenseMultiplier * defenseBonus - accuracyBonus * 2) / 150)
-		local clampedMultiplier = math.min(math.max(multiplier, 0), 1)
+		local defenseLevelMultiplier = math.min(math.max(defenseLevel / maxDefenseLevel, 0), 1) * 0.5
+		local statMultiplier = math.max(math.min((defenseBonus - accuracyBonus) / 100, 1), 0) * 0.5
+		local clampedMultiplier = math.min(math.max(defenseLevelMultiplier + statMultiplier, 0), 0.99)
 
 		self.damageMultiplier = 1 - clampedMultiplier
 	else
@@ -174,7 +178,7 @@ function Weapon.DamageRoll:getDamageStat()
 end
 
 function Weapon.DamageRoll:setLevel(value)
-	self.level = self.level or value
+	self.level = value or self.level
 end
 
 function Weapon.DamageRoll:getBonus()
@@ -186,7 +190,7 @@ function Weapon.DamageRoll:getBonusType()
 end
 
 function Weapon.DamageRoll:setBonus(value)
-	self.bonus = self.bonus or value
+	self.bonus = value or self.bonus
 end
 
 function Weapon.DamageRoll:getMaxHit()
@@ -338,7 +342,7 @@ function Weapon.AttackRoll:getDefenseLevel()
 end
 
 function Weapon.AttackRoll:setDefenseLevel(value)
-	self.defenseLevel = self.defenseLevel or value
+	self.defenseLevel = value or self.defenseLevel
 end
 
 function Weapon.AttackRoll:getAccuracyStat()
@@ -350,7 +354,7 @@ function Weapon.AttackRoll:getAttackLevel()
 end
 
 function Weapon.AttackRoll:setAttackLevel(value)
-	self.attackLevel = self.attackLevel or value
+	self.attackLevel = value or self.attackLevel
 end
 
 function Weapon.AttackRoll:getDefenseBonus()
@@ -358,7 +362,7 @@ function Weapon.AttackRoll:getDefenseBonus()
 end
 
 function Weapon.AttackRoll:setDefenseBonus(value)
-	self.defenseBonus = self.defenseBonus or value
+	self.defenseBonus = value or self.defenseBonus
 end
 
 function Weapon.AttackRoll:getDefenseBonusType()
@@ -370,7 +374,7 @@ function Weapon.AttackRoll:getAccuracyBonus()
 end
 
 function Weapon.AttackRoll:setAccuracyBonus(value)
-	self.accuracyBonus = self.accuracyBonus or value
+	self.accuracyBonus = value or self.accuracyBonus
 end
 
 function Weapon.AttackRoll:getAccuracyBonusType()
@@ -393,38 +397,75 @@ function Weapon.AttackRoll:setMaxDefenseRoll(value)
 	self.maxDefenseRoll = value or false
 end
 
+function Weapon.AttackRoll:setAlwaysHits(value)
+	self.alwaysHits = value or false
+end
+
 function Weapon.AttackRoll:roll()
 	local maxAttackRoll = self:getMaxAttackRoll()
 	local maxDefenseRoll = self:getMaxDefenseRoll()
 
-	local attackRoll = math.floor(math.random(0, maxAttackRoll))
-	local defenseRoll = math.floor(math.random(0, maxDefenseRoll))
+	local attackRoll, defenseRoll
+	if self.alwaysHits then
+		attackRoll = 1
+		defenseRoll = 0
+	else
+		attackRoll = math.floor(math.random(0, maxAttackRoll))
+		defenseRoll = math.floor(math.random(0, maxDefenseRoll))
+	end
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
 
 -- Rolls an attack.
 function Weapon:rollAttack(peep, target, bonus)
-	return Weapon.AttackRoll(self, peep, target, bonus)
+	local roll = Weapon.AttackRoll(self, peep, target, bonus)
+	self:applyAttackModifiers(roll)
+	self:previewAttackRoll(roll)
+
+	return roll
+end
+
+function Weapon:previewAttackRoll(roll)
+	-- Nothing.
+end
+
+function Weapon:applyAttackModifiers(roll)
+	if roll:getSelf() then
+		for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToAttack(roll)
+		end
+	end
+
+	if roll:getTarget() then
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applyTargetToAttack(roll)
+		end
+	end
 end
 
 function Weapon:previewDamageRoll(roll)
 	-- Nothing.
 end
 
-function Weapon:rollDamage(peep, purpose, target)
-	local roll = Weapon.DamageRoll(self, peep, purpose, target)
-	self:previewDamageRoll(roll)
-
-	for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-		effect:applySelfToDamage(roll, purpose)
+function Weapon:applyDamageModifiers(roll, purpose)
+	if roll:getSelf() then
+		for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			effect:applySelfToDamage(roll, purpose)
+		end
 	end
 
-	if target then
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+	if roll:getTarget() then
+		for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 			effect:applyTargetToDamage(roll, purpose)
 		end
 	end
+end
+
+function Weapon:rollDamage(peep, purpose, target)
+	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	self:applyDamageModifiers(roll)
+	self:previewDamageRoll(roll)
 
 	return roll
 end
@@ -489,16 +530,6 @@ end
 
 function Weapon:perform(peep, target)
 	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
-	do
-		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			effect:applySelfToAttack(roll)
-		end
-	end
-	do
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			effect:applyTargetToAttack(roll)
-		end
-	end
 
 	local s, a, d = roll:roll()
 	if s then

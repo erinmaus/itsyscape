@@ -27,6 +27,12 @@ ItsyScape.Resource.Power "Confuse" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Confuse"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 20,
@@ -83,6 +89,12 @@ ItsyScape.Resource.Power "Weaken" {
 	}
 }
 
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Weaken"
+}
+
 ItsyScape.Meta.CombatPowerCoolDown {
 	BaseCoolDown = 60,
 	MaxReduction = 20,
@@ -137,6 +149,12 @@ ItsyScape.Resource.Power "Curse" {
 			Count = ItsyScape.Utility.xpForResource(5)
 		}
 	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Curse"
 }
 
 ItsyScape.Meta.CombatPowerCoolDown {
@@ -235,7 +253,7 @@ ItsyScape.Resource.Power "Nirvana" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(5)
+			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
 		Output {
@@ -256,6 +274,13 @@ ItsyScape.Meta.CombatPowerCoolDown {
 	MinLevel = 10,
 	MaxLevel = 100,
 	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	NoTarget = 1,
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }
 
@@ -286,3 +311,202 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }
+
+ItsyScape.Resource.Power "Hexagram" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsQuick = 1,
+	IsInstant = 1,
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 60,
+	MaxReduction = 20,
+	MinLevel = 20,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Resource.Effect "Power_Hexagram" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hexagram",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Hexagram"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Prevents you from escaping the hexagram.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Hexagram"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hexagram",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Binds the foe to a hexagram, preventing them from moving outside of it.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Resource.Power "IceBarrage" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 90,
+	MaxReduction = 30,
+	MinLevel = 30,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Resource.Effect "Power_IceBarrage" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your movement speed by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Unleash a damaging elemental attack, slowing the foe by 50% for 30 to 60 seconds based on Wisdom level. Deals 100% - 300% damage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Resource.Power "Gravity" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(22)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(22)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 150,
+	MaxReduction = 30,
+	MinLevel = 40,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gravity",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deals up to 300% damage. Applies a 10% to 20% debuff directly to the Constitution stat based on damage dealt.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Resource.Power "BindShadow" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(23)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(23)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerCoolDown {
+	BaseCoolDown = 120,
+	MaxReduction = 60,
+	MinLevel = 50,
+	MaxLevel = 90,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bind Shadow",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Bind the shadow of the opponent to attack, dealing 200% of your opponent's damage against itself.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+

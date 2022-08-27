@@ -111,13 +111,30 @@ function Smoke:isMaybeShrimp()
 	return Class.isCompatibleType(destination, Actor)
 end
 
+function Smoke:isDestinationStillValid()
+	if self.destinationID then
+		return self:getGameView():getActorByID(self.destinationID) ~= nil
+	end
+
+	return false
+end
+
 function Smoke:isMaybeShrimpAlive()
-	if self:isMaybeShrimp() then
+	if self:isMaybeShrimp() and self:isDestinationStillValid() then
 		local health = self:getDestination():getCurrentHitpoints()
 		return health >= 1
 	end
 
 	return true
+end
+
+function Smoke:attach()
+	Projectile.attach(self)
+
+	if self:isMaybeShrimp() then
+		local destination = self:getDestination()
+		self.destinationID = destination:getID()
+	end
 end
 
 function Smoke:update(elapsed)

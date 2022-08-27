@@ -260,6 +260,8 @@ Game "ItsyScape"
 
 	Meta "Prayer" {
 		Drain = Meta.TYPE_INTEGER,
+		IsNonCombat = Meta.TYPE_INTEGER,
+		Style = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -482,6 +484,13 @@ Game "ItsyScape"
 		MinLevel = Meta.TYPE_INTEGER,
 		MaxLevel = Meta.TYPE_INTEGER,
 		Skill = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PowerSpec" {
+		IsInstant = Meta.TYPE_INTEGER,
+		IsQuick = Meta.TYPE_INTEGER,
+		NoTarget = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -889,6 +898,7 @@ include "Resources/Game/DB/Creeps/MagmaSnail.lua"
 include "Resources/Game/DB/Creeps/MagmaJellyfish.lua"
 include "Resources/Game/DB/Creeps/Chocoroach.lua"
 include "Resources/Game/DB/Creeps/Boop.lua"
+include "Resources/Game/DB/Creeps/Theodyssius.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"

@@ -21,7 +21,7 @@ function Prepare:new(activator)
 
 	local level = activator:getState():count(
 		"Skill",
-		"Wisdom",
+		"Defense",
 		{ ['skill-as-level'] = true })
 
 	self.damageMultiplier = 1 - (math.min(level / 50, 0.5) + 0.5)
@@ -32,10 +32,14 @@ function Prepare:getBuffType()
 end
 
 function Prepare:applyTargetToDamage(roll)
-	roll:setMaxHit(math.floor(roll:getMaxHit() * self.damageMultiplier))
-	roll:setMinHit(math.floor(roll:getMinHit() * self.damageMultiplier))
+	local target = self:getPeep():getBehavior(CombatTargetBehavior)
+	target = target and target.actor
+	if target:getPeep() == roll:getSelf() then
+		roll:setMaxHit(math.floor(roll:getMaxHit() * self.damageMultiplier))
+		roll:setMinHit(math.floor(roll:getMinHit() * self.damageMultiplier))
 
-	self:getPeep():removeEffect(self)
+		self:getPeep():removeEffect(self)
+	end
 end
 
 return Prepare

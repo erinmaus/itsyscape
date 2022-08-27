@@ -48,13 +48,12 @@ PlayerStance.DESCRIPTION = {
 	[Weapon.STANCE_DEFENSIVE] = "cautious, increasing defense"
 }
 
-PlayerStance.ACTIVE_STYLE = function(skill)
+PlayerStance.ACTIVE_STYLE = function(skill, path)
 	local t = {
 		inactive = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Hover.9.png",
 		pressed = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Pressed.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-		icon = { skill = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 },
 		fontSize = 26,
 		textX = 0.3,
 		textY = 0.7,
@@ -62,13 +61,13 @@ PlayerStance.ACTIVE_STYLE = function(skill)
 	}
 
 	if skill then
-		t.icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
+		t.icon = { filename = string.format(path or "Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
 	end
 
 	return t
 end
 
-PlayerStance.INACTIVE_STYLE = function(skill)
+PlayerStance.INACTIVE_STYLE = function(skill, path)
 	local t = {
 		inactive = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Hover.9.png",
@@ -81,7 +80,7 @@ PlayerStance.INACTIVE_STYLE = function(skill)
 	}
 
 	if skill then
-		t.icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
+		t.icon = { filename = string.format(path or "Resources/Game/UI/Icons/Skills/%s.png", skill), x = 0.15 }
 	end
 
 	return t
@@ -107,6 +106,7 @@ function PlayerStance:new(id, index, ui)
 		end)
 
 		button:setData('stance', stance)
+		button:setID("PlayerStance-" .. name)
 
 		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
 
@@ -127,6 +127,7 @@ function PlayerStance:new(id, index, ui)
 		end)
 		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
 		button:setData('active', false)
+		button:setID("PlayerStance-UseSpell")
 
 		button:setText("Use Spell")
 		button:setToolTip(
@@ -135,6 +136,28 @@ function PlayerStance:new(id, index, ui)
 
 		self:addChild(button)
 		self.buttons.toggleSpell = button
+	end
+	do
+		local button = Button()
+
+		button.onClick:register(function()
+			for _, interface in self:getView():getInterfaces("ProCombatStatusHUD") do
+				interface:toggleRadialMenu()
+			end
+		end)
+		button:setStyle(ButtonStyle(
+			PlayerStance.INACTIVE_STYLE("Shockwave", "Resources/Game/Powers/%s/Icon.png"),
+			self:getView():getResources()))
+		button:setID("PlayerStance-ToggleHUD")
+
+		button:setText("Toggle HUD")
+		button:setToolTip(
+			ToolTip.Header("Toggle HUD"),
+			ToolTip.Text("Toggles the combat HUD on or off."),
+			ToolTip.Text("Alternatively, you can press the 'Player 1 Focus' button (defaults to the tab key)."))
+
+		self:addChild(button)
+		self.buttons.toggleHUD = button
 	end
 
 	self:performLayout()
@@ -159,6 +182,12 @@ function PlayerStance:performLayout()
 			panelWidth - PlayerStance.PADDING * 2,
 			PlayerStance.BUTTON_HEIGHT)
 		self.buttons.toggleSpell:setPosition(PlayerStance.PADDING, y)
+
+		y = y + PlayerStance.BUTTON_HEIGHT + PlayerStance.PADDING
+		self.buttons.toggleHUD:setSize(
+			panelWidth - PlayerStance.PADDING * 2,
+			PlayerStance.BUTTON_HEIGHT)
+		self.buttons.toggleHUD:setPosition(PlayerStance.PADDING, y)
 	end
 end
 

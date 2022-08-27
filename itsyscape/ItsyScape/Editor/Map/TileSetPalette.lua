@@ -16,6 +16,7 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Label = require "ItsyScape.UI.Label"
 local TextInput = require "ItsyScape.UI.TextInput"
 local Texture = require "ItsyScape.UI.Texture"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 TileSetPalette = Class(Widget)
@@ -81,6 +82,7 @@ function TileSetPalette:refresh(tileSet, tileSetTexture)
 
 		button:setData('tile-index', index)
 		button:setData('tile-texture', texture)
+		button:setToolTip(ToolTip.Text(tileSet:getTileProperty(index, 'name', '(unnamed)')))
 		table.insert(self.buttons, button)
 	end
 
