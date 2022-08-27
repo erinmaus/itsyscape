@@ -135,6 +135,22 @@ do
 		Name = "Chocoroach chitin",
 		Tier = 10
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Leather",
+		Value = "RobinFeather",
+		Language = "en-US",
+		Name = "Robin feather",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Leather",
+		Value = "WhiteWolfHide",
+		Language = "en-US",
+		Name = "White wolf hide",
+		Tier = 30
+	}
 end
 
 -- Fabrics
