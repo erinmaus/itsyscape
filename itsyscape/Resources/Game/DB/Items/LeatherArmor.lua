@@ -28,6 +28,13 @@ local LEATHERS = {
 		tier = 20,
 		weight = 0.25,
 		thread = "PlainThread"
+	},
+
+	["WhiteWolfHide"] = {
+		name = "White wolf hide",
+		tier = 30,
+		weight = 1.7,
+		thread = "PlainThread"
 	}
 }
 
@@ -65,7 +72,7 @@ local SHIELDS = {
 	},
 
 	["BugGuts"] = {
-		name = "Chocoroach chitin",
+		name = "Chocoroach chitin buckler",
 		hides = 3,
 		logs = "WillowLogs"
 	},
@@ -74,6 +81,12 @@ local SHIELDS = {
 		name = "Robin feather buckler",
 		hides = 3,
 		logs = "OakLogs"
+	},
+
+	["WhiteWolfHide"] = {
+		name = "White wolf hide buckler",
+		hides = 3,
+		logs = "MapleLogs"
 	}
 }
 
@@ -502,5 +515,90 @@ do
 		Value = "Not sure how feathers can protected you...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
+	}
+end
+
+-- White wolf hide
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(35, 0.3),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps your fingers toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(31, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(35, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps your toes toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(32, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(36, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideCoif"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Unlike the rest of the armor, this doesn't keep your head toasty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideCoif"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(2, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(31, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Might be too toasty for the most of the Realm...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(36, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(36, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(36, 0.4),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(34, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A decent bucker offering good protection, especially against crushing blows.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
 	}
 end
