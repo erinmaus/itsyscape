@@ -195,6 +195,11 @@ function itsyrealm.graphics.impl.clearScissor()
 	love.graphics.setScissor()
 end
 
+function itsyrealm.graphics.dirty()
+	graphicsState.atlas:markDirty()
+	table.clear(graphicsState.text)
+end
+
 function itsyrealm.graphics.start()	
 	graphicsState.transform:reset()
 end
