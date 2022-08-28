@@ -46,11 +46,12 @@ function Nuke:getTargets(target)
 		function(peep)
 			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
 			local distance = (targetPosition - peepPosition):getLength()
+			local isAttackable = Utility.Peep.isAttackable(peep)
 
 			local isWithinRadius = distance <= Nuke.RADIUS
 			local isNotTarget = peep ~= target
 
-			return isWithinRadius and isNotTarget
+			return isWithinRadius and isNotTarget and isAttackable
 		end)
 	table.insert(result, 1, target)
 
