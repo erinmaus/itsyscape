@@ -76,12 +76,14 @@ function Radioactive:update(delta)
 
 		local peep = self:getPeep()
 		if peep then
-			local health = peep:getBehavior(CombatStatusBehavior)
-			local damage = math.floor(math.min(health.currentHitpoints * Radioactive.DAMAGE_PER_TICK, Radioactive.MAX_DAMAGE_PER_TICK) + 0.5)
-			peep:poke('receiveAttack', AttackPoke({
-				damage = damage,
-				aggressor = self.activator
-			}))
+			local status = peep:getBehavior(CombatStatusBehavior)
+			if status then
+				local damage = math.floor(math.min(status.currentHitpoints * Radioactive.DAMAGE_PER_TICK, Radioactive.MAX_DAMAGE_PER_TICK) + 0.5)
+				peep:poke('receiveAttack', AttackPoke({
+					damage = damage,
+					aggressor = self.activator
+				}))
+			end
 		end
 	end
 end
