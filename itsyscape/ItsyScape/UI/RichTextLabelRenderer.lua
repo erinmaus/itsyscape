@@ -63,7 +63,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 					needsSpace = false
 				end
 
-				love.graphics.print(word, self.x, self.y)
+				itsyrealm.graphics.print(word, self.x, self.y)
 				self.x = self.x + width
 
 				if needsSpace then
@@ -129,7 +129,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 		self.y = self.y + self.height
 	end
 
-	local screenX, screenY = love.graphics.transformPoint(0, 0)
+	local screenX, screenY = itsyrealm.graphics.transformPoint(0, 0)
 	screenX = screenX + self.x
 	screenY = screenY + self.y
 
@@ -152,7 +152,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	end
 
 	love.graphics.setColor(color)
-	love.graphics.print(block.text, self.x, self.y)
+	itsyrealm.graphics.print(block.text, self.x, self.y)
 
 	self.x = self.x + width
 
@@ -177,7 +177,7 @@ function RichTextLabelRenderer.Draw:drawList(block, parent)
 	for i = 1, #block do
 		local line = block[i]
 
-		love.graphics.circle(
+		itsyrealm.graphics.circle(
 			'fill',
 			bulletX + font:getHeight() / 2,
 			self.y + font:getHeight() / 2,
@@ -206,7 +206,7 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 	self.x = self.left
 	self.y = self.y + self.height
 
-	love.graphics.draw(image, self.x, self.y)
+	itsyrealm.graphics.draw(image, self.x, self.y)
 
 	self.height = image:getHeight()
 end
