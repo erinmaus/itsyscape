@@ -100,7 +100,8 @@ function Application:new(multiThreaded)
 		self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
-			_DEBUG = _DEBUG
+			_DEBUG = _DEBUG,
+			_VERBOSE = _ARGS["verbose"]
 		})
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
@@ -267,7 +268,6 @@ end
 
 function Application:tickMultiThread()
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
-	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
 end
 

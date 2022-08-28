@@ -23,6 +23,7 @@ require "bootstrap"
 
 local function init(t)
 	_DEBUG = t._DEBUG
+	_VERBOSE = t._VERBOSE
 end
 
 init(...)
@@ -44,24 +45,47 @@ game.onQuit:register(function() isRunning = false end)
 while isRunning do
 	local t1 = love.timer.getTime()
 	do
+		local a0 = love.timer.getTime()
 		game:tick()
 		game:update(game:getDelta())
 
+		local a1 = love.timer.getTime()
 		gameManager:update()
+		local a2 = love.timer.getTime()
 		gameManager:pushTick()
+		local a3 = love.timer.getTime()
 		gameManager:send()
+		local a4 = love.timer.getTime()
 
 		while not gameManager:receive() do
 			love.timer.sleep(0)
+			break
+		end
+
+		local a5 = love.timer.getTime()
+
+		if _VERBOSE then
+			Log.debug("[BE] game:tick()            -> %03d ms", (a1 - a0) * 1000)
+			Log.debug("[BE] gameManager:update()   -> %03d ms", (a2 - a1) * 1000)
+			Log.debug("[BE] gameManager:pushTick() -> %03d ms", (a3 - a2) * 1000)
+			Log.debug("[BE] gameManager:send()     -> %03d ms", (a4 - a3) * 1000)
+			Log.debug("[BE] gameManager:receive()  -> %03d ms", (a5 - a4) * 1000)
 		end
 	end
 	local t2 = love.timer.getTime()
 
 	local duration = t2 - t1
 	if duration < game:getDelta() then
-		love.timer.sleep(game:getDelta() - duration)
+		if _VERBOSE then
+			Log.debug("Sleeping for %d ms.", (game:getDelta() - duration) * 1000)
+
+			love.timer.sleep(game:getDelta() - duration)
+		end
 	else
-		Log.debug("Tick ran over by %0.2f ms.", math.abs(duration * 1000))
+		Log.debug(
+			"Tick ran over by %0.2f ms (expected <= %d ms).",
+			math.abs((duration - game:getDelta()) * 1000),
+			game:getDelta() * 1000)
 	end
 end
 

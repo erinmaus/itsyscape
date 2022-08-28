@@ -86,7 +86,7 @@ StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, st
 end)
 StageProxy.killActor:link("onActorKilled")
 
-StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop)
+StageProxy.placeProp = Event.Create(PropProxy, function(event, gameManager, stage, id, prop)
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
 	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)

@@ -97,6 +97,7 @@ function RemoteGameManager:receive()
 		e = self.inputChannel:pop()
 		if e then
 			self.pending = buffer.decode(e)
+			self:pushTick()
 			self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 			self:flush()
 			return true
