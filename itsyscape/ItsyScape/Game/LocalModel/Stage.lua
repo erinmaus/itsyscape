@@ -866,10 +866,14 @@ function LocalStage:getItemsAtTile(i, j, layer)
 		local result = {}
 		for item in broker:iterateItemsByKey(inventory, key) do
 			table.insert(result, {
-				ref = broker:getItemRef(item),
-				id = item:getID(),
-				count = item:getCount(),
-				noted = item:isNoted()
+				item = {
+					ref = broker:getItemRef(item),
+					id = item:getID(),
+					count = item:getCount(),
+					noted = item:isNoted()
+				},
+				tile = { i = i, j = j, layer = layer },
+				position = { 0, 0, 0 }
 			})
 		end
 
