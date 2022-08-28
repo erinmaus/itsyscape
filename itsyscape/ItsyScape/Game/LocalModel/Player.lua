@@ -122,7 +122,7 @@ function Player:save()
 			end
 
 			if map and anchor then
-				local x, y, z = Utility.Map.getAnchorPosition(self, map, anchor)
+				local x, y, z = Utility.Map.getAnchorPosition(self.game, map, anchor)
 				local locationSection = root:getSection("Location")
 				locationSection:set({
 					name = map,
