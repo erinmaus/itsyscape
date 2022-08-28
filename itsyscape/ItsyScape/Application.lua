@@ -93,26 +93,23 @@ function Application:new(multiThreaded)
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
-	self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
 
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
-		self.localGameManager = LocalGameManager(self.inputChannel, self.outputChannel, self.localGame)
-
 	else
+		self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG
 		})
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
+		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
 
+	self:getGame().onLeave:register(self.quitGame, self)
 
-	self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
-	self.gameView = GameView(self.game)
+	self.gameView = GameView(self:getGame())
 	self.uiView = UIView(self.gameView)
-
-	self.game.onLeave:register(self.quitGame, self)
 
 	self.times = {}
 
@@ -180,13 +177,17 @@ function Application:setIsPaused(value)
 	self.paused = value or false
 end
 
+function Application:getIsMultiThreaded()
+	return self.multiThreaded
+end
+
 function Application:probe(x, y, performDefault, callback, tests)
 	if self.paused then
 		return
 	end
 
 	local ray = self:shoot(x, y)
-	local probe = Probe(self.game, self.gameView, self.gameDB, ray, tests)
+	local probe = Probe(self:getGame(), self.gameView, self.gameDB, ray, tests)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)
@@ -262,22 +263,6 @@ end
 function Application:tickSingleThread()
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
-	self:measure('localGameManager:update()', function() self.localGameManager:update() end)
-	self.localGameManager:pushTick()
-
-	self:measure('remoteGameManager:receive()', function()
-		while not self.remoteGameManager:receive() do
-			Log.debug("Remote receive pending.")
-		end
-	end)
-
-	self.remoteGameManager:pushTick()
-
-	self:measure('localGameManager:receive()', function()
-		while not self.localGameManager:receive() do
-			Log.debug("Local receive pending.")
-		end
-	end)
 end
 
 function Application:tickMultiThread()
@@ -349,7 +334,7 @@ function Application:getFrameDelta()
 	local currentTime = love.timer.getTime()
 	local previousTime = self.previousTickTime
 
-	local gameDelta = self.game:getDelta()
+	local gameDelta = self:getGame():getDelta()
 	if not gameDelta then
 		return 0
 	else
