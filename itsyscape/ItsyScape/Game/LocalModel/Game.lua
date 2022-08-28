@@ -19,7 +19,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local Discord = require "ItsyScape.Discord"
 
 local LocalGame = Class(Game)
-LocalGame.TICKS_PER_SECOND = 10
+LocalGame.TICKS_PER_SECOND = 8
 
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
