@@ -25,6 +25,7 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local ProCombatStatusHUDController = Class(Controller)
 
@@ -61,6 +62,8 @@ function ProCombatStatusHUDController:bindToPlayer(peep)
 			self.isDirty = true
 		end
 		stats.onLevelUp:register(self._onLevelUp)
+	else
+		Log.error("Could not bind to stats of '%s'.", peep:getName())
 	end
 end
 
