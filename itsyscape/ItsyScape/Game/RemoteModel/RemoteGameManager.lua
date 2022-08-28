@@ -96,13 +96,10 @@ function RemoteGameManager:receive()
 	repeat
 		e = self.inputChannel:pop()
 		if e then
-			e = buffer.decode(e)
-			table.insert(self.pending, e)
-			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
-				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-				self:flush()
-				return true
-			end
+			self.pending = buffer.decode(e)
+			self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+			self:flush()
+			return true
 		end
 	until e == nil
 

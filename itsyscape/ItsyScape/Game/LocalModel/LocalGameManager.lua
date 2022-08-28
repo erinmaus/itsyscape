@@ -22,6 +22,9 @@ local LocalGameManager = Class(GameManager)
 function LocalGameManager:new(inputChannel, outputChannel, game)
 	GameManager.new(self)
 
+	self.pending = {}
+	self.outgoing = {}
+
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
 
@@ -60,19 +63,17 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
-	self.pending = {}
-
 	game:getStage():newMap(1, 1, 1)
 	game:tick()
 end
 
 function LocalGameManager:push(e)
-	self.outputChannel:push(buffer.encode(e))
+	table.insert(self.outgoing, e)
 end
 
 function LocalGameManager:send()
-	-- Nothing for now.
-	-- We immediately send events via 'push' as we receive them.
+	self.outputChannel:push(buffer.encode(self.outgoing))
+	table.clear(self.outgoing)
 end
 
 function LocalGameManager:receive()
