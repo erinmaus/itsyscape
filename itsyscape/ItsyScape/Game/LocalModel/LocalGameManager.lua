@@ -78,7 +78,7 @@ end
 function LocalGameManager:receive()
 	local e
 	repeat
-		e = self.inputChannel:pop()
+		e = self.inputChannel:demand()
 		if e then
 			self.pending = buffer.decode(e)
 			self:flush()

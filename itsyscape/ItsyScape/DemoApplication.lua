@@ -40,7 +40,7 @@ DemoApplication.TITLE_SCREENS = {
 }
 
 function DemoApplication:new()
-	Application.new(self, true)
+	Application.new(self, _CONF.multithreaded or false)
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
@@ -79,7 +79,17 @@ function DemoApplication:initialize()
 
 	love.audio.setDistanceModel('linear')
 
-	self:openTitleScreen()
+	self.pendingTitleScreenOpen = true
+end
+
+function DemoApplication:tickSingleThread()
+	Application.tickSingleThread(self)
+	self:tryOpenTitleScreen()
+end
+
+function DemoApplication:tickMultiThread()
+	Application.tickMultiThread(self)
+	self:tryOpenTitleScreen()
 end
 
 function DemoApplication:closeTitleScreen()
@@ -87,6 +97,13 @@ function DemoApplication:closeTitleScreen()
 	self.titleScreen = nil
 
 	self:closeMainMenu()
+end
+
+function DemoApplication:tryOpenTitleScreen()
+	if self.pendingTitleScreenOpen then
+		self:openTitleScreen()
+		self.pendingTitleScreenOpen = false
+	end
 end
 
 function DemoApplication:openTitleScreen()
@@ -108,6 +125,7 @@ function DemoApplication:openTitleScreen()
 	})
 
 	self:getGame():getPlayer():spawn(storage, false)
+
 	self:getGameView():playMusic('main', "IsabelleIsland")
 end
 
