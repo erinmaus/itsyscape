@@ -357,21 +357,21 @@ function Application:drawDebug()
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f (%010d)\n",
+			"%s: %.04f ms (%010d)\n",
 			self.times[i].name,
-			self.times[i].value,
+			self.times[i].value * 1000,
 			1 / self.times[i].value)
 		sum = sum + self.times[i].value
 	end
 	if 1 / sum < 60 then
 		r = r .. string.format(
-				"!!! sum: %.04f (%010d)\n",
-				sum,
+				"!!! sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	else
 		r = r .. string.format(
-				"sum: %.04f (%010d)\n",
-				sum,
+				"   sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	end
 
