@@ -26,7 +26,7 @@ function RemoteStage:spyOnDropItem(ref, item, tile, position)
 	self.itemSpies[ref] = {
 		item = item,
 		tile = tile,
-		position = positions
+		position = position
 	}
 end
 
