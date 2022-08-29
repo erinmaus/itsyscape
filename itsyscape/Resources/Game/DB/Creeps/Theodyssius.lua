@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "Theodyssius" {
-	-- Nothing.
+	ItsyScape.Action.Attack()
 }
 
 ItsyScape.Meta.ResourceTag {
