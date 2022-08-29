@@ -176,12 +176,12 @@ function PortalView:load()
 			local currentShader = renderer:getCurrentShader()
 
 			local texture = self.renderer:getOutputBuffer():getColor()
-			if currentShader:hasUniform("scape_PortalTexture") then
+			if texture and currentShader:hasUniform("scape_PortalTexture") then
 				currentShader:send("scape_PortalTexture", texture)
 			end
 
 			local outputBuffer = renderer:getOutputBuffer():getColor()
-			if currentShader:hasUniform("scape_ScreenSize") then
+			if outputBuffer and currentShader:hasUniform("scape_ScreenSize") then
 				currentShader:send("scape_ScreenSize", { outputBuffer:getWidth(), outputBuffer:getHeight() })
 			end
 		end)
