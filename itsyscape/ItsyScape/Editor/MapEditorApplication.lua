@@ -143,11 +143,22 @@ end
 function MapEditorApplication:initialize()
 	EditorApplication.initialize(self)
 
+	self:getGame():getStage():newMap(1, 1, 1, "Draft")
+
 	local newMapInterface = NewMapInterface(self)
 	self:getUIView():getRoot():addChild(newMapInterface)
 	newMapInterface.onSubmit:register(function()
 		self:setTool(MapEditorApplication.TOOL_PAINT)
 	end)
+end
+
+function MapEditorApplication:getLastDecorationFeature()
+	local _, decoration = self.decorationList:getCurrentDecoration()
+	if decoration then
+		return decoration:getFeatureByIndex(decoration:getNumFeatures())
+	end
+
+	return nil
 end
 
 function MapEditorApplication:updateGrid(stage, map, layer)
@@ -338,12 +349,13 @@ function MapEditorApplication:mousePress(x, y, button)
 							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
 							local rotation, scale
-							if self.lastDecorationFeature then
-								rotation = self.lastDecorationFeature:getRotation()
-								scale = self.lastDecorationFeature:getScale()
+							local lastDecorationFeature = self:getLastDecorationFeature()
+							if lastDecorationFeature then
+								rotation = lastDecorationFeature:getRotation()
+								scale = lastDecorationFeature:getScale()
 							end
 
-							self.lastDecorationFeature = decoration:add(
+							decoration:add(
 								tile,
 								Vector(x, y, z),
 								rotation,
@@ -635,22 +647,24 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE
-			   and self.lastDecorationFeature
+			   and self:getLastDecorationFeature()
 			then
+				local lastDecorationFeature = self:getLastDecorationFeature()
 				if key == 'r' then
 					local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
-					local newRotation = self.lastDecorationFeature:getRotation() * yRotation
+					local newRotation = lastDecorationFeature:getRotation() * yRotation
 					--newRotation = newRotation:getNormal()
 
 					local group, decoration = self.decorationList:getCurrentDecoration()
 					if decoration then
-						if decoration:remove(self.lastDecorationFeature) then
-							self.lastDecorationFeature = decoration:add(
-								self.lastDecorationFeature:getID(),
-								self.lastDecorationFeature:getPosition(),
-								newRotation,
-								self.lastDecorationFeature:getScale(),
-								self.lastDecorationFeature:getColor())
+						decoration:add(
+							lastDecorationFeature:getID(),
+							lastDecorationFeature:getPosition(),
+							newRotation,
+							lastDecorationFeature:getScale(),
+							lastDecorationFeature:getColor())
+
+						if decoration:remove(lastDecorationFeature) then
 							self:getGame():getStage():decorate(group, decoration)
 						end
 					end
@@ -1000,6 +1014,8 @@ function MapEditorApplication:draw(...)
 	end
 
 	do
+		local w = love.window.getMode()
+
 		local map = self:getGame():getStage():getMap(1)
 		local tile = map:getTile(self.currentI, self.currentJ)
 
@@ -1010,7 +1026,11 @@ function MapEditorApplication:draw(...)
 			(self.currentI - 0.5) * 2,
 			tile:getInterpolatedHeight(0.5, 0.5),
 			(self.currentJ - 0.5) * 2)
-		love.graphics.print(m, 0, 0)
+
+		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.printf(m, 1, 1, w, "center")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(m, 0, 0, w, "center")
 	end
 end
 
