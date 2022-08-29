@@ -133,24 +133,28 @@ end
 function Gravity:tick()
 	if not self.position or not self.size then
 		self.position = self:getTargetPosition(self:getDestination()) + Vector(0, Gravity.MAX_SIZE, 0)
+
+		local min, max = self:getDestination():getBounds()
+		local center = max - min
+		self.size = math.max(center.x, center.y, center.z) / 8 + Gravity.MAX_SIZE
 	end
 end
 
 function Gravity:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	if self.position then
+	if self.position and self.size then
 		local root = self:getRoot()
 		local delta = self:getDelta()
 		local alpha = math.abs(math.sin(delta * math.pi)) * Gravity.ALPHA_MULTIPLIER
 		alpha = math.min(alpha, 1)
 
 		root:getTransform():setLocalTranslation(self.position)
-		root:getTransform():setLocalScale(Vector(Gravity.MAX_SIZE) * alpha)
+		root:getTransform():setLocalScale(Vector(self.size) * alpha)
 
 		local fogValue = alpha * (Gravity.FOG_NEAR_MAX - Gravity.FOG_NEAR_MIN) + Gravity.FOG_NEAR_MIN
-		self.fog:setNearDistance(fogValue + Gravity.FOG_FAR)
-		self.fog:setFarDistance(fogValue)
+		self.fog:setNearDistance((fogValue + Gravity.FOG_FAR) * self.size)
+		self.fog:setFarDistance(fogValue * self.size)
 		self.fog:setColor(Gravity.SINGULARITY_COLOR)
 		self.fog:getHandle():tick()
 		self.fog:setParent(root)

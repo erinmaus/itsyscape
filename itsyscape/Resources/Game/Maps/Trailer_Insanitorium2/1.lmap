@@ -1,0 +1,2869 @@
+{
+	width = 16,
+	height = 16,
+	cellSize = 2,
+	tiles =
+	{
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 39, flat = 3, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+	}
+}
