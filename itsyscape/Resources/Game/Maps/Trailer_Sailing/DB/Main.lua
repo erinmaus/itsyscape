@@ -170,9 +170,9 @@ do
 	local Rotation3 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Z, math.pi / 32)
 	local Rotation = Rotation1 * Rotation2 * Rotation3
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
+		PositionX = 12,
 		PositionY = 7.5,
-		PositionZ = 0,
+		PositionZ = 4,
 		RotationX = Rotation.x,
 		RotationY = Rotation.y,
 		RotationZ = Rotation.z,
