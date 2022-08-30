@@ -21,16 +21,21 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local LocalProp = Class(Prop)
 
-function LocalProp:new(game, peepType)
+function LocalProp:new(game, peepType, peepID)
 	Prop.new(self)
 
 	self.game = game
 	self.id = Prop.NIL_ID
 	self.peepType = peepType
+	self.peepID = peepID
 end
 
 function LocalProp:getPeep()
 	return self.peep
+end
+
+function LocalProp:getPeepID()
+	return self.peepID
 end
 
 function LocalProp:place(id, group, resource, ...)

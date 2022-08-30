@@ -19,7 +19,7 @@ StageProxy.MAP = "map"
 StageProxy.loadMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.Argument("tileSetID"))
 StageProxy.loadMap:link(
 	"onLoadMap",
@@ -29,11 +29,11 @@ StageProxy.loadMap:link(
 StageProxy.getMap = Event.Get(
 	StageProxy.MAP,
 	Event.Return("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.unloadMap = Event.Unset(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.unloadMap:link(
 	"onUnloadMap",
 	Event.Argument("map"),
@@ -41,7 +41,7 @@ StageProxy.unloadMap:link(
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.modifyMap:link(
 	"onMapModified",
 	Event.Argument("map"),
@@ -50,7 +50,7 @@ StageProxy.modifyMap:link(
 StageProxy.MAP_MOVE = "mapMove"
 StageProxy.moveMap = Event.Set(
 	StageProxy.MAP_MOVE,
-	Event.KeyArgument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.Argument("position"),
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
@@ -67,7 +67,7 @@ StageProxy.moveMap:link(
 StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.stopMoveMap:link(
 	"onUnloadMap",
 	Event.Argument("map"),
@@ -126,7 +126,7 @@ StageProxy.decorate = Event.Set(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
 	Event.Argument("decoration"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.decorate:link(
 	"onDecorate",
 	Event.Argument("group"),
@@ -135,16 +135,16 @@ StageProxy.decorate:link(
 StageProxy.undecorate = Event.Unset(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.undecorate:link(
 	"onUndecorate",
 	Event.KeyArgument("group"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 
 StageProxy.WEATHER = "weather"
 StageProxy.forecast = Event.Set(
 	StageProxy.WEATHER,
-	Event.Argument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.KeyArgument("name"),
 	Event.Argument("id"),
 	Event.Argument("props"))
@@ -155,7 +155,7 @@ StageProxy.forecast:link(
 	Event.Argument("layer"))
 StageProxy.stopForecast = Event.Unset(
 	StageProxy.WEATHER,
-	Event.Argument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.KeyArgument("name"))
 StageProxy.stopForecast:link(
 	"onStopForecast",
@@ -166,7 +166,7 @@ StageProxy.WATER = "water"
 StageProxy.flood = Event.Set(
 	Event.KeyArgument("key"),
 	Event.Argument("water"),
-	Event.Argument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.flood:link(
 	"onWaterFlood",
 	Event.Argument("key"),
@@ -174,7 +174,7 @@ StageProxy.flood:link(
 	Event.Argument("layer"))
 StageProxy.drain = Event.Unset(
 	Event.KeyArgument("key"),
-	Event.Argument("water"))
+	Event.KeyArgument("layer", true))
 StageProxy.drain:link(
 	"onWaterDrain",
 	Event.Argument("key"),
@@ -195,17 +195,21 @@ StageProxy.projectile:link(
 StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
 	Event.KeyArgument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 StageProxy.playMusic:link(
 	"onPlayMusic",
 	Event.Argument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 StageProxy.stopMusic = Event.Unset(
 	Event.KeyArgument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 StageProxy.stopMusic:link(
 	"onStopMusic",
 	Event.Argument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 
 return Proxy(StageProxy)

@@ -144,7 +144,7 @@ function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 	if resource then
 		local name = "resource://" .. resource.name
 		local stage = peep:getDirector():getGameInstance():getStage(peep)
-		local s, a = stage:spawnActor(name)
+		local s, a = stage:spawnActor(name, Utility.Peep.getLayer(peep), peep:getLayerName())
 		if s then
 			local actorPeep = a:getPeep()
 
@@ -303,7 +303,7 @@ function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
 	end
 
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
-	local success, prop = stage:placeProp("resource://" .. prop.name, layer)
+	local success, prop = stage:placeProp("resource://" .. prop.name, layer, peep:getLayerName())
 
 	if success then
 		local propPeep = prop:getPeep()
@@ -1114,12 +1114,16 @@ end
 
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
-	local mapScript = stage:getMapScript(layer)
+	local instance = stage:getInstanceByLayer(layer)
+	local mapScript = instance:getMapScriptByLayer(layer)
 
 	local center = stage:getMap(layer):getTileCenter(i, j)
-
-	local transform = Utility.Peep.getTransform(mapScript)
-	return Vector(transform:transformPoint(center.x, center.y, center.z))
+	if not mapScript then
+		return center
+	else
+		local transform = Utility.Peep.getTransform(mapScript)
+		return Vector(transform:transformPoint(center.x, center.y, center.z))
+	end
 end
 
 function Utility.Map.getMapObject(game, map, name)
@@ -1233,7 +1237,8 @@ end
 
 function Utility.Map.spawnMap(peep, map, position, args)
 	local stage = peep:getDirector():getGameInstance():getStage()
-	local mapLayer, mapScript = stage:loadMapResource(map, args)
+	local instance = stage:getPeepInstance(peep)
+	local mapLayer, mapScript = stage:loadMapResource(instance, map, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
 	p.position = position
@@ -1265,7 +1270,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer)
+		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, shipScript:getLayerName())
 		if boatFoamProp then
 			local peep = boatFoamProp:getPeep()
 			peep:listen('finalize', function()
@@ -1279,7 +1284,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer)
+		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, shipScript:getLayerName())
 		if boatFoamTrailProp then
 			local peep = boatFoamTrailProp:getPeep()
 			peep:listen('finalize', function()
@@ -1430,15 +1435,19 @@ end
 function Utility.Peep.getParentTransform(peep)
 	local director = peep:getDirector()
 	local stage = director:getGameInstance():getStage()
-	local mapReference = peep:getBehavior(MapResourceReferenceBehavior)
-	if mapReference and mapReference.map then
-		local mapScript = stage:getMapScript(mapReference.map.name)
-		if mapScript then
-			return Utility.Peep.getTransform(mapScript)
-		end
+	local layer = Utility.Peep.getLayer(peep)
+
+	local instance = stage:getInstanceByLayer(layer)
+	if not instance then
+		return love.math.newTransform()
 	end
 
-	return nil
+	local mapScript = instance:getMapScriptByLayer(layer)
+	if not mapScript then
+		return love.math.newTransform()
+	end
+
+	return Utility.Peep.getMapTransform(mapScript)
 end
 
 function Utility.Peep.getLayer(peep)
@@ -2328,11 +2337,12 @@ function Utility.Peep.getMapResource(peep)
 end
 
 function Utility.Peep.getMapResourceFromLayer(peep)
-	local name = peep:getLayerName()
-	local stage = peep:getDirector():getGameInstance():getStage()
-	local mapPeep = stage:getMapScript(name)
-	if mapPeep then
-		return Utility.Peep.getResource(mapPeep)
+	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
+	if instance then
+		local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+		if mapScript then
+			return Utility.Peep.getResource(mapScript)
+		end
 	end
 
 	return nil
@@ -2340,21 +2350,13 @@ end
 
 function Utility.Peep.setMapResource(peep, map)
 	local _, mapResourceReference = peep:addBehavior(MapResourceReferenceBehavior)
-
-	if type(map) == 'string' then
-		local stage = peep:getDirector():getGameInstance():getStage()
-		local mapPeep = stage:getMapScript(map)
-		mapResourceReference.map = Utility.Peep.getResource(mapPeep)
-	else
-		mapResourceReference.map = map
-	end
+	mapResourceReference.map = map
 end
 
 function Utility.Peep.getMapScript(peep)
-	local map = Utility.Peep.getMapResource(peep)
-	if map then
-		local stage = peep:getDirector():getGameInstance():getStage()
-		return stage:getMapScript(map.name)
+	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
+	if instance then
+		return instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
 	end
 end
 

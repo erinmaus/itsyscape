@@ -10,6 +10,7 @@
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local Utility = require "ItsyScape.Game.Utility"
 local GameProxy = require "ItsyScape.Game.Model.GameProxy"
 local PlayerProxy = require "ItsyScape.Game.Model.PlayerProxy"
 local StageProxy = require "ItsyScape.Game.Model.StageProxy"
@@ -24,6 +25,10 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
+
+	self.pending = {}
+	self.outgoing = {}
+	self.keys = {}
 
 	self:registerInterface(
 		"ItsyScape.Game.Model.Actor",
@@ -60,19 +65,75 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
-	self.pending = {}
-
 	game:getStage():newMap(1, 1, 1)
 	game:tick()
 end
 
-function LocalGameManager:push(e)
+function LocalGameManager:push(e, key)
+	table.insert(self.outgoing, e)
+	self.keys[#self.outgoing] = key
+end
+
+function LocalGameManager:_doSend(e)
 	self.outputChannel:push(buffer.encode(e))
 end
 
 function LocalGameManager:send()
-	-- Nothing for now.
-	-- We immediately send events via 'push' as we receive them.
+	local player = self:getInstance("ItsyScape.Game.Model.Player", 0):getInstance()
+	local playerInstance = player:getInstance()
+
+	if not playerInstance then
+		for i = 1, #self.outgoing do
+			self:_doSend(self.outgoing[i])
+		end
+	else
+		for i = 1, #self.outgoing do
+			local e = self.outgoing[i]
+
+			local instance
+			if e.interface and e.id then
+				instance = self:getInstance(e.interface, e.id)
+			end
+
+			if e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+				if e.interface == "ItsyScape.Game.Model.Actor" or
+				   e.interface == "ItsyScape.Game.Model.Prop"
+				then
+					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
+					if playerInstance:hasLayer(layer) then
+						self:_doSend(e)
+					end
+				else
+					self:_doSend(e)
+				end
+			elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
+				if e.interface == "ItsyScape.Game.Model.Stage" then
+					local key = self.keys[i]
+
+					local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
+					local isGlobal = not key or not key.layer
+
+					if isLayerMatch or isGlobal then
+						self:_doSend(e)
+					end
+				elseif e.interface == "ItsyScape.Game.Model.Actor" or
+				       e.interface == "ItsyScape.Game.Model.Prop"
+				then
+					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
+					if playerInstance:hasLayer(layer) then
+						self:_doSend(e)
+					end
+				else
+					self:_doSend(e)
+				end
+			else
+				self:_doSend(e)
+			end
+		end
+	end
+
+	table.clear(self.outgoing)
+	table.clear(self.keys)
 end
 
 function LocalGameManager:receive()

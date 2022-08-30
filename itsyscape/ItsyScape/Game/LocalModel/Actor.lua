@@ -24,12 +24,13 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 -- Represents an Actor that is simulated locally.
 local LocalActor = Class(Actor)
 
-function LocalActor:new(game, peepType)
+function LocalActor:new(game, peepType, peepID)
 	Actor.new(self)
 
 	self.game = game
 	self.id = Actor.NIL_ID
 	self.peepType = peepType
+	self.peepID = peepID
 
 	self.skin = {}
 	self.animations = {}
@@ -39,6 +40,10 @@ end
 
 function LocalActor:getPeep()
 	return self.peep
+end
+
+function LocalActor:getPeepID()
+	return self.peepID
 end
 
 function LocalActor:spawn(id, group, resource, ...)

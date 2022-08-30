@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
@@ -42,13 +43,27 @@ function LocalPlayer:new(game, stage)
 	self.actor = false
 	self.direction = Vector.UNIT_X
 	self.id = 0
+	self.onMove = Callback()
+end
+
+function LocalPlayer:setInstance(layerName, instance)
+	self:onMove(layerName)
+	self.instance = instance
+end
+
+function LocalPlayer:getInstance()
+	return self.instance
+end
+
+function LocalPlayer:getID()
+	return self.id
 end
 
 function LocalPlayer:spawn(storage, newGame)
 	self.id = self.id + 1
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
-	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One")
+	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, "::orphan")
 	if success then
 		self.actor = actor
 		actor:getPeep():addBehavior(PlayerBehavior)
