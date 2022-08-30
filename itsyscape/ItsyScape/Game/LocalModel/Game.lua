@@ -42,6 +42,11 @@ function LocalGame:getPlayer()
 	return self.player
 end
 
+function LocalGame:getPlayerByID(id)
+	-- TODO
+	return self.player
+end
+
 function LocalGame:getStage()
 	return self.stage
 end

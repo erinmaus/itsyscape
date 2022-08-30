@@ -254,7 +254,7 @@ function GameManager:getInterfaceType(interface)
 	return self.interfaces[interface].type
 end
 
-function GameManager:push(e)
+function GameManager:push(e, key)
 	Class.ABSTRACT()
 end
 
@@ -300,7 +300,7 @@ function GameManager:processDestroy(e)
 	-- Nothing.
 end
 
-function GameManager:pushCallback(interface, id, callback, args)
+function GameManager:pushCallback(interface, id, callback, args, key)
 	local event = {
 		type = GameManager.QUEUE_EVENT_TYPE_CALLBACK,
 		interface = interface,
@@ -309,7 +309,7 @@ function GameManager:pushCallback(interface, id, callback, args)
 		value = args
 	}
 
-	self:push(event)
+	self:push(event, key)
 end
 
 -- This process should be the same client/server.
@@ -433,7 +433,7 @@ function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
 		local key = event:getKeyFromArguments(...)
 		local args = self:getArgs(...)
 		if group:set(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args)
+		self:pushCallback(interface, id, event:getCallbackName(), args, key)
 		end
 	end
 end
@@ -446,7 +446,7 @@ function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 		local key = event:getKeyFromArguments(...)
 		local args = self:getArgs(...)
 		if group:unset(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args)
+			self:pushCallback(interface, id, event:getCallbackName(), args, key)
 		end
 	end
 end

@@ -11,13 +11,21 @@ local Class = require "ItsyScape.Common.Class"
 
 local Event = Class()
 
+Event.BaseFilter = Class()
+Event.MapLayerFilter = Class(Event.BaseFilter)
+
 Event.BaseArgument = Class()
-function Event.BaseArgument:new(parameter)
+function Event.BaseArgument:new(parameter, isFilter)
 	self.parameter = parameter
+	self.isFilter = isFilter or false
 end
 
 function Event.BaseArgument:getParameter()
 	return self.parameter
+end
+
+function Event.BaseArgument:getIsFilter()
+	return self.isFilter
 end
 
 Event.KeyArgument = Class(Event.BaseArgument)
@@ -47,7 +55,8 @@ function Event.BaseCall:getKeyFromArguments(...)
 		local argument = self.arguments[i]
 		if Class.isCompatibleType(argument, Event.KeyArgument) or
 		   Class.isCompatibleType(argument, Event.SortedKeyArgument) or
-		   Class.isCompatibleType(argument, Event.OverrideKeyArgument)
+		   Class.isCompatibleType(argument, Event.OverrideKeyArgument) or
+		   argument:getIsFilter()
 		then
 			key[argument:getParameter()] = {
 				value = select(i, ...),
