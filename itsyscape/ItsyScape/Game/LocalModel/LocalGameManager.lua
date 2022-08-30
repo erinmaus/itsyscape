@@ -25,10 +25,13 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
+	self.game = game
 
 	self.pending = {}
 	self.outgoing = {}
-	self.keys = {}
+	self.outgoingTargets = {}
+	self.outgoingKeys = {}
+	self.pendingDeletion = {}
 
 	self:registerInterface(
 		"ItsyScape.Game.Model.Actor",
@@ -67,15 +70,83 @@ function LocalGameManager:new(inputChannel, outputChannel, game)
 
 	game:getStage():newMap(1, 1, 1)
 	game:tick()
+
+	game:getPlayer().onPoof:register(self.onPlayerPoof, self)
+	game:getPlayer().onMove:register(self.onPlayerMove, self)
+end
+
+function LocalGameManager:onPlayerPoof(player)
+	local stage = self.game:getStage()
+
+	local instance
+	do
+		local previousID, previousFilename = stage:splitLayerNameIntoInstanceIDAndFilename(player:getActor():getPeep():getLayerName())
+		instance = stage:getInstanceByFilenameAndID(previousFilename, previousID)
+	end
+
+	if not instance then
+		return
+	end
+
+	instance:unloadPlayer(self, player)
+end
+
+function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerName)
+	local stage = self.game:getStage()
+
+	local previousInstance
+	do
+		local previousID, previousFilename = stage:splitLayerNameIntoInstanceIDAndFilename(previousLayerName)
+		previousInstance = stage:getInstanceByFilenameAndID(previousFilename, previousID)
+	end
+
+	if previousInstance then
+		previousInstance:unloadPlayer(self, player)
+	end
+
+	local currentInstance
+	do
+		local currentID, currentFilename = stage:splitLayerNameIntoInstanceIDAndFilename(currentLayerName)
+		currentInstance = stage:getInstanceByFilenameAndID(currentFilename, currentID)
+	end
+
+	if currentInstance then
+		currentInstance:loadPlayer(self, player)
+	end
 end
 
 function LocalGameManager:push(e, key)
 	table.insert(self.outgoing, e)
-	self.keys[#self.outgoing] = key
+	self.outgoingKeys[#self.outgoing] = key
+end
+
+function LocalGameManager:assignTargetToLastPush(target)
+	self.outgoingTargets[#self.outgoing] = target
+end
+
+function LocalGameManager:destroyInstance(interface, id)
+	table.insert(self.pendingDeletion, self:getInstance(interface, id))
+	GameManager.destroyInstance(self, interface, id)
 end
 
 function LocalGameManager:_doSend(e)
 	self.outputChannel:push(buffer.encode(e))
+end
+
+function LocalGameManager:getInstance(interface, id)
+	local instance = GameManager.getInstance(self, interface, id)
+	if instance then
+		return instance
+	end
+
+	for i = 1, #self.pendingDeletion do
+		local d = self.pendingDeletion[i]
+		if d:getInterface() == interface and d:getID() == id then
+			return d
+		end
+	end
+
+	return nil
 end
 
 function LocalGameManager:send()
@@ -95,12 +166,17 @@ function LocalGameManager:send()
 				instance = self:getInstance(e.interface, e.id)
 			end
 
-			if e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+			if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
+			   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY or
+			   e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY
+			then
 				if e.interface == "ItsyScape.Game.Model.Actor" or
 				   e.interface == "ItsyScape.Game.Model.Prop"
 				then
-					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-					if playerInstance:hasLayer(layer) then
+					local isActorMatch = e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
+					local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
+
+					if isActorMatch or isPropMatch then
 						self:_doSend(e)
 					end
 				else
@@ -108,12 +184,17 @@ function LocalGameManager:send()
 				end
 			elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
 				if e.interface == "ItsyScape.Game.Model.Stage" then
-					local key = self.keys[i]
+					local key = self.outgoingKeys[i]
+					local target = self.outgoingTargets[i]
 
 					local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
-					local isGlobal = not key or not key.layer
+					local isActorMatch = key and key.actor and playerInstance:hasActor(key.actor.value)
+					local isPropMatch = key and key.prop and playerInstance:hasProp(key.prop.value)
 
-					if isLayerMatch or isGlobal then
+					local isTargetMatch = target and target:getID() == player:getID()
+					local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
+
+					if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
 						self:_doSend(e)
 					end
 				elseif e.interface == "ItsyScape.Game.Model.Actor" or
@@ -133,7 +214,8 @@ function LocalGameManager:send()
 	end
 
 	table.clear(self.outgoing)
-	table.clear(self.keys)
+	table.clear(self.outgoingKeys)
+	table.clear(self.pendingDeletion)
 end
 
 function LocalGameManager:receive()

@@ -64,6 +64,14 @@ function Proxy:createEvent(key, event)
 	table.insert(self.events, Proxy.Field(key, event))
 end
 
+function Proxy:iterateFields()
+	return ipairs(self.fields)
+end
+
+function Proxy:iterateEvents()
+	return ipairs(self.events)
+end
+
 function Proxy:wrapServer(interface, id, instance, gameManager)
 	for i = 1, #self.properties do
 		local propertyName = self.properties[i]:getKey()

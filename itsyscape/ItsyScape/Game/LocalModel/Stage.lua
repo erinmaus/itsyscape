@@ -260,8 +260,6 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		local actor = LocalActor(self.game, Peep, realID)
 		actor:spawn(self.currentActorID, layerName, resource)
 
-		self.onActorSpawned(self, realID, actor)
-
 		self.currentActorID = self.currentActorID + 1
 		self.actors[actor] = true
 
@@ -274,6 +272,8 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 			if p then
 				p.layer = layer
 			end
+
+			self.onActorSpawned(self, realID, actor)
 		end)
 
 		return true, actor
@@ -751,6 +751,8 @@ function LocalStage:movePeep(peep, path, anchor, force)
 		end
 	end
 
+	local newLayerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+
 	if peep:getBehavior(PlayerBehavior) then
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
 		if player then
@@ -763,9 +765,11 @@ function LocalStage:movePeep(peep, path, anchor, force)
 			end
 
 			instance:addPlayer(player)
-			player:setInstance(layerName, instance)
+			player:setInstance(layerName, newLayerName, instance)
 		end
 	end
+
+	self.game:getDirector():movePeep(peep, newLayerName)
 
 	do
 		local actor = peep:getBehavior(ActorReferenceBehavior)
@@ -783,9 +787,6 @@ function LocalStage:movePeep(peep, path, anchor, force)
 			self:onPropPlaced(prop:getPeepID(), prop)
 		end
 	end
-
-	local newLayerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
-	self.game:getDirector():movePeep(peep, newLayerName)
 end
 
 function LocalStage:loadMapResource(instance, filename, args)
@@ -801,17 +802,17 @@ function LocalStage:loadMapResource(instance, filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	local musicMeta
-	do
-		local metaFilename = directoryPath .. "/meta.music"
-		local data = "return " .. (love.filesystem.read(metaFilename) or "")
-		local chunk = assert(loadstring(data))
-		musicMeta = setfenv(chunk, {})() or {}
-	end
+	-- local musicMeta
+	-- do
+	-- 	local metaFilename = directoryPath .. "/meta.music"
+	-- 	local data = "return " .. (love.filesystem.read(metaFilename) or "")
+	-- 	local chunk = assert(loadstring(data))
+	-- 	musicMeta = setfenv(chunk, {})() or {}
+	-- end
 
-	for key, song in pairs(musicMeta) do
-		self:playMusic(self.stageName, key, song)
-	end
+	-- for key, song in pairs(musicMeta) do
+	-- 	self:playMusic(self.stageName, key, song)
+	-- end
 
 	local baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do

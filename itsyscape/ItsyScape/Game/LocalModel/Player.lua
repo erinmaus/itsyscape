@@ -43,11 +43,13 @@ function LocalPlayer:new(game, stage)
 	self.actor = false
 	self.direction = Vector.UNIT_X
 	self.id = 0
+
+	self.onPoof = Callback()
 	self.onMove = Callback()
 end
 
-function LocalPlayer:setInstance(layerName, instance)
-	self:onMove(layerName)
+function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
+	self:onMove(previousLayerName, newLayerName)
 	self.instance = instance
 end
 
@@ -60,6 +62,10 @@ function LocalPlayer:getID()
 end
 
 function LocalPlayer:spawn(storage, newGame)
+	if self.id > 0 then
+		self:poof()
+	end
+
 	self.id = self.id + 1
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
@@ -161,6 +167,8 @@ function LocalPlayer:onPlayerActionPerformed(_, p)
 end
 
 function LocalPlayer:poof()
+	self:onPoof()
+
 	if self.actor then
 		self.stage:killActor(self.actor)
 	end
