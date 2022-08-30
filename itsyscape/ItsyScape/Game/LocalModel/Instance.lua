@@ -8,12 +8,36 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Stage = require "ItsyScape.Game.Model.Stage"
+local ActorProxy = require "ItsyScape.Game.Model.ActorProxy"
+local Event = require "ItsyScape.Game.RPC.Event"
 
 local Instance = Class(Stage)
 
 Instance.GLOBAL_ID      = 0
 Instance.LOCAL_ID_START = 1
+
+Instance.Map = Class()
+
+function Instance.Map:new(layer, map, tileSetID)
+	self.layer = layer
+	self.map = map
+	self.tileSetID = tileSetID
+end
+
+function Instance.Map:getLayer()
+	return self.layer
+end
+
+function Instance.Map:getMap()
+	return self.map
+end
+
+function Instance.Map:getTileSetID()
+	return self.tileSetID
+end
 
 Instance.MapScript = Class()
 
@@ -128,6 +152,84 @@ function Instance:new(id, filename, stage)
 	self.players = {}
 	self.playersByID = {}
 
+	self.maps = {}
+
+	self._onLoadMap = function(_, map, layer, tileSetID)
+		if self:hasLayer(layer) then
+			self.maps[layer] = Instance.Map(layer, map, tileSetID)
+		end
+	end
+	stage.onLoadMap:register(self._onLoadMap)
+
+	self._onUnloadMap = function(_, map, layer)
+		if self:hasLayer(layer) then
+			self.maps[layer] = map
+		end
+	end
+	stage.onUnloadMap:register(self._onUnloadMap)
+
+	self._onMapModified = function(_, map, layer)
+		if self:hasLayer(layer) then
+			local previousMap = self.maps[layer]
+			if previousMap then
+				self.maps[layer] = Instance.Map(layer, map, previousMap:getTileSetID())
+			end
+		end
+	end
+	stage.onMapModified:register(self._onMapModified)
+
+	self.actors = {}
+	self.actorsByID = {}
+
+	self._onActorSpawned = function(_, actorID, actor)
+		local instance = stage:getPeepInstance(actor:getPeep())
+		if instance == self then
+			table.insert(self.actors, actor)
+			self.actorsByID[actor:getID()] = actor
+		end
+	end
+	stage.onActorSpawned:register(self._onActorSpawned)
+
+	self._onActorKilled = function(_, actor)
+		local instance = stage:getPeepInstance(actor:getPeep())
+		if instance == self then
+			for i = 1, #self.actors do
+				if self.actors[i] == actor then
+					table.remove(self.actors, i)
+					self.actorsByID[actor:getID()] = nil
+					break
+				end
+			end
+		end
+	end
+	stage.onActorKilled:register(self._onActorKilled)
+
+	self.props = {}
+	self.propsByID = {}
+
+	self._onPropPlaced = function(_, propID, prop)
+		local instance = stage:getPeepInstance(prop:getPeep())
+		if instance == self then
+			table.insert(self.props, prop)
+			self.propsByID[prop:getID()] = prop
+		end
+	end
+	stage.onPropPlaced:register(self._onPropPlaced)
+
+	self._onPropRemoved = function(_, prop)
+		local instance = stage:getPeepInstance(prop:getPeep())
+		if instance == self then
+			for i = 1, #self.props do
+				if self.props[i] == prop then
+					table.remove(self.props, i)
+					self.propsByID[prop:getID()] = nil
+					break
+				end
+			end
+		end
+	end
+	stage.onPropRemoved:register(self._onPropRemoved)
+
 	self.water = {}
 
 	self._onWaterFlood = function(_, key, water, layer)
@@ -165,13 +267,13 @@ function Instance:new(id, filename, stage)
 		if self:hasLayer(layer) then
 			for i = 1, #self.weather do
 				if self.weather[i]:getKey() == key then
-					self.weather[i] = Instance.Water(layer, key, id, props)
+					self.weather[i] = Instance.Weather(layer, key, id, props)
 					self:onForecast(layer, key, id, props)
 					return
 				end
 			end
 
-			table.insert(self.weather, Instance.Water(layer, key, id, props))
+			table.insert(self.weather, Instance.Weather(layer, key, id, props))
 			self:onForecast(layer, key, id, props)
 		end
 	end
@@ -224,10 +326,11 @@ function Instance:new(id, filename, stage)
 	self.pendingProjectiles = {}
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
-		local sourceLayer = Utility.Peep.getLayer(source)
-		local destinationLayer = Utility.Peep.getLayer(destination)
+		local sourceLayer = source and not Class.isType(source, Vector) and Utility.Peep.getLayer(source:getPeep())
+		local destinationLayer = destination and not Class.isType(destination, Vector) and Utility.Peep.getLayer(destination:getPeep())
 
-		if self:hasLayer(sourceLayer) and self:hasLayer(destinationLayer) then
+		if (self:hasLayer(sourceLayer) or source == nil) and
+		   (self:hasLayer(destinationLayer) or destination == nil) then
 			self:onProjectile(projectileID, source, destination, time)
 		end
 	end
@@ -348,6 +451,14 @@ function Instance:setPartyLeader(player)
 	end
 end
 
+function Instance:hasActor(actor)
+	return self.actorsByID[actor:getID()] ~= nil
+end
+
+function Instance:hasProp(prop)
+	return self.propsByID[prop:getID()] ~= nil
+end
+
 function Instance:playMusic(track, song)
 	self.music[track] = Instance.Music(track, song)
 end
@@ -357,11 +468,197 @@ function Instance:stopMusic(track, song)
 end
 
 function Instance:_addPlayerToInstance(player)
-	-- Nothing.
+	local actor = player:getActor()
+	table.insert(self.actors, actor)
+	self.actorsByID[actor:getID()] = actor
 end
 
 function Instance:_removePlayerFromInstance(player)
-	-- Nothing.
+	local actor = player:getActor()
+	for i = 1, #self.actors do
+		if self.actors[i] == actor then
+			table.remove(self.actors, i)
+			self.actorsByID[actor:getID()] = actor
+			break
+		end
+	end
+end
+
+function Instance:unloadPlayer(localGameManager, player)
+	for _, layer in self:iterateLayers() do
+		local map = self.stage:getMap(layer)
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onUnloadMap",
+			localGameManager:getArgs(map, layer))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for i = 1, #self.actors do
+		local actor = self.actors[i]
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onActorKilled",
+			localGameManager:getArgs(actor))
+		localGameManager:assignTargetToLastPush(player)
+
+		localGameManager:pushDestroy(
+			"ItsyScape.Game.Model.Actor",
+			actor:getID())
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for i = 1, #self.props do
+		local prop = self.props[i]
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onPropRemoved",
+			localGameManager:getArgs(prop))
+		localGameManager:assignTargetToLastPush(player)
+
+		localGameManager:pushDestroy(
+			"ItsyScape.Game.Model.Prop",
+			prop:getID())
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, water in ipairs(self.water) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onWaterDrain",
+			localGameManager:getArgs(water:getKey(), water:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, weather in ipairs(self.weather) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onStopForecast",
+			localGameManager:getArgs(weather:getLayer(), weather:getKey()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, decoration in ipairs(self.decorations) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onUndecorate",
+			localGameManager:getArgs(decoration:getGroup(), decoration:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+end
+
+function Instance:loadPlayer(localGameManager, player)
+	for _, layer in self:iterateLayers() do
+		local map = self.stage:getMap(layer)
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onLoadMap",
+			localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID()))
+		localGameManager:assignTargetToLastPush(player)
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onMapModified",
+			localGameManager:getArgs(map, layer))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for i = 1, #self.actors do
+		local actor = self.actors[i]
+
+		localGameManager:pushCreate(
+			"ItsyScape.Game.Model.Actor",
+			actor:getID())
+		localGameManager:assignTargetToLastPush(player)
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onActorSpawned",
+			localGameManager:getArgs(actor:getPeepID(), actor))
+		localGameManager:assignTargetToLastPush(player)
+
+		self:loadActor(localGameManager, player, actor)
+	end
+
+	for i = 1, #self.props do
+		local prop = self.props[i]
+
+		localGameManager:pushCreate(
+			"ItsyScape.Game.Model.Prop",
+			prop:getID())
+		localGameManager:assignTargetToLastPush(player)
+
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onPropPlaced",
+			localGameManager:getArgs(prop:getPeepID(), prop))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, water in ipairs(self.water) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onWaterFlood",
+			localGameManager:getArgs(water:getKey(), water:getWaterDefinition(), water:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, weather in ipairs(self.weather) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onForecast",
+			localGameManager:getArgs(weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+
+	for _, decoration in ipairs(self.decorations) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onDecorate",
+			localGameManager:getArgs(decoration:getGroup(), decoration:getDecoration(), decoration:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+	end
+end
+
+function Instance:loadActor(localGameManager, player, actor)
+	local actorInstance = localGameManager:getInstance(
+		"ItsyScape.Game.Model.Actor",
+		actor:getID())
+
+	if not actorInstance then
+		return
+	end
+
+	for _, field in ActorProxy:iterateEvents() do
+		local event = field:getValue()
+		if Class.isCompatibleType(event, Event.Set) then
+			local propertyGroup = actorInstance:getPropertyGroup(event:getGroup())
+			for _, v in propertyGroup:iterate() do
+				localGameManager:pushCallback(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID(),
+					event:getCallbackName(),
+					v.value)
+				localGameManager:assignTargetToLastPush(player)
+			end
+		end
+	end
 end
 
 return Instance

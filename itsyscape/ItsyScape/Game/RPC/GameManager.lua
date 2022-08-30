@@ -65,6 +65,10 @@ function GameManager.Instance:getPropertyGroup(groupName)
 	return group
 end
 
+function GameManager.Instance:iteratePropertyGroups()
+	return pairs(self.propertyGroups)
+end
+
 function GameManager.Instance:getProperty(propertyName)
 	return self.properties[propertyName]:getValue()
 end
@@ -81,10 +85,8 @@ function GameManager.Instance:setProperty(propertyName, value)
 	property:set(propertyName, value)
 end
 
-local PROPS = 0
 function GameManager.Instance:update()
 	for i = 1, #self.properties do
-		PROPS = PROPS + 1
 		local property = self.properties[i]
 		local isDirty = property:update(self.instance, self.gameManager)
 		if isDirty then
@@ -133,6 +135,10 @@ GameManager.PropertyGroup = Class()
 
 function GameManager.PropertyGroup:new()
 	self.values = {}
+end
+
+function GameManager.PropertyGroup:iterate()
+	return ipairs(self.values)
 end
 
 function GameManager.PropertyGroup:findIndexOfKey(key)
@@ -407,6 +413,8 @@ function GameManager:newInstance(interface, id, obj)
 end
 
 function GameManager:destroyInstance(interface, id)
+	self:pushDestroy(interface, id)
+
 	local instances = self.interfaces[interface]
 	local instance = instances[id]
 
@@ -418,8 +426,6 @@ function GameManager:destroyInstance(interface, id)
 			break
 		end
 	end
-
-	self:pushDestroy(interface, id)
 end
 
 -- In setStateForPropertyGroup and unsetStateForPropertyGroup, the first argument
@@ -433,7 +439,7 @@ function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
 		local key = event:getKeyFromArguments(...)
 		local args = self:getArgs(...)
 		if group:set(key, args) then
-		self:pushCallback(interface, id, event:getCallbackName(), args, key)
+			self:pushCallback(interface, id, event:getCallbackName(), args, key)
 		end
 	end
 end
@@ -490,8 +496,9 @@ function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
 end
 
 function GameManager:invokeCallback(interface, id, event, _, ...)
+	local key = event:getKeyFromArguments(...)
 	local args = self:getArgs(...)
-	self:pushCallback(interface, id, event:getCallbackName(), args)
+	self:pushCallback(interface, id, event:getCallbackName(), args, key)
 end
 
 function GameManager:getProperty(interface, id, property)

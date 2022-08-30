@@ -132,7 +132,12 @@ function TypeProvider.Instance:serialize(obj, result, state, exceptions)
 end
 
 function TypeProvider.Instance:deserialize(obj, state, exceptions)
-	return self.gameManager:getInstance(obj.typeName, obj.id):getInstance()
+	local instance = self.gameManager:getInstance(obj.typeName, obj.id)
+	if not instance then
+		print(obj.typeName, obj.id)
+	end
+
+	return instance and instance:getInstance()
 end
 
 return TypeProvider

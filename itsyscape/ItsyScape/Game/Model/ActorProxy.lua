@@ -49,7 +49,7 @@ ActorProxy.direction = Event.ServerToClientRPC(
 	Event.Argument("rotation"))
 ActorProxy.direction:link("onDirectionChanged", Event.Argument("direction"), Event.Argument("rotation"))
 
-ActorProxy.transmogrify = Event.ServerToClientRPC(Event.Argument("body"))
+ActorProxy.transmogrify = Event.Set(Event.Argument("body"))
 ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))
 
 ActorProxy.getPosition = Property()
