@@ -19,6 +19,7 @@ require "love.system"
 require "love.thread"
 require "love.timer"
 
+_LOG_SUFFIX = "server"
 require "bootstrap"
 
 local function init(t)
@@ -66,3 +67,4 @@ while isRunning do
 end
 
 Log.info("Game thread exiting...")
+Log.quit()

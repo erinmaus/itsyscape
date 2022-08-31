@@ -133,10 +133,6 @@ end
 
 function TypeProvider.Instance:deserialize(obj, state, exceptions)
 	local instance = self.gameManager:getInstance(obj.typeName, obj.id)
-	if not instance then
-		print(obj.typeName, obj.id)
-	end
-
 	return instance and instance:getInstance()
 end
 

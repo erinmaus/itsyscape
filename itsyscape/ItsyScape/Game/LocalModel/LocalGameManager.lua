@@ -180,6 +180,14 @@ function LocalGameManager:send()
 					local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
 
 					if isActorMatch or isPropMatch or isTargetMatch then
+						if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
+						   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY
+						then
+							Log.engine(
+								"Sending event to %s '%s' (%d) to player '%s' (%d).",
+								e.type, e.interface, e.id, player:getActor():getName(), player:getID())
+						end
+
 						self:_doSend(e)
 					end
 				else
@@ -202,6 +210,9 @@ function LocalGameManager:send()
 				then
 					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
 					if playerInstance:hasLayer(layer) or isTargetMatch then
+						Log.engine(
+							"Sending RPC '%s' on '%s' (%d) to player '%s' (%d).",
+							e.interface, e.id, e.callback, player:getActor():getName(), player:getID())
 						self:_doSend(e)
 					end
 				else

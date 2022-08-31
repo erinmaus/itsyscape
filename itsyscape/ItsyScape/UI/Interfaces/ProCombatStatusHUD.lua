@@ -243,7 +243,7 @@ function ProCombatStatusHUD.Target:update(...)
 
 	local actor = self.hud:getView():getGameView():getActorByID(self.actorID)
 	if actor then
-		self.label:setText(actor:getName():gsub(Utility.Text.INFINITY, "infinite"))
+		self.label:setText((actor:getName() or ""):gsub(Utility.Text.INFINITY, "infinite"))
 
 		local actorState = self:getActorState(self.hud:getState())
 		if actorState then
