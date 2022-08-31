@@ -180,8 +180,13 @@ function Instance:new(id, filename, stage)
 
 	self.actors = {}
 	self.actorsByID = {}
+	self.actorsPendingRemoval = {}
 
 	self._onActorSpawned = function(_, actorID, actor)
+		if self:hasActor(actor) then
+			return
+		end
+
 		local instance = stage:getPeepInstance(actor:getPeep())
 		if instance == self then
 			table.insert(self.actors, actor)
@@ -191,23 +196,21 @@ function Instance:new(id, filename, stage)
 	stage.onActorSpawned:register(self._onActorSpawned)
 
 	self._onActorKilled = function(_, actor)
-		local instance = stage:getPeepInstance(actor:getPeep())
-		if instance == self then
-			for i = 1, #self.actors do
-				if self.actors[i] == actor then
-					table.remove(self.actors, i)
-					self.actorsByID[actor:getID()] = nil
-					break
-				end
-			end
+		if self:hasActor(actor) then
+			table.insert(self.actorsPendingRemoval, actor)
 		end
 	end
 	stage.onActorKilled:register(self._onActorKilled)
 
 	self.props = {}
 	self.propsByID = {}
+	self.propsPendingRemoval = {}
 
 	self._onPropPlaced = function(_, propID, prop)
+		if self:hasProp(prop) then
+			return
+		end
+
 		local instance = stage:getPeepInstance(prop:getPeep())
 		if instance == self then
 			table.insert(self.props, prop)
@@ -217,15 +220,8 @@ function Instance:new(id, filename, stage)
 	stage.onPropPlaced:register(self._onPropPlaced)
 
 	self._onPropRemoved = function(_, prop)
-		local instance = stage:getPeepInstance(prop:getPeep())
-		if instance == self then
-			for i = 1, #self.props do
-				if self.props[i] == prop then
-					table.remove(self.props, i)
-					self.propsByID[prop:getID()] = nil
-					break
-				end
-			end
+		if self:hasProp(prop) then
+			table.insert(self.propsPendingRemoval, prop)
 		end
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
@@ -468,20 +464,11 @@ function Instance:stopMusic(track, song)
 end
 
 function Instance:_addPlayerToInstance(player)
-	local actor = player:getActor()
-	table.insert(self.actors, actor)
-	self.actorsByID[actor:getID()] = actor
+	-- Nothing.
 end
 
 function Instance:_removePlayerFromInstance(player)
-	local actor = player:getActor()
-	for i = 1, #self.actors do
-		if self.actors[i] == actor then
-			table.remove(self.actors, i)
-			self.actorsByID[actor:getID()] = actor
-			break
-		end
-	end
+	-- Nothing.
 end
 
 function Instance:unloadPlayer(localGameManager, player)
@@ -492,6 +479,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onUnloadMap",
+
 			localGameManager:getArgs(map, layer))
 		localGameManager:assignTargetToLastPush(player)
 	end
@@ -659,6 +647,33 @@ function Instance:loadActor(localGameManager, player, actor)
 			end
 		end
 	end
+end
+
+function Instance:tick()
+	for i = 1, #self.actorsPendingRemoval do
+		local actor = self.actorsPendingRemoval[i]
+
+		for i = 1, #self.actors do
+			if self.actors[i] == actor then
+				table.remove(self.actors, i)
+				self.actorsByID[actor:getID()] = nil
+				break
+			end
+		end
+	end
+	table.clear(self.actorsPendingRemoval)
+
+	for i = 1, #self.propsPendingRemoval do
+		local prop = self.propsPendingRemoval[i]
+		for i = 1, #self.props do
+			if self.props[i] == prop then
+				table.remove(self.props, i)
+				self.propsByID[prop:getID()] = nil
+				break
+			end
+		end
+	end
+	table.clear(self.propsPendingRemoval)
 end
 
 return Instance

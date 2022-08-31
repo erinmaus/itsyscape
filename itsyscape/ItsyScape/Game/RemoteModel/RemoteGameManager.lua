@@ -119,8 +119,6 @@ function RemoteGameManager:flush()
 end
 
 function RemoteGameManager:processCreate(e)
-	print("[FE] create", e.interface, e.id)
-
 	local exists = self:getInstance(e.interface, e.id)
 	if exists then
 		Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)

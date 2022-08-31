@@ -13,7 +13,7 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local StageProxy = {}
+local StageProxy = Proxy.Definition()
 
 StageProxy.MAP = "map"
 StageProxy.loadMap = Event.Set(
@@ -73,27 +73,43 @@ StageProxy.stopMoveMap:link(
 	Event.Argument("map"),
 	Event.Argument("layer"))
 
-StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor)
+StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
+	if isMoving then
+		return
+	end
+
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
 	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
 	instance:update()
 end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
-StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor)
+StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving)
+	if isMoving then
+		return
+	end
+
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Actor", actor:getID())
 end, Event.Argument("actor", true))
 StageProxy.killActor:link("onActorKilled")
 
-StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop)
+StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop, isMoving)
+	if isMoving then
+		return
+	end
+
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
 	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)
 	instance:update()
 end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
-StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop)
+StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving)
+	if isMoving then
+		return
+	end
+
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
 end, Event.Argument("prop", true))

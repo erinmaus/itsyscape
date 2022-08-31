@@ -11,7 +11,7 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local UIProxy = {}
+local UIProxy = Proxy.Definition()
 
 UIProxy.open = Event.ServerToClientRPC(
 	Event.Argument("interfaceID"),

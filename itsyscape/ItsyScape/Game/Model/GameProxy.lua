@@ -11,7 +11,7 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local GameProxy = {}
+local GameProxy = Proxy.Definition()
 
 GameProxy._quit = Event.ServerToClientRPC()
 GameProxy._quit:link("onQuit")

@@ -161,6 +161,9 @@ function LocalGameManager:send()
 		for i = 1, #self.outgoing do
 			local e = self.outgoing[i]
 
+			local target = self.outgoingTargets[i]
+			local isTargetMatch = target and target:getID() == player:getID()
+
 			local instance
 			if e.interface and e.id then
 				instance = self:getInstance(e.interface, e.id)
@@ -176,7 +179,7 @@ function LocalGameManager:send()
 					local isActorMatch = e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
 					local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
 
-					if isActorMatch or isPropMatch then
+					if isActorMatch or isPropMatch or isTargetMatch then
 						self:_doSend(e)
 					end
 				else
@@ -185,13 +188,10 @@ function LocalGameManager:send()
 			elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
 				if e.interface == "ItsyScape.Game.Model.Stage" then
 					local key = self.outgoingKeys[i]
-					local target = self.outgoingTargets[i]
 
 					local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
 					local isActorMatch = key and key.actor and playerInstance:hasActor(key.actor.value)
 					local isPropMatch = key and key.prop and playerInstance:hasProp(key.prop.value)
-
-					local isTargetMatch = target and target:getID() == player:getID()
 					local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
 
 					if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
@@ -201,7 +201,7 @@ function LocalGameManager:send()
 				       e.interface == "ItsyScape.Game.Model.Prop"
 				then
 					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-					if playerInstance:hasLayer(layer) then
+					if playerInstance:hasLayer(layer) or isTargetMatch then
 						self:_doSend(e)
 					end
 				else
