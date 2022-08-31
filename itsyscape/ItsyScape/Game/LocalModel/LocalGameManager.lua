@@ -210,9 +210,6 @@ function LocalGameManager:send()
 				then
 					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
 					if playerInstance:hasLayer(layer) or isTargetMatch then
-						Log.engine(
-							"Sending RPC '%s' on '%s' (%d) to player '%s' (%d).",
-							e.interface, e.id, e.callback, player:getActor():getName(), player:getID())
 						self:_doSend(e)
 					end
 				else

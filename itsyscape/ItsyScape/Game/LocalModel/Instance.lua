@@ -352,10 +352,10 @@ function Instance:new(id, filename, stage)
 		if self:hasLayer(layer) then
 			Log.engine(
 				"Trying to add weather '%s' of type %s (layer = %d) to instance %s (%d).",
-				key, layer, id, self:getFilename(), self:getID())
+				key, id, layer, self:getFilename(), self:getID())
 			for i = 1, #self.weather do
 				if self.weather[i]:getKey() == key then
-				Log.engine("Weather exists at index %d; replacing.", i)
+					Log.engine("Weather exists at index %d; replacing.", i)
 					self.weather[i] = Instance.Weather(layer, key, id, props)
 					self:onForecast(layer, key, id, props)
 					return
@@ -368,7 +368,7 @@ function Instance:new(id, filename, stage)
 		else
 			Log.engine(
 				"Could not add weather '%s' of type %s (layer = %d) to instance %s (%d); layer not in instance.",
-				key, layer, id, self:getFilename(), self:getID())
+				key, id, layer, self:getFilename(), self:getID())
 		end
 	end
 	stage.onForecast:register(self._onForecast)
@@ -700,7 +700,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			localGameManager:getArgs(weather:getLayer(), weather:getKey()))
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Unloaded weather '%s' for layer %d.", weather:getLayer(), weather:getKey())
+		Log.engine("Unloaded weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
 	end
 
 	for _, decoration in ipairs(self.decorations) do
@@ -711,7 +711,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			localGameManager:getArgs(decoration:getGroup(), decoration:getLayer()))
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Unloaded decoration '%S' for layer %d.", decoration:getGroup(), decoration:getLayer())
+		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 
 	Log.engine(
@@ -810,7 +810,7 @@ function Instance:loadPlayer(localGameManager, player)
 			localGameManager:getArgs(decoration:getGroup(), decoration:getDecoration(), decoration:getLayer()))
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored decoration '%S' for layer %d.", decoration:getGroup(), decoration:getLayer())
+		Log.engine("Restored decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 end
 

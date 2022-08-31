@@ -20,6 +20,8 @@ function Log.engine(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
 		Log.print("engine", r)
+	else
+		Log.error("Error printing `%s`: %s", format, r)
 	end
 end
 
@@ -27,6 +29,8 @@ function Log.debug(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
 		Log.print("debug", r)
+	else
+		Log.error("Error printing `%s`: %s", format, r)
 	end
 end
 
@@ -68,6 +72,8 @@ function Log.warnOnce(format, ...)
 			WARNINGS[r] = true
 			Log.print("warning", r)
 		end
+	else
+		Log.error("Error printing `%s`: %s", format, r)
 	end
 end
 
@@ -75,6 +81,8 @@ function Log.warn(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
 		Log.print("warning", r)
+	else
+		Log.error("Error printing `%s`: %s", format, r)
 	end
 end
 
@@ -82,6 +90,8 @@ function Log.info(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
 		Log.print("info", r)
+	else
+		Log.error("Error printing `%s`: %s", format, r)
 	end
 end
 

@@ -64,6 +64,7 @@ function LocalActor:spawn(id, group, resource, ...)
 	end)
 
 	self.id = id
+	self.oldID = nil
 	self.resource = resource or false
 end
 
@@ -73,11 +74,12 @@ function LocalActor:depart()
 	self.game:getDirector():removePeep(self.peep)
 	self.peep = nil
 
+	self.oldID = self.id
 	self.id = Actor.NIL_ID
 end
 
 function LocalActor:getID()
-	return self.id
+	return self.oldID or self.id
 end
 
 function LocalActor:getName()
