@@ -172,21 +172,34 @@ function LocalStage:getPeepInstance(peep)
 end
 
 function LocalStage:spawnGround(filename, layer)
+	Log.engine(
+		"Spawning ground on layer %d in instance layer name '%s'.",
+		layer,
+		filename)
+
 	local ground = self.game:getDirector():addPeep(filename, require "Resources.Game.Peeps.Ground")
 	self.grounds[filename] = ground
 	self.grounds[layer] = ground
 
 	local inventory = ground:getBehavior(InventoryBehavior).inventory
-	inventory.onTakeItem:register(self.notifyTakeItem, self)
-	inventory.onDropItem:register(self.notifyDropItem, self)
+	inventory.onTakeItem:register(self.notifyTakeItem, self, layer)
+	inventory.onDropItem:register(self.notifyDropItem, self, layer)
 end 
 
-function LocalStage:notifyTakeItem(item, key)
+function LocalStage:notifyTakeItem(layer, item, key)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
+	Log.engine(
+		"Item '%s' (ref = %d, count = %d, noted = %s) taken from layer %d.",
+		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"), layer)
+
+	self.onTakeItem(
+		self,
+		ref,
+		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
+		layer)
 end
 
-function LocalStage:notifyDropItem(item, key, source)
+function LocalStage:notifyDropItem(layer, item, key, source)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
 	local position = source:getPeep():getBehavior(PositionBehavior)
 	if position then
@@ -196,12 +209,20 @@ function LocalStage:notifyDropItem(item, key, source)
 		position = Vector(0)
 	end
 
+	Log.engine(
+		"Item '%s' (ref = %d, count = %d, noted = %s) dropped at (%d, %d -> %f, %f, %f) on layer %d.",
+		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"),
+		key.i, key.j,
+		position.x, position.y, position.z,
+		layer)
+
 	self.onDropItem(
 		self,
 		ref,
 		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
 		{ i = key.i, j = key.j, layer = key.layer },
-		position)
+		position,
+		layer)
 end
 
 function LocalStage:lookupResource(resourceID, resourceType)
@@ -560,6 +581,10 @@ end
 
 function LocalStage:drain(key, layer)
 	self.onWaterDrain(self, key, layer)
+end
+
+function LocalStage:collectItems(instance)
+
 end
 
 function LocalStage:unloadAll(instance)
@@ -1130,53 +1155,76 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 	end
 end
 
--- TODO
+function LocalStage:collectAllItems()
+	Log.engine("Collecting items across the multiverse...")
+
+	for i = 1, #self.instances do
+		self:collectItems(self.instances[i])
+	end
+
+	Log.engine("Collected items from %d instances.", #self.instances)
+end
+
 function LocalStage:collectItems(instance)
+	Log.engine("Collecting items in instance %s (%d).", instance:getFilename(), instance:getID())
+
 	local transactions = {}
 
 	local broker = self.game:getDirector():getItemBroker()
 	local manager = self.game:getDirector():getItemManager()
+	local layer = instance:getBaseLayer()
 
-	for key, ground in pairs(self.grounds) do
-		inventory = ground:getBehavior(InventoryBehavior).inventory
-		if broker:hasProvider(inventory) then
-			for item in broker:iterateItems(inventory) do
-				-- In the ground table, grounds are stored by layer (number) and layer (string).
-				if type(key) == 'string' then
-					local owner = broker:getItemTag(item, "owner")
-					if owner and owner:hasBehavior(PlayerBehavior) then
-						local bank = owner:getBehavior(InventoryBehavior).bank
+	if not layer then
+		Log.warn("No layer for instance %s (%d); cannot collect items.", instance:getFilename(), instance:getID())
+		return
+	end
 
-						if bank then
-							local transaction = transactions[owner]
-							if not transaction then
-								transaction = broker:createTransaction()
-								transaction:addParty(bank)
+	local ground = self.grounds[layer]
+	if not ground then
+		Log.warn("No ground for layer %d in instance %s (%d).", layer, instance:getFilename(), instance:getID())
+		return
+	end
 
-								transactions[owner] = transaction
-							end
+	inventory = ground:getBehavior(InventoryBehavior).inventory
+	if broker:hasProvider(inventory) then
+		for item in broker:iterateItems(inventory) do
+			local owner = broker:getItemTag(item, "owner")
+			if owner and owner:hasBehavior(PlayerBehavior) then
+				local bank = owner:getBehavior(InventoryBehavior).bank
 
-							transaction:addParty(inventory)
-							transaction:transfer(bank, item, item:getCount(), 'take')
+				if bank then
+					local transaction = transactions[owner]
+					if not transaction then
+						transaction = broker:createTransaction()
+						transaction:addParty(bank)
 
-							if not item:isNoted() and manager:isNoteable(item:getID()) then
-								transaction:note(bank, item:getID(), item:getCount())
-							end
-						end
+						transactions[owner] = transaction
 					end
 
+					transaction:addParty(inventory)
+					transaction:transfer(bank, item, item:getCount(), 'take')
 
-					local ref = broker:getItemRef(item)
-					self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
+					if not item:isNoted() and manager:isNoteable(item:getID()) then
+						transaction:note(bank, item:getID(), item:getCount())
+					end
+
+					Log.engine(
+						"Transferring item '%s' (count = %d) to bank of player '%s' (%d).",
+						item:getID(), item:getCount(), owner:getName(), owner:getBehavior(PlayerBehavior).id)
 				end
 			end
+
+			local ref = broker:getItemRef(item)
+			self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() }, layer)
 		end
 	end
 
 	for _, transaction in pairs(transactions) do
 		local s, r = transaction:commit()
 		if not s then
-			Log.warn("Couldn't commit pickicide: %s", r)
+			Log.warn(
+				"Couldn't commit pickicide on layer %d in instance %s (%d): %s",
+				layer, instance:getFilename(), instance:getID(), r)
 		end
 	end
 end

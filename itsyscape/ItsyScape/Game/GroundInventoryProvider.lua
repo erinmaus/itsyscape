@@ -10,6 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
+local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local GroundInventoryProvider = Class(InventoryProvider)
@@ -57,27 +58,22 @@ end
 
 function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 	local sourcePeep = source:getPeep()
-	local sourcePeepPosition = sourcePeep:getBehavior(PositionBehavior)
-	if sourcePeepPosition then
-		local map = self.peep:getDirector():getMap(PositionBehavior.layer or 1)
-		if map then
-			local i, j = map:toTile(
-				sourcePeepPosition.position.x,
-				sourcePeepPosition.position.z)
-			if i and j then
-				local key = GroundInventoryProvider.Key(i, j, sourcePeepPosition.layer or 1)
-				self:getBroker():setItemKey(item, key)
+	local i, j, layer = Utility.Peep.getTile(sourcePeep)
 
-				if type(purpose) == 'string' then
-					self:getBroker():tagItem(item, "owner", sourcePeep)
-				else
-					self:getBroker():tagItem(item, "owner", purpose)
-				end
+	Log.engine(
+		"Dropping item '%s' (count = %d) from peep '%s' on layer %d at (%d, %d).",
+		item:getID(), item:getCount(), sourcePeep:getName(), layer, i, j)
 
-				self.onDropItem(item, key, source, count)
-			end
-		end
+	local key = GroundInventoryProvider.Key(i, j, layer)
+	self:getBroker():setItemKey(item, key)
+
+	if type(purpose) == 'string' then
+		self:getBroker():tagItem(item, "owner", sourcePeep)
+	else
+		self:getBroker():tagItem(item, "owner", purpose)
 	end
+
+	self.onDropItem(item, key, source, count)
 end
 
 function GroundInventoryProvider:onTransferFrom(source, item, count, purpose)

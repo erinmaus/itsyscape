@@ -75,6 +75,7 @@ StageProxy.stopMoveMap:link(
 
 StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
 	if isMoving then
+		Log.engine("Actor '%s' (%d) is moving between instances; not emitting create.", actor:getName(), actor:getID())
 		return
 	end
 
@@ -86,6 +87,7 @@ end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
 StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving)
 	if isMoving then
+		Log.engine("Actor '%s' (%d) is moving between instances; not emitting destroy.", actor:getName(), actor:getID())
 		return
 	end
 
@@ -96,6 +98,7 @@ StageProxy.killActor:link("onActorKilled")
 
 StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop, isMoving)
 	if isMoving then
+		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
 		return
 	end
 
@@ -107,6 +110,7 @@ end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
 StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving)
 	if isMoving then
+		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
 		return
 	end
 
@@ -121,21 +125,25 @@ StageProxy.dropItem = Event.Set(
 	Event.KeyArgument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
-	Event.Argument("position"))
+	Event.Argument("position"),
+	Event.KeyArgument("layer"))
 StageProxy.dropItem:link(
 	"onDropItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
-	Event.Argument("position"))
+	Event.Argument("position"),
+	Event.Argument("layer"))
 StageProxy.takeItem = Event.Unset(
 	StageProxy.ITEM,
 	Event.KeyArgument("ref"),
-	Event.Argument("item"))
+	Event.Argument("item"),
+	Event.KeyArgument("layer"))
 StageProxy.takeItem:link(
 	"onTakeItem",
 	Event.Argument("ref"),
-	Event.Argument("item"))
+	Event.Argument("item"),
+	Event.Argument("layer"))
 
 StageProxy.DECORATION = "decoration"
 StageProxy.decorate = Event.Set(
@@ -212,7 +220,7 @@ StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
 	Event.KeyArgument("track"),
 	Event.Argument("song"),
-	Event.Argument("layer"))
+	Event.KeyArgument("layer"))
 StageProxy.playMusic:link(
 	"onPlayMusic",
 	Event.Argument("track"),
@@ -221,7 +229,7 @@ StageProxy.playMusic:link(
 StageProxy.stopMusic = Event.Unset(
 	Event.KeyArgument("track"),
 	Event.Argument("song"),
-	Event.Argument("layer"))
+	Event.KeyArgument("layer"))
 StageProxy.stopMusic:link(
 	"onStopMusic",
 	Event.Argument("track"),
