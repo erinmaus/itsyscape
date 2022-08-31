@@ -51,3 +51,6 @@ Log = require "ItsyScape.Common.Log"
 function Log.analytic(...)
 	Log.warnOnce("Analytics not installed.")
 end
+
+Log.setLogSuffix(_LOG_SUFFIX)
+Log.write("ItsyRealm bootstrapped.\n")

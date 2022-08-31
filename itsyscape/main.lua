@@ -1,3 +1,4 @@
+_LOG_SUFFIX = "client"
 require "bootstrap"
 
 itsyrealm = {
@@ -198,6 +199,8 @@ function love.quit()
 		_APP:getUIView():getRenderManager():getDebugStats():dumpStatsToCSV("Widget_Renderer")
 		DebugStats.GLOBAL:dumpStatsToCSV("Global")
 	end
+
+	Log.quit()
 
 	return result
 end

@@ -16,11 +16,14 @@ function Log.profile(...)
 	DebugStats.GLOBAL:measure(...)
 end
 
-function Log.debug(format, ...)
-	if not _DEBUG then
-		return
+function Log.engine(format, ...)
+	local s, r = pcall(string.format, format, ...)
+	if s then
+		Log.print("engine", r)
 	end
+end
 
+function Log.debug(format, ...)
 	local s, r = pcall(string.format, format, ...)
 	if s then
 		Log.print("debug", r)
@@ -82,6 +85,21 @@ function Log.info(format, ...)
 	end
 end
 
+local suffix = _LOG_SUFFIX
+local date = os.date("%Y%m%d_%H%M%S")
+
+function Log.setLogSuffix(value)
+	suffix = value
+end
+
+function Log.getLogFilename()
+	if suffix then
+		return string.format("Logs/%s__%s.log", date, suffix)
+	else
+		return string.format("Logs/%s.log", date)
+	end
+end
+
 function Log.print(scope, message)
 	local s
 	if scope and type(scope) == 'string' then
@@ -90,7 +108,34 @@ function Log.print(scope, message)
 		s = ": "
 	end
 
-	io.stderr:write(os.date(), s, message, "\n")
+	local formattedMessage = table.concat({ os.date(), s, message, "\n" }, "")
+	Log.write(formattedMessage, scope == "debug" or scope == "engine")
+end
+
+function Log.write(message, writeOnly)
+	if not writeOnly then
+		io.stderr:write(message)
+	end
+
+	local logDirectoryInfo = love.filesystem.getInfo("Logs")
+	if not logDirectoryInfo then
+		love.filesystem.createDirectory("Logs")
+	elseif logDirectoryInfo.type ~= "directory" then
+		love.filesystem.remove("Logs")
+		love.filesystem.createDirectory("Logs")
+	end
+
+	love.filesystem.append(Log.getLogFilename(), message)
+end
+
+function Log.quit()
+	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), Log.getLogFilename())
+
+	if suffix then
+		Log.info("Saved '%s' log to '%s'.", suffix, url)
+	else
+		Log.info("Saved log to '%s'.", url)
+	end
 end
 
 return Log
