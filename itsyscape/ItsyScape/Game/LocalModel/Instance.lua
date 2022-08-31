@@ -151,6 +151,7 @@ function Instance:new(id, filename, stage)
 
 	self.players = {}
 	self.playersByID = {}
+	self.orphans = {}
 
 	self.maps = {}
 
@@ -571,12 +572,12 @@ function Instance:hasPlayer(player)
 	return self.playersByID[player:getID()] == true
 end
 
-function Instance:addPlayer(player)
+function Instance:addPlayer(player, e)
 	if not self:hasPlayer(player) then
 		Log.info("Adding player '%s' (%d) to instance %s (%d).", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
 
 		table.insert(self.players, player)
-		self:_addPlayerToInstance(player)
+		self:_addPlayerToInstance(player, e)
 	end
 end
 
@@ -616,12 +617,14 @@ function Instance:hasProp(prop)
 	return self.propsByID[prop:getID()] ~= nil
 end
 
-function Instance:_addPlayerToInstance(player)
-	-- Nothing.
+function Instance:_addPlayerToInstance(player, e)
+	if e and e.isOrphan then
+		self.orphans[player:getActor():getID()] = true
+	end
 end
 
 function Instance:_removePlayerFromInstance(player)
-	-- Nothing.
+	self.orphans[player] = nil
 end
 
 function Instance:unloadPlayer(localGameManager, player)
@@ -660,7 +663,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			actor:getID())
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Unloaded actor '%s' (%s).", actor:getName(), actor:getPeepID())
+		Log.engine("Unloaded actor '%s' (%s).", actor:getName(), actor:getID())
 	end
 
 	for i = 1, #self.props do
@@ -744,22 +747,25 @@ function Instance:loadPlayer(localGameManager, player)
 
 	for i = 1, #self.actors do
 		local actor = self.actors[i]
+		if self.orphans[actor:getID()] then
+			Log.engine(
+				"Actor '%s' (%d) was orphan, no need to re-create.",
+				actor:getName(), actor:getID())
+		else
+			localGameManager:pushCreate(
+				"ItsyScape.Game.Model.Actor",
+				actor:getID())
+			localGameManager:assignTargetToLastPush(player)
 
-		localGameManager:pushCreate(
-			"ItsyScape.Game.Model.Actor",
-			actor:getID())
-		localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onActorSpawned",
+				localGameManager:getArgs(actor:getPeepID(), actor))
+			localGameManager:assignTargetToLastPush(player)
 
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onActorSpawned",
-			localGameManager:getArgs(actor:getPeepID(), actor))
-		localGameManager:assignTargetToLastPush(player)
-
-		self:loadActor(localGameManager, player, actor)
-
-		Log.engine("Restored actor '%s' (%s).", actor:getName(), actor:getPeepID())
+			self:loadActor(localGameManager, player, actor)
+		end
 	end
 
 	for i = 1, #self.props do
@@ -799,7 +805,7 @@ function Instance:loadPlayer(localGameManager, player)
 			localGameManager:getArgs(weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps()))
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored weather '%s' for layer %d.", weather:getLayer(), weather:getKey())
+		Log.engine("Restored weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
 	end
 
 	for _, decoration in ipairs(self.decorations) do
@@ -873,6 +879,8 @@ function Instance:tick()
 		end
 	end
 	table.clear(self.propsPendingRemoval)
+
+	table.clear(self.orphans)
 end
 
 return Instance
