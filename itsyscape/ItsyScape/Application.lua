@@ -276,6 +276,11 @@ function Application:quit()
 		self.game:quit()
 		self.remoteGameManager:pushTick()
 		self.gameThread:wait()
+
+		local e = self.gameThread:getError()
+		if e then
+			Log.warn("Error quitting logic thread: %s", e)
+		end
 	end
 
 	return false

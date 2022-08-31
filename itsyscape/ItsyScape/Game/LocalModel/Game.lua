@@ -103,7 +103,7 @@ function LocalGame:leave()
 	self.stage:collectItems()
 	self.player:save()
 
-	self.stage:unloadAll()
+	self.stage:quit()
 	self:tick()
 
 	self:onLeave()

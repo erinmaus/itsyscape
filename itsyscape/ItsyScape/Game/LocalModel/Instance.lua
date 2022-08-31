@@ -777,7 +777,7 @@ function Instance:loadPlayer(localGameManager, player)
 			localGameManager:getArgs(prop:getPeepID(), prop))
 		localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored prop '%s' (%s).", prop:getName(), actor:getPeepID())
+		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())
 	end
 
 	for _, water in ipairs(self.water) do
