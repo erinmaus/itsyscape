@@ -677,7 +677,7 @@ function LocalStage:buildLayerNameFromInstanceIDAndFilename(id, filename)
 	return string.format("%d@%s", id, filename)
 end
 
-function LocalStage:movePeep(peep, path, anchor, force)
+function LocalStage:movePeep(peep, path, anchor)
 	local filename = self:getFilenameFromPath(path)
 	local arguments = self:getArgumentsFromPath(path)
 
@@ -764,21 +764,10 @@ function LocalStage:movePeep(peep, path, anchor, force)
 	end
 
 	local newLayerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+	local oldLayerName
 
 	if peep:getBehavior(PlayerBehavior) then
-		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
-		if player then
-			local layerName = peep:getLayerName()
-			local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(layerName)
-
-			local previousInstance = self:getInstanceByFilenameAndID(filename, id)
-			if previousInstance then
-				previousInstance:removePlayer(player)
-			end
-
-			instance:addPlayer(player)
-			player:setInstance(layerName, newLayerName, instance)
-		end
+		oldLayerName = peep:getLayerName()
 	end
 
 	self.game:getDirector():movePeep(peep, newLayerName)
@@ -804,6 +793,25 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 		if prop then
 			self:onPropPlaced(prop:getPeepID(), prop, true)
+		end
+	end
+
+	if peep:getBehavior(PlayerBehavior) then
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+		if player then
+			local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(oldLayerName)
+
+			local previousInstance = self:getInstanceByFilenameAndID(filename, id)
+			if previousInstance then
+				previousInstance:removePlayer(player)
+			else
+				Log.engine(
+					"Player '%s' (player ID = %d, actor ID = %d) was not in instance.",
+					player:getActor():getName(), player:getID(), player:getActor():getID())
+			end
+
+			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
+			player:setInstance(oldLayerName, newLayerName, instance)
 		end
 	end
 end
