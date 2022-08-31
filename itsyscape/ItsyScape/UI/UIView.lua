@@ -85,8 +85,9 @@ local graphicsState = {
 }
 
 do
-	graphicsState.atlas.maxWidth = 2048
-	graphicsState.atlas.maxHeight = 2048
+	local limits = love.graphics.getSystemLimits()
+	graphicsState.atlas.maxWidth = math.min(limits.texturesize, 4096)
+	graphicsState.atlas.maxHeight = math.min(limits.texturesize, 4096)
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })

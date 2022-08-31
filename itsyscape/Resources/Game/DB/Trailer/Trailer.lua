@@ -31,25 +31,25 @@ do
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "MooishLeatherCoif",
+		Item = ItsyScape.Resource.Item "GreenDragonhideCoif",
 		Count = 1,
 		Resource = ItsyScape.Resource.Peep "CinematicTrailer1_Archer"
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "MooishLeatherGloves",
+		Item = ItsyScape.Resource.Item "GreenDragonhideGloves",
 		Count = 1,
 		Resource = ItsyScape.Resource.Peep "CinematicTrailer1_Archer"
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "MooishLeatherBoots",
+		Item = ItsyScape.Resource.Item "GreenDragonhideBoots",
 		Count = 1,
 		Resource = ItsyScape.Resource.Peep "CinematicTrailer1_Archer"
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "MooishLeatherBody",
+		Item = ItsyScape.Resource.Item "GreenDragonhideBody",
 		Count = 1,
 		Resource = ItsyScape.Resource.Peep "CinematicTrailer1_Archer"
 	}

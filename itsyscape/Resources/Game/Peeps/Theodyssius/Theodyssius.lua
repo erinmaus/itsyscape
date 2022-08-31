@@ -37,8 +37,7 @@ function Theodyssius:ready(director, game)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maximumHitpoints = 20000
-	status.currentHitpoints = 0
-	status.dead = true
+	status.currentHitpoints = 20000
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

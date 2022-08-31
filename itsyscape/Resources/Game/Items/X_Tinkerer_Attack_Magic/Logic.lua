@@ -18,7 +18,7 @@ function TinkererMagicAttack:getBonusForStance(peep)
 end
 
 function TinkererMagicAttack:getAttackRange()
-	return 8
+	return 16
 end
 
 function TinkererMagicAttack:getWeaponType()

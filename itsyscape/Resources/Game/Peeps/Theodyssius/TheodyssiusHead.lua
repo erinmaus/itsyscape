@@ -37,7 +37,6 @@ function TheodyssiusHead:update(...)
 
 	if self.theodyssius then
 		Utility.Peep.setPosition(self, Utility.Peep.getPosition(self.theodyssius))
-		Utility.Peep.setRotation(self, Utility.Peep.getRotation(self.theodyssius))
 	end
 end
 
