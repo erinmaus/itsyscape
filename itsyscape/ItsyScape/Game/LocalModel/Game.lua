@@ -100,7 +100,7 @@ function LocalGame:quit()
 end
 
 function LocalGame:leave()
-	self.stage:collectItems()
+	self.stage:collectAllItems()
 	self.player:save()
 
 	self.stage:quit()

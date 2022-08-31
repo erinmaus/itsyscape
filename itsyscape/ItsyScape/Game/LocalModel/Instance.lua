@@ -138,6 +138,56 @@ function Instance.Decoration:getDecoration()
 	return self.decoration
 end
 
+Instance.Item = Class()
+
+function Instance.Item:new(layer, ref, item, tile, position)
+	self.layer = layer
+	self.ref = ref
+	self.item = item
+	self.tile = tile
+	self.position = position
+end
+
+function Instance.Item:getLayer()
+	return self.layer
+end
+
+function Instance.Item:getRef()
+	return self.ref
+end
+
+function Instance.Item:getItem()
+	return self.item
+end
+
+function Instance.Item:getTile()
+	return self.tile
+end
+
+function Instance.Item:getPosition()
+	return self.position
+end
+
+Instance.Music = Class()
+
+function Instance.Music:new(layer, track, song)
+	self.layer = layer
+	self.track = track
+	self.song = song
+end
+
+function Instance.Music:getLayer()
+	return self.layer
+end
+
+function Instance.Music:getTrack()
+	return self.track
+end
+
+function Instance.Music:getSong()
+	return self.song
+end
+
 function Instance:new(id, filename, stage)
 	Stage.new(self)
 
@@ -347,6 +397,58 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
+	self.music = {}
+
+	self._onPlayMusic = function(_, track, song, layer)
+		if self:hasLayer(layer) then
+			Log.engine(
+				"Trying to play music '%s' on track '%s' (layer = %d) to instance %s (%d).",
+				song, track, layer, self:getFilename(), self:getID())
+
+			for i = 1, #self.music do
+				if self.music[i]:getTrack() == track then
+					Log.engine("Music playing at index %d; replacing.", i)
+					self.music[i] = Instance.Music(layer, track, song)
+					self:onPlayMusic(track, song, layer)
+					return
+				end
+			end
+
+			Log.engine("Music is not playing; playing.")
+			table.insert(self.music, Instance.Music(layer, track, song))
+			self:onPlayMusic(track, song, layer)
+		else
+			Log.engine(
+				"Did not play music '%s' on track '%s' (layer = %d) to instance %s (%d); layer not in instance.",
+				song, track, layer, self:getFilename(), self:getID())
+		end
+	end
+	stage.onPlayMusic:register(self._onPlayMusic)
+
+	self._onStopMusic = function(_, track, song, layer)
+		if self:hasLayer(layer) then
+			Log.engine(
+				"Trying to stop music on track '%s' (layer = %d) from instance %s (%d).",
+				track, layer, self:getFilename(), self:getID())
+
+			for i = 1, #self.music do
+				if self.music[i]:getTrack() == track then
+					Log.engine("Music removed from index %d.", i)
+					table.remove(self.music, i)
+					self:onStopMusic(track, song, layer)
+					return
+				end
+			end
+
+			Log.engine("Warning; music not found.")
+		else
+			Log.engine(
+				"Did not stop music on track '%s' (layer = %d) from instance %s (%d); layer not in instance.",
+				track, layer, self:getFilename(), self:getID())
+		end
+	end
+	stage.onStopMusic:register(self._onStopMusic)
+
 	self.weather = {}
 
 	self._onForecast = function(_, layer, key, id, props)
@@ -449,7 +551,57 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onUndecorate:register(self._onUndecorate)
 
-	self.pendingProjectiles = {}
+	self.items = {}
+
+	self._onDropItem = function(_, ref, item, tile, position, layer)
+		if self:hasLayer(layer) then
+			Log.engine(
+				"Trying to drop item '%s' (ref = %d, count = %d) at (%d, %d) (layer = %d) in instance %s (%d).",
+				item.id, ref, item.count, tile.i, tile.j, layer, self:getFilename(), self:getID())
+
+			for i = 1, #self.items do
+				if self.items[i]:getRef() == ref then
+					Log.engine("Item found at index %d; replacing.", i)
+					self.items[i] = Instance.Item(layer, ref, item, tile, position)
+					self:onDropItem(ref, item, tile, position, layer)
+					return
+				end
+			end
+
+			Log.engine("Item not found; dropping.")
+			table.insert(self.items, Instance.Item(layer, ref, item, tile, position))
+			self:onDropItem(ref, item, tile, position, layer)
+		else
+			Log.engine(
+				"Did not drop item '%s' (ref = %d, count = %d) at (%d, %d) (layer = %d) in instance %s (%d); layer not in instance.",
+				item.id, ref, item.count, tile.i, tile.j, layer, self:getFilename(), self:getID())
+		end
+	end
+	stage.onDropItem:register(self._onDropItem)
+
+	self._onTakeItem = function(_, ref, item, layer)
+		if self:hasLayer(layer) then
+			Log.engine(
+				"Trying to take item '%s' (count = %d) on layer = %d in instance %s (%d).",
+				item.id, item.count, layer, self:getFilename(), self:getID())
+
+			for i = 1, #self.items do
+				if self.items[i]:getRef() == ref then
+					Log.engine("Item removed from index %d.", i)
+					table.remove(self.items, i)
+					self:onTakeItem(ref, item, layer)
+					return
+				end
+			end
+
+			Log.engine("Warning; item not found.")
+		else
+			Log.engine(
+				"Did not take item '%s' (ref = %d, count = %d) on layer %d in instance %s (%d); layer not in instance.",
+				item.id, ref, item.count, layer, self:getFilename(), self:getID())
+		end
+	end
+	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
 		local sourceLayer = source and not Class.isType(source, Vector) and Utility.Peep.getLayer(source:getPeep())
