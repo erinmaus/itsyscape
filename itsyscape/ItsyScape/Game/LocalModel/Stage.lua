@@ -267,14 +267,17 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		self.peeps[actor] = peep
 		self.peeps[peep] = actor
 
-		peep:listen('ready', function()
+		local function _onAssign()
 			local p = peep:getBehavior(PositionBehavior)
 			if p then
 				p.layer = layer
 			end
 
 			self.onActorSpawned(self, realID, actor)
-		end)
+
+			peep:silence('assign', _onAssign)
+		end
+		peep:listen('assign', _onAssign)
 
 		return true, actor
 	end
@@ -690,6 +693,15 @@ function LocalStage:movePeep(peep, path, anchor, force)
 		return false
 	end
 
+	if peep:hasBehavior(PlayerBehavior) then
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+
+		local previousInstance = self:getPeepInstance(peep)
+		if previousInstance then
+			previousInstance:removePlayer(player)
+		end
+	end
+
 	do
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
@@ -699,11 +711,11 @@ function LocalStage:movePeep(peep, path, anchor, force)
 
 
 		if actor then
-			self:onActorKilled(actor)
+			self:onActorKilled(actor, true)
 		end
 
 		if prop then
-			self:onPropRemoved(prop)
+			self:onPropRemoved(prop, true)
 		end
 	end
 
@@ -772,19 +784,26 @@ function LocalStage:movePeep(peep, path, anchor, force)
 	self.game:getDirector():movePeep(peep, newLayerName)
 
 	do
+		local gameDB = self.game:getGameDB()
+		local map = gameDB:getResource(filename, "Map")
+
+		local _, m = peep:addBehavior(MapResourceReferenceBehavior)
+		m.map = map
+	end
+
+	do
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
 
 		local prop = peep:getBehavior(PropReferenceBehavior)
 		prop = prop and prop.prop
 
-
 		if actor then
-			self:onActorSpawned(actor:getPeepID(), actor)
+			self:onActorSpawned(actor:getPeepID(), actor, true)
 		end
 
 		if prop then
-			self:onPropPlaced(prop:getPeepID(), prop)
+			self:onPropPlaced(prop:getPeepID(), prop, true)
 		end
 	end
 end
@@ -1203,6 +1222,7 @@ end
 function LocalStage:tick()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
+		instance:tick()
 
 		for _, layer in instance:iterateLayers() do
 			local mapScript = instance:getMapScriptByLayer(layer)
