@@ -271,4 +271,12 @@ function Decoration:iterate()
 	end
 end
 
+function Decoration:getNumFeatures()
+	return #self.features
+end
+
+function Decoration:getFeatureByIndex(index)
+	return self.features[index]
+end
+
 return Decoration

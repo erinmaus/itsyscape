@@ -35,10 +35,10 @@ end
 
 grid.insert = function(self, width, height, data)
   if width > self.limitWidth then
-    error("Given image's width("..width..") is bigger than the limit("..self.limitWidth.."). Image ID: "..data.id)
+    error("Given image's width("..width..") is bigger than the limit("..self.limitWidth.."). Image ID: "..tostring(data.id))
     return false
   elseif height > self.limitHeight then
-    error("Given image's height("..height..") is bigger than the limit("..self.limitHeight.."). Image ID: "..data.id)
+    error("Given image's height("..height..") is bigger than the limit("..self.limitHeight.."). Image ID: "..tostring(data.id))
     return false
   end
   
