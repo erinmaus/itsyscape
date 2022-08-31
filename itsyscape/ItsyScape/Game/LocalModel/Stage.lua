@@ -1219,6 +1219,12 @@ function LocalStage:iterateProps()
 	return pairs(self.props)
 end
 
+function LocalStage:quit()
+	for i = 1, #self.instances do
+		self:unloadAll(self.instances[i])
+	end
+end
+
 function LocalStage:tick()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]

@@ -206,5 +206,7 @@ function love.quit()
 end
 
 function love.threaderror(m, e)
+	print(">>>>>>> ERROR!!!!!!!!!")
+	print(m, e)
 	error(e, 0)
 end
