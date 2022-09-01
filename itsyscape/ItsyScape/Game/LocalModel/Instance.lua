@@ -725,7 +725,7 @@ function Instance:getMapScriptByLayer(layer)
 end
 
 function Instance:hasPlayer(player)
-	return self.playersByID[player:getID()] == true
+	return self.playersByID[player:getID()] ~= nil
 end
 
 function Instance:addPlayer(player, e)
@@ -733,7 +733,13 @@ function Instance:addPlayer(player, e)
 		Log.info("Adding player '%s' (%d) to instance %s (%d).", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
 
 		table.insert(self.players, player)
+		self.playersByID[player:getID()] = player
 		self:_addPlayerToInstance(player, e)
+
+		if not self.partyLeader then
+			Log.info("No party leader; setting player to party instance.")
+			self:setPartyLeader(player)
+		end
 	end
 end
 
@@ -754,6 +760,10 @@ function Instance:removePlayer(player)
 			break
 		end
 	end
+end
+
+function Instance:getPartyLeader()
+	return self.partyLeader
 end
 
 function Instance:setPartyLeader(player)

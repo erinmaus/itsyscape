@@ -47,13 +47,6 @@ function RemoteGameManager:new(rpcService, ...)
 		self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance(),
 		self)
 	self.game = self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
-
-	self:newInstance("ItsyScape.Game.Model.Player", 0, RemotePlayer(self))
-	PlayerProxy:wrapClient(
-		"ItsyScape.Game.Model.Player",
-		0,
-		self:getInstance("ItsyScape.Game.Model.Player", 0):getInstance(),
-		self)
 	self:newInstance("ItsyScape.Game.Model.Stage", 0, RemoteStage(self))
 	StageProxy:wrapClient(
 		"ItsyScape.Game.Model.Stage",
@@ -75,6 +68,8 @@ function RemoteGameManager:new(rpcService, ...)
 	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
 	self.onTick = Callback()
+
+	self.rpcService:connect(self)
 end
 
 function RemoteGameManager:push(e)
@@ -124,6 +119,8 @@ function RemoteGameManager:processCreate(e)
 		Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
 		return
 	end
+
+	Log.engine("Creating '%s' (%d).", e.interface, e.id)
 
 	local proxyTypeName = string.format("%sProxy", e.interface)
 	local proxy = require(proxyTypeName)

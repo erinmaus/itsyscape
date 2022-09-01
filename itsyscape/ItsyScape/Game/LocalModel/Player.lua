@@ -35,14 +35,14 @@ LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 -- Constructs a new player.
 --
 -- The Actor isn't created until Player.spawn is called.
-function LocalPlayer:new(game, stage)
+function LocalPlayer:new(id, game, stage)
 	Player.new(self)
 
 	self.game = game
 	self.stage = stage
 	self.actor = false
 	self.direction = Vector.UNIT_X
-	self.id = 0
+	self.id = id
 
 	self.onPoof = Callback()
 	self.onMove = Callback()
@@ -61,12 +61,15 @@ function LocalPlayer:getID()
 	return self.id
 end
 
-function LocalPlayer:spawn(storage, newGame)
-	if self.id > 0 then
-		self:poof()
-	end
+function LocalPlayer:setClientID(value)
+	self.clientID = value
+end
 
-	self.id = self.id + 1
+function LocalPlayer:getClientID()
+	return self.clientID
+end
+
+function LocalPlayer:spawn(storage, newGame)
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
 	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, "::orphan")
@@ -188,17 +191,29 @@ function LocalPlayer:isReady()
 end
 
 function LocalPlayer:flee()
+	if not self:isReady() then
+		return false
+	end
+
 	local peep = self.actor:getPeep()
 	peep:removeBehavior(CombatTargetBehavior)
 	peep:getCommandQueue(CombatCortex.QUEUE):clear()
 end
 
 function LocalPlayer:getIsEngaged()
+	if not self:isReady() then
+		return false
+	end
+
 	local peep = self.actor:getPeep()
 	return peep:hasBehavior(CombatTargetBehavior)
 end
 
 function LocalPlayer:getTarget()
+	if not self:isReady() then
+		return nil
+	end
+
 	local peep = self.actor:getPeep()
 	local target = peep:getBehavior(CombatTargetBehavior)
 	if target and target.actor then
@@ -209,6 +224,11 @@ function LocalPlayer:getTarget()
 end
 
 function LocalPlayer:poke(id, obj, scope)
+	if not self:isReady() then
+		return
+	end
+
+	-- TODO LAYER CHECK
 	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
 		obj:poke(id, scope, self.actor:getPeep())
 	elseif Class.isType(obj) then
@@ -217,10 +237,15 @@ function LocalPlayer:poke(id, obj, scope)
 end
 
 function LocalPlayer:takeItem(i, j, layer, ref)
+	-- TODO LAYER CHECK
 	self.stage:takeItem(i, j, layer, ref, self)
 end
 
 function LocalPlayer:findPath(i, j, k)
+	if not self:isReady() then
+		return nil
+	end
+
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = self.game:getDirector():getMap(k)
@@ -233,8 +258,8 @@ function LocalPlayer:findPath(i, j, k)
 end
 
 function LocalPlayer:move(x, z)
-	if not self.actor then
-		return
+	if not self:isReady() then
+		return false
 	end
 
 	local direction = Vector(x, 0, z):getNormal()

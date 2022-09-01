@@ -22,6 +22,9 @@ local Game = Class()
 function Game:new()
 	self.onQuit = Callback()
 	self.onLeave = Callback()
+	self.onPlayerSpawned = Callback()
+	self.onPlayerPoofed = Callback()
+	self.onReady = Callback()
 end
 
 -- Gets the GameDB.

@@ -1306,20 +1306,20 @@ end
 Utility.Peep = {}
 
 function Utility.Peep.getPlayerModel(peep)
-	return peep:getDirector():getGameInstance():getPlayer()
+	local stage = peep:getDirector():getGameInstance():getStage()
+	local instance = stage:getPeepInstance(peep)
+	local leader = instance:getPartyLeader()
+	return leader
 end
 
 function Utility.Peep.getPlayerActor(peep)
-	return peep:getDirector():getGameInstance():getPlayer():getActor()
+	local model = Utility.Peep.getPlayerModel(peep)
+	return model and model:getActor()
 end
 
 function Utility.Peep.getPlayer(peep)
 	local actor = Utility.Peep.getPlayerActor(peep)
-	if actor then
-		return actor:getPeep()
-	end
-
-	return nil
+	return actor and actor:getPeep()
 end
 
 function Utility.Peep.dismiss(peep)

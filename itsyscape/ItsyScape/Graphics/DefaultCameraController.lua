@@ -49,12 +49,16 @@ function DefaultCameraController:new(...)
 end
 
 function DefaultCameraController:getPlayerPosition()
-	local delta = self:getApp():getFrameDelta()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return Vector.ZERO
+	end
 
+	local delta = self:getApp():getFrameDelta()
 	local position
 	do
 		local gameView = self:getGameView()
-		local actor = gameView:getActor(self:getGame():getPlayer():getActor())
+		local actor = gameView:getActor(player:getActor())
 		if actor then
 			local node = actor:getSceneNode()
 			local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
@@ -72,7 +76,7 @@ function DefaultCameraController:getTargetPosition()
 	do
 		local gameView = self:getGameView()
 		local player = self:getGame():getPlayer()
-		if player:isReady() then
+		if player and player:isReady() then
 			local target = player:getTarget()
 			if target then
 				local actor = gameView:getActor(target)

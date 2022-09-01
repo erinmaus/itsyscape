@@ -53,8 +53,6 @@ function LocalGameManager:new(rpcService, game)
 
 	self:newInstance("ItsyScape.Game.Model.Game", 0, game)
 	GameProxy:wrapServer("ItsyScape.Game.Model.Game", 0, game, self)
-	self:newInstance("ItsyScape.Game.Model.Player", 0, game:getPlayer())
-	PlayerProxy:wrapServer("ItsyScape.Game.Model.Player", 0, game:getPlayer(), self)
 	self:newInstance("ItsyScape.Game.Model.Stage", 0, game:getStage())
 	StageProxy:wrapServer("ItsyScape.Game.Model.Stage", 0, game:getStage(), self)
 	self:newInstance("ItsyScape.Game.Model.UI", 0, game:getUI())
@@ -70,8 +68,14 @@ function LocalGameManager:new(rpcService, game)
 	game:getStage():newMap(1, 1, 1)
 	game:tick()
 
-	game:getPlayer().onPoof:register(self.onPlayerPoof, self)
-	game:getPlayer().onMove:register(self.onPlayerMove, self)
+	game.onPlayerSpawned:register(self.onPlayerSpawned, self)
+
+	self.rpcService:connect(self)
+end
+
+function LocalGameManager:onPlayerSpawned(_, player)
+	player.onPoof:register(self.onPlayerPoof, self)
+	player.onMove:register(self.onPlayerMove, self)
 end
 
 function LocalGameManager:onPlayerPoof(player)
@@ -129,7 +133,7 @@ function LocalGameManager:destroyInstance(interface, id)
 end
 
 function LocalGameManager:_doSend(player, e)
-	self.rpcService:send(player:getID(), e)
+	self.rpcService:send(player:getClientID(), e)
 end
 
 function LocalGameManager:getInstance(interface, id)
@@ -148,107 +152,176 @@ function LocalGameManager:getInstance(interface, id)
 	return nil
 end
 
-function LocalGameManager:send()
-	local player = self:getInstance("ItsyScape.Game.Model.Player", 0):getInstance()
+function LocalGameManager:sendToPlayer(player)
 	local playerInstance = player:getInstance()
-
 	if not playerInstance then
-		for i = 1, #self.outgoing do
-			self:_doSend(player, self.outgoing[i])
+		Log.warn("Player '%s' (%d) not ready; no instance.", (player:getActor() and player:getActor():getName()) or "Player", player:getID())
+		return
+	end
+
+	for i = 1, #self.outgoing do
+		local e = self.outgoing[i]
+
+		local target = self.outgoingTargets[i]
+		local isTargetMatch = target and target:getID() == player:getID()
+
+		local instance
+		if e.interface and e.id then
+			instance = self:getInstance(e.interface, e.id)
 		end
-	else
-		for i = 1, #self.outgoing do
-			local e = self.outgoing[i]
 
-			local target = self.outgoingTargets[i]
-			local isTargetMatch = target and target:getID() == player:getID()
-
-			local instance
-			if e.interface and e.id then
-				instance = self:getInstance(e.interface, e.id)
-			end
-
-			if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
-			   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY or
-			   e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY
+		if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
+		   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY or
+		   e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY
+		then
+			if e.interface == "ItsyScape.Game.Model.Actor" or
+			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
-				if e.interface == "ItsyScape.Game.Model.Actor" or
-				   e.interface == "ItsyScape.Game.Model.Prop"
-				then
-					local isActorMatch = e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
-					local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
+				local isActorMatch = e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
+				local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
 
-					if isActorMatch or isPropMatch or isTargetMatch then
-						if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
-						   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY
-						then
-							Log.engine(
-								"Sending event to %s '%s' (%d) to player '%s' (%d).",
-								e.type, e.interface, e.id, player:getActor():getName(), player:getID())
-						end
-
-						self:_doSend(player, e)
+				if isActorMatch or isPropMatch or isTargetMatch then
+					if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
+					   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY
+					then
+						Log.engine(
+							"Sending event to %s '%s' (%d) to player '%s' (%d).",
+							e.type, e.interface, e.id, player:getActor():getName(), player:getID())
 					end
-				else
+
 					self:_doSend(player, e)
 				end
-			elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
-				if e.interface == "ItsyScape.Game.Model.Stage" then
-					local key = self.outgoingKeys[i]
+			elseif e.interface == "ItsyScape.Game.Model.Player" then
+				local isSamePlayer = e.id == player:getID()
+				if isSamePlayer then
+					self:_doSend(player, e)
+				end
+			end
+		elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
+			if e.interface == "ItsyScape.Game.Model.Stage" then
+				local key = self.outgoingKeys[i]
 
-					local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
-					local isActorMatch = key and key.actor and playerInstance:hasActor(key.actor.value)
-					local isPropMatch = key and key.prop and playerInstance:hasProp(key.prop.value)
-					local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
+				local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
+				local isActorMatch = key and key.actor and playerInstance:hasActor(key.actor.value)
+				local isPropMatch = key and key.prop and playerInstance:hasProp(key.prop.value)
+				local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
 
-					if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
-						self:_doSend(player, e)
-					end
-				elseif e.interface == "ItsyScape.Game.Model.Actor" or
-				       e.interface == "ItsyScape.Game.Model.Prop"
-				then
-					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-					if playerInstance:hasLayer(layer) or isTargetMatch then
-						self:_doSend(player, e)
-					end
-				elseif e.interface == "ItsyScape.Game.Model.UI" then
-					local key = self.outgoingKeys[i]
-					local interfaceID = key and key.interfaceID and key.interfaceID.value
-					local interfaceIndex = key and key.index and key.index.value
+				if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
+					self:_doSend(player, e)
+				end
+			elseif e.interface == "ItsyScape.Game.Model.Actor" or
+			       e.interface == "ItsyScape.Game.Model.Prop"
+			then
+				local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
+				if playerInstance:hasLayer(layer) or isTargetMatch then
+					self:_doSend(player, e)
+				end
+			elseif e.interface == "ItsyScape.Game.Model.UI" then
+				local key = self.outgoingKeys[i]
+				local interfaceID = key and key.interfaceID and key.interfaceID.value
+				local interfaceIndex = key and key.index and key.index.value
 
-					if not interfaceID or not interfaceIndex then
-						Log.engine("Interface ID and/or interface index keys missing; cannot process send for RPC '%s'.", e.callback)
+				if not interfaceID or not interfaceIndex then
+					Log.engine("Interface ID and/or interface index keys missing; cannot process send for RPC '%s'.", e.callback)
+				else
+					local interface = self.game:getUI():get(interfaceID, interfaceIndex)
+					if not interface then
+						Log.warn(
+							"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
+							interfaceID, interfaceIndex, e.callback)
 					else
-						local interface = self.game:getUI():get(interfaceID, interfaceIndex)
-						if not interface then
-							Log.warn(
-								"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
-								interfaceID, interfaceIndex, e.callback)
+						local peep = interface:getPeep()
+						local playerBehavior = peep:getBehavior(PlayerBehavior)
+						if not playerBehavior then
+							Log.engine("Peep '%s' (tally = %d) is not a player; not processing send.", peep:getName(), peep:getTally())
 						else
-							local peep = interface:getPeep()
-							local playerBehavior = peep:getBehavior(PlayerBehavior)
-							if not playerBehavior then
-								Log.engine("Peep '%s' (tally = %d) is not a player; not processing send.", peep:getName(), peep:getTally())
-							else
-								local isSamePlayer = playerBehavior.id == player:getID()
-								if isSamePlayer then
-									self:_doSend(player, e)
-								end
+							local isSamePlayer = playerBehavior.id == player:getID()
+							if isSamePlayer then
+								self:_doSend(player, e)
 							end
 						end
 					end
-				else
+				end
+			elseif e.interface == "ItsyScape.Game.Model.Player" then
+				local isSamePlayer = e.id == player:getID()
+				if isSamePlayer then
 					self:_doSend(player, e)
 				end
-			else
-				self:_doSend(player, e)
+			elseif e.interface == "ItsyScape.Game.Model.Game" then
+				local key = self.outgoingKeys[i]
+				local isPlayerMatch = key and key.player and key.player.value:getID() == player:getID()
+				if isPlayerMatch then
+					self:_doSend(player, e)
+				end
 			end
+		else
+			self:_doSend(player, e)
 		end
+	end
+end
+
+function LocalGameManager:send()
+	for _, player in self.game:iteratePlayers() do
+		self:sendToPlayer(player)
 	end
 
 	table.clear(self.outgoing)
 	table.clear(self.outgoingKeys)
 	table.clear(self.pendingDeletion)
+end
+
+function LocalGameManager:processCallback(e)
+	if e.interface == "ItsyScape.Game.Model.Player" then
+		local player = self:getInstance(e.interface, e.id)
+		player = player and player:getInstance()
+
+		if not player then
+			Log.info("Player not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
+		else
+			local isClientMatch = player:getClientID() == e.clientID
+			if not isClientMatch then
+				Log.warn(
+					"Potential security issue: client %d tried invoking RPC '%s' on player %d, but player is not associated with the client.",
+					e.clientID, e.callback, player:getID())
+			else
+				GameManager.processCallback(self, e)
+			end
+		end
+	elseif e.interface == "ItsyScape.Game.Model.UI" then
+		local ui = self:getInstance(e.interface, e.id)
+		ui = ui and ui:getInstance()
+
+		if not ui then
+			Log.info("UI not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
+		else
+			local args = self.state:deserialize(e.value)
+			local interfaceID, interfaceIndex = unpack(args, 1, table.maxn(args))
+
+			local interface = ui:get(interfaceID, interfaceIndex)
+			if not interface then
+				Log.warn("Interface (id = '%s', index = %d) not found.", interfaceID, interfaceIndex)
+			else
+				local peep = interface:getPeep()
+				local playerBehavior = peep:getBehavior(PlayerBehavior)
+				if not playerBehavior then
+					Log.warn("Interface (id = '%s', index = %d) is not owned by a player.", interfaceID, interfaceIndex)
+				else
+					local player = self.game:getPlayerByID(playerBehavior.id)
+					if not player or player:getClientID() ~= e.clientID then
+						Log.warn(
+							"Potential security issue: client %d tried invoking RPC '%s' on interface (id = '%s', index = %d), but player does not own that interface.",
+							e.clientID, e.callback, interfaceID, interfaceIndex)
+					else
+						GameManager.processCallback(self, e)
+					end
+				end
+			end
+		end
+	else
+		Log.warn(
+			"Potential security issue; client %d tried invoking RPC on '%s' (%d), but this is not allowed.",
+			e.clientID, e.callback, e.interface, e.id)
+	end
 end
 
 function LocalGameManager:receive()
@@ -258,7 +331,7 @@ function LocalGameManager:receive()
 		if e then
 			self:process(e)
 		end
-	until e and e.type == GameManager.QUEUE_EVENT_TYPE_TICK
+	until not e
 	return true
 end
 

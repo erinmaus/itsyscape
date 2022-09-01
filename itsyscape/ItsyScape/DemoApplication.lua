@@ -52,8 +52,13 @@ function DemoApplication:new()
 	self.mouseX, self.mouseY = math.huge, math.huge
 
 	self.cameraController = DefaultCameraController(self)
-	self:getGame():getPlayer().onChangeCamera:register(self.changeCamera, self)
-	self:getGame():getPlayer().onPokeCamera:register(self.pokeCamera, self)
+
+	self:getGame().onReady:register(function(_, player)
+		player.onChangeCamera:register(self.changeCamera, self)
+		player.onPokeCamera:register(self.pokeCamera, self)
+
+		self:tryOpenTitleScreen()
+	end)
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)
@@ -84,17 +89,16 @@ end
 
 function DemoApplication:tickSingleThread()
 	Application.tickSingleThread(self)
-	self:tryOpenTitleScreen()
 end
 
 function DemoApplication:tickMultiThread()
 	Application.tickMultiThread(self)
-	self:tryOpenTitleScreen()
 end
 
 function DemoApplication:closeTitleScreen()
 	self:setIsPaused(false)
 	self.titleScreen = nil
+	self.pendingTitleScreenOpen = true
 
 	self:closeMainMenu()
 end
@@ -483,6 +487,10 @@ end
 
 function DemoApplication:updatePlayerMovement()
 	local player = self:getGame():getPlayer()
+	if not player then
+		return
+	end
+
 	local up = love.keyboard.isDown('w')
 	local down = love.keyboard.isDown('s')
 	local left = love.keyboard.isDown('a')

@@ -436,6 +436,10 @@ function GameView:getMap(layer)
 end
 
 function GameView:addActor(actorID, actor)
+	if not actor or self:getActor(actor) then
+		return
+	end
+
 	local view = ActorView(actor, actorID)
 	view:attach(self)
 
@@ -471,6 +475,10 @@ function GameView:hasActor(actor)
 end
 
 function GameView:addProp(propID, prop)
+	if not prop or self:getProp(prop) then
+		return
+	end
+
 	local PropViewTypeName = string.format("Resources.Game.Props.%s.View", propID, propID)
 	local s, r = xpcall(function() return require(PropViewTypeName) end, debug.traceback)
 	if not s then
@@ -879,7 +887,7 @@ function GameView:update(delta)
 	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
 	_APP:measure("gameView:updateMapQueries()", GameView.updateMapQueries, self, delta)
 
-	do 
+	if self.game:getPlayer() then
 		local actor = self:getActor(self.game:getPlayer():getActor())
 		if actor then
 			player = actor:getSceneNode()
