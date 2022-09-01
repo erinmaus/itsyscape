@@ -14,6 +14,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local ClientRPCService = require "ItsyScape.Game.RPC.ClientRPCService"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
@@ -98,7 +99,7 @@ function Application:new(multiThreaded)
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
 	else
-		local rpcService = ChannelRPCService(self.outputChannel, self.inputChannel)
+		local rpcService = ClientRPCService("localhost", "180323")
 		self.remoteGameManager = RemoteGameManager(rpcService, self.gameDB)
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
