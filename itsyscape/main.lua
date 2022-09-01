@@ -206,7 +206,6 @@ function love.quit()
 end
 
 function love.threaderror(m, e)
-	print(">>>>>>> ERROR!!!!!!!!!")
-	print(m, e)
+	Log.warn("Error in thread: %s", e)
 	error(e, 0)
 end
