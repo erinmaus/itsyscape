@@ -21,11 +21,10 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local LocalGameManager = Class(GameManager)
 
-function LocalGameManager:new(inputChannel, outputChannel, game)
+function LocalGameManager:new(rpcService, game)
 	GameManager.new(self)
 
-	self.inputChannel = inputChannel
-	self.outputChannel = outputChannel
+	self.rpcService = rpcService
 	self.game = game
 
 	self.pending = {}
@@ -131,7 +130,7 @@ function LocalGameManager:destroyInstance(interface, id)
 end
 
 function LocalGameManager:_doSend(player, e)
-	self.outputChannel:push(buffer.encode(e))
+	self.rpcService:send(player:getID(), e)
 end
 
 function LocalGameManager:getInstance(interface, id)
@@ -254,16 +253,12 @@ function LocalGameManager:send()
 end
 
 function LocalGameManager:receive()
-	local e
-	repeat
-		e = self.inputChannel:demand()
-		if e then
-			self.pending = buffer.decode(e)
-			self:flush()
-			return true
-		end
-	until e == nil
-	return false
+	local e = self.rpcService:receive()
+	if e then
+		self.pending = e
+		self:flush()
+		return true
+	end
 end
 
 function LocalGameManager:flush()

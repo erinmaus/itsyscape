@@ -25,11 +25,10 @@ local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
 local RemoteGameManager = Class(GameManager)
 
-function RemoteGameManager:new(inputChannel, outputChannel, ...)
+function RemoteGameManager:new(rpcService, ...)
 	GameManager.new(self)
 
-	self.inputChannel = inputChannel
-	self.outputChannel = outputChannel
+	self.rpcService = rpcService
 
 	self.pending = {}
 	self.outgoing = {}
@@ -87,16 +86,15 @@ function RemoteGameManager:push(e)
 end
 
 function RemoteGameManager:send()
-	self.outputChannel:push(buffer.encode(self.outgoing))
-	self.outgoing = {}
+	self.rpcService:send(0, self.outgoing)
+	table.clear(self.outgoing)
 end
 
 function RemoteGameManager:receive()
 	local e
 	repeat
-		e = self.inputChannel:pop()
+		e = self.rpcService:receive()
 		if e then
-			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
@@ -110,12 +108,11 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:flush()
-	local p = self.pending
-	for i = 1, #p do
-		self:process(p[i])
+	for i = 1, #self.pending do
+		self:process(self.pending[i])
 	end
 
-	self.pending = {}
+	table.clear(self.pending)
 end
 
 function RemoteGameManager:processCreate(e)
