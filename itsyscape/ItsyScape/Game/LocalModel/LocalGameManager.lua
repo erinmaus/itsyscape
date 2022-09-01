@@ -27,7 +27,6 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService = rpcService
 	self.game = game
 
-	self.pending = {}
 	self.outgoing = {}
 	self.outgoingTargets = {}
 	self.outgoingKeys = {}
@@ -253,21 +252,14 @@ function LocalGameManager:send()
 end
 
 function LocalGameManager:receive()
-	local e = self.rpcService:receive()
-	if e then
-		self.pending = e
-		self:flush()
-		return true
-	end
-end
-
-function LocalGameManager:flush()
-	local p = self.pending
-	for i = 1, #p do
-		self:process(p[i])
-	end
-
-	self.pending = {}
+	local e
+	repeat
+		e = self.rpcService:receive()
+		if e then
+			self:process(e)
+		end
+	until e and e.type == GameManager.QUEUE_EVENT_TYPE_TICK
+	return true
 end
 
 return LocalGameManager

@@ -86,7 +86,10 @@ function RemoteGameManager:push(e)
 end
 
 function RemoteGameManager:send()
-	self.rpcService:send(0, self.outgoing)
+	for i = 1, #self.outgoing do
+		self.rpcService:send(0, self.outgoing[i])
+	end
+
 	table.clear(self.outgoing)
 end
 
