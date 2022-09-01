@@ -27,6 +27,7 @@ GameManager.QUEUE_EVENT_TYPE_DESTROY  = "destroy"
 GameManager.QUEUE_EVENT_TYPE_CALLBACK = "callback"
 GameManager.QUEUE_EVENT_TYPE_PROPERTY = "property"
 GameManager.QUEUE_EVENT_TYPE_TICK     = "tick"
+GameManager.QUEUE_EVENT_TYPE_PROTOCOL = "protocol"
 
 GameManager.Instance = Class()
 function GameManager.Instance:new(interface, id, instance, gameManager)
@@ -275,6 +276,8 @@ function GameManager:process(e)
 		self:processProperty(e)
 	elseif e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 		self:processTick(e)
+	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROTOCOL then
+		self:processProtocol(e)
 	end
 end
 

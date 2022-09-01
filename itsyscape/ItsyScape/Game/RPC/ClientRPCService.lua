@@ -41,7 +41,7 @@ function ClientRPCService:_doConnect(client)
 		for i = 1, #self.pending do
 			self.client:send(self.pending[i])
 		end
-		Log.info("Sent #d pending packets.", #self.pending)
+		Log.info("Sent %d pending packets.", #self.pending)
 		table.clear(self.pending)
 	end
 end
@@ -53,6 +53,11 @@ function ClientRPCService:_doDisconnect(client)
 	else
 		Log.warn("Unknown client disconnected.")
 	end
+end
+
+function ClientRPCService:disconnect()
+	self.client:disconnect()
+	self.host:flush()
 end
 
 function ClientRPCService:receive()

@@ -17,6 +17,42 @@ function RemoteGame:new(gameManager, gameDB)
 
 	self.gameManager = gameManager
 	self.gameDB = gameDB
+
+	self.onPlayerSpawned:register(self._onPlayerSpawned, self)
+	self.onPlayerPoofed:register(self._onPlayerPoofed, self)
+end
+
+function RemoteGame:_onPlayerSpawned(_, player)
+	if self.player then
+		Log.warn(
+			"New player '%s' (%d) spawned, but player '%s' (%d) already exists; replacing, but there might be problems.",
+			(player:getActor() and player:getActor():getName()) or "Player",
+			player:getID(),
+			(self.player:getActor() and self.player:getActor():getName()) or "Player",
+			self.player:getID())
+	end
+
+	Log.info(
+		"New player '%s' (%d) spawned.",
+		(player:getActor() and player:getActor():getName()) or "Player", player:getID())
+
+	self.player = player
+	self:onReady(player)
+end
+
+function RemoteGame:_onPlayerPoofed(player)
+	Log.info(
+		"Poofing player '%s' (%d)...",
+		(player:getActor() and player:getActor():getName()) or "Player", player:getID())
+
+	if self.player and self.player:getID() ~= player:getID() then
+		Log.warn("Existing player (id = %d) is different.", player:getID())
+	elseif not self.player then
+		Log.warn("Player not yet created.")
+	end
+
+	self.player = nil
+	Log.info("Player poofed!")
 end
 
 function RemoteGame:getGameDB()
@@ -24,10 +60,6 @@ function RemoteGame:getGameDB()
 end
 
 function RemoteGame:getPlayer()
-	if not self.player then
-		self.player = self.gameManager:getInstance("ItsyScape.Game.Model.Player", 0):getInstance()
-	end
-
 	return self.player
 end
 

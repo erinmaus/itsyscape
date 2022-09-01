@@ -99,12 +99,16 @@ function Application:new(multiThreaded)
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
 	else
-		local rpcService = ClientRPCService("localhost", "180323")
-		self.remoteGameManager = RemoteGameManager(rpcService, self.gameDB)
-		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
-		self.gameThread:start({
-			_DEBUG = _DEBUG
-		})
+		self.rpcService = ClientRPCService("localhost", "180323")
+		self.remoteGameManager = RemoteGameManager(self.rpcService, self.gameDB)
+
+		if not _ARGS["client"] then
+			self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
+			self.gameThread:start({
+				_DEBUG = _DEBUG
+			})
+		end
+
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
@@ -278,6 +282,11 @@ function Application:quit()
 	if self.multiThreaded then
 		self.game:quit()
 		self.remoteGameManager:pushTick()
+
+		if Class.isCompatibleType(self.rpcService, ClientRPCService) then
+			self.rpcService:disconnect()
+		end
+		
 		self.gameThread:wait()
 
 		local e = self.gameThread:getError()

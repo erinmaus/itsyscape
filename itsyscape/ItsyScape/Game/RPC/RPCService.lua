@@ -15,6 +15,18 @@ function RPCService:new()
 	-- Nothing.
 end
 
+function RPCService:connect(gameManager)
+	self.gameManager = gameManager
+end
+
+function RPCService:getIsConnected()
+	return self.gameManager ~= nil
+end
+
+function RPCService:getGameManager()
+	return self.gameManager
+end
+
 function RPCService:send(channel, e)
 	Class.ABSTRACT()
 end

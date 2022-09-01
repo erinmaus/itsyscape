@@ -81,8 +81,8 @@ StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, st
 
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
 	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
 	instance:update()
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
 end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
 StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving)
@@ -104,8 +104,8 @@ StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage
 
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
 	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)
 	instance:update()
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)
 end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
 StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving)
