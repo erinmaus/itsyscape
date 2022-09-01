@@ -17,6 +17,7 @@ local StageProxy = require "ItsyScape.Game.Model.StageProxy"
 local UIProxy = require "ItsyScape.Game.Model.UIProxy"
 local GameManager = require "ItsyScape.Game.RPC.GameManager"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local LocalGameManager = Class(GameManager)
 
@@ -129,7 +130,7 @@ function LocalGameManager:destroyInstance(interface, id)
 	GameManager.destroyInstance(self, interface, id)
 end
 
-function LocalGameManager:_doSend(e)
+function LocalGameManager:_doSend(player, e)
 	self.outputChannel:push(buffer.encode(e))
 end
 
@@ -155,7 +156,7 @@ function LocalGameManager:send()
 
 	if not playerInstance then
 		for i = 1, #self.outgoing do
-			self:_doSend(self.outgoing[i])
+			self:_doSend(player, self.outgoing[i])
 		end
 	else
 		for i = 1, #self.outgoing do
@@ -188,10 +189,10 @@ function LocalGameManager:send()
 								e.type, e.interface, e.id, player:getActor():getName(), player:getID())
 						end
 
-						self:_doSend(e)
+						self:_doSend(player, e)
 					end
 				else
-					self:_doSend(e)
+					self:_doSend(player, e)
 				end
 			elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
 				if e.interface == "ItsyScape.Game.Model.Stage" then
@@ -203,20 +204,46 @@ function LocalGameManager:send()
 					local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
 
 					if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
-						self:_doSend(e)
+						self:_doSend(player, e)
 					end
 				elseif e.interface == "ItsyScape.Game.Model.Actor" or
 				       e.interface == "ItsyScape.Game.Model.Prop"
 				then
 					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
 					if playerInstance:hasLayer(layer) or isTargetMatch then
-						self:_doSend(e)
+						self:_doSend(player, e)
+					end
+				elseif e.interface == "ItsyScape.Game.Model.UI" then
+					local key = self.outgoingKeys[i]
+					local interfaceID = key and key.interfaceID and key.interfaceID.value
+					local interfaceIndex = key and key.index and key.index.value
+
+					if not interfaceID or not interfaceIndex then
+						Log.engine("Interface ID and/or interface index keys missing; cannot process send for RPC '%s'.", e.callback)
+					else
+						local interface = self.game:getUI():get(interfaceID, interfaceIndex)
+						if not interface then
+							Log.warn(
+								"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
+								interfaceID, interfaceIndex, e.callback)
+						else
+							local peep = interface:getPeep()
+							local playerBehavior = peep:getBehavior(PlayerBehavior)
+							if not playerBehavior then
+								Log.engine("Peep '%s' (tally = %d) is not a player; not processing send.", peep:getName(), peep:getTally())
+							else
+								local isSamePlayer = playerBehavior.id == player:getID()
+								if isSamePlayer then
+									self:_doSend(player, e)
+								end
+							end
+						end
 					end
 				else
-					self:_doSend(e)
+					self:_doSend(player, e)
 				end
 			else
-				self:_doSend(e)
+				self:_doSend(player, e)
 			end
 		end
 	end
