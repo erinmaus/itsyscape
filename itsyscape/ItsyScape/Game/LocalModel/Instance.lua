@@ -636,6 +636,10 @@ function Instance:unload()
 	self.stage.onDecorate:unregister(self._onDecorate)
 	self.stage.onUndecorate:unregister(self._onUndecorate)
 	self.stage.onProjectile:unregister(self._onProjectile)
+	self.stage.onPlayMusic:unregister(self._onPlayMusic)
+	self.stage.onStopMusic:unregister(self._onStopMusic)
+	self.stage.onDropItem:unregister(self._onDropItem)
+	self.stage.onTakeItem:unregister(self._onTakeItem)
 end
 
 function Instance:getID()
@@ -869,6 +873,30 @@ function Instance:unloadPlayer(localGameManager, player)
 		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 
+	for _, music in ipairs(self.music) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onStopMusic",
+			localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+	end
+
+	for _, item in ipairs(self.items) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onTakeItem",
+			localGameManager:getArgs(item:getRef(), item:getItem()))
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine(
+			"Unloaded item '%s' (ref = %d, count = %d) at (%d, %d) for layer %d.",
+			item:getItem().id, item:getRef(), item:getItem().count, item:getTile().i, item:getTile().j, item:getLayer())
+	end
+
 	Log.engine(
 		"Successfully unloaded instance %s (%d) for player '%s'.",
 		self:getFilename(),
@@ -969,6 +997,30 @@ function Instance:loadPlayer(localGameManager, player)
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Restored decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
+	end
+
+	for _, music in ipairs(self.music) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onPlayMusic",
+			localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine("Restored song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+	end
+
+	for _, item in ipairs(self.items) do
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onDropItem",
+			localGameManager:getArgs(item:getRef(), item:getItem(), item:getTile(), item:getPosition(), item:getLayer()))
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine(
+			"Restored item '%s' (ref = %d, count = %d) at (%d, %d) for layer %d.",
+			item:getItem().id, item:getRef(), item:getItem().count, item:getTile().i, item:getTile().j, item:getLayer())
 	end
 end
 
