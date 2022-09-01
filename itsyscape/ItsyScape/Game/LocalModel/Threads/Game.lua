@@ -32,13 +32,15 @@ local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
+local ServerRPCService = require "ItsyScape.Game.RPC.ServerRPCService"
 
 local game = LocalGame(GameDB.create())
 
-inputChannel = love.thread.getChannel('ItsyScape.Game::input')
-outputChannel = love.thread.getChannel('ItsyScape.Game::output')
+local inputChannel = love.thread.getChannel('ItsyScape.Game::input')
+local outputChannel = love.thread.getChannel('ItsyScape.Game::output')
+local rpcService = ServerRPCService("localhost", "180323")
 
-local gameManager = LocalGameManager(ChannelRPCService(inputChannel, outputChannel, true), game)
+local gameManager = LocalGameManager(rpcService, game)
 
 local isRunning = true
 game.onQuit:register(function() isRunning = false end)
