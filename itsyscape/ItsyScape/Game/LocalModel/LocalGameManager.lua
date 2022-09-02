@@ -209,9 +209,8 @@ function LocalGameManager:sendToPlayer(player)
 				local isLayerMatch = not hasTarget and key and key.layer and playerInstance:hasLayer(key.layer.value)
 				local isActorMatch = not hasTarget and key and key.actor and playerInstance:hasActor(key.actor.value)
 				local isPropMatch = not hasTarget and key and key.prop and playerInstance:hasProp(key.prop.value)
-				local isGlobal = (not hasTarget and not key) or (not key or (not key.layer and not key.actor and not key.prop))
 
-				if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
+				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch then
 					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Actor" or
@@ -225,25 +224,22 @@ function LocalGameManager:sendToPlayer(player)
 				local key = self.outgoingKeys[i]
 				local interfaceID = key and key.interfaceID and key.interfaceID.value
 				local interfaceIndex = key and key.index and key.index.value
+				local hasPlayer = key and key.player ~= nil
+				local isPlayerMatch = key and key.player and key.player.value:getID() == player:getID()
 
 				if not interfaceID or not interfaceIndex then
 					Log.engine("Interface ID and/or interface index keys missing; cannot process send for RPC '%s'.", e.callback)
 				else
 					local interface = self.game:getUI():get(interfaceID, interfaceIndex)
-					if not interface then
+					if not interface and not hasPlayer then
 						Log.warn(
 							"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
 							interfaceID, interfaceIndex, e.callback)
 					else
-						local peep = interface:getPeep()
-						local playerBehavior = peep:getBehavior(PlayerBehavior)
-						if not playerBehavior then
-							Log.engine("Peep '%s' (tally = %d) is not a player; not processing send.", peep:getName(), peep:getTally())
-						else
-							local isSamePlayer = playerBehavior.id == player:getID()
-							if isSamePlayer then
-								self:_doSend(player, e)
-							end
+						isPlayerMatch = isPlayerMatch or interface and interface:getPlayer():getID() == player:getID()
+
+						if isPlayerMatch then
+							self:_doSend(player, e)
 						end
 					end
 				end

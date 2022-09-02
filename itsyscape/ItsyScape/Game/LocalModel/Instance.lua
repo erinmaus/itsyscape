@@ -807,7 +807,6 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onUnloadMap",
-
 			localGameManager:getArgs(map, layer))
 		localGameManager:assignTargetToLastPush(player)
 
@@ -931,8 +930,14 @@ function Instance:loadPlayer(localGameManager, player)
 			0,
 			"onMapModified",
 			localGameManager:getArgs(map, layer))
+		localGameManager:assignTargetToLastPush(player)
+		localGameManager:pushCallback(
+			"ItsyScape.Game.Model.Stage",
+			0,
+			"onMapModified",
+			localGameManager:getArgs(map, layer))
 
-		Log.engine("Unloaded layer %d.", layer)
+		Log.engine("Loaded layer %d.", layer)
 	end
 
 	for i = 1, #self.actors do

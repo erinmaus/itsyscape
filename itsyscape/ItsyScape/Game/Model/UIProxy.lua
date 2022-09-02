@@ -15,8 +15,9 @@ local UIProxy = Proxy.Definition()
 
 UIProxy.open = Event.ServerToClientRPC(
 	Event.Argument("interfaceID", true),
-	Event.Argument("index", true))
-UIProxy.open:link("onOpen", Event.Argument("interfaceID"), Event.Argument("index"))
+	Event.Argument("index", true),
+	Event.Argument("player", true))
+UIProxy.open:link("onOpen", Event.Argument("interfaceID"), Event.Argument("index"), Event.Argument("player"))
 UIProxy.poke = Event.ClientToServerRPC(
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
@@ -55,10 +56,12 @@ UIProxy.pull = Event.Get(
 UIProxy.close = Event.Unset(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID", true),
-	Event.KeyArgument("index"))
+	Event.KeyArgument("index", true),
+	Event.Argument("player", true))
 UIProxy.close:link(
 	"onClose",
 	Event.Argument("interfaceID"),
-	Event.Argument("index"))
+	Event.Argument("index"),
+	Event.Argument("player"))
 
 return Proxy(UIProxy)

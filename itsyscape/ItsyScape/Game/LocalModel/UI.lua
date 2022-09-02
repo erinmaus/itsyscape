@@ -141,7 +141,7 @@ function LocalUI:open(peep, interfaceID, ...)
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
 	self.onPush(self, interfaceID, i.n, controller:pull())
-	self.onOpen(self, interfaceID, i.n)
+	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
 	return interfaceID, i.n, controller
 end
@@ -186,11 +186,11 @@ function LocalUI:close(interfaceID, index)
 		end
 	end
 
+	self.onClose(self, interfaceID, index, controller:getPlayer())
+
 	controller:close()
 	self.interfaces[interfaceID].v[index] = nil
 	self.controllers[controller] = nil
-
-	self.onClose(self, interfaceID, index)
 end
 
 function LocalUI:closeInstance(instance)
