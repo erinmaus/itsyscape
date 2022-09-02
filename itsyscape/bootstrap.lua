@@ -1,3 +1,15 @@
+require "love"
+require "love.data"
+require "love.event"
+require "love.filesystem"
+require "love.keyboard"
+require "love.math"
+require "love.mouse"
+require "love.physics"
+require "love.system"
+require "love.thread"
+require "love.timer"
+
 _MOBILE = false
 
 do

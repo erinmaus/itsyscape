@@ -284,7 +284,7 @@ function Application:quit()
 		self.remoteGameManager:pushTick()
 
 		if Class.isCompatibleType(self.rpcService, ClientRPCService) then
-			self.rpcService:disconnect()
+			self.rpcService:close()
 		end
 		
 		self.gameThread:wait()

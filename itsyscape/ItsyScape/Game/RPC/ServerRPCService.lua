@@ -7,16 +7,15 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local enet = require "enet"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
-local RPCService = require "ItsyScape.Game.RPC.RPCService"
+local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
 
-local ServerRPCService = Class(RPCService)
+local ServerRPCService = Class(NetworkRPCService)
 
 ServerRPCService.Client = Class()
-function ServerRPCService.Client:new(client, serverRPCService)
-	self.client = client
+function ServerRPCService.Client:new(clientID, serverRPCService)
+	self.clientID = clientID
 	self.serverRPCService = serverRPCService
 
 	self.isPendingConnect = true
@@ -24,7 +23,7 @@ function ServerRPCService.Client:new(client, serverRPCService)
 end
 
 function ServerRPCService.Client:getID()
-	return self.client:connect_id()
+	return self.clientID
 end
 
 function ServerRPCService.Client:getIsPendingConnect()
@@ -41,7 +40,7 @@ end
 
 function ServerRPCService.Client:connect()
 	if not self:getIsPendingConnect() then
-		Log.warn("Client %d is already connected.", self.client:connect_id())
+		Log.warn("Client %d is already connected.", self:getID())
 		return
 	end
 
@@ -50,37 +49,38 @@ function ServerRPCService.Client:connect()
 	local game = gameInstance and gameInstance:getInstance()
 
 	if game then
-		self.player = game:spawnPlayer(self.client:connect_id())
+		self.player = game:spawnPlayer(self:getID())
 		self.isPendingConnect = false
 
-		Log.info("Associated player ID %d with client %d.", self.player:getID(), self.client:connect_id())
+		Log.info("Associated player ID %d with client %d.", self.player:getID(), self:getID())
 	else
-		Log.warn("Could not get game to connect client %d.", self.client:connect_id())
+		Log.warn("Could not get game to connect client %d.", self:getID())
 	end
 end
 
 function ServerRPCService.Client:disconnect()
 	if not self:getIsConnected() then
-		Log.warn("Client %d is not yet connected.", self.client:connect_id())
+		Log.warn("Client %d is not yet connected.", self:getID())
 		return
 	end
 
 	if self.player then
 		self.player:poof()
-		Log.info("Client %d disconnected.", self.client:connect_id())
+		Log.info("Client %d disconnected.", self:getID())
 	else
 		Log.warn("Client %d does not have a player.")
 	end
 end
 
 function ServerRPCService.Client:send(packet)
-	self.client:send(packet)
+	self.serverRPCService:sendNetworkEvent(self:getID(), packet)
 end
 
 function ServerRPCService:new(listenAddress, port)
-	RPCService.new(self)
+	NetworkRPCService.new(self, "server_rpc_service")
 
-	self.host = enet.host_create(string.format("%s:%s", listenAddress, port))
+	self:sendListenEvent(string.format("%s:%s", listenAddress, port))
+
 	self.clients = {}
 	self.clientsByID = {}
 
@@ -95,20 +95,20 @@ function ServerRPCService:send(channel, e)
 	end
 end
 
-function ServerRPCService:_doConnect(client)
-	local rpcClient = ServerRPCService.Client(client, self)
+function ServerRPCService:_doConnect(clientID)
+	local rpcClient = ServerRPCService.Client(clientID, self)
 	rpcClient:connect()
 
 	table.insert(self.clients, rpcClient)
 	self.clientsByID[rpcClient:getID()] = rpcClient
 end
 
-function ServerRPCService:_doDisconnect(client)
-	self.clientsByID[client:connect_id()] = nil
+function ServerRPCService:_doDisconnect(clientID)
+	self.clientsByID[clientID] = nil
 
 	for i = 1, #self.clients do
 		local c = self.clients[i]
-		if c:getID() == client:connect_id() then
+		if c:getID() == clientID then
 			c:disconnect()
 			table.remove(self.clients, i)
 			break
@@ -126,29 +126,19 @@ function ServerRPCService:_doDisconnect(client)
 	end
 end
 
-function ServerRPCService:receive()
-	local e
-	repeat
-		e = self.host:service(0)
-		if e then
-			if e.type == "receive" then
-				local event = buffer.decode(love.data.decompress('string', 'lz4', e.data))
-				event.clientID = e.peer:connect_id()
+function ServerRPCService:handleNetworkEvent(e)
+	if e.type == "receive" then
+		local event = buffer.decode(love.data.decompress('string', 'lz4', e.data))
+		event.clientID = e.client
 
-				return event
-			elseif e.type == "connect" then
-				self:_doConnect(e.peer)
-			elseif e.type == "disconnect" then
-				self:_doDisconnect(e.peer)
-			end
-		end
-	until e == nil
+		return event
+	elseif e.type == "connect" then
+		self:_doConnect(e.client)
+	elseif e.type == "disconnect" then
+		self:_doDisconnect(e.client)
+	end
 
 	return nil
-end
-
-function ServerRPCService:flush()
-	self.host:flush()
 end
 
 return ServerRPCService

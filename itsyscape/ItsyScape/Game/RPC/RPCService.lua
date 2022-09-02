@@ -35,7 +35,7 @@ function RPCService:receive()
 	return Class.ABSTRACT()
 end
 
-function RPCService:flush()
+function RPCService:close()
 	-- Nothing.
 end
 
