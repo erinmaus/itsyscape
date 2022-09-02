@@ -43,7 +43,7 @@ while isRunning do
 
 				for _, client in pairs(clients) do
 					Log.engine("Disconnecting client %d...", client:connect_id())
-					client:disconnect()
+					client:disconnect(client:connect_id())
 				end
 
 				if host then
@@ -77,12 +77,12 @@ while isRunning do
 					client = e.peer:connect_id()
 				})
 			elseif e.type == "disconnect" then
-				clients[e.peer:connect_id()] = nil
-				Log.engine("Client (%d) disconnected.", e.peer:connect_id())
+				clients[e.data or e.peer:connect_id()] = nil
+				Log.engine("Client (%d) disconnected.", e.data or e.peer:connect_id())
 
 				outputChannel:push({
 					type = "disconnect",
-					client = e.peer:connect_id()
+					client = e.data or e.peer:connect_id()
 				})
 			end
 		end
