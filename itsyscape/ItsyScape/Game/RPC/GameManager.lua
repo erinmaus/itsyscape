@@ -231,6 +231,8 @@ function GameManager:new()
 	self.interfaces = {}
 	self.instances = {}
 
+	self.ticks = 0
+
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Quaternion", TypeProvider.Quaternion())
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Ray", TypeProvider.Ray())
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Vector", TypeProvider.Vector())
@@ -357,8 +359,11 @@ function GameManager:processProperty(e)
 end
 
 function GameManager:pushTick()
+	self.ticks = self.ticks + 1
+
 	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_TICK
+		type = GameManager.QUEUE_EVENT_TYPE_TICK,
+		timestamp = self.ticks
 	}
 
 	self:push(event)

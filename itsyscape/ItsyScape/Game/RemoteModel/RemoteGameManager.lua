@@ -95,9 +95,9 @@ function RemoteGameManager:receive()
 		if e then
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+				Log.info("Tick (%d) received.", e.timestamp)
 				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				self:flush()
-				return true
 			end
 		end
 	until e == nil

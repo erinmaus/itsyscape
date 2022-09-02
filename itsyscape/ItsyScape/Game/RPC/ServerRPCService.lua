@@ -104,7 +104,7 @@ function ServerRPCService:_doConnect(client)
 end
 
 function ServerRPCService:_doDisconnect(client)
-	self.clientsByID[client:getID()] = nil
+	self.clientsByID[client:connect_id()] = nil
 
 	for i = 1, #self.clients do
 		local c = self.clients[i]
@@ -145,6 +145,10 @@ function ServerRPCService:receive()
 	until e == nil
 
 	return nil
+end
+
+function ServerRPCService:flush()
+	self.host:flush()
 end
 
 return ServerRPCService
