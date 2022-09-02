@@ -10,70 +10,58 @@
 local enet = require "enet"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
-local RPCService = require "ItsyScape.Game.RPC.RPCService"
+local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
 
-local ClientRPCService = Class(RPCService)
+local ClientRPCService = Class(NetworkRPCService)
 
 function ClientRPCService:new(listenAddress, port)
-	RPCService.new(self)
+	NetworkRPCService.new(self, "client_rpc_service")
 
-	self.host = enet.host_create()
-	self.host:connect(string.format("%s:%s", listenAddress, port))
+	self:sendConnectEvent(string.format("%s:%s", listenAddress, port))
 
 	self.pending = {}
 end
 
 function ClientRPCService:send(channel, e)
 	local packet = love.data.compress('string', 'lz4', buffer.encode(e), -1)
-	if not self.client then
+	if not self.clientID then
 		table.insert(self.pending, packet)
 	else
-		self.client:send(packet)
+		self:sendNetworkEvent(self.clientID, packet)
 	end
 end
 
-function ClientRPCService:_doConnect(client)
-	self.client = client
+function ClientRPCService:_doConnect(clientID)
+	self.clientID = clientID
 	Log.info("Client connected.")
 
 	if #self.pending > 0 then
 		Log.info("Sending %d pending packets...", #self.pending)
 		for i = 1, #self.pending do
-			self.client:send(self.pending[i])
+			self:sendNetworkEvent(self.clientID, self.pending[i])
 		end
 		Log.info("Sent %d pending packets.", #self.pending)
 		table.clear(self.pending)
 	end
 end
 
-function ClientRPCService:_doDisconnect(client)
-	if self.client:connect_id() == client:connect_id() then
+function ClientRPCService:_doDisconnect(clientID)
+	if self.clientID == clientID then
 		Log.info("Client disconnected.")
-		self.client = nil
+		self.clientID = nil
 	else
-		Log.warn("Unknown client disconnected.")
+		Log.warn("Unknown client (%d) disconnected; current client is %d.", clientID, self.clientID)
 	end
 end
 
-function ClientRPCService:disconnect()
-	self.client:disconnect()
-	self.host:flush()
-end
-
-function ClientRPCService:receive()
-	local e
-	repeat
-		e = self.host:service(0)
-		if e then
-			if e.type == "receive" then
-				return buffer.decode(love.data.decompress('string', 'lz4', e.data))
-			elseif e.type == "connect" then
-				self:_doConnect(e.peer)
-			elseif e.type == "disconnect" then
-				self._doDisconnect(e.peer)
-			end
-		end
-	until e == nil
+function ClientRPCService:handleNetworkEvent(e)
+	if e.type == "receive" then
+		return buffer.decode(love.data.decompress('string', 'lz4', e.data))
+	elseif e.type == "connect" then
+		self:_doConnect(e.client)
+	elseif e.type == "disconnect" then
+		self:_doDisconnect(e.client)
+	end
 
 	return nil
 end

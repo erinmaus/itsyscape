@@ -7,17 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-require "love"
-require "love.data"
-require "love.event"
-require "love.filesystem"
-require "love.keyboard"
-require "love.math"
-require "love.mouse"
-require "love.physics"
-require "love.system"
-require "love.thread"
-require "love.timer"
 
 _LOG_SUFFIX = "server"
 require "bootstrap"
@@ -68,6 +57,8 @@ while isRunning do
 		Log.debug("Tick ran over by %0.2f second(s).", math.abs(duration))
 	end
 end
+
+rpcService:close()
 
 Log.info("Game thread exiting...")
 Log.quit()
