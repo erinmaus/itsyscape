@@ -56,9 +56,6 @@ function LocalStage:new(game)
 
 	self.tests = { id = 1 }
 
-	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
-	self.mapThread:start()
-
 	self.instances = {}
 	self.instancesByLayer = {}
 end

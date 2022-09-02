@@ -178,6 +178,9 @@ function GameView:new(game)
 	self.projectiles = {}
 
 	self.weather = {}
+
+	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
+	self.mapThread:start()
 end
 
 function GameView:getGame()

@@ -119,10 +119,6 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 end
 
 function LocalGameManager:push(e, key)
-	if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
-		Log.info("Tick (%d) sent.", e.timestamp)
-	end
-
 	table.insert(self.outgoing, e)
 	self.outgoingKeys[#self.outgoing] = key
 end
