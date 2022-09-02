@@ -350,6 +350,9 @@ function Probe:props()
 				local transform = node:getTransform():getGlobalDeltaTransform(0)
 				min, max = Vector.transformBounds(min, max, transform)
 			end
+
+			min = min or Vector.ZERO
+			max = max or Vector.ZERO
 		end
 
 		local _, _, propLayer = prop:getTile()

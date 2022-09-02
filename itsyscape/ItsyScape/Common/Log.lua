@@ -11,6 +11,10 @@
 local debug = require "debug"
 local Log = {}
 
+function Log.boolean(value)
+	return (value and "true") or "false"
+end
+
 function Log.profile(...)
 	local DebugStats = require "ItsyScape.Graphics.DebugStats"
 	DebugStats.GLOBAL:measure(...)

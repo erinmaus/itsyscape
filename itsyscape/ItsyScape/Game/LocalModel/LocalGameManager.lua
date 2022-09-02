@@ -88,6 +88,7 @@ function LocalGameManager:onPlayerPoof(player)
 	end
 
 	if not instance then
+		Log.engine("Player '%s' (%d) poofed, but player is not in instance.", player:getActor():getName(), player:getID())
 		return
 	end
 
@@ -164,6 +165,7 @@ function LocalGameManager:sendToPlayer(player)
 
 		local target = self.outgoingTargets[i]
 		local isTargetMatch = target and target:getID() == player:getID()
+		local hasTarget = target ~= nil
 
 		local instance
 		if e.interface and e.id then
@@ -177,8 +179,8 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Actor" or
 			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
-				local isActorMatch = e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
-				local isPropMatch = e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
+				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
+				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
 
 				if isActorMatch or isPropMatch or isTargetMatch then
 					if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
@@ -187,6 +189,9 @@ function LocalGameManager:sendToPlayer(player)
 						Log.engine(
 							"Sending event to %s '%s' (%d) to player '%s' (%d).",
 							e.type, e.interface, e.id, player:getActor():getName(), player:getID())
+						Log.debug(
+							"Reason: isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, hasTarget = %s",
+							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget))
 					end
 
 					self:_doSend(player, e)
@@ -201,10 +206,10 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Stage" then
 				local key = self.outgoingKeys[i]
 
-				local isLayerMatch = key and key.layer and playerInstance:hasLayer(key.layer.value)
-				local isActorMatch = key and key.actor and playerInstance:hasActor(key.actor.value)
-				local isPropMatch = key and key.prop and playerInstance:hasProp(key.prop.value)
-				local isGlobal = not key or (not key.layer and not key.actor and not key.prop)
+				local isLayerMatch = not hasTarget and key and key.layer and playerInstance:hasLayer(key.layer.value)
+				local isActorMatch = not hasTarget and key and key.actor and playerInstance:hasActor(key.actor.value)
+				local isPropMatch = not hasTarget and key and key.prop and playerInstance:hasProp(key.prop.value)
+				local isGlobal = (not hasTarget and not key) or (not key or (not key.layer and not key.actor and not key.prop))
 
 				if isLayerMatch or isActorMatch or isPropMatch or isGlobal or isTargetMatch then
 					self:_doSend(player, e)
@@ -213,7 +218,7 @@ function LocalGameManager:sendToPlayer(player)
 			       e.interface == "ItsyScape.Game.Model.Prop"
 			then
 				local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-				if playerInstance:hasLayer(layer) or isTargetMatch then
+				if (not hasTarget and playerInstance:hasLayer(layer)) or isTargetMatch then
 					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.UI" then
@@ -319,7 +324,7 @@ function LocalGameManager:processCallback(e)
 		end
 	else
 		Log.warn(
-			"Potential security issue; client %d tried invoking RPC on '%s' (%d), but this is not allowed.",
+			"Potential security issue; client %d tried invoking RPC '%s' on '%s' (%d), but this is not allowed.",
 			e.clientID, e.callback, e.interface, e.id)
 	end
 end

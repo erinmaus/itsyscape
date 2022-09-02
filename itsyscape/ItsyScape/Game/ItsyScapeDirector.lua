@@ -41,6 +41,8 @@ function ItsyScapeDirector:new(game, gameDB)
 	self.itemBroker = ItemBroker(self.itemManager)
 
 	self.playerStorage = {}
+
+	self:setPlayerStorage(0, PlayerStorage())
 end
 
 function ItsyScapeDirector:setPlayerStorage(index, value)
@@ -71,13 +73,16 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 			return storage
 		end
 	else
-		local player = self.game:getPlayer():getActor():getPeep()
+		local player = self.game:getPlayer()
+		player = player and player:getActor()
+		player = player and player:getPeep()
+
 		if player then
 			return self:getPlayerStorage(player)
 		end
 	end
 
-	return nil
+	return self.playerStorage[0]
 end
 
 function ItsyScapeDirector:getGameInstance()
