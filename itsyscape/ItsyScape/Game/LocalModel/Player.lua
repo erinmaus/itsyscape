@@ -70,9 +70,12 @@ function LocalPlayer:getClientID()
 end
 
 function LocalPlayer:spawn(storage, newGame)
+	local previousLayerName = self.actor and self.actor:getPeep():getLayerName()
+	self:unload()
+
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
-	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, "::orphan")
+	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, previousLayerName or "::orphan")
 	if success then
 		self.actor = actor
 		actor:getPeep():addBehavior(PlayerBehavior)
@@ -169,14 +172,18 @@ function LocalPlayer:onPlayerActionPerformed(_, p)
 	self.currentAction = p.action:getXProgressiveVerb()
 end
 
-function LocalPlayer:poof()
-	self:onPoof()
-
+function LocalPlayer:unload()
 	if self.actor then
 		self.stage:killActor(self.actor)
 	end
 
 	self.actor = false
+end
+
+function LocalPlayer:poof()
+	self:onPoof()
+
+	self:unload()
 
 	self.game:getDirector():setPlayerStorage(self.id, nil)
 end

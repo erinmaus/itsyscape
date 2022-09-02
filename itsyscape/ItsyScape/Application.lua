@@ -286,12 +286,14 @@ function Application:quit()
 		if Class.isCompatibleType(self.rpcService, ClientRPCService) then
 			self.rpcService:close()
 		end
-		
-		self.gameThread:wait()
 
-		local e = self.gameThread:getError()
-		if e then
-			Log.warn("Error quitting logic thread: %s", e)
+		if self.gameThread then
+			self.gameThread:wait()
+
+			local e = self.gameThread:getError()
+			if e then
+				Log.warn("Error quitting logic thread: %s", e)
+			end
 		end
 	end
 
