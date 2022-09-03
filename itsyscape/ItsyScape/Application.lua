@@ -358,7 +358,7 @@ function Application:getFrameDelta()
 		return 0
 	else
 		-- Generate a delta (0 .. 1 inclusive) between the current and previous
-		-- frames'
+		-- frames
 		return (currentTime - previousTime) / gameDelta
 	end
 end
