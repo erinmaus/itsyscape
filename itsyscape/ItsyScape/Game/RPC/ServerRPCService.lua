@@ -88,7 +88,7 @@ function ServerRPCService:new(listenAddress, port)
 end
 
 function ServerRPCService:send(channel, e)
-	local packet = love.data.compress('string', 'lz4', buffer.encode(e), -1)
+	local packet = buffer.encode(e)
 	local client = self.clientsByID[channel]
 	if client then
 		client:send(packet)
@@ -128,7 +128,7 @@ end
 
 function ServerRPCService:handleNetworkEvent(e)
 	if e.type == "receive" then
-		local event = buffer.decode(love.data.decompress('string', 'lz4', e.data))
+		local event = buffer.decode(e.data)
 		event.clientID = e.client
 
 		return event

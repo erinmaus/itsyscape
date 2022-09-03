@@ -34,27 +34,50 @@ local gameManager = LocalGameManager(rpcService, game)
 local isRunning = true
 game.onQuit:register(function() isRunning = false end)
 
+local function getPeriodInMS(a, b)
+	return math.floor((b - a) * 1000)
+end
+
 while isRunning do
-	local t1 = love.timer.getTime()
+	local timeStart
+	local timeGameTick, timeGameUpdate
+	local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend
+	local timeEnd
+
+	timeStart = love.timer.getTime()
 	do
 		game:tick()
+		timeGameTick = love.timer.getTime()
 		game:update(game:getDelta())
+		timeGameUpdate = love.timer.getTime()
 
 		gameManager:update()
+		timeGameManagerUpdate = love.timer.getTime()
 		gameManager:pushTick()
+		timeGameManagerTick = love.timer.getTime()
 		gameManager:send()
+		timeGameManagerSend = love.timer.getTime()
 
 		while not gameManager:receive() do
 			love.timer.sleep(0)
 		end
 	end
-	local t2 = love.timer.getTime()
+	timeEnd = love.timer.getTime()
 
-	local duration = t2 - t1
+	local duration = timeEnd - timeStart
 	if duration < game:getDelta() then
 		love.timer.sleep(game:getDelta() - duration)
 	else
 		Log.debug("Tick ran over by %0.2f second(s).", math.abs(duration))
+		Log.debug(
+			"Stats: iteration = %d ms, game tick = %d ms, game update = %d ms, game manager update = %d ms, game manager tick = %d ms, game manager send = %d ms, game manager receive = %d ms",
+			getPeriodInMS(timeStart, timeEnd),
+			getPeriodInMS(timeStart, timeGameTick),
+			getPeriodInMS(timeGameTick, timeGameUpdate),
+			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
+			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
+			getPeriodInMS(timeGameTick, timeGameManagerSend),
+			getPeriodInMS(timeGameManagerSend, timeEnd))
 	end
 end
 
