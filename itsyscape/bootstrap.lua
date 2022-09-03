@@ -66,3 +66,8 @@ end
 
 Log.setLogSuffix(_LOG_SUFFIX)
 Log.write("ItsyRealm bootstrapped.\n")
+
+if love.system.getOS() == "OS X" then
+	Log.info("Running on macOS, disabling JIT.")
+	require("jit").off()
+end

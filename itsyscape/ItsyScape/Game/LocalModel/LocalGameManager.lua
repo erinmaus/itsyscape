@@ -153,6 +153,8 @@ function LocalGameManager:getInstance(interface, id)
 	return nil
 end
 
+
+
 function LocalGameManager:sendToPlayer(player)
 	local playerInstance = player:getInstance()
 	if not playerInstance then
