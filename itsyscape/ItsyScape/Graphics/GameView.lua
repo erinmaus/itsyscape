@@ -46,16 +46,19 @@ function GameView:new(game)
 	local stage = game:getStage()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
+		Log.engine("Adding map to layer %d.", layer)
 		self:addMap(map, layer, tileSetID)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
 	self._onUnloadMap = function(_, map, layer)
+		Log.engine("Unloading map from layer %d.", layer)
 		self:removeMap(layer)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
 	self._onMapModified = function(_, map, layer)
+		Log.engine("Map for layer %d modified.", layer)
 		self:updateMap(map, layer)
 	end
 	stage.onMapModified:register(self._onMapModified)
@@ -86,57 +89,72 @@ function GameView:new(game)
 	stage.onPropRemoved:register(self._onPropRemoved)
 
 	self._onDropItem = function(_, ref, item, tile, position)
+		Log.engine(
+			"Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.",
+			item.id, ref, item.count, tile.i, tile.j, tile.layer)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
 	self._onTakeItem = function(_, ref, item)
+		Log.engine(
+			"Item '%s' (ref = %d, count = %d) taken.",
+			item.id, ref, item.count)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onDecorate = function(_, group, decoration, layer)
+		Log.engine("Decorating '%s' on layer %d.", group, layer)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
 	self._onUndecorate = function(_, group, layer)
+		Log.engine("Removing decoration '%s' on layer %d.", group, layer)
 		self:decorate(group, nil, layer)
 	end
 	stage.onUndecorate:register(self._onUndecorate)
 
 	self._onWaterFlood = function(_, key, water, layer)
+		Log.engine("Water (%s) flooding on layer %d.", key, layer)
 		self:flood(key, water, layer)
 	end
 	stage.onWaterFlood:register(self._onWaterFlood)
 
-	self._onWaterDrain = function(_, key, water)
+	self._onWaterDrain = function(_, key, water, layer)
+		Log.engine("Water (%s) draining on layer %d.", key, layer)
 		self:drain(key, water)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
 	self._onForecast = function(_, layer, key, id, props)
+		Log.engine("Forecast is '%s' for key '%s' on layer %d.", id, key, layer)
 		self:forecast(layer, key, nil)
 		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
 
 	self._onStopForecast = function(_, layer, key)
+		Log.engine("Forecast '%s' on layer %d is over.", key, layer)
 		self:forecast(layer, key, nil)
 	end
 	stage.onStopForecast:register(self._onStopForecast)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
+		Log.engine("Firing projectile '%s'.", projectileID)
 		self:fireProjectile(projectileID, source, destination, time)
 	end
 	stage.onProjectile:register(self._onProjectile)
 
 	self._onPlayMusic = function(_, track, song)
+		Log.engine("Playing song '%s' on track '%s'.", song, track)
 		self:playMusic(track, song)
 	end
 	stage.onPlayMusic:register(self._onPlayMusic)
 
 	self._onStopMusic = function(_, track, song)
+		Log.engine("Stopping track '%s'.", track)
 		self:playMusic(track, false)
 	end
 	stage.onStopMusic:register(self._onStopMusic)
