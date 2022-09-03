@@ -58,6 +58,7 @@ function LocalStage:new(game)
 
 	self.instances = {}
 	self.instancesByLayer = {}
+	self.instancesPendingUnload = {}
 end
 
 function LocalStage:newLayer(instance)
@@ -124,6 +125,29 @@ function LocalStage:newLocalInstance(filename, args)
 	self:loadStage(instance, filename, args)
 
 	return instance
+end
+
+function LocalStage:unloadLocalInstance(instance)
+	if instance:hasPlayers() then
+		Log.error("Cannot unload instance %s (%d); has players.", instance:getFilename(), instance:getID())
+		return
+	end
+
+	local instancesForFilename = self.instances[instance:getFilename()]
+	if instancesForFilename then
+		for i = 1, #instancesForFilename.instances do
+			if instancesForFilename.instances[i]:getID() == instance:getID() then
+				Log.info("Unloading instance %s (%d).", instance:getFilename(), instance:getID())
+
+				instance:unload()
+				table.remove(instancesForFilename.instances, i)
+
+				return
+			end
+		end
+	end
+
+	Log.error("Could not unload instance %s (%d); not found.", instance:getFilename(), instance:getID())
 end
 
 function LocalStage:getGlobalInstanceByFilename(filename)
@@ -580,10 +604,6 @@ function LocalStage:drain(key, layer)
 	self.onWaterDrain(self, key, layer)
 end
 
-function LocalStage:collectItems(instance)
-
-end
-
 function LocalStage:unloadAll(instance)
 	-- TODO
 	-- do
@@ -834,6 +854,10 @@ function LocalStage:movePeep(peep, path, anchor)
 
 			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
 			player:setInstance(oldLayerName, newLayerName, instance)
+
+			if previousInstance and not previousInstance:hasPlayers() and not previousInstance:getIsGlobal() then
+				table.insert(self.instancesPendingUnload, previousInstance)
+			end
 		end
 	end
 end
@@ -1279,6 +1303,11 @@ function LocalStage:quit()
 end
 
 function LocalStage:tick()
+	for i = 1, #self.instancesPendingUnload do
+		self:unloadLocalInstance(self.instancesPendingUnload[i])
+	end
+	table.clear(self.instancesPendingUnload)
+
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
 		instance:tick()

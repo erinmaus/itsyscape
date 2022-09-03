@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local ActorProxy = require "ItsyScape.Game.Model.ActorProxy"
 local Event = require "ItsyScape.Game.RPC.Event"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local Instance = Class(Stage)
 
@@ -640,6 +641,24 @@ function Instance:unload()
 	self.stage.onStopMusic:unregister(self._onStopMusic)
 	self.stage.onDropItem:unregister(self._onDropItem)
 	self.stage.onTakeItem:unregister(self._onTakeItem)
+
+	for i = 1, #self.actors do
+		local actor = self.actors[i]
+
+		if actor:getPeep():hasBehavior(PlayerBehavior) then
+			Log.engine("Actor '%s' (%d) is player; not removing.", actor:getName(), actor:getID())
+		else
+			self.stage:killActor(actor)
+		end
+	end
+
+	for i = 1, #self.props do
+		self.stage:removeProp(self.props[i])
+	end
+
+	for layer, map in pairs(self.maps) do
+		self.stage:unloadMap(layer)
+	end
 end
 
 function Instance:getID()
@@ -648,6 +667,10 @@ end
 
 function Instance:getFilename()
 	return self.filename
+end
+
+function Instance:getIsGlobal()
+	return self.id == Instance.GLOBAL_ID
 end
 
 function Instance:hasLayer(layer)
@@ -733,6 +756,10 @@ function Instance:getMapScriptByMapFilename(filename)
 
 	Log.warn("No map script with the filename '%s' in instance %s (%d).", filename, self:getFilename(), self:getID())
 	return nil
+end
+
+function Instance:hasPlayers()
+	return #self.players > 0
 end
 
 function Instance:hasPlayer(player)
