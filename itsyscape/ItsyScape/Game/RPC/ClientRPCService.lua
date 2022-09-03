@@ -23,7 +23,7 @@ function ClientRPCService:new(listenAddress, port)
 end
 
 function ClientRPCService:send(channel, e)
-	local packet = love.data.compress('string', 'lz4', buffer.encode(e), -1)
+	local packet = buffer.encode(e)
 	if not self.clientID then
 		table.insert(self.pending, packet)
 	else
@@ -56,7 +56,7 @@ end
 
 function ClientRPCService:handleNetworkEvent(e)
 	if e.type == "receive" then
-		return buffer.decode(love.data.decompress('string', 'lz4', e.data))
+		return buffer.decode(e.data)
 	elseif e.type == "connect" then
 		self:_doConnect(e.client)
 	elseif e.type == "disconnect" then

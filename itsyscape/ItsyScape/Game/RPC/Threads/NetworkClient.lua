@@ -29,7 +29,7 @@ while isRunning do
 			if e.type == "send" then
 				local client = clients[e.client]
 				if client then
-					client:send(e.data)
+					client:send(love.data.compress('string', 'lz4', e.data, -1))
 				end
 			elseif e.type == "listen" then
 				Log.engine("Listening @ '%s'.", e.address)
@@ -66,7 +66,7 @@ while isRunning do
 				outputChannel:push({
 					type = "receive",
 					client = e.peer:connect_id(),
-					data = e.data
+					data = love.data.decompress('string', 'lz4', e.data)
 				})
 			elseif e.type == "connect" then
 				clients[e.peer:connect_id()] = e.peer
