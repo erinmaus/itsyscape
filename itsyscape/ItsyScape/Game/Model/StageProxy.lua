@@ -188,6 +188,7 @@ StageProxy.stopForecast:link(
 
 StageProxy.WATER = "water"
 StageProxy.flood = Event.Set(
+	StageProxy.WATER,
 	Event.KeyArgument("key"),
 	Event.Argument("water"),
 	Event.KeyArgument("layer", true))
@@ -197,6 +198,7 @@ StageProxy.flood:link(
 	Event.Argument("water"),
 	Event.Argument("layer"))
 StageProxy.drain = Event.Unset(
+	StageProxy.WATER,
 	Event.KeyArgument("key"),
 	Event.KeyArgument("layer", true))
 StageProxy.drain:link(

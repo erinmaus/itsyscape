@@ -605,8 +605,8 @@ function Instance:new(id, filename, stage)
 	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
-		local sourceLayer = source and not Class.isType(source, Vector) and Utility.Peep.getLayer(source:getPeep())
-		local destinationLayer = destination and not Class.isType(destination, Vector) and Utility.Peep.getLayer(destination:getPeep())
+		local sourceLayer = source and not Class.isType(source, Vector) and source:getPeep() and Utility.Peep.getLayer(source:getPeep())
+		local destinationLayer = destination and not Class.isType(destination, Vector) and destination:getPeep() and Utility.Peep.getLayer(destination:getPeep())
 
 		if (self:hasLayer(sourceLayer) or source == nil) and
 		   (self:hasLayer(destinationLayer) or destination == nil) then
