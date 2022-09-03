@@ -630,7 +630,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	local node = WaterMeshSceneNode()
-	local map = self:getMap(water.layer or 1)
+	local map = self:getMap(layer)
 	node:generate(
 		map,
 		water.i or 1,
