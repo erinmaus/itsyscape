@@ -53,6 +53,33 @@ end
 do
 	local B = require "B"
 	B._ROOT = "ItsyScape.Mashina"
+
+	local Node = B.Node
+
+	B.Node = function(name)
+		local node = Node(name)
+
+		local Metatable = getmetatable(node)
+		local oldNewIndex = Metatable.__newindex
+
+		function Metatable:__newindex(key, value)
+			if type(value) == "function" or (getmetatable(value) and getmetatable(value).__call) then
+				rawset(self, key, function(...)
+					local s, r = xpcall(value, debug.traceback, ...)
+					if not s then
+						Log.error("Error executing node.%s: %s", key, r)
+						return B.Status.Failure
+					end
+
+					return r
+				end)
+			else
+				oldNewIndex(self, key, value)
+			end
+		end
+
+		return node
+	end
 end
 
 do
