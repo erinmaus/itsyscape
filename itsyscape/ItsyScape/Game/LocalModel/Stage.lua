@@ -735,6 +735,8 @@ function LocalStage:movePeep(peep, path, anchor)
 		return false
 	end
 
+	Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
+
 	if peep:hasBehavior(PlayerBehavior) then
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
 
@@ -767,6 +769,8 @@ function LocalStage:movePeep(peep, path, anchor)
 
 		local layer = instance:getBaseLayer()
 		if not layer then
+			Log.engine("No base layer in instance %s (%d); finding lowest layer.", instance:getFilename(), instance:getID())
+
 			for _, l in instance:iterateLayers() do
 				layer = math.min(layer or math.huge, l)
 			end
@@ -776,10 +780,12 @@ function LocalStage:movePeep(peep, path, anchor)
 			Log.error("No layer in instance '%s' (ID = %d).", instance:getFilename(), instance:getID())
 			return false
 		else
+			Log.engine("Set peep '%s' layer to %d.", peep:getName(), layer)
 			Utility.Peep.setLayer(peep, layer)
 		end
 
 		if previousLayer ~= layer then
+			Log.engine("Layer different; firing travel event.")
 			peep:poke('travel', {
 				from = filename,
 				to = filename
@@ -907,7 +913,10 @@ function LocalStage:loadMapResource(instance, filename, args)
 			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID)
 		end
 	end
-	instance:setBaseLayer(baseLayer)
+
+	if not instance:getBaseLayer() then
+		instance:setBaseLayer(baseLayer)
+	end
 
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
