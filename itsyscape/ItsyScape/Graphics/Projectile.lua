@@ -74,32 +74,34 @@ function Projectile:getDestination()
 end
 
 function Projectile:getTargetPosition(target)
-	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
-		local positionable
-		if self.gameView:getView(target) then
-			if target:isCompatibleType(Prop) then
-				positionable = self.gameView:getView(target):getRoot()
-			elseif target:isCompatibleType(Actor) then
-				positionable = self.gameView:getView(target):getSceneNode()
-			end
-		end
-
-		if positionable then
-			local transform = positionable:getTransform():getGlobalDeltaTransform(0)
-			local position = Vector(transform:transformPoint(0, 0, 0))
-
-			local y
-			if self.CLAMP_BOTTOM then
-				y = 0
-			else
-				local min, max = target:getBounds()
-				y = (max.y - min.y) / 2
+	if target then
+		if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
+			local positionable
+			if self.gameView:getView(target) then
+				if target:isCompatibleType(Prop) then
+					positionable = self.gameView:getView(target):getRoot()
+				elseif target:isCompatibleType(Actor) then
+					positionable = self.gameView:getView(target):getSceneNode()
+				end
 			end
 
-			return position + Vector(0, y, 0)
+			if positionable then
+				local transform = positionable:getTransform():getGlobalDeltaTransform(0)
+				local position = Vector(transform:transformPoint(0, 0, 0))
+
+				local y
+				if self.CLAMP_BOTTOM then
+					y = 0
+				else
+					local min, max = target:getBounds()
+					y = (max.y - min.y) / 2
+				end
+
+				return position + Vector(0, y, 0)
+			end
+		elseif target:isCompatibleType(Vector) then
+			return target
 		end
-	elseif target:isCompatibleType(Vector) then
-		return target
 	end
 
 	return Vector.ZERO

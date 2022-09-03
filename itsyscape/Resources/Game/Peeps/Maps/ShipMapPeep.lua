@@ -317,9 +317,9 @@ function ShipMapPeep:update(director, game)
 			local previousMap = self.previousMap
 			local previousMapAnchor = self.previousMapAnchor
 
-			if previousMap and previousMapAnchor then
+			if not self.isSunk and previousMap and previousMapAnchor then
 				game:getStage():movePeep(
-					game:getPlayer():getActor():getPeep(),
+					Utility.Peep.getPlayer(self),
 					previousMap,
 					previousMapAnchor)
 			end
