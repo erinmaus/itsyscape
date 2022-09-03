@@ -201,6 +201,8 @@ function LocalGameManager:sendToPlayer(player)
 				if isSamePlayer then
 					self:_doSend(player, e)
 				end
+			elseif e.interface == "ItsyScape.Game.Model.Game" then
+				self:_doSend(player, e)
 			end
 		elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
 			if e.interface == "ItsyScape.Game.Model.Stage" then
