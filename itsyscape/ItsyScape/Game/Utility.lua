@@ -215,7 +215,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
 
-	local actor, prop = stage:instantiateMapObject(mapObject, Utility.Peep.getLayer(peep))
+	local actor, prop = stage:instantiateMapObject(mapObject, Utility.Peep.getLayer(peep), peep:getLayerName())
 	
 	if actor then
 		local actorPeep = actor:getPeep()
