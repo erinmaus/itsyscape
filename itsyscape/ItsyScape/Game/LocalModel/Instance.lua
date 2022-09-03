@@ -724,6 +724,17 @@ function Instance:getMapScriptByLayer(layer)
 	return nil
 end
 
+function Instance:getMapScriptByMapFilename(filename)
+	for _, mapScript in pairs(self.mapScripts) do
+		if mapScript:getFilename() == filename then
+			return mapScript:getPeep()
+		end
+	end
+
+	Log.warn("No map script with the filename '%s' in instance %s (%d).", filename, self:getFilename(), self:getID())
+	return nil
+end
+
 function Instance:hasPlayer(player)
 	return self.playersByID[player:getID()] ~= nil
 end

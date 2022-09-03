@@ -1250,8 +1250,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 	local WATER_ELEVATION = 1.75
 
 	local stage = peep:getDirector():getGameInstance():getStage()
-
-	local shipLayer, shipScript = stage:loadMapResource(shipName)
+	local instance = stage:getPeepInstance(peep)
+	local shipLayer, shipScript = stage:loadMapResource(instance, shipName)
 
 	if shipScript then
 		local baseMap = stage:getMap(layer)

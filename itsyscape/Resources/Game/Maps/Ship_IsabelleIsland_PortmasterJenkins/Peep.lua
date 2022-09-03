@@ -167,7 +167,7 @@ end
 function Ship:onLoad(filename, arguments, layer)
 	Map.onLoad(self, filename, arguments, layer)
 
-	self.player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+	self.player = Utility.Peep.getPlayer(self)
 
 	local state = tonumber(arguments['jenkins_state'] or Ship.STATE_SQUID)
 	if state == Ship.STATE_SQUID then
@@ -202,7 +202,8 @@ function Ship:onRaiseCthulhu()
 		heaviness = 0.5
 	})
 
-	local oceanMapScript = stage:getMapScript("IsabelleIsland_FarOcean")
+	local instance = stage:getPeepInstance(self)
+	local oceanMapScript = instance:getMapScriptByMapFilename("IsabelleIsland_FarOcean")
 	Utility.spawnMapObjectAtAnchor(
 		oceanMapScript,
 		"Cthulhu",
