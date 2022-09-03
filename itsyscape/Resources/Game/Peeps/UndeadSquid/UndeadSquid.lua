@@ -149,7 +149,7 @@ function UndeadSquid:onAttackShip()
 				local tile = tiles[math.random(#tiles)]
 				if tile then
 					local center = shipMap:getTileCenter(tile.i, tile.j)
-					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer)
+					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
 					if s then
 						local leakPeep = leak:getPeep()
 						local position = leakPeep:getBehavior(PositionBehavior)
