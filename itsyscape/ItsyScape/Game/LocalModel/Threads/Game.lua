@@ -78,7 +78,7 @@ while isRunning do
 			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
 			getPeriodInMS(timeGameTick, timeGameManagerSend),
 			getPeriodInMS(timeGameManagerSend, timeEnd))
-	--end
+	end
 end
 
 rpcService:close()
