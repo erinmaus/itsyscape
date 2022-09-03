@@ -68,8 +68,8 @@ while isRunning do
 	if duration < game:getDelta() then
 		love.timer.sleep(game:getDelta() - duration)
 	else
-		Log.debug("Tick ran over by %0.2f second(s).", math.abs(duration))
-		Log.debug(
+		Log.info("Tick ran over by %0.2f second(s).", math.abs(duration))
+		Log.info(
 			"Stats: iteration = %d ms, game tick = %d ms, game update = %d ms, game manager update = %d ms, game manager tick = %d ms, game manager send = %d ms, game manager receive = %d ms",
 			getPeriodInMS(timeStart, timeEnd),
 			getPeriodInMS(timeStart, timeGameTick),
@@ -78,7 +78,7 @@ while isRunning do
 			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
 			getPeriodInMS(timeGameTick, timeGameManagerSend),
 			getPeriodInMS(timeGameManagerSend, timeEnd))
-	end
+	--end
 end
 
 rpcService:close()
