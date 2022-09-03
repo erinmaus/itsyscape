@@ -359,7 +359,7 @@ function HighChambersYendor:minibossBeginChanting()
 		do
 			local map
 			do
-				local _, layer = stage:getMapScript(Utility.Peep.getMapResource(self).name)
+				local layer = Utility.Peep.getLayer(self)
 				map = director:getMap(layer)
 
 				k = layer

@@ -123,13 +123,15 @@ function UndeadSquid:onAttackShip()
 	local map = Utility.Peep.getMapResource(self)
 	if map then
 		local stage = self:getDirector():getGameInstance():getStage()
-		local mapScript = stage:getMapScript(map.name)
+		local mapScript = Utility.Peep.getMapScript(self)
 
 		if mapScript:isCompatibleType(MapScript) then
 			local arguments = mapScript:getArguments()
 			if arguments["ship"] then
 				local shipName = arguments["ship"]
-				local shipMapScript, shipMapLayer = stage:getMapScript(shipName)
+				local instance = stage:getPeepInstance(self)
+				local shipMapScript = instance:getMapScriptByMapFilename(shipName)
+				local shipMapLayer = shipMapScript:getLayer()
 				local shipMap = stage:getMap(shipMapLayer)
 
 				Log.info("Attacking %s.", shipMapScript:getName())

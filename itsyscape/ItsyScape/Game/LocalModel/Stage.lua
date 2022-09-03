@@ -705,7 +705,7 @@ function LocalStage:movePeep(peep, path, anchor)
 
 	local instance
 	if self:isPathLocal(path) then
-		instance = self:newLocalInstance(filename, path)
+		instance = self:newLocalInstance(filename, arguments)
 	elseif self:isPathGlobal(path) then
 		instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
 	end
