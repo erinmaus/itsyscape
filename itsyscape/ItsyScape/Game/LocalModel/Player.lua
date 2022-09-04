@@ -173,6 +173,10 @@ function LocalPlayer:onPlayerActionPerformed(_, p)
 end
 
 function LocalPlayer:unload()
+	if self.instance then
+		self.instance:removePlayer(self)
+	end
+
 	if self.actor then
 		self.stage:killActor(self.actor)
 	end
