@@ -795,9 +795,13 @@ function Instance:removePlayer(player)
 
 			self:_removePlayerFromInstance(player)
 
-			break
+			return
 		end
 	end
+
+	Log.warn(
+		"Could not remove player '%s' (%d) from instance %s (%d); not in instance.",
+		player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
 end
 
 function Instance:getPartyLeader()
