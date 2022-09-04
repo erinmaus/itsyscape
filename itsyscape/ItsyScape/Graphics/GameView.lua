@@ -46,19 +46,19 @@ function GameView:new(game)
 	local stage = game:getStage()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
-		Log.engine("Adding map to layer %d.", layer)
+		Log.info("Adding map to layer %d.", layer)
 		self:addMap(map, layer, tileSetID)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
 	self._onUnloadMap = function(_, map, layer)
-		Log.engine("Unloading map from layer %d.", layer)
+		Log.info("Unloading map from layer %d.", layer)
 		self:removeMap(layer)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
 	self._onMapModified = function(_, map, layer)
-		Log.engine("Map for layer %d modified.", layer)
+		Log.info("Map for layer %d modified.", layer)
 		self:updateMap(map, layer)
 	end
 	stage.onMapModified:register(self._onMapModified)
@@ -69,6 +69,7 @@ function GameView:new(game)
 	stage.onMapMoved:register(self._onMapMoved)
 
 	self._onActorSpawned = function(_, actorID, actor)
+		Log.info("Spawning actor '%s' (%s).", actorID, actor and actor:getPeepID())
 		self:addActor(actorID, actor)
 	end
 	stage.onActorSpawned:register(self._onActorSpawned)
@@ -79,6 +80,7 @@ function GameView:new(game)
 	stage.onActorKilled:register(self._onActorKilled)
 
 	self._onPropPlaced = function(_, propID, prop)
+		Log.info("Placing prop '%s' (%s).", propID, prop and prop:getPeepID())
 		self:addProp(propID, prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
@@ -89,7 +91,7 @@ function GameView:new(game)
 	stage.onPropRemoved:register(self._onPropRemoved)
 
 	self._onDropItem = function(_, ref, item, tile, position)
-		Log.engine(
+		Log.info(
 			"Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.",
 			item.id, ref, item.count, tile.i, tile.j, tile.layer)
 		self:spawnItem(item, tile, position)
@@ -97,7 +99,7 @@ function GameView:new(game)
 	stage.onDropItem:register(self._onDropItem)
 
 	self._onTakeItem = function(_, ref, item)
-		Log.engine(
+		Log.info(
 			"Item '%s' (ref = %d, count = %d) taken.",
 			item.id, ref, item.count)
 		self:poofItem(item)
@@ -105,56 +107,56 @@ function GameView:new(game)
 	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onDecorate = function(_, group, decoration, layer)
-		Log.engine("Decorating '%s' on layer %d.", group, layer)
+		Log.info("Decorating '%s' on layer %d.", group, layer)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
 	self._onUndecorate = function(_, group, layer)
-		Log.engine("Removing decoration '%s' on layer %d.", group, layer)
+		Log.info("Removing decoration '%s' on layer %d.", group, layer)
 		self:decorate(group, nil, layer)
 	end
 	stage.onUndecorate:register(self._onUndecorate)
 
 	self._onWaterFlood = function(_, key, water, layer)
-		Log.engine("Water (%s) flooding on layer %d.", key, layer)
+		Log.info("Water (%s) flooding on layer %d.", key, layer)
 		self:flood(key, water, layer)
 	end
 	stage.onWaterFlood:register(self._onWaterFlood)
 
 	self._onWaterDrain = function(_, key, water, layer)
-		Log.engine("Water (%s) draining on layer %d.", key, layer)
+		Log.info("Water (%s) draining on layer %d.", key, layer)
 		self:drain(key, water)
 	end
 	stage.onWaterDrain:register(self._onWaterDrain)
 
 	self._onForecast = function(_, layer, key, id, props)
-		Log.engine("Forecast is '%s' for key '%s' on layer %d.", id, key, layer)
+		Log.info("Forecast is '%s' for key '%s' on layer %d.", id, key, layer)
 		self:forecast(layer, key, nil)
 		self:forecast(layer, key, id, props)
 	end
 	stage.onForecast:register(self._onForecast)
 
 	self._onStopForecast = function(_, layer, key)
-		Log.engine("Forecast '%s' on layer %d is over.", key, layer)
+		Log.info("Forecast '%s' on layer %d is over.", key, layer)
 		self:forecast(layer, key, nil)
 	end
 	stage.onStopForecast:register(self._onStopForecast)
 
 	self._onProjectile = function(_, projectileID, source, destination, time)
-		Log.engine("Firing projectile '%s'.", projectileID)
+		Log.info("Firing projectile '%s'.", projectileID)
 		self:fireProjectile(projectileID, source, destination, time)
 	end
 	stage.onProjectile:register(self._onProjectile)
 
 	self._onPlayMusic = function(_, track, song)
-		Log.engine("Playing song '%s' on track '%s'.", song, track)
+		Log.info("Playing song '%s' on track '%s'.", song, track)
 		self:playMusic(track, song)
 	end
 	stage.onPlayMusic:register(self._onPlayMusic)
 
 	self._onStopMusic = function(_, track, song)
-		Log.engine("Stopping track '%s'.", track)
+		Log.info("Stopping track '%s'.", track)
 		self:playMusic(track, false)
 	end
 	stage.onStopMusic:register(self._onStopMusic)
@@ -457,7 +459,13 @@ function GameView:getMap(layer)
 end
 
 function GameView:addActor(actorID, actor)
-	if not actor or self:getActor(actor) then
+	if not actor then
+		Log.warn("Actor of type '%s' is nil; cannot add.", actorID)
+		return
+	end
+
+	if self:hasActor(actor) then
+		Log.warn("Actor of type '%s' (%d) already exists; cannot add.", actorID, actor:getID())
 		return
 	end
 

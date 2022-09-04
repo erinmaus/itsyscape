@@ -208,9 +208,9 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Stage" then
 				local key = self.outgoingKeys[i]
 
-				local isLayerMatch = not hasTarget and key and key.layer and playerInstance:hasLayer(key.layer.value)
-				local isActorMatch = not hasTarget and key and key.actor and playerInstance:hasActor(key.actor.value)
-				local isPropMatch = not hasTarget and key and key.prop and playerInstance:hasProp(key.prop.value)
+				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
+				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value)
+				local isPropMatch = not hasTarget and key and key.prop and key.prop.value and playerInstance:hasProp(key.prop.value)
 
 				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch then
 					self:_doSend(player, e)
@@ -226,8 +226,8 @@ function LocalGameManager:sendToPlayer(player)
 				local key = self.outgoingKeys[i]
 				local interfaceID = key and key.interfaceID and key.interfaceID.value
 				local interfaceIndex = key and key.index and key.index.value
-				local hasPlayer = key and key.player ~= nil
-				local isPlayerMatch = key and key.player and key.player.value:getID() == player:getID()
+				local hasPlayer = key and key.player and key.player.value
+				local isPlayerMatch = key and key.player and key.player.value and key.player.value:getID() == player:getID()
 
 				if not interfaceID or not interfaceIndex then
 					Log.engine("Interface ID and/or interface index keys missing; cannot process send for RPC '%s'.", e.callback)
@@ -271,6 +271,7 @@ function LocalGameManager:send()
 	table.clear(self.outgoing)
 	table.clear(self.outgoingKeys)
 	table.clear(self.pendingDeletion)
+	table.clear(self.outgoingTargets)
 end
 
 function LocalGameManager:processCallback(e)
