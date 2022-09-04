@@ -723,20 +723,32 @@ function LocalStage:movePeep(peep, path, anchor)
 	local filename = self:getFilenameFromPath(path)
 	local arguments = self:getArgumentsFromPath(path)
 
-	Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
-
 	local instance
-	if self:isPathLocal(path) then
-		instance = self:newLocalInstance(filename, arguments)
-		Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
-	elseif self:isPathGlobal(path) then
-		instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
-		Log.info("Path is global; getting global instance %s (%d).", instance:getFilename(), instance:getID())
+	if type(path) == 'string' then
+		Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
+
+		if self:isPathLocal(path) then
+			instance = self:newLocalInstance(filename, arguments)
+			Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
+		elseif self:isPathGlobal(path) then
+			instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
+			Log.info("Path is global; getting global instance %s (%d).", instance:getFilename(), instance:getID())
+		end
+	elseif Class.isCompatibleType(path, Instance) then
+		instance = path
+		Log.info("Moving peep '%s' to existing instance %s (%d).", instance:getFilename(), instance:getID())
 	end
 
 	if not instance then
-		Log.error("Path '%s' is malformed; not global (no prefix and no arguments) or local (prefixed with '@' or has arguments after '?').", path)
-		return false
+		if type(path) == 'string' then
+			Log.error("Path '%s' is malformed; not global (no prefix and no arguments) or local (prefixed with '@' or has arguments after '?').", path)
+		elseif Class.isClass(path) then
+			Log.error("Path is unexpected type '%s'.", instance:getDebugInfo().shortName)
+		else
+			Log.error("Expected string or instance, got '%s'.", type(path))
+		end
+
+		return nil
 	end
 
 	if peep:hasBehavior(PlayerBehavior) then
@@ -780,7 +792,7 @@ function LocalStage:movePeep(peep, path, anchor)
 
 		if not layer then
 			Log.error("No layer in instance '%s' (ID = %d).", instance:getFilename(), instance:getID())
-			return false
+			return nil
 		else
 			Log.engine("Set peep '%s' layer to %d.", peep:getName(), layer)
 			Utility.Peep.setLayer(peep, layer)
@@ -868,6 +880,8 @@ function LocalStage:movePeep(peep, path, anchor)
 			end
 		end
 	end
+
+	return instance
 end
 
 function LocalStage:loadMapResource(instance, filename, args)
