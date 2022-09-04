@@ -32,14 +32,16 @@ function RumbridgeCave:onLoad(filename, args, layer)
 		maxHeight = 25,
 		heaviness = 0.25
 	})
-
-	self:prepareDebugCutscene()
 end
 
-function RumbridgeCave:prepareDebugCutscene()
+function RumbridgeCave:onPlayerEnter(player)
+	self:prepareDebugCutscene(player:getActor():getPeep())
+end
+
+function RumbridgeCave:prepareDebugCutscene(player)
 	local function actionCallback(action)
 		if action == "pressed" then
-			self:pushPoke('playCutscene')
+			self:pushPoke('playCutscene', player)
 		end
 	end
 
@@ -48,22 +50,22 @@ function RumbridgeCave:prepareDebugCutscene()
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player,
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
 end
 
-function RumbridgeCave:onPlayCutscene()
-	Utility.UI.closeAll(Utility.Peep.getPlayer(self))
+function RumbridgeCave:onPlayCutscene(player)
+	Utility.UI.closeAll(player)
 
 	local cutscene = Utility.Map.playCutscene(self, "Rumbridge_Castle_CaveFloor1_Debug", "StandardCutscene")
-	cutscene:listen('done', self.onFinishCutscene, self)
+	cutscene:listen('done', self.onFinishCutscene, self, player)
 end
 
-function RumbridgeCave:onFinishCutscene()
+function RumbridgeCave:onFinishCutscene(player)
 	Utility.UI.openGroup(
-		Utility.Peep.getPlayer(self),
+		player,
 		Utility.UI.Groups.WORLD)
 end
 

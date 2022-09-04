@@ -19,6 +19,8 @@ function Map:new(resource, name, ...)
 	Utility.Peep.setResource(self, resource)
 
 	self:addPoke('load')
+	self:addPoke('playerEnter')
+	self:addPoke('playerLeave')
 
 	self.filename = ""
 	self.arguments = {}
@@ -46,6 +48,14 @@ function Map:onLoad(filename, arguments, layer)
 	self.filename = filename
 	self.arguments = arguments
 	self.layer = layer
+end
+
+function Map:onPlayerEnter(player)
+	-- Nothing.
+end
+
+function Map:onPlayerLeave(player)
+	-- Nothing.
 end
 
 return Map

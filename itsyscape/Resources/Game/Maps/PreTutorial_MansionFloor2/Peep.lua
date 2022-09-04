@@ -26,14 +26,36 @@ end
 function Mansion:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
 	self.zombiButler = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("Hans"))[1]
-	self.zombiButler:poke('followPlayer', player)
-	self.zombiButler:poke('floorChange', 2)
 
 	Utility.Map.spawnMap(self, "PreTutorial_MansionFloor1", Vector(0, -6.1, 0), { isLayer = true })
+end
+
+function Mansion:onPlayerEnter(player)
+	player = player:getActor():getPeep()
+
+	if self.zombiButler:getCurrentTarget() then
+		self.zombiButler:giveHint("Oh dear me, looks like someone else needs help!")
+	end
+
+	self.zombiButler:poke('followPlayer', player)
+	self.zombiButler:poke('floorChange', 2)
+end
+
+function Mansion:onPlayerLeave(player)
+	player = player:getActor():getPeep()
+
+	if self.zombiButler:getCurrentTarget() == player then
+		self.zombiButler:giveHint("Be seeing you later!")
+		self.zombiButler:poke('followPlayer', nil)
+
+		for _, player in Utility.Peep.getInstance(self):iteratePlayers() do
+			self:onPlayerEnter(player)
+			break
+		end
+	end
 end
 
 return Mansion

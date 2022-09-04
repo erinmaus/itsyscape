@@ -36,8 +36,14 @@ function Common.initLever(map, key)
 	if #hits >= 1 then
 		hits[1]:listen('pull', Common.onLeverPull, map, key)
 
-		local player = director:getGameInstance():getPlayer():getActor():getPeep()
-		Common.prepLeverWater(map, key, hits[1], player)
+		local partyLeader = Utility.Peep.getGameInstance(self)
+		partyLeader = partyLeader and partyLeader:getPartyLeader()
+		partyLeader = partyLeader and partyLeader:getActor()
+		partyLeader = partyLeader and partyLeader:getPeep()
+
+		if partyLeader then
+			Common.prepLeverWater(map, key, hits[1], partyLeader)
+		end
 	end
 end
 

@@ -689,7 +689,7 @@ function LocalStage:getArgumentsFromPath(path)
 		filename = path:sub(1, e - 1)
 
 		local pathArguments = path:sub(e, -1)
-		for key, value in pathArguments:gmatch("([%w_]+)=([%w_]+)") do
+		for key, value in pathArguments:gmatch("([%w_@]+)=([%w_@]+)") do
 			Log.info("Map argument '%s' -> '%s'.", key, value)
 			args[key] = value
 		end
