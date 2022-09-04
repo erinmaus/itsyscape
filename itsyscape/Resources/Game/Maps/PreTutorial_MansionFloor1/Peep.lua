@@ -62,7 +62,7 @@ function Mansion:onPlayerEnter(player)
 
 	player = player:getActor():getPeep()
 
-	if player:getState():has("KeyItem", "PreTutorial_TalkedToBuilter1") then
+	if player:getState():has("KeyItem", "PreTutorial_TalkedToButler1") then
 		if self.zombiButler:getCurrentTarget() then
 			self.zombiButler:giveHint("Oh dear me, looks like someone else needs help!")
 		end
@@ -72,6 +72,10 @@ function Mansion:onPlayerEnter(player)
 end
 
 function Mansion:onPlayerLeave(player)
+	if not self.zombiButler then
+		return
+	end
+
 	player = player:getActor():getPeep()
 
 	if self.zombiButler:getCurrentTarget() == player then
