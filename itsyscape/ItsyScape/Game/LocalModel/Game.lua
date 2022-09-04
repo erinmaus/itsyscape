@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Discord = require "ItsyScape.Discord"
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
@@ -15,8 +16,9 @@ local Game = require "ItsyScape.Game.Model.Game"
 local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
 local LocalStage = require "ItsyScape.Game.LocalModel.Stage"
 local LocalUI = require "ItsyScape.Game.LocalModel.UI"
+local Party = require "ItsyScape.Game.LocalModel.Party"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
-local Discord = require "ItsyScape.Discord"
+local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
 
 local LocalGame = Class(Game)
 LocalGame.TICKS_PER_SECOND = 10
@@ -34,6 +36,10 @@ function LocalGame:new(gameDB, playerSlot)
 	self.players = {}
 	self.playersByID = {}
 	self.currentPlayerID = 1
+
+	self.parties = {}
+	self.partiesByID = {}
+	self.currentPartyID = 1
 end
 
 function LocalGame:getGameDB()
@@ -47,6 +53,42 @@ end
 
 function LocalGame:getPlayerByID(id)
 	return self.playersByID[id]
+end
+
+function LocalGame:startParty(player)
+	if not player:getIsReady() then
+		Log.error("Player %d is not ready to start a party.", player:getID())
+		return nil
+	end
+
+	local peep = player:getActor():getPeep()
+	local existingParty = peep:getBehavior(PartyBehavior)
+	if existingParty and existingParty.id then
+		Log.errorOnce(
+			"Player %s (%d) is in existing party %d.",
+			player:getActor():getName(), player:getID(), existingParty.id)
+		return self:getPartyByID(existingParty.id)
+	end
+
+	local party = Party(self.currentPartyID, self, player)
+	self.currentPartyID = self.currentPartyID + 1
+
+	party.onDisbanded:register(function()
+		for i = 1, #self.parties do
+			if self.parties[i] == party then
+				table.remove(self.parties, i)
+				break
+			end
+		end
+
+		self.partiesByID[party:getID()] = nil
+	end)
+
+	return party
+end
+
+function LocalGame:getPartyByID(id)
+	return self.partiesByID[id]
 end
 
 function LocalGame:spawnPlayer(clientID)

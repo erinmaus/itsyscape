@@ -17,6 +17,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.RaidGroup {
+	Raid = ItsyScape.Resource.Raid "HighChambersYendor",
+	Map = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

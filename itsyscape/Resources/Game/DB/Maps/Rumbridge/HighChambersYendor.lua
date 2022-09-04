@@ -9,6 +9,28 @@
 --------------------------------------------------------------------------------
 
 do
+	local Raid = ItsyScape.Resource.Raid "HighChambersYendor"
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "High Chambers Yendor",
+		Resource = ItsyScape.Resource.Raid "HighChambersYendor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Your first raid! A temple dedicated to Yendor, located on Isabelle Island through the Abandoned Mines. Dare you risk madness to find out what lay at the bottom?",
+		Resource = ItsyScape.Resource.Raid "HighChambersYendor"
+	}
+
+	ItsyScape.Meta.RaidDestination {
+		Raid = Raid,
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
+		Anchor = "Anchor_FromAbandonedMine"
+	}
+end
+
+do
 	ItsyScape.Resource.Prop "HighChambersYendor_Entrance" {
 		-- Nothing.
 	}

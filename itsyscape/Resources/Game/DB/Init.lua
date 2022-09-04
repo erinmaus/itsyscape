@@ -147,13 +147,32 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Raid"
+
+	Meta "RaidDestination" {
+		Map = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Raid = Meta.TYPE_RESOURCE
+	}
+
+	Meta "RaidGroup" {
+		Raid = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Travel"
+	ActionType "PartyTravel"
 
 	Meta "TravelDestination" {
 		Map = Meta.TYPE_RESOURCE,
 		Arguments = Meta.TYPE_TEXT,
 		Anchor = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "PartyTravelDestination" {
+		Action = Meta.TYPE_ACTION,
+		Raid = Meta.TYPE_RESOURCE
 	}
 
 	Meta "GatherableProp" {
