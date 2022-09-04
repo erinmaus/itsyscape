@@ -151,7 +151,7 @@ do
 		MapObject = M["HighChambersYendor_Entrance"]
 	}
 
-	local TravelAction = ItsyScape.Action.Travel() {
+	local TravelAction = ItsyScape.Action.PartyTravel() {
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToJenkins",
 			Count = 1
@@ -163,9 +163,8 @@ do
 		}
 	}
 
-	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromAbandonedMine",
-		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
+	ItsyScape.Meta.PartyTravelDestination {
+		Raid = ItsyScape.Resource.Raid "HighChambersYendor",
 		Action = TravelAction
 	}
 

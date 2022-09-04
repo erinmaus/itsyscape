@@ -677,6 +677,18 @@ function Instance:getIsGlobal()
 	return self.id == Instance.GLOBAL_ID
 end
 
+function Instance:getIsLocal()
+	return not self:getIsGlobal()
+end
+
+function Instance:setRaid(raid)
+	self.raid = raid
+end
+
+function Instance:getRaid()
+	return self.raid
+end
+
 function Instance:hasLayer(layer)
 	return self.layersByID[layer] == true
 end
