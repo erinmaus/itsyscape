@@ -536,6 +536,9 @@ function ActorView:flash(message, anchor, ...)
 	end
 
 	local min, max = self.actor:getBounds()
+	min = min or Vector.ZERO
+	max = max or Vector.ZERO
+
 	local size = max - min
 
 	local sprite = spriteManager:add(message, self.sceneNode, size * anchor, ...)
