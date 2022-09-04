@@ -17,8 +17,6 @@ local enet = require "enet"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
-local MAX_DISCONNECT_TIME_IN_SECONDS = 5
-
 local function getClientAddress(e)
 	return tostring(e.peer)
 end
