@@ -17,9 +17,12 @@ local enet = require "enet"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
+local MAX_DISCONNECT_TIME_IN_SECONDS = 5
+
 local host
 local clients = {}
 local isRunning = true
+local isDisconnecting = false
 while isRunning do
 	local e
 
@@ -46,12 +49,7 @@ while isRunning do
 					client:disconnect(client:connect_id())
 				end
 
-				if host then
-					host:flush()
-					Log.engine("Disconnected all clients.")
-				end
-
-				isRunning = false
+				isDisconnecting = true
 			end
 		end
 	until e == nil
@@ -76,6 +74,11 @@ while isRunning do
 					type = "connect",
 					client = e.peer:connect_id()
 				})
+
+				if isDisconnecting then
+					Log.engine("Whoops, server is shutting down. Disconnecting client %d.", e.peer:channel_id())
+					e.peer:disconnect(e.peer:connect_id())
+				end
 			elseif e.type == "disconnect" then
 				if not e.data then
 					Log.warn("Disconnect received but no connect ID provided (peer %d).", e.peer:connect_id())
@@ -87,8 +90,13 @@ while isRunning do
 
 					outputChannel:push({
 						type = "disconnect",
-						client = e.data or e.peer:connect_id()
+						client = e.data
 					})
+				end
+
+				if isDisconnecting and next(clients, nil) == nil then
+					Log.engine("All clients disconnected; shutting down.")
+					isRunning = false
 				end
 			end
 		end
