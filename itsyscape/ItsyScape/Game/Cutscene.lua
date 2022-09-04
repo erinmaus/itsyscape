@@ -35,6 +35,15 @@ function Cutscene:new(resource, player, director, layerName)
 	self:findMaps()
 
 	self:loadCutscene()
+
+	self.isDone = false
+
+	self.player = Utility.Peep.getPlayerModel(player)
+	self._onPlayerMove = function()
+		self.isDone = true
+		self.player.onMove:unregister(self._onPlayerMove)
+	end
+	self.player.onMove:register(self._onPlayerMove)
 end
 
 function Cutscene:addEntity(name, Type, probe)
@@ -174,13 +183,18 @@ function Cutscene:loadCutscene()
 end
 
 function Cutscene:update()
-	if coroutine.status(self.script) ~= "dead" then
+	if not self.isDone and coroutine.status(self.script) ~= "dead" then
 		local s, e = coroutine.resume(self.script)
 		if not s then
 			Log.warn("Error running cutscene '%s': %s", self.resource.name, e)
 		end
 
 		return true
+	end
+
+	if not self.isDone then
+		self.player.onMove:unregister(self._onPlayerMove)
+		self.isDone = true
 	end
 
 	return false

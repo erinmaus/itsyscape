@@ -723,19 +723,21 @@ function LocalStage:movePeep(peep, path, anchor)
 	local filename = self:getFilenameFromPath(path)
 	local arguments = self:getArgumentsFromPath(path)
 
+	Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
+
 	local instance
 	if self:isPathLocal(path) then
 		instance = self:newLocalInstance(filename, arguments)
+		Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
 	elseif self:isPathGlobal(path) then
 		instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
+		Log.info("Path is global; getting global instance %s (%d).", instance:getFilename(), instance:getID())
 	end
 
 	if not instance then
 		Log.error("Path '%s' is malformed; not global (no prefix and no arguments) or local (prefixed with '@' or has arguments after '?').", path)
 		return false
 	end
-
-	Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
 
 	if peep:hasBehavior(PlayerBehavior) then
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)

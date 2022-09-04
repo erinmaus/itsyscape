@@ -659,6 +659,10 @@ function Instance:unload()
 	for layer, map in pairs(self.maps) do
 		self.stage:unloadMap(layer)
 	end
+
+	for _, mapScript in pairs(self.mapScripts) do
+		Utility.Peep.poof(mapScript:getPeep())
+	end
 end
 
 function Instance:getID()
