@@ -948,7 +948,9 @@ function Instance:unloadPlayer(localGameManager, player)
 		local otherPlayer = self.players[i]
 
 		if otherPlayer:getID() ~= player:getID() then
-			Log.engine("Hiding self from other player '%s' (%d).", otherPlayer:getActor():getName(), otherPlayer:getID())
+			Log.engine(
+				"Hiding self from other player '%s' (%d).",
+				(otherPlayer:getActor() and otherPlayer:getActor():getName()) or "Player", otherPlayer:getID())
 
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
@@ -1100,7 +1102,9 @@ function Instance:loadPlayer(localGameManager, player)
 		local otherPlayer = self.players[i]
 
 		if otherPlayer:getID() ~= player:getID() then
-			Log.engine("Presenting self to other player '%s' (%d).", otherPlayer:getActor():getName(), otherPlayer:getID())
+			Log.engine(
+				"Presenting self to other player '%s' (%d).",
+				(otherPlayer:getActor() and otherPlayer:getActor():getName()), otherPlayer:getID())
 
 			localGameManager:pushCreate(
 				"ItsyScape.Game.Model.Actor",
