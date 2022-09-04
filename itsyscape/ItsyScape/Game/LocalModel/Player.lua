@@ -241,8 +241,15 @@ function LocalPlayer:poke(id, obj, scope)
 
 	-- TODO LAYER CHECK
 	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
-		obj:poke(id, scope, self.actor:getPeep())
-	elseif Class.isType(obj) then
+		local layer = Utility.Peep.getLayer(obj:getPeep())
+		if not self.instance:hasLayer(layer) then
+			Log.warn(
+				"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
+				self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
+		else
+			obj:poke(id, scope, self.actor:getPeep())
+		end
+	elseif Class.isClass(obj) then
 		Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
 	end
 end
