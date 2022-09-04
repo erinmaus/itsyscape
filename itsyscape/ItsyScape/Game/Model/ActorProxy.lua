@@ -40,6 +40,7 @@ ActorProxy.unsetSkin:link(
 	Event.Argument("skin"))
 
 ActorProxy.getID = Property()
+ActorProxy.getPeepID = Property()
 ActorProxy.getName = Property()
 ActorProxy.getDescription = Property()
 ActorProxy.getDirection = Property()

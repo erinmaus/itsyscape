@@ -82,7 +82,7 @@ function LocalUI:getInterfacesForPeep(peep, interfaceID)
 		return function()
 			currentIndex, current = next(interfaces.v, currentIndex)
 			while currentIndex and interfaces.v[currentIndex]:getPeep() ~= peep do
-				currentIndex, current = next(interfaces, currentIndex)
+				currentIndex, current = next(interfaces.v, currentIndex)
 			end
 
 			return currentIndex, current

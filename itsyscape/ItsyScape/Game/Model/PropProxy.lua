@@ -14,6 +14,7 @@ local Property = require "ItsyScape.Game.RPC.Property"
 local PropProxy = Proxy.Definition()
 
 PropProxy.getID = Property()
+PropProxy.getPeepID = Property()
 PropProxy.getName = Property()
 PropProxy.getDescription = Property()
 PropProxy.getResourceName = Property()

@@ -944,6 +944,26 @@ function Instance:unloadPlayer(localGameManager, player)
 			item:getItem().id, item:getRef(), item:getItem().count, item:getTile().i, item:getTile().j, item:getLayer())
 	end
 
+	for i = 1, #self.players do
+		local otherPlayer = self.players[i]
+
+		if otherPlayer:getID() ~= player:getID() then
+			Log.engine("Hiding self from other player '%s' (%d).", otherPlayer:getActor():getName(), otherPlayer:getID())
+
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onActorKilled",
+				localGameManager:getArgs(player:getActor()))
+			localGameManager:assignTargetToLastPush(otherPlayer)
+
+			localGameManager:pushDestroy(
+				"ItsyScape.Game.Model.Actor",
+				player:getActor():getID())
+			localGameManager:assignTargetToLastPush(otherPlayer)
+		end
+	end
+
 	Log.engine(
 		"Successfully unloaded instance %s (%d) for player '%s'.",
 		self:getFilename(),
@@ -1075,6 +1095,34 @@ function Instance:loadPlayer(localGameManager, player)
 			"Restored item '%s' (ref = %d, count = %d) at (%d, %d) for layer %d.",
 			item:getItem().id, item:getRef(), item:getItem().count, item:getTile().i, item:getTile().j, item:getLayer())
 	end
+
+	for i = 1, #self.players do
+		local otherPlayer = self.players[i]
+
+		if otherPlayer:getID() ~= player:getID() then
+			Log.engine("Presenting self to other player '%s' (%d).", otherPlayer:getActor():getName(), otherPlayer:getID())
+
+			localGameManager:pushCreate(
+				"ItsyScape.Game.Model.Actor",
+				player:getActor():getID())
+			localGameManager:assignTargetToLastPush(otherPlayer)
+
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onActorSpawned",
+				localGameManager:getArgs(player:getActor():getPeepID(), player:getActor()))
+			localGameManager:assignTargetToLastPush(otherPlayer)
+
+			self:loadActor(localGameManager, otherPlayer, player:getActor())
+		end
+	end
+
+	Log.engine(
+		"Successfully unloaded instance %s (%d) for player '%s'.",
+		self:getFilename(),
+		self:getID(),
+		(player:getActor() and player:getActor():getName()) or tostring(player:getID()))
 end
 
 function Instance:loadActor(localGameManager, player, actor)
