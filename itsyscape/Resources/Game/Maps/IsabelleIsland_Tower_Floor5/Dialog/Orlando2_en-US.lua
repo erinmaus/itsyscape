@@ -20,4 +20,4 @@ message {
 }
 
 local map = Utility.Peep.getMapScript(_TARGET)
-map:poke('movePlayer')
+map:poke('movePlayer', _TARGET)

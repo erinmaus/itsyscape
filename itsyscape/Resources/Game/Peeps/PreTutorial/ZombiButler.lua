@@ -120,11 +120,17 @@ function ZombiButler:isIn(peep, areaName)
 	return false
 end
 
+function ZombiButler:getCurrentTarget()
+	return self.target
+end
+
 function ZombiButler:onFollowPlayer(player)
 	self.target = player
-	self.targetLastI, self.targetLastJ = Utility.Peep.getTile(player)
-	self.targetLastI = self.targetLastI - 1
-	self.lastI, self.lastJ = Utility.Peep.getTile(self)
+	if player then
+		self.targetLastI, self.targetLastJ = Utility.Peep.getTile(player)
+		self.targetLastI = self.targetLastI - 1
+		self.lastI, self.lastJ = Utility.Peep.getTile(self)
+	end
 end
 
 function ZombiButler:giveHint(hint)

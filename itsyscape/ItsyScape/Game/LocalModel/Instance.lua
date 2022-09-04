@@ -758,6 +758,10 @@ function Instance:getMapScriptByMapFilename(filename)
 	return nil
 end
 
+function Instance:iteratePlayers()
+	return ipairs(self.players)
+end
+
 function Instance:hasPlayers()
 	return #self.players > 0
 end
@@ -829,10 +833,24 @@ function Instance:_addPlayerToInstance(player, e)
 	if e and e.isOrphan then
 		self.orphans[player:getActor():getID()] = true
 	end
+
+	for i = 1, #self.layers do
+		local mapScript = self:getMapScriptByLayer(self.layers[i])
+		if mapScript then
+			mapScript:poke('playerEnter', player)
+		end
+	end
 end
 
 function Instance:_removePlayerFromInstance(player)
 	self.orphans[player] = nil
+
+	for i = 1, #self.layers do
+		local mapScript = self:getMapScriptByLayer(self.layers[i])
+		if mapScript then
+			mapScript:poke('playerLeave', player)
+		end
+	end
 end
 
 function Instance:unloadPlayer(localGameManager, player)

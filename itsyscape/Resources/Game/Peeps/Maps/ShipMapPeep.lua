@@ -318,10 +318,22 @@ function ShipMapPeep:update(director, game)
 			local previousMapAnchor = self.previousMapAnchor
 
 			if not self.isSunk and previousMap and previousMapAnchor then
-				game:getStage():movePeep(
-					Utility.Peep.getPlayer(self),
-					previousMap,
-					previousMapAnchor)
+				local instance = Utility.Peep.getInstance(self)
+				if instance:getPartyLeader() then
+					game:getStage():movePeep(
+						instance:getPartyLeader():getActor():getPeep(),
+						previousMap,
+						previousMapAnchor)
+				end
+
+				for _, player in instance:iteratePlayers() do
+					if player ~= instance:getPartyLeader() then
+						game:getStage():movePeep(
+							player:getActor():getPeep(),
+							previousMap,
+							previousMapAnchor)
+					end
+				end
 			end
 
 			if not self.isSunk then

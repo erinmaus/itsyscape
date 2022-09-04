@@ -857,13 +857,28 @@ function Utility.UI.broadcast(ui, peep, interfaceID, ...)
 end
 
 function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
+	local Instance = require "ItsyScape.Game.LocalModel.Instance"
+
 	local ui = peep:getDirector():getGameInstance():getUI()
-	if blocking then
-		local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
-		return n ~= nil, n, controller
+	if Class.isCompatibleType(peep, Instance) then
+		local results = {}
+		for _, player in peep:iteratePlayers() do
+			local playerPeep = player:getActor() and player:getActor():getPeep()
+			if playerPeep then
+				table.insert(results, {
+					Utility.UI.openInterface(playerPeep, interfaceID, blocking, ...)
+				})
+			end
+		end
+		return results
 	else
-		local _, n, controller= ui:open(peep, interfaceID, ...)
-		return n ~= nil, n, controller
+		if blocking then
+			local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
+			return n ~= nil, n, controller
+		else
+			local _, n, controller= ui:open(peep, interfaceID, ...)
+			return n ~= nil, n, controller
+		end
 	end
 end
 
@@ -1306,6 +1321,13 @@ end
 Utility.Peep = {}
 
 function Utility.Peep.getPlayerModel(peep)
+	local game = peep:getDirector():getGameInstance()
+
+	local follower = peep:getBehavior(FollowerBehavior)
+	if follower and follower.playerID ~= FollowerBehavior.NIL_ID then
+		return game:getPlayerByID(follower.playerID)
+	end
+
 	local stage = peep:getDirector():getGameInstance():getStage()
 	local instance = stage:getPeepInstance(peep)
 	local leader = instance:getPartyLeader()
@@ -2310,6 +2332,10 @@ function Utility.Peep.getTier(peep)
 	end
 
 	return 0
+end
+
+function Utility.Peep.getInstance(peep)
+	return peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
 end
 
 function Utility.Peep.getMap(peep)

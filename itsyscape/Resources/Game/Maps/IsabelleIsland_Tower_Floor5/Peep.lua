@@ -28,11 +28,13 @@ function Tower:onLoad(filename, args, layer)
 
 	local offset = self:getBehavior(MapOffsetBehavior)
 	offset.offset = Vector(0, 14.4, 0)
-
-	self:initCutscene()
 end
 
-function Tower:initCutscene()
+function Tower:onPlayEnter(player)
+	self:initCutscene(player:getActor():getPeep())
+end
+
+function Tower:initCutscene(player)
 	local player = Utility.Peep.getPlayer(self)
 	local metOrlando = player:getState():has("KeyItem", "CalmBeforeTheStorm_MetOrlando")
 	if not metOrlando then
@@ -41,8 +43,7 @@ function Tower:initCutscene()
 	end
 end
 
-function Tower:onMovePlayer()
-	local player = Utility.Peep.getPlayer(self)
+function Tower:onMovePlayer(player)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:movePeep(player, "IsabelleIsland_Tower", "Anchor_StartGame")
 end

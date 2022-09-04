@@ -218,9 +218,15 @@ function LocalGameManager:sendToPlayer(player)
 			elseif e.interface == "ItsyScape.Game.Model.Actor" or
 			       e.interface == "ItsyScape.Game.Model.Prop"
 			then
-				local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-				if (not hasTarget and playerInstance:hasLayer(layer)) or isTargetMatch then
-					self:_doSend(player, e)
+				if instance then
+					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
+					if (not hasTarget and playerInstance:hasLayer(layer)) or isTargetMatch then
+						self:_doSend(player, e)
+					end
+				else
+					Log.engine(
+						"Instance '%s' (%d) does not exist; cannot send RPC '%s'.",
+						e.interface, e.id, e.callback)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.UI" then
 				local key = self.outgoingKeys[i]

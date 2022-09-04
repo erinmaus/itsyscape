@@ -42,20 +42,22 @@ function Ruins:onLoad(filename, args, layer)
 		maxHeight = 20,
 		heaviness = 0.25
 	})
-
-	self:initTroll()
-	self:hurtPlayer()
 end
 
-function Ruins:initTroll()
+function Ruins:onPlayerEnter(player)
+	local peep = player:getActor():getPeep()
+	self:initTroll(peep)
+	self:hurtPlayer(peep)
+end
+
+function Ruins:initTroll(player)
 	local yendor = self:getDirector():probe(self:getLayerName(), Probe.namedMapObject("Yendor"))[1]
-	local player = Utility.Peep.getPlayer(self)
 
 	if yendor then
 		local encounteredYendor = player:getState():has("KeyItem", "Sailing_YendorTroll")
 		if not encounteredYendor then
 			Utility.UI.openInterface(player, "BossHUD", false, yendor)
-			self:pushPoke('damageYendor', yendor, love.timer.getTime() + Ruins.INITIAL_DRAMATIC_WAIT)
+			self:pushPoke('damageYendor', player, yendor, love.timer.getTime() + Ruins.INITIAL_DRAMATIC_WAIT)
 			self:playMusic("V2_VsPirates")
 		else
 			local status = yendor:getBehavior(CombatStatusBehavior)
@@ -67,8 +69,7 @@ function Ruins:initTroll()
 	end
 end
 
-function Ruins:hurtPlayer()
-	local player = Utility.Peep.getPlayer(self)
+function Ruins:hurtPlayer(player)
 	local status = player:getBehavior(CombatStatusBehavior)
 	player:poke('receiveAttack', AttackPoke({
 		damage = math.min(math.floor(status.currentHitpoints / 2), Ruins.MAX_DAMAGE)
@@ -77,10 +78,10 @@ end
 
 function Ruins:playMusic(name)
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:playMusic(self:getLayerName(), "main", name)
+	stage:playMusic(self:getLayer(), "main", name)
 end
 
-function Ruins:onDamageYendor(yendor, target)
+function Ruins:onDamageYendor(player, yendor, target)
 	if love.timer.getTime() > target then
 		local damage = math.random(Ruins.MIN_DAMAGE, Ruins.MAX_DAMAGE)
 		local attack = AttackPoke({
@@ -91,7 +92,6 @@ function Ruins:onDamageYendor(yendor, target)
 
 		local status = yendor:getBehavior(CombatStatusBehavior)
 		if status.currentHitpoints <= 0 or status.dead then
-			local player = Utility.Peep.getPlayer(self)
 			player:getState():give("KeyItem", "Sailing_YendorTroll")
 
 			self:playMusic("V2_RuinsOfRhysilk_UndergroundTemple")

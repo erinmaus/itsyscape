@@ -54,19 +54,21 @@ end
 
 function Ruins:zap()
 	self.wait = math.random() * (self.MAX_LIGHTNING_PERIOD - self.MIN_LIGHTNING_PERIOD) + self.MIN_LIGHTNING_PERIOD
-	Log.info("CRACKLE-BOOM-ZAP!")
 end
 
 function Ruins:boom()
-	local actor = self:getDirector():getGameInstance():getPlayer():getActor()
-	if actor then
-		local animation = CacheRef(
-			"ItsyScape.Graphics.AnimationResource",
-			"Resources/Game/Animations/SFX_LightningStrike/Script.lua")
-		actor:playAnimation(
-			'x-haunted-mansion-lightning',
-			math.huge,
-			animation)
+	local instance = Utility.Peep.getInstance(self)
+	for _, player in instance:iteratePlayers() do
+		local actor = player:getActor()
+		if actor then
+			local animation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				"Resources/Game/Animations/SFX_LightningStrike/Script.lua")
+			actor:playAnimation(
+				'x-ruins-of-rhysilk-lightning',
+				math.huge,
+				animation)
+		end
 	end
 end
 

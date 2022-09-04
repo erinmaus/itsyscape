@@ -93,7 +93,7 @@ function LocalPlayer:spawn(storage, newGame)
 					"jenkins_state=1," ..
 					"i=16," ..
 					"j=16," ..
-					"shore=IsabelleIsland_FarOcean_Cutscene," ..
+					"shore=@IsabelleIsland_FarOcean_Cutscene," ..
 					"shoreAnchor=Anchor_Spawn",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
