@@ -77,13 +77,19 @@ while isRunning do
 					client = e.peer:connect_id()
 				})
 			elseif e.type == "disconnect" then
-				clients[e.data or e.peer:connect_id()] = nil
-				Log.engine("Client (%d) disconnected.", e.data or e.peer:connect_id())
+				if not e.data then
+					Log.warn("Disconnect received but no connect ID provided (peer %d).", e.peer:connect_id())
+				elseif not clients[e.data] then
+					Log.warn("Disconnect received but no client with ID %d.", e.data)
+				else
+					clients[e.data] = nil
+					Log.engine("Client (%d) disconnected.", e.data)
 
-				outputChannel:push({
-					type = "disconnect",
-					client = e.data or e.peer:connect_id()
-				})
+					outputChannel:push({
+						type = "disconnect",
+						client = e.data or e.peer:connect_id()
+					})
+				end
 			end
 		end
 	until e == nil
