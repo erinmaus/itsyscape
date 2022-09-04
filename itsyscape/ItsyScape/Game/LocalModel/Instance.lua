@@ -841,7 +841,16 @@ function Instance:_addPlayerToInstance(player, e)
 	for i = 1, #self.layers do
 		local mapScript = self:getMapScriptByLayer(self.layers[i])
 		if mapScript then
-			mapScript:poke('playerEnter', player)
+			local function onPlayerEnter()
+				mapScript:pushPoke('playerEnter', player)
+				mapScript:silence('finalize', onPlayerEnter)
+			end
+
+			if mapScript:getDirector() then
+				onPlayerEnter()
+			else
+				mapScript:listen('finalize', onPlayerEnter)
+			end
 		end
 	end
 end
@@ -852,7 +861,16 @@ function Instance:_removePlayerFromInstance(player)
 	for i = 1, #self.layers do
 		local mapScript = self:getMapScriptByLayer(self.layers[i])
 		if mapScript then
-			mapScript:poke('playerLeave', player)
+			local function onPlayerLeave()
+				mapScript:pushPoke('playerLeave', player)
+				mapScript:silence('finalize', onPlayerEnter)
+			end
+
+			if mapScript:getDirector() then
+				onPlayerLeave()
+			else
+				mapScript:listen('finalize', onPlayerEnter)
+			end
 		end
 	end
 end
