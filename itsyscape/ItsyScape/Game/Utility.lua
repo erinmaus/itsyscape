@@ -1107,7 +1107,7 @@ end
 
 Utility.Map = {}
 
-function Utility.Map.playCutscene(peep, resource, cameraName)
+function Utility.Map.playCutscene(peep, resource, cameraName, player)
 	local director = peep:getDirector()
 
 	if type(resource) == 'string' then
@@ -1118,7 +1118,8 @@ function Utility.Map.playCutscene(peep, resource, cameraName)
 		peep:getLayerName(),
 		require "ItsyScape.Peep.Peeps.Cutscene",
 		resource,
-		cameraName)
+		cameraName,
+		player)
 end
 
 function Utility.Map.getTilePosition(director, i, j, layer)
@@ -1326,6 +1327,11 @@ function Utility.Peep.getPlayerModel(peep)
 	local follower = peep:getBehavior(FollowerBehavior)
 	if follower and follower.playerID ~= FollowerBehavior.NIL_ID then
 		return game:getPlayerByID(follower.playerID)
+	end
+
+	local player = peep:getBehavior(PlayerBehavior)
+	if player then
+		return game:getPlayerByID(player.id)
 	end
 
 	local stage = peep:getDirector():getGameInstance():getStage()
