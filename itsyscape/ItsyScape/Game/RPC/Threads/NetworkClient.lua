@@ -19,8 +19,14 @@ Log.info("Network client with scope '%s' started.", logSuffix)
 
 local MAX_DISCONNECT_TIME_IN_SECONDS = 5
 
+local function getClientAddress(e)
+	return tostring(e.peer)
+end
+
 local host
 local clients = {}
+local clientsByID = {}
+local clientIDs = {}
 local isRunning = true
 local isDisconnecting = false
 while isRunning do
@@ -30,9 +36,11 @@ while isRunning do
 		e = inputChannel:pop()
 		if e then
 			if e.type == "send" then
-				local client = clients[e.client]
+				local client = clientsByID[e.client]
 				if client then
 					client:send(love.data.compress('string', 'lz4', e.data, -1))
+				else
+					Log.warnOnce("Client %d does not exist; cannot send.", e.client)
 				end
 			elseif e.type == "listen" then
 				Log.engine("Listening @ '%s'.", e.address)
@@ -44,12 +52,18 @@ while isRunning do
 			elseif e.type == "quit" then
 				Log.engine("Received quit event; terminating...")
 
-				for _, client in pairs(clients) do
-					Log.engine("Disconnecting client %d...", client:connect_id())
-					client:disconnect(client:connect_id())
-				end
+				if next(clients, nil) == nil then
+					Log.engine("No clients; terminating immediately.")
+					isRunning = false
+				else
+					for _, client in pairs(clients) do
+						Log.engine("Disconnecting client %d...", client:connect_id())
+						client:disconnect()
+					end
 
-				isDisconnecting = true
+					Log.engine("Waiting on acknowledgement from clients...")
+					isDisconnecting = true
+				end
 			end
 		end
 	until e == nil
@@ -67,36 +81,53 @@ while isRunning do
 					data = love.data.decompress('string', 'lz4', e.data)
 				})
 			elseif e.type == "connect" then
-				clients[e.peer:connect_id()] = e.peer
-				Log.engine("Client (%d) connected.", e.peer:connect_id())
+				local address = getClientAddress(e)
+				local clientID = e.peer:connect_id()
 
-				outputChannel:push({
-					type = "connect",
-					client = e.peer:connect_id()
-				})
+				if clients[address] or clientIDs[address] then
+					Log.warn(
+						"Client (%d, address = %s) already connected as (%d, address = %s); not connecting again and disconnecting new peer.",
+						clientID, address, clientIDs[address] or -1, tostring(clients[address]))
+					e.peer:disconnect()
+				else
+					clients[address] = e.peer
+					clientsByID[clientID] = e.peer
+					clientIDs[address] = clientID
 
-				if isDisconnecting then
-					Log.engine("Whoops, server is shutting down. Disconnecting client %d.", e.peer:channel_id())
-					e.peer:disconnect(e.peer:connect_id())
+					Log.engine("Client (%d, address = %s) connected.", e.peer:connect_id(), address)
+
+					outputChannel:push({
+						type = "connect",
+						client = e.peer:connect_id()
+					})
+
+					if isDisconnecting then
+						Log.engine("Whoops, server is shutting down. Disconnecting client %d (address = %s).", e.peer:channel_id(), address)
+						e.peer:disconnect()
+					end
 				end
 			elseif e.type == "disconnect" then
-				if not e.data then
-					Log.warn("Disconnect received but no connect ID provided (peer %d).", e.peer:connect_id())
-				elseif not clients[e.data] then
-					Log.warn("Disconnect received but no client with ID %d.", e.data)
+				local address = getClientAddress(e)
+				local clientID = clientIDs[address]
+
+				if not clientID then
+					Log.warn("Client (address = %s) is not connected; cannot disconnect.", address)
 				else
-					clients[e.data] = nil
-					Log.engine("Client (%d) disconnected.", e.data)
+					Log.engine("Client (%d, address = %s) disconnected.", clientID, address)
 
 					outputChannel:push({
 						type = "disconnect",
-						client = e.data
+						client = clientID
 					})
-				end
 
-				if isDisconnecting and next(clients, nil) == nil then
-					Log.engine("All clients disconnected; shutting down.")
-					isRunning = false
+					clients[address] = nil
+					clientIDs[address] = nil
+					clientsByID[clientID] = nil
+
+					if isDisconnecting and next(clients, nil) == nil then
+						Log.engine("All clients disconnected; shutting down.")
+						isRunning = false
+					end
 				end
 			end
 		end
