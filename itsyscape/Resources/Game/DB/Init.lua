@@ -172,7 +172,8 @@ Game "ItsyScape"
 
 	Meta "PartyTravelDestination" {
 		Action = Meta.TYPE_ACTION,
-		Raid = Meta.TYPE_RESOURCE
+		Raid = Meta.TYPE_RESOURCE,
+		AnchorOverride = Meta.TYPE_TEXT
 	}
 
 	Meta "GatherableProp" {

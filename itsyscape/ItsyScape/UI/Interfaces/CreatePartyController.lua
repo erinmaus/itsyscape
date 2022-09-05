@@ -15,10 +15,11 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local CreatePartyController = Class(Controller)
 
-function CreatePartyController:new(peep, director, party)
+function CreatePartyController:new(peep, director, party, anchor)
 	Controller.new(self, peep, director)
 
 	self.party = party
+	self.anchor = anchor
 end
 
 function CreatePartyController:poke(actionID, actionIndex, e)
@@ -75,7 +76,7 @@ function CreatePartyController:start()
 		self.party:lock()
 	end
 
-	self.party:start()
+	self.party:start(self.anchor)
 	self:doClose()
 end
 
