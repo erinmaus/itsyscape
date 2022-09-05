@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Utility = require "ItsyScape.Game.Utility"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local ActorProxy = require "ItsyScape.Game.Model.ActorProxy"
@@ -195,6 +196,8 @@ function Instance:new(id, filename, stage)
 	self.id = id
 	self.filename = filename
 	self.stage = stage
+
+	self.storage = PlayerStorage()
 
 	self.layers = {}
 	self.layersByID = {}
@@ -681,8 +684,16 @@ function Instance:getIsLocal()
 	return not self:getIsGlobal()
 end
 
+function Instance:getPlayerStorage()
+	return self.storage
+end
+
 function Instance:setRaid(raid)
-	self.raid = raid
+	self.raid = raid or nil
+end
+
+function Instance:hasRaid()
+	return self.raid ~= nil
 end
 
 function Instance:getRaid()

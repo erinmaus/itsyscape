@@ -1676,7 +1676,7 @@ function Utility.Peep.getStorage(peep)
 			if singleton and singleton:get("Singleton") ~= 0 then
 				local name = singleton:get("SingletonID")
 				if name and name ~= "" then
-					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local worldStorage = director:getPlayerStorage(peep):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection("Singleton")
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 
@@ -1714,7 +1714,7 @@ function Utility.Peep.getStorage(peep)
 				local name = location:get("Name")
 				local map = location:get("Map")
 				if name and name ~= "" and map then
-					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local worldStorage = director:getPlayerStorage(peep):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection(map.name)
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 

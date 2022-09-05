@@ -82,6 +82,8 @@ function LocalGame:startParty(player)
 		end
 
 		self.partiesByID[party:getID()] = nil
+
+		self.stage:disbandParty(party)
 	end)
 
 	table.insert(self.parties, party)
@@ -92,6 +94,10 @@ end
 
 function LocalGame:getPartyByID(id)
 	return self.partiesByID[id]
+end
+
+function LocalGame:iterateParties()
+	return ipairs(self.parties)
 end
 
 function LocalGame:getPartiesForRaid(raid)
