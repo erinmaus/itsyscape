@@ -881,7 +881,15 @@ function LocalStage:movePeep(peep, path, anchor)
 			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
 			player:setInstance(oldLayerName, newLayerName, instance)
 
-			if previousInstance and not previousInstance:hasPlayers() and not previousInstance:getIsGlobal() then
+			local hasInstance = previousInstance ~= nil
+			local hasNoPlayers = hasInstance and not previousInstance:hasPlayers()
+			local isLocal = hasInstance and previousInstance:getIsLocal()
+			local noRaid = hasInstance and not previousInstance:hasRaid()
+
+			if hasInstance and hasNoPlayers and isLocal and noRaid then
+				Log.info(
+					"Previous instance %s (%d) is empty; marking for removal.",
+					previousInstance:getFilename(), previousInstance:getID())
 				table.insert(self.instancesPendingUnload, previousInstance)
 			end
 		end
@@ -1333,12 +1341,7 @@ function LocalStage:quit()
 	end
 end
 
-function LocalStage:tick()
-	for i = 1, #self.instancesPendingUnload do
-		self:unloadLocalInstance(self.instancesPendingUnload[i])
-	end
-	table.clear(self.instancesPendingUnload)
-
+function LocalStage:updateMapPositions()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
 		instance:tick()
@@ -1388,6 +1391,40 @@ function LocalStage:tick()
 			end
 		end
 	end
+end
+
+function LocalStage:disbandParty(party)
+	Log.info("Unloading all orphaned instances for party %d...", party:getID())
+
+	if party:isInRaid() then
+		for _, instance in party:getRaid():iterateInstances() do
+			if instance:hasPlayers() then
+				Log.engine(
+					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; however, player(s) in instance, so not marking for removal.",
+					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
+			else
+				Log.engine(
+					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; marking for removal.",
+					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
+
+				table.insert(self.instancesPendingUnload, instance)
+			end
+		end
+	end
+
+	Log.info("Unloaded all orphaned instances for party %d.", party:getID())
+end
+
+function LocalStage:unloadInstancesPendingRemoval()
+	for i = 1, #self.instancesPendingUnload do
+		self:unloadLocalInstance(self.instancesPendingUnload[i])
+	end
+	table.clear(self.instancesPendingUnload)
+end
+
+function LocalStage:tick()
+	self:unloadInstancesPendingRemoval()
+	self:updateMapPositions()
 end
 
 function LocalStage:update(delta)

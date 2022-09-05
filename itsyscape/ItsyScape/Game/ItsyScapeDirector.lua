@@ -73,12 +73,9 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 			return storage
 		end
 	else
-		local player = self.game:getPlayer()
-		player = player and player:getActor()
-		player = player and player:getPeep()
-
-		if player then
-			return self:getPlayerStorage(player)
+		local instance = Utility.Peep.getInstance(peep)
+		if instance then
+			return instance:getPlayerStorage()
 		end
 	end
 
