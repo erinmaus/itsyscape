@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -33,11 +34,29 @@ function DebugTeleportController:teleport(e)
 	assert(type(e.map) == "string", "map must be string")
 	assert(type(e.anchor) == "string", "anchor must be string")
 
+	local peep = self:getPeep()
+	local instance = Utility.Peep.getInstance(peep)
+	local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+	if mapScript:getFilename() == e.map then
+		local anchorPosition = Vector(Utility.Map.getAnchorPosition(
+			self:getGame(),
+			Utility.Peep.getResource(mapScript),
+			e.anchor))
+		Utility.Peep.setPosition(peep, anchorPosition)
+	else
+		self:getGame():getStage():movePeep(
+			peep,
+			e.map,
+			e.anchor)
+	end
+end
 
-	self:getGame():getStage():movePeep(
-		self:getPeep(),
-		e.map,
-		e.anchor)
+function DebugTeleportController:pull()
+	local state = {
+		currentMap = Utility.Peep.getMapScript(self:getPeep()):getFilename()
+	}
+
+	return state
 end
 
 return DebugTeleportController

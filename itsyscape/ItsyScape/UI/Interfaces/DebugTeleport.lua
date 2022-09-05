@@ -26,6 +26,8 @@ DebugTeleport.PADDING = 8
 function DebugTeleport:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
+	self.anchors = {}
+
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(DebugTeleport.WIDTH, DebugTeleport.HEIGHT)
 	self:setPosition(
@@ -47,6 +49,23 @@ function DebugTeleport:new(id, index, ui)
 		textAlign = 'left'
 	}, self:getView():getResources())
 
+	self.anchorsPanel = ScrollablePanel(GridLayout)
+	self.anchorsPanel:getInnerPanel():setUniformSize(
+		true,
+		DebugTeleport.WIDTH - DebugTeleport.PADDING * 2,
+		24)
+	self.anchorsPanel:getInnerPanel():setPadding(
+		DebugTeleport.PADDING / 2,
+		DebugTeleport.PADDING / 2)
+	self.anchorsPanel:getInnerPanel():setWrapContents(true)
+	self.anchorsPanel:setSize(
+		DebugTeleport.WIDTH,
+		DebugTeleport.HEIGHT / 2 - DebugTeleport.PADDING * 4)
+	self.anchorsPanel:setPosition(
+		DebugTeleport.PADDING,
+		DebugTeleport.HEIGHT / 2 + DebugTeleport.PADDING * 2)
+	self:addChild(self.anchorsPanel)
+
 	self.locationsPanel = ScrollablePanel(GridLayout)
 	self.locationsPanel:getInnerPanel():setUniformSize(
 		true,
@@ -65,6 +84,7 @@ function DebugTeleport:new(id, index, ui)
 	self:addChild(self.locationsPanel)
 
 	do
+		local state = self:getState()
 		local gameDB = ui:getGame():getGameDB()
 
 		local maps = {}
@@ -81,29 +101,15 @@ function DebugTeleport:new(id, index, ui)
 			button:setStyle(self.buttonStyle)
 			button.onClick:register(self.populateAnchors, self, map)
 
+			if map.name == state.currentMap then
+				self:populateAnchors(map)
+			end
+
 			self.locationsPanel:addChild(button)
 		end
 		
 		self.locationsPanel:setScrollSize(self.locationsPanel:getInnerPanel():getSize())
 	end
-
-	self.anchorsPanel = ScrollablePanel(GridLayout)
-	self.anchorsPanel:getInnerPanel():setUniformSize(
-		true,
-		DebugTeleport.WIDTH - DebugTeleport.PADDING * 2,
-		24)
-	self.anchorsPanel:getInnerPanel():setPadding(
-		DebugTeleport.PADDING / 2,
-		DebugTeleport.PADDING / 2)
-	self.anchorsPanel:getInnerPanel():setWrapContents(true)
-	self.anchorsPanel:setSize(
-		DebugTeleport.WIDTH,
-		DebugTeleport.HEIGHT / 2 - DebugTeleport.PADDING * 4)
-	self.anchorsPanel:setPosition(
-		DebugTeleport.PADDING,
-		DebugTeleport.HEIGHT / 2 + DebugTeleport.PADDING * 2)
-	self:addChild(self.anchorsPanel)
-	self.anchors = {}
 
 	self.closeButton = Button()
 	self.closeButton:setSize(48, 48)
@@ -131,16 +137,21 @@ function DebugTeleport:populateAnchors(map)
 	self.anchors = {}
 
 	for i = 1, #anchors do
-		local button = Button()
-		button:setText(anchors[i]:get("Name"))
-		button:setStyle(self.buttonStyle)
-		button.onClick:register(self.teleport, self, map.name, anchors[i]:get("Name"))
+		local noProp = not gameDB:getRecord("PropMapObject", { MapObject = anchors[i]:get("Resource") })
 
-		self.anchorsPanel:addChild(button)
+		if noProp then
+			local button = Button()
+			button:setText(anchors[i]:get("Name"))
+			button:setStyle(self.buttonStyle)
+			button.onClick:register(self.teleport, self, map.name, anchors[i]:get("Name"))
 
-		table.insert(self.anchors, button)
+			self.anchorsPanel:addChild(button)
+
+			table.insert(self.anchors, button)
+		end
 	end
 	self.anchorsPanel:setScrollSize(self.anchorsPanel:getInnerPanel():getSize())
+	self.anchorsPanel:setScroll(0, 0)
 end
 
 function DebugTeleport:teleport(map, anchor)
