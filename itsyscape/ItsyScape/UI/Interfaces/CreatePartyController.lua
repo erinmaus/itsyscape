@@ -95,14 +95,14 @@ function CreatePartyController:pull()
 		local isNotLeader = player ~= self.party:getLeader()
 		local isInSameInstance = Utility.Peep.getInstance(self:getPeep()):hasPlayer(player)
 
-		if isNotLeader then
-			local player = {
-				id = player:getID(),
-				actorID = (isInSameInstance and player:getActor():getID()) or nil,
-				name = player:getActor():getName(),
-				pronouns = Utility.Text.getPronouns(player:getActor():getPeep())
-			}
-		end
+		local player = {
+			id = player:getID(),
+			actorID = (isInSameInstance and player:getActor():getID()) or nil,
+			name = player:getActor():getName(),
+			pronouns = Utility.Text.getPronouns(player:getActor():getPeep())
+		}
+
+		table.insert(state.players, player)
 	end
 
 	return state

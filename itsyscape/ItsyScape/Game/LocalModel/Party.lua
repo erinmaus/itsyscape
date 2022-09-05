@@ -249,7 +249,7 @@ function Party:leave(player)
 	end
 
 	Log.info(
-		"Removed player '%s' (%d) to party %d.",
+		"Removed player '%s' (%d) from party %d.",
 		player:getActor():getName(), player:getID(), self:getID())
 
 	self:onPlayerLeft(player)
@@ -276,7 +276,7 @@ function Party:disband()
 		end
 	end
 
-	self:leave(self:getPartyLeader())
+	self:leave(self:getLeader())
 end
 
 function Party:setRaid(raid)
