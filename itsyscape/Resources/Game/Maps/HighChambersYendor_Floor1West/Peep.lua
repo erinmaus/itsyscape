@@ -586,32 +586,36 @@ function HighChambersYendor:giveMinibossLoot()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 
-	local siphon = gameDB:getRecord("MapObjectLocation", {
-		Name = "SoulSiphon",
+	local heart = gameDB:getRecord("MapObjectLocation", {
+		Name = "Heart",
 		Map = Utility.Peep.getMapResource(self)
 	})
 
-	if siphon then
-		siphon = director:probe(
+	if heart then
+		heart = director:probe(
 			self:getLayerName(),
-			Probe.mapObject(siphon:get("Resource")))[1]
+			Probe.mapObject(heart:get("Resource")))[1]
 
-		if siphon then
-			siphon:poke('materialize', {
-				count = math.random(30, 40),
-				dropTable = gameDB:getResource("HighChambersYendor_SoulSiphon_Rewards", "DropTable"),
-				peep = director:getGameInstance():getPlayer():getActor():getPeep(),
-				chest = siphon
-			})
+		local instance = Utility.Peep.getInstance(self)
+		for _, player in instance:iteratePlayers() do
+			local playerPeep = player:getActor():getPeep()
+
+			if heart then
+				heart:poke('materialize', {
+					count = math.random(30, 40),
+					dropTable = gameDB:getResource("HighChambersYendor_MassiveBeatingHeart_Rewards", "DropTable"),
+					peep = playerPeep,
+					chest = heart
+				})
+			end
+
+			playerPeep:getState():give(
+				"Item",
+				"HighChambersYendor_BloodyIronKey",
+				1,
+				{ ['item-inventory'] = true, ['item-drop-excess'] = true, ['force-item-drop'] = true })
 		end
 	end
-
-	local player = director:getGameInstance():getPlayer():getActor():getPeep()
-	player:getState():give(
-		"Item",
-		"HighChambersYendor_BloodyIronKey",
-		1,
-		{ ['item-inventory'] = true, ['item-drop-excess'] = true })
 end
 
 function HighChambersYendor:update(director, game)

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/HighChambersYendor_SoulSiphon/View.lua
+-- Resources/Game/Props/HighChambersYendor_MassiveBeatingHeart/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -15,20 +15,20 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local SoulSiphon = Class(PropView)
-SoulSiphon.PUMP_TIME = math.pi * 2
-SoulSiphon.MIN_SCALE_XZ = 0.8
-SoulSiphon.MAX_SCALE_XZ = 1.0
-SoulSiphon.MIN_SCALE_Y = 0.8
-SoulSiphon.MAX_SCALE_Y = 1.1
+local Heart = Class(PropView)
+Heart.PUMP_TIME = math.pi * 2
+Heart.MIN_SCALE_XZ = 0.8
+Heart.MAX_SCALE_XZ = 1.0
+Heart.MIN_SCALE_Y = 0.8
+Heart.MAX_SCALE_Y = 1.1
 
-function SoulSiphon:new(prop, gameView)
+function Heart:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.pumpTime = 0
 end
 
-function SoulSiphon:load()
+function Heart:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
@@ -36,13 +36,13 @@ function SoulSiphon:load()
 
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/HighChambersYendor_SoulSiphon/Model.lstatic",
+		"Resources/Game/Props/HighChambersYendor_MassiveBeatingHeart/Model.lstatic",
 		function(mesh)
 			self.mesh = mesh
 		end)
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/HighChambersYendor_SoulSiphon/Texture.png",
+		"Resources/Game/Props/HighChambersYendor_MassiveBeatingHeart/Texture.png",
 		function(texture)
 			self.texture = texture
 		end)
@@ -54,24 +54,24 @@ function SoulSiphon:load()
 	end)
 end
 
-function SoulSiphon:update(delta)
+function Heart:update(delta)
 	PropView.update(self, delta)
 
 	self.pumpTime = self.pumpTime + delta
 	if self.decoration then
-		local delta = (math.sin(self.pumpTime * SoulSiphon.PUMP_TIME) + 1) / 2
+		local delta = (math.sin(self.pumpTime * Heart.PUMP_TIME) + 1) / 2
 		local mu = Tween.powerEaseInOut(delta, 3)
 
-		local xzWidth = SoulSiphon.MAX_SCALE_XZ - SoulSiphon.MIN_SCALE_XZ
-		local yWidth = SoulSiphon.MAX_SCALE_Y - SoulSiphon.MIN_SCALE_Y
+		local xzWidth = Heart.MAX_SCALE_XZ - Heart.MIN_SCALE_XZ
+		local yWidth = Heart.MAX_SCALE_Y - Heart.MIN_SCALE_Y
 
 		local scale = Vector(
-			xzWidth * mu + SoulSiphon.MIN_SCALE_XZ,
-			yWidth * mu + SoulSiphon.MIN_SCALE_Y,
-			xzWidth * mu + SoulSiphon.MIN_SCALE_XZ)
+			xzWidth * mu + Heart.MIN_SCALE_XZ,
+			yWidth * mu + Heart.MIN_SCALE_Y,
+			xzWidth * mu + Heart.MIN_SCALE_XZ)
 
 		self.decoration:getTransform():setLocalScale(scale)
 	end
 end
 
-return SoulSiphon
+return Heart
