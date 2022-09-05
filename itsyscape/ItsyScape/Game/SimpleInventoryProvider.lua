@@ -56,9 +56,14 @@ end
 function SimpleInventoryProvider:load(...)
 	InventoryProvider.load(self, ...)
 
-	local broker = self:getBroker()
+	if self.player then
+		Log.engine(
+			"Reloading instanced SimpleInventoryProvider for player %s (%d).",
+			self.player:getName(), Utility.Peep.getPlayerModel(self.player):getID())
+	end
 
-	local storage = Utility.Item.getStorage(self.peep, "Simple", self.player)
+	local broker = self:getBroker()
+	local storage = Utility.Item.getStorage(self.peep, "Simple", false, self.player)
 	if storage then
 		for key, section in storage:iterateSections() do
 			broker:itemFromStorage(self, section)
@@ -70,15 +75,19 @@ function SimpleInventoryProvider:unload(...)
 	local broker = self:getBroker()
 
 	if self.player then
+		local playerModel = Utility.Peep.getPlayerModel(self.player)
 		Log.engine(
 			"Unloading instanced SimpleInventoryProvider for player %s (%d).",
-			self.player:getName(), Utility.Peep.getPlayerModel(self.player):getID())
+			self.player:getName(), (playerModel and playerModel:getID()) or 0)
 	end
 
 	local storage = Utility.Item.getStorage(self.peep, "Simple", true, self.player)
 	if storage then
 		local index = 1
-		for item in broker:iterateItems(self) do	
+		for item in broker:iterateItems(self) do
+			Log.engine(
+				"Storing item %s (count = %d, noted = %s).",
+				item:getID(), item:getCount(), Log.boolean(item:isNoted()))
 			broker:itemToStorage(item, storage, index)
 			index = index + 1
 		end

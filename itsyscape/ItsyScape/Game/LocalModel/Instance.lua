@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Utility = require "ItsyScape.Game.Utility"
@@ -208,6 +209,9 @@ function Instance:new(id, filename, stage)
 	self.orphans = {}
 
 	self.maps = {}
+
+	self.onPlayerEnter = Callback()
+	self.onPlayerLeave = Callback()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		if self:hasLayer(layer) then
@@ -876,6 +880,8 @@ function Instance:_addPlayerToInstance(player, e)
 			end
 		end
 	end
+
+	self:onPlayerEnter(player)
 end
 
 function Instance:_removePlayerFromInstance(player)
@@ -896,6 +902,8 @@ function Instance:_removePlayerFromInstance(player)
 			end
 		end
 	end
+
+	self:onPlayerLeave(player)
 end
 
 function Instance:unloadPlayer(localGameManager, player)
