@@ -91,6 +91,25 @@ function LocalGame:getPartyByID(id)
 	return self.partiesByID[id]
 end
 
+function LocalGame:getPartiesForRaid(raid)
+	local raidName
+	if type(raid) == 'string' then
+		raidName = raid
+	else
+		raidName = raid.name
+	end
+
+	local result = {}
+	for i = 1, #self.parties do
+		local party = self.parties[i]
+		if party:getRaid() and party:getRaid():getIsValid() and party:getRaid():getResource().name == raid then
+			table.insert(result, party)
+		end
+	end
+
+	return result
+end
+
 function LocalGame:spawnPlayer(clientID)
 	local player = LocalPlayer(self.currentPlayerID, self, self.stage)
 	self.currentPlayerID = self.currentPlayerID + 1

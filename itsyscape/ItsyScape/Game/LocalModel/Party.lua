@@ -46,6 +46,10 @@ function Party.Raid:getIsValid()
 	return self.resource ~= nil
 end
 
+function Party.Raid:getResource()
+	return self.resource
+end
+
 function Party.Raid:addInstance(instance)
 	if instance:getIsGlobal() then
 		Log.error(
