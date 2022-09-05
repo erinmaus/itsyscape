@@ -63,9 +63,16 @@ function SimpleInventoryProvider:load(...)
 	end
 
 	local broker = self:getBroker()
-	local storage = Utility.Item.getStorage(self.peep, "Simple", false, self.player)
+	local storage = Utility.Item.getStorage(
+		self.peep,
+		(self.player and "SimpleInstanced") or "Simple",
+		false,
+		self.player)
 	if storage then
 		for key, section in storage:iterateSections() do
+			Log.engine(
+				"Restoring item %s (count = %d, noted = %s).",
+				section:get("item-id"), section:get("item-count"), Log.boolean(section:get("item-noted")))
 			broker:itemFromStorage(self, section)
 		end
 	end
@@ -81,7 +88,11 @@ function SimpleInventoryProvider:unload(...)
 			self.player:getName(), (playerModel and playerModel:getID()) or 0)
 	end
 
-	local storage = Utility.Item.getStorage(self.peep, "Simple", true, self.player)
+	local storage = Utility.Item.getStorage(
+		self.peep,
+		(self.player and "SimpleInstanced") or "Simple",
+		true,
+		self.player)
 	if storage then
 		local index = 1
 		for item in broker:iterateItems(self) do

@@ -1680,7 +1680,7 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 					Log.engine(
 						"Trying to get singleton peep storage for player '%s' (%d).",
 						(instancedPlayer and instancedPlayer:getName()) or "<invalid>",
-						(instancedPlayer and Utility.Peep.getPlayerModel(instancedPlayer):getID()) or -1)
+						(instancedPlayer and Utility.Peep.getPlayerModel(instancedPlayer) and Utility.Peep.getPlayerModel(instancedPlayer):getID()) or -1)
 
 					local worldStorage = director:getPlayerStorage(instancedPlayer or Utility.Peep.getPlayer(peep)):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection("Singleton")
