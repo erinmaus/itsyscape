@@ -79,7 +79,12 @@ function Travel:travel(state, peep, target)
 	do
 		local instance = Utility.Peep.getInstance(peep)
 		local raid = instance:getRaid()
-		if raid then
+		local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
+			Map = map,
+			Raid = raid:getResource()
+		})
+
+		if raid and isInGroup then
 			local existingInstance = raid:getInstances(map.name)[1]
 			if existingInstance then
 				stage:movePeep(peep, existingInstance, destination)
