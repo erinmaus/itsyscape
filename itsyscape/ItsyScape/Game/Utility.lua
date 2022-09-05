@@ -878,7 +878,6 @@ end
 function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 	local Instance = require "ItsyScape.Game.LocalModel.Instance"
 
-	local ui = peep:getDirector():getGameInstance():getUI()
 	if Class.isCompatibleType(peep, Instance) then
 		local results = {}
 		for _, player in peep:iteratePlayers() do
@@ -891,6 +890,7 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 		end
 		return results
 	else
+		local ui = peep:getDirector():getGameInstance():getUI()
 		if blocking then
 			local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
 			return n ~= nil, n, controller
@@ -1659,7 +1659,7 @@ function Utility.Peep.getDescription(peep, lang)
 	return string.format("It's a %s.", peep:getName())
 end
 
-function Utility.Peep.getStorage(peep, player)
+function Utility.Peep.getStorage(peep, instancedPlayer)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
 
@@ -1677,7 +1677,12 @@ function Utility.Peep.getStorage(peep, player)
 			if singleton and singleton:get("Singleton") ~= 0 then
 				local name = singleton:get("SingletonID")
 				if name and name ~= "" then
-					local worldStorage = director:getPlayerStorage(player or Utility.Peep.getPlayer(peep)):getRoot():getSection("World")
+					Log.engine(
+						"Trying to get singleton peep storage for player '%s' (%d).",
+						(instancedPlayer and instancedPlayer:getName()) or "<invalid>",
+						(instancedPlayer and Utility.Peep.getPlayerModel(instancedPlayer):getID()) or -1)
+
+					local worldStorage = director:getPlayerStorage(instancedPlayer or Utility.Peep.getPlayer(peep)):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection("Singleton")
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 

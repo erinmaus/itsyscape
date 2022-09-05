@@ -29,6 +29,47 @@ function BasicChest:new(...)
 	self:addPoke('materialize')
 end
 
+function BasicChest:onFinalize(director, game)
+	Prop.onFinalize(self, director, game)
+
+	self:registerWithInstance()
+end
+
+function BasicChest:registerWithInstance()
+	if self.currentInstance then
+		self.currentInstance.onPlayerEnter:unregister(self._onPlayerEnter)
+	end
+
+	self.currentInstance = Utility.Peep.getInstance(self)
+	if self.currentInstance then
+		self._onPlayerEnter = self._onPlayerEnter or function()
+			self:reloadInventory()
+		end
+
+		self.currentInstance.onPlayerEnter:register(self._onPlayerEnter)
+	end
+end
+
+function BasicChest:move(key)
+	Prop.move(self, key)
+
+	self:registerWithInstance()
+	self:reloadInventory()
+end
+
+function BasicChest:reloadInventory()
+	local inventoryBehavior = self:getBehavior(InstancedInventoryBehavior)
+	if not inventoryBehavior then
+		return
+	end
+
+	for _, inventory in ipairs(inventoryBehavior.inventory) do
+		if inventory then
+			inventory:load(inventory:getItemBroker())
+		end
+	end
+end
+
 function BasicChest.getDroppedItem(loot, weight)
 	local currentWeight = 0
 	local item = loot[1]
