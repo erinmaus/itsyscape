@@ -94,7 +94,7 @@ function PartyQuestionController:poke(actionID, actionIndex, e)
 end
 
 function PartyQuestionController:join()
-	Utility.UI.openInterface(self:getPeep(), "JoinPartyController", true, self.raid)
+	Utility.UI.openInterface(self:getPeep(), "JoinParty", true, self.raid)
 	self:doClose()
 end
 
@@ -104,13 +104,19 @@ function PartyQuestionController:rejoin()
 
 	local raid = party:getRaid()
 	if raid then
-		raid:rejoin(Utility.Peep.getPlayer(self:getPeep()))
+		raid:rejoin(Utility.Peep.getPlayerModel(self:getPeep()))
 	end
 end
 
 function PartyQuestionController:create()
-	Utility.UI.openInterface(self:getPeep(), "CreatePartyController", true, self.raid)
-	self:doClose()
+	local game = self:getGame()
+	local party = game:startParty(Utility.Peep.getPlayerModel(self:getPeep()))
+	if party then
+		party:setRaid(self.raid)
+		Utility.UI.openInterface(self:getPeep(), "CreateParty", true, party)
+	else
+		self:doClose()
+	end
 end
 
 function PartyQuestionController:leave()
@@ -118,7 +124,7 @@ function PartyQuestionController:leave()
 	party = party and party.id and self:getDirector():getGameInstance():getPartyByID(party.id)
 
 	if party then
-		party:leave(Utility.Peep.getPlayer(self:getPeep()))
+		party:leave(Utility.Peep.getPlayerModel(self:getPeep()))
 	end
 
 	self:doClose()

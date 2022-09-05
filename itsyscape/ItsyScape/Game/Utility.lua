@@ -765,6 +765,24 @@ Utility.Text.BE = {
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
 
+function Utility.Text.getPronouns(peep)
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		if #gender.pronouns > 0 then
+			return gender.pronouns
+		else
+			return Utility.Text.DEFAULT_PRONOUNS["en-US"][gender.gender or "x"]
+		end
+	end
+
+	return {
+		"???",
+		"???",
+		"???",
+		"???"
+	}
+end
+
 function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	lang = lang or "en-US"
 
