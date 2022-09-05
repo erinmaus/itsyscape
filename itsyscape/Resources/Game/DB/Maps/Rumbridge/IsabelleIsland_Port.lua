@@ -61,14 +61,14 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest"
 	}
 end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid" {
-		-- Nothing.
+		ItsyScape.Action.Attack()
 	}
 
 	ItsyScape.Meta.PeepID {

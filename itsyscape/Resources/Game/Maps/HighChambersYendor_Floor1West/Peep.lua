@@ -321,7 +321,7 @@ function HighChambersYendor:startMiniboss(cthulhuian)
 	local game = director:getGameInstance()
 
 	local _, _, interface = Utility.UI.openInterface(
-		game:getPlayer():getActor():getPeep(),
+		Utility.Peep.getInstance(self),
 		"BossHUD",
 		false,
 		unpack(cthulhuians))

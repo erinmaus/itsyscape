@@ -12,6 +12,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 
 local BasicChest = Class(Prop)
@@ -89,6 +91,30 @@ function BasicChest:onMaterialize(e)
 	end
 end
 
+function BasicChest:addItemToInstancedInventory(player, itemID, itemCount)
+	local inventory = Utility.Peep.prepInstancedInventory(self, SimpleInventoryProvider, player)
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	local transaction = broker:createTransaction()
+	transaction:addParty(inventory)
+	transaction:spawn(inventory, itemID, itemCount, true, true)
+	local success = transaction:commit()
+
+	local playerModel = Utility.Peep.getPlayerModel(player)
+	if not success then
+		Log.warn(
+			"Couldn't spawn item %s (count = %d) for player %s (%d) in '%s'.",
+			itemID, itemCount, playerModel:getActor():getName(), playerModel:getID(), self:getName())
+	else
+		Log.engine(
+			"Successfully spawned item %s (count = %d) for player %s (%d) in '%s'.",
+			itemID, itemCount, playerModel:getActor():getName(), playerModel:getID(), self:getName())
+	end
+end
+
 function BasicChest:reward(action, e, xp)
 	local gameDB = action:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -99,7 +125,14 @@ function BasicChest:reward(action, e, xp)
 		if resourceType.name:lower() == "skill" then
 			xp[resource.name] = (xp[resource.name] or 0) + output.count
 		elseif resourceType.name:lower() == "item" then
-			e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+			if self:hasBehavior(InstancedInventoryBehavior) then
+				self:addItemToInstancedInventory(
+					e.peep,
+					resource.name,
+					output.count)
+			else
+				e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+			end
 		else
 			Log.warn("Unhandled reward: '%s' of type '%s' (%dx)", resource.name, resourceType.name, output.count)
 		end
