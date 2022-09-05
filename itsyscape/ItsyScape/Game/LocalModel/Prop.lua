@@ -46,7 +46,7 @@ function LocalProp:place(id, group, resource, ...)
 	propReference.prop = self
 
 	self.id = id
-	self.resource = resource or false	
+	self.resource = resource or false
 end
 
 function LocalProp:remove()
@@ -67,7 +67,13 @@ function LocalProp:getName()
 end
 
 function LocalProp:getDescription()
-	return Utility.Peep.getDescription(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+	if not self.descriptionResource or resource.id.value ~= resource.id.value then
+		self.description = Utility.Peep.getDescription(self.peep)
+		self.descriptionResource = resource
+	end
+
+	return self.description
 end
 
 function LocalProp:getResourceType()
