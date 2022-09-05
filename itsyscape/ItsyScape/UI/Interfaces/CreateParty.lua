@@ -230,6 +230,7 @@ function CreateParty:update(delta)
 		self:allocatePartyMembers(#state.players)
 	end
 	self:updatePartyMembers(state.players)
+	self:updateToggleLockButton()
 end
 
 return CreateParty

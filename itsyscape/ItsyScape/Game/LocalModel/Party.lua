@@ -320,7 +320,7 @@ function Party:start()
 
 	local leader = self:getLeader()
 	local originalInstance = leader:getInstance()
-	local instance = self:movePeep(leader:getActor():getPeep(), filename, anchor)
+	local instance = self:getGame():getStage():movePeep(leader:getActor():getPeep(), filename, anchor)
 
 	if not instance then
 		Log.warn("Couldn't start raid for party %d because leader move failed.", self:getID())
