@@ -42,30 +42,66 @@ function BasicChest:registerWithInstance()
 
 	self.currentInstance = Utility.Peep.getInstance(self)
 	if self.currentInstance then
-		self._onPlayerEnter = self._onPlayerEnter or function()
-			self:reloadInventory()
+		self._onPlayerEnter = self._onPlayerEnter or function(_, player)
+			self:reloadInventory(player:getID())
 		end
 
 		self.currentInstance.onPlayerEnter:register(self._onPlayerEnter)
 	end
 end
 
-function BasicChest:move(key)
-	Prop.move(self, key)
+function BasicChest:move(director, key)
+	Prop.move(self, director, key)
 
 	self:registerWithInstance()
-	self:reloadInventory()
+
+	if key then
+		self:reloadInventory()
+	end
 end
 
-function BasicChest:reloadInventory()
+function BasicChest:reloadInventory(incomingPlayerID)
 	local inventoryBehavior = self:getBehavior(InstancedInventoryBehavior)
 	if not inventoryBehavior then
 		return
 	end
 
-	for _, inventory in ipairs(inventoryBehavior.inventory) do
+	if not incomingPlayerID then
+		Log.info("Removing all instanced chest inventories.")
+
+		for playerID, inventory in ipairs(inventoryBehavior.inventory) do
+			if inventory then
+				local player = self:getDirector():getGameInstance():getPlayerByID(playerID)
+				if player then
+					Log.info(
+						"Removing instanced chest inventory for player '%s' (%d).",
+						player:getActor():getName(), player:getID())
+				else
+					Log.info("Player %d no longer exists.", playerID)
+				end
+
+				local inventory = inventoryBehavior.inventory[playerID]
+				inventory:getBroker():removeProvider(inventory, true)
+
+				inventoryBehavior.inventory[playerID] = nil
+			end
+		end
+	else
+		local player = self:getDirector():getGameInstance():getPlayerByID(incomingPlayerID)
+		if player then
+			Log.info(
+				"Removing instanced chest inventory for player '%s' (%d).",
+				player:getActor():getName(), player:getID())
+		else
+			Log.error("Incoming player %d does not exist!", incomingPlayerID)
+		end
+
+		local inventory = inventoryBehavior.inventory[incomingPlayerID]
 		if inventory then
-			inventory:load(inventory:getItemBroker())
+			inventory:getBroker():removeProvider(inventory, true)
+			inventoryBehavior.inventory[incomingPlayerID] = nil
+
+			Log.info("Successfully removed instanced chest inventory.")
 		end
 	end
 end

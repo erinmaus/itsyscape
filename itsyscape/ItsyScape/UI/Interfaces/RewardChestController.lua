@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
+local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 local Controller = require "ItsyScape.UI.Controller"
 local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -36,7 +37,7 @@ function RewardChestController:getInventory()
 	do
 		local inventoryBehavior = self.chest:getBehavior(InstancedInventoryBehavior)
 		if inventoryBehavior then
-			inventory = Utility.Peep.prepInstancedInventory(self.chest, nil, self:getPeep())
+			inventory = Utility.Peep.prepInstancedInventory(self.chest, SimpleInventoryProvider, self:getPeep())
 		end
 	end
 
@@ -58,16 +59,14 @@ function RewardChestController:refresh()
 	local inventory = self:getInventory()
 	if inventory then
 		local broker = self:getDirector():getItemBroker() 
-		if inventory.inventory then
-			local storage = inventory.inventory
-			for item in broker:iterateItems(storage) do
-				local serializedItem = self:pullItem(item)
-				table.insert(self.state.items, serializedItem)
-				table.insert(self.items, item)
-			end
-
-			self.state.items.max = #self.state.items
+		local storage = inventory
+		for item in broker:iterateItems(storage) do
+			local serializedItem = self:pullItem(item)
+			table.insert(self.state.items, serializedItem)
+			table.insert(self.items, item)
 		end
+
+		self.state.items.max = #self.state.items
 	end
 end
 
