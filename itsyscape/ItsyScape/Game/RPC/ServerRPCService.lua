@@ -76,6 +76,10 @@ function ServerRPCService.Client:send(packet)
 	self.serverRPCService:sendNetworkEvent(self:getID(), packet)
 end
 
+function ServerRPCService.Client:sendBatch(batch)
+	self.serverRPCService:sendBatchNetworkEvent(self:getID(), batch)
+end
+
 function ServerRPCService:new(listenAddress, port)
 	NetworkRPCService.new(self, "server_rpc_service")
 
@@ -92,6 +96,13 @@ function ServerRPCService:send(channel, e)
 	local client = self.clientsByID[channel]
 	if client then
 		client:send(packet)
+	end
+end
+
+function ServerRPCService:sendBatch(channel, batch)
+	local client = self.clientsByID[channel]
+	if client then
+		client:sendBatch(batch)
 	end
 end
 

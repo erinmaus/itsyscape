@@ -65,6 +65,14 @@ function NetworkRPCService:sendNetworkEvent(clientID, packet)
 	})
 end
 
+function NetworkRPCService:sendBatchNetworkEvent(clientID, batch)
+	self.outputChannel:push({
+		type = "batch",
+		client = clientID,
+		batch = buffer.encode(batch)
+	})
+end
+
 function NetworkRPCService:receive()
 	local e
 	repeat

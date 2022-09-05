@@ -27,6 +27,7 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService = rpcService
 	self.game = game
 
+	self.pending = {}
 	self.outgoing = {}
 	self.outgoingTargets = {}
 	self.outgoingKeys = {}
@@ -134,7 +135,12 @@ function LocalGameManager:destroyInstance(interface, id)
 end
 
 function LocalGameManager:_doSend(player, e)
-	self.rpcService:send(player:getClientID(), e)
+	table.insert(self.pending, e)
+end
+
+function LocalGameManager:_doFlush(player)
+	self.rpcService:sendBatch(player:getClientID(), self.pending)
+	table.clear(self.pending)
 end
 
 function LocalGameManager:getInstance(interface, id)
@@ -267,6 +273,8 @@ function LocalGameManager:sendToPlayer(player)
 			self:_doSend(player, e)
 		end
 	end
+
+	self:_doFlush(player)
 end
 
 function LocalGameManager:send()
