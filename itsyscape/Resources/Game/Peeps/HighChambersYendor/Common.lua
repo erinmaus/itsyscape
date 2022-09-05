@@ -37,7 +37,9 @@ function Common.initLever(map, key)
 		hits[1]:listen('pull', Common.onLeverPull, map, key)
 
 		local partyLeader = Utility.Peep.getInstance(map)
-		partyLeader = partyLeader and partyLeader:getPartyLeader()
+		partyLeader = partyLeader and partyLeader:getRaid()
+		partyLeader = partyLeader and partyLeader:getParty()
+		partyLeader = partyLeader and partyLeader:getLeader()
 		partyLeader = partyLeader and partyLeader:getActor()
 		partyLeader = partyLeader and partyLeader:getPeep()
 

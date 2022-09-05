@@ -1009,44 +1009,11 @@ function LocalStage:loadMapResource(instance, filename, args)
 end
 
 function LocalStage:playMusic(layer, channel, song)
-	local oldSong
-	for i = 1, #self.music do
-		local music = self.music[i]
-		if music.channel == channel then
-			oldSong = music
-			break
-		end
-	end
-
-	if oldSong then
-		if oldSong.song == song then
-			oldSong.stopping = false
-			return
-		end
-
-		self:stopMusic(layer, channel, oldSong.song)
-	end
-
 	self.onPlayMusic(self, channel, song, layer)
-	table.insert(self.music, {
-		channel = channel,
-		song = song,
-		stopping = false
-	})
 end
 
 function LocalStage:stopMusic(layer, channel, song)
 	self.onStopMusic(self, channel, song, layer)
-
-	local index = 1
-	while index <= #self.music do
-		local m = self.music[index]
-		if m.channel == channel and m.song == song then
-			table.remove(self.music, index)
-		else
-			index = index + 1
-		end
-	end
 end
 
 function LocalStage:loadStage(instance, filename, args)
