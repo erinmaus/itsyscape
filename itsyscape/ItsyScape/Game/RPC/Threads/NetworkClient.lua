@@ -14,6 +14,7 @@ _LOG_SUFFIX = logSuffix
 require "bootstrap"
 
 local enet = require "enet"
+local buffer = require "string.buffer"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
@@ -39,6 +40,16 @@ while isRunning do
 					client:send(love.data.compress('string', 'lz4', e.data, -1))
 				else
 					Log.warnOnce("Client %d does not exist; cannot send.", e.client)
+				end
+			elseif e.type == "batch" then
+				local batch = buffer.decode(e.batch)
+				local client = clientsByID[e.client]
+				if client then
+					for i = 1, #batch do
+						client:send(love.data.compress('string', 'lz4', buffer.encode(batch[i]), -1))
+					end
+				else
+					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
 				end
 			elseif e.type == "listen" then
 				Log.engine("Listening @ '%s'.", e.address)

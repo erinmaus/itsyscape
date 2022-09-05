@@ -31,6 +31,13 @@ function RPCService:send(channel, e)
 	Class.ABSTRACT()
 end
 
+function RPCService:sendBatch(channel, b)
+	-- Naive implementation.
+	for i = 1, #b do
+		self:send(channel, b[i])
+	end
+end
+
 function RPCService:receive()
 	return Class.ABSTRACT()
 end
