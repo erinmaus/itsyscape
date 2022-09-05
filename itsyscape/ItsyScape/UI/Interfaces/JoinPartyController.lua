@@ -70,7 +70,7 @@ function JoinPartyController:pull()
 
 	local state = {
 		players = {},
-		partyID = self.party and self.party:getID():getLeader():getID()
+		partyID = self.party and self.party:getLeader():getID()
 	}
 
 	for i = 1, #parties do
@@ -81,7 +81,7 @@ function JoinPartyController:pull()
 		local isJoined = party:hasPlayer(Utility.Peep.getPlayerModel(self:getPeep()))
 		local isInSameInstance = Utility.Peep.getInstance(self:getPeep()):hasPlayer(player)
 
-		if isAvailable then
+		if isAvailable or isJoined then
 			local player = {
 				id = player:getID(),
 				actorID = (isInSameInstance and player:getActor():getID()) or nil,

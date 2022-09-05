@@ -143,16 +143,13 @@ function JoinParty:allocatePartyMembers(count)
 			JoinParty.PLAYER_ROW_HEIGHT - 20 - JoinParty.PADDING)
 		panel:addChild(pronouns)
 		
-		local leaveOrJoinButton = Button()
-		leaveOrJoinButton:setText("Kick")
-		leaveOrJoinButton:setToolTip("Kick this player from the party.")
-		leaveOrJoinButton:setSize(JoinParty.BUTTON_WIDTH / 2, JoinParty.BUTTON_HEIGHT)
-		leaveOrJoinButton:setPosition(JoinParty.WIDTH - JoinParty.BUTTON_WIDTH / 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE - JoinParty.PADDING * 3, JoinParty.PADDING)
-		leaveOrJoinButton.onClick:register(self.joinOrLeave, self, i)
-
-		if i > 1 then
-			panel:addChild(leaveOrJoinButton)
-		end
+		local joinOrLeaveButton = Button()
+		joinOrLeaveButton:setText("")
+		joinOrLeaveButton:setToolTip("")
+		joinOrLeaveButton:setSize(JoinParty.BUTTON_WIDTH, JoinParty.BUTTON_HEIGHT)
+		joinOrLeaveButton:setPosition(JoinParty.WIDTH - JoinParty.BUTTON_WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - JoinParty.PADDING * 3, JoinParty.PADDING)
+		joinOrLeaveButton.onClick:register(self.joinOrLeave, self, i)
+		panel:addChild(joinOrLeaveButton)
 
 		local camera = ThirdPersonCamera()
 		camera:setDistance(5)
@@ -174,7 +171,7 @@ function JoinParty:allocatePartyMembers(count)
 			playerSceneSnippet = sceneSnippet,
 			name = name,
 			pronouns = pronouns,
-			leaveOrJoinButton = leaveOrJoinButton,
+			joinOrLeaveButton = joinOrLeaveButton,
 			camera = camera
 		}
 
@@ -210,11 +207,11 @@ function JoinParty:updatePartyMembers()
 		end
 
 		if state.partyID == playerInfo.id then
-			playerWidgets.leaveOrJoinButton:setText("Leave")
-			playerWidgets.leaveOrJoinButton:setToolTip("Leave this party.")
+			playerWidgets.joinOrLeaveButton:setText("Leave")
+			playerWidgets.joinOrLeaveButton:setToolTip("Leave this party.")
 		else
-			playerWidgets.leaveOrJoinButton:setText("Join")
-			playerWidgets.leaveOrJoinButton:setToolTip("Join this party.")
+			playerWidgets.joinOrLeaveButton:setText("Join")
+			playerWidgets.joinOrLeaveButton:setToolTip("Join this party.")
 		end
 	end
 

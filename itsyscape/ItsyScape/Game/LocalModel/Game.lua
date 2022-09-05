@@ -84,6 +84,9 @@ function LocalGame:startParty(player)
 		self.partiesByID[party:getID()] = nil
 	end)
 
+	table.insert(self.parties, party)
+	self.partiesByID[party:getID()] = party
+
 	return party
 end
 
@@ -102,7 +105,8 @@ function LocalGame:getPartiesForRaid(raid)
 	local result = {}
 	for i = 1, #self.parties do
 		local party = self.parties[i]
-		if party:getRaid() and party:getRaid():getIsValid() and party:getRaid():getResource().name == raid then
+
+		if party:getRaid() and party:getRaid():getIsValid() and party:getRaid():getResource().name == raidName then
 			table.insert(result, party)
 		end
 	end

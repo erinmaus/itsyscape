@@ -134,6 +134,11 @@ function Party:new(id, game, leader)
 	self.onDisbanded = Callback()
 	self.onPlayerJoined = Callback()
 	self.onPlayerLeft = Callback()
+
+	do
+		local _, party = leader:getActor():getPeep():addBehavior(PartyBehavior)
+		party.id = self:getID()
+	end
 end
 
 function Party:getGame()
@@ -208,7 +213,7 @@ function Party:join(player)
 		table.insert(self.players, player)
 		self.playersByID[player:getID()] = player
 
-		local _, party = player:addBehavior(PartyBehavior)
+		local _, party = player:getActor():getPeep():addBehavior(PartyBehavior)
 		party.id = self:getID()
 
 		Log.info(
@@ -249,6 +254,7 @@ function Party:leave(player)
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
 			table.remove(self.players, i)
+			break
 		end
 	end
 
@@ -307,6 +313,8 @@ function Party:getIsStarted()
 end
 
 function Party:start()
+	self.isStarted = true
+
 	if not self:getRaid() then
 		Log.warn("Cannot start raid for party %d: no raid set.", self:getID())
 		return false
@@ -334,14 +342,16 @@ function Party:start()
 	self:getRaid():addInstance(instance)
 
 	for _, player in self:iteratePlayers() do
-		local isInSameLayer = originalInstance and originalInstance:hasPlayer(player)
+		local isInSameInstance = originalInstance and originalInstance:hasPlayer(player)
 		if player ~= leader and isInSameInstance then
-			self:movePeep(player, instance, anchor)
+			self:getGame():getStage():movePeep(player:getActor():getPeep(), instance, anchor)
 		else
-			if not isInSameInstance then
+			if player ~= leader and not isInSameInstance and originalInstance then
 				Log.info(
-					"Player '%s' (%d) is in a different instance; cannot automatically join raid. Shucks!",
-					player:getActor():getName(), player:getID())
+					"Player '%s' (%d) is in a different instance %s (%d); cannot automatically join raid from instance %s %d. Shucks!",
+					player:getActor():getName(), player:getID(),
+					player:getInstance():getFilename(), player:getInstance():getID(),
+					originalInstance:getFilename(), originalInstance:getID())
 			end
 		end
 	end
@@ -349,8 +359,6 @@ function Party:start()
 	Log.info(
 		"And so the party %d began the raid at instance %s (%d), lead by the brave and/or foolish player '%s' (%d)! Good luck!",
 		self:getID(), instance:getFilename(), instance:getID(), leader:getActor():getName(), leader:getID())
-
-	self.isStarted = true
 
 	return true
 end
