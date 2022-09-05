@@ -22,8 +22,8 @@ local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 
 local CreateParty = Class(Interface)
-CreateParty.WIDTH = 480
-CreateParty.HEIGHT = 320
+CreateParty.WIDTH = 640
+CreateParty.HEIGHT = 480
 CreateParty.PADDING = 8
 
 CreateParty.BUTTON_HEIGHT = 48
