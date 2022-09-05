@@ -36,7 +36,7 @@ function Common.initLever(map, key)
 	if #hits >= 1 then
 		hits[1]:listen('pull', Common.onLeverPull, map, key)
 
-		local partyLeader = Utility.Peep.getGameInstance(self)
+		local partyLeader = Utility.Peep.getInstance(map)
 		partyLeader = partyLeader and partyLeader:getPartyLeader()
 		partyLeader = partyLeader and partyLeader:getActor()
 		partyLeader = partyLeader and partyLeader:getPeep()
