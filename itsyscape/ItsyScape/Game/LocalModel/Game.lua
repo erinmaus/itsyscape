@@ -56,7 +56,7 @@ function LocalGame:getPlayerByID(id)
 end
 
 function LocalGame:startParty(player)
-	if not player:getIsReady() then
+	if not player:isReady() then
 		Log.error("Player %d is not ready to start a party.", player:getID())
 		return nil
 	end

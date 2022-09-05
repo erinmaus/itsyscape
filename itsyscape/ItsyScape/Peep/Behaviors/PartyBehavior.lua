@@ -12,7 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies the party a peep belongs to.
-local PartyBehavior = Behavior("Player")
+local PartyBehavior = Behavior("Party")
 
 -- Constructs a PartyBehavior.
 --

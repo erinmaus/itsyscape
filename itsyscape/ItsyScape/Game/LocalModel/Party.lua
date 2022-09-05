@@ -33,6 +33,8 @@ function Party.Raid:new(party, resource)
 		self.resource = resource
 	end
 
+	Log.info("Raid '%s' created for party %d.", self.resource.name, party:getID())
+
 	self.instances = {}
 end
 
@@ -96,6 +98,20 @@ function Party.Raid:getInstances(filename)
 	return result
 end
 
+function Party.Raid:getStartMapAndAnchor()
+	local gameDB = self:getParty():getGame():getGameDB()
+	local destination = gameDB:getRecord("RaidDestination", {
+		Raid = self.resource
+	})
+
+	if not destination then
+		Log.warn("Raid '%s' does not have a destination. Whoops.", self.resource.name)
+		return nil, nil
+	end
+
+	return "@" .. destination:get("Map").name, destination:get("Anchor")
+end
+
 function Party:new(id, game, leader)
 	self.id = id
 	self.game = game
@@ -108,6 +124,8 @@ function Party:new(id, game, leader)
 	self.playersByID = {
 		[leader:getID()] = leader
 	}
+
+	self.isLocked = false
 
 	self.onDisbanded = Callback()
 	self.onPlayerJoined = Callback()
@@ -127,7 +145,7 @@ function Party:getLeader()
 end
 
 function Party:iteratePlayers()
-	return ipirs(self.players)
+	return ipairs(self.players)
 end
 
 function Party:hasPlayer(player)
@@ -142,10 +160,36 @@ function Party:getIsDisbanded()
 	return self:getNumPlayers() == 0
 end
 
+function Party:lock()
+	if self.isLocked then
+		Log.warn("Party %d is already locked.", self:getID())
+	else
+		Log.info("Party %d was locked.", self:getID())
+		self.isLocked = true
+	end
+end
+
+function Party:unlock()
+	if not self.isLocked then
+		Log.warn("Party %d is already unlocked.", self:getID())
+	else
+		Log.info("Party %d was unlocked.", self:getID())
+		self.isLocked = false
+	end
+end
+
+function Party:getIsLocked()
+	return self.isLocked
+end
+
 function Party:join(player)
 	if self:getIsDisbanded() then
 		Log.info(
 			"Cannot add player '%s' (%d) to party %d; party is disbanded.",
+			player:getActor():getName(), player:getID(), self:getID())
+	elseif self:getIsLocked() then
+		Log.info(
+			"Cannot add player '%s' (%d) to party %d; party is locked.",
 			player:getActor():getName(), player:getID(), self:getID())
 	elseif self:hasPlayer(player) then
 		Log.info(
@@ -252,6 +296,59 @@ end
 
 function Party:isInRaid()
 	return self.raid ~= nil
+end
+
+function Party:getIsStarted()
+	return self.isStarted
+end
+
+function Party:start()
+	if not self:getRaid() then
+		Log.warn("Cannot start raid for party %d: no raid set.", self:getID())
+		return false
+	end
+
+	if self.isStarted then
+		Log.info("Heads up, party %d already started raid.", self:getID())
+	end
+
+	local filename, anchor = self.raid:getStartMapAndAnchor()
+	if not filename or not anchor then
+		Log.warn("Cannot start raid for party %d because destination is bonked up.", self:getID())
+		return false
+	end
+
+	local leader = self:getLeader()
+	local originalInstance = leader:getInstance()
+	local instance = self:movePeep(leader:getActor():getPeep(), filename, anchor)
+
+	if not instance then
+		Log.warn("Couldn't start raid for party %d because leader move failed.", self:getID())
+		return false
+	end
+
+	self:getRaid():addInstance(instance)
+
+	for _, player in self:iteratePlayers() do
+		local isInSameLayer = originalInstance and originalInstance:hasPlayer(player)
+		if player ~= leader and isInSameInstance then
+			self:movePeep(player, instance, anchor)
+		else
+			if not isInSameInstance then
+				Log.info(
+					"Player '%s' (%d) is in a different instance; cannot automatically join raid. Shucks!",
+					player:getActor():getName(), player:getID())
+			end
+		end
+	end
+
+	Log.info(
+		"And so the party %d began the raid at instance %s (%d), lead by the brave and/or foolish player '%s' (%d)! Good luck!",
+		self:getID(), instance:getFilename(), instance:getID(), leader:getActor():getName(), leader:getID())
+
+	self.isStarted = true
+
+	return true
 end
 
 return Party
