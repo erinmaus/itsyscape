@@ -63,7 +63,7 @@ function LocalGame:startParty(player)
 
 	local peep = player:getActor():getPeep()
 	local existingParty = peep:getBehavior(PartyBehavior)
-	if existingParty and existingParty.id then
+	if existingParty and existingParty.id and self:getPartyByID(existingParty.id) then
 		Log.errorOnce(
 			"Player %s (%d) is in existing party %d.",
 			player:getActor():getName(), player:getID(), existingParty.id)

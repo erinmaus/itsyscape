@@ -740,7 +740,9 @@ function Instance:setBaseLayer(layer)
 		Log.engine("Base layer set to %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 		self.baseLayer = layer
 	else
-		Log.engine("Could not set base layer to %d in instance %s (%d); layer not in instance.", layer, self:getFilename(), self:getID())
+		Log.engine(
+			"Could not set base layer to %d in instance %s (%d); layer not in instance.",
+			layer, self:getFilename(), self:getID())
 	end
 end
 

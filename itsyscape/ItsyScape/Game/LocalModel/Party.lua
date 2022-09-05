@@ -113,7 +113,7 @@ function Party.Raid:getStartMapAndAnchor()
 		return nil, nil
 	end
 
-	return "@" .. destination:get("Map").name, destination:get("Anchor")
+	return destination:get("Map").name, destination:get("Anchor")
 end
 
 function Party:new(id, game, leader)
@@ -247,8 +247,7 @@ function Party:leave(player)
 		return
 	end
 
-
-	player:getActor():getPeep():removeBehavior(PartyBehavior)
+	local s = player:getActor():getPeep():removeBehavior(PartyBehavior)
 
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
@@ -313,7 +312,7 @@ function Party:getIsStarted()
 end
 
 function Party:start(otherAnchor)
-	Log.info("Party %d is trying to start raid...")
+	Log.info("Party %d is trying to start raid...", self:getID())
 
 	self.isStarted = true
 
@@ -333,13 +332,18 @@ function Party:start(otherAnchor)
 	end
 
 	if otherAnchor and otherAnchor ~= "" then
-		Log.info("Using other anchor '%s' instead of default anchor '%s'.")
+		Log.info(
+			"Using other anchor '%s' instead of default anchor '%s'.",
+			otherAnchor, anchor)
 		anchor = otherAnchor
 	end
 
 	local leader = self:getLeader()
 	local originalInstance = leader:getInstance()
-	local instance = self:getGame():getStage():movePeep(leader:getActor():getPeep(), filename, anchor)
+	local instance = self:getGame():getStage():movePeep(
+		leader:getActor():getPeep(),
+		"@" .. filename,
+		anchor)
 
 	if not instance then
 		Log.warn("Couldn't start raid for party %d because leader move failed.", self:getID())
@@ -351,7 +355,10 @@ function Party:start(otherAnchor)
 	for _, player in self:iteratePlayers() do
 		local isInSameInstance = originalInstance and originalInstance:hasPlayer(player)
 		if player ~= leader and isInSameInstance then
-			self:getGame():getStage():movePeep(player:getActor():getPeep(), instance, anchor)
+			self:getGame():getStage():movePeep(
+				player:getActor():getPeep(),
+				instance,
+				anchor)
 		else
 			if player ~= leader and not isInSameInstance and originalInstance then
 				Log.info(
@@ -380,16 +387,20 @@ function Party:rejoin(player, otherAnchor)
 
 	Log.info(
 		"Trying to have player %s (%d) rejoin raid for party %d...",
-		player:getActor():getName(), player:getID())
+		player:getActor():getName(), player:getID(), self:getID())
 
 	local filename, anchor = self.raid:getStartMapAndAnchor()
 	if not filename or not anchor then
-		Log.warn("Cannot start raid for party %d because destination is bonked up.", self:getID())
+		Log.warn(
+			"Cannot start raid for party %d because destination is bonked up.",
+			self:getID())
 		return false
 	end
 
 	if otherAnchor and otherAnchor ~= "" then
-		Log.info("Using anchor '%s' instead of anchor '%s'.")
+		Log.info(
+			"Using anchor '%s' instead of anchor '%s'.",
+			otherAnchor, anchor)
 		anchor = otherAnchor
 	end
 
