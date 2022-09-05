@@ -104,7 +104,13 @@ function LocalActor:getName()
 end
 
 function LocalActor:getDescription()
-	return Utility.Peep.getDescription(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+	if not self.descriptionResource or resource.id.value ~= resource.id.value then
+		self.description = Utility.Peep.getDescription(self.peep)
+		self.descriptionResource = resource
+	end
+
+	return self.description
 end
 
 function LocalActor:setName(value)
