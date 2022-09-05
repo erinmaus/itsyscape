@@ -720,11 +720,11 @@ function LocalStage:buildLayerNameFromInstanceIDAndFilename(id, filename)
 end
 
 function LocalStage:movePeep(peep, path, anchor)
-	local filename = self:getFilenameFromPath(path)
-	local arguments = self:getArgumentsFromPath(path)
-
-	local instance
+	local filename, arguments, instance
 	if type(path) == 'string' then
+		filename = self:getFilenameFromPath(path)
+		arguments = self:getArgumentsFromPath(path)
+
 		Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
 
 		if self:isPathLocal(path) then
@@ -736,6 +736,12 @@ function LocalStage:movePeep(peep, path, anchor)
 		end
 	elseif Class.isCompatibleType(path, Instance) then
 		instance = path
+
+		filename = instance:getFilename()
+
+		local mapScript = instance:getMapScriptByLayer(instance:getBaseLayer())
+		args = (mapScript and mapScript:getArguments()) or {}
+
 		Log.info("Moving peep '%s' to existing instance %s (%d).", instance:getFilename(), instance:getID())
 	end
 
