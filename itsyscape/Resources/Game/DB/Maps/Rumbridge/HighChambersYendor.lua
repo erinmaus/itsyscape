@@ -1572,32 +1572,38 @@ do
 end
 
 do
-	ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon" {
+	ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart" {
 		ItsyScape.Action.Collect()
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Language = "en-US",
 		Value = "Soul siphon",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "A divine scrying tool constructed to steal souls at any distance by Prisium, the Great Intelligence.",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicChest",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "HighChambersYendor_MassiveBeatingHeart",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 2.5,
 		SizeY = 3,
 		SizeZ = 1.5,
-		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	local CavePotatoReward = ItsyScape.Action.Reward() {
@@ -1721,7 +1727,7 @@ do
 		Weight = 5
 	}
 
-	ItsyScape.Resource.DropTable "HighChambersYendor_SoulSiphon_Rewards" {
+	ItsyScape.Resource.DropTable "HighChambersYendor_MassiveBeatingHeart_Rewards" {
 		CavePotatoReward,
 		SailorsHatReward,
 		AirRuneReward,
