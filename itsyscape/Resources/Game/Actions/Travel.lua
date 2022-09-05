@@ -76,7 +76,21 @@ function Travel:travel(state, peep, target)
 	end
 
 	local stage = self:getGame():getStage()
-	stage:movePeep(peep, map.name .. arguments, destination)
+	do
+		local instance = Utility.Peep.getInstance(peep)
+		local raid = instance:getRaid()
+		if raid then
+			local existingInstance = raid:getInstances(map.name)[1]
+			if existingInstance then
+				stage:movePeep(peep, existingInstance, destination)
+			else
+				local newInstance = stage:movePeep(peep, "@" .. map.name .. arguments, destination)
+				raid:addInstance(newInstance)
+			end
+		else
+			stage:movePeep(peep, map.name .. arguments, destination)
+		end
+	end
 
 	peep:getCommandQueue():clear()
 	peep:removeBehavior(TargetTileBehavior)

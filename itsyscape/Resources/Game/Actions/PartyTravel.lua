@@ -52,7 +52,7 @@ function PartyTravel:getRaid()
 		return
 	end
 
-	return record:get("Raid")
+	return record:get("Raid"), record:get("AnchorOverride")
 end
 
 return PartyTravel

@@ -92,7 +92,7 @@ end
 function Party.Raid:getInstances(filename)
 	local result = {}
 
-	for i = 1, #self.instances[i] do
+	for i = 1, #self.instances do
 		local instance = self.instances[i]
 		if instance:getFilename() == filename then
 			table.insert(result, instance)
@@ -312,7 +312,9 @@ function Party:getIsStarted()
 	return self.isStarted
 end
 
-function Party:start()
+function Party:start(otherAnchor)
+	Log.info("Party %d is trying to start raid...")
+
 	self.isStarted = true
 
 	if not self:getRaid() then
@@ -328,6 +330,11 @@ function Party:start()
 	if not filename or not anchor then
 		Log.warn("Cannot start raid for party %d because destination is bonked up.", self:getID())
 		return false
+	end
+
+	if otherAnchor and otherAnchor ~= "" then
+		Log.info("Using other anchor '%s' instead of default anchor '%s'.")
+		anchor = otherAnchor
 	end
 
 	local leader = self:getLeader()
@@ -361,6 +368,57 @@ function Party:start()
 		self:getID(), instance:getFilename(), instance:getID(), leader:getActor():getName(), leader:getID())
 
 	return true
+end
+
+function Party:rejoin(player, otherAnchor)
+	if not self:getIsStarted() then
+		Log.info(
+			"Party %d's raid hasn't started, player %s (%d) can't rejoin.",
+			self:getID(), player:getActor():getName(), player:getID())
+		return
+	end
+
+	Log.info(
+		"Trying to have player %s (%d) rejoin raid for party %d...",
+		player:getActor():getName(), player:getID())
+
+	local filename, anchor = self.raid:getStartMapAndAnchor()
+	if not filename or not anchor then
+		Log.warn("Cannot start raid for party %d because destination is bonked up.", self:getID())
+		return false
+	end
+
+	if otherAnchor and otherAnchor ~= "" then
+		Log.info("Using anchor '%s' instead of anchor '%s'.")
+		anchor = otherAnchor
+	end
+
+	local instances = self:getRaid():getInstances(filename)
+	if #instances > 1 then
+		Log.warn("%d instances found for map '%s'; choosing first one.", #instances, filename)
+	elseif #instances == 1 then
+		local instance = instances[1]
+
+		Log.info("Going to existing instance %s (%d).", instance:getFilename(), instance:getID())
+		self:getGame():getStage():movePeep(
+			player:getActor():getPeep(),
+			instance,
+			anchor)
+	else
+		Log.warn(
+			"Kinda wonky, party %d doesn't have a raid instance for map %s. That's weird.",
+			self:getID(), filename)
+
+		local instance = self:getGame():getStage():movePeep(
+			player:getActor():getPeep(),
+			filename,
+			anchor)
+		self:getRaid():addInstance(instance)
+	end
+
+	Log.info(
+		"Player %s (%d) successfully rejoined party %d.",
+		player:getActor():getName(), player:getID(), self:getID())
 end
 
 return Party

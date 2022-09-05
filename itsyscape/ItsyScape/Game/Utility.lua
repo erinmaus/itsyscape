@@ -1498,6 +1498,10 @@ function Utility.Peep.getParentTransform(peep)
 end
 
 function Utility.Peep.getLayer(peep)
+	if not peep then
+		return nil
+	end
+
 	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
 		return peep:getLayer()
 	end
