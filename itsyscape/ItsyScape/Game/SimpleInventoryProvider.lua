@@ -13,10 +13,11 @@ local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 
 local SimpleInventoryProvider = Class(InventoryProvider)
 
-function SimpleInventoryProvider:new(peep)
+function SimpleInventoryProvider:new(peep, player)
 	InventoryProvider.new(self)
 
 	self.peep = peep
+	self.player = player
 end
 
 function SimpleInventoryProvider:getPeep()
@@ -57,7 +58,7 @@ function SimpleInventoryProvider:load(...)
 
 	local broker = self:getBroker()
 
-	local storage = Utility.Item.getStorage(self.peep, "Simple")
+	local storage = Utility.Item.getStorage(self.peep, "Simple", self.player)
 	if storage then
 		for key, section in storage:iterateSections() do
 			broker:itemFromStorage(self, section)
@@ -68,7 +69,13 @@ end
 function SimpleInventoryProvider:unload(...)
 	local broker = self:getBroker()
 
-	local storage = Utility.Item.getStorage(self.peep, "Simple", true)
+	if self.player then
+		Log.engine(
+			"Unloading instanced SimpleInventoryProvider for player %s (%d).",
+			self.player:getName(), Utility.Peep.getPlayerModel(self.player):getID())
+	end
+
+	local storage = Utility.Item.getStorage(self.peep, "Simple", true, self.player)
 	if storage then
 		local index = 1
 		for item in broker:iterateItems(self) do	

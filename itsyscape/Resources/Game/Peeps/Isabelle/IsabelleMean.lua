@@ -116,7 +116,7 @@ end
 
 function IsabelleMean:onBoss()
 	Utility.UI.openInterface(
-		self:getDirector():getGameInstance():getPlayer():getActor():getPeep(),
+		Utility.Peep.getInstance(self),
 		"BossHUD",
 		false,
 		self)

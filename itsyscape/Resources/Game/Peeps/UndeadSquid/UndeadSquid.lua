@@ -91,7 +91,7 @@ end
 
 function UndeadSquid:onBoss()
 	Utility.UI.openInterface(
-		Utility.Peep.getInstance(peep),
+		Utility.Peep.getInstance(self),
 		"BossHUD",
 		false,
 		self)

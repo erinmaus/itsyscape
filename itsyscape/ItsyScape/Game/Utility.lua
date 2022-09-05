@@ -23,6 +23,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -920,11 +921,11 @@ end
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
-function Utility.Item.getStorage(peep, tag, clear)
+function Utility.Item.getStorage(peep, tag, clear, player)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
 
-	local storage = Utility.Peep.getStorage(peep)
+	local storage = Utility.Peep.getStorage(peep, player)
 	if storage then
 		if clear then
 			storage:getSection("Inventory"):removeSection(tag)
@@ -1354,7 +1355,7 @@ function Utility.Peep.getPlayerModel(peep)
 
 	local stage = peep:getDirector():getGameInstance():getStage()
 	local instance = stage:getPeepInstance(peep)
-	local leader = instance:getPartyLeader()
+	local leader = instance and instance:getPartyLeader()
 	return leader
 end
 
@@ -1658,7 +1659,7 @@ function Utility.Peep.getDescription(peep, lang)
 	return string.format("It's a %s.", peep:getName())
 end
 
-function Utility.Peep.getStorage(peep)
+function Utility.Peep.getStorage(peep, player)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
 
@@ -1676,7 +1677,7 @@ function Utility.Peep.getStorage(peep)
 			if singleton and singleton:get("Singleton") ~= 0 then
 				local name = singleton:get("SingletonID")
 				if name and name ~= "" then
-					local worldStorage = director:getPlayerStorage(peep):getRoot():getSection("World")
+					local worldStorage = director:getPlayerStorage(player or Utility.Peep.getPlayer(peep)):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection("Singleton")
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 
@@ -2661,6 +2662,27 @@ function Utility.Peep.addInventory(peep, InventoryType)
 
 	peep:listen('assign', Utility.Peep.Inventory.onAssign)
 	peep:listen('ready', Utility.Peep.Inventory.onReady)
+end
+
+function Utility.Peep.prepInstancedInventory(peep, InventoryType, player)
+	InventoryType = InventoryType or require "ItsyScape.Game.SimpleInventoryProvider"
+	local inventoryBehavior = peep:getBehavior(InstancedInventoryBehavior)
+
+	if not inventoryBehavior then
+		return nil
+	end
+
+	local playerModel = Utility.Peep.getPlayerModel(player)
+
+	local inventory = inventoryBehavior.inventory[playerModel:getID()]
+	if not inventory then
+		inventory = InventoryType(peep, player)
+		inventoryBehavior.inventory[playerModel:getID()] = inventory
+
+		peep:getDirector():getItemBroker():addProvider(inventory)
+	end
+
+	return inventory
 end
 
 Utility.Peep.Equipment = {}

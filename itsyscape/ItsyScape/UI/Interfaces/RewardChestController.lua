@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local RewardChestController = Class(Controller)
@@ -30,6 +31,23 @@ function RewardChestController:new(peep, director, chest)
 		{})
 end
 
+function RewardChestController:getInventory()
+	local inventory
+	do
+		local inventoryBehavior = self.chest:getBehavior(InstancedInventoryBehavior)
+		if inventoryBehavior then
+			inventory = Utility.Peep.prepInstancedInventory(self.chest, nil, self:getPeep())
+		end
+	end
+
+	if not inventory then
+		local inventoryBehavior = self.chest:getBehavior(InventoryBehavior)
+		inventory = inventoryBehavior and inventoryBehavior.inventory
+	end
+
+	return inventory
+end
+
 function RewardChestController:refresh()
 	self.state = {
 		items = {}
@@ -37,7 +55,7 @@ function RewardChestController:refresh()
 
 	self.items = {}
 
-	local inventory = self.chest:getBehavior(InventoryBehavior)
+	local inventory = self:getInventory()
 	if inventory then
 		local broker = self:getDirector():getItemBroker() 
 		if inventory.inventory then

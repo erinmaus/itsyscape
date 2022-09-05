@@ -12,6 +12,7 @@ local ItemBroker = require "ItsyScape.Game.ItemBroker"
 local ItemManager = require "ItsyScape.Game.ItemManager"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Director = require "ItsyScape.Peep.Director"
+local Peep = require "ItsyScape.Peep.Peep"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -56,7 +57,7 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 		local index
 		if type(peep) == 'number' then
 			index = peep
-		else
+		elseif Class.isCompatibleType(peep, Peep) then
 			local player = peep:getBehavior(PlayerBehavior)
 			if player and player.id then
 				index = player.id
@@ -72,10 +73,12 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 
 			return storage
 		end
-	else
-		local instance = Utility.Peep.getInstance(peep)
-		if instance then
-			return instance:getPlayerStorage()
+
+		if Class.isCompatibleType(peep, Peep) then
+			local instance = self.game:getStage():getPeepInstance(peep)
+			if instance then
+				return instance:getPlayerStorage()
+			end
 		end
 	end
 
