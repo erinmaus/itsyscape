@@ -46,6 +46,9 @@ end
 
 function HighChambersYendor:onFinalize(director, game)
 	self:initBoss(director, game)
+end
+
+function HighChambersYendor:onPlayerEnter(player)
 	self:initWater(director, game)
 end
 
@@ -155,41 +158,68 @@ function HighChambersYendor:onMinionRezzed(effect)
 	})
 end
 
-function HighChambersYendor:initWater(director, game)
+function HighChambersYendor:flood(pushOrPop)
+	local game = self:getDirector():getGameInstance()
 	local stage = game:getStage()
-	local player = game:getPlayer():getActor():getPeep()
+	local anchorTopLeft = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_TopLeft"))
+	local anchorBottomRight = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_BottomRight"))
+	local map = stage:getMap(self:getLayer())
+
+	local t, l, r, b
+	do
+		local _, i, j = map:getTileAt(anchorTopLeft.x, anchorTopLeft.z)
+		l = i
+		t = j
+	end
+	do
+		local _, i, j = map:getTileAt(anchorBottomRight.x, anchorBottomRight.z)
+		r = i
+		b = j
+	end
+
+	for j = t, b do
+		for i = l, r do
+			local tile = map:getTile(i, j)
+
+			if pushOrPop == 'push' then
+				tile:pushFlag('impassable')
+			elseif pushOrPop == 'pop' then
+				tile:popFlag('impassable')
+			end
+		end
+	end
+end
+
+function HighChambersYendor:initWater(director)
+	local stage = self:getDirector():getGameInstance():getStage()
+	local player
+	do
+		local instance = Utility.Peep.getInstance(self)
+		local raid = instance and instance:getRaid()
+		local party = raid and raid:getParty()
+		local leader = party and party:getLeader()
+		player = leader and leader:getActor():getPeep()
+		player = player or (instance and instance:getPartyLeader())
+	end
+
+	if not player then
+		Log.warn("Player not found; cannot initialize water.")
+		return
+	end
+
 	local state = player:getState()
 
 	if state:has("KeyItem", "HighChambersYendor_Lever1") and
 	   state:has("KeyItem", "HighChambersYendor_Lever2") and
 	   state:has("KeyItem", "HighChambersYendor_Lever3")
 	then
+		Log.info("Canal is not flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_DRAIN, self:getLayer())
+		self:flood('pop')
 	else
+		Log.info("Canal is flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_FLOOD, self:getLayer())
-
-		local anchorTopLeft = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_TopLeft"))
-		local anchorBottomRight = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_BottomRight"))
-		local map = stage:getMap(self:getLayer())
-
-		local t, l, r, b
-		do
-			local _, i, j = map:getTileAt(anchorTopLeft.x, anchorTopLeft.z)
-			l = i
-			t = j
-		end
-		do
-			local _, i, j = map:getTileAt(anchorBottomRight.x, anchorBottomRight.z)
-			r = i
-			b = j
-		end
-
-		for j = t, b do
-			for i = l, r do
-				local tile = map:getTile(i, j)
-				tile:pushFlag('impassable')
-			end
-		end
+		self:flood('push')
 	end
 end
 
