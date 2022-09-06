@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
@@ -319,6 +320,12 @@ function Application:connect(address, port, password)
 
 	self:setPassword(password)
 	self:swapRPCService(ClientRPCService, address, tostring(port))
+
+	self.rpcService.onError:register(self.onNetworkError, self)
+
+	_CONF.lastInputAddress = address
+	_CONF.lastInputPort = tostring(port)
+	_CONF.lastPassword = password
 end
 
 function Application:setPassword(password)
@@ -327,6 +334,11 @@ end
 
 function Application:getPassword()
 	return self.password
+end
+
+function Application:onNetworkError(_, message)
+	Log.info("Could not connect (%s); switching to single player.", message)
+	self:disconnect()
 end
 
 function Application:quit()

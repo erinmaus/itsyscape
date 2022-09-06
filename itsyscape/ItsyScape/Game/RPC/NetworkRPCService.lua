@@ -10,6 +10,7 @@
 local enet = require "enet"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local RPCService = require "ItsyScape.Game.RPC.RPCService"
 
 local NetworkRPCService = Class(RPCService)
@@ -25,6 +26,8 @@ function NetworkRPCService:new(scope)
 
 	self.thread = love.thread.newThread(NetworkRPCService.THREAD)
 	self.thread:start(self.outputChannel, self.inputChannel, scope)
+
+	self.onError = Callback()
 end
 
 function NetworkRPCService:close()
@@ -85,9 +88,13 @@ function NetworkRPCService:receive()
 	repeat
 		e = self.inputChannel:pop()
 		if e then
-			local response = self:handleNetworkEvent(e)
-			if response then
-				return response
+			if e.type == "error" then
+				self:onError(e.message)
+			else
+				local response = self:handleNetworkEvent(e)
+				if response then
+					return response
+				end
 			end
 		end
 	until e == nil
