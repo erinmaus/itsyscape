@@ -21,6 +21,9 @@ PlayerProxy.save = Event.ClientToServerRPC()
 PlayerProxy.onSave = Event.ServerToClientRPC(Event.Argument("storage"))
 PlayerProxy.onSave:link("onSave", Event.Argument("storage"))
 
+PlayerProxy.onLeave = Event.ServerToClientRPC()
+PlayerProxy.onLeave:link("onLeave")
+
 PlayerProxy.getActor = Property()
 PlayerProxy.isReady = Property()
 

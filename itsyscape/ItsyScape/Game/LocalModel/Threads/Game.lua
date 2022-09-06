@@ -108,6 +108,8 @@ while isRunning do
 				end
 
 				gameManager:swapRPCService(channelRpcService)
+
+				game:spawnPlayer(0)
 			end
 		end
 	until not e

@@ -26,7 +26,11 @@ function QuitGameWindowController:poke(actionID, actionIndex, e)
 end
 
 function QuitGameWindowController:confirm(e)
-	self:getGame():leave()
+	local playerModel = Utility.Peep.getPlayerModel(self:getPeep())
+
+	Utility.save(self:getPeep())
+	playerModel:onLeave()
+
 	self:getGame():getUI():closeInstance(self)
 	Log.analytic("END_GAME")
 end

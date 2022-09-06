@@ -167,7 +167,7 @@ end
 function LocalGameManager:sendToPlayer(player)
 	local playerInstance = player:getInstance()
 	if not playerInstance then
-		Log.warn("Player '%s' (%d) not ready; no instance.", (player:getActor() and player:getActor():getName()) or "Player", player:getID())
+		Log.warn("Player '%s' (%d) not ready; no instance.", (player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 		return
 	end
 
@@ -202,7 +202,7 @@ function LocalGameManager:sendToPlayer(player)
 					then
 						Log.engine(
 							"Sending event to %s '%s' (%d) to player '%s' (%d).",
-							e.type, e.interface, e.id, player:getActor():getName(), player:getID())
+							e.type, e.interface, e.id, (player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 						Log.debug(
 							"Reason: isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, hasTarget = %s, isLayerMatch = %s",
 							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget), Log.boolean(isLayerMatch))
@@ -214,6 +214,10 @@ function LocalGameManager:sendToPlayer(player)
 				local isSamePlayer = e.id == player:getID()
 				if isSamePlayer then
 					self:_doSend(player, e)
+
+					if e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY then
+						self.game:acknowledgePlayerDestroyed(player)
+					end
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Game" then
 				self:_doSend(player, e)
@@ -268,6 +272,9 @@ function LocalGameManager:sendToPlayer(player)
 			elseif e.interface == "ItsyScape.Game.Model.Player" then
 				local isSamePlayer = e.id == player:getID()
 				if isSamePlayer then
+					Log.engine(
+						"Sending RPC '%s' to player %s (%d).",
+						e.callback, (player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Game" then

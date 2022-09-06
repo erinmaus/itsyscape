@@ -59,7 +59,12 @@ function DemoApplication:new()
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
 
+		self:getGameView():reset()
 		self:tryOpenTitleScreen()
+	end)
+
+	self:getGame().onPlayerPoofed:register(function(_, player)
+		self:quitPlayer(player)
 	end)
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
@@ -92,6 +97,12 @@ function DemoApplication:savePlayer(_, storage)
 
 	local result = storage:toString()
 	love.filesystem.write(self.playerFilename, result)
+end
+
+function DemoApplication:quitPlayer()
+	Log.info("Player quit their session.")
+
+	self:disconnect()
 end
 
 function DemoApplication:initialize()
