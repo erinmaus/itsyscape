@@ -190,10 +190,13 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Actor" or
 			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
+				local key = self.outgoingKeys[i]
+				if key and key.layer then print(key and key.layer and key.layer.value) end
+				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
 				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
 				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
 
-				if isActorMatch or isPropMatch or isTargetMatch then
+				if isActorMatch or isPropMatch or isTargetMatch or isLayerMatch then
 					if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
 					   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY
 					then
@@ -201,8 +204,8 @@ function LocalGameManager:sendToPlayer(player)
 							"Sending event to %s '%s' (%d) to player '%s' (%d).",
 							e.type, e.interface, e.id, player:getActor():getName(), player:getID())
 						Log.debug(
-							"Reason: isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, hasTarget = %s",
-							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget))
+							"Reason: isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, hasTarget = %s, isLayerMatch = %s",
+							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget), Log.boolean(isLayerMatch))
 					end
 
 					self:_doSend(player, e)

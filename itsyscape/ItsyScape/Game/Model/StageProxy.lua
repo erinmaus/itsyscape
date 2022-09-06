@@ -85,15 +85,15 @@ StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, st
 	instance:update()
 end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
-StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving)
+StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving, layer)
 	if isMoving then
 		Log.engine("Actor '%s' (%d) is moving between instances; not emitting destroy.", actor:getName(), actor:getID())
 		return
 	end
 
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor, layer)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Actor", actor:getID())
-end, Event.Argument("actor", true))
+end, Event.Argument("actor", true), Event.Argument("layer", true))
 StageProxy.killActor:link("onActorKilled")
 
 StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop, isMoving)
@@ -108,15 +108,15 @@ StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage
 	instance:update()
 end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
-StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving)
+StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving, layer)
 	if isMoving then
 		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
 		return
 	end
 
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop)
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop, layer)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
-end, Event.Argument("prop", true))
+end, Event.Argument("prop", true), Event.Argument("layer", true))
 StageProxy.removeProp:link("onPropRemoved")
 
 StageProxy.ITEM = "item"
