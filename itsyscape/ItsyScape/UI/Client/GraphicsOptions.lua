@@ -483,7 +483,9 @@ function GraphicsOptions:new(application)
 		width = _CONF.width,
 		height = _CONF.height,
 		vsync = _CONF.vsync,
-		fullscreen = _CONF.fullscreen
+		fullscreen = _CONF.fullscreen,
+		debug = _CONF.debug,
+		multithreaded = _CONF.multithreaded
 	}
 
 	self.onClose = Callback()
@@ -581,7 +583,7 @@ function GraphicsOptions:setDebug(enabled)
 end
 
 function GraphicsOptions:setMultithreaded(enabled)
-	self.conf.multihreaded = enabled
+	self.conf.multithreaded = enabled
 	if enabled then
 		self.multithreadedOnButton:setStyle(
 			ButtonStyle(
@@ -610,7 +612,7 @@ function GraphicsOptions:confirm(save)
 		_CONF.fullscreen = self.conf.fullscreen
 		_CONF.vsync = self.conf.vsync
 		_CONF.debug = self.conf.debug
-		_CONF.multithreaded = self.conf.multihreaded
+		_CONF.multithreaded = self.conf.multithreaded
 	end
 
 	self.onClose(save)

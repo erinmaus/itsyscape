@@ -11,11 +11,8 @@
 _LOG_SUFFIX = "server"
 require "bootstrap"
 
-local function init(t)
-	_DEBUG = t._DEBUG
-end
-
-init(...)
+local conf = ...
+_DEBUG = conf._DEBUG
 
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
@@ -79,6 +76,19 @@ while isRunning do
 			getPeriodInMS(timeGameTick, timeGameManagerSend),
 			getPeriodInMS(timeGameManagerSend, timeEnd))
 	end
+
+	local e
+	repeat
+		e = inputChannel:pop()
+		if e then
+			if e.type == 'quit' then
+				isRunning = false
+			elseif e.type == 'host' then
+				game:setPassword(e.password)
+				rpcService:host(e.address, e.port)
+			end
+		end
+	until not e
 end
 
 rpcService:close()

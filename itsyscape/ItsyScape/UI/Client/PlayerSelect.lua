@@ -250,7 +250,7 @@ end
 
 function PlayerSelect:loadPlayer(player)
 	local game = self.application:getGame()
-	game:getPlayer():spawn(player.storage)
+	game:getPlayer():spawn(player.storage, false, self.application:getPassword())
 
 	self.application:closeTitleScreen()
 
@@ -275,7 +275,7 @@ function PlayerSelect:newPlayer(player)
 	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
 
-	game:getPlayer():spawn(storage, true)
+	game:getPlayer():spawn(storage, true, self.application:getPassword())
 
 	self.application:closeTitleScreen()
 

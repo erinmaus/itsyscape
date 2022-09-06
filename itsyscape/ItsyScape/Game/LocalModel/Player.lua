@@ -46,6 +46,7 @@ function LocalPlayer:new(id, game, stage)
 
 	self.onPoof = Callback()
 	self.onMove = Callback()
+	self.onForceDisconnect = Callback()
 end
 
 function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
@@ -69,7 +70,13 @@ function LocalPlayer:getClientID()
 	return self.clientID
 end
 
-function LocalPlayer:spawn(storage, newGame)
+function LocalPlayer:spawn(storage, newGame, password)
+	if not self.game:verifyPassword(password) then
+		Log.warn("Player %d (client %d) did not say the right password.", self:getID(), self:getClientID() or -1)
+		self:onForceDisconnect()
+		return
+	end
+
 	local previousLayerName = self.actor and self.actor:getPeep():getLayerName()
 	self:unload()
 

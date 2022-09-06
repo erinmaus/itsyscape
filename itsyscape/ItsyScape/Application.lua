@@ -95,7 +95,6 @@ function Application:new(multiThreaded)
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
-
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
 	else
@@ -106,7 +105,7 @@ function Application:new(multiThreaded)
 			self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 			self.gameThread:start({
 				_DEBUG = _DEBUG
-			})
+			}, self.outputChannel)
 		end
 
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
@@ -116,6 +115,7 @@ function Application:new(multiThreaded)
 	self:getGame().onLeave:register(self.quitGame, self)
 
 	self.gameView = GameView(self:getGame())
+	self.gameView:attach()
 	self.uiView = UIView(self.gameView)
 
 	self.times = {}
@@ -278,6 +278,42 @@ function Application:tickMultiThread()
 	self.previousTickTime = love.timer.getTime()
 end
 
+function Application:host(port, password)
+	Log.info("Hosting on port %d.", port)
+	self.outputChannel:push({
+		type = 'host',
+		address = "*",
+		port = tostring(port),
+		password = password
+	})
+end
+
+function Application:disconnect()
+	Log.info("Switching to single player.")
+	self.outputChannel:push({
+		type = 'host',
+		address = "localhost",
+		port = "180323",
+		password = ""
+	})
+
+	self.rpcService:connectToServer("localhost", "")
+end
+
+function Application:connect(address, port, password)
+	Log.info("Connecting to %s:%d.", address, port)
+	self.rpcService:connectToServer(address, tostring(port))
+	self:setPasssword(password)
+end
+
+function Application:setPassword(password)
+	self.password = value
+end
+
+function Application:getPassword()
+	return self.password
+end
+
 function Application:quit()
 	if self.multiThreaded then
 		self.game:quit()
@@ -288,6 +324,9 @@ function Application:quit()
 		end
 
 		if self.gameThread then
+			self.outputChannel:push({
+				type = 'quit'
+			})
 			self.gameThread:wait()
 
 			local e = self.gameThread:getError()

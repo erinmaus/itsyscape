@@ -50,6 +50,10 @@ function ServerRPCService.Client:connect()
 
 	if game then
 		self.player = game:spawnPlayer(self:getID())
+		self.player.onForceDisconnect:register(function()
+			Log.info("Forcefully disconnecting player %d (client %d).", self.player:getID(), self.player:getClientID())
+			self:disconnect()
+		end)
 		self.isPendingConnect = false
 
 		Log.info("Associated player ID %d with client %d.", self.player:getID(), self:getID())
@@ -66,6 +70,7 @@ function ServerRPCService.Client:disconnect()
 
 	if self.player then
 		self.player:poof()
+		self.serverRPCService:sendDisconnectEvent(self:getID())
 		Log.info("Client %d disconnected.", self:getID())
 	else
 		Log.warn("Client %d does not have a player.")
@@ -82,13 +87,23 @@ end
 
 function ServerRPCService:new(listenAddress, port)
 	NetworkRPCService.new(self, "server_rpc_service")
-
-	self:sendListenEvent(string.format("%s:%s", listenAddress, port))
+	self:host(listenAddress, port)
 
 	self.clients = {}
 	self.clientsByID = {}
 
 	self.pending = {}
+end
+
+function ServerRPCService:host(listenAddress, port)
+	self:sendListenEvent(string.format("%s:%s", listenAddress, port))
+end
+
+function ServerRPCService:disconnect(channel)
+	local client = self.clientsByID[channel]
+	if client then
+		client:disconnect()
+	end
 end
 
 function ServerRPCService:send(channel, e)
