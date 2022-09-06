@@ -74,6 +74,11 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService:connect(self)
 end
 
+function LocalGameManager:swapRPCService(rpcService)
+	self.rpcService = rpcService
+	self.rpcService:connect(self)
+end
+
 function LocalGameManager:onPlayerSpawned(_, player)
 	player.onPoof:register(self.onPlayerPoof, self)
 	player.onMove:register(self.onPlayerMove, self)
@@ -296,11 +301,11 @@ function LocalGameManager:processCallback(e)
 		if not player then
 			Log.info("Player not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
 		else
-			local isClientMatch = player:getClientID() == e.clientID
+			local isClientMatch = player:getClientID() == e.clientID or e.clientID == nil
 			if not isClientMatch then
 				Log.warn(
 					"Potential security issue: client %d tried invoking RPC '%s' on player %d, but player is not associated with the client.",
-					e.clientID, e.callback, player:getID())
+					e.clientID or 0, e.callback, player:getID())
 			else
 				GameManager.processCallback(self, e)
 			end
@@ -336,9 +341,13 @@ function LocalGameManager:processCallback(e)
 			end
 		end
 	else
-		Log.warn(
-			"Potential security issue; client %d tried invoking RPC '%s' on '%s' (%d), but this is not allowed.",
-			e.clientID, e.callback, e.interface, e.id)
+		if e.client ~= nil then
+			Log.warn(
+				"Potential security issue; client %d tried invoking RPC '%s' on '%s' (%d), but this is not allowed.",
+				e.clientID or 0, e.callback, e.interface, e.id)
+		else
+			GameManager.processCallback(self, e)
+		end
 	end
 end
 

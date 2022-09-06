@@ -11,7 +11,7 @@
 _LOG_SUFFIX = "server"
 require "bootstrap"
 
-local conf = ...
+local conf, adminChannel = ...
 _DEBUG = conf._DEBUG
 
 local GameDB = require "ItsyScape.GameDB.GameDB"
@@ -24,12 +24,16 @@ local game = LocalGame(GameDB.create())
 
 local inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 local outputChannel = love.thread.getChannel('ItsyScape.Game::output')
-local rpcService = ServerRPCService("localhost", "180323")
 
-local gameManager = LocalGameManager(rpcService, game)
+local serverRPCService
+local channelRpcService = ChannelRPCService(inputChannel, outputChannel)
+
+local gameManager = LocalGameManager(channelRpcService, game)
 
 local isRunning = true
+
 game.onQuit:register(function() isRunning = false end)
+game:spawnPlayer(0)
 
 local function getPeriodInMS(a, b)
 	return math.floor((b - a) * 1000)
@@ -79,19 +83,39 @@ while isRunning do
 
 	local e
 	repeat
-		e = inputChannel:pop()
+		e = adminChannel:pop()
 		if e then
 			if e.type == 'quit' then
 				isRunning = false
 			elseif e.type == 'host' then
+				Log.info("Hosting server, swapping RPC service.")
+
 				game:setPassword(e.password)
-				rpcService:host(e.address, e.port)
+
+				if serverRPCService then
+					Log.info("Closing existing connection...")
+					serverRPCService:close()
+					Log.info("Closed existing connection.")
+				end
+
+				serverRPCService = ServerRPCService(e.address, e.port)
+
+				gameManager:swapRPCService(serverRPCService)
+			elseif e.type == 'disconnect' then
+				if serverRPCService then
+					serverRPCService:close()
+					serverRPCService = nil
+				end
+
+				gameManager:swapRPCService(channelRpcService)
 			end
 		end
 	until not e
 end
 
-rpcService:close()
+if serverRPCService then
+	serverRPCService:close()
+end
 
 Log.info("Game thread exiting...")
 Log.quit()
