@@ -70,12 +70,32 @@ while isRunning do
 			elseif e.type == "listen" then
 				disconnectAllClients()
 				Log.engine("Listening @ '%s'.", e.address)
-				host = enet.host_create(e.address)
+				local s, e = pcall(enet.host_create, e.address)
+				if not s then
+					Log.warn("Error listening: %s.", e)
+					outputChannel:push({
+						type = "error",
+						message = e
+					})
+				else
+					host = e
+				end
 			elseif e.type == "connect" then
 				disconnectAllClients()
+
 				Log.engine("Connecting @ '%s'.", e.address)
+
 				host = enet.host_create()
-				host:connect(e.address)
+				local s, e = pcall(host.connect, host, e.address)
+				if not s then
+					Log.warn("Error connecting: %s.", e)
+					outputChannel:push({
+						type = "error",
+						message = e
+					})
+
+					host = nil
+				end
 			elseif e.type == "quit" then
 				Log.engine("Received quit event; terminating...")
 

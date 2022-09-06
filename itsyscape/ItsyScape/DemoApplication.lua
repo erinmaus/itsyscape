@@ -336,6 +336,22 @@ function DemoApplication:openMainMenu()
 	end
 end
 
+function DemoApplication:onNetworkError(client, message)
+	self.titleScreen:disableLogo()
+
+	local error = AlertWindow(self)
+	error:open(
+		"A network error ocurred: " .. message,
+		"Error Connecting",
+		480,
+		320)
+	error.onSubmit:register(function()
+		self.titleScreen:enableLogo()
+	end)
+
+	Application.onNetworkError(self, client, message)
+end
+
 function DemoApplication:openOptionsScreen(Type, callback)
 	if self.optionsScreen then
 		self.mainMenu:removeChild(self.optionsScreen)
