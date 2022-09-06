@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local RPCService = require "ItsyScape.Game.RPC.RPCService"
 
 local ChannelRPCService = Class(RPCService)
+ChannelRPCService.CLIENT_ID = 0
 
 function ChannelRPCService:new(inputChannel, outputChannel, isBlocking)
 	RPCService.new(self)
@@ -19,13 +20,30 @@ function ChannelRPCService:new(inputChannel, outputChannel, isBlocking)
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
 	self.isBlocking = isBlocking or false
+
+	self.pending = {}
+	self.pendingIndex = 0
+end
+
+function ChannelRPCService:sendBatch(channel, batch)
+	self.outputChannel:push(buffer.encode(batch))
 end
 
 function ChannelRPCService:send(channel, e)
 	self.outputChannel:push(buffer.encode(e))
 end
 
+function ChannelRPCService:wrap(e)
+	e.clientID = ChannelRPCService.CLIENT_ID
+	return e
+end
+
 function ChannelRPCService:receive()
+	if self.pendingIndex < #self.pending then
+		self.pendingIndex = self.pendingIndex + 1
+		return self.pending[self.pendingIndex]
+	end
+
 	local e
 	if self.isBlocking then
 		e = self.inputChannel:demand()
@@ -34,7 +52,16 @@ function ChannelRPCService:receive()
 	end
 
 	if e then
-		return buffer.decode(e)
+		e = buffer.decode(e)
+
+		if #e > 0 then
+			self.pending = e
+			self.pendingIndex = 1
+
+			return self:wrap(self.pending[1])
+		else
+			return self:wrap(e)
+		end
 	end
 
 	return nil

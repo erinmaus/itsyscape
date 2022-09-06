@@ -72,6 +72,11 @@ function RemoteGameManager:new(rpcService, ...)
 	self.rpcService:connect(self)
 end
 
+function RemoteGameManager:swapRPCService(rpcService)
+	self.rpcService = rpcService
+	self.rpcService:connect(self)
+end
+
 function RemoteGameManager:push(e)
 	table.insert(self.outgoing, e)
 

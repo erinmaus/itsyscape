@@ -92,7 +92,11 @@ function Log.analytic(...)
 end
 
 Log.setLogSuffix(_LOG_SUFFIX)
-Log.write("ItsyRealm bootstrapped.\n")
+if _LOG_SUFFIX then
+	Log.info("ItsyRealm bootstrapped (%s).\n", _LOG_SUFFIX)
+else
+	Log.engine("ItsyRealm bootstrapped.")
+end
 
 if love.system.getOS() == "OS X" then
 	Log.info("Running on macOS, disabling JIT.")

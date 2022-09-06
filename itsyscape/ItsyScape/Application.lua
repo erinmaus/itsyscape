@@ -92,21 +92,20 @@ function Application:new(multiThreaded)
 
 	self.multiThreaded = multiThreaded or false
 
+	self.adminChannel = love.thread.newChannel()
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
 	else
-		self.rpcService = ClientRPCService("localhost", "180323")
+		self.rpcService = ChannelRPCService(self.outputChannel, self.inputChannel)
 		self.remoteGameManager = RemoteGameManager(self.rpcService, self.gameDB)
 
-		if not _ARGS["client"] then
-			self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
-			self.gameThread:start({
-				_DEBUG = _DEBUG
-			}, self.outputChannel)
-		end
+		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
+		self.gameThread:start({
+			_DEBUG = _DEBUG
+		}, self.adminChannel)
 
 		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
@@ -278,32 +277,48 @@ function Application:tickMultiThread()
 	self.previousTickTime = love.timer.getTime()
 end
 
+function Application:swapRPCService(RPCServiceType, ...)
+	if self.rpcService then
+		Log.info("Existing RPC service (%s), shutting down...", self.rpcService:getDebugInfo().shortName)
+
+		self.rpcService:close()
+
+		Log.info("Shut down existing RPC service.")
+	end
+
+	self.rpcService = RPCServiceType(...)
+	self.remoteGameManager:swapRPCService(self.rpcService)
+end
+
 function Application:host(port, password)
 	Log.info("Hosting on port %d.", port)
-	self.outputChannel:push({
+
+	self.adminChannel:push({
 		type = 'host',
 		address = "*",
 		port = tostring(port),
 		password = password
 	})
+
+	self:setPassword(password)
+	self:swapRPCService(ClientRPCService, "localhost", tostring(port))
 end
 
 function Application:disconnect()
 	Log.info("Switching to single player.")
-	self.outputChannel:push({
-		type = 'host',
-		address = "localhost",
-		port = "180323",
-		password = ""
+
+	self.adminChannel:push({
+		type = 'disconnect'
 	})
 
-	self.rpcService:connectToServer("localhost", "")
+	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 end
 
 function Application:connect(address, port, password)
 	Log.info("Connecting to %s:%d.", address, port)
-	self.rpcService:connectToServer(address, tostring(port))
-	self:setPasssword(password)
+
+	self:setPassword(password)
+	self:swapRPCService(ClientRPCService, address, tostring(port))
 end
 
 function Application:setPassword(password)
@@ -319,12 +334,12 @@ function Application:quit()
 		self.game:quit()
 		self.remoteGameManager:pushTick()
 
-		if Class.isCompatibleType(self.rpcService, ClientRPCService) then
+		if self.rpcService then
 			self.rpcService:close()
 		end
 
 		if self.gameThread then
-			self.outputChannel:push({
+			self.adminChannel:push({
 				type = 'quit'
 			})
 			self.gameThread:wait()
