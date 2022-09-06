@@ -23,24 +23,24 @@ end
 function TitleScreen:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local _, map = Utility.Map.spawnMap(
+	Utility.Map.spawnMap(
 		self,
 		"Sailing_RuinsOfRhysilk",
 		TitleScreen.RUINS_LOCATION)
-	map:listen("finalize", function()
-		local director = self:getDirector()
-		local fog = director:probe(self:getLayerName(), Probe.namedMapObject("Light_Fog1"))[1]
-		if fog then
-			fog:setNearDistance(40)
-			fog:setFarDistance(60)
-		end
-	end)
-
-	self:pushPoke("initTitleScreen")
 end
 
-function TitleScreen:onInitTitleScreen()
-	local player = Utility.Peep.getPlayerModel(self)
+function TitleScreen:onPlayerEnter(player)
+	self:pushPoke("initTitleScreen", player)
+end
+
+function TitleScreen:onInitTitleScreen(player)
+	local director = self:getDirector()
+	local fog = director:probe(self:getLayerName(), Probe.namedMapObject("Light_Fog1"))[1]
+	if fog then
+		fog:setNearDistance(40)
+		fog:setFarDistance(60)
+	end
+
 	player:changeCamera("StandardCutscene")
 	player:pokeCamera("targetActor", player:getActor():getID())
 	player:pokeCamera("zoom", 50, 0)
