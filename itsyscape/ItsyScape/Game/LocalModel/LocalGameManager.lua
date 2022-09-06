@@ -88,13 +88,15 @@ function LocalGameManager:onPlayerPoof(player)
 	local stage = self.game:getStage()
 
 	local instance
-	do
+	if player:getActor() then
 		local previousID, previousFilename = stage:splitLayerNameIntoInstanceIDAndFilename(player:getActor():getPeep():getLayerName())
 		instance = stage:getInstanceByFilenameAndID(previousFilename, previousID)
 	end
 
 	if not instance then
-		Log.engine("Player '%s' (%d) poofed, but player is not in instance.", player:getActor():getName(), player:getID())
+		Log.engine(
+			"Player '%s' (%d) poofed, but player is not in instance.",
+			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 		return
 	end
 

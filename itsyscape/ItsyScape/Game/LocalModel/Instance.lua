@@ -822,7 +822,7 @@ function Instance:removePlayer(player)
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
-			Log.info("Removing player '%s' (%d) from instance %s (%d).", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
+			Log.info("Removing player '%s' (%d) from instance %s (%d).", (player:getActor() and player:getActor():getName()), player:getID(), self:getFilename(), self:getID())
 
 			table.remove(self.players, i)
 
@@ -838,7 +838,7 @@ function Instance:removePlayer(player)
 
 	Log.warn(
 		"Could not remove player '%s' (%d) from instance %s (%d); not in instance.",
-		player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
+		(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID(), self:getFilename(), self:getID())
 end
 
 function Instance:getPartyLeader()

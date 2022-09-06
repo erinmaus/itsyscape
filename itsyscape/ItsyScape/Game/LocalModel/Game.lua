@@ -240,8 +240,8 @@ end
 function LocalGame:quit()
 	self:leave()
 
-	while #self.players > 0 do
-		self.players[1]:poof()
+	for i = 1, #self.players do
+		self.players[i]:poof()
 	end
 
 	self:tick()
