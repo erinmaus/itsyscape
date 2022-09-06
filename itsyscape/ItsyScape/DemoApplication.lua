@@ -37,7 +37,7 @@ DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
 	"TitleScreen_EmptyRuins",
-	--"TitleScreen_RuinsOfRhysilk",
+	"TitleScreen_RuinsOfRhysilk",
 }
 
 function DemoApplication:new()
