@@ -21,7 +21,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest",
 		MapObject = M["RatKingRewardChest"]
 	}
 end
