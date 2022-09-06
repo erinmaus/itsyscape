@@ -25,6 +25,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
@@ -128,7 +129,7 @@ function DemoApplication:openTitleScreen()
 		}
 	})
 
-	self:getGame():getPlayer():spawn(storage, false)
+	self:getGame():getPlayer():spawn(storage, false, self:getPassword())
 
 	self:getGameView():playMusic('main', "IsabelleIsland")
 end
@@ -256,6 +257,31 @@ function DemoApplication:openMainMenu()
 	soundButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
 	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	self.mainMenu:addChild(soundButton)
+
+	local networkButton = Button()
+	networkButton:setStyle(ButtonStyle(
+		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
+		self:getUIView():getResources()))
+	networkButton.onClick:register(function()
+		self:openOptionsScreen(Network, function(type, ...)
+			if type == Network.ACTION_CONNECT then
+				self:connect(...)
+			elseif type == Network.ACTION_HOST then
+				self:host(...)
+			else
+				self:disconnect()
+			end
+
+			self:closeMainMenu()
+			self:openMainMenu()
+		end)
+	end)
+	networkButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		h - BUTTON_SIZE * 4 - PADDING * 6)
+	networkButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	networkButton:setToolTip(ToolTip.Text("Configure controls."))
+	self.mainMenu:addChild(networkButton)
 
 	local closeButton = Button()
 	closeButton:setStyle(ButtonStyle({

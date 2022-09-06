@@ -46,6 +46,13 @@ function NetworkRPCService:sendConnectEvent(address)
 	})
 end
 
+function NetworkRPCService:sendDisconnectEvent(clientID)
+	self.outputChannel:push({
+		type = "disconnect",
+		client = clientID
+	})
+end
+
 function NetworkRPCService:sendListenEvent(address)
 	self.outputChannel:push({
 		type = "listen",

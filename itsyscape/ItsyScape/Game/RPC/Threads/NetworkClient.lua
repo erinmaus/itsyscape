@@ -28,6 +28,14 @@ local clientsByID = {}
 local clientIDs = {}
 local isRunning = true
 local isDisconnecting = false
+
+local function disconnectAllClients()
+	for _, client in pairs(clients) do
+		Log.engine("Disconnecting client %d...", client:connect_id())
+		client:disconnect()
+	end
+end
+
 while isRunning do
 	local e
 
@@ -51,10 +59,20 @@ while isRunning do
 				else
 					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
 				end
+			elseif e.type == "disconnect" then
+				local client = clientsByID[e.client]
+				if client then
+					Log.info("Disconnecting client %d...")
+					client:disconnect(client:connect_id())
+				else
+					Log.warnOnce("Client %d does not exist; cannot disconnect.", e.client)
+				end
 			elseif e.type == "listen" then
+				disconnectAllClients()
 				Log.engine("Listening @ '%s'.", e.address)
 				host = enet.host_create(e.address)
 			elseif e.type == "connect" then
+				disconnectAllClients()
 				Log.engine("Connecting @ '%s'.", e.address)
 				host = enet.host_create()
 				host:connect(e.address)
@@ -65,10 +83,7 @@ while isRunning do
 					Log.engine("No clients; terminating immediately.")
 					isRunning = false
 				else
-					for _, client in pairs(clients) do
-						Log.engine("Disconnecting client %d...", client:connect_id())
-						client:disconnect()
-					end
+					disconnectAllClients()
 
 					Log.engine("Waiting on acknowledgement from clients...")
 					isDisconnecting = true

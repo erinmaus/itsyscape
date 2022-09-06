@@ -16,10 +16,13 @@ local ClientRPCService = Class(NetworkRPCService)
 
 function ClientRPCService:new(listenAddress, port)
 	NetworkRPCService.new(self, "client_rpc_service")
-
-	self:sendConnectEvent(string.format("%s:%s", listenAddress, port))
+	self:connectToServer(listenAddress, port)
 
 	self.pending = {}
+end
+
+function ClientRPCService:connectToServer(listenAddress, port)
+	self:sendConnectEvent(string.format("%s:%s", listenAddress, port))
 end
 
 function ClientRPCService:send(channel, e)
@@ -52,6 +55,10 @@ function ClientRPCService:_doDisconnect(clientID)
 	else
 		Log.warn("Unknown client (%d) disconnected; current client is %d.", clientID, self.clientID)
 	end
+end
+
+function ClientRPCService:getIsConnected()
+	return self.clientID ~= nil
 end
 
 function ClientRPCService:handleNetworkEvent(e)

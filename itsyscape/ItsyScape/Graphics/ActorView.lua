@@ -206,7 +206,7 @@ function ActorView:attach(game)
 	self.game = game
 end
 
-function ActorView:poof()
+function ActorView:release()
 	self.sceneNode:setParent(nil)
 
 	self.actor.onDirectionChanged:unregister(self._onDirectionChanged)

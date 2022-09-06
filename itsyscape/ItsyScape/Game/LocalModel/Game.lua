@@ -51,6 +51,14 @@ function LocalGame:getPlayer()
 	return self.players[next(self.players, nil)]
 end
 
+function LocalGame:setPassword(password)
+	self.password = password
+end
+
+function LocalGame:verifyPassword(password)
+	return self.password == nil or self.password == "" or self.password == password
+end
+
 function LocalGame:getPlayerByID(id)
 	return self.playersByID[id]
 end

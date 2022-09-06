@@ -43,7 +43,71 @@ function GameView:new(game)
 	self.views = {}
 	self.propViewDebugStats = GameView.PropViewDebugStats()
 
-	local stage = game:getStage()
+	self.scene = SceneNode()
+	self.mapMeshes = {}
+	self.tests = { id = 1 }
+
+	self.music = {}
+
+	self.water = {}
+
+	self.decorations = {}
+
+	self.renderer = Renderer(_MOBILE)
+	self.resourceManager = ResourceManager()
+	self.spriteManager = SpriteManager(self.resourceManager)
+
+	self.itemBagModel = self.resourceManager:load(
+		ModelResource,
+		"Resources/Game/Items/ItemBag.lmesh")
+	self.itemBagIconModel = self.resourceManager:load(
+		ModelResource,
+		"Resources/Game/Items/ItemBagIcon.lmesh")
+	self.items = {}
+
+	local translucentTextureImageData = love.image.newImageData(1, 1)
+	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
+	self.translucentTexture = TextureResource(love.graphics.newImage(translucentTextureImageData))
+
+	local whiteTextureImageData = love.image.newImageData(1, 1)
+	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
+	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
+
+	local itemTextureImageData = love.image.newImageData(1, 1)
+	itemTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
+	self.itemTexture = TextureResource(love.graphics.newImage(itemTextureImageData))
+
+	self.projectiles = {}
+
+	self.weather = {}
+
+	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
+	self.mapThread:start()
+end
+
+function GameView:getGame()
+	return self.game
+end
+
+function GameView:getRenderer()
+	return self.renderer
+end
+
+function GameView:getResourceManager()
+	return self.resourceManager
+end
+
+function GameView:getSpriteManager()
+	return self.spriteManager
+end
+
+function GameView:getScene()
+	return self.scene
+end
+
+function GameView:attach(game)
+	self.game = game or self.game
+	local stage = self.game:getStage()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		Log.info("Adding map to layer %d.", layer)
@@ -160,75 +224,61 @@ function GameView:new(game)
 		self:playMusic(track, false)
 	end
 	stage.onStopMusic:register(self._onStopMusic)
-
-	self.scene = SceneNode()
-	self.mapMeshes = {}
-	self.tests = { id = 1 }
-
-	self.music = {}
-
-	self.water = {}
-
-	self.decorations = {}
-
-	self.renderer = Renderer(_MOBILE)
-	self.resourceManager = ResourceManager()
-	self.spriteManager = SpriteManager(self.resourceManager)
-
-	self.itemBagModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBag.lmesh")
-	self.itemBagIconModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBagIcon.lmesh")
-	self.items = {}
-
-	local translucentTextureImageData = love.image.newImageData(1, 1)
-	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
-	self.translucentTexture = TextureResource(love.graphics.newImage(translucentTextureImageData))
-
-	local whiteTextureImageData = love.image.newImageData(1, 1)
-	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
-	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
-
-	local itemTextureImageData = love.image.newImageData(1, 1)
-	itemTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
-	self.itemTexture = TextureResource(love.graphics.newImage(itemTextureImageData))
-
-	self.projectiles = {}
-
-	self.weather = {}
-
-	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
-	self.mapThread:start()
 end
 
-function GameView:getGame()
-	return self.game
-end
-
-function GameView:getRenderer()
-	return self.renderer
-end
-
-function GameView:getResourceManager()
-	return self.resourceManager
-end
-
-function GameView:getSpriteManager()
-	return self.spriteManager
-end
-
-function GameView:getScene()
-	return self.scene
-end
-
-function GameView:release()
+function GameView:reset()
 	for _, actor in pairs(self.actors) do
 		actor:release()
 	end
+	table.clear(self.actors)
 
-	local stage = game:getStage()
+	for _, prop in pairs(self.props) do
+		prop:remove()
+	end
+	table.clear(self.props)
+
+	for layer in pairs(self.mapMeshes) do
+		self:removeMap(layer)
+	end
+
+	for _, itemNode in pairs(self.items) do
+		itemNode:setParent(nil)
+	end
+	table.clear(self.items)
+
+	for _, decoration in pairs(self.decorations) do
+		if decoration.sceneNode then
+			decoration.sceneNode:setParent(nil)
+		end
+	end
+	table.clear(self.decorations)
+
+	for _, water in pairs(self.water) do
+		water:setParent(nil)
+	end
+	table.clear(self.water)
+
+	for _, weather in pairs(self.weather) do
+		weather:remove()
+	end
+	table.clear(self.weather)
+
+	for projectile in ipairs(self.projectiles) do
+		projectile:poof()
+	end
+	table.clear(self.projectiles)
+
+	for track in ipairs(self.music) do
+		self:playMusic(track, false)
+	end
+
+	self.spriteManager:clear()
+end
+
+function GameView:release()
+	self:reset()
+
+	local stage = self.game:getStage()
 	stage.onLoadMap:unregister(self._onLoadMap)
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 	stage.onMapModified:unregister(self._onMapModified)
@@ -493,7 +543,7 @@ end
 function GameView:removeActor(actor)
 	if self.actors[actor] then
 		local view = self.actors[actor]
-		self.actors[actor]:poof()
+		self.actors[actor]:release()
 		self.actors[actor] = nil
 		self.views[view] = nil
 	end
