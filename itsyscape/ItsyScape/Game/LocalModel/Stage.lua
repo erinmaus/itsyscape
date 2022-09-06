@@ -333,7 +333,7 @@ function LocalStage:killActor(actor)
 			actor = self.peeps[actor]
 		end
 
-		self.onActorKilled(self, actor)
+		self.onActorKilled(self, actor, false, Utility.Peep.getLayer(actor:getPeep()))
 		actor:depart()
 
 		local peep = self.peeps[actor]
@@ -381,7 +381,7 @@ function LocalStage:removeProp(prop)
 			prop = self.peeps[prop]
 		end
 
-		self.onPropRemoved(self, prop)
+		self.onPropRemoved(self, prop, false, Utility.Peep.getLayer(prop:getPeep()))
 		prop:remove()
 
 		local peep = self.peeps[prop]

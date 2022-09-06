@@ -940,7 +940,7 @@ function Instance:unloadPlayer(localGameManager, player)
 
 		localGameManager:pushDestroy(
 			"ItsyScape.Game.Model.Actor",
-			actor:getID())
+			actor:getID(), Utility.Peep.getLayer(actor:getPeep()))
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded actor '%s' (%s).", actor:getName(), actor:getID())
@@ -958,7 +958,7 @@ function Instance:unloadPlayer(localGameManager, player)
 
 		localGameManager:pushDestroy(
 			"ItsyScape.Game.Model.Prop",
-			prop:getID())
+			prop:getID(), Utility.Peep.getLayer(prop:getPeep()))
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded prop '%s' (%s).", prop:getName(), prop:getPeepID())
@@ -1033,7 +1033,7 @@ function Instance:unloadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onActorKilled",
-				localGameManager:getArgs(player:getActor()))
+				localGameManager:getArgs(player:getActor()), Utility.Peep.getLayer(player:getActor():getPeep()))
 			localGameManager:assignTargetToLastPush(otherPlayer)
 
 			localGameManager:pushDestroy(
