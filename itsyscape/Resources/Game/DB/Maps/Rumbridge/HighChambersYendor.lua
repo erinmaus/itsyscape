@@ -1909,6 +1909,35 @@ do
 end
 
 do
+	ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Musky chest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Looks like rats have been chewing on it...",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "HighChambersYendor_RatKingRewardChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+end
+
+do
 	local Rat = ItsyScape.Resource.Peep "HighChambersYendor_Rat"
 
 	ItsyScape.Resource.Peep "HighChambersYendor_Rat" {
