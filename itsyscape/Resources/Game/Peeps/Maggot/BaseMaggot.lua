@@ -62,13 +62,4 @@ function BaseMaggot:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function BaseMaggot:onDie(...)
-	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
-	local playerState = player:getState()
-	playerState:give('KeyItem', "PreTutorial_SavedGhostBoy")
-
-	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector.ZERO
-end
-
 return BaseMaggot
