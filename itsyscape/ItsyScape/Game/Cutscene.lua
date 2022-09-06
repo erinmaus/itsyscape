@@ -27,7 +27,7 @@ function Cutscene:new(resource, player, director, layerName, entities)
 	self.entities = {
 		Player = CutsceneEntity(player),
 		Map = CutsceneMap(Utility.Peep.getMapScript(player)),
-		Camera = CutsceneCamera(self.game)
+		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
 	}
 
 	self:findMapObjects()
