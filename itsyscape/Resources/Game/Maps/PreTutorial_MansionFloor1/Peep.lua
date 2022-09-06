@@ -76,6 +76,10 @@ function Mansion:onPlayerLeave(player)
 		return
 	end
 
+	if not player:getActor() then
+		return
+	end
+
 	player = player:getActor():getPeep()
 
 	if self.zombiButler:getCurrentTarget() == player then
