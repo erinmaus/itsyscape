@@ -13,10 +13,11 @@ local CutsceneCamera = require "ItsyScape.Game.CutsceneCamera"
 local CutsceneEntity = require "ItsyScape.Game.CutsceneEntity"
 local CutsceneMap = require "ItsyScape.Game.CutsceneMap"
 local Utility = require "ItsyScape.Game.Utility"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
 
 local Cutscene = Class()
 
-function Cutscene:new(resource, player, director, layerName)
+function Cutscene:new(resource, player, director, layerName, entities)
 	self.director = director
 	self.game = director:getGameInstance()
 	self.gameDB = director:getGameDB()
@@ -33,6 +34,7 @@ function Cutscene:new(resource, player, director, layerName)
 	self:findPeeps()
 	self:findProps()
 	self:findMaps()
+	self:overrideEntities(entities)
 
 	self:loadCutscene()
 
@@ -93,6 +95,16 @@ end
 
 function Cutscene:findMaps()
 	self:find("CutsceneMap", CutsceneMap, Utility.Peep.getResource)
+end
+
+function Cutscene:overrideEntities(entities)
+	for name, peep in pairs(entities) do
+		if Class.isCompatibleType(peep, MapScript) then
+			self.entities[name] = CutsceneMap(peep)
+		else
+			self.entities[name] = CutsceneEntity(peep)
+		end
+	end
 end
 
 function Cutscene.parallel(t)
