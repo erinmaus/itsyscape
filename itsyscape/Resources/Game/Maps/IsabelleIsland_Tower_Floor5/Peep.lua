@@ -30,16 +30,21 @@ function Tower:onLoad(filename, args, layer)
 	offset.offset = Vector(0, 14.4, 0)
 end
 
-function Tower:onPlayEnter(player)
+function Tower:onPlayerEnter(player)
 	self:initCutscene(player:getActor():getPeep())
 end
 
 function Tower:initCutscene(player)
-	local player = Utility.Peep.getPlayer(self)
 	local metOrlando = player:getState():has("KeyItem", "CalmBeforeTheStorm_MetOrlando")
 	if not metOrlando then
-		Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando", 0)
-		Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Floor5_Introduction", "StandardCutscene")
+		Log.info("Player '%s' has not met Orlando!", player:getName())
+
+		local orlando = Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando", 0)
+		orlando = orlando:getPeep()
+
+		Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Floor5_Introduction", "StandardCutscene", player, {
+			Orlando = orlando
+		})
 	end
 end
 

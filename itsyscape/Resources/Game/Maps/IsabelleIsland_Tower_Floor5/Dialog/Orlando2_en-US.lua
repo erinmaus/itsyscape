@@ -21,3 +21,5 @@ message {
 
 local map = Utility.Peep.getMapScript(_TARGET)
 map:poke('movePlayer', _TARGET)
+
+Utility.Peep.poof(_SPEAKERS["Orlando"])
