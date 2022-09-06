@@ -57,6 +57,7 @@ function DemoApplication:new()
 	self:getGame().onReady:register(function(_, player)
 		player.onChangeCamera:register(self.changeCamera, self)
 		player.onPokeCamera:register(self.pokeCamera, self)
+		player.onSave:register(self.savePlayer, self)
 
 		self:tryOpenTitleScreen()
 	end)
@@ -78,6 +79,19 @@ end
 
 function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
+end
+
+function DemoApplication:setPlayerFilename(value)
+	self.playerFilename = value
+end
+
+function DemoApplication:savePlayer(_, storage)
+	love.filesystem.createDirectory("Player")
+
+	Log.info("Saving player data to '%s'...", self.playerFilename)
+
+	local result = storage:toString()
+	love.filesystem.write(self.playerFilename, result)
 end
 
 function DemoApplication:initialize()

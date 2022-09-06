@@ -18,6 +18,9 @@ PlayerProxy.getID = Property()
 PlayerProxy.spawn = Event.ClientToServerRPC(Event.Argument("storage"), Event.Argument("newGame"), Event.Argument("password"))
 PlayerProxy.save = Event.ClientToServerRPC()
 
+PlayerProxy.onSave = Event.ServerToClientRPC(Event.Argument("storage"))
+PlayerProxy.onSave:link("onSave", Event.Argument("storage"))
+
 PlayerProxy.getActor = Property()
 PlayerProxy.isReady = Property()
 

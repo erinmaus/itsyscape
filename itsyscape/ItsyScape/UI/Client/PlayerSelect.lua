@@ -65,6 +65,7 @@ function PlayerSelect.getPlayers()
 		if files[i]:match("%.dat$") and love.filesystem.getInfo(filename).type == 'file' then
 			local result = PlayerStorage()
 			result:deserialize(love.filesystem.read(filename) or "{}")
+			result:getRoot():set({ filename = filename })
 
 			table.insert(results, result)
 		end
@@ -250,6 +251,8 @@ end
 
 function PlayerSelect:loadPlayer(player)
 	local game = self.application:getGame()
+
+	self.application:setPlayerFilename(player.storage:getRoot():get("filename"))
 	game:getPlayer():spawn(player.storage, false, self.application:getPassword())
 
 	self.application:closeTitleScreen()
@@ -275,6 +278,7 @@ function PlayerSelect:newPlayer(player)
 	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
 
+	self.application:setPlayerFilename(filename)
 	game:getPlayer():spawn(storage, true, self.application:getPassword())
 
 	self.application:closeTitleScreen()

@@ -368,4 +368,8 @@ function LocalPlayer:pokeCamera(event, ...)
 	self.onPokeCamera(self, event, ...)
 end
 
+function LocalPlayer:quit()
+	
+end
+
 return LocalPlayer

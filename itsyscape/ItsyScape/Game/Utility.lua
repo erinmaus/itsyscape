@@ -83,15 +83,10 @@ function Utility.save(player, saveLocation, talk, ...)
 			end
 		end
 
-		local filename = root:get("filename")
-		if not filename then
-			return false
+		local playerModel = Utility.Peep.getPlayerModel(player)
+		if playerModel then
+			playerModel:onSave(storage)
 		end
-
-		love.filesystem.createDirectory("Player")
-
-		local result = storage:toString()
-		love.filesystem.write(filename, result)
 
 		local actor = player:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor and talk then
