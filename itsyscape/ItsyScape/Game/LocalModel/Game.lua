@@ -35,6 +35,7 @@ function LocalGame:new(gameDB, playerSlot)
 
 	self.players = {}
 	self.playersByID = {}
+	self.playersPendingRemoval = {}
 	self.currentPlayerID = 1
 
 	self.parties = {}
@@ -149,13 +150,14 @@ function LocalGame:spawnPlayer(clientID)
 	})
 	player:spawn(storage, false)
 
+	player.onLeave:register(self._onPlayerLeave, self)
 	player.onPoof:register(self._onPlayerPoofed, self)
 	self:onPlayerSpawned(player)
 
 	return player
 end
 
-function LocalGame:_onPlayerPoofed(player)
+function LocalGame:removePlayer(player)
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
@@ -165,7 +167,23 @@ function LocalGame:_onPlayerPoofed(player)
 	end
 
 	player.onPoof:unregister(self._onPlayerPoofed)
+end
+
+function LocalGame:_onPlayerLeave(player)
+	Log.info("Player %d (client %d) is leaving.", player:getID(), player:getClientID())
+	player:poof()
+end
+
+function LocalGame:_onPlayerPoofed(player)
+	player.onPoof:unregister(self._onPlayerPoofed)
 	self:onPlayerPoofed(player)
+end
+
+function LocalGame:acknowledgePlayerDestroyed(player)
+	Log.engine(
+		"Acknowledging player %d (client ID = %d) was destroyed, marking for removal.",
+		player:getID(), player:getClientID())
+	table.insert(self.playersPendingRemoval, player)
 end
 
 function LocalGame:iteratePlayers()
@@ -193,6 +211,8 @@ function LocalGame:getCurrentTick()
 end
 
 function LocalGame:tick()
+	self:cleanup()
+
 	self.ticks = self.ticks + 1
 	self.stage:tick()
 	self.director:update(self:getDelta())
@@ -204,6 +224,17 @@ end
 
 function LocalGame:update(delta)
 	self.stage:update(delta)
+end
+
+function LocalGame:cleanup()
+	for i = 1, #self.playersPendingRemoval do
+		local player = self.playersPendingRemoval[i]
+		Log.info(
+			"Finally removing player %d (client ID = %d).",
+			player:getID(), player:getClientID())
+		self:removePlayer(player)
+	end
+	table.clear(self.playersPendingRemoval)
 end
 
 function LocalGame:quit()

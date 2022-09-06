@@ -17,6 +17,7 @@ function Player:new()
 	self.onChangeCamera = Callback()
 	self.onPokeCamera = Callback()
 	self.onSave = Callback()
+	self.onLeave = Callback()
 end
 
 -- Gets the Actor this Player is represented by.

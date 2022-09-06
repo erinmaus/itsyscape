@@ -40,7 +40,7 @@ function RemoteGame:_onPlayerSpawned(_, player)
 	self:onReady(player)
 end
 
-function RemoteGame:_onPlayerPoofed(player)
+function RemoteGame:_onPlayerPoofed(_, player)
 	Log.info(
 		"Poofing player '%s' (%d)...",
 		(player:getActor() and player:getActor():getName()) or "Player", player:getID())

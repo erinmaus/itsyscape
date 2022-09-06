@@ -22,7 +22,7 @@ function ChannelRPCService:new(inputChannel, outputChannel, isBlocking)
 	self.isBlocking = isBlocking or false
 
 	self.pending = {}
-	self.pendingIndex = 0
+	self.pendingIndex = 1
 end
 
 function ChannelRPCService:sendBatch(channel, batch)
