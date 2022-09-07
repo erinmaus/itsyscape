@@ -43,9 +43,12 @@ function BossHUDController:updateStats()
 			local bossStats = peepMapScript:getBehavior(BossStatsBehavior)
 			if bossStats then
 				for i = 1, #bossStats.stats do
-					if not stats[bossStats.stats[i]] then
-						table.insert(self.stats, bossStats.stats[i]:get())
-						stats[bossStats.stats[i]] = true
+					local bossStat = bossStats.stats[i]
+					if not stats[bossStat] and
+					   (bossStat:getPeep() == self:getPeep() or not bossStat:getPeep())
+					then
+						table.insert(self.stats, bossStat:get())
+						stats[bossStat] = true
 					end
 				end
 			end
@@ -58,9 +61,12 @@ function BossHUDController:updateStats()
 				local bossStats = peepMapScript:getBehavior(BossStatsBehavior)
 				if bossStats then
 					for i = 1, #bossStats.stats do
-						if not stats[bossStats.stats[i]] then
-							table.insert(self.stats, bossStats.stats[i]:get())
-							stats[bossStats.stats[i]] = true
+						local bossStat = bossStats.stats[i]
+						if not stats[bossStat] and
+						   (bossStat:getPeep() == self:getPeep() or not bossStat:getPeep())
+						then
+							table.insert(self.stats, bossStat:get())
+							stats[bossStat] = true
 						end
 					end
 				end
