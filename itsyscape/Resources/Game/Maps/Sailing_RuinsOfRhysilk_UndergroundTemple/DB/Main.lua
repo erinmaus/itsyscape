@@ -205,7 +205,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Yendor_Base",
-		MapObject = M["Yendor"]
+		MapObject = M["Yendor"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.MapObjectGroup {
