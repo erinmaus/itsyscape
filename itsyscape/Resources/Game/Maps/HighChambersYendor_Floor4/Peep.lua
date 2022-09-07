@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
@@ -241,49 +242,61 @@ function HighChambersYendor:killMinion(name)
 	end
 end
 
-function HighChambersYendor:onKillBoss(director, game)
-	local player = game:getPlayer():getActor():getPeep()
-	player:getState():give("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+function HighChambersYendor:onKillBoss(director, game, isabelle)
+	local isabelleActor = isabelle:getBehavior(ActorReferenceBehavior)
+	isabelleActor = isabelleActor and isabelleActor.actor
+
+	local instance = Utility.Peep.getInstance(self)
+	if instance and instance:hasRaid() then
+		local party = instance:getRaid():getParty()
+		for _, player in party:iteratePlayers() do
+			local playerPeep = player:getActor():getPeep()
+			playerPeep:getState():give("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+
+			Log.info(
+				"Player %s (%d) was rewarded with Isabelle's defeat.",
+				playerPeep:getName(), player:getID())
+
+			local target = playerPeep:getBehavior(CombatTargetBehavior)
+			if target and target.actor == isabelleActor then
+				Log.info(
+					"Player %s (%d) is dis-engaging from Isabelle.",
+					playerPeep:getName(),
+					player:getID())
+				playerPeep:removeBehavior(CombatTargetBehavior)
+			end
+		end
+	end
 
 	self:killMinion("Wizard")
 	self:killMinion("Archer")
 	self:killMinion("Warrior")
 
-	do
-		local hits = director:probe(
-			self:getLayerName(),
-			Probe.namedMapObject("Isabelle"))
-		if #hits >= 1 then
-			isabelle = hits[1]
-			isabelle:removeBehavior(MashinaBehavior)
-			isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
-			isabelle:pushPoke('resurrect')
+	isabelle:removeBehavior(MashinaBehavior)
+	isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	isabelle:pushPoke('resurrect')
 
-			local status = isabelle:getBehavior(CombatStatusBehavior)
-			status.dead = false
-			status.currentHitpoints = math.huge
+	local status = isabelle:getBehavior(CombatStatusBehavior)
+	status.dead = false
+	status.currentHitpoints = math.huge
 
-			player:removeBehavior(CombatTargetBehavior)
+	local mapObject = Utility.Map.getMapObject(
+		game,
+		"HighChambersYendor_Floor4",
+		"Isabelle_Dead")
+	Utility.Peep.setMapObject(isabelle, mapObject)
 
-			local mapObject = Utility.Map.getMapObject(
-				game,
-				"HighChambersYendor_Floor4",
-				"Isabelle_Dead")
-			Utility.Peep.setMapObject(isabelle, mapObject)
-
-			local actions = Utility.getActions(
-				game,
-				mapObject,
-				'world')
-			for i = 1, #actions do
-				if actions[i].instance:is("talk") then
-					return Utility.UI.openInterface(
-						player,
-						"DialogBox",
-						true,
-						actions[i].instance:getAction())
-				end
-			end
+	local actions = Utility.getActions(
+		game,
+		mapObject,
+		'world')
+	for i = 1, #actions do
+		if actions[i].instance:is("talk") then
+			return Utility.UI.openInterface(
+				instance,
+				"DialogBox",
+				true,
+				actions[i].instance:getAction())
 		end
 	end
 end
