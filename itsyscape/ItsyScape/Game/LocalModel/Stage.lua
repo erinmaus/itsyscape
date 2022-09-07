@@ -1219,7 +1219,7 @@ function LocalStage:collectItems(instance)
 			if owner and owner:hasBehavior(PlayerBehavior) then
 				local bank = owner:getBehavior(InventoryBehavior).bank
 
-				if bank then
+				if bank and broker:hasProvider(bank) then
 					local transaction = transactions[owner]
 					if not transaction then
 						transaction = broker:createTransaction()
