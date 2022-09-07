@@ -120,10 +120,12 @@ function DeathCortex:update()
 
 			if info.poofTime < 0 then
 				local mapObject = Utility.Peep.getMapObject(peep)
-				if mapObject and info.respawns then
+				local instance = Utility.Peep.getInstance(peep)
+
+				if mapObject and info.respawns and instance:getIsGlobal() then
 					table.insert(self.pendingRespawn, {
 						time = DeathCortex.RESPAWN_TIME_IN_SECONDS,
-						instance = Utility.Peep.getInstance(peep),
+						instance = instance,
 						layer = Utility.Peep.getLayer(peep),
 						mapObject = mapObject
 					})
