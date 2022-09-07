@@ -132,7 +132,9 @@ Game "ItsyScape"
 
 	Meta "PeepMapObject" {
 		Peep = Meta.TYPE_RESOURCE,
-		MapObject = Meta.TYPE_RESOURCE
+		MapObject = Meta.TYPE_RESOURCE,
+		DoesNotDespawn = Meta.TYPE_INTEGER,
+		DoesNotRespawn = Meta.TYPE_INTEGER
 	}
 
 	Meta "MapObjectGroup" {
