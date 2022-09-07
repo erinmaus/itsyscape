@@ -2449,6 +2449,10 @@ function Utility.Peep.setNameMagically(peep)
 end
 
 function Utility.Peep.poof(peep)
+	if peep:wasPoofed() then
+		return
+	end
+
 	local function performPoof()
 		local stage = peep:getDirector():getGameInstance():getStage()
 

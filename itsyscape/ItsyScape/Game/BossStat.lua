@@ -29,6 +29,11 @@ function BossStat:set(t)
 	self.currentValue = t.current or self.currentValue or 0
 	self.maxValue = t.max or self.maxValue or 1
 	self.isBoolean = t.isBoolean or self.isBoolean or false
+	self.peep = t.peep or false
+end
+
+function BossStat:getPeep()
+	return self.peep or nil
 end
 
 function BossStat:get()
