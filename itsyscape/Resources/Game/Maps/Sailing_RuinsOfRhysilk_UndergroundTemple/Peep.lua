@@ -100,9 +100,9 @@ function Ruins:onDamageYendor(player, yendor, target)
 			return
 		end
 
-		self:pushPoke('damageYendor', yendor, love.timer.getTime() + Ruins.POST_DRAMATIC_WAIT)
+		self:pushPoke('damageYendor', player, yendor, love.timer.getTime() + Ruins.POST_DRAMATIC_WAIT)
 	else
-		self:pushPoke('damageYendor', yendor, target)
+		self:pushPoke('damageYendor', player, yendor, target)
 	end
 end
 
