@@ -72,6 +72,7 @@ Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
+Application.MAX_TICKS = 100
 
 function Application:new(multiThreaded)
 	self.camera = ThirdPersonCamera()
@@ -119,6 +120,7 @@ function Application:new(multiThreaded)
 	self.uiView = UIView(self.gameView)
 
 	self.times = {}
+	self.ticks = {}
 
 	self.gameView:getRenderer():setCamera(self.camera)
 
@@ -267,12 +269,23 @@ function Application:update(delta)
 	self.clickActionTime = self.clickActionTime - delta
 end
 
+function Application:doCommonTick()
+	table.insert(self.ticks, 1, love.timer.getTime() - self.previousTickTime)
+	while #self.ticks > self.MAX_TICKS do
+		table.remove(self.ticks)
+	end
+end
+
 function Application:tickSingleThread()
+	self:doCommonTick()
+
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 
 function Application:tickMultiThread()
+	self:doCommonTick()
+
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
@@ -326,6 +339,9 @@ function Application:connect(address, port, password)
 	_CONF.lastInputAddress = address
 	_CONF.lastInputPort = tostring(port)
 	_CONF.lastPassword = password
+
+	self.tickTripTime = 0
+	self.tickTripTotal = 0
 end
 
 function Application:setPassword(password)
@@ -425,7 +441,7 @@ function Application:getFrameDelta()
 	else
 		-- Generate a delta (0 .. 1 inclusive) between the current and previous
 		-- frames
-		return (currentTime - previousTime) / gameDelta
+		return math.min(math.max((currentTime - previousTime) / gameDelta, 0), 0)
 	end
 end
 
@@ -442,24 +458,46 @@ function Application:drawDebug()
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f (%010d)\n",
+			"%s: %.04f ms (%010d)\n",
 			self.times[i].name,
-			self.times[i].value,
+			self.times[i].value * 1000,
 			1 / self.times[i].value)
 		sum = sum + self.times[i].value
 	end
 	if 1 / sum < 60 then
 		r = r .. string.format(
-				"!!! sum: %.04f (%010d)\n",
-				sum,
+				"!!! sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	else
 		r = r .. string.format(
-				"sum: %.04f (%010d)\n",
-				sum,
+				"sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	end
 
+	local ping
+	do
+		local sum = 0
+		for i = 1, #self.ticks do
+			sum = sum + self.ticks[i]
+		end
+		ping = sum / math.max(#self.ticks, 1)
+	end
+
+	r = r .. string.format(
+			"ping: %.04f ms\n",
+			ping * 1000)
+
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.printf(
+		r,
+		width - 600 + 1,
+		1,
+		600,
+		'right')
+
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(
 		r,
 		width - 600,
