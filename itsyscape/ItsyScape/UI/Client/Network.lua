@@ -82,7 +82,7 @@ function Network:new(application)
 	layout:addChild(port)
 
 	self.inputPort = TextInput()
-	self.inputPort:setText(_CONF.lastInputPort or "180323")
+	self.inputPort:setText(_CONF.lastInputPort or "18323")
 	layout:addChild(self.inputPort)
 
 	local password = Label()
@@ -147,14 +147,14 @@ function Network:connect()
 	self.onClose(
 		Network.ACTION_CONNECT,
 		self.inputAddress:getText(),
-		tonumber(self.inputPort:getText()) or 180323,
+		tonumber(self.inputPort:getText()) or 18323,
 		self.inputPassword:getText())
 end
 
 function Network:host()
 	self.onClose(
 		Network.ACTION_HOST,
-		tonumber(self.inputPort:getText()) or 180323,
+		tonumber(self.inputPort:getText()) or 18323,
 		self.inputPassword:getText())
 end
 

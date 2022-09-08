@@ -20,11 +20,8 @@ local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
-local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
-local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ToolTip = require "ItsyScape.UI.ToolTip"
-local UIView = require "ItsyScape.UI.UIView"
 
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
@@ -63,8 +60,6 @@ local function inspectGameDB(gameDB)
 	end
 end
 
-local FONT = love.graphics.getFont()
-
 local Application = Class()
 Application.CLICK_NONE = 0
 Application.CLICK_ACTION = 1
@@ -75,14 +70,6 @@ Application.DEBUG_DRAW_THRESHOLD = 160
 Application.MAX_TICKS = 100
 
 function Application:new(multiThreaded)
-	self.camera = ThirdPersonCamera()
-	do
-		self.camera:setDistance(30)
-		self.camera:setUp(Vector(0, -1, 0))
-		self.camera:setHorizontalRotation(-math.pi / 8)
-		self.camera:setVerticalRotation(-math.pi / 2)
-	end
-
 	self.previousTickTime = love.timer.getTime()
 	self.startDrawTime = false
 	self.time = 0
@@ -109,20 +96,39 @@ function Application:new(multiThreaded)
 			_DEBUG = _DEBUG
 		}, self.adminChannel)
 
-		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
+		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
 
 	self:getGame().onLeave:register(self.quitGame, self)
 
-	self.gameView = GameView(self:getGame())
-	self.gameView:attach()
-	self.uiView = UIView(self.gameView)
-
 	self.times = {}
 	self.ticks = {}
 
-	self.gameView:getRenderer():setCamera(self.camera)
+	if _CONF.server then
+		Log.info("Server only.")
+		self:host(_CONF.lastInputPort or '18323', _CONF.lastPassword or "")
+	else
+		local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+		local GameView = require "ItsyScape.Graphics.GameView"
+		local UIView = require "ItsyScape.UI.UIView"
+
+		self.camera = ThirdPersonCamera()
+		do
+			self.camera:setDistance(30)
+			self.camera:setUp(Vector(0, -1, 0))
+			self.camera:setHorizontalRotation(-math.pi / 8)
+			self.camera:setVerticalRotation(-math.pi / 2)
+		end
+
+		self.gameView = GameView(self:getGame())
+		self.gameView:attach()
+		self.uiView = UIView(self.gameView)
+
+		self.gameView:getRenderer():setCamera(self.camera)
+
+		self.defaultFont = love.graphics.getFont()
+	end
 
 	self.showDebug = true
 	self.show2D = true
@@ -263,8 +269,10 @@ function Application:update(delta)
 		self.remoteGameManager:receive()
 	end
 
-	self:measure('gameView:update()', function() self.gameView:update(delta) end)
-	self:measure('uiView:update()', function() self.uiView:update(delta) end)
+	if not _CONF.server then
+		self:measure('gameView:update()', function() self.gameView:update(delta) end)
+		self:measure('uiView:update()', function() self.uiView:update(delta) end)
+	end
 
 	self.clickActionTime = self.clickActionTime - delta
 end
@@ -289,6 +297,10 @@ function Application:tickMultiThread()
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
+end
+
+function Application:tickServer()
+	self:doCommonTick()
 end
 
 function Application:swapRPCService(RPCServiceType, ...)
@@ -450,7 +462,7 @@ function Application:drawDebug()
 		return
 	end
 
-	love.graphics.setFont(FONT)
+	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
 	local width = love.window.getMode()
@@ -507,6 +519,10 @@ function Application:drawDebug()
 end
 
 function Application:_draw()
+	if _CONF.server then
+		return
+	end
+
 	local width, height = love.window.getMode()
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)
