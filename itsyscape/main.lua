@@ -80,7 +80,11 @@ function love.load(args)
 	end
 
 	if not main then
-		main = "ItsyScape.DemoApplication"
+		if _CONF.server then
+			main = "ItsyScape.Application"
+		else
+			main = "ItsyScape.DemoApplication"
+		end
 	end
 
 	local s, r = pcall(require, main)
@@ -107,31 +111,31 @@ function love.update(delta)
 end
 
 function love.mousepressed(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:mousePress(...)
 	end
 end
 
 function love.mousereleased(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:mouseRelease(...)
 	end
 end
 
 function love.wheelmoved(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:mouseScroll(...)
 	end
 end
 
 function love.mousemoved(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:mouseMove(...)
 	end
 end
 
 function love.keypressed(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:keyDown(...)
 	end
 
@@ -152,19 +156,19 @@ function love.keypressed(...)
 end
 
 function love.keyreleased(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:keyUp(...)
 	end
 end
 
 function love.textinput(...)
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:type(...)
 	end
 end
 
 function love.draw()
-	if _APP then
+	if _APP and not _CONF.server then
 		_APP:draw()
 	end
 end
@@ -193,10 +197,13 @@ function love.quit()
 	if _DEBUG then
 		local DebugStats = require "ItsyScape.Graphics.DebugStats"
 
-		_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
-		_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
-		_APP:getGameView():dumpStatsToCSV()
-		_APP:getUIView():getRenderManager():getDebugStats():dumpStatsToCSV("Widget_Renderer")
+		if not _CONF.server then
+			_APP:getGameView():getRenderer():getNodeDebugStats():dumpStatsToCSV("Renderer_Nodes")
+			_APP:getGameView():getRenderer():getPassDebugStats():dumpStatsToCSV("Renderer_Passes")
+			_APP:getGameView():dumpStatsToCSV()
+			_APP:getUIView():getRenderManager():getDebugStats():dumpStatsToCSV("Widget_Renderer")
+		end
+
 		DebugStats.GLOBAL:dumpStatsToCSV("Global")
 	end
 
