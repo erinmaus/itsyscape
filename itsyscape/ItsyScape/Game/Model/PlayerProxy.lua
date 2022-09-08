@@ -50,4 +50,6 @@ PlayerProxy.CAMERA = "camera"
 PlayerProxy.changeCamera = Event.Set(Event.KeyArgument("cameraType"))
 PlayerProxy.changeCamera:link("onChangeCamera", Event.Argument("cameraType"))
 
+PlayerProxy.talk = Event.ClientToServerRPC(Event.Argument("yell"))
+
 return Proxy(PlayerProxy)

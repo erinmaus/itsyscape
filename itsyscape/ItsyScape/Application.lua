@@ -441,7 +441,7 @@ function Application:getFrameDelta()
 	else
 		-- Generate a delta (0 .. 1 inclusive) between the current and previous
 		-- frames
-		return math.min(math.max((currentTime - previousTime) / gameDelta, 0), 0)
+		return math.min(math.max((currentTime - previousTime) / gameDelta, 0), 1)
 	end
 end
 

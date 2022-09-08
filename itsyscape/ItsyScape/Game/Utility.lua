@@ -834,6 +834,7 @@ Utility.UI = {}
 Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
+		"Chat",
 		"ProCombatStatusHUD"
 	}
 }
