@@ -137,15 +137,10 @@ function RemoteGameManager:processCreate(e)
 end
 
 function RemoteGameManager:processCallback(e)
-	if e.interface == "ItsyScape.Game.Model.Player" then
-		Log.info("callback %s %d %s", e.interface, e.id, e.callback)
-	end
-
 	GameManager.processCallback(self, e)
 end
 
 function RemoteGameManager:processDestroy(e)
-	Log.info("destroy %s %d", e.interface, e.id)
 	self:destroyInstance(e.interface, e.id)
 end
 

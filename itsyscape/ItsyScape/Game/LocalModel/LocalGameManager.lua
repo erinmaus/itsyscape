@@ -193,7 +193,6 @@ function LocalGameManager:sendToPlayer(player)
 			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
 				local key = self.outgoingKeys[i]
-				if key and key.layer then print(key and key.layer and key.layer.value) end
 				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
 				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
 				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())

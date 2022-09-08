@@ -31,6 +31,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
+LocalPlayer.MAX_MESSAGES = 50
 
 -- Constructs a new player.
 --
@@ -47,6 +48,8 @@ function LocalPlayer:new(id, game, stage)
 	self.onPoof = Callback()
 	self.onMove = Callback()
 	self.onForceDisconnect = Callback()
+
+	self.messages = { received = 0 }
 end
 
 function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
@@ -368,8 +371,63 @@ function LocalPlayer:pokeCamera(event, ...)
 	self.onPokeCamera(self, event, ...)
 end
 
-function LocalPlayer:quit()
-	
+function LocalPlayer:pushMessage(player, message)
+	local m = {
+		player = player,
+		message = message,
+		lastKnownName = player:getActor():getPeep():getName()
+	}
+
+	table.insert(self.messages, m)
+
+	while #self.messages > LocalPlayer.MAX_MESSAGES do
+		table.remove(self.messages, 1)
+	end
+
+	self.messages.received = self.messages.received + 1
+end
+
+function LocalPlayer:getMessages()
+	return self.messages
+end
+
+function LocalPlayer:talk(message)
+	message = message:match("^%s*(.*)%s*$") or ""
+	local whisper = message:match("^%s*/w%s*(.*)%s*$")
+
+	if message == "" or whisper == "" then
+		return
+	end
+
+	if whisper then
+		Log.info("Player '%s' (%d) whispered: %s", self:getActor():getName(), self:getID(), whisper)
+
+		local instance = Utility.Peep.getInstance(self:getActor():getPeep())
+		if not instance then
+			Log.info("Player isn't in instance; can't whisper.")
+			return
+		end
+
+		if instance:hasRaid() then
+			for _, player in instance:getRaid():iteratePlayers() do
+				player:pushMessage(self, whisper)
+			end
+		else
+			for _, player in instance:iteratePlayers() do
+				player:pushMessage(self, whisper)
+			end
+		end
+
+		self:getActor():flash("Message", 2, whisper, nil, 2)
+	else
+		Log.info("Player '%s' (%d) said: %s", self:getActor():getName(), self:getID(), message)
+
+		for _, player in self.game:iteratePlayers() do
+			player:pushMessage(self, message)
+		end
+
+		self:getActor():flash("Message", 1, message, nil, 2)
+	end
 end
 
 return LocalPlayer
