@@ -37,9 +37,9 @@ jobs:
         with:
           name: itsyrealm
           path: |
-            love.AppImage
-            settings.cfg
-            itsyrealm.love
+            cicd/linux/love.AppImage
+            cicd/linux/settings.cfg
+            cicd/linux/itsyrealm.love
       -
         name: Build image and push
         uses: docker/build-push-action@v3
