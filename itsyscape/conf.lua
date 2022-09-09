@@ -25,8 +25,6 @@ function love.conf(t)
 	t.identity = "ItsyRealm"
 	t.title = "ItsyRealm"
 
-	s.server = false
-
 	if s.server then
 		t.modules.graphics = false
 		t.modules.window = false
