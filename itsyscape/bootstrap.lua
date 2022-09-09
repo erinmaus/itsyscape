@@ -44,7 +44,7 @@ do
 			sourceDirectory,
 			path)
 		
-		if love.system.getOS() == "OS X" or love.system.getOS() "Linux" then
+		if love.system.getOS() == "OS X" or love.system.getOS() == "Linux" then
 			_ANALYTICS_DISABLED = true
 		end
 	end
