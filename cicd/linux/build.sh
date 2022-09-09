@@ -34,3 +34,4 @@ rm love-${LOVE_BRANCH}.AppImage
 make LOVE_BRANCH=${LOVE_BRANCH}
 
 mv love-${LOVE_BRANCH}.AppImage love.AppImage
+cp itsyscape/cicd/linux/settings.cfg ./settings.cfg
