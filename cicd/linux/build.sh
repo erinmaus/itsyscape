@@ -1,6 +1,7 @@
 #!/bin/sh
 
-export LOVE_BRANCH=wip-networking
+export LOVE_BRANCH=master
+export ITSYREALM_BRANCH=wip-networking
 
 set -xe
 
@@ -16,7 +17,7 @@ apt-get install --assume-yes build-essential git make cmake autoconf automake \
 
 apt install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse2 zip
 
-git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || cd love2d-${LOVE_BRANCH} && git pull && cd ..
+git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || true
 
 rm -rf installdir/bin/love
 
@@ -28,6 +29,8 @@ make LOVE_BRANCH=${LOVE_BRANCH}
 ./build_nbunny.sh
 ./build_itsyrealm.sh
 
+rm love-${LOVE_BRANCH}.AppImage
+
 make LOVE_BRANCH=${LOVE_BRANCH}
 
-cp love-${LOVE_BRANCH}.AppImage love.AppImage
+mv love-${LOVE_BRANCH}.AppImage love.AppImage
