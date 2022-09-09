@@ -2,7 +2,7 @@
 
 set -xe
 
-git clone https://github.com/erinmaus/discworld || cd discworld && git pull && cd ..
+git clone https://github.com/erinmaus/discworld || true
 cd discworld
 sed -i 's/lua51/luajit-5.1/g' premake5.lua || true
 sed -i 's/platforms { "x64" }//g' premake5.lua || true
