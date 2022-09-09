@@ -44,6 +44,7 @@ jobs:
         name: Build image and push
         uses: docker/build-push-action@v3
         with:
+          context: .
           file: ./cicd/linux/Dockerfile
           push: true
           tags: erinmaus/itsyrealm:latest
