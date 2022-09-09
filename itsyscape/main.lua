@@ -97,11 +97,12 @@ function love.load(args)
 
 	Log.info("Game initialized.")
 
-	love.keyboard.setKeyRepeat(true)
-	love.audio.setVolume(_CONF.volume or 1)
-
-	Log.info("Settings applied.")
-	Log.info("Volume: %d%%.", love.audio.getVolume() * 100)
+	if not _CONF.server then
+		love.keyboard.setKeyRepeat(true)
+		love.audio.setVolume(_CONF.volume or 1)
+		Log.info("Volume: %d%%.", love.audio.getVolume() * 100)
+		Log.info("Settings applied.")
+	end
 end
 
 function love.update(delta)
