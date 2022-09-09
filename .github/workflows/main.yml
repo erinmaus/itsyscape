@@ -32,13 +32,6 @@ jobs:
           cd ./cicd/linux
           sudo ./build.sh
       -
-        name: Build image and push
-        uses: docker/build-push-action@v3
-        with:
-          file: ./cicd/linux/Dockerfile
-          push: true
-          tags: erinmaus/itsyrealm:latest
-      -
         name: Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -47,3 +40,10 @@ jobs:
             love.AppImage
             settings.cfg
             itsyrealm.love
+      -
+        name: Build image and push
+        uses: docker/build-push-action@v3
+        with:
+          file: ./cicd/linux/Dockerfile
+          push: true
+          tags: erinmaus/itsyrealm:latest
