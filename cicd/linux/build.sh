@@ -16,7 +16,7 @@ apt-get install --assume-yes build-essential git make cmake autoconf automake \
 
 apt install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse2 zip
 
-git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH}
+git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || cd love2d-${LOVE_BRANCH} && git pull && cd ..
 
 rm -rf installdir/bin/love
 
