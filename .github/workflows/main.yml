@@ -9,6 +9,7 @@ on:
 jobs:
   linux-server:
     runs-on: ubuntu-latest
+    environment: main
     steps:
       -
         name: Checkout
