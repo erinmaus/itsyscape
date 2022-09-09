@@ -30,7 +30,7 @@ jobs:
         name: Build code
         run: |
           cd ./cicd/linux
-          ./build.sh
+          sudo ./build.sh
       -
         name: Build image and push
         uses: docker/build-push-action@v3
