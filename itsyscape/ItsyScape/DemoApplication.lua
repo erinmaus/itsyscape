@@ -37,7 +37,7 @@ DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
 	"TitleScreen_EmptyRuins",
-	--"TitleScreen_RuinsOfRhysilk",
+	"TitleScreen_RuinsOfRhysilk",
 }
 
 function DemoApplication:new()
@@ -285,7 +285,7 @@ function DemoApplication:openMainMenu()
 
 	local networkButton = Button()
 	networkButton:setStyle(ButtonStyle(
-		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
+		BUTTON_STYLE("Resources/Game/UI/Icons/Things/Compass.png"),
 		self:getUIView():getResources()))
 	networkButton.onClick:register(function()
 		self:openOptionsScreen(Network, function(type, ...)
@@ -305,7 +305,7 @@ function DemoApplication:openMainMenu()
 		w - BUTTON_SIZE - PADDING,
 		h - BUTTON_SIZE * 4 - PADDING * 6)
 	networkButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
-	networkButton:setToolTip(ToolTip.Text("Configure controls."))
+	networkButton:setToolTip(ToolTip.Text("Play online or on the local network."))
 	self.mainMenu:addChild(networkButton)
 
 	local closeButton = Button()
