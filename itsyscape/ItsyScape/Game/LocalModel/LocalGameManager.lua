@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Callback = require "ItsyScape.Common.Callback"
 local Utility = require "ItsyScape.Game.Utility"
 local GameProxy = require "ItsyScape.Game.Model.GameProxy"
@@ -242,8 +243,15 @@ function LocalGameManager:sendToPlayer(player)
 				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
 				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value)
 				local isPropMatch = not hasTarget and key and key.prop and key.prop.value and playerInstance:hasProp(key.prop.value)
+				local hasSourceAndDestination = not hasTarget and key and key.source and key.source.value and key.destination and key.destination.value
+				local isSourceMatch = hasSourceAndDestination and
+					((Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.source.value)) or
+					 (Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.source.value)))
+				local isSourceMatch = hasSourceAndDestination and
+					((Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.destination.value)) or
+					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value)))
 
-				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch then
+				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch or isSourceMatch or isDestinationMatch then
 					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Actor" or

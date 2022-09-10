@@ -208,8 +208,8 @@ StageProxy.drain:link(
 
 StageProxy.projectile = Event.ServerToClientRPC(
 	Event.Argument("projectileID"),
-	Event.Argument("source"),
-	Event.Argument("destination"),
+	Event.Argument("source", true),
+	Event.Argument("destination", true),
 	Event.Argument("time"))
 StageProxy.projectile:link(
 	"onProjectile",
