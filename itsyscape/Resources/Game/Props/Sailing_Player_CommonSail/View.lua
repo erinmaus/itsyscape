@@ -56,8 +56,8 @@ function BasicSail:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
-	local color1 = Color(unpack(state.primary))
-	local color2 = Color(unpack(state.secondary))
+	local color1 = Color(unpack(state.primary or {}))
+	local color2 = Color(unpack(state.secondary or {}))
 
 	if self.decoration1 then
 		self.decoration1:getMaterial():setColor(color1)

@@ -119,7 +119,7 @@ function FireView:tick()
 	end
 
 	local state = self:getProp():getState()
-	if state.duration < 0.5 then
+	if state.duration and state.duration < 0.5 then
 		self.node:getTransform():setLocalScale(Vector(state.duration / 0.5))
 	end
 end
