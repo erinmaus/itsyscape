@@ -28,8 +28,8 @@ function BaseNymph:new(resource, name, ...)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 10
-	movement.maxAcceleration = 12
+	movement.maxSpeed = 5
+	movement.maxAcceleration = 6
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 12

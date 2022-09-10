@@ -24,7 +24,7 @@ function Chocoroach:new(resource, name, ...)
 	Bug.new(self, resource, name or 'Chocoroach_Base', ...)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 24
+	movement.maxSpeed = 12
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 12

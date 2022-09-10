@@ -30,8 +30,8 @@ function BaseCthulhuianParasite:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 10
-	movement.maxAcceleration = 12
+	movement.maxSpeed = 5
+	movement.maxAcceleration = 6
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

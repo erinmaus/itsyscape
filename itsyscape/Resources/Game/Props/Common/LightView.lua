@@ -37,7 +37,7 @@ function LightView:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
-	self.light:setColor(Color(unpack(state.color)))
+	self.light:setColor(Color(unpack(state.color or {})))
 	self.light:setIsGlobal(state.global)
 end
 

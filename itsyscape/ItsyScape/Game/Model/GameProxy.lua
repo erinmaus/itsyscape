@@ -21,8 +21,8 @@ GameProxy.quit = Event.ClientToServerRPC()
 GameProxy.onLeave = Event.ServerToClientRPC()
 GameProxy.onLeave:link("onLeave")
 
-GameProxy.getTicks = Property()
-GameProxy.getCurrentTick = Property()
+GameProxy.getTicks = Property(0)
+GameProxy.getCurrentTick = Property(0)
 
 GameProxy.spawnPlayer = Event.Create(PlayerProxy, function(event, gameManager, game, player)
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Player", player:getID(), player)

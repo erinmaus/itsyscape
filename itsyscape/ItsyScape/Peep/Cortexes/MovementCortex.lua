@@ -24,14 +24,6 @@ MovementCortex.GROUND_EPSILON = 0.1
 -- +/- CLAMP_EPSILON, then the component is clamped to zero.
 MovementCortex.CLAMP_EPSILON = 0.05
 
--- Baseline for tick.
---
--- The MovementCortex was built under the assumption of 10 ticks/second. If this
--- number changes in the future, the acceleration and velocity need to be smudged
--- to feel the same. The 'multiplier' calculation in update keeps the movement
--- roughly consistent no matter the ticks/second.
-MovementCortex.BASE_LINE_TICKS = 10
-
 function MovementCortex:new()
 	Cortex.new(self)
 
@@ -79,8 +71,6 @@ function MovementCortex:update(delta)
 	local gravity = game:getStage():getGravity()
 	local map = game:getStage():getMap()
 
-	local multiplier = 1 + (game:getTicks() - 10) / 200
-
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
@@ -104,7 +94,7 @@ function MovementCortex:update(delta)
 			local acceleration = movement.acceleration * delta * movement.accelerationMultiplier + movement.additionalAcceleration
 			acceleration = self:accumulate(peep, self.accumulateAcceleration, acceleration)
 
-			movement.velocity = movement.velocity + acceleration * multiplier
+			movement.velocity = movement.velocity + acceleration
 			clampVector(movement.velocity)
 
 			do
@@ -124,12 +114,9 @@ function MovementCortex:update(delta)
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
-			position.position = position.position + velocity * multiplier
+			position.position = position.position + velocity
 
 			local newTile, newI, newJ = map:getTileAt(position.position.x, position.position.z)
-
-			movement.acceleration = movement.acceleration * 1 / (1 + movement.decay * 8 * delta)
-			movement.velocity = movement.velocity * 1 / (1 + movement.decay * 8 * delta)
 
 			if newTile:hasFlag('impassable') or
 			   newTile:hasFlag('door') or
@@ -142,12 +129,13 @@ function MovementCortex:update(delta)
 					oldPosition.x, oldPosition.z)
 				local snappedX = reflectionX + position.position.x
 				local snappedZ = reflectionZ + position.position.z
-				local snappedTile = map:getTileAt(snappedX, snappedZ)
+				local snappedPosition = Vector(snappedX, position.position.y, snappedZ)
+				local snappedTile = map:getTileAt(snappedPosition.x, snappedPosition.z)
 
-				if not snappedTile:getIsPassable() or map:isOutOfBounds(snappedX, snappedZ) then
+				if not snappedTile:getIsPassable() or map:isOutOfBounds(snappedPosition.x, snappedPosition.z) then
 					position.position = Vector(oldPosition:get())
 				else
-					position.position = Vector(snappedX, position.position.y, snappedZ)
+					position.position = snappedPosition
 				end
 
 				peep:poke('movedOutOfBounds')
@@ -184,8 +172,8 @@ function MovementCortex:update(delta)
 				movement.velocity.y = 0
 
 				if movement.isStopping then
-					movement.acceleration = movement.acceleration * movement.decay ^ movement.stoppingForce
-					movement.velocity = movement.velocity * movement.decay ^ movement.stoppingForce
+					movement.acceleration = movement.acceleration * movement.decay * delta
+					movement.velocity = movement.velocity * movement.decay * delta
 				end
 			else
 				position.position.y = math.max(position.position.y, y)

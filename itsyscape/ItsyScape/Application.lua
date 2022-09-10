@@ -282,6 +282,21 @@ function Application:doCommonTick()
 	while #self.ticks > self.MAX_TICKS do
 		table.remove(self.ticks)
 	end
+
+	local average
+	do
+		local sum = 0
+		for i = 1, #self.ticks do
+			sum = sum + self.ticks[i]
+		end
+		average = sum / math.max(#self.ticks, 1)
+	end
+
+	self.adaptiveTick = average
+end
+
+function Application:getAdaptiveTickDelta()
+	return self.adaptiveTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
@@ -447,14 +462,9 @@ function Application:getFrameDelta()
 	local currentTime = love.timer.getTime()
 	local previousTime = self.previousTickTime
 
-	local gameDelta = self:getGame():getDelta()
-	if not gameDelta then
-		return 0
-	else
-		-- Generate a delta (0 .. 1 inclusive) between the current and previous
-		-- frames
-		return math.min(math.max((currentTime - previousTime) / gameDelta, 0), 1)
-	end
+	-- Generate a delta (0 .. 1 inclusive) between the current and previous
+	-- frames
+	return math.min(math.max((currentTime - previousTime) / self:getAdaptiveTickDelta(), 0), 1)
 end
 
 function Application:drawDebug()
@@ -488,18 +498,9 @@ function Application:drawDebug()
 				1 / sum)
 	end
 
-	local ping
-	do
-		local sum = 0
-		for i = 1, #self.ticks do
-			sum = sum + self.ticks[i]
-		end
-		ping = sum / math.max(#self.ticks, 1)
-	end
-
 	r = r .. string.format(
-			"ping: %.04f ms\n",
-			ping * 1000)
+			"tick delta: %.04f ms\n",
+			self:getAdaptiveTickDelta() * 1000)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(

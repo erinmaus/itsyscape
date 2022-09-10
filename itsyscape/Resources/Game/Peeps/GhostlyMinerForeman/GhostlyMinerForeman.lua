@@ -29,7 +29,7 @@ function GhostlyMinerForeman:new(resource, name, ...)
 	size.size = Vector(2, 4, 2)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 4
+	movement.maxSpeed = 2
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.maxChaseDistance = math.huge

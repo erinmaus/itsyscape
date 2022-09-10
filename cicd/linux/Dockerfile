@@ -1,9 +1,12 @@
 FROM ubuntu:18.04
 USER root
 
-RUN mkdir -p /itsyrealm && mkdir -p /root/.local/share/ItsyRealm/
+RUN mkdir -p /itsyrealm && && \
+	mkdir -p /itsyrealm/config && \
+	mkdir -p /root/.local/share && \
+	ln -s /itsyrealm/config /root/.local/share/ItsyRealm
 ADD ./cicd/linux/love.AppImage ./cicd/linux/itsyrealm.love /itsyrealm
-ADD ./cicd/linux/settings.cfg /root/.local/share/ItsyRealm/settings.cfg
+ADD ./cicd/linux/settings.cfg /itsyrealm/config/settings.cfg
 
 WORKDIR /itsyrealm
 

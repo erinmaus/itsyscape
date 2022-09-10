@@ -83,8 +83,8 @@ function ZombiButler:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 22
-	movement.maxAcceleration = 18
+	movement.maxSpeed = 7
+	movement.maxAcceleration = 7
 	movement.stoppingForce = 4
 
 	local body = CacheRef(

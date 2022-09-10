@@ -59,8 +59,8 @@ function HaruChicken:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.bounce = 0.9
 	movement.bounceThreshold = 2.5
-	movement.maxSpeed = 16
-	movement.maxAcceleration = 16
+	movement.maxSpeed = 8
+	movement.maxAcceleration = 8
 	movement.maxStepHeight = math.huge
 
 	local combatStatus = self:getBehavior(CombatStatusBehavior)

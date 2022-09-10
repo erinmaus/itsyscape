@@ -46,8 +46,8 @@ function FungalDemogorgon:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 22
-	movement.maxAcceleration = 18
+	movement.maxSpeed = 11
+	movement.maxAcceleration = 9
 	movement.stoppingForce = 4
 
 	local body = CacheRef(

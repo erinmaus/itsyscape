@@ -22,7 +22,7 @@ function DirectionalLight:tick()
 	LightView.tick(self)
 
 	local state = self:getProp():getState()
-	self:getLight():setDirection(Vector(unpack(state.direction)):getNormal())
+	self:getLight():setDirection(Vector(unpack(state.direction or { 1, 0, 1 })):getNormal())
 end
 
 return DirectionalLight
