@@ -13,13 +13,13 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local StageProxy = {}
+local StageProxy = Proxy.Definition()
 
 StageProxy.MAP = "map"
 StageProxy.loadMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.Argument("tileSetID"))
 StageProxy.loadMap:link(
 	"onLoadMap",
@@ -29,11 +29,11 @@ StageProxy.loadMap:link(
 StageProxy.getMap = Event.Get(
 	StageProxy.MAP,
 	Event.Return("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.unloadMap = Event.Unset(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.unloadMap:link(
 	"onUnloadMap",
 	Event.Argument("map"),
@@ -41,7 +41,7 @@ StageProxy.unloadMap:link(
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.modifyMap:link(
 	"onMapModified",
 	Event.Argument("map"),
@@ -50,7 +50,7 @@ StageProxy.modifyMap:link(
 StageProxy.MAP_MOVE = "mapMove"
 StageProxy.moveMap = Event.Set(
 	StageProxy.MAP_MOVE,
-	Event.KeyArgument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.Argument("position"),
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
@@ -67,36 +67,56 @@ StageProxy.moveMap:link(
 StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
 	Event.Argument("map"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.stopMoveMap:link(
 	"onUnloadMap",
 	Event.Argument("map"),
 	Event.Argument("layer"))
 
-StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor)
+StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
+	if isMoving then
+		Log.engine("Actor '%s' (%d) is moving between instances; not emitting create.", actor:getName(), actor:getID())
+		return
+	end
+
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
 	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
-	instance:update()
-end)
+	instance:update(true)
+end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
-StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor)
+StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving, layer)
+	if isMoving then
+		Log.engine("Actor '%s' (%d) is moving between instances; not emitting destroy.", actor:getName(), actor:getID())
+		return
+	end
+
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor, layer)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Actor", actor:getID())
-end)
+end, Event.Argument("actor", true), Event.Argument("layer", true))
 StageProxy.killActor:link("onActorKilled")
 
-StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop)
+StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop, isMoving)
+	if isMoving then
+		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
+		return
+	end
+
 	local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
 	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
 	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)
-	instance:update()
-end)
+	instance:update(true)
+end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
-StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop)
+StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving, layer)
+	if isMoving then
+		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
+		return
+	end
+
+	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop, layer)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
-end)
+end, Event.Argument("prop", true), Event.Argument("layer", true))
 StageProxy.removeProp:link("onPropRemoved")
 
 StageProxy.ITEM = "item"
@@ -105,28 +125,32 @@ StageProxy.dropItem = Event.Set(
 	Event.KeyArgument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
-	Event.Argument("position"))
+	Event.Argument("position"),
+	Event.KeyArgument("layer"))
 StageProxy.dropItem:link(
 	"onDropItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
-	Event.Argument("position"))
+	Event.Argument("position"),
+	Event.Argument("layer"))
 StageProxy.takeItem = Event.Unset(
 	StageProxy.ITEM,
 	Event.KeyArgument("ref"),
-	Event.Argument("item"))
+	Event.Argument("item"),
+	Event.KeyArgument("layer"))
 StageProxy.takeItem:link(
 	"onTakeItem",
 	Event.Argument("ref"),
-	Event.Argument("item"))
+	Event.Argument("item"),
+	Event.Argument("layer"))
 
 StageProxy.DECORATION = "decoration"
 StageProxy.decorate = Event.Set(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
 	Event.Argument("decoration"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.decorate:link(
 	"onDecorate",
 	Event.Argument("group"),
@@ -135,16 +159,16 @@ StageProxy.decorate:link(
 StageProxy.undecorate = Event.Unset(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.undecorate:link(
 	"onUndecorate",
 	Event.KeyArgument("group"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer", true))
 
 StageProxy.WEATHER = "weather"
 StageProxy.forecast = Event.Set(
 	StageProxy.WEATHER,
-	Event.Argument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.KeyArgument("name"),
 	Event.Argument("id"),
 	Event.Argument("props"))
@@ -155,7 +179,7 @@ StageProxy.forecast:link(
 	Event.Argument("layer"))
 StageProxy.stopForecast = Event.Unset(
 	StageProxy.WEATHER,
-	Event.Argument("layer"),
+	Event.KeyArgument("layer", true),
 	Event.KeyArgument("name"))
 StageProxy.stopForecast:link(
 	"onStopForecast",
@@ -164,17 +188,19 @@ StageProxy.stopForecast:link(
 
 StageProxy.WATER = "water"
 StageProxy.flood = Event.Set(
+	StageProxy.WATER,
 	Event.KeyArgument("key"),
 	Event.Argument("water"),
-	Event.Argument("layer"))
+	Event.KeyArgument("layer", true))
 StageProxy.flood:link(
 	"onWaterFlood",
 	Event.Argument("key"),
 	Event.Argument("water"),
 	Event.Argument("layer"))
 StageProxy.drain = Event.Unset(
+	StageProxy.WATER,
 	Event.KeyArgument("key"),
-	Event.Argument("water"))
+	Event.KeyArgument("layer", true))
 StageProxy.drain:link(
 	"onWaterDrain",
 	Event.Argument("key"),
@@ -195,17 +221,21 @@ StageProxy.projectile:link(
 StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
 	Event.KeyArgument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.KeyArgument("layer"))
 StageProxy.playMusic:link(
 	"onPlayMusic",
 	Event.Argument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 StageProxy.stopMusic = Event.Unset(
 	Event.KeyArgument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.KeyArgument("layer"))
 StageProxy.stopMusic:link(
 	"onStopMusic",
 	Event.Argument("track"),
-	Event.Argument("song"))
+	Event.Argument("song"),
+	Event.Argument("layer"))
 
 return Proxy(StageProxy)

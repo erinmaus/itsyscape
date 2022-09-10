@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local Controller = Class()
 
@@ -24,6 +25,15 @@ end
 -- Gets the peep this controller belongs to.
 function Controller:getPeep()
 	return self.peep
+end
+
+function Controller:getPlayer()
+	local player = self.peep and self.peep:getBehavior(PlayerBehavior)
+	if player then
+		return self.director:getGameInstance():getPlayerByID(player.id)
+	end
+
+	return nil
 end
 
 -- Gets the director this controller belongs to.

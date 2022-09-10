@@ -48,46 +48,85 @@ function FoggyForest:new(resource, name, ...)
 	self:addPoke('ancientDriftwoodTreeHit')
 	self:addPoke('ancientDriftwoodTreeFelled')
 
-	self.nymph = false
-
 	self:addBehavior(BossStatsBehavior)
 
-	self.numFoesStat = BossStat({
+	self.nymphs = {}
+	self.numFoesStat = {}
+	self.treeHealthStat = {}
+end
+
+function FoggyForest:makeStats(player)
+	self.numFoesStat[player] = BossStat({
 		icon = "Resources/Game/UI/Icons/Concepts/Rage.png",
 		text = "Foes remaining",
 		inColor = { 0.78, 0.21, 0.21, 1.0 },
 		outColor = { 0.21, 0.67, 0.78, 1.0 },
 		current = 0,
-		max = 0
+		max = 0,
+		peep = player:getActor():getPeep()
 	})
 
-	self.treeHealthStat = BossStat({
+	self.treeHealthStat[player] = BossStat({
 		icon = "Resources/Game/Items/CopperHatchet/Icon.png",
 		text = "Tree health",
 		inColor = { 0.78, 0.21, 0.21, 1.0 },
 		outColor = { 0.21, 0.67, 0.78, 1.0 },
 		current = FoggyForest.NUM_TICKS,
-		max = FoggyForest.NUM_TICKS
+		max = FoggyForest.NUM_TICKS,
+		peep = player:getActor():getPeep()
 	})
 
 	local stats = self:getBehavior(BossStatsBehavior)
-	table.insert(stats.stats, self.numFoesStat)
-	table.insert(stats.stats, self.treeHealthStat)
+	table.insert(stats.stats, self.numFoesStat[player])
+	table.insert(stats.stats, self.treeHealthStat[player])
 end
 
-function FoggyForest:spawnBossyNymph()
-	local player = Utility.Peep.getPlayer(self)
+function FoggyForest:onPlayerEnter(player)
+	self.nymphs[player] = false
+	self:makeStats(player)
+end
+
+function FoggyForest:onPlayerLeave(player)
+	local nymph = self.nymphs[player]
+	if nymph and nymph.boss then
+		Utility.Peep.poof(nymph.boss)
+
+		for i = 1, #nymph.peeps do
+			Utility.Peep.poof(nymph.peeps[i])
+		end
+	end
+
+	local stats = self:getBehavior(BossStatsBehavior)
+	do
+		for i = 1, #stats.stats do
+			if stats.stats[i] == self.numFoesStat[player] then
+				table.remove(stats.stats, i)
+				break
+			end
+		end
+
+		for i = 1, #stats.stats do
+			if stats.stats[i] == self.treeHealthStat[player] then
+				table.remove(stats.stats, i)
+				break
+			end
+		end
+	end
+end
+
+function FoggyForest:spawnBossyNymph(e)
+	local player = e.peep
 	local adjacent = Utility.Peep.getPosition(player) - Vector.UNIT_X * 2
-	local actor = Utility.spawnActorAtPosition(self, FoggyForest.BOSS_UNATTACKABLE, adjacent.x, adjacent.y, adjacent.z, 0)
+	local actor = Utility.spawnActorAtPosition(self, FoggyForest.BOSS_UNATTACKABLE, adjacent.x, adjacent.y, adjacent.z, 2)
 
-	self.nymph = actor:getPeep()
+	local nymph = actor:getPeep()
 
-	self.nymph:listen('finalize', function()
-		Utility.UI.openInterface(player, "BossHUD", false, self.nymph)
+	nymph:listen('finalize', function()
+		Utility.UI.openInterface(player, "BossHUD", false, nymph)
 
 		local actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
-			Utility.Peep.getResource(self.nymph),
+			Utility.Peep.getResource(nymph),
 			'world')
 		for i = 1, #actions do
 			if actions[i].instance:is("talk") then
@@ -96,17 +135,25 @@ function FoggyForest:spawnBossyNymph()
 					"DialogBox",
 					true,
 					actions[i].instance:getAction(),
-					self.nymph)
+					nymph)
 			end
 		end
 	end)
 
-	self.nymph:listen('die', function()
+	nymph:listen('die', function()
 		player:getState():give("KeyItem", "CalmBeforeTheStorm_KilledBoundNymph", 1)
 	end)
+
+	self.nymphs[Utility.Peep.getPlayerModel(e.peep)] = {
+		boss = nymph,
+		peeps = {}
+	}
 end
 
 function FoggyForest:spawnFoes(e)
+	local playerModel = Utility.Peep.getPlayerModel(e.peep)
+
+	local peeps = self.nymphs[playerModel].peeps
 	for i = 1, FoggyForest.NUM_FOES do
 		local peep
 		do
@@ -125,22 +172,25 @@ function FoggyForest:spawnFoes(e)
 			Log.info("Spawned %s.", actor:getName())
 			actor:getPeep():listen('finalize', Utility.Peep.attack, actor:getPeep(), e.peep, math.huge)
 			actor:getPeep():listen('die', function()
-				self.numFoesStat.currentValue = self.numFoesStat.currentValue - 1
+				self.numFoesStat[playerModel].currentValue = self.numFoesStat[playerModel].currentValue - 1
 			end)
+
+			table.insert(peeps, actor:getPeep())
 		else
 			Log.warn("Failed to spawn '%s' @ '%s'.", peep, anchor)
 		end
 	end
 
-	self:makeNymphTalk(FoggyForest.BOSS_MESSAGES[math.random(#FoggyForest.BOSS_MESSAGES)])
+	self:makeNymphTalk(e.peep, FoggyForest.BOSS_MESSAGES[math.random(#FoggyForest.BOSS_MESSAGES)])
 
-	self.numFoesStat.currentValue = self.numFoesStat.currentValue + FoggyForest.NUM_FOES
-	self.numFoesStat.maxValue = self.numFoesStat.currentValue + FoggyForest.NUM_FOES
+	self.numFoesStat[playerModel].currentValue = self.numFoesStat[playerModel].currentValue + FoggyForest.NUM_FOES
+	self.numFoesStat[playerModel].maxValue = self.numFoesStat[playerModel].currentValue + FoggyForest.NUM_FOES
 end
 
-function FoggyForest:makeNymphTalk(message)
-	if self.nymph then
-		local actor = self.nymph:getBehavior(ActorReferenceBehavior)
+function FoggyForest:makeNymphTalk(player, message)
+	local nymph = self.nymphs[Utility.Peep.getPlayerModel(player)]
+	if nymph then
+		local actor = nymph.boss:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor = actor.actor
 			actor:flash('Message', 1, message, nil, 2.5)
@@ -151,26 +201,29 @@ end
 function FoggyForest:onAncientDriftwoodTreeHit(e)
 	Log.info('Ancient driftwood tree hit; at %d ticks.', e.ticks)
 
-	if not self.nymph then
+	if not self.nymphs[Utility.Peep.getPlayerModel(e.peep)] then
 		Log.info("Spawning bossy nymph...")
-		self:spawnBossyNymph()
+		self:spawnBossyNymph(e)
 	else
 		self:spawnFoes(e)
 	end
 
-	self.treeHealthStat.currentValue = self.treeHealthStat.currentValue - 1
+	local playerModel = Utility.Peep.getPlayerModel(e.peep)
+	self.treeHealthStat[playerModel].currentValue = self.treeHealthStat[playerModel].currentValue - 1
 end
 
 function FoggyForest:onAncientDriftwoodTreeFelled(e)
 	Log.info('Ancient driftwood tree felled after %d ticks.', e.ticks)
 
 	local gameDB = self:getDirector():getGameDB()
-	Utility.Peep.setResource(self.nymph, gameDB:getResource(FoggyForest.BOSS_ATTACKABLE, "Peep"))
-	Utility.Peep.attack(self.nymph, e.peep or Utility.Peep.getPlayer(self))
+	local playerModel = Utility.Peep.getPlayerModel(e.peep)
 
-	self:makeNymphTalk("Nooooo! FEEL MY WRATH!")
+	local nymph = self.nymphs[playerModel].boss
+	Utility.Peep.setResource(nymph, gameDB:getResource(FoggyForest.BOSS_ATTACKABLE, "Peep"))
+	Utility.Peep.attack(nymph, e.peep)
+	self:makeNymphTalk(e.peep, "Nooooo! FEEL MY WRATH!")
 
-	self.treeHealthStat.currentValue = self.treeHealthStat.currentValue - 1
+	self.treeHealthStat[playerModel].currentValue = self.treeHealthStat[playerModel].currentValue - 1
 end
 
 return FoggyForest

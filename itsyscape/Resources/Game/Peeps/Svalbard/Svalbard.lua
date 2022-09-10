@@ -198,7 +198,7 @@ end
 function Svalbard:onBoss()
 	if not self.fightStarted then
 		Utility.UI.openInterface(
-			Utility.Peep.getPlayer(self),
+			Utility.Peep.getInstance(self),
 			"BossHUD",
 			false,
 			self)

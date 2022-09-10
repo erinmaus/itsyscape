@@ -20,6 +20,16 @@ function SpriteManager:new(resourceManager)
 	self.nodes = {}
 end
 
+function SpriteManager:clear()
+	for i = 1, #self.sprites do
+		self.sprites[i]:poof()
+	end
+
+	table.clear(self.sprites)
+	table.clear(self.nodes)
+	table.clear(self.times)
+end
+
 function SpriteManager:getResources()
 	return self.resourceManager
 end

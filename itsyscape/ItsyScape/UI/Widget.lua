@@ -46,6 +46,7 @@ function Widget:new()
 	self.childProperties = {}
 	self.data = {}
 	self.toolTip = false
+	self.isClickThrough = false
 end
 
 function Widget:getID()
@@ -385,6 +386,14 @@ function Widget:setToolTip(...)
 	else
 		self.toolTip = { n = select('#', ...), ... }
 	end
+end
+
+function Widget:getIsClickThrough()
+	return self.isClickThrough
+end
+
+function Widget:setIsClickThrough(value)
+	self.isClickThrough = value or false
 end
 
 function Widget:performLayout()

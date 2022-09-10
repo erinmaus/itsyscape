@@ -25,6 +25,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
@@ -36,7 +37,7 @@ DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
 	"TitleScreen_EmptyRuins",
-	"TitleScreen_RuinsOfRhysilk"
+	"TitleScreen_RuinsOfRhysilk",
 }
 
 function DemoApplication:new()
@@ -52,8 +53,19 @@ function DemoApplication:new()
 	self.mouseX, self.mouseY = math.huge, math.huge
 
 	self.cameraController = DefaultCameraController(self)
-	self:getGame():getPlayer().onChangeCamera:register(self.changeCamera, self)
-	self:getGame():getPlayer().onPokeCamera:register(self.pokeCamera, self)
+
+	self:getGame().onReady:register(function(_, player)
+		player.onChangeCamera:register(self.changeCamera, self)
+		player.onPokeCamera:register(self.pokeCamera, self)
+		player.onSave:register(self.savePlayer, self)
+
+		self:getGameView():reset()
+		self:tryOpenTitleScreen()
+	end)
+
+	self:getGame().onPlayerPoofed:register(function(_, player)
+		self:quitPlayer(player)
+	end)
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)
@@ -74,6 +86,25 @@ function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
 end
 
+function DemoApplication:setPlayerFilename(value)
+	self.playerFilename = value
+end
+
+function DemoApplication:savePlayer(_, storage)
+	love.filesystem.createDirectory("Player")
+
+	Log.info("Saving player data to '%s'...", self.playerFilename)
+
+	local result = storage:toString()
+	love.filesystem.write(self.playerFilename, result)
+end
+
+function DemoApplication:quitPlayer()
+	Log.info("Player quit their session.")
+
+	self:disconnect()
+end
+
 function DemoApplication:initialize()
 	Application.initialize(self)
 
@@ -84,17 +115,16 @@ end
 
 function DemoApplication:tickSingleThread()
 	Application.tickSingleThread(self)
-	self:tryOpenTitleScreen()
 end
 
 function DemoApplication:tickMultiThread()
 	Application.tickMultiThread(self)
-	self:tryOpenTitleScreen()
 end
 
 function DemoApplication:closeTitleScreen()
 	self:setIsPaused(false)
 	self.titleScreen = nil
+	self.pendingTitleScreenOpen = true
 
 	self:closeMainMenu()
 end
@@ -124,7 +154,7 @@ function DemoApplication:openTitleScreen()
 		}
 	})
 
-	self:getGame():getPlayer():spawn(storage, false)
+	self:getGame():getPlayer():spawn(storage, false, self:getPassword())
 
 	self:getGameView():playMusic('main', "IsabelleIsland")
 end
@@ -253,6 +283,31 @@ function DemoApplication:openMainMenu()
 	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	self.mainMenu:addChild(soundButton)
 
+	local networkButton = Button()
+	networkButton:setStyle(ButtonStyle(
+		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
+		self:getUIView():getResources()))
+	networkButton.onClick:register(function()
+		self:openOptionsScreen(Network, function(type, ...)
+			if type == Network.ACTION_CONNECT then
+				self:connect(...)
+			elseif type == Network.ACTION_HOST then
+				self:host(...)
+			else
+				self:disconnect()
+			end
+
+			self:closeMainMenu()
+			self:openMainMenu()
+		end)
+	end)
+	networkButton:setPosition(
+		w - BUTTON_SIZE - PADDING,
+		h - BUTTON_SIZE * 4 - PADDING * 6)
+	networkButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+	networkButton:setToolTip(ToolTip.Text("Configure controls."))
+	self.mainMenu:addChild(networkButton)
+
 	local closeButton = Button()
 	closeButton:setStyle(ButtonStyle({
 		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
@@ -279,6 +334,22 @@ function DemoApplication:openMainMenu()
 	if self.titleScreen then
 		self.titleScreen:enableLogo()
 	end
+end
+
+function DemoApplication:onNetworkError(client, message)
+	self.titleScreen:disableLogo()
+
+	local error = AlertWindow(self)
+	error:open(
+		"A network error ocurred: " .. message,
+		"Error Connecting",
+		480,
+		320)
+	error.onSubmit:register(function()
+		self.titleScreen:enableLogo()
+	end)
+
+	Application.onNetworkError(self, client, message)
 end
 
 function DemoApplication:openOptionsScreen(Type, callback)
@@ -483,6 +554,10 @@ end
 
 function DemoApplication:updatePlayerMovement()
 	local player = self:getGame():getPlayer()
+	if not player then
+		return
+	end
+
 	local up = love.keyboard.isDown('w')
 	local down = love.keyboard.isDown('s')
 	local left = love.keyboard.isDown('a')

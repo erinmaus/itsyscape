@@ -165,10 +165,4 @@ end
 
 do
 	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_Floor5_Introduction"
-
-	ItsyScape.Meta.CutsceneMapObject {
-		Name = "Orlando",
-		Cutscene = Cutscene,
-		Resource = M["Orlando"]
-	}
 end

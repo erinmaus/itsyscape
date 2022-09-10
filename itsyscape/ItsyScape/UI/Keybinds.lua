@@ -27,6 +27,7 @@ add('PLAYER_1_MOVE_RIGHT', 'd')
 add('PLAYER_1_FLEE',       'escape')
 add('PLAYER_1_FOCUS',      'tab')
 add('PLAYER_1_CAMERA',     '/')
+add('PLAYER_1_CHAT',       'return')
 
 -- Strategy bar
 add('STRATEGY_BAR_SLOT_1',  '1')

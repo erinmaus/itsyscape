@@ -1,3 +1,15 @@
+require "love"
+require "love.data"
+require "love.event"
+require "love.filesystem"
+require "love.keyboard"
+require "love.math"
+require "love.mouse"
+require "love.physics"
+require "love.system"
+require "love.thread"
+require "love.timer"
+
 _MOBILE = false
 
 do
@@ -32,7 +44,7 @@ do
 			sourceDirectory,
 			path)
 		
-		if love.system.getOS() == "OS X" then
+		if love.system.getOS() == "OS X" or love.system.getOS() == "Linux" then
 			_ANALYTICS_DISABLED = true
 		end
 	end
@@ -41,6 +53,33 @@ end
 do
 	local B = require "B"
 	B._ROOT = "ItsyScape.Mashina"
+
+	local Node = B.Node
+
+	B.Node = function(name)
+		local node = Node(name)
+
+		local Metatable = getmetatable(node)
+		local oldNewIndex = Metatable.__newindex
+
+		function Metatable:__newindex(key, value)
+			if type(value) == "function" or (getmetatable(value) and getmetatable(value).__call) then
+				rawset(self, key, function(...)
+					local s, r = xpcall(value, debug.traceback, ...)
+					if not s then
+						Log.error("Error executing node.%s: %s", key, r)
+						return B.Status.Failure
+					end
+
+					return r
+				end)
+			else
+				oldNewIndex(self, key, value)
+			end
+		end
+
+		return node
+	end
 end
 
 do
@@ -50,4 +89,16 @@ end
 Log = require "ItsyScape.Common.Log"
 function Log.analytic(...)
 	Log.warnOnce("Analytics not installed.")
+end
+
+Log.setLogSuffix(_LOG_SUFFIX)
+if _LOG_SUFFIX then
+	Log.info("ItsyRealm bootstrapped (%s).\n", _LOG_SUFFIX)
+else
+	Log.engine("ItsyRealm bootstrapped.")
+end
+
+if love.system.getOS() == "OS X" then
+	Log.info("Running on macOS, disabling JIT.")
+	require("jit").off()
 end

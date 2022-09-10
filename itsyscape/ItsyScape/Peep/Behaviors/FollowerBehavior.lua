@@ -25,6 +25,7 @@ function FollowerBehavior:new()
 
 	self.scope = "General"
 	self.id = FollowerBehavior.NIL_ID
+	self.playerID = FollowerBehavior.NIL_ID
 end
 
 return FollowerBehavior

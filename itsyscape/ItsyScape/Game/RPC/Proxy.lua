@@ -13,6 +13,27 @@ local State = require "ItsyScape.Game.RPC.State"
 local Property = require "ItsyScape.Game.RPC.Property"
 
 local Proxy = Class()
+function Proxy.Definition()
+	local fields = {}
+	local function __newindex(self, key, value)
+		if value == nil then
+			for i = 1, #fields do
+				if fields[i].key == key then
+					table.remove(fields, i)
+					break
+				end
+			end
+		end
+
+		table.insert(fields, { key = key, value = value })
+		rawset(self, key, value)
+	end
+
+	return setmetatable({}, {
+		fields = fields,
+		__newindex = __newindex
+	})
+end
 
 Proxy.Field = Class()
 
@@ -33,9 +54,13 @@ function Proxy:new(definition)
 	self.fields = {}
 	self.events = {}
 	self.properties = {}
-	self.groups = {}
 
-	for key, value in pairs(definition) do
+	local fields = getmetatable(definition).fields
+
+	for _, field in ipairs(fields) do
+		local key = field.key
+		local value = field.value
+
 		if Class.isCompatibleType(value, Property) then
 			self:createProperty(key, value)
 		elseif Class.isCompatibleType(value, Event.BaseCall) then
@@ -64,6 +89,14 @@ function Proxy:createEvent(key, event)
 	table.insert(self.events, Proxy.Field(key, event))
 end
 
+function Proxy:iterateFields()
+	return ipairs(self.fields)
+end
+
+function Proxy:iterateEvents()
+	return ipairs(self.events)
+end
+
 function Proxy:wrapServer(interface, id, instance, gameManager)
 	for i = 1, #self.properties do
 		local propertyName = self.properties[i]:getKey()
@@ -84,7 +117,7 @@ function Proxy:wrapServer(interface, id, instance, gameManager)
 		elseif Class.isCompatibleType(event, Event.ServerToClientRPC) then
 			instance[event:getCallbackName()]:register(gameManager.invokeCallback, gameManager, interface, id, event)
 		elseif Class.isCompatibleType(event, Event.ClientToServerRPC) then
-			Log.debug("Ignoring event '%s' of type 'ClientToServerRPC'; wrapping for server, not client.")
+			Log.debug("Ignoring event '%s' of type 'ClientToServerRPC'; wrapping for server, not client.", key)
 		elseif Class.isCompatibleType(event, Event.Create) then
 			instance[event:getCallbackName()]:register(event:getFunc(), event, gameManager)
 		elseif Class.isCompatibleType(event, Event.Destroy) then

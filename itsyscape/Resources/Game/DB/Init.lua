@@ -7,6 +7,9 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+
+_LOG_SUFFIX = "GameDB"
+
 local Curve = require "ItsyScape.Game.Curve"
 
 Game "ItsyScape"
@@ -129,7 +132,9 @@ Game "ItsyScape"
 
 	Meta "PeepMapObject" {
 		Peep = Meta.TYPE_RESOURCE,
-		MapObject = Meta.TYPE_RESOURCE
+		MapObject = Meta.TYPE_RESOURCE,
+		DoesNotDespawn = Meta.TYPE_INTEGER,
+		DoesNotRespawn = Meta.TYPE_INTEGER
 	}
 
 	Meta "MapObjectGroup" {
@@ -144,13 +149,33 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Raid"
+
+	Meta "RaidDestination" {
+		Map = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Raid = Meta.TYPE_RESOURCE
+	}
+
+	Meta "RaidGroup" {
+		Raid = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Travel"
+	ActionType "PartyTravel"
 
 	Meta "TravelDestination" {
 		Map = Meta.TYPE_RESOURCE,
 		Arguments = Meta.TYPE_TEXT,
 		Anchor = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "PartyTravelDestination" {
+		Action = Meta.TYPE_ACTION,
+		Raid = Meta.TYPE_RESOURCE,
+		AnchorOverride = Meta.TYPE_TEXT
 	}
 
 	Meta "GatherableProp" {

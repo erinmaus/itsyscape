@@ -11,17 +11,17 @@ local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local ClientRPCService = require "ItsyScape.Game.RPC.ClientRPCService"
+local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
-local GameView = require "ItsyScape.Graphics.GameView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
-local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ToolTip = require "ItsyScape.UI.ToolTip"
-local UIView = require "ItsyScape.UI.UIView"
 
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
@@ -60,8 +60,6 @@ local function inspectGameDB(gameDB)
 	end
 end
 
-local FONT = love.graphics.getFont()
-
 local Application = Class()
 Application.CLICK_NONE = 0
 Application.CLICK_ACTION = 1
@@ -69,16 +67,9 @@ Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
+Application.MAX_TICKS = 100
 
 function Application:new(multiThreaded)
-	self.camera = ThirdPersonCamera()
-	do
-		self.camera:setDistance(30)
-		self.camera:setUp(Vector(0, -1, 0))
-		self.camera:setHorizontalRotation(-math.pi / 8)
-		self.camera:setVerticalRotation(-math.pi / 2)
-	end
-
 	self.previousTickTime = love.timer.getTime()
 	self.startDrawTime = false
 	self.time = 0
@@ -90,30 +81,54 @@ function Application:new(multiThreaded)
 
 	self.multiThreaded = multiThreaded or false
 
+	self.adminChannel = love.thread.newChannel()
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
-
 
 	if not self.multiThreaded then
 		self.localGame = LocalGame(self.gameDB)
 	else
-		self.remoteGameManager = RemoteGameManager(self.outputChannel, self.inputChannel, self.gameDB)
+		self.rpcService = ChannelRPCService(self.outputChannel, self.inputChannel)
+		self.remoteGameManager = RemoteGameManager(self.rpcService, self.gameDB)
+
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG
-		})
-		self.remoteGameManager.onTick:register(self.tickMultiThread, self)
+		}, self.adminChannel)
+
+		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
 
 	self:getGame().onLeave:register(self.quitGame, self)
 
-	self.gameView = GameView(self:getGame())
-	self.uiView = UIView(self.gameView)
-
 	self.times = {}
+	self.ticks = {}
 
-	self.gameView:getRenderer():setCamera(self.camera)
+	if _CONF.server then
+		Log.info("Server only.")
+		self:host(_CONF.lastInputPort or '18323', _CONF.lastPassword or "")
+	else
+		local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+		local GameView = require "ItsyScape.Graphics.GameView"
+		local UIView = require "ItsyScape.UI.UIView"
+
+		self.camera = ThirdPersonCamera()
+		do
+			self.camera:setDistance(30)
+			self.camera:setUp(Vector(0, -1, 0))
+			self.camera:setHorizontalRotation(-math.pi / 8)
+			self.camera:setVerticalRotation(-math.pi / 2)
+		end
+
+		self.gameView = GameView(self:getGame())
+		self.gameView:attach()
+		self.uiView = UIView(self.gameView)
+
+		self.gameView:getRenderer():setCamera(self.camera)
+
+		self.defaultFont = love.graphics.getFont()
+	end
 
 	self.showDebug = true
 	self.show2D = true
@@ -254,28 +269,126 @@ function Application:update(delta)
 		self.remoteGameManager:receive()
 	end
 
-	self:measure('gameView:update()', function() self.gameView:update(delta) end)
-	self:measure('uiView:update()', function() self.uiView:update(delta) end)
+	if not _CONF.server then
+		self:measure('gameView:update()', function() self.gameView:update(delta) end)
+		self:measure('uiView:update()', function() self.uiView:update(delta) end)
+	end
 
 	self.clickActionTime = self.clickActionTime - delta
 end
 
+function Application:doCommonTick()
+	table.insert(self.ticks, 1, love.timer.getTime() - self.previousTickTime)
+	while #self.ticks > self.MAX_TICKS do
+		table.remove(self.ticks)
+	end
+end
+
 function Application:tickSingleThread()
+	self:doCommonTick()
+
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 
 function Application:tickMultiThread()
+	self:doCommonTick()
+
 	self:measure('gameView:tick()', function() self.gameView:tick() end)
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
+end
+
+function Application:tickServer()
+	self:doCommonTick()
+end
+
+function Application:swapRPCService(RPCServiceType, ...)
+	if self.rpcService then
+		Log.info("Existing RPC service (%s), shutting down...", self.rpcService:getDebugInfo().shortName)
+
+		self.rpcService:close()
+
+		Log.info("Shut down existing RPC service.")
+	end
+
+	self.rpcService = RPCServiceType(...)
+	self.remoteGameManager:swapRPCService(self.rpcService)
+end
+
+function Application:host(port, password)
+	Log.info("Hosting on port %d.", port)
+
+	self.adminChannel:push({
+		type = 'host',
+		address = "*",
+		port = tostring(port),
+		password = password
+	})
+
+	self:setPassword(password)
+	self:swapRPCService(ClientRPCService, "localhost", tostring(port))
+end
+
+function Application:disconnect()
+	Log.info("Switching to single player.")
+
+	self.adminChannel:push({
+		type = 'disconnect'
+	})
+
+	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+end
+
+function Application:connect(address, port, password)
+	Log.info("Connecting to %s:%d.", address, port)
+
+	self:setPassword(password)
+	self:swapRPCService(ClientRPCService, address, tostring(port))
+
+	self.rpcService.onError:register(self.onNetworkError, self)
+
+	_CONF.lastInputAddress = address
+	_CONF.lastInputPort = tostring(port)
+	_CONF.lastPassword = password
+
+	self.tickTripTime = 0
+	self.tickTripTotal = 0
+end
+
+function Application:setPassword(password)
+	self.password = value
+end
+
+function Application:getPassword()
+	return self.password
+end
+
+function Application:onNetworkError(_, message)
+	Log.info("Could not connect (%s); switching to single player.", message)
+	self:disconnect()
 end
 
 function Application:quit()
 	if self.multiThreaded then
 		self.game:quit()
 		self.remoteGameManager:pushTick()
-		self.gameThread:wait()
+
+		if self.rpcService then
+			self.rpcService:close()
+		end
+
+		if self.gameThread then
+			self.adminChannel:push({
+				type = 'quit'
+			})
+			self.gameThread:wait()
+
+			local e = self.gameThread:getError()
+			if e then
+				Log.warn("Error quitting logic thread: %s", e)
+			end
+		end
 	end
 
 	return false
@@ -339,8 +452,8 @@ function Application:getFrameDelta()
 		return 0
 	else
 		-- Generate a delta (0 .. 1 inclusive) between the current and previous
-		-- frames'
-		return (currentTime - previousTime) / gameDelta
+		-- frames
+		return math.min(math.max((currentTime - previousTime) / gameDelta, 0), 1)
 	end
 end
 
@@ -349,7 +462,7 @@ function Application:drawDebug()
 		return
 	end
 
-	love.graphics.setFont(FONT)
+	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
 	local width = love.window.getMode()
@@ -357,24 +470,46 @@ function Application:drawDebug()
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f (%010d)\n",
+			"%s: %.04f ms (%010d)\n",
 			self.times[i].name,
-			self.times[i].value,
+			self.times[i].value * 1000,
 			1 / self.times[i].value)
 		sum = sum + self.times[i].value
 	end
 	if 1 / sum < 60 then
 		r = r .. string.format(
-				"!!! sum: %.04f (%010d)\n",
-				sum,
+				"!!! sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	else
 		r = r .. string.format(
-				"sum: %.04f (%010d)\n",
-				sum,
+				"sum: %.04f ms (%010d)\n",
+				sum * 1000,
 				1 / sum)
 	end
 
+	local ping
+	do
+		local sum = 0
+		for i = 1, #self.ticks do
+			sum = sum + self.ticks[i]
+		end
+		ping = sum / math.max(#self.ticks, 1)
+	end
+
+	r = r .. string.format(
+			"ping: %.04f ms\n",
+			ping * 1000)
+
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.printf(
+		r,
+		width - 600 + 1,
+		1,
+		600,
+		'right')
+
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(
 		r,
 		width - 600,
@@ -384,6 +519,10 @@ function Application:drawDebug()
 end
 
 function Application:_draw()
+	if _CONF.server then
+		return
+	end
+
 	local width, height = love.window.getMode()
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)

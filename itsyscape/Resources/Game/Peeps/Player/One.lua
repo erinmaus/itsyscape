@@ -271,7 +271,7 @@ function One:ready(director, game)
 		'feet'
 	}
 
-	local skin = director:getPlayerStorage():getRoot():getSection("Player"):getSection("Skin")
+	local skin = director:getPlayerStorage(self):getRoot():getSection("Player"):getSection("Skin")
 	for i = 1, #SLOTS do
 		local slot = SLOTS[i]
 		if skin:hasSection(slot) then

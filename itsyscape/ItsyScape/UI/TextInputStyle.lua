@@ -147,7 +147,7 @@ function TextButtonStyle:draw(widget)
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
 			itsyrealm.graphics.printf(
-				widget:getText(),
+				{ widget:getText() },
 				textX + 1,
 				textY + 1,
 				textWidth,
@@ -156,7 +156,7 @@ function TextButtonStyle:draw(widget)
 
 		love.graphics.setColor(self.color:get())
 		itsyrealm.graphics.printf(
-			widget:getText(),
+			{ widget:getText() },
 			textX,
 			textY,
 			textWidth,

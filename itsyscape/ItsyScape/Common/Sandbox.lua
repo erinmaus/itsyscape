@@ -93,8 +93,11 @@ local function Sandbox()
 		os = {
 			clock = os.clock,
 			difftime = os.difftime,
-			time = os.time
+			time = os.time,
+			date = os.date
 		},
+
+		love = love,
 
 		Action = require "ItsyScape.GameDB.Commands.Action",
 		ActionCategory = require "ItsyScape.GameDB.Commands.ActionCategory",

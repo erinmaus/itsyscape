@@ -12,6 +12,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 
 local BasicChest = Class(Prop)
@@ -25,6 +27,83 @@ function BasicChest:new(...)
 	Utility.Peep.addInventory(self, SimpleInventoryProvider)
 
 	self:addPoke('materialize')
+end
+
+function BasicChest:onFinalize(director, game)
+	Prop.onFinalize(self, director, game)
+
+	self:registerWithInstance()
+end
+
+function BasicChest:registerWithInstance()
+	if self.currentInstance then
+		self.currentInstance.onPlayerEnter:unregister(self._onPlayerEnter)
+	end
+
+	self.currentInstance = Utility.Peep.getInstance(self)
+	if self.currentInstance then
+		self._onPlayerEnter = self._onPlayerEnter or function(_, player)
+			self:reloadInventory(player:getID())
+		end
+
+		self.currentInstance.onPlayerEnter:register(self._onPlayerEnter)
+	end
+end
+
+function BasicChest:move(director, key)
+	Prop.move(self, director, key)
+
+	self:registerWithInstance()
+
+	if key then
+		self:reloadInventory()
+	end
+end
+
+function BasicChest:reloadInventory(incomingPlayerID)
+	local inventoryBehavior = self:getBehavior(InstancedInventoryBehavior)
+	if not inventoryBehavior then
+		return
+	end
+
+	if not incomingPlayerID then
+		Log.info("Removing all instanced chest inventories.")
+
+		for playerID, inventory in ipairs(inventoryBehavior.inventory) do
+			if inventory then
+				local player = self:getDirector():getGameInstance():getPlayerByID(playerID)
+				if player then
+					Log.info(
+						"Removing instanced chest inventory for player '%s' (%d).",
+						player:getActor():getName(), player:getID())
+				else
+					Log.info("Player %d no longer exists.", playerID)
+				end
+
+				local inventory = inventoryBehavior.inventory[playerID]
+				inventory:getBroker():removeProvider(inventory, true)
+
+				inventoryBehavior.inventory[playerID] = nil
+			end
+		end
+	else
+		local player = self:getDirector():getGameInstance():getPlayerByID(incomingPlayerID)
+		if player then
+			Log.info(
+				"Removing instanced chest inventory for player '%s' (%d).",
+				player:getActor():getName(), player:getID())
+		else
+			Log.error("Incoming player %d does not exist!", incomingPlayerID)
+		end
+
+		local inventory = inventoryBehavior.inventory[incomingPlayerID]
+		if inventory then
+			inventory:getBroker():removeProvider(inventory, true)
+			inventoryBehavior.inventory[incomingPlayerID] = nil
+
+			Log.info("Successfully removed instanced chest inventory.")
+		end
+	end
 end
 
 function BasicChest.getDroppedItem(loot, weight)
@@ -89,6 +168,30 @@ function BasicChest:onMaterialize(e)
 	end
 end
 
+function BasicChest:addItemToInstancedInventory(player, itemID, itemCount)
+	local inventory = Utility.Peep.prepInstancedInventory(self, SimpleInventoryProvider, player)
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	local transaction = broker:createTransaction()
+	transaction:addParty(inventory)
+	transaction:spawn(inventory, itemID, itemCount, true, true)
+	local success = transaction:commit()
+
+	local playerModel = Utility.Peep.getPlayerModel(player)
+	if not success then
+		Log.warn(
+			"Couldn't spawn item %s (count = %d) for player %s (%d) in '%s'.",
+			itemID, itemCount, playerModel:getActor():getName(), playerModel:getID(), self:getName())
+	else
+		Log.engine(
+			"Successfully spawned item %s (count = %d) for player %s (%d) in '%s'.",
+			itemID, itemCount, playerModel:getActor():getName(), playerModel:getID(), self:getName())
+	end
+end
+
 function BasicChest:reward(action, e, xp)
 	local gameDB = action:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -99,7 +202,14 @@ function BasicChest:reward(action, e, xp)
 		if resourceType.name:lower() == "skill" then
 			xp[resource.name] = (xp[resource.name] or 0) + output.count
 		elseif resourceType.name:lower() == "item" then
-			e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+			if self:hasBehavior(InstancedInventoryBehavior) then
+				self:addItemToInstancedInventory(
+					e.peep,
+					resource.name,
+					output.count)
+			else
+				e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+			end
 		else
 			Log.warn("Unhandled reward: '%s' of type '%s' (%dx)", resource.name, resourceType.name, output.count)
 		end

@@ -23,6 +23,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -82,15 +83,10 @@ function Utility.save(player, saveLocation, talk, ...)
 			end
 		end
 
-		local filename = root:get("filename")
-		if not filename then
-			return false
+		local playerModel = Utility.Peep.getPlayerModel(player)
+		if playerModel then
+			playerModel:onSave(storage)
 		end
-
-		love.filesystem.createDirectory("Player")
-
-		local result = storage:toString()
-		love.filesystem.write(filename, result)
 
 		local actor = player:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor and talk then
@@ -144,7 +140,7 @@ function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
 	if resource then
 		local name = "resource://" .. resource.name
 		local stage = peep:getDirector():getGameInstance():getStage(peep)
-		local s, a = stage:spawnActor(name)
+		local s, a = stage:spawnActor(name, Utility.Peep.getLayer(peep), peep:getLayerName())
 		if s then
 			local actorPeep = a:getPeep()
 
@@ -215,7 +211,7 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
 
-	local actor, prop = stage:instantiateMapObject(mapObject, Utility.Peep.getLayer(peep))
+	local actor, prop = stage:instantiateMapObject(mapObject, Utility.Peep.getLayer(peep), peep:getLayerName())
 	
 	if actor then
 		local actorPeep = actor:getPeep()
@@ -303,7 +299,7 @@ function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
 	end
 
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
-	local success, prop = stage:placeProp("resource://" .. prop.name, layer)
+	local success, prop = stage:placeProp("resource://" .. prop.name, layer, peep:getLayerName())
 
 	if success then
 		local propPeep = prop:getPeep()
@@ -765,6 +761,24 @@ Utility.Text.BE = {
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
 
+function Utility.Text.getPronouns(peep)
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		if #gender.pronouns > 0 then
+			return gender.pronouns
+		else
+			return Utility.Text.DEFAULT_PRONOUNS["en-US"][gender.gender or "x"]
+		end
+	end
+
+	return {
+		"???",
+		"???",
+		"???",
+		"???"
+	}
+end
+
 function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	lang = lang or "en-US"
 
@@ -820,6 +834,7 @@ Utility.UI = {}
 Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
+		"Chat",
 		"ProCombatStatusHUD"
 	}
 }
@@ -857,13 +872,28 @@ function Utility.UI.broadcast(ui, peep, interfaceID, ...)
 end
 
 function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
-	local ui = peep:getDirector():getGameInstance():getUI()
-	if blocking then
-		local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
-		return n ~= nil, n, controller
+	local Instance = require "ItsyScape.Game.LocalModel.Instance"
+
+	if Class.isCompatibleType(peep, Instance) then
+		local results = {}
+		for _, player in peep:iteratePlayers() do
+			local playerPeep = player:getActor() and player:getActor():getPeep()
+			if playerPeep then
+				table.insert(results, {
+					Utility.UI.openInterface(playerPeep, interfaceID, blocking, ...)
+				})
+			end
+		end
+		return results
 	else
-		local _, n, controller= ui:open(peep, interfaceID, ...)
-		return n ~= nil, n, controller
+		local ui = peep:getDirector():getGameInstance():getUI()
+		if blocking then
+			local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
+			return n ~= nil, n, controller
+		else
+			local _, n, controller= ui:open(peep, interfaceID, ...)
+			return n ~= nil, n, controller
+		end
 	end
 end
 
@@ -887,11 +917,11 @@ end
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
-function Utility.Item.getStorage(peep, tag, clear)
+function Utility.Item.getStorage(peep, tag, clear, player)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
 
-	local storage = Utility.Peep.getStorage(peep)
+	local storage = Utility.Peep.getStorage(peep, player)
 	if storage then
 		if clear then
 			storage:getSection("Inventory"):removeSection(tag)
@@ -1092,7 +1122,7 @@ end
 
 Utility.Map = {}
 
-function Utility.Map.playCutscene(peep, resource, cameraName)
+function Utility.Map.playCutscene(peep, resource, cameraName, player, entities)
 	local director = peep:getDirector()
 
 	if type(resource) == 'string' then
@@ -1103,7 +1133,9 @@ function Utility.Map.playCutscene(peep, resource, cameraName)
 		peep:getLayerName(),
 		require "ItsyScape.Peep.Peeps.Cutscene",
 		resource,
-		cameraName)
+		cameraName,
+		player,
+		entities)
 end
 
 function Utility.Map.getTilePosition(director, i, j, layer)
@@ -1114,12 +1146,16 @@ end
 
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
-	local mapScript = stage:getMapScript(layer)
+	local instance = stage:getInstanceByLayer(layer)
+	local mapScript = instance:getMapScriptByLayer(layer)
 
 	local center = stage:getMap(layer):getTileCenter(i, j)
-
-	local transform = Utility.Peep.getTransform(mapScript)
-	return Vector(transform:transformPoint(center.x, center.y, center.z))
+	if not mapScript then
+		return center
+	else
+		local transform = Utility.Peep.getTransform(mapScript)
+		return Vector(transform:transformPoint(center.x, center.y, center.z))
+	end
 end
 
 function Utility.Map.getMapObject(game, map, name)
@@ -1233,7 +1269,8 @@ end
 
 function Utility.Map.spawnMap(peep, map, position, args)
 	local stage = peep:getDirector():getGameInstance():getStage()
-	local mapLayer, mapScript = stage:loadMapResource(map, args)
+	local instance = stage:getPeepInstance(peep)
+	local mapLayer, mapScript = stage:loadMapResource(instance, map, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
 	p.position = position
@@ -1245,8 +1282,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 	local WATER_ELEVATION = 1.75
 
 	local stage = peep:getDirector():getGameInstance():getStage()
-
-	local shipLayer, shipScript = stage:loadMapResource(shipName)
+	local instance = stage:getPeepInstance(peep)
+	local shipLayer, shipScript = stage:loadMapResource(instance, shipName)
 
 	if shipScript then
 		local baseMap = stage:getMap(layer)
@@ -1265,7 +1302,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer)
+		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, shipScript:getLayerName())
 		if boatFoamProp then
 			local peep = boatFoamProp:getPeep()
 			peep:listen('finalize', function()
@@ -1279,7 +1316,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer)
+		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, shipScript:getLayerName())
 		if boatFoamTrailProp then
 			local peep = boatFoamTrailProp:getPeep()
 			peep:listen('finalize', function()
@@ -1301,20 +1338,32 @@ end
 Utility.Peep = {}
 
 function Utility.Peep.getPlayerModel(peep)
-	return peep:getDirector():getGameInstance():getPlayer()
+	local game = peep:getDirector():getGameInstance()
+
+	local follower = peep:getBehavior(FollowerBehavior)
+	if follower and follower.playerID ~= FollowerBehavior.NIL_ID then
+		return game:getPlayerByID(follower.playerID)
+	end
+
+	local player = peep:getBehavior(PlayerBehavior)
+	if player then
+		return game:getPlayerByID(player.id)
+	end
+
+	local stage = peep:getDirector():getGameInstance():getStage()
+	local instance = stage:getPeepInstance(peep)
+	local leader = instance and instance:getPartyLeader()
+	return leader
 end
 
 function Utility.Peep.getPlayerActor(peep)
-	return peep:getDirector():getGameInstance():getPlayer():getActor()
+	local model = Utility.Peep.getPlayerModel(peep)
+	return model and model:getActor()
 end
 
 function Utility.Peep.getPlayer(peep)
 	local actor = Utility.Peep.getPlayerActor(peep)
-	if actor then
-		return actor:getPeep()
-	end
-
-	return nil
+	return actor and actor:getPeep()
 end
 
 function Utility.Peep.dismiss(peep)
@@ -1430,18 +1479,26 @@ end
 function Utility.Peep.getParentTransform(peep)
 	local director = peep:getDirector()
 	local stage = director:getGameInstance():getStage()
-	local mapReference = peep:getBehavior(MapResourceReferenceBehavior)
-	if mapReference and mapReference.map then
-		local mapScript = stage:getMapScript(mapReference.map.name)
-		if mapScript then
-			return Utility.Peep.getTransform(mapScript)
-		end
+	local layer = Utility.Peep.getLayer(peep)
+
+	local instance = stage:getInstanceByLayer(layer)
+	if not instance then
+		return love.math.newTransform()
 	end
 
-	return nil
+	local mapScript = instance:getMapScriptByLayer(layer)
+	if not mapScript then
+		return love.math.newTransform()
+	end
+
+	return Utility.Peep.getMapTransform(mapScript)
 end
 
 function Utility.Peep.getLayer(peep)
+	if not peep then
+		return nil
+	end
+
 	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
 		return peep:getLayer()
 	end
@@ -1603,7 +1660,7 @@ function Utility.Peep.getDescription(peep, lang)
 	return string.format("It's a %s.", peep:getName())
 end
 
-function Utility.Peep.getStorage(peep)
+function Utility.Peep.getStorage(peep, instancedPlayer)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
 
@@ -1621,7 +1678,12 @@ function Utility.Peep.getStorage(peep)
 			if singleton and singleton:get("Singleton") ~= 0 then
 				local name = singleton:get("SingletonID")
 				if name and name ~= "" then
-					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					Log.engine(
+						"Trying to get singleton peep storage for player '%s' (%d).",
+						(instancedPlayer and instancedPlayer:getName()) or "<invalid>",
+						(instancedPlayer and Utility.Peep.getPlayerModel(instancedPlayer) and Utility.Peep.getPlayerModel(instancedPlayer):getID()) or -1)
+
+					local worldStorage = director:getPlayerStorage(instancedPlayer or Utility.Peep.getPlayer(peep)):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection("Singleton")
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 
@@ -1659,7 +1721,7 @@ function Utility.Peep.getStorage(peep)
 				local name = location:get("Name")
 				local map = location:get("Map")
 				if name and name ~= "" and map then
-					local worldStorage = director:getPlayerStorage():getRoot():getSection("World")
+					local worldStorage = director:getPlayerStorage(peep):getRoot():getSection("World")
 					local mapStorage = worldStorage:getSection(map.name)
 					local peepStorage = mapStorage:getSection("Peeps"):getSection(name)
 
@@ -2303,6 +2365,10 @@ function Utility.Peep.getTier(peep)
 	return 0
 end
 
+function Utility.Peep.getInstance(peep)
+	return peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
+end
+
 function Utility.Peep.getMap(peep)
 	local director = peep:getDirector()
 	local position = peep:getBehavior(PositionBehavior)
@@ -2328,11 +2394,12 @@ function Utility.Peep.getMapResource(peep)
 end
 
 function Utility.Peep.getMapResourceFromLayer(peep)
-	local name = peep:getLayerName()
-	local stage = peep:getDirector():getGameInstance():getStage()
-	local mapPeep = stage:getMapScript(name)
-	if mapPeep then
-		return Utility.Peep.getResource(mapPeep)
+	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
+	if instance then
+		local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+		if mapScript then
+			return Utility.Peep.getResource(mapScript)
+		end
 	end
 
 	return nil
@@ -2340,21 +2407,13 @@ end
 
 function Utility.Peep.setMapResource(peep, map)
 	local _, mapResourceReference = peep:addBehavior(MapResourceReferenceBehavior)
-
-	if type(map) == 'string' then
-		local stage = peep:getDirector():getGameInstance():getStage()
-		local mapPeep = stage:getMapScript(map)
-		mapResourceReference.map = Utility.Peep.getResource(mapPeep)
-	else
-		mapResourceReference.map = map
-	end
+	mapResourceReference.map = map
 end
 
 function Utility.Peep.getMapScript(peep)
-	local map = Utility.Peep.getMapResource(peep)
-	if map then
-		local stage = peep:getDirector():getGameInstance():getStage()
-		return stage:getMapScript(map.name)
+	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
+	if instance then
+		return instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
 	end
 end
 
@@ -2391,6 +2450,10 @@ function Utility.Peep.setNameMagically(peep)
 end
 
 function Utility.Peep.poof(peep)
+	if peep:wasPoofed() then
+		return
+	end
+
 	local function performPoof()
 		local stage = peep:getDirector():getGameInstance():getStage()
 
@@ -2609,6 +2672,27 @@ function Utility.Peep.addInventory(peep, InventoryType)
 
 	peep:listen('assign', Utility.Peep.Inventory.onAssign)
 	peep:listen('ready', Utility.Peep.Inventory.onReady)
+end
+
+function Utility.Peep.prepInstancedInventory(peep, InventoryType, player)
+	InventoryType = InventoryType or require "ItsyScape.Game.SimpleInventoryProvider"
+	local inventoryBehavior = peep:getBehavior(InstancedInventoryBehavior)
+
+	if not inventoryBehavior then
+		return nil
+	end
+
+	local playerModel = Utility.Peep.getPlayerModel(player)
+
+	local inventory = inventoryBehavior.inventory[playerModel:getID()]
+	if not inventory then
+		inventory = InventoryType(peep, player)
+		inventoryBehavior.inventory[playerModel:getID()] = inventory
+
+		peep:getDirector():getItemBroker():addProvider(inventory)
+	end
+
+	return inventory
 end
 
 Utility.Peep.Equipment = {}

@@ -18,6 +18,7 @@ function LocalUI:new(game)
 	self.game = game
 	self.interfaces = {}
 	self.controllers = {}
+	self.blockingInterface = {}
 end
 
 function LocalUI:poke(interfaceID, index, actionID, actionIndex, e)
@@ -82,7 +83,7 @@ function LocalUI:getInterfacesForPeep(peep, interfaceID)
 		return function()
 			currentIndex, current = next(interfaces.v, currentIndex)
 			while currentIndex and interfaces.v[currentIndex]:getPeep() ~= peep do
-				currentIndex, current = next(interfaces, currentIndex)
+				currentIndex, current = next(interfaces.v, currentIndex)
 			end
 
 			return currentIndex, current
@@ -141,18 +142,18 @@ function LocalUI:open(peep, interfaceID, ...)
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
 	self.onPush(self, interfaceID, i.n, controller:pull())
-	self.onOpen(self, interfaceID, i.n)
+	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
 	return interfaceID, i.n, controller
 end
 
 function LocalUI:openBlockingInterface(peep, interfaceID, ...)
-	if self.blockingInterface then
-		self:interrupt()
+	if self.blockingInterface[peep] then
+		self:interrupt(peep)
 	end
 
 	local id, n, controller = self:open(peep, interfaceID, ...)
-	self.blockingInterface = {
+	self.blockingInterface[peep] = {
 		id = id,
 		index = n
 	}
@@ -160,12 +161,11 @@ function LocalUI:openBlockingInterface(peep, interfaceID, ...)
 	return id, n, controller
 end
 
-function LocalUI:interrupt()
-	if self.blockingInterface then
-		self:close(self.blockingInterface.id, self.blockingInterface.index)
+function LocalUI:interrupt(peep)
+	local blockingInterface = self.blockingInterface[peep]
+	if blockingInterface then
+		self:close(blockingInterface.id, blockingInterface.index)
 	end
-
-	self.blockingInterface = nil
 end
 
 function LocalUI:close(interfaceID, index)
@@ -178,19 +178,20 @@ function LocalUI:close(interfaceID, index)
 		return false
 	end
 
-	if self.blockingInterface then
-		if self.blockingInterface.id == interfaceID and
-		   self.blockingInterface.index == index
+	if self.blockingInterface[controller:getPeep()] then
+		local blockingInterface = self.blockingInterface[controller:getPeep()]
+		if blockingInterface.id == interfaceID and
+		   blockingInterface.index == index
 		then
-			self.blockingInterface = false
+			self.blockingInterface[controller:getPeep()] = nil
 		end
 	end
+
+	self.onClose(self, interfaceID, index, controller:getPlayer())
 
 	controller:close()
 	self.interfaces[interfaceID].v[index] = nil
 	self.controllers[controller] = nil
-
-	self.onClose(self, interfaceID, index)
 end
 
 function LocalUI:closeInstance(instance)

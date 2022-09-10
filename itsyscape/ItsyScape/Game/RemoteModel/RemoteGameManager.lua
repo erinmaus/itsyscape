@@ -25,11 +25,10 @@ local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
 local RemoteGameManager = Class(GameManager)
 
-function RemoteGameManager:new(inputChannel, outputChannel, ...)
+function RemoteGameManager:new(rpcService, ...)
 	GameManager.new(self)
 
-	self.inputChannel = inputChannel
-	self.outputChannel = outputChannel
+	self.rpcService = rpcService
 
 	self.pending = {}
 	self.outgoing = {}
@@ -48,13 +47,6 @@ function RemoteGameManager:new(inputChannel, outputChannel, ...)
 		self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance(),
 		self)
 	self.game = self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
-
-	self:newInstance("ItsyScape.Game.Model.Player", 0, RemotePlayer(self))
-	PlayerProxy:wrapClient(
-		"ItsyScape.Game.Model.Player",
-		0,
-		self:getInstance("ItsyScape.Game.Model.Player", 0):getInstance(),
-		self)
 	self:newInstance("ItsyScape.Game.Model.Stage", 0, RemoteStage(self))
 	StageProxy:wrapClient(
 		"ItsyScape.Game.Model.Stage",
@@ -76,6 +68,13 @@ function RemoteGameManager:new(inputChannel, outputChannel, ...)
 	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
 	self.onTick = Callback()
+
+	self.rpcService:connect(self)
+end
+
+function RemoteGameManager:swapRPCService(rpcService)
+	self.rpcService = rpcService
+	self.rpcService:connect(self)
 end
 
 function RemoteGameManager:push(e)
@@ -87,21 +86,22 @@ function RemoteGameManager:push(e)
 end
 
 function RemoteGameManager:send()
-	self.outputChannel:push(buffer.encode(self.outgoing))
-	self.outgoing = {}
+	for i = 1, #self.outgoing do
+		self.rpcService:send(0, self.outgoing[i])
+	end
+
+	table.clear(self.outgoing)
 end
 
 function RemoteGameManager:receive()
 	local e
 	repeat
-		e = self.inputChannel:pop()
+		e = self.rpcService:receive()
 		if e then
-			e = buffer.decode(e)
 			table.insert(self.pending, e)
 			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				self:flush()
-				return true
 			end
 		end
 	until e == nil
@@ -110,12 +110,11 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:flush()
-	local p = self.pending
-	for i = 1, #p do
-		self:process(p[i])
+	for i = 1, #self.pending do
+		self:process(self.pending[i])
 	end
 
-	self.pending = {}
+	table.clear(self.pending)
 end
 
 function RemoteGameManager:processCreate(e)
@@ -125,6 +124,8 @@ function RemoteGameManager:processCreate(e)
 		return
 	end
 
+	Log.engine("Creating '%s' (%d).", e.interface, e.id)
+
 	local proxyTypeName = string.format("%sProxy", e.interface)
 	local proxy = require(proxyTypeName)
 
@@ -133,6 +134,10 @@ function RemoteGameManager:processCreate(e)
 
 	self:newInstance(e.interface, e.id, instance)
 	proxy:wrapClient(e.interface, e.id, instance, self)
+end
+
+function RemoteGameManager:processCallback(e)
+	GameManager.processCallback(self, e)
 end
 
 function RemoteGameManager:processDestroy(e)

@@ -17,6 +17,8 @@ local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourc
 
 local AncientDriftwoodTree = Class(BasicTree)
 AncientDriftwoodTree.MAX_TICKS = 4
+AncientDriftwoodTree.NORMAL_COOLDOWN = 10
+AncientDriftwoodTree.FELLED_COOLDOWN = 15
 
 function AncientDriftwoodTree:new(...)
 	BasicTree.new(self, ...)
@@ -38,11 +40,14 @@ function AncientDriftwoodTree:onResourceObtained(e)
 	local t = director:probe(self:getLayerName(), Probe.resource(map))
 
 	if self.ticks <= AncientDriftwoodTree.MAX_TICKS then
-		self.spawnCooldown = 10
-
 		director:broadcast(t, 'ancientDriftwoodTreeHit', { ticks = self.ticks, peep = e.peep })
+
+		self.spawnCooldown = AncientDriftwoodTree.NORMAL_COOLDOWN
 	else
 		director:broadcast(t, 'ancientDriftwoodTreeFelled', { ticks = self.ticks, peep = e.peep })
+	
+		self.spawnCooldown = AncientDriftwoodTree.FELLED_COOLDOWN
+		self.ticks = 0
 	end
 end
 

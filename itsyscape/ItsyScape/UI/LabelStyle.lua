@@ -62,7 +62,14 @@ function LabelStyle:draw(widget, state)
 
 		local x = 0
 		if width == 0 then
-			width = font:getWidth(text)
+			local r
+			if type(text) == 'table' then
+				for i = 2, #text, 2 do
+					r = (r or "") .. text[i]
+				end
+			end
+
+			width = font:getWidth(r or text)
 
 			if self.align == 'center' then
 				x = -width / 2

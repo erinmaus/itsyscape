@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
@@ -46,6 +47,9 @@ end
 
 function HighChambersYendor:onFinalize(director, game)
 	self:initBoss(director, game)
+end
+
+function HighChambersYendor:onPlayerEnter(player)
 	self:initWater(director, game)
 end
 
@@ -155,41 +159,68 @@ function HighChambersYendor:onMinionRezzed(effect)
 	})
 end
 
-function HighChambersYendor:initWater(director, game)
+function HighChambersYendor:flood(pushOrPop)
+	local game = self:getDirector():getGameInstance()
 	local stage = game:getStage()
-	local player = game:getPlayer():getActor():getPeep()
+	local anchorTopLeft = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_TopLeft"))
+	local anchorBottomRight = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_BottomRight"))
+	local map = stage:getMap(self:getLayer())
+
+	local t, l, r, b
+	do
+		local _, i, j = map:getTileAt(anchorTopLeft.x, anchorTopLeft.z)
+		l = i
+		t = j
+	end
+	do
+		local _, i, j = map:getTileAt(anchorBottomRight.x, anchorBottomRight.z)
+		r = i
+		b = j
+	end
+
+	for j = t, b do
+		for i = l, r do
+			local tile = map:getTile(i, j)
+
+			if pushOrPop == 'push' then
+				tile:pushFlag('impassable')
+			elseif pushOrPop == 'pop' then
+				tile:popFlag('impassable')
+			end
+		end
+	end
+end
+
+function HighChambersYendor:initWater(director)
+	local stage = self:getDirector():getGameInstance():getStage()
+	local player
+	do
+		local instance = Utility.Peep.getInstance(self)
+		local raid = instance and instance:getRaid()
+		local party = raid and raid:getParty()
+		local leader = party and party:getLeader()
+		player = leader and leader:getActor():getPeep()
+		player = player or (instance and instance:getPartyLeader())
+	end
+
+	if not player then
+		Log.warn("Player not found; cannot initialize water.")
+		return
+	end
+
 	local state = player:getState()
 
 	if state:has("KeyItem", "HighChambersYendor_Lever1") and
 	   state:has("KeyItem", "HighChambersYendor_Lever2") and
 	   state:has("KeyItem", "HighChambersYendor_Lever3")
 	then
+		Log.info("Canal is not flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_DRAIN, self:getLayer())
+		self:flood('pop')
 	else
+		Log.info("Canal is flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_FLOOD, self:getLayer())
-
-		local anchorTopLeft = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_TopLeft"))
-		local anchorBottomRight = Vector(Utility.Map.getAnchorPosition(game, "HighChambersYendor_Floor4", "Anchor_Bridge_BottomRight"))
-		local map = stage:getMap(self:getLayer())
-
-		local t, l, r, b
-		do
-			local _, i, j = map:getTileAt(anchorTopLeft.x, anchorTopLeft.z)
-			l = i
-			t = j
-		end
-		do
-			local _, i, j = map:getTileAt(anchorBottomRight.x, anchorBottomRight.z)
-			r = i
-			b = j
-		end
-
-		for j = t, b do
-			for i = l, r do
-				local tile = map:getTile(i, j)
-				tile:pushFlag('impassable')
-			end
-		end
+		self:flood('push')
 	end
 end
 
@@ -211,49 +242,61 @@ function HighChambersYendor:killMinion(name)
 	end
 end
 
-function HighChambersYendor:onKillBoss(director, game)
-	local player = game:getPlayer():getActor():getPeep()
-	player:getState():give("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+function HighChambersYendor:onKillBoss(director, game, isabelle)
+	local isabelleActor = isabelle:getBehavior(ActorReferenceBehavior)
+	isabelleActor = isabelleActor and isabelleActor.actor
+
+	local instance = Utility.Peep.getInstance(self)
+	if instance and instance:hasRaid() then
+		local party = instance:getRaid():getParty()
+		for _, player in party:iteratePlayers() do
+			local playerPeep = player:getActor():getPeep()
+			playerPeep:getState():give("KeyItem", "CalmBeforeTheStorm_IsabelleDefeated")
+
+			Log.info(
+				"Player %s (%d) was rewarded with Isabelle's defeat.",
+				playerPeep:getName(), player:getID())
+
+			local target = playerPeep:getBehavior(CombatTargetBehavior)
+			if target and target.actor == isabelleActor then
+				Log.info(
+					"Player %s (%d) is dis-engaging from Isabelle.",
+					playerPeep:getName(),
+					player:getID())
+				playerPeep:removeBehavior(CombatTargetBehavior)
+			end
+		end
+	end
 
 	self:killMinion("Wizard")
 	self:killMinion("Archer")
 	self:killMinion("Warrior")
 
-	do
-		local hits = director:probe(
-			self:getLayerName(),
-			Probe.namedMapObject("Isabelle"))
-		if #hits >= 1 then
-			isabelle = hits[1]
-			isabelle:removeBehavior(MashinaBehavior)
-			isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
-			isabelle:pushPoke('resurrect')
+	isabelle:removeBehavior(MashinaBehavior)
+	isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	isabelle:pushPoke('resurrect')
 
-			local status = isabelle:getBehavior(CombatStatusBehavior)
-			status.dead = false
-			status.currentHitpoints = math.huge
+	local status = isabelle:getBehavior(CombatStatusBehavior)
+	status.dead = false
+	status.currentHitpoints = math.huge
 
-			player:removeBehavior(CombatTargetBehavior)
+	local mapObject = Utility.Map.getMapObject(
+		game,
+		"HighChambersYendor_Floor4",
+		"Isabelle_Dead")
+	Utility.Peep.setMapObject(isabelle, mapObject)
 
-			local mapObject = Utility.Map.getMapObject(
-				game,
-				"HighChambersYendor_Floor4",
-				"Isabelle_Dead")
-			Utility.Peep.setMapObject(isabelle, mapObject)
-
-			local actions = Utility.getActions(
-				game,
-				mapObject,
-				'world')
-			for i = 1, #actions do
-				if actions[i].instance:is("talk") then
-					return Utility.UI.openInterface(
-						player,
-						"DialogBox",
-						true,
-						actions[i].instance:getAction())
-				end
-			end
+	local actions = Utility.getActions(
+		game,
+		mapObject,
+		'world')
+	for i = 1, #actions do
+		if actions[i].instance:is("talk") then
+			return Utility.UI.openInterface(
+				instance,
+				"DialogBox",
+				true,
+				actions[i].instance:getAction())
 		end
 	end
 end

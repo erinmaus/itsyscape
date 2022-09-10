@@ -11,7 +11,11 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local ActorProxy = {}
+local ActorProxy = Proxy.Definition()
+
+ActorProxy.BODY = "body"
+ActorProxy.transmogrify = Event.Set(ActorProxy.BODY, Event.Argument("body"))
+ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))
 
 ActorProxy.SKIN = "skin"
 ActorProxy.setSkin = Event.Set(
@@ -36,6 +40,7 @@ ActorProxy.unsetSkin:link(
 	Event.Argument("skin"))
 
 ActorProxy.getID = Property()
+ActorProxy.getPeepID = Property()
 ActorProxy.getName = Property()
 ActorProxy.getDescription = Property()
 ActorProxy.getDirection = Property()
@@ -48,9 +53,6 @@ ActorProxy.direction = Event.ServerToClientRPC(
 	Event.Argument("direction"),
 	Event.Argument("rotation"))
 ActorProxy.direction:link("onDirectionChanged", Event.Argument("direction"), Event.Argument("rotation"))
-
-ActorProxy.transmogrify = Event.ServerToClientRPC(Event.Argument("body"))
-ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))
 
 ActorProxy.getPosition = Property()
 ActorProxy.getScale = Property()

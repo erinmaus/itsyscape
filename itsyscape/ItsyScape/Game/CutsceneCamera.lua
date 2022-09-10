@@ -12,9 +12,9 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 
 local CutsceneCamera = Class()
 
-function CutsceneCamera:new(game)
+function CutsceneCamera:new(game, player)
 	self.game = game
-	self.player = game:getPlayer()
+	self.player = player
 	self.director = game:getDirector()
 end
 

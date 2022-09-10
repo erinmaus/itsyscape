@@ -23,7 +23,15 @@ else
 	local maggotHits = _DIRECTOR:probe(
 		_TARGET:getLayerName(),
 		require("ItsyScape.Peep.Probe").resource("Peep", "PreTutorial_Maggot"))
-	local hasSpawnedMaggot = #maggotHits >= 1
+	local isMaggotAlive = false
+	for i = 1, #maggotHits do
+		local maggot = maggotHits[i]
+		local status = maggot:getBehavior("CombatStatus")
+		if not status.dead then
+			isMaggotAlive = true
+			break
+		end
+	end
 	local hasToyWeaponEquipped =
 		state:has('Item', "ToyLongsword", 1, { ['item-equipment'] = true }) or
 		state:has('Item', "ToyWand", 1, { ['item-equipment'] = true }) or
@@ -50,7 +58,7 @@ else
 		}
 
 		if hasToyWeaponEquipped then
-			if hasSpawnedMaggot then
+			if isMaggotAlive then
 				speaker "Edward"
 				message "Kill the m-m-monster, silly!"
 			else
@@ -61,6 +69,17 @@ else
 					_TARGET,
 					"Maggot",
 					"Anchor_Maggot")
+
+				maggot:getPeep():listen('die', function()
+					local status = maggot:getPeep():getBehavior("CombatStatus")
+					local peeps = status.damage
+					for peep in pairs(peeps) do
+						if peep:hasBehavior("Player") then
+							Log.info("Player '%s' helped save Edward.", peep:getName())
+							peep:getState():give("KeyItem", "PreTutorial_SavedGhostBoy")
+						end
+					end
+				end)
 
 				speaker "Edward"
 				message "S-S-SAVE ME!"

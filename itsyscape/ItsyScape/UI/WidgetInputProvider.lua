@@ -97,7 +97,8 @@ function WidgetInputProvider:isBlocking(x, y)
 	x, y = love.graphics.getScaledPoint(x, y)
 
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, true)
-	return widget ~= self.root and widget
+	local isClickThrough = widget and widget:getIsClickThrough()
+	return widget ~= self.root and widget and not isClickThrough
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)

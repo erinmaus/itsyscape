@@ -26,12 +26,13 @@ function TitleScreen:onLoad(filename, args, layer)
 		self,
 		"EmptyRuins_SistineOfTheSimulacrum_Outside",
 		TitleScreen.SISTINE_LOCATION)
-
-	self:pushPoke("initTitleScreen")
 end
 
-function TitleScreen:onInitTitleScreen()
-	local player = Utility.Peep.getPlayerModel(self)
+function TitleScreen:onPlayerEnter(player)
+	self:pushPoke("initTitleScreen", player)
+end
+
+function TitleScreen:onInitTitleScreen(player)
 	player:changeCamera("StandardCutscene")
 	player:pokeCamera("targetActor", player:getActor():getID())
 	player:pokeCamera("zoom", 100, 0)

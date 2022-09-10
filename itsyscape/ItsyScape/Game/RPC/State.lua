@@ -7,7 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local marshal = require "nbunny.marshal"
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 
@@ -95,22 +95,14 @@ function State:registerTypeProvider(typeName, provider, alias)
 		self.typeNames[alias] = result
 	end
 
-	function type._METATABLE.__persist(obj)
-		local S = require "ItsyScape.Game.RPC.State"
-		local state = S.getCurrentState()
-
+	function type._METATABLE.__persist(obj, state)
 		local r = {
-			typeName = result.typeName
+			typeName = result.typeName,
+			__persist = true
 		}
 		result.provider:serialize(obj, r, state)
 
-		return function()
-			local S = require "ItsyScape.Game.RPC.State"
-			local state = S.getCurrentState()
-			local t = state.typeNames[r.typeName]
-
-			return t.provider:deserialize(r, state)
-		end
+		return r
 	end
 end
 
@@ -123,24 +115,54 @@ local function isTable(value)
 	return type(value) == 'table' and not getmetatable(value)
 end
 
+local function serialize(self, obj)
+	if type(obj) == 'table' then
+		metatable = getmetatable(obj)
+		if metatable then
+			assert(metatable.__persist, "table with metatable does not have persist hook")
+
+			return metatable.__persist(obj, self)
+		else
+			local result = {}
+			for key, value in pairs(obj) do
+				assert(type(key) ~= "table", "tables as keys not supported")
+				assert(type(value) ~= "function", "function serialization not supported")
+				result[key] = serialize(self, value)
+			end
+
+			return result
+		end
+	end
+
+	return obj
+end
+
+local function deserialize(self, obj)
+	if type(obj) == 'table' then
+		if obj.__persist then
+			local t = self.typeNames[obj.typeName]
+			return t.provider:deserialize(obj, self)
+		else
+			-- Deserialize in place
+			for key, value in pairs(obj) do
+				obj[key] = deserialize(self, value)
+			end
+
+			return obj
+		end
+	end
+
+	return obj
+end
+
 function State:deserialize(obj)
-	_CURRENT_STATE = self
-
-	local result = marshal.decode(obj)
-
-	_CURRENT_STATE = nil
-
-	return result
+	local result = buffer.decode(obj)
+	return deserialize(self, result)
 end
 
 function State:serialize(obj)
-	_CURRENT_STATE = self
-
-	local result = marshal.encode(obj)
-
-	_CURRENT_STATE = nil
-
-	return result
+	local result = serialize(self, obj)
+	return buffer.encode(result)
 end
 
 return State

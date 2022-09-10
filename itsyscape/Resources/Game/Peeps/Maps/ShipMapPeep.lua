@@ -107,7 +107,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 	local map = args['map']
 	if map then
 		Log.info('Ship map: %s.', map)
-		local scriptLayer, script = stage:loadMapResource(map, {
+		local scriptLayer, script = stage:loadMapResource(
+			stage:getPeepInstance(self), map, {
 			ship = filename,
 			instance = self
 		})
@@ -144,7 +145,7 @@ function ShipMapPeep:onLoad(filename, args, layer)
 			z = (z or 0) + selfMap:getHeight() / 2 * selfMap:getCellSize()
 
 			local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", self:getPrefix(), self:getSuffix())
-			local _, boatFoamProp = stage:placeProp(boatFoamPropName, scriptLayer)
+			local _, boatFoamProp = stage:placeProp(boatFoamPropName, scriptLayer, self:getLayerName())
 			if boatFoamProp then
 				local peep = boatFoamProp:getPeep()
 				peep:listen('finalize', function()
@@ -157,7 +158,7 @@ function ShipMapPeep:onLoad(filename, args, layer)
 			end
 
 			local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", self:getPrefix(), self:getSuffix())
-			local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, scriptLayer)
+			local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, scriptLayer, self:getLayerName())
 			if boatFoamTrailProp then
 				local peep = boatFoamTrailProp:getPeep()
 				peep:listen('finalize', function()
@@ -316,11 +317,23 @@ function ShipMapPeep:update(director, game)
 			local previousMap = self.previousMap
 			local previousMapAnchor = self.previousMapAnchor
 
-			if previousMap and previousMapAnchor then
-				game:getStage():movePeep(
-					game:getPlayer():getActor():getPeep(),
-					previousMap,
-					previousMapAnchor)
+			if not self.isSunk and previousMap and previousMapAnchor then
+				local instance = Utility.Peep.getInstance(self)
+				if instance:getPartyLeader() then
+					game:getStage():movePeep(
+						instance:getPartyLeader():getActor():getPeep(),
+						previousMap,
+						previousMapAnchor)
+				end
+
+				for _, player in instance:iteratePlayers() do
+					if player ~= instance:getPartyLeader() then
+						game:getStage():movePeep(
+							player:getActor():getPeep(),
+							previousMap,
+							previousMapAnchor)
+					end
+				end
 			end
 
 			if not self.isSunk then
