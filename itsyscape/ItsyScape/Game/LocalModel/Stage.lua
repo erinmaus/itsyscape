@@ -127,6 +127,26 @@ function LocalStage:newLocalInstance(filename, args)
 	return instance
 end
 
+function LocalStage:unloadGlobalInstance(instance)
+	if instance:hasPlayers() then
+		Log.error("Cannot unload instance %s (%d); has players.", instance:getFilename(), instance:getID())
+		return
+	end
+
+	local instancesForFilename = self.instances[instance:getFilename()]
+	if instancesForFilename then
+		local instance = instancesForFilename.global
+		instance:unload()
+
+		instancesForFilename.global = nil
+
+		Log.info("Unloaded global instance %s.", instance:getFilename())
+		return
+	end
+
+	Log.error("Could not unload global instance %s; not found.", instance:getFilename())
+end
+
 function LocalStage:unloadLocalInstance(instance)
 	if instance:hasPlayers() then
 		Log.error("Cannot unload instance %s (%d); has players.", instance:getFilename(), instance:getID())
@@ -883,10 +903,9 @@ function LocalStage:movePeep(peep, path, anchor)
 
 			local hasInstance = previousInstance ~= nil
 			local hasNoPlayers = hasInstance and not previousInstance:hasPlayers()
-			local isLocal = hasInstance and previousInstance:getIsLocal()
 			local noRaid = hasInstance and not previousInstance:hasRaid()
 
-			if hasInstance and hasNoPlayers and isLocal and noRaid then
+			if hasInstance and hasNoPlayers and noRaid then
 				Log.info(
 					"Previous instance %s (%d) is empty; marking for removal.",
 					previousInstance:getFilename(), previousInstance:getID())
@@ -1384,7 +1403,12 @@ end
 
 function LocalStage:unloadInstancesPendingRemoval()
 	for i = 1, #self.instancesPendingUnload do
-		self:unloadLocalInstance(self.instancesPendingUnload[i])
+		local instance = self.instancesPendingUnload[i]
+		if instance:getIsGlobal() then
+			self:unloadGlobalInstance(instance)
+		else
+			self:unloadLocalInstance(instance)
+		end
 	end
 	table.clear(self.instancesPendingUnload)
 end
