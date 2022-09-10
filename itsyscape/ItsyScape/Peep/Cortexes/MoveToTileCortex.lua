@@ -34,7 +34,6 @@ function MoveToTileCortex:addPeep(peep)
 	self.speed[peep] = 0
 
 	local map = Utility.Peep.getMap(peep)
-	self.previousTileCenter[peep] = map:getTileCenter(Utility.Peep.getTile(peep))
 end
 
 function MoveToTileCortex:removePeep(peep)
@@ -85,16 +84,18 @@ function MoveToTileCortex:update(delta)
 
 				position.position = position.position + velocity * delta
 
+				local distance = (targetPosition - currentPosition):getLength()
+
 				local currentDistance = (position.position - targetPosition):getLength()
 				local previousTileCenter = self.previousTileCenter[peep]
-				local didOvershoot = previousTileCenter and (previousTileCenter - currentPosition):getLength() >= map:getCellSize() - 0.5
+				local didOvershoot = previousTileCenter and (previousTileCenter - currentPosition):getLength() >= (currentPosition - targetPosition):getLength()
 
 				if currentDistance < 0.5 or didOvershoot then
-					-- Otherwise, activate next node (if possible).
+					peep:removeBehavior(TargetTileBehavior)
+
 					if targetTile.nextPathNode then
 						targetTile.nextPathNode:activate(peep)
 					else
-						peep:removeBehavior(TargetTileBehavior)
 						movement.isStopping = true
 					end
 
