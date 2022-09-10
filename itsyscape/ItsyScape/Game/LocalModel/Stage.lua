@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
 local TransferItemCommand = require "ItsyScape.Game.TransferItemCommand"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
+local Instance = require "ItsyScape.Game.LocalModel.Instance"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
@@ -38,47 +39,188 @@ local LocalStage = Class(Stage)
 
 function LocalStage:new(game)
 	Stage.new(self)
+
 	self.game = game
+
 	self.actors = {}
 	self.props = {}
 	self.peeps = {}
-	self.decorations = {}
-	self.tileSets = {}
+
 	self.currentActorID = 1
 	self.currentPropID = 1
-	self.map = {}
-	self.numMaps = 0
-	self.mapScripts = {}
-	self.water = {}
-	self.gravity = Vector(0, -18, 0)
-	self.stageName = "::orphan"
-	self.tests = { id = 1 }
-	self.weathers = {}
-	self.music = {}
+	self.currentLayer = 1
 
 	self.grounds = {}
-	self:spawnGround(self.stageName, 1)
 
-	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
-	self.mapThread:start()
+	self.gravity = Vector(0, -18, 0)
+
+	self.tests = { id = 1 }
+
+	self.instances = {}
+	self.instancesByLayer = {}
+	self.instancesPendingUnload = {}
+end
+
+function LocalStage:newLayer(instance)
+	local layer = self.currentLayer
+	self.currentLayer = self.currentLayer + 1
+
+	self.instancesByLayer[layer] = instance
+
+	return layer
+end
+
+function LocalStage:deleteLayer(layer)
+	self.instancesByLayer[layer] = nil
+end
+
+function LocalStage:newGlobalInstance(filename)
+	do
+		local existingGlobalInstance = self.instances[filename]
+		existingGlobalInstance = existingGlobalInstance and existingGlobalInstance.global
+
+		if existingGlobalInstance then
+			Log.error("Global instance for '%s' already exists.", filename)
+			return existingGlobalInstance
+		end
+	end
+
+	local instance = Instance(Instance.GLOBAL_ID, filename, self)
+
+	local instancesForFilename = self.instances[filename]
+	if not instancesForFilename then
+		instancesForFilename = {
+			index = Instance.LOCAL_ID_START,
+			instances = {}
+		}
+
+		self.instances[filename] = instancesForFilename
+	end
+	instancesForFilename.global = instance
+
+	table.insert(self.instances, instance)
+	self:loadStage(instance, filename, {})
+
+	return instance
+end
+
+function LocalStage:newLocalInstance(filename, args)
+	local instancesForFilename = self.instances[filename]
+	if not instancesForFilename then
+		instancesForFilename = {
+			index = Instance.LOCAL_ID_START,
+			instances = {}
+		}
+
+		self.instances[filename] = instancesForFilename
+	end
+
+	local index = instancesForFilename.index
+	instancesForFilename.index = instancesForFilename.index + 1
+
+	local instance = Instance(index, filename, self)
+	table.insert(instancesForFilename.instances, instance)
+	table.insert(self.instances, instance)
+
+	self:loadStage(instance, filename, args)
+
+	return instance
+end
+
+function LocalStage:unloadLocalInstance(instance)
+	if instance:hasPlayers() then
+		Log.error("Cannot unload instance %s (%d); has players.", instance:getFilename(), instance:getID())
+		return
+	end
+
+	local instancesForFilename = self.instances[instance:getFilename()]
+	if instancesForFilename then
+		for i = 1, #instancesForFilename.instances do
+			if instancesForFilename.instances[i]:getID() == instance:getID() then
+				Log.info("Unloading instance %s (%d).", instance:getFilename(), instance:getID())
+
+				instance:unload()
+				table.remove(instancesForFilename.instances, i)
+
+				return
+			end
+		end
+	end
+
+	Log.error("Could not unload instance %s (%d); not found.", instance:getFilename(), instance:getID())
+end
+
+function LocalStage:getGlobalInstanceByFilename(filename)
+	local instances = self.instances[filename]
+	if not instances or not instances.global then
+		return nil
+	end
+
+	return instances.global
+end
+
+function LocalStage:getLocalInstanceByFilenameAndID(filename, id)
+	local instances = self.instances[filename]
+	if not instances then
+		return nil
+	end
+
+	instances = instances.instances
+	for i = 1, #instances do
+		if instances[i]:getID() == id then
+			return instances[i]
+		end
+	end
+
+	return nil
+end
+
+function LocalStage:getInstanceByFilenameAndID(filename, id)
+	if id == Instance.GLOBAL_ID then
+		return self:getGlobalInstanceByFilename(filename)
+	else
+		return self:getLocalInstanceByFilenameAndID(filename, id)
+	end
+end
+
+function LocalStage:getInstanceByLayer(layer)
+	return self.instancesByLayer[layer]
+end
+
+function LocalStage:getPeepInstance(peep)
+	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
+	return self:getInstanceByFilenameAndID(filename, id)
 end
 
 function LocalStage:spawnGround(filename, layer)
+	Log.engine(
+		"Spawning ground on layer %d in instance layer name '%s'.",
+		layer,
+		filename)
+
 	local ground = self.game:getDirector():addPeep(filename, require "Resources.Game.Peeps.Ground")
 	self.grounds[filename] = ground
 	self.grounds[layer] = ground
 
 	local inventory = ground:getBehavior(InventoryBehavior).inventory
-	inventory.onTakeItem:register(self.notifyTakeItem, self)
-	inventory.onDropItem:register(self.notifyDropItem, self)
+	inventory.onTakeItem:register(self.notifyTakeItem, self, layer)
+	inventory.onDropItem:register(self.notifyDropItem, self, layer)
 end 
 
-function LocalStage:notifyTakeItem(item, key)
+function LocalStage:notifyTakeItem(layer, item, key)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
+	Log.engine(
+		"Item '%s' (ref = %d, count = %d, noted = %s) taken from layer %d.",
+		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"), layer)
+
+	self.onTakeItem(
+		self,
+		ref,
+		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
+		layer)
 end
 
-function LocalStage:notifyDropItem(item, key, source)
+function LocalStage:notifyDropItem(layer, item, key, source)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
 	local position = source:getPeep():getBehavior(PositionBehavior)
 	if position then
@@ -88,31 +230,20 @@ function LocalStage:notifyDropItem(item, key, source)
 		position = Vector(0)
 	end
 
+	Log.engine(
+		"Item '%s' (ref = %d, count = %d, noted = %s) dropped at (%d, %d -> %f, %f, %f) on layer %d.",
+		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"),
+		key.i, key.j,
+		position.x, position.y, position.z,
+		layer)
+
 	self.onDropItem(
 		self,
 		ref,
 		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
 		{ i = key.i, j = key.j, layer = key.layer },
-		position)
-end
-
-function LocalStage:getMapScript(key)
-	if type(key) == 'number' then
-		for _, map in pairs(self.mapScripts) do
-			if map.layer == key then
-				return map.peep, map.filename
-			end
-		end
-
-		Log.warn("No map for layer %d.", key)
-	else
-		local map = self.mapScripts[key]
-		if map then
-			return map.peep, map.layer
-		else
-			return nil
-		end
-	end
+		position,
+		layer)
 end
 
 function LocalStage:lookupResource(resourceID, resourceType)
@@ -162,16 +293,14 @@ function LocalStage:lookupResource(resourceID, resourceType)
 	return Type, resource, realResourceID
 end
 
-function LocalStage:spawnActor(actorID, layer)
+function LocalStage:spawnActor(actorID, layer, layerName)
 	layer = layer or 1
 
 	local Peep, resource, realID = self:lookupResource(actorID, "Peep")
 
 	if Peep then
-		local actor = LocalActor(self.game, Peep)
-		actor:spawn(self.currentActorID, self.stageName, resource)
-
-		self.onActorSpawned(self, realID, actor)
+		local actor = LocalActor(self.game, Peep, realID)
+		actor:spawn(self.currentActorID, layerName, resource)
 
 		self.currentActorID = self.currentActorID + 1
 		self.actors[actor] = true
@@ -180,12 +309,17 @@ function LocalStage:spawnActor(actorID, layer)
 		self.peeps[actor] = peep
 		self.peeps[peep] = actor
 
-		peep:listen('ready', function()
+		local function _onAssign()
 			local p = peep:getBehavior(PositionBehavior)
 			if p then
 				p.layer = layer
 			end
-		end)
+
+			self.onActorSpawned(self, realID, actor)
+
+			peep:silence('assign', _onAssign)
+		end
+		peep:listen('assign', _onAssign)
 
 		return true, actor
 	end
@@ -199,7 +333,7 @@ function LocalStage:killActor(actor)
 			actor = self.peeps[actor]
 		end
 
-		self.onActorKilled(self, actor)
+		self.onActorKilled(self, actor, false, Utility.Peep.getLayer(actor:getPeep()))
 		actor:depart()
 
 		local peep = self.peeps[actor]
@@ -210,14 +344,14 @@ function LocalStage:killActor(actor)
 	end
 end
 
-function LocalStage:placeProp(propID, layer)
+function LocalStage:placeProp(propID, layer, layerName)
 	layer = layer or 1
 
 	local Peep, resource, realID = self:lookupResource(propID, "Prop")
 
 	if Peep then
-		local prop = LocalProp(self.game, Peep)
-		prop:place(self.currentPropID, self.stageName, resource)
+		local prop = LocalProp(self.game, Peep, realID)
+		prop:place(self.currentPropID, layerName, resource)
 
 		self.currentPropID = self.currentPropID + 1
 		self.props[prop] = true
@@ -247,7 +381,7 @@ function LocalStage:removeProp(prop)
 			prop = self.peeps[prop]
 		end
 
-		self.onPropRemoved(self, prop)
+		self.onPropRemoved(self, prop, false, Utility.Peep.getLayer(prop:getPeep()))
 		prop:remove()
 
 		local peep = self.peeps[prop]
@@ -258,7 +392,7 @@ function LocalStage:removeProp(prop)
 	end
 end
 
-function LocalStage:instantiateMapObject(resource, layer, isLayer)
+function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 	layer = layer or 1
 
 	local gameDB = self.game:getGameDB()
@@ -290,7 +424,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 			if prop and spawnProp then
 				prop = prop:get("Prop")
 				if prop then
-					local s, p = self:placeProp("resource://" .. prop.name, layer)
+					local s, p = self:placeProp("resource://" .. prop.name, layer, layerName)
 
 					if s then
 						local peep = p:getPeep()
@@ -347,7 +481,7 @@ function LocalStage:instantiateMapObject(resource, layer, isLayer)
 			if actor and spawnActor then
 				actor = actor:get("Peep")
 				if actor then
-					local s, a = self:spawnActor("resource://" .. actor.name, layer)
+					local s, a = self:spawnActor("resource://" .. actor.name, layer, layerName)
 
 					if s then
 						local peep = a:getPeep()
@@ -412,11 +546,10 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 
 	local map = Map.loadFromFile(filename)
 	if map then
-		self.map[layer] = map
-		self.onLoadMap(self, self.map[layer], layer, tileSetID)
+		self.onLoadMap(self, map, layer, tileSetID)
 		self.game:getDirector():setMap(layer, map)
 
-		self:updateMap(layer)
+		self:updateMap(layer, map)
 	end
 
 	if tileSetID then
@@ -438,32 +571,27 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	end
 end
 
-function LocalStage:newMap(width, height, layer, tileSetID)
-	self:unloadMap(layer)
+function LocalStage:newMap(width, height, tileSetID)
+	local layer = self:newLayer()
 
 	local map = Map(width, height, Stage.CELL_SIZE)
-	self.map[layer] = map
-	self.onLoadMap(self, self.map[layer], layer, tileSetID)
+	self.onLoadMap(self, map, layer, tileSetID)
 	self.game:getDirector():setMap(layer, map)
 
 	self:updateMap(layer)
 end
 
 function LocalStage:updateMap(layer, map)
-	if self.map[layer] then
-		if map then
-			self.map[layer] = map
-			self.game:getDirector():setMap(layer, map)
-		end
-
-		self.onMapModified(self, self.map[layer], layer)
+	if map then
+		self.game:getDirector():setMap(layer, map)
+		self.onMapModified(self, map, layer)
 	end
 end
 
 function LocalStage:unloadMap(layer)
-	if self.map[layer] then
-		self.onUnloadMap(self, self.map[layer], layer)
-		self.map[layer] = nil
+	local map = self.game:getDirector():getMap(layer)
+	if map then
+		self.onUnloadMap(self, map, layer)
 		self.game:getDirector():setMap(layer, nil)
 	end
 end
@@ -473,38 +601,39 @@ function LocalStage:flood(key, water, layer)
 end
 
 function LocalStage:drain(key, layer)
-	self.onWaterDrain(self, key)
+	self.onWaterDrain(self, key, layer)
 end
 
-function LocalStage:unloadAll()
-	do
-		self.game:getDirector():getItemBroker():toStorage()
+function LocalStage:unloadAll(instance)
+	-- TODO
+	-- do
+	-- 	self.game:getDirector():getItemBroker():toStorage()
+	-- end
+
+	for _, layer in instance:iterateLayers() do
+		self:unloadMap(layer)
 	end
 
-	local layers = self:getLayers()
-	for i = 1, #layers do
-		self:unloadMap(layers[i])
-	end
+	-- for key in pairs(self.water) do
+	-- 	self.onWaterDrain(self, key)
+	-- end
 
-	self.numMaps = 0
+	-- for group, decoration in pairs(self.decorations) do
+	-- 	self:decorate(group, nil)
+	-- end
 
-	for key in pairs(self.water) do
-		self.onWaterDrain(self, key)
-	end
-
-	for group, decoration in pairs(self.decorations) do
-		self:decorate(group, nil)
-	end
-
-	for weather in pairs(self.weathers) do
-		self:forecast(nil, weather, nil)
-	end
+	-- for weather in pairs(self.weathers) do
+	-- 	self:forecast(nil, weather, nil)
+	-- end
 
 	do
 		local p = {}
 
 		for prop in self:iterateProps() do
-			table.insert(p, prop)
+			local layer = Utility.Peep.getLayer(prop:getPeep())
+			if instance:hasLayer(layer) then
+				table.insert(p, prop)
+			end
 		end
 
 		for _, prop in ipairs(p) do
@@ -516,14 +645,14 @@ function LocalStage:unloadAll()
 		local p = {}
 
 		for actor in self:iterateActors() do
-			if actor ~= self.game:getPlayer():getActor() then
+			local layer = Utility.Peep.getLayer(actor:getPeep())
+			if instance:hasLayer(layer) and not actor:getPeep():getBehavior(PlayerBehavior) then
 				table.insert(p, actor)
 			end
 		end
 
 		do
-			self:collectItems()
-
+			self:collectItems(instance)
 			self.grounds = {}
 		end
 
@@ -532,11 +661,11 @@ function LocalStage:unloadAll()
 		end
 	end
 
-	self.game:getDirector():removeLayer(self.stageName)
-	self.mapScripts = {}
+	local layerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+	self.game:getDirector():removeLayer(layerName)
 end
 
-function LocalStage:movePeep(peep, path, anchor, force)
+function LocalStage:getFilenameFromPath(path)
 	local filename
 	do
 		local s, e = path:find("%?")
@@ -546,72 +675,233 @@ function LocalStage:movePeep(peep, path, anchor, force)
 		filename = path:sub(1, e - 1)
 	end
 
-	local playerPeep = self.game:getPlayer():getActor():getPeep()
-	if playerPeep == peep then
-		-- We want to reload if this is a new stage or if it's forced.
-		local teleportedPeep = false
-		if filename ~= self.stageName or force or filename ~= path then
-			local t1, t2
-			do
-				t1 = love.timer.getTime()
-				self:loadStage(path)
-				t2 = love.timer.getTime()
-			end
-			Log.debug("Loaded '%s' in %d ms.", path, (t2 - t1) * 1000)
-
-			teleportedPeep = true
-		end
-
-		playerPeep = self.game:getPlayer():getActor():getPeep()
-		local position = playerPeep:getBehavior(PositionBehavior)
-
-		if Class.isType(anchor, Vector) then
-			position.position = Vector(anchor.x, anchor.y, anchor.z)
-
-			local _, layer = self:getMapScript(self.stageName)
-			position.layer = layer
-		else
-			local gameDB = self.game:getGameDB()
-			local map = gameDB:getResource(filename, "Map")
-			if map then
-				local mapObject = gameDB:getRecord("MapObjectLocation", {
-					Name = anchor,
-					Map = map
-				})
-
-				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-				position.position = Vector(x, y, z)
-				position.layer = self.mapScripts[filename].layer
-
-				if not teleportedPeep then
-					peep:poke('travel', {
-						from = filename,
-						to = filename
-					})
-				end
-			end
-		end
-	else
-		local actor = peep:getBehavior(ActorReferenceBehavior)
-		local prop = peep:getBehavior(PropReferenceBehavior)
-		if actor and actor.actor then
-			self:killActor(actor.actor)
-		elseif prop and prop.prop then
-			self:removeProp(prop.prop)
-		else
-			Log.error("Cannot move peep '%s'; not player, actor, or prop.", peep:getName())
-			Log.warn("Removing peep '%s' anyway; may cause bad references.", peep:getName())
-			self.game:getDirector():removePeep(peep)
-		end
-	end
+	return filename:match("^@?([%w_]*)")
 end
 
-function LocalStage:loadMapResource(filename, args)
+function LocalStage:getArgumentsFromPath(path)
+	local filename
+	local args = {}
+	do
+		local s, e = path:find("%?")
+		s = s or 1
+		e = e or #path + 1
+		
+		filename = path:sub(1, e - 1)
+
+		local pathArguments = path:sub(e, -1)
+		for key, value in pathArguments:gmatch("([%w_@]+)=([%w_@]+)") do
+			Log.info("Map argument '%s' -> '%s'.", key, value)
+			args[key] = value
+		end
+	end
+
+	return args
+end
+
+function LocalStage:isPathLocal(path)
+	return path:match("^@") ~= nil or next(self:getArgumentsFromPath(path), nil) ~= nil
+end
+
+function LocalStage:isPathGlobal(path)
+	return path:match("^@") == nil and next(self:getArgumentsFromPath(path), nil) == nil
+end
+
+function LocalStage:splitLayerNameIntoInstanceIDAndFilename(layerName)
+	local id, filename = layerName:match("(%d*)@([%w_]*)")
+	if id and filename then
+		return tonumber(id), filename
+	end
+
+	return Instance.GLOBAL_ID, layerName
+end
+
+function LocalStage:buildLayerNameFromInstanceIDAndFilename(id, filename)
+	return string.format("%d@%s", id, filename)
+end
+
+function LocalStage:movePeep(peep, path, anchor)
+	local filename, arguments, instance
+	if type(path) == 'string' then
+		filename = self:getFilenameFromPath(path)
+		arguments = self:getArgumentsFromPath(path)
+
+		Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
+
+		if self:isPathLocal(path) then
+			instance = self:newLocalInstance(filename, arguments)
+			Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
+		elseif self:isPathGlobal(path) then
+			instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
+			Log.info("Path is global; getting global instance %s (%d).", instance:getFilename(), instance:getID())
+		end
+	elseif Class.isCompatibleType(path, Instance) then
+		instance = path
+
+		filename = instance:getFilename()
+
+		local mapScript = instance:getMapScriptByLayer(instance:getBaseLayer())
+		args = (mapScript and mapScript:getArguments()) or {}
+
+		Log.info("Moving peep '%s' to existing instance %s (%d).", instance:getFilename(), instance:getID())
+	end
+
+	if not instance then
+		if type(path) == 'string' then
+			Log.error("Path '%s' is malformed; not global (no prefix and no arguments) or local (prefixed with '@' or has arguments after '?').", path)
+		elseif Class.isClass(path) then
+			Log.error("Path is unexpected type '%s'.", instance:getDebugInfo().shortName)
+		else
+			Log.error("Expected string or instance, got '%s'.", type(path))
+		end
+
+		return nil
+	end
+
+	if peep:hasBehavior(PlayerBehavior) then
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+
+		local previousInstance = self:getPeepInstance(peep)
+		if previousInstance then
+			previousInstance:removePlayer(player)
+		end
+	end
+
+	do
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		prop = prop and prop.prop
+
+
+		if actor then
+			self:onActorKilled(actor, true)
+		end
+
+		if prop then
+			self:onPropRemoved(prop, true)
+		end
+	end
+
+	local previousLayer, newLayer
+	do
+		previousLayer = Utility.Peep.getLayer(peep)
+
+		local layer = instance:getBaseLayer()
+		if not layer then
+			Log.engine("No base layer in instance %s (%d); finding lowest layer.", instance:getFilename(), instance:getID())
+
+			for _, l in instance:iterateLayers() do
+				layer = math.min(layer or math.huge, l)
+			end
+		end
+
+		if not layer then
+			Log.error("No layer in instance '%s' (ID = %d).", instance:getFilename(), instance:getID())
+			return nil
+		else
+			Log.engine("Set peep '%s' layer to %d.", peep:getName(), layer)
+			Utility.Peep.setLayer(peep, layer)
+		end
+
+		if previousLayer ~= layer then
+			Log.engine("Layer different; firing travel event.")
+			peep:poke('travel', {
+				from = filename,
+				to = filename
+			})
+		end
+
+		newLayer = layer
+	end
+
+	if Class.isType(anchor, Vector) then
+		Utility.Peep.setPosition(peep, anchor)
+	else
+		local gameDB = self.game:getGameDB()
+		local map = gameDB:getResource(filename, "Map")
+		if map then
+			local mapObject = gameDB:getRecord("MapObjectLocation", {
+				Name = anchor,
+				Map = map
+			})
+
+			local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
+			Utility.Peep.setPosition(peep, Vector(x, y, z))
+		end
+	end
+
+	local newLayerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+	local oldLayerName
+
+	if peep:getBehavior(PlayerBehavior) then
+		oldLayerName = peep:getLayerName()
+	end
+
+	self.game:getDirector():movePeep(peep, newLayerName)
+
+	do
+		local gameDB = self.game:getGameDB()
+		local map = gameDB:getResource(filename, "Map")
+
+		local _, m = peep:addBehavior(MapResourceReferenceBehavior)
+		m.map = map
+	end
+
+	do
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		prop = prop and prop.prop
+
+		if actor then
+			self:onActorSpawned(actor:getPeepID(), actor, true)
+		end
+
+		if prop then
+			self:onPropPlaced(prop:getPeepID(), prop, true)
+		end
+	end
+
+	if peep:getBehavior(PlayerBehavior) then
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+		if player then
+			local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(oldLayerName)
+
+			local previousInstance = self:getInstanceByFilenameAndID(filename, id)
+			if previousInstance then
+				previousInstance:removePlayer(player)
+			else
+				Log.engine(
+					"Player '%s' (player ID = %d, actor ID = %d) was not in instance.",
+					player:getActor():getName(), player:getID(), player:getActor():getID())
+			end
+
+			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
+			player:setInstance(oldLayerName, newLayerName, instance)
+
+			local hasInstance = previousInstance ~= nil
+			local hasNoPlayers = hasInstance and not previousInstance:hasPlayers()
+			local isLocal = hasInstance and previousInstance:getIsLocal()
+			local noRaid = hasInstance and not previousInstance:hasRaid()
+
+			if hasInstance and hasNoPlayers and isLocal and noRaid then
+				Log.info(
+					"Previous instance %s (%d) is empty; marking for removal.",
+					previousInstance:getFilename(), previousInstance:getID())
+				table.insert(self.instancesPendingUnload, previousInstance)
+			end
+		end
+	end
+
+	return instance
+end
+
+function LocalStage:loadMapResource(instance, filename, args)
 	args = args or {}
-
+	local layerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
 	local directoryPath = "Resources/Game/Maps/" .. filename
-
-	local baseLayer = self.numMaps or 0
 
 	local meta
 	do
@@ -621,39 +911,42 @@ function LocalStage:loadMapResource(filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	local musicMeta
-	do
-		local metaFilename = directoryPath .. "/meta.music"
-		local data = "return " .. (love.filesystem.read(metaFilename) or "")
-		local chunk = assert(loadstring(data))
-		musicMeta = setfenv(chunk, {})() or {}
-	end
+	-- local musicMeta
+	-- do
+	-- 	local metaFilename = directoryPath .. "/meta.music"
+	-- 	local data = "return " .. (love.filesystem.read(metaFilename) or "")
+	-- 	local chunk = assert(loadstring(data))
+	-- 	musicMeta = setfenv(chunk, {})() or {}
+	-- end
 
-	for key, song in pairs(musicMeta) do
-		self:playMusic(self.stageName, key, song)
-	end
+	-- for key, song in pairs(musicMeta) do
+	-- 	self:playMusic(self.stageName, key, song)
+	-- end
 
-	local maxLayer = baseLayer
+	local baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
-		local layer = item:match(".*(-?%d)%.lmap$")
-		if layer then
-			layer = tonumber(layer)
+		local localLayer = item:match(".*(-?%d)%.lmap$")
+		if localLayer then
+			localLayer = tonumber(localLayer)
 
 			local tileSetID
-			if meta[layer] then
-				tileSetID = meta[layer].tileSetID
+			if meta[localLayer] then
+				tileSetID = meta[localLayer].tileSetID
 			end
 
-			local layerMeta = meta[layer] or {}
+			local layerMeta = meta[localLayer] or {}
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, layer + baseLayer, layerMeta.tileSetID)
-			maxLayer = math.max(layer + baseLayer, maxLayer)
+			local globalLayer = self:newLayer(instance)
+			baseLayer = baseLayer or globalLayer
+			instance:addLayer(globalLayer)
+
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID)
 		end
 	end
 
-	self.numMaps = maxLayer
-
-	local layer = baseLayer + 1
+	if not instance:getBaseLayer() then
+		instance:setBaseLayer(baseLayer)
+	end
 
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
@@ -662,8 +955,7 @@ function LocalStage:loadMapResource(filename, args)
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water, layer)
-			self.water[item] = water
+			self.onWaterFlood(self, item, water, baseLayer)
 		end
 	end
 
@@ -672,11 +964,11 @@ function LocalStage:loadMapResource(filename, args)
 		if group then
 			local key = directoryPath .. "/Decorations/" .. item
 			local decoration = Decoration(directoryPath .. "/Decorations/" .. item)
-			self:decorate(key, decoration, layer)
+			self:decorate(key, decoration, baseLayer)
 		end
 	end
 
-	self:spawnGround(filename, layer)
+	self:spawnGround(layerName, baseLayer)
 
 	local mapScript
 
@@ -689,24 +981,19 @@ function LocalStage:loadMapResource(filename, args)
 				Peep = require "ItsyScape.Peep.Peeps.Map"
 			end
 
-			self.mapScripts[filename] = {
-				peep = self.game:getDirector():addPeep(self.stageName, Peep, resource),
-				layer = layer,
-				name = filename
-			}
+			local peep = self.game:getDirector():addPeep(layerName, Peep, resource)
+			instance:addMapScript(baseLayer, peep, filename)
 
-			self.mapScripts[filename].peep:listen('ready',
-				function(self)
-					self:poke('load', filename, args or {}, layer)
-				end
-			)
+			peep:listen('ready', function(self)
+				self:poke('load', filename, args or {}, baseLayer)
+			end)
 
 			do
-				local _, m = self.mapScripts[filename].peep:addBehavior(MapResourceReferenceBehavior)
+				local _, m = peep:addBehavior(MapResourceReferenceBehavior)
 				m.map = resource
 			end 
 
-			mapScript = self.mapScripts[filename].peep
+			mapScript = peep
 		end
 
 		local objects = gameDB:getRecords("MapObjectLocation", {
@@ -714,120 +1001,68 @@ function LocalStage:loadMapResource(filename, args)
 		})
 
 		for i = 1, #objects do
-			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer + 1, args.isLayer)
+			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer, layerName, args.isLayer)
 		end
 	end
 
-	return baseLayer + 1, mapScript
+	return baseLayer, mapScript
 end
 
-function LocalStage:playMusic(layerName, channel, song)
-	local oldSong
-	for i = 1, #self.music do
-		local music = self.music[i]
-		if music.channel == channel then
-			oldSong = music
-			break
-		end
-	end
-
-	if oldSong then
-		if oldSong.song == song then
-			oldSong.stopping = false
-			return
-		end
-
-		self:stopMusic(layerName, channel, oldSong.song)
-	end
-
-	self.onPlayMusic(self, channel, song)
-	table.insert(self.music, {
-		channel = channel,
-		song = song,
-		stopping = false
-	})
+function LocalStage:playMusic(layer, channel, song)
+	self.onPlayMusic(self, channel, song, layer)
 end
 
-function LocalStage:stopMusic(layerName, channel, song)
-	self.onStopMusic(self, channel, song)
-
-	local index = 1
-	while index <= #self.music do
-		local m = self.music[index]
-		if m.channel == channel and m.song == song then
-			table.remove(self.music, index)
-		else
-			index = index + 1
-		end
-	end
+function LocalStage:stopMusic(layer, channel, song)
+	self.onStopMusic(self, channel, song, layer)
 end
 
-function LocalStage:loadStage(path)
-	local filename
-	local args = {}
-	do
-		local s, e = path:find("%?")
-		s = s or 1
-		e = e or #path + 1
-		
-		filename = path:sub(1, e - 1)
+function LocalStage:loadStage(instance, filename, args)
 
-		Log.info("Loading map %s.", filename)
+	-- TODO
+	-- do
+	-- 	local director = self.game:getDirector()
+	-- 	director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
+	-- end
 
-		local pathArguments = path:sub(e, -1)
-		for key, value in pathArguments:gmatch("([%w_]+)=([%w_]+)") do
-			Log.info("Map argument '%s' -> '%s'.", key, value)
-			args[key] = value
-		end
-	end
+	-- for i = 1, #self.music do
+	-- 	self.music[i].stopping = true
+	-- end
 
-	do
-		local director = self.game:getDirector()
-		director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
-	end
+	self:loadMapResource(instance, filename, args)
 
-	for i = 1, #self.music do
-		self.music[i].stopping = true
-	end
+	-- TODO
+	-- local index = 1
+	-- while index <= #self.music do
+	-- 	local m = self.music[index]
+	-- 	if m.stopping then
+	-- 		self.onStopMusic(self.stageName, m.channel, m.song)
+	-- 		table.remove(self.music, index)
+	-- 	else
+	-- 		index = index + 1
+	-- 	end
+	-- end
 
-	self:unloadAll()
-	self.oldStageName = self.stageName
-	self.stageName = filename
+	-- TODO
+	-- do
+	-- 	local director = self.game:getDirector()
+	-- 	local player = self.game:getPlayer():getActor():getPeep()
+	-- 	director:movePeep(player, filename)
 
-	self:loadMapResource(filename, args)
+	-- 	local resource = director:getGameDB():getResource(filename, "Map")
 
+	-- 	player:addBehavior(MapResourceReferenceBehavior)
+	-- 	local m = player:getBehavior(MapResourceReferenceBehavior)
+	-- 	m.map = resource or false
 
-	local index = 1
-	while index <= #self.music do
-		local m = self.music[index]
-		if m.stopping then
-			self.onStopMusic(self.stageName, m.channel, m.song)
-			table.remove(self.music, index)
-		else
-			index = index + 1
-		end
-	end
-
-	do
-		local director = self.game:getDirector()
-		local player = self.game:getPlayer():getActor():getPeep()
-		director:movePeep(player, filename)
-
-		local resource = director:getGameDB():getResource(filename, "Map")
-
-		player:addBehavior(MapResourceReferenceBehavior)
-		local m = player:getBehavior(MapResourceReferenceBehavior)
-		m.map = resource or false
-
-		player:poke('travel', {
-			from = oldStageName,
-			to = filename
-		})
-	end
+	-- 	player:poke('travel', {
+	-- 		from = oldStageName,
+	-- 		to = filename
+	-- 	})
+	-- end
 end
 
 function LocalStage:getMap(layer)
-	return self.map[layer]
+	return self.game:getDirector():getMap(layer)
 end
 
 function LocalStage:getLayers()
@@ -947,52 +1182,76 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 	end
 end
 
-function LocalStage:collectItems()
+function LocalStage:collectAllItems()
+	Log.engine("Collecting items across the multiverse...")
+
+	for i = 1, #self.instances do
+		self:collectItems(self.instances[i])
+	end
+
+	Log.engine("Collected items from %d instances.", #self.instances)
+end
+
+function LocalStage:collectItems(instance)
+	Log.engine("Collecting items in instance %s (%d).", instance:getFilename(), instance:getID())
+
 	local transactions = {}
 
 	local broker = self.game:getDirector():getItemBroker()
 	local manager = self.game:getDirector():getItemManager()
+	local layer = instance:getBaseLayer()
 
-	for key, ground in pairs(self.grounds) do
-		inventory = ground:getBehavior(InventoryBehavior).inventory
-		if broker:hasProvider(inventory) then
-			for item in broker:iterateItems(inventory) do
-				-- In the ground table, grounds are stored by layer (number) and layer (string).
-				if type(key) == 'string' then
-					local owner = broker:getItemTag(item, "owner")
-					if owner and owner:hasBehavior(PlayerBehavior) then
-						local bank = owner:getBehavior(InventoryBehavior).bank
+	if not layer then
+		Log.warn("No layer for instance %s (%d); cannot collect items.", instance:getFilename(), instance:getID())
+		return
+	end
 
-						if bank then
-							local transaction = transactions[owner]
-							if not transaction then
-								transaction = broker:createTransaction()
-								transaction:addParty(bank)
+	local ground = self.grounds[layer]
+	if not ground then
+		Log.warn("No ground for layer %d in instance %s (%d).", layer, instance:getFilename(), instance:getID())
+		return
+	end
 
-								transactions[owner] = transaction
-							end
+	inventory = ground:getBehavior(InventoryBehavior).inventory
+	if broker:hasProvider(inventory) then
+		for item in broker:iterateItems(inventory) do
+			local owner = broker:getItemTag(item, "owner")
+			if owner and owner:hasBehavior(PlayerBehavior) then
+				local bank = owner:getBehavior(InventoryBehavior).bank
 
-							transaction:addParty(inventory)
-							transaction:transfer(bank, item, item:getCount(), 'take')
+				if bank and broker:hasProvider(bank) then
+					local transaction = transactions[owner]
+					if not transaction then
+						transaction = broker:createTransaction()
+						transaction:addParty(bank)
 
-							if not item:isNoted() and manager:isNoteable(item:getID()) then
-								transaction:note(bank, item:getID(), item:getCount())
-							end
-						end
+						transactions[owner] = transaction
 					end
 
+					transaction:addParty(inventory)
+					transaction:transfer(bank, item, item:getCount(), 'take')
 
-					local ref = broker:getItemRef(item)
-					self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() })
+					if not item:isNoted() and manager:isNoteable(item:getID()) then
+						transaction:note(bank, item:getID(), item:getCount())
+					end
+
+					Log.engine(
+						"Transferring item '%s' (count = %d) to bank of player '%s' (%d).",
+						item:getID(), item:getCount(), owner:getName(), owner:getBehavior(PlayerBehavior).id)
 				end
 			end
+
+			local ref = broker:getItemRef(item)
+			self.onTakeItem(self, ref, { ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() }, layer)
 		end
 	end
 
 	for _, transaction in pairs(transactions) do
 		local s, r = transaction:commit()
 		if not s then
-			Log.warn("Couldn't commit pickicide: %s", r)
+			Log.warn(
+				"Couldn't commit pickicide on layer %d in instance %s (%d): %s",
+				layer, instance:getFilename(), instance:getID(), r)
 		end
 	end
 end
@@ -1022,20 +1281,16 @@ end
 function LocalStage:forecast(layer, name, id, props)
 	if not props then
 		self.onStopForecast(self, layer, name)
-		self.weathers[name] = nil
 	else
 		self.onForecast(self, layer, name, id, props)
-		self.weathers[name] = true
 	end
 end
 
 function LocalStage:decorate(group, decoration, layer)
 	if not decoration then
 		self.onUndecorate(self, group, layer or 1)
-		self.decorations[group] = nil
 	else
 		self.onDecorate(self, group, decoration, layer or 1)
-		self.decorations[group] = decoration
 	end
 end
 
@@ -1047,50 +1302,96 @@ function LocalStage:iterateProps()
 	return pairs(self.props)
 end
 
-function LocalStage:tick()
-	for _, map in pairs(self.mapScripts) do
-		local peep = map.peep
-
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position = position.position
-		else
-			position = Vector.ZERO
-		end
-
-		local rotation = peep:getBehavior(RotationBehavior)
-		if rotation then
-			rotation = rotation.rotation
-		else
-			rotation = Quaternion.IDENTITY
-		end
-
-		local scale = peep:getBehavior(ScaleBehavior)
-		if scale then
-			scale = scale.scale
-		else
-			scale = Vector.ONE
-		end
-
-		local origin = peep:getBehavior(OriginBehavior)
-		if origin then
-			origin = origin.origin
-		else
-			origin = Vector.ZERO
-		end
-
-		local offset = peep:getBehavior(MapOffsetBehavior)
-		if offset then
-			rotation = rotation * offset.rotation
-			scale = scale * offset.scale
-
-			offset = offset.offset
-		else
-			offset = Vector.ZERO
-		end
-
-		self.onMapMoved(self, map.layer, position + offset, rotation, scale, origin, peep:hasBehavior(DisabledBehavior))
+function LocalStage:quit()
+	for i = 1, #self.instances do
+		self:unloadAll(self.instances[i])
 	end
+end
+
+function LocalStage:updateMapPositions()
+	for i = 1, #self.instances do
+		local instance = self.instances[i]
+		instance:tick()
+
+		for _, layer in instance:iterateLayers() do
+			local mapScript = instance:getMapScriptByLayer(layer)
+			if mapScript then
+				local position = mapScript:getBehavior(PositionBehavior)
+				if position then
+					position = position.position
+				else
+					position = Vector.ZERO
+				end
+
+				local rotation = mapScript:getBehavior(RotationBehavior)
+				if rotation then
+					rotation = rotation.rotation
+				else
+					rotation = Quaternion.IDENTITY
+				end
+
+				local scale = mapScript:getBehavior(ScaleBehavior)
+				if scale then
+					scale = scale.scale
+				else
+					scale = Vector.ONE
+				end
+
+				local origin = mapScript:getBehavior(OriginBehavior)
+				if origin then
+					origin = origin.origin
+				else
+					origin = Vector.ZERO
+				end
+
+				local offset = mapScript:getBehavior(MapOffsetBehavior)
+				if offset then
+					rotation = rotation * offset.rotation
+					scale = scale * offset.scale
+
+					offset = offset.offset
+				else
+					offset = Vector.ZERO
+				end
+
+				self.onMapMoved(self, layer, position + offset, rotation, scale, origin, mapScript:hasBehavior(DisabledBehavior))
+			end
+		end
+	end
+end
+
+function LocalStage:disbandParty(party)
+	Log.info("Unloading all orphaned instances for party %d...", party:getID())
+
+	if party:isInRaid() then
+		for _, instance in party:getRaid():iterateInstances() do
+			if instance:hasPlayers() then
+				Log.engine(
+					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; however, player(s) in instance, so not marking for removal.",
+					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
+			else
+				Log.engine(
+					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; marking for removal.",
+					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
+
+				table.insert(self.instancesPendingUnload, instance)
+			end
+		end
+	end
+
+	Log.info("Unloaded all orphaned instances for party %d.", party:getID())
+end
+
+function LocalStage:unloadInstancesPendingRemoval()
+	for i = 1, #self.instancesPendingUnload do
+		self:unloadLocalInstance(self.instancesPendingUnload[i])
+	end
+	table.clear(self.instancesPendingUnload)
+end
+
+function LocalStage:tick()
+	self:unloadInstancesPendingRemoval()
+	self:updateMapPositions()
 end
 
 function LocalStage:update(delta)

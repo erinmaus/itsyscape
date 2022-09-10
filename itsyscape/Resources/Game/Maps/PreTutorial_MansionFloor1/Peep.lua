@@ -41,8 +41,6 @@ function Mansion:onLoad(filename, args, layer)
 		heaviness = 0.25
 	})
 
-	self.player = Utility.Peep.getPlayerActor(self)
-
 	self.lightning = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("Light_Lightning"))[1]
@@ -52,30 +50,66 @@ function Mansion:onLoad(filename, args, layer)
 		self.zombiButler = self:getDirector():probe(
 			self:getLayerName(),
 			Probe.namedMapObject("Hans"))[1]
-
-		if self.player:getPeep():getState():has('KeyItem', "PreTutorial_TalkedToButler1") then
-			self.zombiButler:poke('followPlayer', self.player:getPeep())
-		end
 	end
 
 	self:zap()
 end
 
+function Mansion:onPlayerEnter(player)
+	if not self.zombiButler then
+		return
+	end
+
+	player = player:getActor():getPeep()
+
+	if player:getState():has("KeyItem", "PreTutorial_TalkedToButler1") then
+		if self.zombiButler:getCurrentTarget() then
+			self.zombiButler:giveHint("Oh dear me, looks like someone else needs help!")
+		end
+
+		self.zombiButler:poke('followPlayer', player)
+	end
+end
+
+function Mansion:onPlayerLeave(player)
+	if not self.zombiButler then
+		return
+	end
+
+	if not player:getActor() then
+		return
+	end
+
+	player = player:getActor():getPeep()
+
+	if self.zombiButler:getCurrentTarget() == player then
+		self.zombiButler:giveHint("Be seeing you later!")
+		self.zombiButler:poke('followPlayer', nil)
+
+		for _, player in Utility.Peep.getInstance(self):iteratePlayers() do
+			self:onPlayerEnter(player)
+			break
+		end
+	end
+end
+
 function Mansion:zap()
 	self.wait = math.random() * (self.MAX_LIGHTNING_PERIOD - self.MIN_LIGHTNING_PERIOD) + self.MIN_LIGHTNING_PERIOD
-	Log.info("CRACKLE-BOOM-ZAP!")
 end
 
 function Mansion:boom()
-	local actor = self:getDirector():getGameInstance():getPlayer():getActor()
-	if actor then
-		local animation = CacheRef(
-			"ItsyScape.Graphics.AnimationResource",
-			"Resources/Game/Animations/SFX_LightningStrike/Script.lua")
-		actor:playAnimation(
-			'x-haunted-mansion-lightning',
-			math.huge,
-			animation)
+	local instance = Utility.Peep.getInstance(self)
+	for _, player in instance:iteratePlayers() do
+		local actor = player:getActor()
+		if actor then
+			local animation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				"Resources/Game/Animations/SFX_LightningStrike/Script.lua")
+			actor:playAnimation(
+				'x-haunted-mansion-lightning',
+				math.huge,
+				animation)
+		end
 	end
 end
 

@@ -349,7 +349,7 @@ function Action:transfer(state, player, flags)
 			for i = 1, #props do
 				local resource = props[i]:get("Prop")
 				if resource then
-					local s, p = stage:placeProp("resource://" .. resource.name)
+					local s, p = stage:placeProp("resource://" .. resource.name, Utility.Peep.getLayer(player), player:getLayerName())
 					if s then
 						local propPeep = p:getPeep()
 						propPeep:listen('ready', function()

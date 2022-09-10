@@ -9,6 +9,28 @@
 --------------------------------------------------------------------------------
 
 do
+	local Raid = ItsyScape.Resource.Raid "HighChambersYendor"
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "High Chambers Yendor",
+		Resource = ItsyScape.Resource.Raid "HighChambersYendor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Your first raid! A temple dedicated to Yendor, located on Isabelle Island through the Abandoned Mines. Dare you risk madness to find out what lay at the bottom?",
+		Resource = ItsyScape.Resource.Raid "HighChambersYendor"
+	}
+
+	ItsyScape.Meta.RaidDestination {
+		Raid = Raid,
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
+		Anchor = "Anchor_FromAbandonedMine"
+	}
+end
+
+do
 	ItsyScape.Resource.Prop "HighChambersYendor_Entrance" {
 		-- Nothing.
 	}
@@ -1550,32 +1572,38 @@ do
 end
 
 do
-	ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon" {
+	ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart" {
 		ItsyScape.Action.Collect()
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Language = "en-US",
 		Value = "Soul siphon",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "A divine scrying tool constructed to steal souls at any distance by Prisium, the Great Intelligence.",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicChest",
-		Resource = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "HighChambersYendor_MassiveBeatingHeart",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 2.5,
 		SizeY = 3,
 		SizeZ = 1.5,
-		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_SoulSiphon"
+		MapObject = ItsyScape.Resource.Prop "HighChambersYendor_MassiveBeatingHeart"
 	}
 
 	local CavePotatoReward = ItsyScape.Action.Reward() {
@@ -1699,7 +1727,7 @@ do
 		Weight = 5
 	}
 
-	ItsyScape.Resource.DropTable "HighChambersYendor_SoulSiphon_Rewards" {
+	ItsyScape.Resource.DropTable "HighChambersYendor_MassiveBeatingHeart_Rewards" {
 		CavePotatoReward,
 		SailorsHatReward,
 		AirRuneReward,
@@ -1877,6 +1905,35 @@ do
 		Range = 5,
 		Noted = 1,
 		Resource = PrimaryDropTable
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Musky chest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Looks like rats have been chewing on it...",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "HighChambersYendor_RatKingRewardChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+		Resource = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest"
 	}
 end
 

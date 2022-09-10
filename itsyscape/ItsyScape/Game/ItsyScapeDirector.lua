@@ -12,6 +12,7 @@ local ItemBroker = require "ItsyScape.Game.ItemBroker"
 local ItemManager = require "ItsyScape.Game.ItemManager"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Director = require "ItsyScape.Peep.Director"
+local Peep = require "ItsyScape.Peep.Peep"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local MoveToTileCortex = require "ItsyScape.Peep.Cortexes.MoveToTileCortex"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -26,6 +27,7 @@ function ItsyScapeDirector:new(game, gameDB)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.MirrorCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatXPCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.DeathCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.PrayerDrainCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.LootDropperCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex")
@@ -41,6 +43,8 @@ function ItsyScapeDirector:new(game, gameDB)
 	self.itemBroker = ItemBroker(self.itemManager)
 
 	self.playerStorage = {}
+
+	self:setPlayerStorage(0, PlayerStorage())
 end
 
 function ItsyScapeDirector:setPlayerStorage(index, value)
@@ -54,7 +58,7 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 		local index
 		if type(peep) == 'number' then
 			index = peep
-		else
+		elseif Class.isCompatibleType(peep, Peep) then
 			local player = peep:getBehavior(PlayerBehavior)
 			if player and player.id then
 				index = player.id
@@ -70,14 +74,16 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 
 			return storage
 		end
-	else
-		local player = self.game:getPlayer():getActor():getPeep()
-		if player then
-			return self:getPlayerStorage(player)
+
+		if Class.isCompatibleType(peep, Peep) then
+			local instance = self.game:getStage():getPeepInstance(peep)
+			if instance then
+				return instance:getPlayerStorage()
+			end
 		end
 	end
 
-	return nil
+	return self.playerStorage[0]
 end
 
 function ItsyScapeDirector:getGameInstance()

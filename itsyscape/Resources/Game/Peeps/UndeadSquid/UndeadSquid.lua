@@ -91,7 +91,7 @@ end
 
 function UndeadSquid:onBoss()
 	Utility.UI.openInterface(
-		self:getDirector():getGameInstance():getPlayer():getActor():getPeep(),
+		Utility.Peep.getInstance(self),
 		"BossHUD",
 		false,
 		self)
@@ -123,13 +123,15 @@ function UndeadSquid:onAttackShip()
 	local map = Utility.Peep.getMapResource(self)
 	if map then
 		local stage = self:getDirector():getGameInstance():getStage()
-		local mapScript = stage:getMapScript(map.name)
+		local mapScript = Utility.Peep.getMapScript(self)
 
 		if mapScript:isCompatibleType(MapScript) then
 			local arguments = mapScript:getArguments()
 			if arguments["ship"] then
 				local shipName = arguments["ship"]
-				local shipMapScript, shipMapLayer = stage:getMapScript(shipName)
+				local instance = stage:getPeepInstance(self)
+				local shipMapScript = instance:getMapScriptByMapFilename(shipName)
+				local shipMapLayer = shipMapScript:getLayer()
 				local shipMap = stage:getMap(shipMapLayer)
 
 				Log.info("Attacking %s.", shipMapScript:getName())
@@ -147,7 +149,7 @@ function UndeadSquid:onAttackShip()
 				local tile = tiles[math.random(#tiles)]
 				if tile then
 					local center = shipMap:getTileCenter(tile.i, tile.j)
-					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer)
+					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
 					if s then
 						local leakPeep = leak:getPeep()
 						local position = leakPeep:getBehavior(PositionBehavior)

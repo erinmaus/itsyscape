@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
@@ -30,25 +31,61 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
+LocalPlayer.MAX_MESSAGES = 50
 
 -- Constructs a new player.
 --
 -- The Actor isn't created until Player.spawn is called.
-function LocalPlayer:new(game, stage)
+function LocalPlayer:new(id, game, stage)
 	Player.new(self)
 
 	self.game = game
 	self.stage = stage
 	self.actor = false
 	self.direction = Vector.UNIT_X
-	self.id = 0
+	self.id = id
+
+	self.onPoof = Callback()
+	self.onMove = Callback()
+	self.onForceDisconnect = Callback()
+
+	self.messages = { received = 0 }
 end
 
-function LocalPlayer:spawn(storage, newGame)
-	self.id = self.id + 1
+function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
+	self:onMove(previousLayerName, newLayerName)
+	self.instance = instance
+end
+
+function LocalPlayer:getInstance()
+	return self.instance
+end
+
+function LocalPlayer:getID()
+	return self.id
+end
+
+function LocalPlayer:setClientID(value)
+	self.clientID = value
+end
+
+function LocalPlayer:getClientID()
+	return self.clientID
+end
+
+function LocalPlayer:spawn(storage, newGame, password)
+	if not self.game:verifyPassword(password) then
+		Log.warn("Player %d (client %d) did not say the right password.", self:getID(), self:getClientID() or -1)
+		self:onForceDisconnect()
+		return
+	end
+
+	local previousLayerName = self.actor and self.actor:getPeep():getLayerName()
+	self:unload()
+
 	self.game:getDirector():setPlayerStorage(self.id, storage)
 
-	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One")
+	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, previousLayerName or "::orphan")
 	if success then
 		self.actor = actor
 		actor:getPeep():addBehavior(PlayerBehavior)
@@ -66,7 +103,7 @@ function LocalPlayer:spawn(storage, newGame)
 					"jenkins_state=1," ..
 					"i=16," ..
 					"j=16," ..
-					"shore=IsabelleIsland_FarOcean_Cutscene," ..
+					"shore=@IsabelleIsland_FarOcean_Cutscene," ..
 					"shoreAnchor=Anchor_Spawn",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
@@ -145,12 +182,22 @@ function LocalPlayer:onPlayerActionPerformed(_, p)
 	self.currentAction = p.action:getXProgressiveVerb()
 end
 
-function LocalPlayer:poof()
+function LocalPlayer:unload()
+	if self.instance then
+		self.instance:removePlayer(self)
+	end
+
 	if self.actor then
 		self.stage:killActor(self.actor)
 	end
 
 	self.actor = false
+end
+
+function LocalPlayer:poof()
+	self:onPoof()
+
+	self:unload()
 
 	self.game:getDirector():setPlayerStorage(self.id, nil)
 end
@@ -165,17 +212,29 @@ function LocalPlayer:isReady()
 end
 
 function LocalPlayer:flee()
+	if not self:isReady() then
+		return false
+	end
+
 	local peep = self.actor:getPeep()
 	peep:removeBehavior(CombatTargetBehavior)
 	peep:getCommandQueue(CombatCortex.QUEUE):clear()
 end
 
 function LocalPlayer:getIsEngaged()
+	if not self:isReady() then
+		return false
+	end
+
 	local peep = self.actor:getPeep()
 	return peep:hasBehavior(CombatTargetBehavior)
 end
 
 function LocalPlayer:getTarget()
+	if not self:isReady() then
+		return nil
+	end
+
 	local peep = self.actor:getPeep()
 	local target = peep:getBehavior(CombatTargetBehavior)
 	if target and target.actor then
@@ -186,18 +245,35 @@ function LocalPlayer:getTarget()
 end
 
 function LocalPlayer:poke(id, obj, scope)
+	if not self:isReady() then
+		return
+	end
+
+	-- TODO LAYER CHECK
 	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
-		obj:poke(id, scope, self.actor:getPeep())
-	elseif Class.isType(obj) then
+		local layer = Utility.Peep.getLayer(obj:getPeep())
+		if not self.instance:hasLayer(layer) then
+			Log.warn(
+				"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
+				self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
+		else
+			obj:poke(id, scope, self.actor:getPeep())
+		end
+	elseif Class.isClass(obj) then
 		Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
 	end
 end
 
 function LocalPlayer:takeItem(i, j, layer, ref)
+	-- TODO LAYER CHECK
 	self.stage:takeItem(i, j, layer, ref, self)
 end
 
 function LocalPlayer:findPath(i, j, k)
+	if not self:isReady() then
+		return nil
+	end
+
 	local peep = self.actor:getPeep()
 	local position = peep:getBehavior(PositionBehavior).position
 	local map = self.game:getDirector():getMap(k)
@@ -210,8 +286,8 @@ function LocalPlayer:findPath(i, j, k)
 end
 
 function LocalPlayer:move(x, z)
-	if not self.actor then
-		return
+	if not self:isReady() then
+		return false
 	end
 
 	local direction = Vector(x, 0, z):getNormal()
@@ -293,6 +369,65 @@ end
 
 function LocalPlayer:pokeCamera(event, ...)
 	self.onPokeCamera(self, event, ...)
+end
+
+function LocalPlayer:pushMessage(player, message)
+	local m = {
+		player = player,
+		message = message,
+		lastKnownName = player:getActor():getPeep():getName()
+	}
+
+	table.insert(self.messages, m)
+
+	while #self.messages > LocalPlayer.MAX_MESSAGES do
+		table.remove(self.messages, 1)
+	end
+
+	self.messages.received = self.messages.received + 1
+end
+
+function LocalPlayer:getMessages()
+	return self.messages
+end
+
+function LocalPlayer:talk(message)
+	message = message:match("^%s*(.*)%s*$") or ""
+	local whisper = message:match("^%s*/w%s*(.*)%s*$")
+
+	if message == "" or whisper == "" then
+		return
+	end
+
+	if whisper then
+		Log.info("Player '%s' (%d) whispered: %s", self:getActor():getName(), self:getID(), whisper)
+
+		local instance = Utility.Peep.getInstance(self:getActor():getPeep())
+		if not instance then
+			Log.info("Player isn't in instance; can't whisper.")
+			return
+		end
+
+		if instance:hasRaid() then
+			for _, player in instance:getRaid():iteratePlayers() do
+				player:pushMessage(self, whisper)
+			end
+		else
+			for _, player in instance:iteratePlayers() do
+				player:pushMessage(self, whisper)
+			end
+		end
+
+		self:getActor():flash("Message", 2, whisper, nil, 2)
+	else
+		Log.info("Player '%s' (%d) said: %s", self:getActor():getName(), self:getID(), message)
+
+		for _, player in self.game:iteratePlayers() do
+			player:pushMessage(self, message)
+		end
+
+		self:getActor():flash("Message", 1, message, nil, 2)
+	end
 end
 
 return LocalPlayer

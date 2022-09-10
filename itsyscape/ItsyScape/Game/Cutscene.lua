@@ -13,10 +13,11 @@ local CutsceneCamera = require "ItsyScape.Game.CutsceneCamera"
 local CutsceneEntity = require "ItsyScape.Game.CutsceneEntity"
 local CutsceneMap = require "ItsyScape.Game.CutsceneMap"
 local Utility = require "ItsyScape.Game.Utility"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
 
 local Cutscene = Class()
 
-function Cutscene:new(resource, player, director, layerName)
+function Cutscene:new(resource, player, director, layerName, entities)
 	self.director = director
 	self.game = director:getGameInstance()
 	self.gameDB = director:getGameDB()
@@ -26,15 +27,25 @@ function Cutscene:new(resource, player, director, layerName)
 	self.entities = {
 		Player = CutsceneEntity(player),
 		Map = CutsceneMap(Utility.Peep.getMapScript(player)),
-		Camera = CutsceneCamera(self.game)
+		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
 	}
 
 	self:findMapObjects()
 	self:findPeeps()
 	self:findProps()
 	self:findMaps()
+	self:overrideEntities(entities)
 
 	self:loadCutscene()
+
+	self.isDone = false
+
+	self.player = Utility.Peep.getPlayerModel(player)
+	self._onPlayerMove = function()
+		self.isDone = true
+		self.player.onMove:unregister(self._onPlayerMove)
+	end
+	self.player.onMove:register(self._onPlayerMove)
 end
 
 function Cutscene:addEntity(name, Type, probe)
@@ -84,6 +95,16 @@ end
 
 function Cutscene:findMaps()
 	self:find("CutsceneMap", CutsceneMap, Utility.Peep.getResource)
+end
+
+function Cutscene:overrideEntities(entities)
+	for name, peep in pairs(entities) do
+		if Class.isCompatibleType(peep, MapScript) then
+			self.entities[name] = CutsceneMap(peep)
+		else
+			self.entities[name] = CutsceneEntity(peep)
+		end
+	end
 end
 
 function Cutscene.parallel(t)
@@ -174,13 +195,18 @@ function Cutscene:loadCutscene()
 end
 
 function Cutscene:update()
-	if coroutine.status(self.script) ~= "dead" then
+	if not self.isDone and coroutine.status(self.script) ~= "dead" then
 		local s, e = coroutine.resume(self.script)
 		if not s then
 			Log.warn("Error running cutscene '%s': %s", self.resource.name, e)
 		end
 
 		return true
+	end
+
+	if not self.isDone then
+		self.player.onMove:unregister(self._onPlayerMove)
+		self.isDone = true
 	end
 
 	return false

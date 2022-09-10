@@ -150,16 +150,25 @@ function ActorView:new(actor, actorID)
 	self.skins = {}
 	self.models = {}
 	self._onSkinChanged = function(_, slot, priority, skin)
+		Log.engine(
+			"Skin slot '%s' (priority = %d) changed to '%s' for '%s' (%d).",
+			slot, priority, skin and skin:getFilename(), self.actor:getName(), self.actor:getID() or -1)
 		self:changeSkin(slot, priority, skin)
 	end
 	actor.onSkinChanged:register(self._onSkinChanged)
 	self._onSkinRemoved = function(_, slot, priority, skin)
+		Log.engine(
+			"Skin slot '%s' unset '%s' for '%s' (%d).",
+			slot, skin and skin:getFilename(), self.actor:getName(), self.actor:getID() or -1)
 		self:changeSkin(slot, false, skin)
 	end
 	actor.onSkinRemoved:register(self._onSkinRemoved)
 
 	self.body = false
 	self._onTransmogrified = function(_, body)
+		Log.engine(
+			"Transmogrified to '%s' for '%s' (%d).",
+			body and body:getFilename(), self.actor:getName(), self.actor:getID() or -1)
 		self:transmogrify(body)
 	end
 	actor.onTransmogrified:register(self._onTransmogrified)
@@ -197,7 +206,7 @@ function ActorView:attach(game)
 	self.game = game
 end
 
-function ActorView:poof()
+function ActorView:release()
 	self.sceneNode:setParent(nil)
 
 	self.actor.onDirectionChanged:unregister(self._onDirectionChanged)
@@ -527,6 +536,9 @@ function ActorView:flash(message, anchor, ...)
 	end
 
 	local min, max = self.actor:getBounds()
+	min = min or Vector.ZERO
+	max = max or Vector.ZERO
+
 	local size = max - min
 
 	local sprite = spriteManager:add(message, self.sceneNode, size * anchor, ...)

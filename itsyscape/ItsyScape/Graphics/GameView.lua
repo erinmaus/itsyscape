@@ -43,104 +43,6 @@ function GameView:new(game)
 	self.views = {}
 	self.propViewDebugStats = GameView.PropViewDebugStats()
 
-	local stage = game:getStage()
-
-	self._onLoadMap = function(_, map, layer, tileSetID)
-		self:addMap(map, layer, tileSetID)
-	end
-	stage.onLoadMap:register(self._onLoadMap)
-
-	self._onUnloadMap = function(_, map, layer)
-		self:removeMap(layer)
-	end
-	stage.onUnloadMap:register(self._onUnloadMap)
-
-	self._onMapModified = function(_, map, layer)
-		self:updateMap(map, layer)
-	end
-	stage.onMapModified:register(self._onMapModified)
-
-	self._onMapMoved = function(_, layer, position, rotation, scale, offset, disabled)
-		self:moveMap(layer, position, rotation, scale, offset, disabled)
-	end
-	stage.onMapMoved:register(self._onMapMoved)
-
-	self._onActorSpawned = function(_, actorID, actor)
-		self:addActor(actorID, actor)
-	end
-	stage.onActorSpawned:register(self._onActorSpawned)
-
-	self._onActorKilled = function(_, actor)
-		self:removeActor(actor)
-	end
-	stage.onActorKilled:register(self._onActorKilled)
-
-	self._onPropPlaced = function(_, propID, prop)
-		self:addProp(propID, prop)
-	end
-	stage.onPropPlaced:register(self._onPropPlaced)
-
-	self._onPropRemoved = function(_, prop)
-		self:removeProp(prop)
-	end
-	stage.onPropRemoved:register(self._onPropRemoved)
-
-	self._onDropItem = function(_, ref, item, tile, position)
-		self:spawnItem(item, tile, position)
-	end
-	stage.onDropItem:register(self._onDropItem)
-
-	self._onTakeItem = function(_, ref, item)
-		self:poofItem(item)
-	end
-	stage.onTakeItem:register(self._onTakeItem)
-
-	self._onDecorate = function(_, group, decoration, layer)
-		self:decorate(group, decoration, layer)
-	end
-	stage.onDecorate:register(self._onDecorate)
-
-	self._onUndecorate = function(_, group, layer)
-		self:decorate(group, nil, layer)
-	end
-	stage.onUndecorate:register(self._onUndecorate)
-
-	self._onWaterFlood = function(_, key, water, layer)
-		self:flood(key, water, layer)
-	end
-	stage.onWaterFlood:register(self._onWaterFlood)
-
-	self._onWaterDrain = function(_, key, water)
-		self:drain(key, water)
-	end
-	stage.onWaterDrain:register(self._onWaterDrain)
-
-	self._onForecast = function(_, layer, key, id, props)
-		self:forecast(layer, key, nil)
-		self:forecast(layer, key, id, props)
-	end
-	stage.onForecast:register(self._onForecast)
-
-	self._onStopForecast = function(_, layer, key)
-		self:forecast(layer, key, nil)
-	end
-	stage.onStopForecast:register(self._onStopForecast)
-
-	self._onProjectile = function(_, projectileID, source, destination, time)
-		self:fireProjectile(projectileID, source, destination, time)
-	end
-	stage.onProjectile:register(self._onProjectile)
-
-	self._onPlayMusic = function(_, track, song)
-		self:playMusic(track, song)
-	end
-	stage.onPlayMusic:register(self._onPlayMusic)
-
-	self._onStopMusic = function(_, track, song)
-		self:playMusic(track, false)
-	end
-	stage.onStopMusic:register(self._onStopMusic)
-
 	self.scene = SceneNode()
 	self.mapMeshes = {}
 	self.tests = { id = 1 }
@@ -178,6 +80,9 @@ function GameView:new(game)
 	self.projectiles = {}
 
 	self.weather = {}
+
+	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
+	self.mapThread:start()
 end
 
 function GameView:getGame()
@@ -200,12 +105,180 @@ function GameView:getScene()
 	return self.scene
 end
 
-function GameView:release()
+function GameView:attach(game)
+	self.game = game or self.game
+	local stage = self.game:getStage()
+
+	self._onLoadMap = function(_, map, layer, tileSetID)
+		Log.info("Adding map to layer %d.", layer)
+		self:addMap(map, layer, tileSetID)
+	end
+	stage.onLoadMap:register(self._onLoadMap)
+
+	self._onUnloadMap = function(_, map, layer)
+		Log.info("Unloading map from layer %d.", layer)
+		self:removeMap(layer)
+	end
+	stage.onUnloadMap:register(self._onUnloadMap)
+
+	self._onMapModified = function(_, map, layer)
+		Log.info("Map for layer %d modified.", layer)
+		self:updateMap(map, layer)
+	end
+	stage.onMapModified:register(self._onMapModified)
+
+	self._onMapMoved = function(_, layer, position, rotation, scale, offset, disabled)
+		self:moveMap(layer, position, rotation, scale, offset, disabled)
+	end
+	stage.onMapMoved:register(self._onMapMoved)
+
+	self._onActorSpawned = function(_, actorID, actor)
+		Log.info("Spawning actor '%s' (%s).", actorID, actor and actor:getPeepID())
+		self:addActor(actorID, actor)
+	end
+	stage.onActorSpawned:register(self._onActorSpawned)
+
+	self._onActorKilled = function(_, actor)
+		self:removeActor(actor)
+	end
+	stage.onActorKilled:register(self._onActorKilled)
+
+	self._onPropPlaced = function(_, propID, prop)
+		Log.info("Placing prop '%s' (%s).", propID, prop and prop:getPeepID())
+		self:addProp(propID, prop)
+	end
+	stage.onPropPlaced:register(self._onPropPlaced)
+
+	self._onPropRemoved = function(_, prop)
+		self:removeProp(prop)
+	end
+	stage.onPropRemoved:register(self._onPropRemoved)
+
+	self._onDropItem = function(_, ref, item, tile, position)
+		Log.info(
+			"Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.",
+			item.id, ref, item.count, tile.i, tile.j, tile.layer)
+		self:spawnItem(item, tile, position)
+	end
+	stage.onDropItem:register(self._onDropItem)
+
+	self._onTakeItem = function(_, ref, item)
+		Log.info(
+			"Item '%s' (ref = %d, count = %d) taken.",
+			item.id, ref, item.count)
+		self:poofItem(item)
+	end
+	stage.onTakeItem:register(self._onTakeItem)
+
+	self._onDecorate = function(_, group, decoration, layer)
+		Log.info("Decorating '%s' on layer %d.", group, layer)
+		self:decorate(group, decoration, layer)
+	end
+	stage.onDecorate:register(self._onDecorate)
+
+	self._onUndecorate = function(_, group, layer)
+		Log.info("Removing decoration '%s' on layer %d.", group, layer)
+		self:decorate(group, nil, layer)
+	end
+	stage.onUndecorate:register(self._onUndecorate)
+
+	self._onWaterFlood = function(_, key, water, layer)
+		Log.info("Water (%s) flooding on layer %d.", key, layer)
+		self:flood(key, water, layer)
+	end
+	stage.onWaterFlood:register(self._onWaterFlood)
+
+	self._onWaterDrain = function(_, key, water, layer)
+		Log.info("Water (%s) draining on layer %d.", key, layer)
+		self:drain(key, water)
+	end
+	stage.onWaterDrain:register(self._onWaterDrain)
+
+	self._onForecast = function(_, layer, key, id, props)
+		Log.info("Forecast is '%s' for key '%s' on layer %d.", id, key, layer)
+		self:forecast(layer, key, nil)
+		self:forecast(layer, key, id, props)
+	end
+	stage.onForecast:register(self._onForecast)
+
+	self._onStopForecast = function(_, layer, key)
+		Log.info("Forecast '%s' on layer %d is over.", key, layer)
+		self:forecast(layer, key, nil)
+	end
+	stage.onStopForecast:register(self._onStopForecast)
+
+	self._onProjectile = function(_, projectileID, source, destination, time)
+		Log.info("Firing projectile '%s'.", projectileID)
+		self:fireProjectile(projectileID, source, destination, time)
+	end
+	stage.onProjectile:register(self._onProjectile)
+
+	self._onPlayMusic = function(_, track, song)
+		Log.info("Playing song '%s' on track '%s'.", song, track)
+		self:playMusic(track, song)
+	end
+	stage.onPlayMusic:register(self._onPlayMusic)
+
+	self._onStopMusic = function(_, track, song)
+		Log.info("Stopping track '%s'.", track)
+		self:playMusic(track, false)
+	end
+	stage.onStopMusic:register(self._onStopMusic)
+end
+
+function GameView:reset()
 	for _, actor in pairs(self.actors) do
 		actor:release()
 	end
+	table.clear(self.actors)
 
-	local stage = game:getStage()
+	for _, prop in pairs(self.props) do
+		prop:remove()
+	end
+	table.clear(self.props)
+
+	for layer in pairs(self.mapMeshes) do
+		self:removeMap(layer)
+	end
+
+	for _, itemNode in pairs(self.items) do
+		itemNode:setParent(nil)
+	end
+	table.clear(self.items)
+
+	for _, decoration in pairs(self.decorations) do
+		if decoration.sceneNode then
+			decoration.sceneNode:setParent(nil)
+		end
+	end
+	table.clear(self.decorations)
+
+	for _, water in pairs(self.water) do
+		water:setParent(nil)
+	end
+	table.clear(self.water)
+
+	for _, weather in pairs(self.weather) do
+		weather:remove()
+	end
+	table.clear(self.weather)
+
+	for projectile in ipairs(self.projectiles) do
+		projectile:poof()
+	end
+	table.clear(self.projectiles)
+
+	for track in ipairs(self.music) do
+		self:playMusic(track, false)
+	end
+
+	self.spriteManager:clear()
+end
+
+function GameView:release()
+	self:reset()
+
+	local stage = self.game:getStage()
 	stage.onLoadMap:unregister(self._onLoadMap)
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 	stage.onMapModified:unregister(self._onMapModified)
@@ -436,6 +509,16 @@ function GameView:getMap(layer)
 end
 
 function GameView:addActor(actorID, actor)
+	if not actor then
+		Log.warn("Actor of type '%s' is nil; cannot add.", actorID)
+		return
+	end
+
+	if self:hasActor(actor) then
+		Log.warn("Actor of type '%s' (%d) already exists; cannot add.", actorID, actor:getID())
+		return
+	end
+
 	local view = ActorView(actor, actorID)
 	view:attach(self)
 
@@ -460,7 +543,7 @@ end
 function GameView:removeActor(actor)
 	if self.actors[actor] then
 		local view = self.actors[actor]
-		self.actors[actor]:poof()
+		self.actors[actor]:release()
 		self.actors[actor] = nil
 		self.views[view] = nil
 	end
@@ -471,6 +554,10 @@ function GameView:hasActor(actor)
 end
 
 function GameView:addProp(propID, prop)
+	if not prop or self:getProp(prop) then
+		return
+	end
+
 	local PropViewTypeName = string.format("Resources.Game.Props.%s.View", propID, propID)
 	local s, r = xpcall(function() return require(PropViewTypeName) end, debug.traceback)
 	if not s then
@@ -619,7 +706,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	local node = WaterMeshSceneNode()
-	local map = self:getMap(water.layer or 1)
+	local map = self:getMap(layer)
 	node:generate(
 		map,
 		water.i or 1,
@@ -879,7 +966,7 @@ function GameView:update(delta)
 	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
 	_APP:measure("gameView:updateMapQueries()", GameView.updateMapQueries, self, delta)
 
-	do 
+	if self.game:getPlayer() then
 		local actor = self:getActor(self.game:getPlayer():getActor())
 		if actor then
 			player = actor:getSceneNode()

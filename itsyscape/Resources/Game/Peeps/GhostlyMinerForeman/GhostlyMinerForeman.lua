@@ -39,7 +39,7 @@ end
 
 function GhostlyMinerForeman:onBoss()
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		Utility.Peep.getInstance(self),
 		"BossHUD",
 		false,
 		self)

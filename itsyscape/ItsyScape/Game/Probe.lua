@@ -287,6 +287,9 @@ function Probe:actors()
 	for actor in self.game:getStage():iterateActors() do
 		local min, max = actor:getBounds()
 		do
+			min = min or Vector.ZERO
+			max = max or Vector.ZERO
+
 			local _, _, layer = actor:getTile()
 			local node = self.gameView:getMapSceneNode(layer)
 			if node then
@@ -344,6 +347,9 @@ function Probe:props()
 	for prop in self.game:getStage():iterateProps() do
 		local min, max = prop:getBounds()
 		do
+			min = min or Vector.ZERO
+			max = max or Vector.ZERO
+
 			local _, layer = prop:getPosition()
 			local node = self.gameView:getMapSceneNode(layer)
 			if node then

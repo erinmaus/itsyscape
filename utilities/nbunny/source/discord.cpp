@@ -16,7 +16,7 @@
 
 #include "nbunny/discord.hpp"
 
-#ifndef __APPLE__
+#if NBUNNY_BUILDING_WINDOWS
 nbunny::Discord::~Discord()
 {
 	core->destroy(core);

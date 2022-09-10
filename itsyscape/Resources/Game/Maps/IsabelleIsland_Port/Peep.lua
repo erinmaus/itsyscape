@@ -36,6 +36,10 @@ function Port:update(...)
 	Map.update(self, ...)
 
 	local player = Utility.Peep.getPlayer(self)
+	if not player then
+		return
+	end
+
 	local playerState = player:getState()
 	local talkedToJenkins = playerState:has("KeyItem", "CalmBeforeTheStorm_TalkedToJenkins")
 	local hasCompletedQuest = playerState:has("Quest", "CalmBeforeTheStorm")

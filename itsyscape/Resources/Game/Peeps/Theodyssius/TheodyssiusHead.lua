@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local TheodyssiusHead = Class(PassableProp)
 
@@ -51,11 +52,14 @@ function TheodyssiusHead:getPropState()
 			state.eye = actor:getID()
 		end
 
-		local target = Utility.Peep.getPlayer(self):getBehavior(ActorReferenceBehavior)
-		target = target and target.actor
-
-		if target then
-			state.target = target:getID()
+		local combatTarget = self.theodyssius:getBehavior(CombatTargetBehavior)
+		if combatTarget and combatTarget.actor then
+			state.target = combatTarget.actor:getID()
+		else
+			local target = Utility.Peep.getPlayerActor(self)
+			if target then
+				state.target = target:getID()
+			end
 		end
 	end
 

@@ -15,13 +15,13 @@
 
 #include <string>
 
-#ifndef __APPLE__
+#ifdef NBUNNY_BUILDING_WINDOWS
 #include "deps/discord_game_sdk.h"
 #endif
 
 namespace nbunny
 {
-	#ifndef __APPLE__
+	#ifdef NBUNNY_BUILDING_WINDOWS
 	struct Discord
 	{
 		struct IDiscordCore* core = nullptr;

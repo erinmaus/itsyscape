@@ -27,6 +27,7 @@ GameManager.QUEUE_EVENT_TYPE_DESTROY  = "destroy"
 GameManager.QUEUE_EVENT_TYPE_CALLBACK = "callback"
 GameManager.QUEUE_EVENT_TYPE_PROPERTY = "property"
 GameManager.QUEUE_EVENT_TYPE_TICK     = "tick"
+GameManager.QUEUE_EVENT_TYPE_PROTOCOL = "protocol"
 
 GameManager.Instance = Class()
 function GameManager.Instance:new(interface, id, instance, gameManager)
@@ -65,6 +66,10 @@ function GameManager.Instance:getPropertyGroup(groupName)
 	return group
 end
 
+function GameManager.Instance:iteratePropertyGroups()
+	return pairs(self.propertyGroups)
+end
+
 function GameManager.Instance:getProperty(propertyName)
 	return self.properties[propertyName]:getValue()
 end
@@ -81,10 +86,8 @@ function GameManager.Instance:setProperty(propertyName, value)
 	property:set(propertyName, value)
 end
 
-local PROPS = 0
-function GameManager.Instance:update()
+function GameManager.Instance:update(reliable)
 	for i = 1, #self.properties do
-		PROPS = PROPS + 1
 		local property = self.properties[i]
 		local isDirty = property:update(self.instance, self.gameManager)
 		if isDirty then
@@ -92,7 +95,8 @@ function GameManager.Instance:update()
 				self.interface,
 				self.id,
 				property:getField(),
-				property:getValue())
+				property:getValue(),
+				reliable)
 		end
 	end
 end
@@ -133,6 +137,10 @@ GameManager.PropertyGroup = Class()
 
 function GameManager.PropertyGroup:new()
 	self.values = {}
+end
+
+function GameManager.PropertyGroup:iterate()
+	return ipairs(self.values)
 end
 
 function GameManager.PropertyGroup:findIndexOfKey(key)
@@ -224,6 +232,8 @@ function GameManager:new()
 	self.interfaces = {}
 	self.instances = {}
 
+	self.ticks = 0
+
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Quaternion", TypeProvider.Quaternion())
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Ray", TypeProvider.Ray())
 	self.state:registerTypeProvider("ItsyScape.Common.Math.Vector", TypeProvider.Vector())
@@ -254,7 +264,7 @@ function GameManager:getInterfaceType(interface)
 	return self.interfaces[interface].type
 end
 
-function GameManager:push(e)
+function GameManager:push(e, key)
 	Class.ABSTRACT()
 end
 
@@ -269,6 +279,8 @@ function GameManager:process(e)
 		self:processProperty(e)
 	elseif e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
 		self:processTick(e)
+	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROTOCOL then
+		self:processProtocol(e)
 	end
 end
 
@@ -300,7 +312,7 @@ function GameManager:processDestroy(e)
 	-- Nothing.
 end
 
-function GameManager:pushCallback(interface, id, callback, args)
+function GameManager:pushCallback(interface, id, callback, args, key)
 	local event = {
 		type = GameManager.QUEUE_EVENT_TYPE_CALLBACK,
 		interface = interface,
@@ -309,7 +321,7 @@ function GameManager:pushCallback(interface, id, callback, args)
 		value = args
 	}
 
-	self:push(event)
+	self:push(event, key)
 end
 
 -- This process should be the same client/server.
@@ -326,13 +338,14 @@ function GameManager:processCallback(e)
 	end
 end
 
-function GameManager:pushProperty(interface, id, property, args)
+function GameManager:pushProperty(interface, id, property, args, reliable)
 	local event = {
 		type = GameManager.QUEUE_EVENT_TYPE_PROPERTY,
 		interface = interface,
 		id = id,
 		property = property,
-		value = args
+		value = args,
+		__reliable = reliable
 	}
 
 	self:push(event)
@@ -340,12 +353,19 @@ end
 
 function GameManager:processProperty(e)
 	local instance = self:getInstance(e.interface, e.id)
-	instance:setProperty(e.property, e.value)
+	if not instance then
+		Log.warnOnce("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
+	else
+		instance:setProperty(e.property, e.value)
+	end
 end
 
 function GameManager:pushTick()
+	self.ticks = self.ticks + 1
+
 	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_TICK
+		type = GameManager.QUEUE_EVENT_TYPE_TICK,
+		timestamp = self.ticks
 	}
 
 	self:push(event)
@@ -407,6 +427,8 @@ function GameManager:newInstance(interface, id, obj)
 end
 
 function GameManager:destroyInstance(interface, id)
+	self:pushDestroy(interface, id)
+
 	local instances = self.interfaces[interface]
 	local instance = instances[id]
 
@@ -418,8 +440,6 @@ function GameManager:destroyInstance(interface, id)
 			break
 		end
 	end
-
-	self:pushDestroy(interface, id)
 end
 
 -- In setStateForPropertyGroup and unsetStateForPropertyGroup, the first argument
@@ -433,7 +453,7 @@ function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
 		local key = event:getKeyFromArguments(...)
 		local args = self:getArgs(...)
 		if group:set(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args)
+			self:pushCallback(interface, id, event:getCallbackName(), args, key)
 		end
 	end
 end
@@ -446,7 +466,7 @@ function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 		local key = event:getKeyFromArguments(...)
 		local args = self:getArgs(...)
 		if group:unset(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args)
+			self:pushCallback(interface, id, event:getCallbackName(), args, key)
 		end
 	end
 end
@@ -490,8 +510,9 @@ function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
 end
 
 function GameManager:invokeCallback(interface, id, event, _, ...)
+	local key = event:getKeyFromArguments(...)
 	local args = self:getArgs(...)
-	self:pushCallback(interface, id, event:getCallbackName(), args)
+	self:pushCallback(interface, id, event:getCallbackName(), args, key)
 end
 
 function GameManager:getProperty(interface, id, property)

@@ -11,12 +11,13 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local UIProxy = {}
+local UIProxy = Proxy.Definition()
 
 UIProxy.open = Event.ServerToClientRPC(
-	Event.Argument("interfaceID"),
-	Event.Argument("index"))
-UIProxy.open:link("onOpen", Event.Argument("interfaceID"), Event.Argument("index"))
+	Event.Argument("interfaceID", true),
+	Event.Argument("index", true),
+	Event.Argument("player", true))
+UIProxy.open:link("onOpen", Event.Argument("interfaceID"), Event.Argument("index"), Event.Argument("player"))
 UIProxy.poke = Event.ClientToServerRPC(
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
@@ -24,8 +25,8 @@ UIProxy.poke = Event.ClientToServerRPC(
 	Event.Argument("actionIndex"),
 	Event.Argument("e"))
 UIProxy.sendPoke = Event.ServerToClientRPC(
-	Event.Argument("interfaceID"),
-	Event.Argument("index"),
+	Event.Argument("interfaceID", true),
+	Event.Argument("index", true),
 	Event.Argument("actionID"),
 	Event.Argument("actionIndex"),
 	Event.Argument("e"))
@@ -39,8 +40,8 @@ UIProxy.sendPoke:link("onPoke",
 UIProxy.INTERFACE = "interface"
 UIProxy.push = Event.Set(
 	UIProxy.INTERFACE,
-	Event.KeyArgument("interfaceID"),
-	Event.KeyArgument("index"),
+	Event.KeyArgument("interfaceID", true),
+	Event.KeyArgument("index", true),
 	Event.Argument("state"))
 UIProxy.push:link(
 	"onPush",
@@ -54,11 +55,13 @@ UIProxy.pull = Event.Get(
 	Event.Return("e"))
 UIProxy.close = Event.Unset(
 	UIProxy.INTERFACE,
-	Event.KeyArgument("interfaceID"),
-	Event.KeyArgument("index"))
+	Event.KeyArgument("interfaceID", true),
+	Event.KeyArgument("index", true),
+	Event.Argument("player", true))
 UIProxy.close:link(
 	"onClose",
 	Event.Argument("interfaceID"),
-	Event.Argument("index"))
+	Event.Argument("index"),
+	Event.Argument("player"))
 
 return Proxy(UIProxy)

@@ -18,7 +18,8 @@ do
 	local stage = game:getStage()
 
 	local map = Utility.Peep.getMapResource(_TARGET)
-	local mapScript = stage:getMapScript(map.name)
+	local instance = stage:getPeepInstance(_TARGET)
+	local mapScript = instance:getMapScriptByMapFilename(map.name)
 
 	if mapScript then
 		mapScript:poke('raiseCthulhu')

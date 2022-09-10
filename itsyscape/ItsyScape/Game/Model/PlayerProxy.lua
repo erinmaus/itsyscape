@@ -11,10 +11,18 @@ local Proxy = require "ItsyScape.Game.RPC.Proxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local Property = require "ItsyScape.Game.RPC.Property"
 
-local PlayerProxy = {}
+local PlayerProxy = Proxy.Definition()
 
-PlayerProxy.spawn = Event.ClientToServerRPC(Event.Argument("storage"), Event.Argument("newGame"))
+PlayerProxy.getID = Property()
+
+PlayerProxy.spawn = Event.ClientToServerRPC(Event.Argument("storage"), Event.Argument("newGame"), Event.Argument("password"))
 PlayerProxy.save = Event.ClientToServerRPC()
+
+PlayerProxy.onSave = Event.ServerToClientRPC(Event.Argument("storage"))
+PlayerProxy.onSave:link("onSave", Event.Argument("storage"))
+
+PlayerProxy.onLeave = Event.ServerToClientRPC()
+PlayerProxy.onLeave:link("onLeave")
 
 PlayerProxy.getActor = Property()
 PlayerProxy.isReady = Property()
@@ -41,5 +49,7 @@ PlayerProxy.pokeCamera:link("onPokeCamera", Event.Argument("event"), Event.Argum
 PlayerProxy.CAMERA = "camera"
 PlayerProxy.changeCamera = Event.Set(Event.KeyArgument("cameraType"))
 PlayerProxy.changeCamera:link("onChangeCamera", Event.Argument("cameraType"))
+
+PlayerProxy.talk = Event.ClientToServerRPC(Event.Argument("yell"))
 
 return Proxy(PlayerProxy)
