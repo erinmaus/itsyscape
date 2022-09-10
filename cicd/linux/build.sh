@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export LOVE_BRANCH=master
-export ITSYREALM_BRANCH=wip-networking
+export ITSYREALM_BRANCH=master
 
 set -xe
 
