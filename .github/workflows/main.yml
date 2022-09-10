@@ -3,8 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - 'main'
-      - 'wip-networking'
+      - 'master'
 
 jobs:
   linux-server:
