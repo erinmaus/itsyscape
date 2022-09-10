@@ -54,7 +54,18 @@ while isRunning do
 				local client = clientsByID[e.client]
 				if client then
 					for i = 1, #batch do
-						client:send(love.data.compress('string', 'lz4', buffer.encode(batch[i]), -1))
+						local b = batch[i]
+
+						local flag
+						if b.__reliable then
+							flag = 'reliable'
+						else
+							flag = 'unsequenced'
+						end
+
+						local channel = b.__channel
+
+						client:send(love.data.compress('string', 'lz4', buffer.encode(b), -1), channel, flag)
 					end
 				else
 					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
@@ -146,7 +157,7 @@ while isRunning do
 					})
 
 					if isDisconnecting then
-						Log.engine("Whoops, server is shutting down. Disconnecting client %d (address = %s).", e.peer:channel_id(), address)
+						Log.engine("Whoops, server is shutting down. Disconnecting client %d (address = %s).", e.peer:connect_id(), address)
 						e.peer:disconnect()
 					end
 				end

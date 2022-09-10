@@ -20,6 +20,8 @@ local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local LocalGameManager = Class(GameManager)
+LocalGameManager.GAME_CHANNEL = 0
+LocalGameManager.UI_CHANNEL   = 0
 
 function LocalGameManager:new(rpcService, game)
 	GameManager.new(self)
@@ -141,7 +143,10 @@ function LocalGameManager:destroyInstance(interface, id)
 	GameManager.destroyInstance(self, interface, id)
 end
 
-function LocalGameManager:_doSend(player, e)
+function LocalGameManager:_doSend(player, e, reliable, channel)
+	e.__channel = channel or LocalGameManager.GAME_CHANNEL
+	e.__reliable = (reliable == nil and true) or reliable
+
 	table.insert(self.pending, e)
 end
 
@@ -209,7 +214,14 @@ function LocalGameManager:sendToPlayer(player)
 							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget), Log.boolean(isLayerMatch))
 					end
 
-					self:_doSend(player, e)
+					local reliable
+					if e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+						reliable = e.__reliable or false
+					else
+						reliable = true
+					end
+
+					self:_doSend(player, e, reliable)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Player" then
 				local isSamePlayer = e.id == player:getID()
@@ -266,7 +278,7 @@ function LocalGameManager:sendToPlayer(player)
 						isPlayerMatch = isPlayerMatch or interface and interface:getPlayer():getID() == player:getID()
 
 						if isPlayerMatch then
-							self:_doSend(player, e)
+							self:_doSend(player, e, true, LocalGameManager.UI_CHANNEL)
 						end
 					end
 				end
