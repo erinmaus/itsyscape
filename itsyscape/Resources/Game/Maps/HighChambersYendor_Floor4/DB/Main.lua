@@ -315,7 +315,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWizard",
-		MapObject = M["Wizard"]
+		MapObject = M["Wizard"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 end
 
@@ -333,7 +335,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonArcher",
-		MapObject = M["Archer"]
+		MapObject = M["Archer"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 end
 
@@ -351,6 +355,8 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_SkeletonWarrior",
-		MapObject = M["Warrior"]
+		MapObject = M["Warrior"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 end
