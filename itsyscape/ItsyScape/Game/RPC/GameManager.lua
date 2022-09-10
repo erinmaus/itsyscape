@@ -70,6 +70,10 @@ function GameManager.Instance:iteratePropertyGroups()
 	return pairs(self.propertyGroups)
 end
 
+function GameManager.Instance:hasProperty(propertyName)
+	return self.properties[propertyName] ~= nil and self.properties[propertyName]:hasValue()
+end
+
 function GameManager.Instance:getProperty(propertyName)
 	return self.properties[propertyName]:getValue()
 end
@@ -105,10 +109,15 @@ GameManager.Property = Class()
 function GameManager.Property:new(field, filter)
 	self.field = field
 	self.filter = filter
+	self.isEmpty = true
 end
 
 function GameManager.Property:getField()
 	return self.field
+end
+
+function GameManager.Property:hasValue()
+	return not self.isEmpty
 end
 
 function GameManager.Property:getValue()
@@ -125,12 +134,14 @@ function GameManager.Property:update(instance, gameManager)
 
 	local isDirty = true
 	self.currentValue = newValue
+	self.isEmpty = false
 
 	return isDirty
 end
 
 function GameManager.Property:set(instance, newValue)
 	self.currentValue = newValue
+	self.isEmpty = false
 end
 
 GameManager.PropertyGroup = Class()
@@ -513,6 +524,11 @@ function GameManager:invokeCallback(interface, id, event, _, ...)
 	local key = event:getKeyFromArguments(...)
 	local args = self:getArgs(...)
 	self:pushCallback(interface, id, event:getCallbackName(), args, key)
+end
+
+function GameManager:hasProperty(interface, id, property)
+	local instance = self:getInstance(interface, id)
+	return instance ~= nil and instance:hasProperty(property)
 end
 
 function GameManager:getProperty(interface, id, property)

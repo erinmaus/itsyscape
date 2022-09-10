@@ -11,6 +11,14 @@ local Class = require "ItsyScape.Common.Class"
 
 local Property = Class()
 
+function Property:new(...)
+	self.defaultValue = { n = select('#', ...), ... }
+end
+
+function Property:getDefaultValue()
+	return unpack(self.defaultValue, 1, self.defaultValue.n)
+end
+
 function Property:filter(...)
 	return ...
 end
