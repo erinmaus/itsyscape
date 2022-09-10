@@ -295,15 +295,10 @@ function LocalPlayer:move(x, z)
 	local peep = self.actor:getPeep()
 	local movement = peep:getBehavior(MovementBehavior)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
-		local currentAccceleration = movement.acceleration:getLength()
-		if currentAccceleration < LocalPlayer.MOVEMENT_STOP_THRESHOLD then
-			movement.acceleration = Vector(0, movement.acceleration.y, 0)
-			movement.velocity = Vector(0, movement.velocity.y, 0)
-			movement.isStopping = true
-		end
+		movement.isStopping = true
 	else
 		if peep:getCommandQueue():clear() then
-			movement.acceleration = movement.maxAcceleration * direction
+			movement.velocity = movement.maxSpeed * direction
 			movement.isStopping = false
 
 			local i, j, k = Utility.Peep.getTile(peep)

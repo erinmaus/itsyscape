@@ -211,6 +211,9 @@ function LocalGame:getCurrentTick()
 end
 
 function LocalGame:tick()
+	self.lastTick = self.currentTick or (love.timer.getTime() - self:getTargetDelta())
+	self.currentTick = love.timer.getTime()
+
 	self:cleanup()
 
 	self.ticks = self.ticks + 1
@@ -220,6 +223,14 @@ function LocalGame:tick()
 
 	--self.player:updateDiscord()
 	self.discord:tick()
+end
+
+function LocalGame:getDelta()
+	if self.lastTick and self.currentTick then
+		return self.currentTick - self.lastTick
+	else
+		return self:getTargetDelta()
+	end
 end
 
 function LocalGame:update(delta)

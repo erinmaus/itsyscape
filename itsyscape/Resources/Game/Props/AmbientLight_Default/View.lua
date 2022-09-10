@@ -21,7 +21,7 @@ function AmbientLight:tick()
 	LightView.tick(self)
 
 	local state = self:getProp():getState()
-	self:getLight():setAmbience(state.ambience)
+	self:getLight():setAmbience(state.ambience or 1)
 end
 
 return AmbientLight

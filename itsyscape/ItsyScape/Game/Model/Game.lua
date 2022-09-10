@@ -67,13 +67,17 @@ end
 -- Gets the delta. This is the time between a tick.
 --
 -- This value is the same as 1.0 / self:getTicks().
-function Game:getDelta()
+function Game:getTargetDelta()
 	local ticks = self:getTicks()
 	if ticks then
 		return 1.0 / ticks
 	else
 		return nil
 	end
+end
+
+function Game:getDelta()
+	return self:getTargetDelta()
 end
 
 -- Gets the current tick since the beginning of the game instance.

@@ -134,6 +134,10 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 		gameManager:registerProperty(interface, id, propertyName, property)
 
 		instance[propertyName] = function()
+			if not gameManager:hasProperty(interface, id, propertyName) then
+				return property:getDefaultValue()
+			end
+
 			local p = gameManager:getProperty(interface, id, propertyName)
 			return unpack(p, 1, table.maxn(p))
 		end
