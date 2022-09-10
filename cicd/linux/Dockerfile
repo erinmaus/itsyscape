@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 USER root
 
-RUN mkdir -p /itsyrealm && && \
+RUN mkdir -p /itsyrealm && \
 	mkdir -p /itsyrealm/config && \
 	mkdir -p /root/.local/share && \
 	ln -s /itsyrealm/config /root/.local/share/ItsyRealm
