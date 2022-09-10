@@ -86,7 +86,7 @@ function GameManager.Instance:setProperty(propertyName, value)
 	property:set(propertyName, value)
 end
 
-function GameManager.Instance:update()
+function GameManager.Instance:update(reliable)
 	for i = 1, #self.properties do
 		local property = self.properties[i]
 		local isDirty = property:update(self.instance, self.gameManager)
@@ -95,7 +95,8 @@ function GameManager.Instance:update()
 				self.interface,
 				self.id,
 				property:getField(),
-				property:getValue())
+				property:getValue(),
+				reliable)
 		end
 	end
 end
@@ -337,13 +338,14 @@ function GameManager:processCallback(e)
 	end
 end
 
-function GameManager:pushProperty(interface, id, property, args)
+function GameManager:pushProperty(interface, id, property, args, reliable)
 	local event = {
 		type = GameManager.QUEUE_EVENT_TYPE_PROPERTY,
 		interface = interface,
 		id = id,
 		property = property,
-		value = args
+		value = args,
+		__reliable = reliable
 	}
 
 	self:push(event)
