@@ -41,7 +41,7 @@ DemoApplication.TITLE_SCREENS = {
 }
 
 function DemoApplication:new()
-	Application.new(self, _CONF.multithreaded or false)
+	Application.new(self, true)
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
