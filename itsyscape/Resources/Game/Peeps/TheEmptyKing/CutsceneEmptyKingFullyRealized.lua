@@ -34,8 +34,8 @@ function TheEmptyKing:new(resource, name, ...)
 	size.size = Vector(2, 6, 2)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxAcceleration = 16
-	movement.maxSpeed = 32
+	movement.maxAcceleration = 8
+	movement.maxSpeed = 16
 end
 
 function TheEmptyKing:ready(director, game)

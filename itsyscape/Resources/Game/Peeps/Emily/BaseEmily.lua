@@ -44,8 +44,8 @@ function BaseEmily:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.1
-	movement.maxSpeed = 10
-	movement.maxAcceleration = 10
+	movement.maxSpeed = 5
+	movement.maxAcceleration = 5
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

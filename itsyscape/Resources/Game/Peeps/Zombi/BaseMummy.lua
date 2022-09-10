@@ -30,8 +30,8 @@ function BaseMummy:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 8
-	movement.maxAcceleration = 6
+	movement.maxSpeed = 4
+	movement.maxAcceleration = 3
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

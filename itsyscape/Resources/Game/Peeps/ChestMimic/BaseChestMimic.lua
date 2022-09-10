@@ -30,9 +30,9 @@ function BaseChestMimic:new(resource, name, ...)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 5
+	movement.maxSpeed = 4
 	movement.decay = 0.6
-	movement.maxAcceleration = 18
+	movement.maxAcceleration = 9
 	movement.velocityMultiplier = 1.1
 	movement.accelerationMultiplier = 1.1
 

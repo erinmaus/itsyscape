@@ -78,8 +78,8 @@ function GoryMass:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxAcceleration = 32
-	movement.maxSpeed = 32
+	movement.maxAcceleration = 16
+	movement.maxSpeed = 16
 	movement.float = 1.5
 
 	Utility.Peep.equipXWeapon(self, "GoryMass_Attack")

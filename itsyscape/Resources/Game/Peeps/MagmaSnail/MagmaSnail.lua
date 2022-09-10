@@ -63,8 +63,8 @@ function MagmaSnail:new(resource, name, ...)
 	size.size = Vector(1.5, 1.5, 1.5)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 2
-	movement.maxAcceleration = 2
+	movement.maxSpeed = 1
+	movement.maxAcceleration = 1
 end
 
 function MagmaSnail:onDie()
