@@ -68,43 +68,50 @@ function MoveToTileCortex:update(delta)
 			local speed = math.min(self.speed[peep] + movement.maxSpeed * delta, movement.maxSpeed)
 			local map = game:getDirector():getMap(peep:getBehavior(PositionBehavior).layer or 1)
 			if map then
-				local currentTile, currentTileI, currentTileJ = map:getTileAt(position.position.x, position.position.z)
-				local nextTile, nextTileI, nextTileJ = map:getTile(targetTile.pathNode.i, targetTile.pathNode.j)
-				local previousTileCenter = self.previousTileCenter[peep]
-				local currentPosition = previousTileCenter or position.position
-				local targetPosition = map:getTileCenter(nextTileI, nextTileJ)
-				local direction = (targetPosition - currentPosition):getNormal()
-				local offset = direction * speed / (1 + movement.decay * 8 * delta)
+				local currentDelta = delta
+				while currentDelta > 0 do
+					local currentTile, currentTileI, currentTileJ = map:getTileAt(position.position.x, position.position.z)
+					local nextTile, nextTileI, nextTileJ = map:getTile(targetTile.pathNode.i, targetTile.pathNode.j)
+					local previousTileCenter = self.previousTileCenter[peep]
+					local currentPosition = position.position
+					local targetPosition = map:getTileCenter(nextTileI, nextTileJ)
+					local direction = (targetPosition - currentPosition):getNormal()
+					local offset = direction * speed
 
-				if direction.x < 0 then
-					movement.facing = MovementBehavior.FACING_LEFT
-				elseif direction.x > 0 then
-					movement.facing = MovementBehavior.FACING_RIGHT
-				end
-
-				local velocity = offset
-				velocity = self:accumulateVelocity(peep, velocity)
-
-				position.position = position.position + velocity * delta
-
-				local distance = (targetPosition - currentPosition):getLength()
-
-				local currentDistance = (position.position - targetPosition):getLength()
-				local didOvershoot = previousTileCenter and (currentPosition - targetPosition):getLength() >= currentDistance
-
-				if didOvershoot then
-					peep:removeBehavior(TargetTileBehavior)
-
-					position.position = targetPosition
-
-					-- Otherwise, activate next node (if possible).
-					if targetTile.nextPathNode then
-						targetTile.nextPathNode:activate(peep)
-					else
-						movement.isStopping = true
+					if direction.x < 0 then
+						movement.facing = MovementBehavior.FACING_LEFT
+					elseif direction.x > 0 then
+						movement.facing = MovementBehavior.FACING_RIGHT
 					end
 
-					self.previousTileCenter[peep] = targetPosition
+					local velocity = offset
+					velocity = self:accumulateVelocity(peep, velocity)
+
+					local velocitySlice = velocity * currentDelta
+					local velocitySliceLength = velocitySlice:getLength()
+
+					local didOvershoot = false
+					local distance = (targetPosition - position.position):getLength()
+					if distance < velocitySliceLength then
+						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
+						velocitySlice = direction * distance
+						didOvershoot = true
+					else
+						currentDelta = 0
+						didOvershoot = false
+					end
+
+					position.position = position.position + velocitySlice
+
+					if didOvershoot then
+						peep:removeBehavior(TargetTileBehavior)
+
+						if targetTile.nextPathNode then
+							targetTile.nextPathNode:activate(peep)
+						else
+							movement.isStopping = true
+						end
+					end
 				end
 
 				self.speed[peep] = speed
