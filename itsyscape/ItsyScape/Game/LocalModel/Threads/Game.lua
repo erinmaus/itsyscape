@@ -67,7 +67,7 @@ while isRunning do
 
 	local duration = timeEnd - timeStart
 	if duration < game:getDelta() then
-		love.timer.sleep(game:getDelta() - duration)
+		love.timer.sleep(game:getTargetDelta() - duration)
 	else
 		Log.info("Tick ran over by %0.2f ms.", (duration - game:getDelta()) * 1000)
 		Log.info(
