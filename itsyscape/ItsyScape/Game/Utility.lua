@@ -3113,8 +3113,8 @@ end
 function Utility.Peep.makeHuman(peep)
 	local movement = peep:getBehavior(MovementBehavior)
 	if movement then
-		movement.maxSpeed = 16
-		movement.maxAcceleration = 16
+		movement.maxSpeed = 8
+		movement.maxAcceleration = 8
 		movement.decay = 0.6
 		movement.velocityMultiplier = 1
 		movement.accelerationMultiplier = 1
