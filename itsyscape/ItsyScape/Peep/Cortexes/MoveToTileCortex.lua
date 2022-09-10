@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -25,16 +26,21 @@ function MoveToTileCortex:new()
 	self:require(TargetTileBehavior)
 
 	self.speed = {}
+	self.previousTileCenter = {}
 end
 
 function MoveToTileCortex:addPeep(peep)
 	Cortex.addPeep(self, peep)
 	self.speed[peep] = 0
+
+	local map = Utility.Peep.getMap(peep)
+	self.previousTileCenter[peep] = map:getTileCenter(Utility.Peep.getTile(peep))
 end
 
 function MoveToTileCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
 	self.speed[peep] = nil
+	self.previousTileCenter[peep] = nil
 end
 
 function MoveToTileCortex:accumulateVelocity(peep, value)
@@ -63,8 +69,8 @@ function MoveToTileCortex:update(delta)
 			if map then
 				local currentTile, currentTileI, currentTileJ = map:getTileAt(position.position.x, position.position.z)
 				local nextTile, nextTileI, nextTileJ = map:getTile(targetTile.pathNode.i, targetTile.pathNode.j)
-				local currentPosition = position.position * Vector.PLANE_XZ
-				local targetPosition = map:getTileCenter(nextTileI, nextTileJ) * Vector.PLANE_XZ
+				local currentPosition = position.position
+				local targetPosition = map:getTileCenter(nextTileI, nextTileJ)
 				local direction = (targetPosition - currentPosition):getNormal()
 				local offset = direction * speed
 
@@ -77,18 +83,22 @@ function MoveToTileCortex:update(delta)
 				local velocity = offset * MoveToTileCortex.SPEED_MULTIPLIER
 				velocity = self:accumulateVelocity(peep, velocity)
 
-				position.position = position.position + velocity * delta 
+				position.position = position.position + velocity * delta
 
-				local distance = ((position.position * Vector.PLANE_XZ) - targetPosition):getLength()
-				if distance < 0.5 then
-					peep:removeBehavior(TargetTileBehavior)
+				local currentDistance = (position.position - targetPosition):getLength()
+				local previousTileCenter = self.previousTileCenter[peep]
+				local didOvershoot = previousTileCenter and (previousTileCenter - currentPosition):getLength() >= map:getCellSize() - 0.5
 
+				if currentDistance < 0.5 or didOvershoot then
 					-- Otherwise, activate next node (if possible).
 					if targetTile.nextPathNode then
 						targetTile.nextPathNode:activate(peep)
 					else
+						peep:removeBehavior(TargetTileBehavior)
 						movement.isStopping = true
 					end
+
+					self.previousTileCenter[peep] = targetPosition
 				end
 			end
 		end
