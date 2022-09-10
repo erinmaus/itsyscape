@@ -27,9 +27,9 @@ function Fog:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
-	self.fog:setColor(Color(unpack(state.color)))
-	self.fog:setFarDistance(state.distance.far)
-	self.fog:setNearDistance(state.distance.near)
+	self.fog:setColor(Color(unpack(state.color or {})))
+	self.fog:setFarDistance((state.distance and state.distance.far) or 0)
+	self.fog:setNearDistance((state.distance and state.distance.near) or 0)
 
 	if state.followTarget then
 		self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_TARGET)

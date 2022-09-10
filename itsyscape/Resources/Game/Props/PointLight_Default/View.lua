@@ -21,7 +21,7 @@ function PointLight:tick()
 	LightView.tick(self)
 
 	local state = self:getProp():getState()
-	self:getLight():setAttenuation(state.attenuation)
+	self:getLight():setAttenuation(state.attenuation or 0)
 end
 
 return PointLight
