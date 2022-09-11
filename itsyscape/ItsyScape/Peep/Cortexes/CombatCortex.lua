@@ -96,7 +96,7 @@ function CombatCortex:usePower(peep, target, logic)
 		local canUseAbility = true
 
 		local id = power:getResource().id.value
-		local time = game:getCurrentTick() * game:getDelta()
+		local time = love.timer.getTime()
 		if coolDowns.powers[id] then
 			canUseAbility = time > coolDowns.powers[id]
 		end
