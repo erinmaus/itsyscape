@@ -9,8 +9,8 @@ message {
 }
 
 message {
-	"I've wired 10,000 to your bank.",
-	"I also provided soem supplies.",
+	"I've wired 10,000 coins to your bank.",
+	"I also provided some supplies.",
 	"Per our agreement, of course.",
 	"Consider our deal done."
 }
