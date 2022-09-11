@@ -124,8 +124,8 @@ ItsyScape.Meta.GatherableProp {
 
 ItsyScape.Meta.Cannon {
 	Range = 10,
-	MinDamage = 100,
-	MaxDamage = 200,
+	MinDamage = 8,
+	MaxDamage = 12,
 	Cannonball = ItsyScape.Resource.Item "IronCannonball",
 	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }
