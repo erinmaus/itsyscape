@@ -35,7 +35,9 @@ function MoveToTileCortex:addPeep(peep)
 	self.speed[peep] = self.speed[peep] or peep:getBehavior(MovementBehavior).maxSpeed / 2
 
 	local map = Utility.Peep.getMap(peep)
-	self.previousTileCenter[peep] = self.previousTileCenter[peep] or map:getTileCenter(Utility.Peep.getTile(peep))
+	if map then
+		self.previousTileCenter[peep] = self.previousTileCenter[peep] or map:getTileCenter(Utility.Peep.getTile(peep))
+	end
 end
 
 function MoveToTileCortex:removePeep(peep)
