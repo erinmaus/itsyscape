@@ -403,7 +403,7 @@ function ProCombatStatusHUDController:updatePowersState(powers)
 	end
 
 	if b then
-		local time = self:getGame():getCurrentTick() * self:getGame():getDelta()
+		local time = love.timer.getTime()
 		for i = 1, #powers do
 			local p = powers[i]
 
