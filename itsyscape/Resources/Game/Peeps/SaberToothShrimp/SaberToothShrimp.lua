@@ -79,7 +79,11 @@ end
 
 function SaberToothShrimp:update(...)
 	Creep.update(self, ...)
-	Utility.Peep.lookAt(self, Utility.Peep.getPlayer(self))
+
+	local player = Utility.Peep.getPlayer(self)
+	if player then
+		Utility.Peep.lookAt(self, player)
+	end
 end
 
 return SaberToothShrimp
