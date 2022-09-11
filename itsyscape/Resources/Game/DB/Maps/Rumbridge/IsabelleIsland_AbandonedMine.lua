@@ -311,7 +311,7 @@ do
 
 	ItsyScape.Meta.GatherableProp {
 		Health = 5,
-		SpawnTime = math.huge,
+		SpawnTime = 30,
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
 	}
 

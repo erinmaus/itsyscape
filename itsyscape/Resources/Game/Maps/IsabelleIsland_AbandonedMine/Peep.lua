@@ -36,7 +36,9 @@ end
 function Mine:onPillarMined(prop, e)
 	local director = self:getDirector()
 	local hit = director:probe(self:getLayerName(), Probe.namedMapObject("GhostlyMinerForeman"))[1]
-	hit:poke('pillarMined', { pillar = prop, aggressor = (e and e.peep)or prop })
+	if hit then
+		hit:poke('pillarMined', { pillar = prop, aggressor = (e and e.peep) or prop })
+	end
 end
 
 function Mine:getTorches()
