@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Game/LocalModel/Instance.lua
 --
@@ -633,6 +634,9 @@ end
 function Instance:unload()
 	Log.engine("Unloaded instance %s (%d).", self:getFilename(), self:getID())
 
+	self.stage.onLoadMap:unregister(self._onLoadMap)
+	self.stage.onUnloadMap:unregister(self._onUnloadMap)
+	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
 	self.stage.onActorKilled:unregister(self._onActorKilled)
 	self.stage.onPropPlaced:unregister(self._onPropPlaced)
