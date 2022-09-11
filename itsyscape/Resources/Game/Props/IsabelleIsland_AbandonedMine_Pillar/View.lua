@@ -25,6 +25,7 @@ function PillarView:new(prop, gameView)
 	self.depleted = false
 	self.previousProgress = 0
 	self.time = false
+	self.reverse = false
 end
 
 function PillarView:load()
@@ -99,7 +100,9 @@ function PillarView:update(delta)
 
 	if self.node and self.animation then
 		local transforms = {}
-		self.animation:getResource():computeTransforms(time, transforms)
+		self.animation:getResource():computeTransforms(
+			(self.reverse and (self.animation:getResource():getDuration() - time)) or time,
+			transforms)
 		self.node:setTransforms(transforms)
 	end
 end
@@ -119,10 +122,16 @@ function PillarView:tick()
 		end
 
 		if r.depleted ~= self.depleted then
-			if r.depleted then
-				self.time = 0
+			if self.time then
+				self.time = self.animation:getResource():getDuration() - self.time
 			else
-				self.time = false
+				self.time = 0
+			end
+
+			if r.depleted then
+				self.reverse = false
+			else
+				self.reverse = true
 			end
 
 			self.depleted = r.depleted
