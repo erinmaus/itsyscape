@@ -125,7 +125,13 @@ while isRunning do
 
 	repeat
 		if host then
-			e = host:service(0)
+			local s, r = pcall(host.service, host, 0)
+			if not s then
+				Log.warn("Error running service: %s", r)
+				e = nil
+			else
+				e = r
+			end
 		end
 
 		if e then
