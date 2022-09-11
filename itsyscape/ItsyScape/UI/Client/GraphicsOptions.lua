@@ -380,74 +380,6 @@ function GraphicsOptions:new(application)
 	end
 
 	do
-		local label = Label()
-		label:setStyle(
-			LabelStyle(
-				GraphicsOptions.INPUT_STYLE,
-				self.application:getUIView():getResources()))
-		label:setText("Multicore")
-		label:setPosition(
-			GraphicsOptions.WIDTH / 2 + GraphicsOptions.PADDING * 2,
-			GraphicsOptions.PADDING * 5 + GraphicsOptions.INPUT_HEIGHT * 3)
-		label:setSize(GraphicsOptions.WIDTH / 4, GraphicsOptions.INPUT_HEIGHT)
-		self:addChild(label)
-
-		local onButton = Button()
-		onButton:setText('On')
-		onButton:setToolTip(
-			ToolTip.Text("Enable multicore mode."),
-			ToolTip.Text("Experimental! Runs the logic on another thread."),
-			ToolTip.Text("Good for fast computers where you don't lag."))
-		onButton:setPosition(
-			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.PADDING * 3,
-			GraphicsOptions.PADDING * 4 + GraphicsOptions.INPUT_HEIGHT * 3)
-		onButton:setSize(
-			GraphicsOptions.INPUT_WIDTH,
-			GraphicsOptions.INPUT_HEIGHT)
-
-		if _CONF.multithreaded then
-			onButton:setStyle(
-				ButtonStyle(
-					GraphicsOptions.ACTIVE_ITEM_STYLE,
-					self.application:getUIView():getResources()))
-		else
-			onButton:setStyle(
-				ButtonStyle(
-					GraphicsOptions.INACTIVE_ITEM_STYLE,
-					self.application:getUIView():getResources()))
-		end
-		onButton.onClick:register(self.setMultithreaded, self, true)
-		self:addChild(onButton)
-		self.multithreadedOnButton = onButton
-
-		local offButton = Button()
-		offButton:setText('Off')
-		offButton:setToolTip(
-			ToolTip.Text("Disable multicore mode."),
-			ToolTip.Text("Will fix rendering glitches and slow downs."))
-		offButton:setPosition(
-			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.INPUT_WIDTH + GraphicsOptions.PADDING * 4,
-			GraphicsOptions.PADDING * 4 + GraphicsOptions.INPUT_HEIGHT * 3)
-		offButton:setSize(
-			GraphicsOptions.INPUT_WIDTH,
-			GraphicsOptions.INPUT_HEIGHT)
-		if not _CONF.multithreaded then
-			offButton:setStyle(
-				ButtonStyle(
-					GraphicsOptions.ACTIVE_ITEM_STYLE,
-					self.application:getUIView():getResources()))
-		else
-			offButton:setStyle(
-				ButtonStyle(
-					GraphicsOptions.INACTIVE_ITEM_STYLE,
-					self.application:getUIView():getResources()))
-		end
-		offButton.onClick:register(self.setMultithreaded, self, false)
-		self:addChild(offButton)
-		self.multithreadedOffButton = offButton
-	end
-
-	do
 		local confirmButton = Button()
 		confirmButton:setText("Confirm")
 		confirmButton:setStyle(
@@ -484,8 +416,7 @@ function GraphicsOptions:new(application)
 		height = _CONF.height,
 		vsync = _CONF.vsync,
 		fullscreen = _CONF.fullscreen,
-		debug = _CONF.debug,
-		multithreaded = _CONF.multithreaded
+		debug = _CONF.debug
 	}
 
 	self.onClose = Callback()
@@ -582,29 +513,6 @@ function GraphicsOptions:setDebug(enabled)
 	end
 end
 
-function GraphicsOptions:setMultithreaded(enabled)
-	self.conf.multithreaded = enabled
-	if enabled then
-		self.multithreadedOnButton:setStyle(
-			ButtonStyle(
-				GraphicsOptions.ACTIVE_ITEM_STYLE,
-				self.application:getUIView():getResources()))
-		self.multithreadedOffButton:setStyle(
-			ButtonStyle(
-				GraphicsOptions.INACTIVE_ITEM_STYLE,
-				self.application:getUIView():getResources()))
-	else
-		self.multithreadedOnButton:setStyle(
-			ButtonStyle(
-				GraphicsOptions.INACTIVE_ITEM_STYLE,
-				self.application:getUIView():getResources()))
-		self.multithreadedOffButton:setStyle(
-			ButtonStyle(
-				GraphicsOptions.ACTIVE_ITEM_STYLE,
-				self.application:getUIView():getResources()))
-	end
-end
-
 function GraphicsOptions:confirm(save)
 	if save then
 		_CONF.width = self.conf.width
@@ -612,7 +520,6 @@ function GraphicsOptions:confirm(save)
 		_CONF.fullscreen = self.conf.fullscreen
 		_CONF.vsync = self.conf.vsync
 		_CONF.debug = self.conf.debug
-		_CONF.multithreaded = self.conf.multithreaded
 	end
 
 	self.onClose(save)
