@@ -311,7 +311,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Pirate1"]
+		MapObject = M["Pirate1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
@@ -335,7 +337,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Pirate2"]
+		MapObject = M["Pirate2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
