@@ -55,8 +55,8 @@ function Creep:new(resource, ...)
 	Utility.Peep.addStats(self, Curve.MAX)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 12
-	movement.maxAcceleration = 8
+	movement.maxSpeed = 6
+	movement.maxAcceleration = 6
 	movement.decay = 0.7
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
