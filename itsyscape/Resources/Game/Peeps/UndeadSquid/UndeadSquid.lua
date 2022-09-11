@@ -35,8 +35,8 @@ function UndeadSquid:new(resource, name, ...)
 	size.offset = Vector(0, 1, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.velocityMultiplier = 1.5
-	movement.accelerationMultiplier = 1.5
+	movement.maxSpeed = 6
+	movement.maxAcceleration = 6
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge

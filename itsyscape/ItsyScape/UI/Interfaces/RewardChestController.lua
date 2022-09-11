@@ -107,13 +107,11 @@ function RewardChestController:pullItem(item)
 end
 
 function RewardChestController:collect(e)
-	local reward = self.chest:getBehavior(InventoryBehavior)
-	local inventory = self:getPeep():getBehavior(InventoryBehavior)
-	if inventory and inventory.bank and
-	   reward and reward.inventory
-	then
-		reward = reward.inventory
+	local reward = self:getInventory()
+	if reward then
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
 		inventory = inventory.bank
+
 		assert(reward:getBroker() == inventory:getBroker())
 
 		local broker = reward:getBroker()
