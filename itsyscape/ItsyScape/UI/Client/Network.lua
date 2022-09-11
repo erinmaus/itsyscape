@@ -112,7 +112,7 @@ function Network:new(application)
 
 	local cancel = Button()
 	cancel:setText("Nevermind")
-	cancel.onClick:register(self.cancel, self)
+	cancel.onClick:register(self.close, self)
 	layout:addChild(cancel)
 
 	self.closeButton = Button()
