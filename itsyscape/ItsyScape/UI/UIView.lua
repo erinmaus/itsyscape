@@ -203,9 +203,40 @@ function itsyrealm.graphics.impl.clearScissor()
 	love.graphics.setScissor()
 end
 
+function itsyrealm.graphics.impl.noOp()
+end
+
 function itsyrealm.graphics.dirty()
 	graphicsState.atlas:markDirty()
 	table.clear(graphicsState.text)
+end
+
+itsyrealm.graphics.disabled = {}
+
+itsyrealm.graphics.disabled.clearPseudoScissor = itsyrealm.graphics.clearPseudoScissor
+
+function itsyrealm.graphics.disabled.resetPseudoScissor()
+	local w, h = love.window.getMode()
+	love.graphics.setScissor(0, 0, w, h)
+end
+
+function itsyrealm.graphics.disable()
+	for key, value in pairs(itsyrealm.graphics) do
+		local l = love.graphics[key]
+		if type(value) == 'function' then
+			if l then
+				itsyrealm.graphics[key] = l
+				Log.engine(
+					"Replaced `itsyrealm.graphics.%s` with `love.graphics.%s`.",
+					key, key)
+			else
+				itsyrealm.graphics[key] = itsyrealm.graphics.disabled[key] or itsyrealm.graphics.impl.noOp
+				Log.engine(
+					"Poofed `itsyrealm.graphics.%s` (no-op = %s).",
+					key, Log.boolean(itsyrealm.graphics[key] == itsyrealm.graphics.impl.noOp))
+			end
+		end
+	end
 end
 
 function itsyrealm.graphics.start()	
@@ -468,6 +499,25 @@ end
 
 function itsyrealm.graphics.inverseTransformPoint(...)
 	return graphicsState.transform:inverseTransformPoint(...)
+end
+
+itsyrealm.graphics.disabled.intersectPseudoScissor = itsyrealm.graphics.intersectPseudoScissor
+itsyrealm.graphics.disabled.popPseudoScissor = itsyrealm.graphics.popPseudoScissor
+
+function itsyrealm.graphics.disabled.applyPseudoScissor()
+	love.graphics.setScissor(unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
+end
+
+itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoScissor
+
+itsyrealm.graphics.disabled.drawq = love.graphics.draw
+itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
+
+if love.system.getOS() ~= "OS X" then
+	Log.info(
+		"Disabling advanced UI caching on platform '%s'.",
+		love.system.getOS())
+	itsyrealm.graphics.disable()
 end
 
 function UIView:new(gameView)
