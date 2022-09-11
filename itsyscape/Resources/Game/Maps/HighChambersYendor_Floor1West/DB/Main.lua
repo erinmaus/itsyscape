@@ -1565,7 +1565,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
-		MapObject = M["CthulhuianMiniboss1"]
+		MapObject = M["CthulhuianMiniboss1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -1591,7 +1593,9 @@ do
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "CthulhuianMiniboss",
 		Map = M._MAP,
-		MapObject = M["CthulhuianMiniboss2"]
+		MapObject = M["CthulhuianMiniboss2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMapObject {
@@ -1627,7 +1631,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
-		MapObject = M["CthulhuianMiniboss3"]
+		MapObject = M["CthulhuianMiniboss3"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
