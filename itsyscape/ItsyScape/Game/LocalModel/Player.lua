@@ -404,7 +404,7 @@ function LocalPlayer:talk(message)
 		end
 
 		if instance:hasRaid() then
-			for _, player in instance:getRaid():iteratePlayers() do
+			for _, player in instance:getRaid():getParty():iteratePlayers() do
 				player:pushMessage(self, whisper)
 			end
 		else
