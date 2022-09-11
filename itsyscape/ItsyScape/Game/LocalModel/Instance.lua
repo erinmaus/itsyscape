@@ -634,6 +634,8 @@ end
 function Instance:unload()
 	Log.engine("Unloaded instance %s (%d).", self:getFilename(), self:getID())
 
+	self:tick()
+
 	self.stage.onLoadMap:unregister(self._onLoadMap)
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
