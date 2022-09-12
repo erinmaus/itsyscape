@@ -15,6 +15,7 @@ require "bootstrap"
 
 local enet = require "enet"
 local buffer = require "string.buffer"
+local cerror = require "nbunny.cerror"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
@@ -127,7 +128,7 @@ while isRunning do
 		if host then
 			local s, r = pcall(host.service, host, 0)
 			if not s then
-				Log.warn("Error running service: %s", r)
+				Log.warnOnce("Error running service: %s (errno = %d, error = %s)", r, cerror())
 				e = nil
 			else
 				e = r
