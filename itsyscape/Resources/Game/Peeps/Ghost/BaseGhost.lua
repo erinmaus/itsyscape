@@ -28,8 +28,8 @@ function BaseGhost:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 4
-	movement.maxAcceleration = 3
+	movement.maxSpeed = 1
+	movement.maxAcceleration = 1
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",

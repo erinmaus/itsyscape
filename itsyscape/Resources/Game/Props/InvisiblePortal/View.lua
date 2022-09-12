@@ -48,7 +48,8 @@ function InvisiblePortal:updateRotation(delta)
 	do
 		local playerPosition
 		do
-			local playerActor = self:getGameView():getGame():getPlayer():getActor()
+			local game = self:getGameView():getGame()
+			local playerActor = game:getPlayer() amd game:getPlayer():getActor()
 			if not playerActor then
 				return
 			else
