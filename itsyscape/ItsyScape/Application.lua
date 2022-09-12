@@ -355,6 +355,15 @@ function Application:disconnect()
 	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 end
 
+function Application:setAdmin(clientID)
+	Log.info("Setting admin to client %d.")
+
+	self.adminChannel:push({
+		type = 'admin',
+		admin = clientID
+	})
+end
+
 function Application:connect(address, port, password)
 	Log.info("Connecting to %s:%d.", address, port)
 
