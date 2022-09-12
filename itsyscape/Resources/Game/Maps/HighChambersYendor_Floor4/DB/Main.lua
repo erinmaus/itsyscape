@@ -229,7 +229,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
-		MapObject = M["Isabelle"]
+		MapObject = M["Isabelle"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	M["Isabelle"] {
@@ -247,7 +249,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
-		MapObject = M["Isabelle_Dummy"]
+		MapObject = M["Isabelle_Dummy"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	local TalkAction = ItsyScape.Action.Talk()
@@ -279,7 +283,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
-		MapObject = M["Isabelle_Dead"]
+		MapObject = M["Isabelle_Dead"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	local TalkAction = ItsyScape.Action.Talk()
