@@ -32,7 +32,7 @@ local isDisconnecting = false
 local function disconnectAllClients()
 	for _, client in pairs(clients) do
 		Log.engine("Disconnecting client %d...", client:connect_id())
-		client:disconnect()
+		client:disconnect_later()
 	end
 end
 
@@ -74,7 +74,7 @@ while isRunning do
 				local client = clientsByID[e.client]
 				if client then
 					Log.info("Disconnecting client %d...")
-					client:disconnect(client:connect_id())
+					client:disconnect_later(client:connect_id())
 				else
 					Log.warnOnce("Client %d does not exist; cannot disconnect.", e.client)
 				end
