@@ -25,7 +25,7 @@ local game = LocalGame(GameDB.create())
 local inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 local outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
-local serverRPCService
+local serverRPCService, adminClientID
 local channelRpcService = ChannelRPCService(inputChannel, outputChannel)
 
 local gameManager = LocalGameManager(channelRpcService, game)
@@ -36,15 +36,15 @@ game.onQuit:register(function() isRunning = false end)
 game:spawnPlayer(0)
 
 local function getPeriodInMS(a, b)
-	return math.floor((b - a) * 1000)
+	return math.floor(((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000)
 end
 
-while isRunning do
-	local timeStart
-	local timeGameTick, timeGameUpdate
-	local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend
-	local timeEnd
+local timeStart
+local timeGameTick, timeGameUpdate
+local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend
+local timeEnd
 
+local function tick()
 	timeStart = love.timer.getTime()
 	do
 		game:tick()
@@ -64,6 +64,98 @@ while isRunning do
 		end
 	end
 	timeEnd = love.timer.getTime()
+end
+
+local function saveOnErrorForMultiPlayer()
+	Log.warn("Encountered error, trying to save...")
+
+	local director = game:getDirector()
+	director:getItemBroker():toStorage()
+
+	gameManager:pushTick()
+	gameManager:send()
+
+	for _, player in game:iteratePlayers() do
+		Log.info(
+			"Trying to save player '%s' (ID = %d, client ID = %d)...",
+			(player:getActor() and player:getActor():getName()),
+			player:getID(), player:getClientID())
+
+		local storage = game:getDirector():getPlayerStorage(player:getID())
+
+		if player:getClientID() == adminClientID then
+			Log.info("Player is admin; saving now.")
+
+			local filename = storage and storage:getFilename()
+			if filename then
+				Log.info("Saving player data to '%s'...", filename)
+
+				local result = storage:toString()
+				love.filesystem.write(filename, result)
+			else
+				Log.info("Player does not have filename in storage; cannot save.")
+			end
+		else
+			Log.info("Player is client; sending save RPC.")
+			if storage then
+				player:onSave(storage)
+				player:onLeave()
+			end
+		end
+	end
+
+	gameManager:pushTick()
+	gameManager:send()
+
+	serverRPCService:close()
+
+	Log.info("Done trying to saving.")
+end
+
+local function saveOnErrorForSinglePlayer(clientID)
+	Log.warn("Encountered error, trying to save...")
+
+	local director = game:getDirector()
+	director:getItemBroker():toStorage()
+
+	for _, player in game:iteratePlayers() do
+		Log.info(
+			"Trying to save player '%s' (ID = %d, client ID = %d)...",
+			(player:getActor() and player:getActor():getName()),
+			player:getID(), player:getClientID())
+
+		local storage = director:getPlayerStorage(player:getID())
+		local filename = storage and storage:getRoot():get("filename")
+
+		if filename then
+			Log.info("Saving player data to '%s'...", filename)
+
+			local result = storage:toString()
+			love.filesystem.write(filename, result)
+		else
+			Log.info("Player does not have filename in storage; cannot save.")
+		end
+	end
+
+	Log.info("Done trying to save.")
+end
+
+while isRunning do
+	local success, result = xpcall(tick, debug.traceback)
+	if not success then
+		local s, r 
+		if serverRPCService then
+			s, r = xpcall(saveOnErrorForMultiPlayer, debug.traceback)
+		else
+			s, r = xpcall(saveOnErrorForSinglePlayer, debug.traceback)
+		end
+
+		if not s then
+			Log.warn("Couldn't save on error: %s", r)
+		end
+
+		error(result, 0)
+	end
 
 	local duration = timeEnd - timeStart
 	if duration < game:getDelta() then
@@ -87,6 +179,8 @@ while isRunning do
 		if e then
 			if e.type == 'quit' then
 				isRunning = false
+			elseif e.type == 'admin' then
+				adminClientID = e.admin
 			elseif e.type == 'host' then
 				Log.info("Hosting server, swapping RPC service.")
 
@@ -105,10 +199,16 @@ while isRunning do
 				serverRPCService = ServerRPCService(e.address, e.port)
 
 				gameManager:swapRPCService(serverRPCService)
+
+				adminClientID = nil
 			elseif e.type == 'disconnect' then
 				if serverRPCService then
 					serverRPCService:close()
 					serverRPCService = nil
+				else
+					for _, player in game:iteratePlayers() do
+						player:poof()
+					end
 				end
 
 				gameManager:swapRPCService(channelRpcService)

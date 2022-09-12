@@ -28,7 +28,7 @@ end
 function Parry:applyTargetToDamage(roll)
 	local target = self:getPeep():getBehavior(CombatTargetBehavior)
 	target = target and target.actor
-	if target:getPeep() == roll:getSelf() then 
+	if target and target:getPeep() == roll:getSelf() then 
 		roll:setMaxHit(0)
 		roll:setMinHit(0)
 

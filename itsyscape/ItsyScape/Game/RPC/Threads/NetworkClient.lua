@@ -15,6 +15,7 @@ require "bootstrap"
 
 local enet = require "enet"
 local buffer = require "string.buffer"
+local cerror = require "nbunny.cerror"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
@@ -32,7 +33,7 @@ local isDisconnecting = false
 local function disconnectAllClients()
 	for _, client in pairs(clients) do
 		Log.engine("Disconnecting client %d...", client:connect_id())
-		client:disconnect()
+		client:disconnect_later()
 	end
 end
 
@@ -74,7 +75,7 @@ while isRunning do
 				local client = clientsByID[e.client]
 				if client then
 					Log.info("Disconnecting client %d...")
-					client:disconnect(client:connect_id())
+					client:disconnect_later(client:connect_id())
 				else
 					Log.warnOnce("Client %d does not exist; cannot disconnect.", e.client)
 				end
@@ -127,7 +128,7 @@ while isRunning do
 		if host then
 			local s, r = pcall(host.service, host, 0)
 			if not s then
-				Log.warn("Error running service: %s", r)
+				Log.warnOnce("Error running service: %s (errno = %d, error = %s)", r, cerror())
 				e = nil
 			else
 				e = r
