@@ -346,7 +346,7 @@ function HighChambersYendor:minibossBeginChanting()
 	local gameDB = director:getGameDB()
 
 	local center = gameDB:getRecord("MapObjectLocation", {
-		Name = "Anchor_SoulSiphon",
+		Name = "Anchor_Heart",
 		Map = Utility.Peep.getMapResource(self)
 	})
 
@@ -414,10 +414,10 @@ function HighChambersYendor:minibossBeginChanting()
 			end
 
 			self.currentWalking = #cthulhuians
-			self.currentPulledAway = 0
 		end
 	end
 
+	self.currentPulledAway = 0
 	self.minibossChantTimer = math.huge
 	self.minibossSoulSiphonTick = HighChambersYendor.MINIBOSS_SOUL_SIPHON_STEP_DURATION
 end
