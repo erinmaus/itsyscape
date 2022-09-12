@@ -117,7 +117,7 @@ function LightBeamSceneNode:buildSeamless(path)
 
 	self:initVertexCache(#path * 2)
 
-	if #path < 1 then
+	if #path < 2 then
 		self:release()
 		return
 	end
