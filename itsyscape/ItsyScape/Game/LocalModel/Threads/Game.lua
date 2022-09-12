@@ -77,7 +77,7 @@ while isRunning do
 			getPeriodInMS(timeGameTick, timeGameUpdate),
 			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
 			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
-			getPeriodInMS(timeGameTick, timeGameManagerSend),
+			getPeriodInMS(timeGameManagerTick, timeGameManagerSend),
 			getPeriodInMS(timeGameManagerSend, timeEnd))
 	end
 
