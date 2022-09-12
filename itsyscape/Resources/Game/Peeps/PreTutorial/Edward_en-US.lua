@@ -19,6 +19,8 @@ if not hasGhostSpeakEquipped then
 		message "Maybe if I equip that Ghostspeak amulet..."
 	end
 else
+	state:give('KeyItem', "PreTutorial_TalkedToGhostBoy")
+
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
 	local maggotHits = _DIRECTOR:probe(
 		_TARGET:getLayerName(),
