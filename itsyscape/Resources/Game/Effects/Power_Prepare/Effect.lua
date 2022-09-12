@@ -34,7 +34,7 @@ end
 function Prepare:applyTargetToDamage(roll)
 	local target = self:getPeep():getBehavior(CombatTargetBehavior)
 	target = target and target.actor
-	if target:getPeep() == roll:getSelf() then
+	if target and target:getPeep() == roll:getSelf() then
 		roll:setMaxHit(math.floor(roll:getMaxHit() * self.damageMultiplier))
 		roll:setMinHit(math.floor(roll:getMinHit() * self.damageMultiplier))
 
