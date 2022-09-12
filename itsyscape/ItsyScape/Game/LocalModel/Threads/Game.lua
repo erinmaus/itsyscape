@@ -96,6 +96,10 @@ while isRunning do
 					Log.info("Closing existing connection...")
 					serverRPCService:close()
 					Log.info("Closed existing connection.")
+				else
+					for _, player in game:iteratePlayers() do
+						player:poof()
+					end
 				end
 
 				serverRPCService = ServerRPCService(e.address, e.port)
