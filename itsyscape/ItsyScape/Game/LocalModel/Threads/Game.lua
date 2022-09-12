@@ -77,7 +77,7 @@ while isRunning do
 			getPeriodInMS(timeGameTick, timeGameUpdate),
 			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
 			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
-			getPeriodInMS(timeGameTick, timeGameManagerSend),
+			getPeriodInMS(timeGameManagerTick, timeGameManagerSend),
 			getPeriodInMS(timeGameManagerSend, timeEnd))
 	end
 
@@ -96,6 +96,10 @@ while isRunning do
 					Log.info("Closing existing connection...")
 					serverRPCService:close()
 					Log.info("Closed existing connection.")
+				else
+					for _, player in game:iteratePlayers() do
+						player:poof()
+					end
 				end
 
 				serverRPCService = ServerRPCService(e.address, e.port)

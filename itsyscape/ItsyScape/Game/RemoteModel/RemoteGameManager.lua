@@ -75,6 +75,20 @@ end
 function RemoteGameManager:swapRPCService(rpcService)
 	self.rpcService = rpcService
 	self.rpcService:connect(self)
+
+	self:removeAllInstances("ItsyScape.Game.Model.Actor")
+	self:removeAllInstances("ItsyScape.Game.Model.Prop")
+end
+
+function RemoteGameManager:removeAllInstances(type)
+	local instances = {}
+	for instance in self:iterateInstances(type) do
+		table.insert(instances, instance)
+	end
+
+	for i = 1, #instances do
+		self:destroyInstance(type, instances[i]:getID())
+	end
 end
 
 function RemoteGameManager:push(e)
