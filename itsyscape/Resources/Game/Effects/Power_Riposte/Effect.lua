@@ -37,7 +37,7 @@ end
 function Riposte:applyTargetToDamage(roll)
 	local target = self:getPeep():getBehavior(CombatTargetBehavior)
 	target = target and target.actor
-	if target:getPeep() == roll:getSelf() then 
+	if target and target:getPeep() == roll:getSelf() then 
 		local damage = roll:roll()
 		roll:setMaxHit(math.floor(damage * self.damageMultiplier))
 		roll:setMinHit(math.floor(damage * self.damageMultiplier))
