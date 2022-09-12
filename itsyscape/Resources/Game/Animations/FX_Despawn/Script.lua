@@ -1,4 +1,4 @@
-Animation "Undead Squid (Target Inking)" {
+Animation "Despawn FX" {
 	Target {
 		Tint {
 			0.3, 0.1, 0.3, 0.0,
@@ -8,7 +8,7 @@ Animation "Undead Squid (Target Inking)" {
 
 		Tint {
 			0.3, 0.1, 0.3, 0.0,
-			duration = 5,
+			duration = 10,
 			tween = 'constantOne'
 		}
 	}
