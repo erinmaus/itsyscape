@@ -81,7 +81,19 @@ local function saveOnErrorForMultiPlayer()
 			(player:getActor() and player:getActor():getName()),
 			player:getID(), player:getClientID())
 
+		local peep = player:getActor()
+		peep = peep and peep:getPeep()
+
 		local storage = game:getDirector():getPlayerStorage(player:getID())
+
+		if peep then
+			local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+
+			local stats = peep:getBehavior(StatsBehavior)
+			if stats and stats.stats then
+				stats.stats:save(storage:getRoot():getSection("Peep"))
+			end
+		end
 
 		if player:getClientID() == adminClientID then
 			Log.info("Player is admin; saving now.")
@@ -124,14 +136,43 @@ local function saveOnErrorForSinglePlayer(clientID)
 			(player:getActor() and player:getActor():getName()),
 			player:getID(), player:getClientID())
 
+		local peep = player:getActor()
+		peep = peep and peep:getPeep()
+
 		local storage = director:getPlayerStorage(player:getID())
+
+		if peep then
+			local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+
+			local stats = peep:getBehavior(StatsBehavior)
+			if stats and stats.stats then
+				stats.stats:save(storage:getRoot():getSection("Peep"))
+			end
+		end
+
 		local filename = storage and storage:getRoot():get("filename")
 
 		if filename then
 			Log.info("Saving player data to '%s'...", filename)
 
-			local result = storage:toString()
-			love.filesystem.write(filename, result)
+			local data, e = love.filesystem.read(filename)
+			if not data then
+				Log.warn("Error reading save for back up: %s.", e)
+			else
+				local backupFilename = filename .. "." .. os.date("%Y%m%d_%H%M%S") .. ".bak"
+				local success, e = love.filesystem.write(backupFilename, data)
+
+				if not success then
+					Log.warn("Couldn't write back up save: %s.", e)
+				else
+					Log.info("Backed up save file to '%s'.", backupFilename)
+
+					local result = storage:toString()
+					love.filesystem.write(filename, result)
+
+					Log.info("Saved current player data.")
+				end
+			end
 		else
 			Log.info("Player does not have filename in storage; cannot save.")
 		end
