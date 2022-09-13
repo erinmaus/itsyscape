@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
+local Utility = require "ItsyScape.Game.Utility"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 
 local KeyItemStateProvider = Class(StateProvider)
@@ -23,6 +24,19 @@ end
 
 function KeyItemStateProvider:getPriority()
 	return State.PRIORITY_LOCAL
+end
+
+function KeyItemStateProvider:updateQuestProgressNotificationController(resource)
+	local controller
+	if self.controllerIndex then
+		controller = Utility.UI.getOpenInterface(self.peep, "QuestProgressNotification", self.controllerIndex)
+		controller:updateKeyItem(resource)
+	end
+
+	if not controller then
+		local _, n = Utility.UI.openInterface(self.peep, "QuestProgressNotification", false, resource)
+		self.controllerIndex = n
+	end
 end
 
 function KeyItemStateProvider:has(name, count, flags)
@@ -52,6 +66,9 @@ function KeyItemStateProvider:give(name, count, flags)
 	end
 
 	self.storage:set(name, true)
+
+	self:updateQuestProgressNotificationController(resource)
+
 	return true
 end
 
