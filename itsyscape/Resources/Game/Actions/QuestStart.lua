@@ -19,4 +19,20 @@ function QuestStart:perform(state, peep)
 	return self:transfer(state, peep)
 end
 
+function QuestStart:didStart(state, peep)
+	local gameDB = self:getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	for output in brochure:getOutputs(self:getAction()) do
+		local resource = brochure:getConstraintResource(output)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		if resourceType.name == "KeyItem" and not state:has("KeyItem", resource.name) then
+			return false
+		end
+	end
+
+	return true
+end
+
 return QuestStart

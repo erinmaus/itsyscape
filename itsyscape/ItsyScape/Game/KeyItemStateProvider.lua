@@ -27,15 +27,15 @@ function KeyItemStateProvider:getPriority()
 end
 
 function KeyItemStateProvider:updateQuestProgressNotificationController(resource)
-	local controller
-	if self.controllerIndex then
-		controller = Utility.UI.getOpenInterface(self.peep, "QuestProgressNotification", self.controllerIndex)
-		controller:updateKeyItem(resource)
+	local isOpen, index = Utility.UI.isOpen(self.peep, "QuestProgressNotification")
+	if not isOpen then
+		local _, n = Utility.UI.openInterface(self.peep, "QuestProgressNotification", false)
+		index = n
 	end
 
-	if not controller then
-		local _, n = Utility.UI.openInterface(self.peep, "QuestProgressNotification", false, resource)
-		self.controllerIndex = n
+	if index then
+		local controller = Utility.UI.getOpenInterface(self.peep, "QuestProgressNotification", index)
+		controller:updateKeyItem(resource)
 	end
 end
 

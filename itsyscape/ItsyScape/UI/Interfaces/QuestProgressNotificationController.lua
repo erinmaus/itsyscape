@@ -41,13 +41,27 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 				local keyItems = quest.steps[i]
 				for j = 1, #keyItems do
 					local keyItem = keyItems[j]
-					QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = quest.id
+					QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = q
 				end
 			end
 		end
 	end
 
-	self:updateKeyItem(keyItem)
+	if keyItem then
+		self:updateKeyItem(keyItem)
+	else
+		local storage = self:getDirector():getPlayerStorage(self:getPeep())
+		local lastQuest = storage:getRoot():getSection("Nominomicon"):get("lastQuest")
+
+		if lastQuest then
+			gameDB = self:getDirector():getGameDB()
+			local quest = gameDB:getResource("Quest", lastQuest)
+
+			if quest then
+				self:updateQuest(quest)
+			end
+		end
+	end
 end
 
 function QuestProgressNotificationController:poke(actionID, actionIndex, e)
@@ -58,8 +72,8 @@ function QuestProgressNotificationController:poke(actionID, actionIndex, e)
 	end
 end
 
-function QuestProgressNotificationController:updateKeyItem(keyItem)
-	self.questID = QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] or self.quest
+function QuestProgressNotificationController:updateQuest(quest)
+	self.questID = (quest and quest.name) or self.questID
 	self.log = nil
 
 	if self.questID then
@@ -69,11 +83,20 @@ function QuestProgressNotificationController:updateKeyItem(keyItem)
 		end
 	end
 
+	if self.log then
+		local storage = self:getDirector():getPlayerStorage(self:getPeep())
+		storage:getRoot():getSection("Nominomicon"):set("lastQuest", self.questID)
+	end
+
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,
 		"updateQuest",
 		nil,
 		{})
+end
+
+function QuestProgressNotificationController:updateKeyItem(keyItem)
+	self:updateQuest(QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name])
 end
 
 function QuestProgressNotificationController:update(delta)

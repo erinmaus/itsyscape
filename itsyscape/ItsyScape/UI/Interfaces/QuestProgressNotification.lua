@@ -116,14 +116,14 @@ end
 function QuestProgressNotification:updateQuest()
 	local state = self:getState()
 
-	self.title:setText(state.questName)
+	self.title:setText(state.questName or "")
 
-	local label = {
-		state.steps[#state.steps - 2],
-		state.steps[#state.steps - 1],
+	local label = state.steps and {
+		state.steps[#state.steps - 1] or "",
+		state.steps[#state.steps] or "",
 	}
 
-	self.guideLabel:setText(label)
+	self.guideLabel:setText(label or "")
 end
 
 function QuestProgressNotification:update(delta)

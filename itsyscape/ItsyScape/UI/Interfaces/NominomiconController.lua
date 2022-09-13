@@ -450,7 +450,10 @@ function NominomiconController:new(peep, director)
 		local quest = {
 			id = q.name,
 			name = Utility.getName(q, gameDB),
-			description = Utility.getDescription(q, gameDB)
+			description = Utility.getDescription(q, gameDB),
+			didComplete = Utility.Quest.didComplete(q, peep),
+			inProgress = Utility.Quest.didStart(q, peep),
+			canStart = Utility.Quest.canStart(q, peep)
 		}
 
 		local steps = Utility.Quest.build(q, gameDB)
@@ -477,7 +480,8 @@ function NominomiconController:new(peep, director)
 	table.insert(self.questInfo, NominomiconController.CREDITS["en-US"][1])
 
 	self.state = {
-		quests = self.quests
+		quests = self.quests,
+		hideQuestProgress = self:getDirector():getPlayerStorage(self:getPeep()):getRoot():getSection("Nominomicon"):get("hideQuestProgress") == true
 	}
 end
 
@@ -486,8 +490,36 @@ function NominomiconController:poke(actionID, actionIndex, e)
 		self:select(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
+	elseif actionID == "openQuestProgress" then
+		self:openQuestProgress(e)
+	elseif actionID == "toggleShowQuestProgress" then
+		self:toggleShowQuestProgress(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
+	end
+end
+
+function NominomiconController:openQuestProgress(e)
+	assert(type(e.index) == 'number', "index must be number")
+	assert(e.index >= 1, "index must be >= 1")
+	assert(e.index <= #self.quests, "index must be less than number of quests")
+
+	local gameDB = self:getDirector():getGameDB()
+	local quest = gameDB:getResource(self.quests[e.index].id, "Quest")
+
+	if not quest then
+		return
+	end
+
+	local isOpen, index = Utility.UI.isOpen(self:getPeep(), "QuestProgressNotification")
+	if not isOpen then
+		local _, n = Utility.UI.openInterface(self:getPeep(), "QuestProgressNotification", false)
+		index = n
+	end
+
+	if index then
+		local controller = Utility.UI.getOpenInterface(self:getPeep(), "QuestProgressNotification", index)
+		controller:updateQuest(quest)
 	end
 end
 
@@ -522,6 +554,14 @@ function NominomiconController:select(e)
 		"updateGuide",
 		nil,
 		{})
+end
+
+function NominomiconController:toggleShowQuestProgress()
+	local storage = self:getDirector():getPlayerStorage(self:getPeep())
+	local hideQuestProgress = not storage:getRoot():getSection("Nominomicon"):get("hideQuestProgress")
+	storage:getRoot():getSection("Nominomicon"):set("hideQuestProgress", hideQuestProgress)
+
+	self.state.hideQuestProgress = hideQuestProgress
 end
 
 function NominomiconController:pull()
