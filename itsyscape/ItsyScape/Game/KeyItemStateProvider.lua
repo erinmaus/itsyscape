@@ -63,6 +63,11 @@ function KeyItemStateProvider:give(name, count, flags)
 
 	if not self.storage:get(name) then
 		Log.analytic("PLAYER_GOT_KEY_ITEM", name)
+		Log.info(
+			"Player '%s' (%d) obtained key item %s.",
+			self.peep:getName(),
+			Utility.Peep.getPlayerModel(self.peep) and Utility.Peep.getPlayerModel(self.peep):getID(),
+			name)
 	end
 
 	self.storage:set(name, true)

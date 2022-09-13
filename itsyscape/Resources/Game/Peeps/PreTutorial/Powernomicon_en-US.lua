@@ -31,3 +31,5 @@ else
 		"but I don't have inventory space to take them."
 	}
 end
+
+_TARGET:getState():give("KeyItem", "PreTutorial_LearnedToMakeGhostspeakAmulet")

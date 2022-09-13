@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/PreTutorial_MansionFloor1/Peep.lua
+-- Resources/Game/Maps/PreTutorial_MansionBasement/Peep.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -20,17 +20,7 @@ Mansion.LIGHTNING_TIME = 0.5
 Mansion.MAX_AMBIENCE = 2
 
 function Mansion:new(resource, name, ...)
-	Map.new(self, resource, name or 'PreTutorial_MansionFloor1', ...)
-end
-
-function Mansion:onLoad(filename, args, layer)
-	Map.onLoad(self, filename, args, layer)
-
-	self.zombiButler = self:getDirector():probe(
-		self:getLayerName(),
-		Probe.namedMapObject("Hans"))[1]
-
-	Utility.Map.spawnMap(self, "PreTutorial_MansionFloor1", Vector(0, -6.1, 0), { isLayer = true })
+	Map.new(self, resource, name or 'PreTutorial_MansionBasement', ...)
 end
 
 function Mansion:onPlayerEnter(player)
@@ -42,6 +32,10 @@ function Mansion:onPlayerEnter(player)
 
 	self.zombiButler:poke('followPlayer', player)
 	self.zombiButler:poke('floorChange', 2)
+
+	Utility.Quest.listenForAction(player, "Prop", "CopperRock_Default", "Mine", function()
+		player:getState():give("KeyItem", "PreTutorial_MineCopper")
+	end)
 
 	Utility.Quest.listenForAction(player, "Item", "GhostspeakAmulet", "Enchant", function()
 		player:getState():give("KeyItem", "PreTutorial_MineCopper")
@@ -58,24 +52,6 @@ function Mansion:onPlayerEnter(player)
 		player:getState():give("KeyItem", "PreTutorial_EnchantedCopperAmulet")
 		player:getState():give("KeyItem", "PreTutorial_MadeGhostspeakAmulet")
 	end)
-end
-
-function Mansion:onPlayerLeave(player)
-	if not player:getActor() then
-		return
-	end
-
-	player = player:getActor():getPeep()
-
-	if self.zombiButler:getCurrentTarget() == player then
-		self.zombiButler:giveHint("Be seeing you later!")
-		self.zombiButler:poke('followPlayer', nil)
-
-		for _, player in Utility.Peep.getInstance(self):iteratePlayers() do
-			self:onPlayerEnter(player)
-			break
-		end
-	end
 end
 
 return Mansion
