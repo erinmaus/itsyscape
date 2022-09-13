@@ -20,6 +20,33 @@ local QuestProgressNotificationController = Class(Controller)
 QuestProgressNotificationController.QUEST_CACHE = {}
 QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE = {}
 
+function QuestProgressNotificationController.updateCache(gameDB)
+	if next(QuestProgressNotificationController.QUEST_CACHE) ~= nil then
+		return
+	end
+
+	for q in gameDB:getResources("Quest") do
+		local quest = {
+			id = q.name,
+			name = Utility.getName(q, gameDB),
+			description = Utility.getDescription(q, gameDB)
+		}
+
+		quest.steps = Utility.Quest.build(q, gameDB)
+		quest.info = Utility.Quest.buildWorkingQuestLog(quest.steps, gameDB)
+
+		QuestProgressNotificationController.QUEST_CACHE[quest.id] = quest
+
+		for i = 1, #quest.steps do
+			local keyItems = quest.steps[i]
+			for j = 1, #keyItems do
+				local keyItem = keyItems[j]
+				QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = q
+			end
+		end
+	end
+end
+
 function QuestProgressNotificationController:new(peep, director, keyItem)
 	Controller.new(self, peep, director)
 
@@ -27,28 +54,7 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
 
-	if next(QuestProgressNotificationController.QUEST_CACHE) == nil then
-		for q in gameDB:getResources("Quest") do
-			local quest = {
-				id = q.name,
-				name = Utility.getName(q, gameDB),
-				description = Utility.getDescription(q, gameDB)
-			}
-
-			quest.steps = Utility.Quest.build(q, gameDB)
-			quest.info = Utility.Quest.buildWorkingQuestLog(quest.steps, gameDB)
-
-			QuestProgressNotificationController.QUEST_CACHE[quest.id] = quest
-
-			for i = 1, #quest.steps do
-				local keyItems = quest.steps[i]
-				for j = 1, #keyItems do
-					local keyItem = keyItems[j]
-					QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = q
-				end
-			end
-		end
-	end
+	QuestProgressNotificationController.updateCache(gameDB)
 
 	if keyItem then
 		self:updateKeyItem(keyItem)

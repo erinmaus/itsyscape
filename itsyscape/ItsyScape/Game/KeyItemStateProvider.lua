@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
 local Utility = require "ItsyScape.Game.Utility"
 local StateProvider = require "ItsyScape.Game.StateProvider"
+local QuestProgressNotificationController = require "ItsyScape.UI.Interfaces.QuestProgressNotificationController"
 
 local KeyItemStateProvider = Class(StateProvider)
 
@@ -20,6 +21,8 @@ function KeyItemStateProvider:new(peep)
 
 	self.storage = storage:getRoot():getSection("KeyItems")
 	self.peep = peep
+
+	QuestProgressNotificationController.updateCache(director:getGameDB())
 end
 
 function KeyItemStateProvider:getPriority()
@@ -61,16 +64,24 @@ function KeyItemStateProvider:give(name, count, flags)
 		return false
 	end
 
-	if not self.storage:get(name) then
+	local hadKeyItem = self.storage:get(name)
+
+	self.storage:set(name, true)
+
+	if not hadKeyItem then
 		Log.analytic("PLAYER_GOT_KEY_ITEM", name)
 		Log.info(
 			"Player '%s' (%d) obtained key item %s.",
 			self.peep:getName(),
 			Utility.Peep.getPlayerModel(self.peep) and Utility.Peep.getPlayerModel(self.peep):getID(),
 			name)
-	end
 
-	self.storage:set(name, true)
+		local quest = QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[name]
+		print("quest", quest, quest.name)
+		if quest and Utility.Quest.didComplete(quest, self.peep) then
+			Utility.UI.openInterface(self.peep, "QuestCompleteNotification", false, quest)
+		end
+	end
 
 	self:updateQuestProgressNotificationController(resource)
 
