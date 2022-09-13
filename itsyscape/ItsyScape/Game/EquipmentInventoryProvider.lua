@@ -112,13 +112,15 @@ function EquipmentInventoryProvider:onTransferTo(item, source, count, purpose)
 end
 
 function EquipmentInventoryProvider:onTransferFrom(destination, item, count, purpose)
+	local broker = self:getBroker()
+
 	local itemManager = self.peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(item:getID())
 	if logic:isCompatibleType(Equipment) then
 		logic:onEquip(self.peep)
 	end
 
-	local equipStatsTag = self:getBroker():getItemTag(item, 'equip-record')
+	local equipStatsTag = broker:getItemTag(item, 'equip-record')
 	if equipStatsTag then
 		for i = 1, #EquipmentInventoryProvider.STATS do
 			local stat = EquipmentInventoryProvider.STATS[i]
@@ -126,19 +128,30 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 		end
 	end
 
-	local existingKey = self:getBroker():getItemKey(item)
-	local equipSlotTag = self:getBroker():getItemTag(item, 'equip-slot')
-	local equipModelTag = self:getBroker():getItemTag(item, 'equip-model')
+	local existingKey = broker:getItemKey(item)
+	local isDifferentItemInKey
+	do
+		for existingItem in broker:iterateItemsByKey(self, existingKey) do
+			if broker:getItemRef(existingItem) ~= broker:getItemRef(item) then
+				isDifferentItemInKey = true
+			end
+		end
+	end
 
-	if equipSlotTag and equipModelTag and existingKey then
-		local actor = self.peep:getBehavior(ActorReferenceBehavior)
-		if actor.actor then
-			actor = actor.actor
+	if not isDifferentItemInKey then
+		local equipSlotTag = broker:getItemTag(item, 'equip-slot')
+		local equipModelTag = broker:getItemTag(item, 'equip-model')
 
-			local ref = CacheRef(
-				equipModelTag:get("Type"),
-				equipModelTag:get("Filename"))
-			actor:unsetSkin(equipSlotTag, Equipment.SKIN_PRIORITY_EQUIPMENT, ref)
+		if equipSlotTag and equipModelTag and existingKey then
+			local actor = self.peep:getBehavior(ActorReferenceBehavior)
+			if actor.actor then
+				actor = actor.actor
+
+				local ref = CacheRef(
+					equipModelTag:get("Type"),
+					equipModelTag:get("Filename"))
+				actor:unsetSkin(equipSlotTag, Equipment.SKIN_PRIORITY_EQUIPMENT, ref)
+			end
 		end
 	end
 end
