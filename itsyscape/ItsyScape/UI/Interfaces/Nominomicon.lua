@@ -227,15 +227,16 @@ function Nominomicon:selectItem(index, button, mouseButton)
 			end
 		})
 
-
-		table.insert(actions, {
-			id = "show-guide",
-			verb = "Show-Guide",
-			object = button:getText(),
-			callback = function()
-				self:sendPoke("openQuestProgress", nil, { index = index })
-			end
-		})
+		if not quest.didComplete then
+			table.insert(actions, {
+				id = "show-guide",
+				verb = "Show-Guide",
+				object = button:getText(),
+				callback = function()
+					self:sendPoke("openQuestProgress", nil, { index = index })
+				end
+			})
+		end
 
 		self:getView():probe(actions)
 	end
