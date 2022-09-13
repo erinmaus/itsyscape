@@ -189,6 +189,8 @@ function QuestProgressNotificationController:update(delta)
 
 	if not self.questID or not self.log then
 		self:getGame():getUI():closeInstance(self)
+	elseif self:getPeep():getState():has("Quest", self.questID) then
+		self:getGame():getUI():closeInstance(self)
 	else
 		if self.questID then
 			self:updateMapHints()
