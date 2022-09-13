@@ -9,6 +9,13 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Quest "PreTutorial" {
+	ItsyScape.Action.QuestStart() {
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial",
+			Count = 1
+		}
+	},
+
 	ItsyScape.Action.QuestComplete() {
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "PreTutorial_WokeUp",

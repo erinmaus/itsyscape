@@ -835,7 +835,8 @@ Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
 		"Chat",
-		"ProCombatStatusHUD"
+		"ProCombatStatusHUD",
+		"QuestProgressNotification"
 	}
 }
 
@@ -3529,10 +3530,6 @@ function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, _debug)
 		end
 	end
 
-	if max then
-		table.insert(result, questLog[max].block[1])
-	end
-
 	return result
 end
 
@@ -3578,6 +3575,20 @@ function Utility.Quest.promptToStart(quest, peep, questGiver)
 		quest,
 		action,
 		questGiver)
+end
+
+function Utility.Quest.didComplete(quest, peep)
+	if type(quest) ~= 'string' then
+		quest = quest.name
+	end
+
+	return peep:getState():has("Quest", quest)
+end
+
+function Utility.Quest.didStart(quest, peep)
+	local game = peep:getDirector():getGameInstance()
+	local action = Utility.Quest.getStartAction(quest, game)
+	return action and action:didStart(peep:getState(), peep)
 end
 
 function Utility.Quest.canStart(quest, peep)

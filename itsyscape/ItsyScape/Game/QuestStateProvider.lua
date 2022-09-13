@@ -42,10 +42,6 @@ function QuestStateProvider:count(name, flags)
 		return 0
 	end
 
-	if _DEBUG then
-		return 1
-	end
-
 	local gameDB = self.peep:getDirector():getGameDB()
 	local resource = gameDB:getResource(name, "Quest")
 	if not resource then
