@@ -288,126 +288,93 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	end
 end
 
-function ActorView:applySkin(slotNodes)
-	slotNodes.index = (slotNodes.index or 0) + 1
-	local index = slotNodes.index
+function ActorView:_doApplySkin(slotNodes)
+	local resourceManager = self.game:getResourceManager()
 
-	local i = #slotNodes
-	local iterate
-	local function step()
-		-- This ensures we give up if another skin has been applied.
-		-- Only the latest will take affect.
-		if slotNodes.index ~= index then
-			return
-		end
-
-		if i > 1 then
-			self.game:getResourceManager():queueEvent(iterate)
-			i = i - 1
-		else
-			for i = 1, #slotNodes do
-				local slotNode = slotNodes[i]
-				if i + 1 < #slotNodes and slotNode.instance:getIsOccluded() then
-					if not slotNodes[i + 1].instance:getIsGhosty() then
-						slotNode.sceneNode:setParent(nil)
-					end
-				elseif slotNode.instance:getIsBlocking() then
-					for j = 1, i - 1 do
-						slotNodes[j].sceneNode:setParent(nil)
-					end
-				end
-			end
-		end
-	end
-
-	iterate = function()
+	for i = 1, #slotNodes do
 		local slot = slotNodes[i]
-		if not slot then
-			step()
-			return
-		end
-
 		local skin = slot.definition
+
 		if slot.sceneNode then
 			slot.sceneNode:setParent(false)
 		end
 
 		if self.body then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
-				self.game:getResourceManager():queueCacheRef(skin, function(instance)
-					slot.instance = instance
-					slot.sceneNode = ModelSceneNode()
+				local instance = resourceManager:loadCacheRef(skin)
 
-					self.game:getResourceManager():queueCacheRef(slot.instance:getModel(), function(model)
-						model:getResource():bindSkeleton(self.body:getSkeleton())
-						slot.sceneNode:setModel(model)
+				slot.instance = instance
+				slot.sceneNode = ModelSceneNode()
 
-						local texture = slot.instance:getTexture()
-						if texture then
-							self.game:getResourceManager():queueCacheRef(texture, function(textureResource)
-								slot.sceneNode:getMaterial():setTextures(textureResource)
-							end)
+				local model = resourceManager:loadCacheRef(slot.instance:getModel())
+				model:getResource():bindSkeleton(self.body:getSkeleton())
+				slot.sceneNode:setModel(model)
+
+				local textureCacheRef = slot.instance:getTexture()
+				if textureCacheRef then
+					local textureResource = resourceManager:loadCacheRef(textureCacheRef)
+					slot.sceneNode:getMaterial():setTextures(textureResource)
+
+					if coroutine.running() then
+						coroutine.yield()
+					end
+				else
+					slot.sceneNode:getMaterial():setTextures(self.game:getTranslucentTexture())
+				end
+
+				if slot.instance:getIsTranslucent() then
+					slot.sceneNode:getMaterial():setIsTranslucent(true)
+					slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
+				end
+				slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
+
+				local transform = slot.sceneNode:getTransform()
+				transform:setLocalTranslation(slot.instance:getPosition())
+				transform:setLocalScale(slot.instance:getScale())
+				transform:setLocalRotation(slot.instance:getRotation())
+
+				slot.sceneNode:setParent(self.sceneNode)
+				slot.sceneNode:setTransforms(self.animatable:getTransforms())
+
+				local lights = slot.instance:getLights()
+				if #lights > 0 then
+					slot.lights = {}
+
+					for i = 1, #lights do
+						local inputLight = lights[i]
+						local outputLight
+
+						if inputLight:isPoint() then
+							outputLight = PointLightSceneNode()
+						elseif inputLight:getAmbience() > 0 then
+							outputLight = AmbientLightSceneNode()
 						end
-
-						if slot.instance:getIsTranslucent() then
-							slot.sceneNode:getMaterial():setIsTranslucent(true)
-							slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
+						
+						if outputLight then
+							outputLight:fromLight(inputLight)
+							outputLight:setParent(slot.sceneNode)
+							table.insert(slot.lights, outputLight)
 						end
+					end
+				end
 
-						local transform = slot.sceneNode:getTransform()
-						transform:setLocalTranslation(slot.instance:getPosition())
-						transform:setLocalScale(slot.instance:getScale())
-						transform:setLocalRotation(slot.instance:getRotation())
+				local particles = slot.instance:getParticles()
+				if #particles > 0 then
+					slot.particles = {}
 
-						slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
+					for i = 1, #particles do
+						local p = ParticleSceneNode()
+						p:initParticleSystemFromDef(particles[i].system, self.game:getResourceManager())
+						p:setParent(slot.sceneNode)
 
-						slot.sceneNode:setParent(self.sceneNode)
-						slot.sceneNode:getMaterial():setTextures(self.game:getTranslucentTexture())
-						slot.sceneNode:setTransforms(self.animatable:getTransforms())
+						table.insert(slot.particles, {
+							sceneNode = p,
+							attach = particles[i].attach
+						})
+					end
+				end
 
-						local lights = slot.instance:getLights()
-						if #lights > 0 then
-							slot.lights = {}
-
-							for i = 1, #lights do
-								local inputLight = lights[i]
-								local outputLight
-
-								if inputLight:isPoint() then
-									outputLight = PointLightSceneNode()
-								elseif inputLight:getAmbience() > 0 then
-									outputLight = AmbientLightSceneNode()
-								end
-								
-								if outputLight then
-									outputLight:fromLight(inputLight)
-									outputLight:setParent(slot.sceneNode)
-									table.insert(slot.lights, outputLight)
-								end
-							end
-						end
-
-						local particles = slot.instance:getParticles()
-						if #particles > 0 then
-							slot.particles = {}
-
-							for i = 1, #particles do
-								local p = ParticleSceneNode()
-								p:initParticleSystemFromDef(particles[i].system, self.game:getResourceManager())
-								p:setParent(slot.sceneNode)
-
-								table.insert(slot.particles, {
-									sceneNode = p,
-									attach = particles[i].attach
-								})
-							end
-						end
-
-						self.models[slot.sceneNode] = true
-
-						step()
-					end)
-				end, self.body:getSkeleton())
+				self.models[slot.sceneNode] = true
 			end
 		else
 			if slot.sceneNode then
@@ -416,14 +383,26 @@ function ActorView:applySkin(slotNodes)
 
 			slot.instance = false
 			slot.sceneNode = false
-
-			step()
 		end
 	end
 
-	if i > 0 then
-		self.game:getResourceManager():queueEvent(iterate)
+	for i = 1, #slotNodes do
+		local slotNode = slotNodes[i]
+		if i + 1 < #slotNodes and slotNode.instance:getIsOccluded() then
+			if not slotNodes[i + 1].instance:getIsGhosty() then
+				slotNode.sceneNode:setParent(nil)
+			end
+		elseif slotNode.instance:getIsBlocking() then
+			for j = 1, i - 1 do
+				slotNodes[j].sceneNode:setParent(nil)
+			end
+		end
 	end
+end
+
+function ActorView:applySkin(slotNodes)
+	local resourceManager = self.game:getResourceManager()
+	resourceManager:queueEvent(self._doApplySkin, self, slotNodes)
 end
 
 function ActorView:transmogrify(body)
@@ -453,6 +432,12 @@ function ActorView:changeSkin(slot, priority, skin)
 					s.sceneNode:setParent(nil)
 				end
 
+				Log.engine(
+					"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
+					self.actor:getName(), self.actor:getID(),
+					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
+					skin:getFilename())
+
 				break
 			end
 		end
@@ -465,6 +450,12 @@ function ActorView:changeSkin(slot, priority, skin)
 				if s.sceneNode then
 					s.sceneNode:setParent(nil)
 				end
+
+				Log.engine(
+					"Unset existing skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
+					self.actor:getName(), self.actor:getID(),
+					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
+					s.definition:getFilename())
 
 				break
 			end

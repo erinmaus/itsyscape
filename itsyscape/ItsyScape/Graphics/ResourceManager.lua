@@ -109,7 +109,7 @@ end
 
 function ResourceManager:_blockingLoad(resourceType, filename, ...)
 	-- We delegate to _blockingLoad so this warning is consistent.
-	do
+	if not coroutine.running() then
 		local info = debug.getinfo(2, "Sl")
 		Log.warn(
 			"blocking resource load in function '%s' @ %s:%d (%s)",

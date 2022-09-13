@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Actor = require "ItsyScape.Game.Model.Actor"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -354,6 +355,12 @@ function LocalActor:setSkin(slot, priority, skin)
 		end
 	end
 
+	Log.engine(
+		"Setting skin for skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
+		self:getName(), self:getID(),
+		Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
+		skin:getFilename())
+
 	self.onSkinChanged(self, slot, priority, skin)
 end
 
@@ -365,11 +372,18 @@ function LocalActor:unsetSkin(slot, priority, skin)
 				local priority = s[i].priority
 
 				table.remove(s, i)
-				self.onSkinRemoved(self, slot, priority, skin)
 				break
 			end
 		end
 	end
+
+	Log.engine(
+		"Unsetting skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
+		self:getName(), self:getID(),
+		Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
+		skin:getFilename())
+
+	self.onSkinRemoved(self, slot, priority, skin)
 end
 
 function LocalActor:getSkin(index)

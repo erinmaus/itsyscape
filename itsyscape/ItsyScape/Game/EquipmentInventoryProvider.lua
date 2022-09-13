@@ -126,9 +126,11 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 		end
 	end
 
+	local existingKey = self:getBroker():getItemKey(item)
 	local equipSlotTag = self:getBroker():getItemTag(item, 'equip-slot')
 	local equipModelTag = self:getBroker():getItemTag(item, 'equip-model')
-	if equipSlotTag and equipModelTag then
+
+	if equipSlotTag and equipModelTag and existingKey then
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor.actor then
 			actor = actor.actor

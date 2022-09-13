@@ -42,6 +42,7 @@ function Equip:perform(state, peep, item, target)
 	local transaction = broker:createTransaction()
 	transaction:addParty(inventory)
 	transaction:addParty(equipment)
+	transaction:transfer(equipment, item, nil, 'equip')
 	do
 		local gameDB = self:getGameDB()
 		local resource = gameDB:getResource(item:getID(), "Item")
@@ -84,10 +85,6 @@ function Equip:perform(state, peep, item, target)
 			end
 		end
 	end
-
-	-- We want to unequip to happen before the equip.
-	-- This ensures that skin changes that might result of this are more accurate.
-	transaction:transfer(equipment, item, nil, 'equip')
 
 	local s, r = transaction:commit()
 	if not s then
