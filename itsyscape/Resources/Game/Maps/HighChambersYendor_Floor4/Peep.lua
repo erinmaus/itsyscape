@@ -199,8 +199,8 @@ function HighChambersYendor:initWater(director)
 		local raid = instance and instance:getRaid()
 		local party = raid and raid:getParty()
 		local leader = party and party:getLeader()
-		player = leader and leader:getActor():getPeep()
-		player = player or (instance and instance:getPartyLeader())
+		player = leader and leader:getActor() and leader:getActor():getPeep()
+		player = player or (instance and instance:getPartyLeader() and instance:getPartyLeader():getActor() and instance:getPartyLeader():getActor():getPeep())
 	end
 
 	if not player then
