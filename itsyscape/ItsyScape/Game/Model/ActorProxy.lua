@@ -21,9 +21,9 @@ ActorProxy.transmogrify:link("onTransmogrified", Event.Argument("body"))
 ActorProxy.SKIN = "skin"
 ActorProxy.setSkin = Event.Set(
 	ActorProxy.SKIN,
-	Event.Argument("slot"),
-	Event.Argument("priority"),
-	Event.KeyArgument("skin"))
+	Event.KeyArgument("slot"),
+	Event.KeyArgument("priority"),
+	Event.Argument("skin"))
 ActorProxy.setSkin:link(
 	"onSkinChanged",
 	Event.Argument("slot"),
@@ -31,9 +31,9 @@ ActorProxy.setSkin:link(
 	Event.Argument("skin"))
 ActorProxy.unsetSkin = Event.Unset(
 	ActorProxy.SKIN,
-	Event.Argument("slot"),
-	Event.Argument("priority"),
-	Event.KeyArgument("skin"))
+	Event.KeyArgument("slot"),
+	Event.KeyArgument("priority"),
+	Event.Argument("skin"))
 ActorProxy.unsetSkin:link(
 	"onSkinRemoved",
 	Event.Argument("slot"),
