@@ -29,7 +29,7 @@ else
 	for i = 1, #maggotHits do
 		local maggot = maggotHits[i]
 		local status = maggot:getBehavior("CombatStatus")
-		if not status.dead then
+		if status and status.currentHitpoints > 0 then
 			isMaggotAlive = true
 			break
 		end
