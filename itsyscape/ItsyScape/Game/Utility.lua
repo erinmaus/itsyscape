@@ -3466,6 +3466,76 @@ function Utility.Quest.build(quest, gameDB)
 	return result
 end
 
+function Utility.Quest.buildWorkingQuestLog(steps, gameDB)
+	local questInfo = {}
+	for i = 1, #steps do
+		local step = steps[i]
+		if #step > 1 then
+			local block = {
+				t = 'list'
+			}
+
+			for i = 1, #step do
+				local description1 = Utility.getDescription(step[i], gameDB, nil, 1)
+				local description2 = Utility.getDescription(step[i], gameDB, nil, 2)
+				table.insert(block, { description1, description2 })
+			end
+
+			table.insert(questInfo, { block = block, resources = step })
+		else
+			table.insert(questInfo, {
+				block = {
+					{ Utility.getDescription(step[1], gameDB, nil, 1),
+					  Utility.getDescription(step[1], gameDB, nil, 2) }
+				},
+				resources = step
+			})
+		end
+	end
+
+	return questInfo
+end
+
+function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, _debug)
+	local result = {}
+
+	local max
+	for i = 2, #questLog do
+		local block = {}
+		local hasAny = false
+		for j = 1, #questLog[i].resources do
+			if peep:getState():has("KeyItem", questLog[i].resources[j].name) then
+				table.insert(block, questLog[i].block[j][2])
+				hasAny = true
+			else
+				table.insert(block, questLog[i].block[j][1])
+			end
+		end
+
+		if #block == 1 then
+			block.t = 'text'
+		else
+			block.t = 'list'
+		end
+
+		table.insert(result, block)
+
+		if not hasAny then
+			max = i
+
+			if not _debug then
+				break
+			end
+		end
+	end
+
+	if max then
+		table.insert(result, questLog[max].block[1])
+	end
+
+	return result
+end
+
 function Utility.Quest.getStartAction(quest, game)
 	local gameDB = game:getGameDB()
 
