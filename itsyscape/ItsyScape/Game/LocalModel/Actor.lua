@@ -84,6 +84,10 @@ function LocalActor:getID()
 end
 
 function LocalActor:getName()
+	if not self.peep then
+		return "<poofed>"
+	end
+
 	local name = self.peep:getName()
 	local isAttackable
 	do

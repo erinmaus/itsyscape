@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/PreTutorial_MansionBasement/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.PreTutorial_MansionBasement.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Azathoth, Haunted Mansion, Basement",
 	Language = "en-US",
@@ -226,5 +231,13 @@ do
 		Tree = "Resources/Game/Peeps/PreTutorial/UnaggressiveCreep_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = M["Rat3"]
+	}
+end
+
+do
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["CopperRock1"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_MineCopper"
 	}
 end

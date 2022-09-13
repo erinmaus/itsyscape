@@ -191,6 +191,12 @@ do
 	M["Portal_UpStairs"] {
 		TravelAction
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Portal_UpStairs"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
+	}
 end
 
 M["Portal_DownStairs"] = ItsyScape.Resource.MapObject.Unique()
@@ -249,6 +255,12 @@ do
 
 	M["Portal_DownStairs"] {
 		TravelAction
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Portal_DownStairs"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_MineCopper"
 	}
 end
 
@@ -326,6 +338,12 @@ do
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Edward",
 		MapObject = M["Edward"]
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Edward"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostBoy"
+	}
 end
 
 M["Elizabeth"] = ItsyScape.Resource.MapObject.Unique()
@@ -342,6 +360,12 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Elizabeth",
 		MapObject = M["Elizabeth"]
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Elizabeth"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostGirl"
 	}
 end
 
@@ -379,6 +403,12 @@ do
 	M["SearchableCrate"] {
 		TalkAction
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["SearchableCrate"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
+	}
 end
 
 M["Maggot"] = ItsyScape.Resource.MapObject.Unique()
@@ -405,5 +435,19 @@ do
 		Name = "Anchor_Maggot",
 		Map = M._MAP,
 		Resource = M["Anchor_Maggot"]
+	}
+end
+
+do
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Anvil"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SmithCopperAmulet"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Furnace"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SmeltCopperBar"
 	}
 end

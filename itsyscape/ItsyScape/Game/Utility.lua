@@ -835,7 +835,8 @@ Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
 		"Chat",
-		"ProCombatStatusHUD"
+		"ProCombatStatusHUD",
+		"QuestProgressNotification"
 	}
 }
 
@@ -3402,6 +3403,30 @@ function Utility.Quest.isNextStep(quest, step, peep)
 	return false
 end
 
+function Utility.Quest.getNextStep(quest, peep)
+	local steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
+
+	local index = #steps
+	while index > 0 do
+		local step = steps[index]
+
+		local numStepsCompleted = 0
+		for i = 1, #step do
+			if peep:getState():has("KeyItem", step[i].name) then
+				numStepsCompleted = numStepsCompleted + 1
+			end
+		end
+
+		if numStepsCompleted == #step then
+			return steps[index + 1]
+		end
+
+		index = index - 1
+	end
+
+	return nil
+end
+
 function Utility.Quest.build(quest, gameDB)
 	if type(quest) == 'string' then
 		local resource = gameDB:getResource(quest, "Quest")
@@ -3466,6 +3491,72 @@ function Utility.Quest.build(quest, gameDB)
 	return result
 end
 
+function Utility.Quest.buildWorkingQuestLog(steps, gameDB)
+	local questInfo = {}
+	for i = 1, #steps do
+		local step = steps[i]
+		if #step > 1 then
+			local block = {
+				t = 'list'
+			}
+
+			for i = 1, #step do
+				local description1 = Utility.getDescription(step[i], gameDB, nil, 1)
+				local description2 = Utility.getDescription(step[i], gameDB, nil, 2)
+				table.insert(block, { description1, description2 })
+			end
+
+			table.insert(questInfo, { block = block, resources = step })
+		else
+			table.insert(questInfo, {
+				block = {
+					{ Utility.getDescription(step[1], gameDB, nil, 1),
+					  Utility.getDescription(step[1], gameDB, nil, 2) }
+				},
+				resources = step
+			})
+		end
+	end
+
+	return questInfo
+end
+
+function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, _debug)
+	local result = {}
+
+	local max
+	for i = 2, #questLog do
+		local block = {}
+		local hasAny = false
+		for j = 1, #questLog[i].resources do
+			if peep:getState():has("KeyItem", questLog[i].resources[j].name) then
+				table.insert(block, questLog[i].block[j][2])
+				hasAny = true
+			else
+				table.insert(block, questLog[i].block[j][1])
+			end
+		end
+
+		if #block == 1 then
+			block.t = 'text'
+		else
+			block.t = 'list'
+		end
+
+		table.insert(result, block)
+
+		if not hasAny then
+			max = i
+
+			if not _debug then
+				break
+			end
+		end
+	end
+
+	return result
+end
+
 function Utility.Quest.getStartAction(quest, game)
 	local gameDB = game:getGameDB()
 
@@ -3508,6 +3599,20 @@ function Utility.Quest.promptToStart(quest, peep, questGiver)
 		quest,
 		action,
 		questGiver)
+end
+
+function Utility.Quest.didComplete(quest, peep)
+	if type(quest) ~= 'string' then
+		quest = quest.name
+	end
+
+	return peep:getState():has("Quest", quest)
+end
+
+function Utility.Quest.didStart(quest, peep)
+	local game = peep:getDirector():getGameInstance()
+	local action = Utility.Quest.getStartAction(quest, game)
+	return action and action:didStart(peep:getState(), peep)
 end
 
 function Utility.Quest.canStart(quest, peep)
@@ -3607,6 +3712,72 @@ function Utility.Quest.wakeUp(peep)
 		peep,
 		location:get("name"),
 		Vector(location:get("x"), location:get("y"), location:get("z")))
+end
+
+function Utility.Quest.listenForAction(peep, resourceType, resourceName, actionType, callback)
+	local targetActionInstance
+	do
+		local director = peep:getDirector()
+		local gameDB = director:getGameDB()
+		local resource = gameDB:getResource(resourceName, resourceType)
+		if not resource then
+			Log.warn("Resource '%s' (%s) not found; cannot listen for action.", resourceName, resourceType)
+			return false
+		end
+
+		local actions = Utility.getActions(director:getGameInstance(), resource)
+		for i = 1, #actions do
+			if actions[i].instance:is(actionType) then
+				targetActionInstance = actions[i].instance
+				break
+			end
+		end
+
+		if not targetActionInstance then
+			Log.warn(
+				"Couldn't find action '%s' on resource '%s' (%s); cannot listen for action.",
+				actionType, resourceName, resourceType)
+		end
+	end
+
+	local listen, silence
+
+	silence = function()
+		peep:silence('actionPerformed', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, p)
+		if p.action:getID() == targetActionInstance:getID() then
+			callback(p.action)
+
+			silence()
+		end
+	end
+
+	peep:listen('actionPerformed', listen)
+	peep:listen('move', silence)
+end
+
+function Utility.Quest.listenForItem(peep, itemID, callback)
+	local listen, silence
+
+	silence = function()
+		peep:silence('transferItemTo', listen)
+		peep:silence('spawnItem', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, p)
+		if p.item:getID() == itemID then
+			callback(p.item)
+			silence()
+		end
+	end
+
+	peep:listen('transferItemTo', listen)
+	peep:listen('spawnItem', listen)
+	peep:listen('move', silence)
 end
 
 return Utility

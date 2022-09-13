@@ -450,42 +450,14 @@ function NominomiconController:new(peep, director)
 		local quest = {
 			id = q.name,
 			name = Utility.getName(q, gameDB),
-			description = Utility.getDescription(q, gameDB)
+			description = Utility.getDescription(q, gameDB),
+			didComplete = Utility.Quest.didComplete(q, peep),
+			inProgress = Utility.Quest.didStart(q, peep),
+			canStart = Utility.Quest.canStart(q, peep)
 		}
 
-		local questInfo = {}
-		do
-			local steps = Utility.Quest.build(q, gameDB)
-			for i = 1, #steps do
-				local step = steps[i]
-				if #step > 1 then
-					local block = {
-						t = 'list'
-					}
-
-					for i = 1, #step do
-						local description1 = Utility.getDescription(step[i], gameDB, nil, 1)
-						local description2 = Utility.getDescription(step[i], gameDB, nil, 2)
-						table.insert(block, { description1, description2 })
-					end
-
-					table.insert(questInfo, { block = block, resources = step })
-				else
-					table.insert(questInfo, {
-						block = {
-							{ Utility.getDescription(step[1], gameDB, nil, 1),
-							  Utility.getDescription(step[1], gameDB, nil, 2) }
-						},
-						resources = step
-					})
-				end
-			end
-
-			table.insert(questInfo, 1, {
-				t = 'header',
-				quest.name
-			})
-		end
+		local steps = Utility.Quest.build(q, gameDB)
+		local questInfo = Utility.Quest.buildWorkingQuestLog(steps, gameDB)
 
 		table.insert(self.quests, quest)
 		table.insert(self.questInfo, questInfo)
@@ -508,7 +480,8 @@ function NominomiconController:new(peep, director)
 	table.insert(self.questInfo, NominomiconController.CREDITS["en-US"][1])
 
 	self.state = {
-		quests = self.quests
+		quests = self.quests,
+		hideQuestProgress = self:getDirector():getPlayerStorage(self:getPeep()):getRoot():getSection("Nominomicon"):get("hideQuestProgress") == true
 	}
 end
 
@@ -517,8 +490,36 @@ function NominomiconController:poke(actionID, actionIndex, e)
 		self:select(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
+	elseif actionID == "openQuestProgress" then
+		self:openQuestProgress(e)
+	elseif actionID == "toggleShowQuestProgress" then
+		self:toggleShowQuestProgress(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
+	end
+end
+
+function NominomiconController:openQuestProgress(e)
+	assert(type(e.index) == 'number', "index must be number")
+	assert(e.index >= 1, "index must be >= 1")
+	assert(e.index <= #self.quests, "index must be less than number of quests")
+
+	local gameDB = self:getDirector():getGameDB()
+	local quest = gameDB:getResource(self.quests[e.index].id, "Quest")
+
+	if not quest then
+		return
+	end
+
+	local isOpen, index = Utility.UI.isOpen(self:getPeep(), "QuestProgressNotification")
+	if not isOpen then
+		local _, n = Utility.UI.openInterface(self:getPeep(), "QuestProgressNotification", false)
+		index = n
+	end
+
+	if index then
+		local controller = Utility.UI.getOpenInterface(self:getPeep(), "QuestProgressNotification", index)
+		controller:updateQuest(quest)
 	end
 end
 
@@ -533,47 +534,15 @@ function NominomiconController:select(e)
 	if e.index == 1 or e.index == #self.questInfo then
 		result = currentQuest
 	else
-		result = { currentQuest[1] }
-		do
-			local peep = self:getPeep()
+		result = Utility.Quest.buildRichTextLabelFromQuestLog(currentQuest, self:getPeep(), _DEBUG)
 
-			local max
-			for i = 2, #currentQuest do
-				local block = {}
-				local hasAny = false
-				for j = 1, #currentQuest[i].resources do
-					if peep:getState():has("KeyItem", currentQuest[i].resources[j].name) then
-						table.insert(block, currentQuest[i].block[j][2])
-						hasAny = true
-					else
-						table.insert(block, currentQuest[i].block[j][1])
-					end
-				end
-
-				if #block == 1 then
-					block.t = 'text'
-				else
-					block.t = 'list'
-				end
-
-				table.insert(result, block)
-
-				if not hasAny then
-					max = i
-
-					if not _DEBUG then
-						break
-					end
-				end
-			end
-
-			if max then
-				table.insert(result, currentQuest[max].block[1])
-			end
-		end
+		table.insert(result, 1, {
+			t = 'header',
+			self.quests[e.index].name
+		})
 	end
 
-	if #result == 1 then
+	if #result == 0 then
 		table.insert(result, "You haven't started this quest.")
 	end
 
@@ -585,6 +554,14 @@ function NominomiconController:select(e)
 		"updateGuide",
 		nil,
 		{})
+end
+
+function NominomiconController:toggleShowQuestProgress()
+	local storage = self:getDirector():getPlayerStorage(self:getPeep())
+	local hideQuestProgress = not storage:getRoot():getSection("Nominomicon"):get("hideQuestProgress")
+	storage:getRoot():getSection("Nominomicon"):set("hideQuestProgress", hideQuestProgress)
+
+	self.state.hideQuestProgress = hideQuestProgress
 end
 
 function NominomiconController:pull()

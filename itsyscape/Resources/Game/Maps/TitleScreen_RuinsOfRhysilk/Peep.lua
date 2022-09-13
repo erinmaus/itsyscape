@@ -41,10 +41,12 @@ function TitleScreen:onInitTitleScreen(player)
 		fog:setFarDistance(60)
 	end
 
-	player:changeCamera("StandardCutscene")
-	player:pokeCamera("targetActor", player:getActor():getID())
-	player:pokeCamera("zoom", 50, 0)
-	player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 4, 0)
+	if player:getActor() then
+		player:changeCamera("StandardCutscene")
+		player:pokeCamera("targetActor", player:getActor():getID())
+		player:pokeCamera("zoom", 50, 0)
+		player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 4, 0)
+	end
 end
 
 return TitleScreen

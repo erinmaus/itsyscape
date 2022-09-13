@@ -578,6 +578,14 @@ function GameView:getProp(prop)
 	return self.props[prop]
 end
 
+function GameView:getPropByID(id)
+	for prop in pairs(self.props) do
+		if prop:getID() == id then
+			return prop
+		end
+	end
+end
+
 function GameView:removeProp(prop)
 	if self.props[prop] then
 		local view = self.props[prop]

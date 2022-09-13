@@ -9,6 +9,13 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Quest "CalmBeforeTheStorm" {
+	ItsyScape.Action.QuestStart() {
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_Start",
+			Count = 1
+		}
+	},
+
 	ItsyScape.Action.QuestComplete() {
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
