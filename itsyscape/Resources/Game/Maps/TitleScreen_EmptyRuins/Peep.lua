@@ -33,10 +33,12 @@ function TitleScreen:onPlayerEnter(player)
 end
 
 function TitleScreen:onInitTitleScreen(player)
-	player:changeCamera("StandardCutscene")
-	player:pokeCamera("targetActor", player:getActor():getID())
-	player:pokeCamera("zoom", 100, 0)
-	player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 4, 0)
+	if player:getActor() then
+		player:changeCamera("StandardCutscene")
+		player:pokeCamera("targetActor", player:getActor():getID())
+		player:pokeCamera("zoom", 100, 0)
+		player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 4, 0)
+	end
 end
 
 return TitleScreen
