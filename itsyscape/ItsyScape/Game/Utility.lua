@@ -3403,6 +3403,30 @@ function Utility.Quest.isNextStep(quest, step, peep)
 	return false
 end
 
+function Utility.Quest.getNextStep(quest, peep)
+	local steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
+
+	local index = #steps
+	while index > 0 do
+		local step = steps[index]
+
+		local numStepsCompleted = 0
+		for i = 1, #step do
+			if peep:getState():has("KeyItem", step[i].name) then
+				numStepsCompleted = numStepsCompleted + 1
+			end
+		end
+
+		if numStepsCompleted == #step then
+			return steps[index + 1]
+		end
+
+		index = index - 1
+	end
+
+	return nil
+end
+
 function Utility.Quest.build(quest, gameDB)
 	if type(quest) == 'string' then
 		local resource = gameDB:getResource(quest, "Quest")

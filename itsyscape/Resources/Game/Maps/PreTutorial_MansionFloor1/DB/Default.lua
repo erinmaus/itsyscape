@@ -1394,7 +1394,7 @@ do
 	}
 end
 
-M["Furnace_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["Furnace"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 60.000000,
@@ -1407,14 +1407,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Furnace_Default1",
+		Name = "Furnace",
 		Map = M._MAP,
-		Resource = M["Furnace_Default1"]
+		Resource = M["Furnace"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Furnace_Default",
-		MapObject = M["Furnace_Default1"]
+		MapObject = M["Furnace"]
 	}
 end
 
@@ -2546,7 +2546,7 @@ do
 	}
 end
 
-M["Anvil_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["Anvil"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 59.000000,
@@ -2559,14 +2559,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Anvil_Default1",
+		Name = "Anvil",
 		Map = M._MAP,
-		Resource = M["Anvil_Default1"]
+		Resource = M["Anvil"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Anvil_Default",
-		MapObject = M["Anvil_Default1"]
+		MapObject = M["Anvil"]
 	}
 end
 

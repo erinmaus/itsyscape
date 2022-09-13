@@ -26,13 +26,6 @@ end
 function Mansion:onPlayerEnter(player)
 	player = player:getActor():getPeep()
 
-	if self.zombiButler:getCurrentTarget() then
-		self.zombiButler:giveHint("Oh dear me, looks like someone else needs help!")
-	end
-
-	self.zombiButler:poke('followPlayer', player)
-	self.zombiButler:poke('floorChange', 2)
-
 	Utility.Quest.listenForAction(player, "Prop", "CopperRock_Default", "Mine", function()
 		player:getState():give("KeyItem", "PreTutorial_MineCopper")
 	end)

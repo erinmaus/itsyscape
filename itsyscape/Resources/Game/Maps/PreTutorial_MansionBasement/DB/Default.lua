@@ -2,7 +2,7 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "PreTutorial_MansionBasement"
 
-M["CopperRock_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15.000000,
@@ -15,14 +15,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "CopperRock_Default1",
+		Name = "CopperRock1",
 		Map = M._MAP,
-		Resource = M["CopperRock_Default1"]
+		Resource = M["CopperRock1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CopperRock_Default",
-		MapObject = M["CopperRock_Default1"]
+		MapObject = M["CopperRock1"]
 	}
 end
 
@@ -314,7 +314,7 @@ do
 	}
 end
 
-M["CopperRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 11.000000,
@@ -327,14 +327,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "CopperRock_Default2",
+		Name = "CopperRock2",
 		Map = M._MAP,
-		Resource = M["CopperRock_Default2"]
+		Resource = M["CopperRock2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CopperRock_Default",
-		MapObject = M["CopperRock_Default2"]
+		MapObject = M["CopperRock2"]
 	}
 end
 
