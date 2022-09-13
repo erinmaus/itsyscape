@@ -19,6 +19,8 @@ if not hasGhostSpeakEquipped then
 		message "Maybe if I equip that Ghostspeak amulet..."
 	end
 else
+	state:give('KeyItem', "PreTutorial_TalkedToGhostBoy")
+
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
 	local maggotHits = _DIRECTOR:probe(
 		_TARGET:getLayerName(),
@@ -27,7 +29,7 @@ else
 	for i = 1, #maggotHits do
 		local maggot = maggotHits[i]
 		local status = maggot:getBehavior("CombatStatus")
-		if not status.dead then
+		if status and status.currentHitpoints > 0 then
 			isMaggotAlive = true
 			break
 		end

@@ -63,7 +63,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 					needsSpace = false
 				end
 
-				itsyrealm.graphics.print(word, self.x, self.y)
+				itsyrealm.graphics.print({ word }, self.x, self.y)
 				self.x = self.x + width
 
 				if needsSpace then
@@ -152,7 +152,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	end
 
 	love.graphics.setColor(color)
-	itsyrealm.graphics.print(block.text, self.x, self.y)
+	itsyrealm.graphics.print({ block.text }, self.x, self.y)
 
 	self.x = self.x + width
 

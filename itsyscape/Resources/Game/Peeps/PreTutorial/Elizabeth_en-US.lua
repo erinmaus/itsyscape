@@ -21,6 +21,8 @@ if not hasGhostSpeakEquipped then
 		message "Maybe if I equip that Ghostspeak amulet..."
 	end
 else
+	state:give('KeyItem', "PreTutorial_TalkedToGhostGirl")
+
 	local saved = state:has('KeyItem', "PreTutorial_SavedGhostGirl")
 	if not saved then
 		local hasCookedLarry = state:has('Item', "CookedLarry", 1, { ['item-inventory'] = true })

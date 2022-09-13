@@ -28,23 +28,29 @@ Nominomicon.BUTTON_SIZE = 48
 Nominomicon.BUTTON_PADDING = 4
 Nominomicon.PADDING = 4
 
-Nominomicon.INACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
-	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
-	textShadow = true
-}
+Nominomicon.INACTIVE_BUTTON_STYLE = function(color)
+	return {
+		pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
+		inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		color = color or { 1, 1, 1, 1 },
+		fontSize = 16,
+		textShadow = true
+	}
+end
 
-Nominomicon.ACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
-	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
-	textShadow = true
-}
+Nominomicon.ACTIVE_BUTTON_STYLE = function(color)
+	return {
+		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+		inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		color = color or { 1, 1, 1, 1 },
+		fontSize = 16,
+		textShadow = true
+	}
+end
 
 function Nominomicon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -69,8 +75,19 @@ function Nominomicon:new(id, index, ui)
 		Nominomicon.BUTTON_SIZE + Nominomicon.BUTTON_PADDING * 2)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(Nominomicon.BUTTON_PADDING)
-	self.grid:setSize(WIDTH * (1 / 2), HEIGHT)
+	self.grid:setSize(WIDTH * (1 / 2), HEIGHT - Nominomicon.BUTTON_SIZE - Nominomicon.PADDING)
 	self:addChild(self.grid)
+
+	self.toggleButton = Button()
+	self.toggleButton:setSize(
+		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - Nominomicon.PADDING * 2,
+		Nominomicon.BUTTON_SIZE)
+	self.toggleButton:setPosition(Nominomicon.PADDING, HEIGHT - Nominomicon.BUTTON_SIZE - Nominomicon.PADDING)
+	self.toggleButton.onClick:register(function()
+		self:sendPoke("toggleShowQuestProgress", nil, {})
+	end)
+	self:updateToggleButton()
+	self:addChild(self.toggleButton)
 
 	self.infoPanel = ScrollablePanel(GridLayout)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
@@ -100,6 +117,46 @@ function Nominomicon:new(id, index, ui)
 	self.previousSelection = false
 end
 
+function Nominomicon:updateToggleButton()
+	local hideQuestProgress = self:getState().hideQuestProgress
+
+	if self.hideQuestProgress ~= hideQuestProgress then
+		if not hideQuestProgress then
+			self.toggleButton:setStyle(
+				ButtonStyle(
+					Nominomicon.ACTIVE_BUTTON_STYLE(),
+					self:getView():getResources()))
+			self.toggleButton:setText("Toggle Quest HUD Off")
+			self.toggleButton:setToolTip(
+				"Currently, the quest HUD is enabled.",
+				"Click the button to disable the quest HUD.")
+		else
+			self.toggleButton:setStyle(
+				ButtonStyle(
+					Nominomicon.INACTIVE_BUTTON_STYLE(),
+					self:getView():getResources()))
+			self.toggleButton:setText("Toggle Quest HUD On")
+			self.toggleButton:setToolTip(
+				"Currently, the quest HUD is disabled.",
+				"Click the button to enable the quest HUD.")
+		end
+
+		self.hideQuestProgress = hideQuestProgress
+	end
+end
+
+function Nominomicon:getQuestStatusColor(quest)
+	if quest.didComplete then
+		return { 0, 1, 0, 1}
+	elseif quest.inProgress then
+		return { 1, 1, 0, 1 }
+	elseif not quest.canStart then
+		return { 1, 0, 0, 1 }
+	else
+		return { 1, 1, 1, 1 }
+	end
+end
+
 function Nominomicon:update(...)
 	Interface.update(self, ...)
 
@@ -118,7 +175,7 @@ function Nominomicon:update(...)
 
 			button:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE,
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
 					self:getView():getResources()))
 			button:setID("Quest-" .. quest.id)
 
@@ -127,30 +184,61 @@ function Nominomicon:update(...)
 
 		self.ready = true
 	end
+
+	self:updateToggleButton()
 end
 
-function Nominomicon:selectItem(index, button)
-	if self.previousSelection then
-		self.previousSelection:setStyle(
-			ButtonStyle(
-				Nominomicon.INACTIVE_BUTTON_STYLE,
-				self:getView():getResources()))
-	end
+function Nominomicon:selectItem(index, button, mouseButton)
+	local state = self:getState()
+	local quest = state.quests[index]
 
-	if self.previousSelection ~= button then
-		button:setStyle(
-			ButtonStyle(
-				Nominomicon.ACTIVE_BUTTON_STYLE,
-				self:getView():getResources()))
+	if mouseButton == 1 then
+		if self.previousSelection then
+			self.previousSelection:setStyle(
+				ButtonStyle(
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					self:getView():getResources()))
+		end
 
-		self.activeItem = index
-		self.previousSelection = button
+		if self.previousSelection ~= button then
+			button:setStyle(
+				ButtonStyle(
+					Nominomicon.ACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					self:getView():getResources()))
 
-		self:sendPoke("select", nil, { index = index })
-	else
-		self.activeItem = false
-		self.previousSelection = false
-		self.guideLabel:setText("")
+			self.activeItem = index
+			self.previousSelection = button
+
+			self:sendPoke("select", nil, { index = index })
+		else
+			self.activeItem = false
+			self.previousSelection = false
+			self.guideLabel:setText("")
+		end
+	elseif mouseButton == 2 then
+		local actions = {}
+
+		table.insert(actions, {
+			id = "view",
+			verb = "View-Log",
+			object = button:getText(),
+			callback = function()
+				self:selectItem(index, button, 1)
+			end
+		})
+
+		if not quest.didComplete then
+			table.insert(actions, {
+				id = "show-guide",
+				verb = "Show-Guide",
+				object = button:getText(),
+				callback = function()
+					self:sendPoke("openQuestProgress", nil, { index = index })
+				end
+			})
+		end
+
+		self:getView():probe(actions)
 	end
 end
 

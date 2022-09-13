@@ -140,4 +140,10 @@ do
 	M["Powernomicon"] {
 		TalkAction
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Powernomicon"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_LearnedToMakeGhostspeakAmulet"
+	}
 end

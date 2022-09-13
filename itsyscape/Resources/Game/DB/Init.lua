@@ -402,6 +402,12 @@ Game "ItsyScape"
 
 	ResourceType "KeyItem"
 
+	Meta "KeyItemLocationHint" {
+		Map = Meta.TYPE_RESOURCE,
+		MapObject = Meta.TYPE_RESOURCE,
+		KeyItem = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Effect"
 	Meta "Enchantment" {
 		Effect = Meta.TYPE_RESOURCE,
