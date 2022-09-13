@@ -3690,4 +3690,70 @@ function Utility.Quest.wakeUp(peep)
 		Vector(location:get("x"), location:get("y"), location:get("z")))
 end
 
+function Utility.Quest.listenForAction(peep, resourceType, resourceName, actionType, callback)
+	local targetActionInstance
+	do
+		local director = peep:getDirector()
+		local gameDB = director:getGameDB()
+		local resource = gameDB:getResource(resourceName, resourceType)
+		if not resource then
+			Log.warn("Resource '%s' (%s) not found; cannot listen for action.", resourceName, resourceType)
+			return false
+		end
+
+		local actions = Utility.getActions(director:getGameInstance(), resource)
+		for i = 1, #actions do
+			if actions[i].instance:is(actionType) then
+				targetActionInstance = actions[i].instance
+				break
+			end
+		end
+
+		if not targetActionInstance then
+			Log.warn(
+				"Couldn't find action '%s' on resource '%s' (%s); cannot listen for action.",
+				actionType, resourceName, resourceType)
+		end
+	end
+
+	local listen, silence
+
+	silence = function()
+		peep:silence('actionPerformed', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, p)
+		if p.action:getID() == targetActionInstance:getID() then
+			callback(p.action)
+
+			silence()
+		end
+	end
+
+	peep:listen('actionPerformed', listen)
+	peep:listen('move', silence)
+end
+
+function Utility.Quest.listenForItem(peep, itemID, callback)
+	local listen, silence
+
+	silence = function()
+		peep:silence('transferItemTo', listen)
+		peep:silence('spawnItem', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, p)
+		if p.item:getID() == itemID then
+			callback(p.item)
+			silence()
+		end
+	end
+
+	peep:listen('transferItemTo', listen)
+	peep:listen('spawnItem', listen)
+	peep:listen('move', silence)
+end
+
 return Utility

@@ -69,6 +69,33 @@ function Mansion:onPlayerEnter(player)
 
 		self.zombiButler:poke('followPlayer', player)
 	end
+
+	Utility.Quest.listenForAction(player, "Item", "CopperBar", "Smelt", function()
+		player:getState():give("KeyItem", "PreTutorial_MineCopper")
+		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
+	end)
+
+	Utility.Quest.listenForAction(player, "Item", "CopperAmulet", "Smith", function()
+		player:getState():give("KeyItem", "PreTutorial_MineCopper")
+		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
+		player:getState():give("KeyItem", "PreTutorial_SmithCopperAmulet")
+	end)
+
+	Utility.Quest.listenForAction(player, "Item", "GhostspeakAmulet", "Enchant", function()
+		player:getState():give("KeyItem", "PreTutorial_MineCopper")
+		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
+		player:getState():give("KeyItem", "PreTutorial_SmithCopperAmulet")
+		player:getState():give("KeyItem", "PreTutorial_EnchantedCopperAmulet")
+		player:getState():give("KeyItem", "PreTutorial_MadeGhostspeakAmulet")
+	end)
+
+	Utility.Quest.listenForItem(player, "GhostspeakAmulet", function()
+		player:getState():give("KeyItem", "PreTutorial_MineCopper")
+		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
+		player:getState():give("KeyItem", "PreTutorial_SmithCopperAmulet")
+		player:getState():give("KeyItem", "PreTutorial_EnchantedCopperAmulet")
+		player:getState():give("KeyItem", "PreTutorial_MadeGhostspeakAmulet")
+	end)
 end
 
 function Mansion:onPlayerLeave(player)

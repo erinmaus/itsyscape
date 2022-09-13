@@ -128,7 +128,7 @@ ItsyScape.Utility.questStep(
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to search the crate.",
+	Value = "Hans advised to look in the shed for tools.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
 }
 
@@ -140,7 +140,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to read the Powernomicon.",
+	Value = "There might be information about speaking to ghosts in the Powernomicon, located upstairs.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
 }
 
@@ -152,19 +152,19 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to start Restless Ghosts.",
+	Value = "To start Restless Ghosts, find Hans in the haunted mansion located somewhere in Azathoth.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_Start"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Hans, the Zombi butler, to find out what's wrong.",
+	Value = "Hans, the Zombi butler, might know what's wrong.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler1"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to learn how to make the ghost speak amulet.",
+	Value = "Learning how to make a ghostspeak amulet may help.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_LearnedToMakeGhostspeakAmulet"
 }
 
@@ -176,7 +176,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to mine some copper from the basement using the pickaxe you obtained in the storage shed.",
+	Value = "Mine some copper from the basement using the pickaxe you obtained in the storage shed.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_MineCopper"
 }
 
@@ -188,7 +188,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to smelt a copper bar using the furnace in the shed, near the courtyard.",
+	Value = "Smelt a copper bar using the furnace in the shed, near the courtyard.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SmeltCopperBar"
 }
 
@@ -200,19 +200,19 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to smith a copper amulet on the anvil in the shed using the hammer you obtained.",
+	Value = "Smith a copper amulet on the anvil in the shed using the hammer you obtained.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SmithCopperAmulet"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to smithed a copper amulet.",
+	Value = "You smithed a copper amulet.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SmithCopperAmulet"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to enchant the copper amulet using the Enchant spell. Runes for this spell can be obtained from the Powernomicon.",
+	Value = "Enchant the copper amulet using the Enchant spell. Runes for this spell can be obtained from the Powernomicon.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_EnchantedCopperAmulet"
 }
 
@@ -224,7 +224,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to make the ghostpeak amulet.",
+	Value = "You haven't made the ghost speak amulet yet.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_MadeGhostspeakAmulet"
 }
 
@@ -236,7 +236,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Elizabeth, the ghost girl, using the ghostspeak amulet to find out what's wrong.",
+	Value = "Talk to Elizabeth, the ghost girl, using the ghostspeak amulet to find out what's wrong.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostGirl"
 }
 
@@ -248,7 +248,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Edward, the ghost boy, using the ghostspeak amulet.",
+	Value = "Talk to Edward, the ghost boy, using the ghostspeak amulet.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostBoy"
 }
 
@@ -258,29 +258,27 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostBoy"
 }
 
--- next
-
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to save the ghost girl.",
+	Value = "Save Elizabeth by feeding her something dramatic.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostGirl"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to save the ghost boy.",
+	Value = "Save Edward by defeating the monster under the bed.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostBoy"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to the Butler to find out what's next.",
+	Value = "Talk to the Butler to find out what's next.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler2"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to let Hans teleport you to Isabelle Island.",
+	Value = "Hans will teleport you to Isabelle Island.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_WokeUp"
 }
 
@@ -298,13 +296,13 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You saved the ghost girl by giving her the goldfish, Larry, to eat. How morbid!",
+	Value = "You saved Elizabeth by giving her the goldfish, Larry, to eat. How morbid!",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostGirl"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You saved the ghost boy by defeating the monster under the bed.",
+	Value = "You saved the Edward by defeating the monster (ew, it was a maggot!) under the bed.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostBoy"
 }
 
