@@ -357,7 +357,7 @@ function LocalActor:setSkin(slot, priority, skin)
 
 	Log.engine(
 		"Setting skin for skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
-		self:getName(), self:getID(),
+		(self.peep and self:getName()) or "<poofed>", self:getID(),
 		Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
 		skin:getFilename())
 
@@ -379,7 +379,7 @@ function LocalActor:unsetSkin(slot, priority, skin)
 
 	Log.engine(
 		"Unsetting skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
-		self:getName(), self:getID(),
+		(self.peep and self:getName()) or "<poofed>", self:getID(),
 		Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
 		skin:getFilename())
 
