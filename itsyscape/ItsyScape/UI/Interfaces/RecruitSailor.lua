@@ -353,7 +353,6 @@ function  RecruitSailor:update(delta)
 		local actorView = self.recruitables[i]:getData('view')
 		if actorView then
 			actorView:update(delta)
-			actorView:updateAnimations()
 		end
 	end
 
