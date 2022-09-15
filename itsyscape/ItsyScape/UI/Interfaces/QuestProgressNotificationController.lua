@@ -64,7 +64,7 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 
 		if lastQuest then
 			gameDB = self:getDirector():getGameDB()
-			local quest = gameDB:getResource("Quest", lastQuest)
+			local quest = gameDB:getResource(lastQuest, "Quest")
 
 			if quest then
 				self:updateQuest(quest)
