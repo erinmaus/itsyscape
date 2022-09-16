@@ -53,6 +53,20 @@ local LOGS = {
 		tinderbox = "Tinderbox"
 	},
 
+	["Yew"] = {
+		tier = 40,
+		weight = 6,
+		health = 100,
+		tinderbox = "Tinderbox"
+	},
+
+	["PetrifiedSpider"] = {
+		tier = 50,
+		weight = 2,
+		health = 250,
+		tinderbox = "Tinderbox"
+	},
+
 	["Coconut"] = {
 		tier = 15,
 		weight = 2,
