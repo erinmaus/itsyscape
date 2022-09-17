@@ -117,7 +117,7 @@ do
 		Health = 150,
 		Distance = 800,
 		Defense = 50,
-		Speed = 50,
+		Speed = 150,
 		Resource = ItsyScape.Resource.SailingItem "Hull_Common"
 	}
 
