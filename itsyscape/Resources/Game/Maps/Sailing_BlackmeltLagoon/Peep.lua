@@ -35,7 +35,6 @@ function BlackmeltLagoon:onPlayerEnter(player)
 		player = player
 	})
 
-	local player = Utility.Peep.getPlayer(self)
 	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
 	if not pending then
 		local actor = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
