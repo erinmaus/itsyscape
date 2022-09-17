@@ -129,7 +129,7 @@ end
 function MapTable:onPlayerTravel(player, e)
 	local map = Utility.Peep.getMapResource(self)
 	if e.to ~= map.name then
-		local playerModel = Utility.Peep.getPlayerModel(self)
+		local playerModel = Utility.Peep.getPlayerModel(player)
 		playerModel:changeCamera('Default')
 
 		player:silence('travel', self.onPlayerTravel)

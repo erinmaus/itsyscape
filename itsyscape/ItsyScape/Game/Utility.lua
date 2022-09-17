@@ -288,18 +288,8 @@ function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
 		return nil
 	end
 
-	local layer
-	do
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			layer = position.layer
-		end
-
-		layer = layer or 1
-	end
-
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
-	local success, prop = stage:placeProp("resource://" .. prop.name, layer, peep:getLayerName())
+	local success, prop = stage:placeProp("resource://" .. prop.name, Utility.Peep.getLayer(peep), peep:getLayerName())
 
 	if success then
 		local propPeep = prop:getPeep()
