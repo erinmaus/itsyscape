@@ -16,6 +16,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local BaseSailor = Class(Player)
 
@@ -23,6 +24,7 @@ function BaseSailor:new(resource, name, ...)
 	Player.new(self, nil, name or 'Sailor', ...)
 
 	self:addBehavior(FollowerBehavior)
+	self:addBehavior(InstancedBehavior)
 
 	self:addPoke('place')
 end

@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local BlackmeltLagoon = Class(Map)
@@ -22,18 +22,25 @@ end
 function BlackmeltLagoon:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	Utility.spawnMapAtAnchor(self, "Ship_Player1", "Anchor_Ship")
-
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'Sailing_BlackmeltLagoon_LightRain', 'Rain', {
 		wind = { -2, 0, 0 },
 		heaviness = 0.125
 	})
+end
+
+function BlackmeltLagoon:onPlayerEnter(player)
+	Utility.spawnMapAtAnchor(self, "Ship_Player1", "Anchor_Ship", {
+		isInstancedToPlayer = true,
+		player = player
+	})
 
 	local player = Utility.Peep.getPlayer(self)
 	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
 	if not pending then
-		Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
+		local actor = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
+		local _, instancedBehavior = actor:getPeep():addBehavior(InstancedBehavior)
+		instancedBehavior.playerID = player:getID()
 	end
 end
 
