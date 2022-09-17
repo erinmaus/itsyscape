@@ -518,7 +518,7 @@ itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoSciss
 itsyrealm.graphics.disabled.drawq = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
 
-if love.system.getOS() ~= "OS X" or true then
+if love.system.getOS() ~= "OS X" then
 	Log.info(
 		"Disabling advanced UI caching on platform '%s'.",
 		love.system.getOS())
