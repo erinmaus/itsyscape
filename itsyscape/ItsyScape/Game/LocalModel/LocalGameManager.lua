@@ -69,7 +69,7 @@ function LocalGameManager:new(rpcService, game)
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
 	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
-	game:getStage():newMap(1, 1, 1)
+	--game:getStage():newMap(1, 1, 1)
 	game:tick()
 
 	game.onPlayerSpawned:register(self.onPlayerSpawned, self)

@@ -122,8 +122,8 @@ end
 --
 -- Returns a Vector with the center of the tile in world space.
 function Map:getTileCenter(i, j)
-	local x = (i - 0.5) * self.cellSize
-	local z = (j - 0.5) * self.cellSize
+	local x = (math.floor(i + 0.5) - 0.5) * self.cellSize
+	local z = (math.floor(j + 0.5) - 0.5) * self.cellSize
 	local y = self:getInterpolatedHeight(x, z)
 
 	return Vector(x, y, z)

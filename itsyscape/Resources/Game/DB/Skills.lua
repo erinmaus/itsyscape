@@ -261,6 +261,13 @@ ItsyScape.Resource.Skill "Foraging"
 	}
 
 ItsyScape.Resource.Skill "Antilogika"
+	ActionType "Travel_Antilogika"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Travel",
+			XProgressive = "Traveling",
+			Language = "en-US",
+			Type = "Travel_Antilogika"
+		}
 
 ItsyScape.Resource.Skill "Necromancy"
 
