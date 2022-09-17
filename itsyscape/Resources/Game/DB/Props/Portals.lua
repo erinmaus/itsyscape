@@ -27,6 +27,27 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
 
+ItsyScape.Resource.Prop "InvisiblePortal_Antilogika" {
+	ItsyScape.Action.Travel_Antilogika()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Leads you somewhere different.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
 ItsyScape.Resource.Prop "Portal_Default" {
 	ItsyScape.Action.Teleport()
 }

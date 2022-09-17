@@ -596,14 +596,14 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	end
 end
 
-function LocalStage:newMap(width, height, tileSetID)
-	local layer = self:newLayer()
-
+function LocalStage:newMap(width, height, tileSetID, layer)
 	local map = Map(width, height, Stage.CELL_SIZE)
 	self.onLoadMap(self, map, layer, tileSetID)
 	self.game:getDirector():setMap(layer, map)
 
 	self:updateMap(layer)
+
+	return map
 end
 
 function LocalStage:updateMap(layer, map)
@@ -952,6 +952,13 @@ function LocalStage:loadMapResource(instance, filename, args)
 		end
 	end
 
+	if not baseLayer then
+		baseLayer = self:newLayer(instance)
+		instance:addLayer(baseLayer)
+	end
+
+	self:spawnGround(layerName, baseLayer)
+
 	if not instance:getBaseLayer() then
 		instance:setBaseLayer(baseLayer)
 	end
@@ -975,8 +982,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 			self:decorate(key, decoration, baseLayer)
 		end
 	end
-
-	self:spawnGround(layerName, baseLayer)
 
 	local mapScript
 

@@ -214,6 +214,7 @@ function Instance:new(id, filename, stage)
 
 	self.onPlayerEnter = Callback()
 	self.onPlayerLeave = Callback()
+	self.onUnload = Callback()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		if self:hasLayer(layer, true) then
@@ -639,6 +640,8 @@ end
 
 function Instance:unload()
 	Log.engine("Unloaded instance %s (%d).", self:getFilename(), self:getID())
+
+	self:onUnload()
 
 	self:tick()
 
