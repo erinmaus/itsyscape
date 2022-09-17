@@ -83,8 +83,10 @@ function Port:onLoad(filename, args, layer)
 
 	self:poke('spawnShip')
 	self:poke('rollFirstMate', false)
+end
 
-	local playerStorage = self:getDirector():getPlayerStorage():getRoot()
+function Port:onPlayerEnter(player)
+	local playerStorage = self:getDirector():getPlayerStorage(player:getID()):getRoot()
 	local followersStorage = playerStorage:getSection("Follower"):getSection("SailingCrew")
 	for i = 1, followersStorage:length() do
 		self:poke('recruit', followersStorage:getSection(i):get("id"))
@@ -92,7 +94,7 @@ function Port:onLoad(filename, args, layer)
 end
 
 function Port:onSpawnShip(filename, args, layer)
-	local player = self:getDirector():getGameInstance():getPlayer():getActor():getPeep()
+	local player = Utility.Peep.getPlayer(self)
 	if player:getState():has("SailingItem", "Ship") then
 		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(12, 0, 48))
 		local rotation = ship:getBehavior(RotationBehavior)
@@ -106,7 +108,8 @@ function Port:onRecruit(id)
 	local stage = self:getDirector():getGameInstance():getStage()
 	local success, actor = stage:spawnActor(
 		"Resources.Game.Peeps.Sailors.BaseSailor",
-		self:getLayer())
+		self:getLayer(),
+		self:getLayerName())
 
 	if success then
 		local peep = actor:getPeep()
@@ -124,7 +127,7 @@ function Port:onRecruit(id)
 				end
 			until position
 
-			peep:getBehavior(PositionBehavior).position = position
+			Utility.Peep.setPosition(peep, position)
 
 			peep:pushPoke('place', id)
 		end)
