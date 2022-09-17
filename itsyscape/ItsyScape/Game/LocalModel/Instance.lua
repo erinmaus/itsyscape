@@ -900,17 +900,20 @@ function Instance:_addPlayerToInstance(player, e)
 	end
 
 	for i = 1, #self.layers do
-		local mapScript = self:getMapScriptByLayer(self.layers[i])
-		if mapScript then
-			local function onPlayerEnter()
-				mapScript:pushPoke('playerEnter', player)
-				mapScript:silence('finalize', onPlayerEnter)
-			end
+		local layer = self.layers[i]
+		if self.layersByID[layer] == true or self.layersByID[layer] == player:getID() then
+			local mapScript = self:getMapScriptByLayer(layer)
+			if mapScript then
+				local function onPlayerEnter()
+					mapScript:pushPoke('playerEnter', player)
+					mapScript:silence('finalize', onPlayerEnter)
+				end
 
-			if mapScript:getDirector() then
-				onPlayerEnter()
-			else
-				mapScript:listen('finalize', onPlayerEnter)
+				if mapScript:getDirector() then
+					onPlayerEnter()
+				else
+					mapScript:listen('finalize', onPlayerEnter)
+				end
 			end
 		end
 	end
@@ -1018,17 +1021,20 @@ function Instance:_removePlayerFromInstance(player)
 	self.orphans[player] = nil
 
 	for i = 1, #self.layers do
-		local mapScript = self:getMapScriptByLayer(self.layers[i])
-		if mapScript then
-			local function onPlayerLeave()
-				mapScript:pushPoke('playerLeave', player)
-				mapScript:silence('finalize', onPlayerEnter)
-			end
+		local layer = self.layers[i]
+		if self.layersByID[layer] == true or self.layersByID[layer] == player:getID() then
+			local mapScript = self:getMapScriptByLayer(layer)
+			if mapScript then
+				local function onPlayerLeave()
+					mapScript:pushPoke('playerLeave', player)
+					mapScript:silence('finalize', onPlayerEnter)
+				end
 
-			if mapScript:getDirector() then
-				onPlayerLeave()
-			else
-				mapScript:listen('finalize', onPlayerEnter)
+				if mapScript:getDirector() then
+					onPlayerLeave()
+				else
+					mapScript:listen('finalize', onPlayerEnter)
+				end
 			end
 		end
 	end
