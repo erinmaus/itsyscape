@@ -102,7 +102,9 @@ end
 function DemoApplication:quitPlayer()
 	Log.info("Player quit their session.")
 
-	self:disconnect()
+	if self:getIsConnected() then
+		self:disconnect()
+	end
 end
 
 function DemoApplication:initialize()

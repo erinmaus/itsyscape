@@ -341,6 +341,8 @@ function Application:host(port, password)
 		password = password
 	})
 
+	self.isConnected = true
+
 	self:setPassword(password)
 	self:swapRPCService(ClientRPCService, "localhost", tostring(port))
 end
@@ -351,6 +353,8 @@ function Application:disconnect()
 	self.adminChannel:push({
 		type = 'disconnect'
 	})
+
+	self.isConnected = false
 
 	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 end
@@ -378,6 +382,12 @@ function Application:connect(address, port, password)
 
 	self.tickTripTime = 0
 	self.tickTripTotal = 0
+
+	self.isConnected = true
+end
+
+function Application:getIsConnected()
+	return self.isConnected
 end
 
 function Application:setPassword(password)
