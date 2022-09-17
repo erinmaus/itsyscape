@@ -17,6 +17,7 @@ local Stage = require "ItsyScape.Game.Model.Stage"
 local ActorProxy = require "ItsyScape.Game.Model.ActorProxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local Instance = Class(Stage)
 
@@ -215,7 +216,7 @@ function Instance:new(id, filename, stage)
 	self.onPlayerLeave = Callback()
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Adding map to instance %s (%d) on layer %d.",
 				self:getFilename(),
@@ -233,13 +234,18 @@ function Instance:new(id, filename, stage)
 	stage.onLoadMap:register(self._onLoadMap)
 
 	self._onUnloadMap = function(_, map, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Unloaded map from instance %s (%d) on layer %d.",
 				self:getFilename(),
 				self:getID(),
 				layer)
 			self.maps[layer] = nil
+
+			local mapScript = self.mapScripts[layer]
+			if mapScript then
+				Utility.Peep.poof(mapScript:getPeep())
+			end
 		else
 			Log.engine(
 				"Did not unload map to instance %s (%d) on layer %d; layer is not in instance.",
@@ -251,7 +257,7 @@ function Instance:new(id, filename, stage)
 	stage.onUnloadMap:register(self._onUnloadMap)
 
 	self._onMapModified = function(_, map, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Modified map in instance %s (%d) on layer %d.",
 				self:getFilename(),
@@ -357,7 +363,7 @@ function Instance:new(id, filename, stage)
 	self.water = {}
 
 	self._onWaterFlood = function(_, key, water, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to add water '%s' (layer = %d) to instance %s (%d).",
 				key, layer, self:getFilename(), self:getID())
@@ -383,7 +389,7 @@ function Instance:new(id, filename, stage)
 	stage.onWaterFlood:register(self._onWaterFlood)
 
 	self._onWaterDrain = function(_, key, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to remove water '%s' (layer = %d) from instance %s (%d).",
 				key, layer, self:getFilename(), self:getID())
@@ -409,7 +415,7 @@ function Instance:new(id, filename, stage)
 	self.music = {}
 
 	self._onPlayMusic = function(_, track, song, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to play music '%s' on track '%s' (layer = %d) to instance %s (%d).",
 				song, track, layer, self:getFilename(), self:getID())
@@ -435,7 +441,7 @@ function Instance:new(id, filename, stage)
 	stage.onPlayMusic:register(self._onPlayMusic)
 
 	self._onStopMusic = function(_, track, song, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to stop music on track '%s' (layer = %d) from instance %s (%d).",
 				track, layer, self:getFilename(), self:getID())
@@ -461,7 +467,7 @@ function Instance:new(id, filename, stage)
 	self.weather = {}
 
 	self._onForecast = function(_, layer, key, id, props)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to add weather '%s' of type %s (layer = %d) to instance %s (%d).",
 				key, id, layer, self:getFilename(), self:getID())
@@ -486,7 +492,7 @@ function Instance:new(id, filename, stage)
 	stage.onForecast:register(self._onForecast)
 
 	self._onStopForecast = function(_, layer, key)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to remove weather '%s' (layer = %d) from instance %s (%d).",
 				key, layer, self:getFilename(), self:getID())
@@ -512,7 +518,7 @@ function Instance:new(id, filename, stage)
 	self.decorations = {}
 
 	self._onDecorate = function(_, group, decoration, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to add decoration '%s' (layer = %d) to instance %s (%d).",
 				group, layer, self:getFilename(), self:getID())
@@ -537,7 +543,7 @@ function Instance:new(id, filename, stage)
 	stage.onDecorate:register(self._onDecorate)
 
 	self._onUndecorate = function(_, group, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to remove decoration '%s' (layer = %d) from instance %s (%d).",
 				group, layer, self:getFilename(), self:getID())
@@ -563,7 +569,7 @@ function Instance:new(id, filename, stage)
 	self.items = {}
 
 	self._onDropItem = function(_, ref, item, tile, position, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to drop item '%s' (ref = %d, count = %d) at (%d, %d) (layer = %d) in instance %s (%d).",
 				item.id, ref, item.count, tile.i, tile.j, layer, self:getFilename(), self:getID())
@@ -589,7 +595,7 @@ function Instance:new(id, filename, stage)
 	stage.onDropItem:register(self._onDropItem)
 
 	self._onTakeItem = function(_, ref, item, layer)
-		if self:hasLayer(layer) then
+		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to take item '%s' (count = %d) on layer = %d in instance %s (%d).",
 				item.id, item.count, layer, self:getFilename(), self:getID())
@@ -616,8 +622,8 @@ function Instance:new(id, filename, stage)
 		local sourceLayer = source and not Class.isType(source, Vector) and source:getPeep() and Utility.Peep.getLayer(source:getPeep())
 		local destinationLayer = destination and not Class.isType(destination, Vector) and destination:getPeep() and Utility.Peep.getLayer(destination:getPeep())
 
-		if (self:hasLayer(sourceLayer) or source == nil) and
-		   (self:hasLayer(destinationLayer) or destination == nil) then
+		if (self:hasLayer(sourceLayer, true) or source == nil) and
+		   (self:hasLayer(destinationLayer, true) or destination == nil) then
 
 			Log.engine(
 				"Firing projectile '%s' in instance %s (%d).",
@@ -710,14 +716,18 @@ function Instance:getRaid()
 	return self.raid
 end
 
-function Instance:hasLayer(layer)
-	return self.layersByID[layer] == true
+function Instance:hasLayer(layer, player)
+	if player and player ~= true then
+		return self.layersByID[layer] == true or self.layersByID[layer] == player:getID()
+	else
+		return self.layersByID[layer] == true or (self.layersByID[layer] ~= nil and player)
+	end
 end
 
-function Instance:addLayer(layer)
-	if not self:hasLayer(layer) then
+function Instance:addLayer(layer, player)
+	if not self:hasLayer(layer, true) then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())
-		self.layersByID[layer] = true
+		self.layersByID[layer] = (player and player:getID()) or true
 		table.insert(self.layers, layer)
 	end
 end
@@ -742,7 +752,7 @@ function Instance:removeLayer(layer)
 end
 
 function Instance:setBaseLayer(layer)
-	if self:hasLayer(layer) then
+	if self:hasLayer(layer, true) then
 		Log.engine("Base layer set to %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 		self.baseLayer = layer
 	else
@@ -761,7 +771,7 @@ function Instance:iterateLayers()
 end
 
 function Instance:addMapScript(layer, peep, filename)
-	if self:hasLayer(layer) then
+	if self:hasLayer(layer, true) then
 		Log.engine("Added map script '%s' to layer %d in instance %s (%d).", peep:getName(), layer, self:getFilename(), self:getID())
 		self.mapScripts[layer] = Instance.MapScript(layer, peep, filename)
 	else
@@ -860,12 +870,28 @@ function Instance:setPartyLeader(player)
 	end
 end
 
-function Instance:hasActor(actor)
-	return self.actorsByID[actor:getID()] ~= nil
+function Instance:hasActor(actor, player)
+	local hasActor = self.actorsByID[actor:getID()] ~= nil
+	if hasActor and player and actor:getPeep() then
+		local instanceBehavior = actor:getPeep():getBehavior(InstancedBehavior)
+		local isVisible = not instanceBehavior or instanceBehavior.playerID == player:getID()
+
+		return isVisible
+	end
+
+	return hasActor
 end
 
-function Instance:hasProp(prop)
-	return self.propsByID[prop:getID()] ~= nil
+function Instance:hasProp(prop, player)
+	local hasProp = self.propsByID[prop:getID()] ~= nil
+	if hasProp and player and prop:getPeep() then
+		local instanceBehavior = prop:getPeep():getBehavior(InstancedBehavior)
+		local isVisible = not instanceBehavior or instanceBehavior.playerID == player:getID()
+
+		return isVisible
+	end
+
+	return hasProp
 end
 
 function Instance:_addPlayerToInstance(player, e)
@@ -892,6 +918,102 @@ function Instance:_addPlayerToInstance(player, e)
 	self:onPlayerEnter(player)
 end
 
+function Instance:_clearInstancedActors(player)
+	for i = 1, #self.actors do
+		local actor = self.actors[i]
+
+		if actor:getPeep() then
+			if Utility.Peep.isInstancedToPlayer(actor:getPeep(), player) then
+				Log.engine(
+					"Clearing instanced actor '%s' (%d) for player %s (%d).",
+					actor:getName(), actor:getID(),
+					(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+				Utility.Peep.poof(actor:getPeep())
+			end
+		end
+	end
+end
+
+function Instance:_clearInstancedProps(player)
+	for i = 1, #self.props do
+		local prop = self.props[i]
+
+		if prop:getPeep() then
+			if Utility.Peep.isInstancedToPlayer(prop:getPeep(), player) then
+				Log.engine(
+					"Clearing instanced prop '%s' (%d) for player %s (%d).",
+					prop:getName(), prop:getID(),
+					(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+				Utility.Peep.poof(prop:getPeep())
+			end
+		end
+	end
+end
+
+function Instance:_clearInstancedMap(layer)
+	local water = {}
+	for i = 1, #self.water do
+		local w = self.water[i]
+		if w:getLayer() == layer then
+			table.insert(water, w)
+		end
+	end
+
+	for i = 1, #water do
+		self.stage:onWaterDrain(water:getKey(), water:getLayer())
+	end
+
+	local decorations = {}
+	for i = 1, #self.decorations do
+		local d = self.decorations[i]
+		if d:getLayer() == layer then
+			table.insert(decorations, d)
+		end
+	end
+
+	for i = 1, #decorations do
+		self.stage:onUndecorate(decorations[i]:getGroup(), decorations[i]:getLayer())
+	end
+
+	local music = {}
+	for i = 1, #self.music do
+		local m = self.music[i]
+		if m:getLayer() == layer then
+			table.insert(music, m)
+		end
+	end
+
+	for i = 1, #music do
+		self.stage:onStopMusic(music[i]:getTrack(), music[i]:getSong(), music[i]:getLayer())
+	end
+
+	local forecast = {}
+	for i = 1, #self.weather do
+		local f = self.weather[i]
+		if f:getLayer() == layer then
+			table.insert(forecast, f)
+		end
+	end
+
+	for i = 1, #forecast do
+		self.stage:onStopForecast(forecast[i]:getLayer(), forecast[i]:getKey())
+	end
+end
+
+function Instance:_clearInstancedMaps(player)
+	for layer, playerID in pairs(self.layersByID) do
+		if playerID == player:getID() then
+			Log.info(
+				"Clearing instanced layer %d for player '%s' (%d).",
+				layer, (player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+
+			self:_clearInstancedMap(layer)
+			self.stage:unloadMap(layer)
+			self.stage:deleteLayer(layer)
+		end
+	end
+end
+
 function Instance:_removePlayerFromInstance(player)
 	self.orphans[player] = nil
 
@@ -910,6 +1032,10 @@ function Instance:_removePlayerFromInstance(player)
 			end
 		end
 	end
+
+	self:_clearInstancedActors(player)
+	self:_clearInstancedProps(player)
+	self:_clearInstancedMaps(player)
 
 	self:onPlayerLeave(player)
 end
@@ -1060,27 +1186,33 @@ function Instance:loadPlayer(localGameManager, player)
 	Log.engine("Restoring instance for player '%s'...", (player:getActor() and player:getActor():getName()) or tostring(player:getID()))
 
 	for _, layer in self:iterateLayers() do
-		local map = self.stage:getMap(layer)
+		if not self:hasLayer(layer, player) then
+			Log.engine(
+				"Layer %d is not visible to player, no need to update map.",
+				layer)
+		else
+			local map = self.stage:getMap(layer)
 
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onLoadMap",
-			localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID()))
-		localGameManager:assignTargetToLastPush(player)
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onMapModified",
-			localGameManager:getArgs(map, layer))
-		localGameManager:assignTargetToLastPush(player)
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onMapModified",
-			localGameManager:getArgs(map, layer))
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onLoadMap",
+				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID()))
+			localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onMapModified",
+				localGameManager:getArgs(map, layer))
+			localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onMapModified",
+				localGameManager:getArgs(map, layer))
 
-		Log.engine("Loaded layer %d.", layer)
+			Log.engine("Loaded layer %d.", layer)
+		end
 	end
 
 	for i = 1, #self.actors do
@@ -1088,6 +1220,10 @@ function Instance:loadPlayer(localGameManager, player)
 		if self.orphans[actor:getID()] then
 			Log.engine(
 				"Actor '%s' (%d) was orphan, no need to re-create.",
+				actor:getName(), actor:getID())
+		elseif not self:hasActor(actor, player) then
+			Log.engine(
+				"Actor '%s' (%d) is not visible to player, no need to re-create.",
 				actor:getName(), actor:getID())
 		else
 			localGameManager:pushCreate(
@@ -1109,63 +1245,94 @@ function Instance:loadPlayer(localGameManager, player)
 	for i = 1, #self.props do
 		local prop = self.props[i]
 
-		localGameManager:pushCreate(
-			"ItsyScape.Game.Model.Prop",
-			prop:getID())
-		localGameManager:assignTargetToLastPush(player)
+		if not self:hasProp(prop, player) then
+			Log.engine(
+				"Prop '%s' (%d) is not visible to player, no need to re-create.",
+				prop:getName(), prop:getID())
+		else
 
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onPropPlaced",
-			localGameManager:getArgs(prop:getPeepID(), prop))
-		localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCreate(
+				"ItsyScape.Game.Model.Prop",
+				prop:getID())
+			localGameManager:assignTargetToLastPush(player)
+
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onPropPlaced",
+				localGameManager:getArgs(prop:getPeepID(), prop))
+			localGameManager:assignTargetToLastPush(player)
+		end
 
 		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())
 	end
 
 	for _, water in ipairs(self.water) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onWaterFlood",
-			localGameManager:getArgs(water:getKey(), water:getWaterDefinition(), water:getLayer()))
-		localGameManager:assignTargetToLastPush(player)
+		if not self:hasLayer(water:getLayer(), player) then
+			Log.engine(
+				"Layer %d is not visible to player, no need to update water '%s'.",
+				water:getLayer(), water:getKey())
+		else
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onWaterFlood",
+				localGameManager:getArgs(water:getKey(), water:getWaterDefinition(), water:getLayer()))
+			localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored water '%s' for layer %d.", water:getKey(), water:getLayer())
+			Log.engine("Restored water '%s' for layer %d.", water:getKey(), water:getLayer())
+		end
 	end
 
 	for _, weather in ipairs(self.weather) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onForecast",
-			localGameManager:getArgs(weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps()))
-		localGameManager:assignTargetToLastPush(player)
+		if not self:hasLayer(weather:getLayer(), player) then
+			Log.engine(
+				"Layer %d is not visible to player, no need to update weather '%s'.",
+				weather:getLayer(), weather:getKey())
+		else
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onForecast",
+				localGameManager:getArgs(weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps()))
+			localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
+			Log.engine("Restored weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
+		end
 	end
 
 	for _, decoration in ipairs(self.decorations) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onDecorate",
-			localGameManager:getArgs(decoration:getGroup(), decoration:getDecoration(), decoration:getLayer()))
-		localGameManager:assignTargetToLastPush(player)
+		if not self:hasLayer(decoration:getLayer(), player) then
+			Log.engine(
+				"Layer %d is not visible to player, no need to update decoration '%s'.",
+				decoration:getLayer(), decoration:getGroup())
+		else
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onDecorate",
+				localGameManager:getArgs(decoration:getGroup(), decoration:getDecoration(), decoration:getLayer()))
+			localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
+			Log.engine("Restored decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
+		end
 	end
 
 	for _, music in ipairs(self.music) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onPlayMusic",
-			localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
-		localGameManager:assignTargetToLastPush(player)
+		if not self:hasLayer(music:getLayer(), player) then
+			Log.engine(
+				"Layer %d is not visible to player, no need to update music track '%s'.",
+				music:getTrack(), music:getKey())
+		else
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onPlayMusic",
+				localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+			localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Restored song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+			Log.engine("Restored song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+		end
 	end
 
 	for _, item in ipairs(self.items) do
