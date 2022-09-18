@@ -43,9 +43,14 @@ repeat
 		message "You've got this!"
 
 		speaker "_SELF"
-		message "Thanks for the kind words, %person{PLAYER_NAME}!"
+		message "Thanks for the kind words, %person{${PLAYER_NAME}}!"
 	elseif result == SAIL then
-		message "I've gotta find my navigation gear first!"
+		local map = Utility.Peep.getMapResource(_TARGET)
+		local anchor = string.format("Anchor_Chart_%s", map.name)
+		local destination = string.format("MapTable_Main?playerAnchor=%s,returnAnchor=Anchor_MapTable", map.name)
+
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(_TARGET, destination, anchor)
 	elseif result == DISMISS then
 		speaker "_TARGET"
 		message "I'm afraid I need someone more weathered on the seas."
