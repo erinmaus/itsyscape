@@ -364,6 +364,7 @@ function Application:play()
 
 	if self:getIsConnected() then
 		Log.warn("Connected to multiplayer, not a good idea.")
+		self:disconnect()
 	end
 
 	self.adminChannel:push({
