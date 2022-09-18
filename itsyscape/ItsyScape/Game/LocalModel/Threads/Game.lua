@@ -253,7 +253,7 @@ while isRunning do
 				end
 
 				gameManager:swapRPCService(channelRpcService)
-
+			elseif e.type == 'play' then
 				game:spawnPlayer(0)
 			end
 		end

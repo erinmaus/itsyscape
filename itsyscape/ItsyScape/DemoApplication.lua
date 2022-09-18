@@ -102,7 +102,7 @@ end
 function DemoApplication:quitPlayer()
 	Log.info("Player quit their session.")
 
-	self:disconnect()
+	self:play()
 end
 
 function DemoApplication:initialize()
