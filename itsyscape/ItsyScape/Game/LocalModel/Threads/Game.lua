@@ -222,6 +222,12 @@ while isRunning do
 				isRunning = false
 			elseif e.type == 'admin' then
 				adminClientID = e.admin
+			elseif e.type == 'play' then
+				if game:getNumPlayers() > 0 then
+					Log.warn("Game has %d players when playing offline!", game:getNumPlayers())
+				end
+
+				game:spawnPlayer(0)
 			elseif e.type == 'host' then
 				Log.info("Hosting server, swapping RPC service.")
 
@@ -242,18 +248,26 @@ while isRunning do
 				gameManager:swapRPCService(serverRPCService)
 
 				adminClientID = nil
+			elseif e.type == 'offline' then
+				for _, player in game:iteratePlayers() do
+					player:poof()
+				end
+
+				gameManager:swapRPCService(channelRpcService)
+
+				game:spawnPlayer(0)
 			elseif e.type == 'disconnect' then
 				if serverRPCService then
 					serverRPCService:close()
 					serverRPCService = nil
-				else
-					for _, player in game:iteratePlayers() do
-						player:poof()
-					end
+				end
+
+				for _, player in game:iteratePlayers() do
+					player:poof()
 				end
 
 				gameManager:swapRPCService(channelRpcService)
-			elseif e.type == 'play' then
+
 				game:spawnPlayer(0)
 			end
 		end
