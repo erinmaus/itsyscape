@@ -350,13 +350,15 @@ end
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
-	self.adminChannel:push({
-		type = 'disconnect'
-	})
+	if self:getIsConnected() then
+		self.adminChannel:push({
+			type = 'disconnect'
+		})
 
-	self.isConnected = false
+		self.isConnected = false
 
-	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+	end
 end
 
 function Application:setAdmin(clientID)
