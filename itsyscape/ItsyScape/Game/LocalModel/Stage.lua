@@ -22,6 +22,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
@@ -998,7 +999,12 @@ function LocalStage:loadMapResource(instance, filename, args)
 			do
 				local _, m = peep:addBehavior(MapResourceReferenceBehavior)
 				m.map = resource
-			end 
+			end
+
+			if args.isInstancedToPlayer and args.player then
+				local _, instancedBehavior = peep:addBehavior(InstancedBehavior)
+				instancedBehavior.playerID = args.player:getID()
+			end
 
 			mapScript = peep
 		end

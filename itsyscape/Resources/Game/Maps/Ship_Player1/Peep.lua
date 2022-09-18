@@ -201,7 +201,7 @@ function Ship:onCustomize()
 	self.props = {}
 
 	local director = self:getDirector()
-	self.player = director:getGameInstance():getPlayer():getActor():getPeep()
+	self.player = Utility.Peep.getPlayer(self)
 
 	local storage = director:getPlayerStorage(self.player):getRoot()
 	self:colorDeck(storage, Color(0.57, 0.40, 0.25))

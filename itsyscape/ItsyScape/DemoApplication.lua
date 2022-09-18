@@ -67,12 +67,11 @@ function DemoApplication:new()
 		self:play(player)
 	end)
 
-	self:getGame().onPlayerPoofed:register(function(_, player)
-		local currentPlayer = self:getGame():getPlayer()
-		if currentPlayer and currentPlayer:getID() == player:getID() then
-			self:quitPlayer(player)
-		end
+	self:getGame().onQuit:register(function()
+		self:quitPlayer(player)
 	end)
+
+	self:getGame()
 
 	self:disconnect()
 

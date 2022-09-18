@@ -25,6 +25,7 @@ function Game:new()
 	self.onPlayerSpawned = Callback()
 	self.onPlayerPoofed = Callback()
 	self.onReady = Callback()
+	self.onQuit = Callback()
 end
 
 -- Gets the GameDB.
