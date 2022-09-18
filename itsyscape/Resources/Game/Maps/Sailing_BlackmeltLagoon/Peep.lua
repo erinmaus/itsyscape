@@ -35,7 +35,7 @@ function BlackmeltLagoon:onPlayerEnter(player)
 		player = player
 	})
 
-	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
+	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player:getActor():getPeep())
 	if not pending then
 		local actor = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
 		if actor then
