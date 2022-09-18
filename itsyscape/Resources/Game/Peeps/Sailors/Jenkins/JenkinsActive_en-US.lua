@@ -47,7 +47,12 @@ repeat
 		speaker "_SELF"
 		message "'Ere's to that, mate."
 	elseif result == SAIL then
-		message "I be scared to tell ye, but 'at isn't possible yet, mate."
+		local map = Utility.Peep.getMapResource(_TARGET)
+		local anchor = string.format("Anchor_Chart_%s", map.name)
+		local destination = string.format("MapTable_Main?playerAnchor=%s,returnAnchor=Anchor_MapTable", map.name)
+
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(_TARGET, destination, anchor)
 	elseif result == DISMISS then
 		speaker "_TARGET"
 		message "I'm afraid I'm looking for someone better."
