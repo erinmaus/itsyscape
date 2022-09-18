@@ -23,6 +23,11 @@ function RemoteGame:new(gameManager, gameDB)
 end
 
 function RemoteGame:_onPlayerSpawned(_, player)
+	if not player then
+		Log.warn("Spawned player is nil.")
+		return
+	end
+
 	if self.player then
 		Log.warn(
 			"New player '%s' (%d) spawned, but player '%s' (%d) already exists; replacing, but there might be problems.",
@@ -41,6 +46,11 @@ function RemoteGame:_onPlayerSpawned(_, player)
 end
 
 function RemoteGame:_onPlayerPoofed(_, player)
+	if not player then
+		Log.warn("Poofed player is nil.")
+		return
+	end
+
 	Log.info(
 		"Poofing player '%s' (%d)...",
 		(player:getActor() and player:getActor():getName()) or "Player", player:getID())
@@ -49,10 +59,12 @@ function RemoteGame:_onPlayerPoofed(_, player)
 		Log.warn("Existing player (id = %d) is different.", player:getID())
 	elseif not self.player then
 		Log.warn("Player not yet created.")
-	end
+	else
+		self.player = nil
+		Log.info("Player poofed!")
 
-	self.player = nil
-	Log.info("Player poofed!")
+		self:onQuit()
+	end
 end
 
 function RemoteGame:getGameDB()

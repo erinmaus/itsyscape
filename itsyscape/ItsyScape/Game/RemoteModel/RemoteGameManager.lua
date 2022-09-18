@@ -72,6 +72,10 @@ function RemoteGameManager:new(rpcService, ...)
 	self.rpcService:connect(self)
 end
 
+function RemoteGameManager:getRPCService()
+	return self.rpcService
+end
+
 function RemoteGameManager:swapRPCService(rpcService)
 	self.rpcService = rpcService
 	self.rpcService:connect(self)

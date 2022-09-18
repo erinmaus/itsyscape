@@ -13,7 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local Ruins = Class(Map)
@@ -29,7 +29,6 @@ end
 function Ruins:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	Utility.spawnMapAtAnchor(self, "Ship_Player1", "Anchor_Ship")
 	local beachedShip = Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_Pirate", "Anchor_BeachedShip")
 	beachedShip:poke('beach')
 
@@ -39,17 +38,27 @@ function Ruins:onLoad(filename, args, layer)
 		heaviness = 1
 	})
 
-	local player = Utility.Peep.getPlayer(self)
-	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player)
-	if not pending then
-		Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
-	end
-
 	self.lightning = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("Light_Lightning"))[1]
 	self.lightningTime = 0
 	self:zap()
+end
+
+function Ruins:onPlayerEnter(player)
+	Utility.spawnMapAtAnchor(self, "Ship_Player1", "Anchor_Ship", {
+		isInstancedToPlayer = true,
+		player = player
+	})
+
+	local firstMate, pending = SailorsCommon.getActiveFirstMateResource(player:getActor():getPeep())
+	if not pending then
+		local actor = Utility.spawnActorAtAnchor(self, firstMate, "Anchor_FirstMate", 0)
+		if actor then
+			local _, instancedBehavior = actor:getPeep():addBehavior(InstancedBehavior)
+			instancedBehavior.playerID = player:getID()
+		end
+	end
 end
 
 function Ruins:zap()
@@ -73,6 +82,8 @@ function Ruins:boom()
 end
 
 function Ruins:update(director, game)
+	Map.update(self, director, game)
+
 	local delta = game:getDelta()
 
 	if self.lightningTime > 0 then

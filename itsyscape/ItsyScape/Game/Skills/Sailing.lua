@@ -65,11 +65,12 @@ function Sailing.Orchestration.step(peep)
 	local _, targetLocation = Sailing.Itinerary.getDestination(peep, currentIndex + 1)
 	local targetDistance = Sailing.getDistanceBetweenLocations(currentLocation, targetLocation)
 
-	if currentDistance > targetDistance then
+	-- TODO: Restore when random events are fleshed out
+	--if currentDistance > targetDistance then
 		Sailing.Orchestration.arriveNext(peep)
-	else
-		Sailing.Orchestration.randomEvent(peep)
-	end
+	--else
+	--	Sailing.Orchestration.randomEvent(peep)
+	--end
 end
 
 function Sailing.Orchestration.randomEvent(peep)

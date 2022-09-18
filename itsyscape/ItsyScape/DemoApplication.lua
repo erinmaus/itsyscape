@@ -55,17 +55,25 @@ function DemoApplication:new()
 	self.cameraController = DefaultCameraController(self)
 
 	self:getGame().onReady:register(function(_, player)
+		Log.info("Ready to play with player ID %d!", player:getID())
+
 		player.onChangeCamera:register(self.changeCamera, self)
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
 
 		self:getGameView():reset()
 		self:tryOpenTitleScreen()
+
+		self:play(player)
 	end)
 
-	self:getGame().onPlayerPoofed:register(function(_, player)
+	self:getGame().onQuit:register(function()
 		self:quitPlayer(player)
 	end)
+
+	self:getGame()
+
+	self:disconnect()
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)

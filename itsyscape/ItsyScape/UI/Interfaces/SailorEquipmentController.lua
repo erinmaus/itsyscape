@@ -49,6 +49,7 @@ function SailorEquipmentController:new(peep, director, target)
 	peep:listen('actionPerformed', self.interrupt, self)
 	peep:listen('walk', self.interrupt, self)
 	peep:listen('receiveAttack', self.interrupt, self)
+	peep:listen('travel', self.interrupt, self)
 end
 
 function SailorEquipmentController:poke(actionID, actionIndex, e)
@@ -82,10 +83,10 @@ function SailorEquipmentController:updateState()
 				for item in broker:iterateItemsByKey(inventory.inventory, key) do
 					local resultItem = self:pullItem(item)
 					resultItem.disabled = true
-					self:pullActions(item, resultItem, 'inventory')
+					local actionInstances = self:pullActions(item, resultItem, 'inventory')
 
-					for i = 1, #resultItem.actions do
-						local action = resultItem.actions[i].instance
+					for i = 1, #actionInstances do
+						local action = actionInstances[i]
 						if action:is("Equip") then
 							resultItem.disabled = not action:canPerform(self.target:getState())
 						end
@@ -158,17 +159,32 @@ function SailorEquipmentController:pullActions(item, serializedItem, scope)
 		return
 	end
 
+	local actionInstances = {}
+
 	local gameDB = self:getDirector():getGameDB()
 	local itemResource = gameDB:getResource(item:getID(), "Item")
 	if itemResource then
-		serializedItem.actions = Utility.getActions(
+		local actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
 			scope,
-			true)
+			false)
+
+		serializedItem.actions = {}
+
+		for i = 1, #actions do
+			actionInstances[i] = actions[i].instance
+			serializedItem.actions[i] = {
+				id = actions[i].id,
+				type = actions[i].type,
+				verb = actions[i].verb
+			}
+		end
 	else
 		serializedItem.actions = {}
 	end
+
+	return actionInstances
 end
 
 function SailorEquipmentController:close()
@@ -183,6 +199,7 @@ function SailorEquipmentController:close()
 	self:getPeep():silence('actionPerformed', self.interrupt)
 	self:getPeep():silence('walk', self.interrupt)
 	self:getPeep():silence('receiveAttack', self.interrupt)
+	self:getPeep():silence('travel', self.interrupt)
 end
 
 function SailorEquipmentController:equip(e)
@@ -244,7 +261,13 @@ function SailorEquipmentController:dequip(e)
 	end
 
 	if not item then
-		Log.error("no item at index %d", e.index)
+		if e.index == Equipment.PLAYER_SLOT_RIGHT_HAND then
+			item = Utility.Peep.getEquippedItem(self.target, Equipment.PLAYER_SLOT_TWO_HANDED)
+		end
+	end
+
+	if not item then
+		Log.error("No item at index %d.", e.index)
 		return false
 	end
 
