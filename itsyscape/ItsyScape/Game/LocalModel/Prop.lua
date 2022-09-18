@@ -53,7 +53,6 @@ function LocalProp:remove()
 	assert(self.id ~= Prop.NIL_ID, "Prop not spawned")
 
 	self.game:getDirector():removePeep(self.peep)
-	self.peep = nil
 
 	self.oldID = self.id
 	self.id = Prop.NIL_ID
@@ -61,6 +60,10 @@ end
 
 function LocalProp:getID()
 	return self.oldID or self.id
+end
+
+function LocalProp:getIsPoofed()
+	return self.oldID ~= nil
 end
 
 function LocalProp:getName()

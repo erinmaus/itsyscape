@@ -62,6 +62,8 @@ function RemoteGame:_onPlayerPoofed(_, player)
 	else
 		self.player = nil
 		Log.info("Player poofed!")
+
+		self:onQuit()
 	end
 end
 

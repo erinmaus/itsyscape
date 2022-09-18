@@ -1337,6 +1337,11 @@ function Utility.Peep.getPlayerModel(peep)
 		return game:getPlayerByID(follower.playerID)
 	end
 
+	local instance = peep:getBehavior(InstancedBehavior)
+	if instance and instance.playerID ~= InstancedBehavior.NIL_ID then
+		return game:getPlayerByID(instance.playerID)
+	end
+
 	local player = peep:getBehavior(PlayerBehavior)
 	if player then
 		return game:getPlayerByID(player.id)
