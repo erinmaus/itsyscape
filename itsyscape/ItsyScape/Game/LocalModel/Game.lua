@@ -186,6 +186,10 @@ function LocalGame:acknowledgePlayerDestroyed(player)
 	table.insert(self.playersPendingRemoval, player)
 end
 
+function LocalGame:getNumPlayers()
+	return #self.players
+end
+
 function LocalGame:iteratePlayers()
 	return ipairs(self.players)
 end

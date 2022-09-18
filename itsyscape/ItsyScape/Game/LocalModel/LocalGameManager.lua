@@ -117,6 +117,10 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 
 	if previousInstance then
 		previousInstance:unloadPlayer(self, player)
+	else
+		Log.info(
+			"Player '%s' (%d) is not in previous instance; cannot unload.",
+			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 	end
 
 	local currentInstance
@@ -127,6 +131,10 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 
 	if currentInstance then
 		currentInstance:loadPlayer(self, player)
+	else
+		Log.info(
+			"Player '%s' (%d) is not in new instance; cannot load.",
+			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 	end
 end
 
@@ -199,9 +207,9 @@ function LocalGameManager:sendToPlayer(player)
 			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
 				local key = self.outgoingKeys[i]
-				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
-				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance())
-				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance())
+				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value, player)
+				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance(), player)
+				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance(), player)
 
 				if isActorMatch or isPropMatch or isTargetMatch or isLayerMatch then
 					if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
@@ -240,16 +248,16 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Stage" then
 				local key = self.outgoingKeys[i]
 
-				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value)
-				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value)
-				local isPropMatch = not hasTarget and key and key.prop and key.prop.value and playerInstance:hasProp(key.prop.value)
+				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value, player)
+				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value, player)
+				local isPropMatch = not hasTarget and key and key.prop and key.prop.value and playerInstance:hasProp(key.prop.value, player)
 				local hasSourceAndDestination = not hasTarget and key and key.source and key.source.value and key.destination and key.destination.value
 				local isSourceMatch = hasSourceAndDestination and
-					((Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.source.value)) or
-					 (Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.source.value)))
+					((Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.source.value, player)) or
+					 (Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.source.value, player)))
 				local isSourceMatch = hasSourceAndDestination and
-					((Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.destination.value)) or
-					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value)))
+					((Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.destination.value, player)) or
+					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value, player)))
 
 				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch or isSourceMatch or isDestinationMatch then
 					self:_doSend(player, e)
@@ -259,7 +267,7 @@ function LocalGameManager:sendToPlayer(player)
 			then
 				if instance then
 					local layer = Utility.Peep.getLayer(instance:getInstance():getPeep())
-					if (not hasTarget and playerInstance:hasLayer(layer)) or isTargetMatch then
+					if (not hasTarget and playerInstance:hasLayer(layer, player)) or isTargetMatch then
 						self:_doSend(player, e)
 					end
 				else

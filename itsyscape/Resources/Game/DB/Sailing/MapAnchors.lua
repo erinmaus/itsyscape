@@ -166,7 +166,7 @@ do
 	ItsyScape.Meta.SailingMapLocation {
 		AnchorI = 37,
 		AnchorJ = 53,
-		RealityWarpDistanceMultiplier = 1.5,
+		RealityWarpDistanceMultiplier = 1.1,
 		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk",
 		SeaChart = CHART_MAIN,
 		Resource = ItsyScape.Resource.SailingMapAnchor "RuinsOfRhysilk"

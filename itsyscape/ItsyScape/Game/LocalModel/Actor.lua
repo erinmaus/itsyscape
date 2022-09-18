@@ -73,7 +73,6 @@ function LocalActor:depart()
 	assert(self.id ~= Actor.NIL_ID, "Actor not spawned")
 
 	self.game:getDirector():removePeep(self.peep)
-	self.peep = nil
 
 	self.oldID = self.id
 	self.id = Actor.NIL_ID
@@ -81,6 +80,10 @@ end
 
 function LocalActor:getID()
 	return self.oldID or self.id
+end
+
+function LocalActor:getIsPoofed()
+	return self.oldID ~= nil
 end
 
 function LocalActor:getName()

@@ -213,13 +213,6 @@ end
 
 itsyrealm.graphics.disabled = {}
 
-itsyrealm.graphics.disabled.clearPseudoScissor = itsyrealm.graphics.clearPseudoScissor
-
-function itsyrealm.graphics.disabled.resetPseudoScissor()
-	local w, h = love.window.getMode()
-	love.graphics.setScissor(0, 0, w, h)
-end
-
 function itsyrealm.graphics.disable()
 	for key, value in pairs(itsyrealm.graphics) do
 		local l = love.graphics[key]
@@ -288,6 +281,11 @@ function itsyrealm.graphics.resetPseudoScissor()
 end
 
 function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
+	if #graphicsState.pseudoScissor == 0 then
+		Log.error("Can't apply pseudo scissor: stack is empty.")
+		return
+	end
+
 	local pseudoScissor = graphicsState.pseudoScissor[#graphicsState.pseudoScissor]
 	local x1 = math.max(pseudoScissor[1], x)
 	local y1 = math.max(pseudoScissor[2], y)
@@ -499,6 +497,13 @@ end
 
 function itsyrealm.graphics.inverseTransformPoint(...)
 	return graphicsState.transform:inverseTransformPoint(...)
+end
+
+itsyrealm.graphics.disabled.clearPseudoScissor = itsyrealm.graphics.clearPseudoScissor
+
+function itsyrealm.graphics.disabled.resetPseudoScissor()
+	local w, h = love.window.getMode()
+	love.graphics.setScissor(0, 0, w, h)
 end
 
 itsyrealm.graphics.disabled.intersectPseudoScissor = itsyrealm.graphics.intersectPseudoScissor

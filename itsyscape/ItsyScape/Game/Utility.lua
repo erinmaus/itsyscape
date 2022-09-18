@@ -23,6 +23,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
@@ -288,18 +289,8 @@ function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
 		return nil
 	end
 
-	local layer
-	do
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			layer = position.layer
-		end
-
-		layer = layer or 1
-	end
-
 	local stage = peep:getDirector():getGameInstance():getStage(peep)
-	local success, prop = stage:placeProp("resource://" .. prop.name, layer, peep:getLayerName())
+	local success, prop = stage:placeProp("resource://" .. prop.name, Utility.Peep.getLayer(peep), peep:getLayerName())
 
 	if success then
 		local propPeep = prop:getPeep()
@@ -341,7 +332,7 @@ function Utility.spawnPropAtAnchor(peep, prop, anchor, radius)
 	end
 end
 
-function Utility.spawnMapAtAnchor(peep, resource, anchor)
+function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 	local resourceName
 	if type(resource) == 'string' then
 	resourceName = resource
@@ -356,7 +347,7 @@ function Utility.spawnMapAtAnchor(peep, resource, anchor)
 		anchor)
 
 	if x and y and z then
-		local _, ship = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z))
+		local _, ship = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
 
 		ship:listen('finalize', function()
 			Utility.orientateToAnchor(ship, map, anchor)
@@ -1346,6 +1337,11 @@ function Utility.Peep.getPlayerModel(peep)
 		return game:getPlayerByID(follower.playerID)
 	end
 
+	local instance = peep:getBehavior(InstancedBehavior)
+	if instance and instance.playerID ~= InstancedBehavior.NIL_ID then
+		return game:getPlayerByID(instance.playerID)
+	end
+
 	local player = peep:getBehavior(PlayerBehavior)
 	if player then
 		return game:getPlayerByID(player.id)
@@ -1365,6 +1361,15 @@ end
 function Utility.Peep.getPlayer(peep)
 	local actor = Utility.Peep.getPlayerActor(peep)
 	return actor and actor:getPeep()
+end
+
+function Utility.Peep.isInstancedToPlayer(peep, player)
+	local instance = peep:getBehavior(InstancedBehavior)
+	if instance and instance.playerID == player:getID() then
+		return true
+	end
+
+	return false
 end
 
 function Utility.Peep.dismiss(peep)

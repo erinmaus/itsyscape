@@ -22,6 +22,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
@@ -208,6 +209,10 @@ function LocalStage:getInstanceByLayer(layer)
 end
 
 function LocalStage:getPeepInstance(peep)
+	if not peep then
+		return nil
+	end
+
 	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
 	return self:getInstanceByFilenameAndID(filename, id)
 end
@@ -625,33 +630,17 @@ function LocalStage:drain(key, layer)
 end
 
 function LocalStage:unloadAll(instance)
-	-- TODO
-	-- do
-	-- 	self.game:getDirector():getItemBroker():toStorage()
-	-- end
-
 	for _, layer in instance:iterateLayers() do
 		self:unloadMap(layer)
+		self:deleteLayer(layer)
 	end
-
-	-- for key in pairs(self.water) do
-	-- 	self.onWaterDrain(self, key)
-	-- end
-
-	-- for group, decoration in pairs(self.decorations) do
-	-- 	self:decorate(group, nil)
-	-- end
-
-	-- for weather in pairs(self.weathers) do
-	-- 	self:forecast(nil, weather, nil)
-	-- end
 
 	do
 		local p = {}
 
 		for prop in self:iterateProps() do
 			local layer = Utility.Peep.getLayer(prop:getPeep())
-			if instance:hasLayer(layer) then
+			if instance:hasLayer(layer, true) then
 				table.insert(p, prop)
 			end
 		end
@@ -666,7 +655,7 @@ function LocalStage:unloadAll(instance)
 
 		for actor in self:iterateActors() do
 			local layer = Utility.Peep.getLayer(actor:getPeep())
-			if instance:hasLayer(layer) and not actor:getPeep():getBehavior(PlayerBehavior) then
+			if instance:hasLayer(layer, true) and not actor:getPeep():getBehavior(PlayerBehavior) then
 				table.insert(p, actor)
 			end
 		end
@@ -957,7 +946,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 
 			local globalLayer = self:newLayer(instance)
 			baseLayer = baseLayer or globalLayer
-			instance:addLayer(globalLayer)
+			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
 			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID)
 		end
@@ -1010,7 +999,12 @@ function LocalStage:loadMapResource(instance, filename, args)
 			do
 				local _, m = peep:addBehavior(MapResourceReferenceBehavior)
 				m.map = resource
-			end 
+			end
+
+			if args.isInstancedToPlayer and args.player then
+				local _, instancedBehavior = peep:addBehavior(InstancedBehavior)
+				instancedBehavior.playerID = args.player:getID()
+			end
 
 			mapScript = peep
 		end
