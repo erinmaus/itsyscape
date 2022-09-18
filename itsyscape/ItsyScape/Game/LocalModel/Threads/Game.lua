@@ -228,12 +228,28 @@ while isRunning do
 					player:poof()
 				end
 			elseif e.type == 'play' then
-				if game:getNumPlayers() > 0 then
-					Log.warn("Game has %d players when playing offline!", game:getNumPlayers())
-				end
+				if e.playerID then
+					Log.info(
+						"Got player ID (%d), poofing all other players.",
+						e.playerID)
 
-				local newPlayer = game:spawnPlayer(0)
-				Log.info("Switching to single player; spawned new player %d.", newPlayer:getID())
+					local count = 0
+					for _, player in game:iteratePlayers() do
+						if player:getID() ~= e.playerID then
+							player:poof()
+							count = count + 1
+						end
+					end
+
+					Log.info("Poofed %d player(s).", count)
+				else
+					if game:getNumPlayers() > 0 then
+						Log.warn("Game has %d players when playing offline!", game:getNumPlayers())
+					end
+
+					local newPlayer = game:spawnPlayer(0)
+					Log.info("Switching to single player; spawned new player %d.", newPlayer:getID())
+				end
 			elseif e.type == 'host' then
 				Log.info("Hosting server, swapping RPC service.")
 

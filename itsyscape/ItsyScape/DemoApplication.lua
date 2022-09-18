@@ -36,7 +36,7 @@ DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
-	--"TitleScreen_EmptyRuins",
+	"TitleScreen_EmptyRuins",
 	"TitleScreen_RuinsOfRhysilk",
 }
 
@@ -63,14 +63,15 @@ function DemoApplication:new()
 
 		self:getGameView():reset()
 		self:tryOpenTitleScreen()
-	end)
 
-	self:getGame().onPlayerSpawned:register(function()
-		self:getGameView():reset()
+		self:play(player)
 	end)
 
 	self:getGame().onPlayerPoofed:register(function(_, player)
-		self:quitPlayer(player)
+		local currentPlayer = self:getGame():getPlayer()
+		if currentPlayer and currentPlayer:getID() == player:getID() then
+			self:quitPlayer(player)
+		end
 	end)
 
 	self:disconnect()
@@ -127,8 +128,6 @@ end
 
 function DemoApplication:tickMultiThread()
 	Application.tickMultiThread(self)
-
-	print("cur id", self:getGame():getPlayer() and self:getGame():getPlayer():getID())
 end
 
 function DemoApplication:closeTitleScreen()

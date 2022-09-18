@@ -357,6 +357,23 @@ function Application:host(port, password)
 	self.playMode = Application.PLAY_MODE_MULTIPLAYER_HOST
 end
 
+function Application:play(player)
+	if not player then
+		Log.info("No player; cannot assign player as primary.")
+		return
+	end
+
+	if self:getPlayMode() == Application.PLAY_MODE_SINGLE_PLAYER then
+		Log.info("Playing as player %d; assigning as primary", player:getID())
+		self.adminChannel:push({
+			type = 'play',
+			playerID = player:getID()
+		})
+	else
+		Log.warn("Is a multiplayer session, cannot make player %d primary.", player:getID())
+	end
+end
+
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
