@@ -55,6 +55,8 @@ function DemoApplication:new()
 	self.cameraController = DefaultCameraController(self)
 
 	self:getGame().onReady:register(function(_, player)
+		Log.info("Ready to play with player ID %d!", player:getID())
+
 		player.onChangeCamera:register(self.changeCamera, self)
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
@@ -102,7 +104,7 @@ end
 function DemoApplication:quitPlayer()
 	Log.info("Player quit their session.")
 
-	self:play()
+	self:disconnect()
 end
 
 function DemoApplication:initialize()

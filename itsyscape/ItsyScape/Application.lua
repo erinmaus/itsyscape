@@ -69,6 +69,10 @@ Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
 Application.MAX_TICKS = 100
 
+Application.PLAY_MODE_SINGLE_PLAYER      = 0
+Application.PLAY_MODE_MULTIPLAYER_HOST   = 1
+Application.PLAY_MODE_MULTIPLAYER_CLIENT = 2
+
 function Application:new(multiThreaded)
 	self.previousTickTime = love.timer.getTime()
 	self.startDrawTime = false
@@ -142,6 +146,8 @@ function Application:new(multiThreaded)
 	end
 
 	self.paused = false
+
+	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 end
 
 function Application:measure(name, func, ...)
@@ -334,6 +340,10 @@ end
 function Application:host(port, password)
 	Log.info("Hosting on port %d.", port)
 
+	if self:getPlayMode() == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
+		self:disconnect()
+	end
+
 	self.adminChannel:push({
 		type = 'host',
 		address = "*",
@@ -341,35 +351,33 @@ function Application:host(port, password)
 		password = password
 	})
 
-	self.isConnected = true
-
 	self:setPassword(password)
 	self:swapRPCService(ClientRPCService, "localhost", tostring(port))
+
+	self.playMode = Application.PLAY_MODE_MULTIPLAYER_HOST
 end
 
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
-	self.adminChannel:push({
-		type = 'disconnect'
-	})
-
-	self.isConnected = false
-
 	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
-end
 
-function Application:play()
-	Log.info("Starting to play.")
-
-	if self:getIsConnected() then
-		Log.warn("Connected to multiplayer, not a good idea.")
-		self:disconnect()
+	local playMode = self:getPlayMode()
+	if playMode == Application.PLAY_MODE_MULTIPLAYER_HOST then
+		self.adminChannel:push({
+			type = 'disconnect'
+		})
+	elseif playMode == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
+		self.adminChannel:push({
+			type = 'offline'
+		})
+	elseif playMode == Application.PLAY_MODE_SINGLE_PLAYER then
+		self.adminChannel:push({
+			type = 'play'
+		})
 	end
 
-	self.adminChannel:push({
-		type = 'play'
-	})
+	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 end
 
 function Application:setAdmin(clientID)
@@ -396,11 +404,11 @@ function Application:connect(address, port, password)
 	self.tickTripTime = 0
 	self.tickTripTotal = 0
 
-	self.isConnected = true
+	self.playMode = Application.PLAY_MODE_MULTIPLAYER_CLIENT
 end
 
-function Application:getIsConnected()
-	return self.isConnected
+function Application:getPlayMode()
+	return self.playMode
 end
 
 function Application:setPassword(password)
