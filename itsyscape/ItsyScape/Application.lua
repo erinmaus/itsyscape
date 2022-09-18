@@ -350,15 +350,25 @@ end
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
+	self.adminChannel:push({
+		type = 'disconnect'
+	})
+
+	self.isConnected = false
+
+	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+end
+
+function Application:play()
+	Log.info("Starting to play.")
+
 	if self:getIsConnected() then
-		self.adminChannel:push({
-			type = 'disconnect'
-		})
-
-		self.isConnected = false
-
-		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+		Log.warn("Connected to multiplayer, not a good idea.")
 	end
+
+	self.adminChannel:push({
+		type = 'play'
+	})
 end
 
 function Application:setAdmin(clientID)
