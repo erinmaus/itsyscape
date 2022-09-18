@@ -36,7 +36,7 @@ DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
-	"TitleScreen_EmptyRuins",
+	--"TitleScreen_EmptyRuins",
 	"TitleScreen_RuinsOfRhysilk",
 }
 
@@ -65,9 +65,15 @@ function DemoApplication:new()
 		self:tryOpenTitleScreen()
 	end)
 
+	self:getGame().onPlayerSpawned:register(function()
+		self:getGameView():reset()
+	end)
+
 	self:getGame().onPlayerPoofed:register(function(_, player)
 		self:quitPlayer(player)
 	end)
+
+	self:disconnect()
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)
@@ -121,6 +127,8 @@ end
 
 function DemoApplication:tickMultiThread()
 	Application.tickMultiThread(self)
+
+	print("cur id", self:getGame():getPlayer() and self:getGame():getPlayer():getID())
 end
 
 function DemoApplication:closeTitleScreen()

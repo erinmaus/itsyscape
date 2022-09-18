@@ -208,6 +208,10 @@ function LocalStage:getInstanceByLayer(layer)
 end
 
 function LocalStage:getPeepInstance(peep)
+	if not peep then
+		return nil
+	end
+
 	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
 	return self:getInstanceByFilenameAndID(filename, id)
 end
