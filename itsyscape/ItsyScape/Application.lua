@@ -360,18 +360,23 @@ end
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
-	self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
-
 	local playMode = self:getPlayMode()
 	if playMode == Application.PLAY_MODE_MULTIPLAYER_HOST then
+		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+
+		Log.info("Switching from multiplayer (host).")
 		self.adminChannel:push({
 			type = 'disconnect'
 		})
 	elseif playMode == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
+		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
+
+		Log.info("Switching from multiplayer (client).")
 		self.adminChannel:push({
 			type = 'offline'
 		})
 	elseif playMode == Application.PLAY_MODE_SINGLE_PLAYER then
+		Log.info("Staying on single player.")
 		self.adminChannel:push({
 			type = 'play'
 		})
@@ -405,6 +410,10 @@ function Application:connect(address, port, password)
 	self.tickTripTotal = 0
 
 	self.playMode = Application.PLAY_MODE_MULTIPLAYER_CLIENT
+
+	self.adminChannel:push({
+		type = 'connect'
+	})
 end
 
 function Application:getPlayMode()

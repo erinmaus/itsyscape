@@ -64,6 +64,10 @@ function LocalProp:getID()
 end
 
 function LocalProp:getName()
+	if not self.peep then
+		return "<poofed>"
+	end
+
 	return self.peep:getName()
 end
 

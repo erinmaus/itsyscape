@@ -33,7 +33,6 @@ local gameManager = LocalGameManager(channelRpcService, game)
 local isRunning = true
 
 game.onQuit:register(function() isRunning = false end)
-game:spawnPlayer(0)
 
 local function getPeriodInMS(a, b)
 	return math.floor(((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000)
@@ -222,12 +221,19 @@ while isRunning do
 				isRunning = false
 			elseif e.type == 'admin' then
 				adminClientID = e.admin
+			elseif e.type == 'connect' then
+				Log.info("Clearing players because we are connecting to an external host...")
+
+				for _, player in game:iteratePlayers() do
+					player:poof()
+				end
 			elseif e.type == 'play' then
 				if game:getNumPlayers() > 0 then
 					Log.warn("Game has %d players when playing offline!", game:getNumPlayers())
 				end
 
-				game:spawnPlayer(0)
+				local newPlayer = game:spawnPlayer(0)
+				Log.info("Switching to single player; spawned new player %d.", newPlayer:getID())
 			elseif e.type == 'host' then
 				Log.info("Hosting server, swapping RPC service.")
 

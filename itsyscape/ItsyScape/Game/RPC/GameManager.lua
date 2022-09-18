@@ -365,7 +365,7 @@ end
 function GameManager:processProperty(e)
 	local instance = self:getInstance(e.interface, e.id)
 	if not instance then
-		Log.warnOnce("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
+		Log.engine("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
 	else
 		instance:setProperty(e.property, e.value)
 	end

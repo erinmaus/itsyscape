@@ -117,6 +117,10 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 
 	if previousInstance then
 		previousInstance:unloadPlayer(self, player)
+	else
+		Log.info(
+			"Player '%s' (%d) is not in previous instance; cannot unload.",
+			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 	end
 
 	local currentInstance
@@ -127,6 +131,10 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 
 	if currentInstance then
 		currentInstance:loadPlayer(self, player)
+	else
+		Log.info(
+			"Player '%s' (%d) is not in new instance; cannot load.",
+			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
 	end
 end
 
