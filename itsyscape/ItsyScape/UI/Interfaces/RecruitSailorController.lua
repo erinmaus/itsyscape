@@ -270,7 +270,7 @@ function RecruitSailorController:recruit(e)
 				})
 
 				local mapScript = Utility.Peep.getMapScript(self:getPeep())
-				mapScript:poke('recruit', id)
+				mapScript:poke('recruit', id, Utility.Peep.getPlayerModel(self:getPeep()))
 			end
 
 			self.crewStorage:set({ Recruitables = self.state.recruitables })
