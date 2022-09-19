@@ -428,19 +428,12 @@ function One:update(...)
 		self:poke('resurrect', {})
 	end
 
-	if _DEBUG and love.keyboard.isDown('f9') and not _TRAVELED then
+	if _DEBUG and love.keyboard.isDown('f9') then
 		local i, j, k = Utility.Peep.getTile(self)
 		Log.info("Peep: tile = (%d, %d; %d)", i, j, k)
 
 		local position = Utility.Peep.getAbsolutePosition(self)
 		Log.info("Peep: position = (%0.2f, %0.2f; %0.2f)", position.x, position.y, position.z)
-
-		local Antilogika = require "ItsyScape.Game.Skills.Antilogika"
-		local db = Antilogika.DimensionBuilder(Antilogika.Seed(), 4)
-		local im = Antilogika.InstanceManager(self:getDirector():getGameInstance(), db)
-		local i = im:instantiate(5, 5)
-		self:getDirector():getGameInstance():getStage():movePeep(self, i, Vector(1, 10, 1))
-		_TRAVELED = true
 	end
 end
 
