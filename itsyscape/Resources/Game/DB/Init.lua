@@ -1039,6 +1039,7 @@ do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
 	ActionType "Debug_Save"
+	ActionType "Debug_AntilogikaTeleport"
 
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
@@ -1050,6 +1051,7 @@ do
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
 	local saveAction = ItsyScape.Action.Debug_Save()
+	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Ascend",
@@ -1066,6 +1068,13 @@ do
 	}
 
 	ItsyScape.Meta.ActionVerb {
+		Value = "Teleport-Antilogika",
+		Language = "en-US",
+		XProgressive = "Teleporting-through-random-dimensions",
+		Action = antilogikaTeleportAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
 		Value = "Save",
 		XProgressive = "Saving-the-world",
 		Language = "en-US",
@@ -1077,6 +1086,7 @@ do
 		ItsyScape.Action.Dequip(),
 		ascendAction,
 		teleportAction,
+		antilogikaTeleportAction,
 		saveAction
 	}
 

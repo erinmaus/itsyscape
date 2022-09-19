@@ -23,6 +23,7 @@ function Zone:new(t)
 	self.curve = love.math.newBezierCurve(unpack(t.curve or Zone.DEFAULT_CURVE))
 	self.amplitude = t.amplitude or 1
 	self.tileSetID = t.tileSetID or "Draft"
+	self.bedrockHeight = t.bedrockHeight or 4
 end
 
 function Zone:getCurve()
@@ -41,7 +42,7 @@ function Zone:sample(x, y, z, w)
 	local noise = NoiseBuilder.TERRAIN:sample4D(x or 0, y or 0, z or 0, w or 0)
 	local clampedNoise = math.min(math.max((noise + 1) / 2, 0), 1)
 
-	return math.abs(self.curve:evaluate(clampedNoise)) * self.amplitude
+	return math.abs(self.curve:evaluate(clampedNoise)) * self.amplitude + self.bedrockHeight
 end
 
 return Zone

@@ -20,19 +20,19 @@ function Seed:new(x, y, z, w, time)
 end
 
 function Seed:getX()
-	return self.x, tonumber(self.x, 26)
+	return self.x, tonumber(self.x, 36) or 0
 end
 
 function Seed:getY()
-	return self.y, tonumber(self.y, 26)
+	return self.y, tonumber(self.y, 36) or 0
 end
 
 function Seed:getZ()
-	return self.z, tonumber(self.z, 26)
+	return self.z, tonumber(self.z, 36) or 0
 end
 
 function Seed:getW()
-	return self.w, tonumber(self.w, 26)
+	return self.w, tonumber(self.w, 36) or 0
 end
 
 function Seed:getTime()

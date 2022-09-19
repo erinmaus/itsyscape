@@ -38,6 +38,7 @@ function Cell:mutateMap(map, dimensionBuilder)
 					local sample = zone:sample(x + xOffset, 0, z + zOffset)
 
 					tile[tile:getCornerName(s, t)] = sample
+					tile.edge = 2
 				end
 			end
 		end
