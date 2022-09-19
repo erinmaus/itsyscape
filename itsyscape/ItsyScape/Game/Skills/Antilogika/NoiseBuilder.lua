@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
-local NoiseBuilder = Class()
+local NoiseBuilder, Metatable = Class()
 
 function NoiseBuilder:new(t)
 	t = t or {}
@@ -20,6 +20,21 @@ function NoiseBuilder:new(t)
 	self.octaves = t.octaves or 1
 	self.amplitude = 1
 	self.lacunarity = t.lacunarity or 0
+end
+
+function Metatable:__call(t)
+	t = t or {}
+
+	local r = {
+		persistence = t.persistence or self.persistence,
+		offset = t.offset or { self.offset:get() },
+		scale = t.scale or self.scale,
+		octaves = t.octaves or self.octaves,
+		amplitude = t.amplitude or self.amplitude,
+		lacunarity = t.lacunarity or self.lacunarity
+	}
+
+	return NoiseBuilder(r)
 end
 
 function NoiseBuilder:getOffset()
