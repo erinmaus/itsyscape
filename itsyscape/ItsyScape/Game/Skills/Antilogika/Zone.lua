@@ -11,26 +11,35 @@ local Class = require "ItsyScape.Common.Class"
 local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 local Zone = Class()
+Zone.DEFAULT_CURVE = {
+	0.0, 0.0,
+	0.5, 0.5,
+	1.0, 1.0
+}
 
-function Zone:new()
-	self.curve = love.math.newBezierCurve(
-		-1.0, -1.0,
-		-1.0, 1.0,
-		-1.0, 1.0,
-		1.0, 1.0)
-	self.amplitude = 4
+function Zone:new(t)
+	t = t or {}
+
+	self.curve = love.math.newBezierCurve(unpack(t.curve or Zone.DEFAULT_CURVE))
+	self.amplitude = t.amplitude or 1
+	self.tileSetID = t.tileSetID or "Draft"
+end
+
+function Zone:getCurve()
+	return self.curve
+end
+
+function Zone:getAmplitude()
+	return self.amplitude
+end
+
+function Zone:getTileSetID()
+	return self.tileSetID
 end
 
 function Zone:sample(x, y, z, w)
 	local noise = NoiseBuilder.TERRAIN:sample4D(x or 0, y or 0, z or 0, w or 0)
-	local clampedNoise = (noise + 1) / 2
-	if clampedNoise > 1 then
-		print('c', clampedNoise)
-		c = 1
-	elseif clampedNoise < 0 then
-		print('<', clampedNoise)
-		c = 0
-	end
+	local clampedNoise = math.min(math.max((noise + 1) / 2, 0), 1)
 
 	return math.abs(self.curve:evaluate(clampedNoise)) * self.amplitude
 end
