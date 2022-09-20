@@ -24,8 +24,6 @@ end
 function AntilogikaMap:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	print(">>> layer", layer)
-
 	local a = self:getBehavior(AntilogikaInstanceBehavior)
 	a.instanceManager = args.antilogikaInstanceManager or false
 	a.cellI = args.i or a.cellI

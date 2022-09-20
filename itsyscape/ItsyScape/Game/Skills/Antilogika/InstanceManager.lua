@@ -20,7 +20,6 @@ function InstanceManager:new(game, dimensionBuilder)
 	self.dimensionBuilder = dimensionBuilder
 
 	self.instances = {}
-	self.tileSets = {}
 end
 
 function InstanceManager:getGame()
@@ -38,23 +37,15 @@ end
 function InstanceManager:buildMap(i, j, layer)
 	local cell = self:getDimensionBuilder():getCell(i, j)
 
-	local tileSets = {
-		"EmptyRuins",
-		"RumbridgeMainland",
-		"YendorianRuins",
-		"GrassyPlain",
-	}
-
-	local index = j * self:getDimensionBuilder():getWidth() + i
-	self.tileSets[index] = self.tileSets[index] or tileSets[cell.rng:random(1, #tileSets)]
-
 	local stage = self:getStage()
-	local map = stage:newMap(
-		InstanceManager.MAP_SIZE,
-		InstanceManager.MAP_SIZE,
-		self.tileSets[index],
-		layer)
+	local map = Map(InstanceManager.MAP_SIZE, InstanceManager.MAP_SIZE, 2)
 	cell:mutateMap(map, self:getDimensionBuilder())
+
+	stage:newMap(
+		InstanceManager.MAP_SIZE,
+		InstanceManager.MAP_SIZE,
+		map:getTile(1, 1).tileSetID,
+		layer)
 	stage:updateMap(layer, map)
 
 	return layer
@@ -85,9 +76,6 @@ function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position
 
 		local _, size = peep:addBehavior(SizeBehavior)
 		size.size = Vector(2.5, 2, 2.5)
-
-		print('mapScript.getLayer', mapScript:getLayer(), mapScript.layer)
-		print('instancce.getBaseLayer', instance:getBaseLayer())
 	end)
 end
 

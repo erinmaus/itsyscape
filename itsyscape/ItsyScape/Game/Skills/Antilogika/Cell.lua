@@ -24,12 +24,12 @@ end
 function Cell:mutateMap(map, dimensionBuilder)
 	local rngState = self.rng:getState()
 
+	local initialZone
+
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local x = self.i + (i - 1) / (map:getWidth())
 			local z = self.j + (j - 1) / (map:getHeight())
-
-			local zone = dimensionBuilder:getZone(x, y)
 
 			local tile = map:getTile(i, j)
 			for s = 1, 2 do
@@ -37,10 +37,22 @@ function Cell:mutateMap(map, dimensionBuilder)
 					local xOffset = (s - 1) / map:getWidth()
 					local zOffset = (t - 1) / map:getHeight()
 
-					local sample = zone:sample(x + xOffset, 0, z + zOffset)
+					local subTileX = x + xOffset
+					local subTileZ = z + zOffset
+
+					local zone = dimensionBuilder:getZone(subTileX, subTileZ)
+					local sample = zone:sample(subTileX, subTileZ)
+
+					initialZone = initialZone or zone
+					if initialZone ~= zone then
+						tile.red = 0.2
+						tile.green = 0.2
+						tile.blue = 0.2
+					end
 
 					tile[tile:getCornerName(s, t)] = sample
 					tile.edge = 2
+					tile.tileSetID = zone:getTileSetID()
 				end
 			end
 		end
