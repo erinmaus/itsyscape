@@ -22,6 +22,8 @@ function Cell:getPosition()
 end
 
 function Cell:mutateMap(map, dimensionBuilder)
+	local rngState = self.rng:getState()
+
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local x = self.i + (i - 1) / (map:getWidth())
@@ -43,6 +45,8 @@ function Cell:mutateMap(map, dimensionBuilder)
 			end
 		end
 	end
+
+	self.rng:setState(rngState)
 end
 
 return Cell

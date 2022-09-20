@@ -38,6 +38,10 @@ function Zone:getTileSetID()
 	return self.tileSetID
 end
 
+function Zone:getBedrockHeight()
+	return self.bedrockHeight
+end
+
 function Zone:sample(x, y, z, w)
 	local noise = NoiseBuilder.TERRAIN:sample4D(x or 0, y or 0, z or 0, w or 0)
 	local clampedNoise = math.min(math.max((noise + 1) / 2, 0), 1)
