@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/Skills/Antilogika/Zones.lua
+-- ItsyScape/Game/Skills/Antilogika/DimensionConfig.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,13 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-local Dimensions = {
+local DimensionConfig = {
 	{
-		name = "Realm",
+		id = "Realm",
 
 		zones = {
 			{
-				id = "Yendorian Ruins",
+				id = "Realm_YendorianRuins",
 				tileSetID = "YendorianRuins",
 				amplitude = 2,
 				bedrockHeight = 4,
@@ -26,7 +26,7 @@ local Dimensions = {
 				}
 			},
 			{
-				id = "Isabelle Island",
+				id = "Realm_IsabelleIsland",
 				tileSetID = "GrassyPlain",
 				amplitude = 3,
 				bedrockHeight = 2,
@@ -38,7 +38,7 @@ local Dimensions = {
 				}
 			},
 			{
-				id = "Rumbridge",
+				id = "Realm_Rumbridge",
 				tileSetID = "RumbridgeMainland",
 				amplitude = 1,
 				bedrockHeight = 3,
@@ -52,4 +52,4 @@ local Dimensions = {
 	}
 }
 
-return Dimensions
+return DimensionConfig
