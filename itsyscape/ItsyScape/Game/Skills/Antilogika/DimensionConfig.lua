@@ -11,6 +11,10 @@
 local DimensionConfig = {
 	{
 		id = "Realm",
+		param1 = "Temperature",
+		param2 = "Moisture",
+		defaultID = "Realm_IsabelleIsland",
+		zoneThreshold = 0.5,
 
 		zones = {
 			{

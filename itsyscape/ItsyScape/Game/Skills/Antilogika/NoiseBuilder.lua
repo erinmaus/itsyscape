@@ -92,7 +92,10 @@ function NoiseBuilder:sample4D(x, y, z, w)
 		divisor = divisor + d
 	end
 
-	return math.max(math.min((sum / divisor), 1), 0) * self.amplitude
+	local result = math.max(math.min((sum / divisor), 1), 0)
+	result = (result * 2) - 1
+
+	return result * self.amplitude
 end
 
 function NoiseBuilder:sampleTestImage(width, height, z, w)
