@@ -89,14 +89,12 @@ end
 function DebugAntilogikaWarp.Graph:drawSampledNoise(x, y, w, h)
 	local points = {}
 
-	local minHeight = self.zone:getBedrockHeight() - self.zone:getAmplitude()
-	local maxHeight = self.zone:getBedrockHeight() + self.zone:getAmplitude()
-	local heightDifference = maxHeight - minHeight
+	local heightDifference = self.zone:getAmplitude()
 
 	for i = 1, DebugAntilogikaWarp.Graph.STEPS_NOISE do
 		local delta = (i - 1) / (DebugAntilogikaWarp.Graph.STEPS_NOISE - 1)
 		local currentX = delta * w
-		local sample = (self.zone:sample(1 + delta, 0, 0, 0) + heightDifference) / (heightDifference * 2)
+		local sample = (self.zone:sample(1 + delta, 0, 0, 0) + heightDifference - self.zone:getBedrockHeight()) / (heightDifference * 2)
 		local currentY = h - (sample * h)
 
 		table.insert(points, currentX + x)
