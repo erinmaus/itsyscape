@@ -10,6 +10,7 @@
 
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local Tile = require "ItsyScape.World.Tile"
 
 -- Map mesh. Builds a mesh from a map.
@@ -32,8 +33,11 @@ MapMesh.FORMAT = {
     { "VertexNormal", 'float', 3 },
     { "VertexTexture", 'float', 2 },
     { "VertexTileBounds", 'float', 4 },
-    { "VertexColor", 'float', 4 }
+    { "VertexColor", 'float', 4 },
+    { "VertexIndex", 'float', 1 }
 }
+
+MapMesh.MULTITEXTURE_SIZE = 1024
 
 -- Creates a mesh from 'map' using the provided tile set.
 --
@@ -50,7 +54,104 @@ function MapMesh:new(map, tileSet, left, right, top, bottom)
 	top = math.max(top or 1, 1)
 	bottom = math.min(bottom or map.height, map.height)
 
+	if #tileSet > 0 then
+		self:_mapTileSet()
+		self:_prepTexture()
+		self.multiTexture = true
+	else
+		self.multiTexture = false
+	end
+
 	self:_buildMesh(left, right, top, bottom)
+
+	if self.multiTexture then
+		self:_materializeTextureArray()
+		self:_materializeDataTextures()
+	end
+end
+
+function MapMesh:_mapTileSet()
+	self.tileSetMap = {}
+
+	for tileSetID in pairs(self.tileSet) do
+		if type(tileSetID) == 'string' then
+			table.insert(self.tileSetMap, tileSetID)
+			self.tileSetMap[tileSetID] = #self.tileSetMap
+		end
+	end
+
+	self.tileSetMap[""] = 1
+end
+
+function MapMesh:_prepTexture()
+	self.textureData = {
+		{},
+		{},
+		{},
+		{}
+	}
+end
+
+function MapMesh:_materializeDataTextures()
+	self.dataTextures = {}
+
+	for i = 1, #self.textureData do
+		local textureData = self.textureData[i]
+		local height = math.max(math.ceil((#self.vertices * 2) / MapMesh.MULTITEXTURE_SIZE))
+
+		local imageData = love.image.newImageData(MapMesh.MULTITEXTURE_SIZE, height, 'rgba32f')
+
+		for j = 1, #textureData, 4 do
+			local x = ((j - 1) / 4) % MapMesh.MULTITEXTURE_SIZE
+			local y = math.floor(((j - 1) / 4) / MapMesh.MULTITEXTURE_SIZE)
+			imageData:setPixel(x, y, textureData[j], textureData[j + 1], textureData[j + 2], textureData[j + 3])
+		end
+
+		table.insert(self.dataTextures, love.graphics.newImage(imageData))
+	end
+end
+
+function MapMesh:_materializeTextureArray()
+	local result = {}
+	for i = 1, #self.tileSetMap do
+		table.insert(result, self.tileSet[self.tileSetMap[i]]:getTextureFilename())
+	end
+
+	self.tileSetArrayTexture = love.graphics.newArrayImage(result)
+end
+
+function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)
+	if self.multiTexture then
+		local defaultTileSetID = self.tileSetMap[1]
+		local tileSet = self.tileSet[tileSetID] or self.tileSet[defaultTileSetID]
+		return tileSet:getTileProperty(tileIndex, property, defaultValue)
+	else
+		return self.tileSet:getTileProperty(tileIndex, property, defaultValue)
+	end
+end
+
+function MapMesh:_getAdjacentTileProperties(i, j, index)
+	local tile = self.map:getTile(i, j)
+	local left = self:_getTileProperty(tile.tileSetID, tile[index], 'textureLeft', 0)
+	local right = self:_getTileProperty(tile.tileSetID, tile[index], 'textureRight', 1)
+	local top = self:_getTileProperty(tile.tileSetID, tile[index], 'textureTop', 0)
+	local bottom = self:_getTileProperty(tile.tileSetID, tile[index], 'textureBottom', 1)
+
+	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
+	local layer = self.tileSetMap[tile.tileSetID]
+
+	return tileBounds, self.tileSetMap[tile.tileSetID] - 1, 0.25
+end
+
+function MapMesh:_addMultiTextureVertexData(index, tile, layer, weight)
+	table.insert(self.textureData[index], tile.left)
+	table.insert(self.textureData[index], tile.right)
+	table.insert(self.textureData[index], tile.top)
+	table.insert(self.textureData[index], tile.bottom)
+	table.insert(self.textureData[index], weight)
+	table.insert(self.textureData[index], layer)
+	table.insert(self.textureData[index], 0)
+	table.insert(self.textureData[index], 0)
 end
 
 function MapMesh:getBounds()
@@ -68,6 +169,18 @@ end
 function MapMesh:draw(texture, ...)
 	self.mesh:setTexture(texture)
 	love.graphics.draw(self.mesh, ...)
+end
+
+function MapMesh:getIsMultiTexture()
+	return self.multiTexture
+end
+
+function MapMesh:getDataTextures()
+	return self.dataTextures
+end
+
+function MapMesh:getTileSetArrayTexture()
+	return self.tileSetArrayTexture
 end
 
 -- Builds a mesh within the provided bounds.
@@ -127,7 +240,8 @@ function MapMesh:_addVertex(position, normal, texture, tile, color)
 		normal.x, normal.y, normal.z,
 		texture.s, texture.t,
 		tile.left, tile.right, tile.top, tile.bottom,
-		color.r / 255, color.g / 255, color.b / 255, color.a / 255
+		color.r / 255, color.g / 255, color.b / 255, color.a / 255,
+		#self.vertices
 	}
 
 	table.insert(self.vertices, vertex)
@@ -184,14 +298,14 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 		tileIndex = tile[index]
 	end
 
-	local left = self.tileSet:getTileProperty(tileIndex, 'textureLeft', 0)
-	local right = self.tileSet:getTileProperty(tileIndex, 'textureRight', 1)
-	local top = self.tileSet:getTileProperty(tileIndex, 'textureTop', 0)
-	local bottom = self.tileSet:getTileProperty(tileIndex, 'textureBottom', 1)
+	local left = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
+	local right = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
+	local top = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
+	local bottom = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
 
-	local red = self.tileSet:getTileProperty(tileIndex, 'colorRed', 255) * tile.red
-	local green = self.tileSet:getTileProperty(tileIndex, 'colorGreen', 255) * tile.green
-	local blue = self.tileSet:getTileProperty(tileIndex, 'colorBlue', 255) * tile.blue
+	local red = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorRed', 255) * tile.red
+	local green = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorGreen', 255) * tile.green
+	local blue = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorBlue', 255) * tile.blue
 	local alpha = 255
 
 	local texture = { s = s, t = t }
@@ -199,6 +313,39 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 	local color = { r = red, g = green, b = blue, a = alpha }
 
 	self:_addVertex(worldPosition, normal, texture, tileBounds, color)
+
+	if self.multiTexture then
+		if type(index) == 'number' or index == 'edge' then
+			self:_addMultiTextureVertexData(1, tileBounds, self.tileSetMap[tile.tileSetID], 1)
+			self:_addMultiTextureVertexData(2, tileBounds, self.tileSetMap[tile.tileSetID], 0)
+			self:_addMultiTextureVertexData(3, tileBounds, self.tileSetMap[tile.tileSetID], 0)
+			self:_addMultiTextureVertexData(4, tileBounds, self.tileSetMap[tile.tileSetID], 0)
+		else
+			self:_addMultiTextureVertexData(1, tileBounds, self.tileSetMap[tile.tileSetID], 0.25)
+
+			if s == 0 then
+				self:_addMultiTextureVertexData(2, self:_getAdjacentTileProperties(i - 1, j, index))
+			else
+				self:_addMultiTextureVertexData(2, self:_getAdjacentTileProperties(i + 1, j, index))
+			end
+
+			if t == 0 then
+				self:_addMultiTextureVertexData(3, self:_getAdjacentTileProperties(i, j - 1, index))
+			else
+				self:_addMultiTextureVertexData(3, self:_getAdjacentTileProperties(i, j + 1, index))
+			end
+
+			if s == 0 and t == 0 then
+				self:_addMultiTextureVertexData(4, self:_getAdjacentTileProperties(i - 1, j - 1, index))
+			elseif s == 0 and t == 1 then
+				self:_addMultiTextureVertexData(4, self:_getAdjacentTileProperties(i + 1, j - 1, index))
+			elseif s == 1 and t == 1 then
+				self:_addMultiTextureVertexData(4, self:_getAdjacentTileProperties(i + 1, j + 1, index))
+			else
+				self:_addMultiTextureVertexData(4, self:_getAdjacentTileProperties(i - 1, j + 1, index))
+			end
+		end
+	end
 end
 
 -- Generates and returns a function to add an edge.

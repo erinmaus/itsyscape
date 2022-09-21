@@ -111,7 +111,7 @@ function GameView:attach(game)
 
 	self._onLoadMap = function(_, map, layer, tileSetID)
 		Log.info("Adding map to layer %d.", layer)
-		self:addMap(map, layer, tileSetID)
+		self:addMap(map, layer, { tileSetID })
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
@@ -301,10 +301,21 @@ function GameView:release()
 end
 
 function GameView:addMap(map, layer, tileSetID)
-	local tileSetFilename = string.format(
-		"Resources/Game/TileSets/%s/Layout.lua",
-		tileSetID or "GrassyPlain")
-	local tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
+	if type(tileSetID) == 'string' then
+		tileSetID = { tileSetID }
+	end
+
+	local tileSet, texture = {}, {}
+	for i = 1, #tileSetID do
+		local tileSetFilename = string.format(
+			"Resources/Game/TileSets/%s/Layout.lua",
+			tileSetID[i] or "GrassyPlain")
+		local a, b = TileSet.loadFromFile(tileSetFilename, true)
+
+		tileSet[i] = a
+		tileSet[tileSetID[i] or "GrassyPlain"] = a
+		texture[i] = b
+	end
 
 	if self.mapMeshes[layer] then
 		self:removeMap(layer)
@@ -313,7 +324,7 @@ function GameView:addMap(map, layer, tileSetID)
 	local m = {
 		tileSet = tileSet,
 		texture = texture,
-		tileSetID = tileSetID or "GrassyPlain",
+		tileSetID = tileSetID,
 		map = map,
 		node = SceneNode(),
 		parts = {},
@@ -353,21 +364,25 @@ function GameView:updateGroundDecorations(m)
 		return
 	end
 
-	local groundDecorationsFilename = string.format(
-		"Resources/Game/TileSets/%s/Ground.lua",
-		m.tileSetID)
-	local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
+	for i = 1, #m.tileSetID do
+		local groundDecorationsFilename = string.format(
+			"Resources/Game/TileSets/%s/Ground.lua",
+			m.tileSetID[i])
+		local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
 
-	if groundExists then
-		local chunk = love.filesystem.load(groundDecorationsFilename)
+		if groundExists then
+			local chunk = love.filesystem.load(groundDecorationsFilename)
 
-		local GroundType = chunk()
-		if GroundType then
-			local ground = GroundType()
-			ground:emitAll(m.tileSet, m.map)
+			local GroundType = chunk()
+			if GroundType then
+				local ground = GroundType()
+				ground:emitAll(m.tileSet[i], m.map)
 
-			local decoration = ground:getDecoration()
-			self:decorate("_x_GroundDecorations", decoration, m.layer)
+				local decoration = ground:getDecoration()
+
+				local group = string.format("_x_GroundDecorations_%s", m.tileSetID[i])
+				self:decorate(group, decoration, m.layer)
+			end
 		end
 	end
 end
@@ -448,7 +463,7 @@ function GameView:updateMap(map, layer)
 						x, y,
 						GameView.MAP_MESH_DIVISIONS,
 						GameView.MAP_MESH_DIVISIONS)
-					node:getMaterial():setTextures(m.texture)
+					--node:getMaterial():setTextures(m.texture)
 				end)
 			end
 		end
