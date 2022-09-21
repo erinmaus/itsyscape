@@ -7,9 +7,10 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MapMeshMask = require "ItsyScape.World.MapMeshMask"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local Tile = require "ItsyScape.World.Tile"
 
 -- Map mesh. Builds a mesh from a map.
@@ -32,17 +33,20 @@ MapMesh.FORMAT = {
     { "VertexNormal", 'float', 3 },
     { "VertexTexture", 'float', 2 },
     { "VertexTileBounds", 'float', 4 },
-    { "VertexColor", 'float', 4 }
+    { "VertexColor", 'float', 4 },
+    { "VertexTextureLayer", 'float', 2 }
 }
 
 -- Creates a mesh from 'map' using the provided tile set.
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
+	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
+	self.mask = mask
 	self.min, self.max = Vector(math.huge), Vector(-math.huge)
 
 	left = math.max(left or 1, 1)
@@ -68,6 +72,45 @@ end
 function MapMesh:draw(texture, ...)
 	self.mesh:setTexture(texture)
 	love.graphics.draw(self.mesh, ...)
+end
+
+function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)
+	local tileSet
+	if self.multiTexture then
+		tileSet = self.tileSet:getTileSetByID(tileSetID)
+	else
+		tileSet = self.tileSet
+	end
+
+	return (tileSet and tileSet:getTileProperty(tileIndex, property, defaultValue)) or defaultValue
+end
+
+function MapMesh:_getTileLayer(tileSetID)
+	if self.multiTexture then
+		return (self.tileSet:getTileSetLayerByID(tileSetID) or 1) - 1
+	else
+		return 0
+	end
+end
+
+function MapMesh:_shouldMask(currentTile, currentTileS, currentTileT, otherTile, otherTileS, otherTileT)
+	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
+		return false
+	end
+
+	local isCurrentSharp = self:_getTileProperty(currentTile.tileSetID, currentTile.flat, 'sharp', false)
+	local isOtherSharp = self:_getTileProperty(otherTile.tileSetID, otherTile.flat, 'sharp', false)
+	if isCurrentSharp or isOtherSharp then
+		return false
+	end
+
+	local currentTileY = currentTile:getCorner(currentTileS, currentTileT)
+	local otherTileY = otherTile:getCorner(otherTileS, otherTileT)
+	if currentTileY ~= otherTileY then
+		return false
+	end
+
+	return true
 end
 
 -- Builds a mesh within the provided bounds.
@@ -99,10 +142,18 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 
 			self:_addFlat(i, j, tile, 'flat')
 			for k = 1, #tile.decals do
-				self:_addFlat(i, j, tile, k)
+				--self:_addFlat(i, j, tile, k)
 			end
 		end
 	end
+
+	-- if self.mask then
+	-- 	for j = top, bottom do
+	-- 		for i = left, right do
+	-- 			local tile = self.map:getTile(i, j)
+	-- 		end
+	-- 	end
+	-- end
 
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
@@ -121,13 +172,14 @@ end
 --   is in the range of 0 .. 255 inclusive
 --
 -- color is modified as a function of height.
-function MapMesh:_addVertex(position, normal, texture, tile, color)
+function MapMesh:_addVertex(position, normal, texture, tile, color, layer, maskLayer)
 	local vertex = {
 		position.x, position.y, position.z,
 		normal.x, normal.y, normal.z,
 		texture.s, texture.t,
 		tile.left, tile.right, tile.top, tile.bottom,
-		color.r / 255, color.g / 255, color.b / 255, color.a / 255
+		color.r / 255, color.g / 255, color.b / 255, color.a / 255,
+		layer, maskLayer
 	}
 
 	table.insert(self.vertices, vertex)
@@ -146,7 +198,10 @@ end
 -- * index is the tile set index of the tile. This is either 'flat' or 'edge'.
 -- * i, j are the tile indices on the x and y axis, respectively
 -- * tile is the tile at (i, j) from the Map instance
-function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
+function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, maskType, maskTile)
+	tile = maskTile or tile
+	maskType = maskType or MapMeshMask.TYPE_UNMASKED
+
 	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.map.cellSize
 	local worldPosition = localPosition * Vector(self.map.cellSize / 2, 1, self.map.cellSize / 2) + tileCenterPosition
 
@@ -184,21 +239,23 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile)
 		tileIndex = tile[index]
 	end
 
-	local left = self.tileSet:getTileProperty(tileIndex, 'textureLeft', 0)
-	local right = self.tileSet:getTileProperty(tileIndex, 'textureRight', 1)
-	local top = self.tileSet:getTileProperty(tileIndex, 'textureTop', 0)
-	local bottom = self.tileSet:getTileProperty(tileIndex, 'textureBottom', 1)
+	local left = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
+	local right = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
+	local top = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
+	local bottom = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
 
-	local red = self.tileSet:getTileProperty(tileIndex, 'colorRed', 255) * tile.red
-	local green = self.tileSet:getTileProperty(tileIndex, 'colorGreen', 255) * tile.green
-	local blue = self.tileSet:getTileProperty(tileIndex, 'colorBlue', 255) * tile.blue
+	local red = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorRed', 255) * tile.red
+	local green = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorGreen', 255) * tile.green
+	local blue = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorBlue', 255) * tile.blue
 	local alpha = 255
 
 	local texture = { s = s, t = t }
 	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
 	local color = { r = red, g = green, b = blue, a = alpha }
+	local layer = self:_getTileLayer(tile.tileSetID)
+	local maskLayer = maskType - 1
 
-	self:_addVertex(worldPosition, normal, texture, tileBounds, color)
+	self:_addVertex(worldPosition, normal, texture, tileBounds, color, layer, maskLayer)
 end
 
 -- Generates and returns a function to add an edge.
@@ -379,7 +436,7 @@ MapMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
 MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
 -- Simply adds the flat (top).
-function MapMesh:_addFlat(i, j, tile, index)
+function MapMesh:_addFlat(i, j, tile, index, maskType, maskTile)
 	local E = self.map.cellSize / 2
 	local topLeft = Vector(-E, tile.topLeft, -E)
 	local topRight = Vector(E, tile.topRight, -E)
@@ -396,27 +453,27 @@ function MapMesh:_addFlat(i, j, tile, index)
 	if crease == Tile.CREASE_FORWARD then
 		-- Triangle 1
 		local normal1 = calculateTriangleNormal(bottomLeft, topRight,  bottomRight)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal1, -1, index, i, j, tile)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal1, -1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile, maskType, maskTile)
 
 		-- Triangle 2
 		local normal2 = calculateTriangleNormal(topLeft, topRight, bottomLeft)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal2, 1, index, i, j, tile)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal2, 1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile, maskType, maskTile)
 	else
 		-- Triangle 1
 		local normal1 = calculateTriangleNormal(topLeft, topRight, bottomRight)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, index, i, j, tile)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile)
-		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal1, -1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal1, 1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(1, tile.topRight, -1), normal1, 1, index, i, j, tile, maskType, maskTile)
 
 		-- Triangle 2
 		local normal2 = calculateTriangleNormal(topLeft, bottomRight, bottomLeft)
-		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal2, 1, index, i, j, tile)
-		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile)
-		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile)
+		self:_buildVertex(Vector(1, tile.bottomRight, 1), normal2, 1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(-1, tile.topLeft, -1), normal2, -1, index, i, j, tile, maskType, maskTile)
+		self:_buildVertex(Vector(-1, tile.bottomLeft, 1), normal2, -1, index, i, j, tile, maskType, maskTile)
 	end
 end
 

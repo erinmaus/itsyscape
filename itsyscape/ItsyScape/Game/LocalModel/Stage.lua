@@ -570,6 +570,12 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	self:unloadMap(layer)
 
 	local map = Map.loadFromFile(filename)
+	for i = 1, map:getWidth() do
+		for j = 1, map:getHeight() do
+			map:getTile(i, j).tileSetID = tileSetID
+		end
+	end
+
 	if map then
 		self.onLoadMap(self, map, layer, tileSetID)
 		self.game:getDirector():setMap(layer, map)
@@ -598,6 +604,13 @@ end
 
 function LocalStage:newMap(width, height, tileSetID, layer)
 	local map = Map(width, height, Stage.CELL_SIZE)
+
+	for i = 1, map:getWidth() do
+		for j = 1, map:getHeight() do
+			map:getTile(i, j).tileSetID = tileSetID
+		end
+	end
+
 	self.onLoadMap(self, map, layer, tileSetID)
 	self.game:getDirector():setMap(layer, map)
 

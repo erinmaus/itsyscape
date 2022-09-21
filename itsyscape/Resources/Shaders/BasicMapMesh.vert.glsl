@@ -1,8 +1,10 @@
 #line 1
 
 attribute vec4 VertexTileBounds;
+attribute vec4 VertexTextureLayer;
 
 varying vec4 frag_TileBounds;
+varying vec4 frag_TextureLayer;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -13,4 +15,5 @@ void performTransform(
 	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
 	frag_TileBounds = VertexTileBounds;
+	frag_TextureLayer = VertexTextureLayer;
 }
