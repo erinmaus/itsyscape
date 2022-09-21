@@ -129,11 +129,7 @@ function LayerTextureResource:loadFromFile(filename, resourceManager)
 end
 
 function LayerTextureResource:getIsReady()
-	if self.image then
-		return true
-	else
-		return false
-	end
+	return self:getResource() ~= nil
 end
 
 return LayerTextureResource

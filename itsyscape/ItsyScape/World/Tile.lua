@@ -50,6 +50,8 @@ function Tile:new(t)
 	self.red = t.red or 1
 	self.green = t.green or 1
 	self.blue = t.blue or 1
+
+	self.tileSetID = ""
 end
 
 function Tile:serialize()
@@ -67,6 +69,7 @@ function Tile:serialize()
 		red = self.red,
 		green = self.green,
 		blue = self.blue,
+		tileSetID = self.tileSetID
 	}
 end
 

@@ -390,6 +390,8 @@ function Map.loadFromTable(t)
 				outputTile:setData(key, value)
 			end
 
+			outputTile.tileSetID = inputTile.tileSetID or ""
+
 			index = index + 1
 		end
 	end
