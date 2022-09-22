@@ -95,6 +95,10 @@ function MapMesh:_getTileLayer(tileSetID)
 end
 
 function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI, otherJ)
+	if self.maskedTiles[otherTile] and self.maskedTiles[otherTile][currentTile] then
+		return false
+	end
+
 	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
 		return false
 	end
@@ -159,141 +163,119 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 	end
 end
 
-MapMesh.MASKS = {
-	[
-		"10" ..
-		"00"
-	] = { MapMeshMask.TYPE_HORIZONTAL_TOP, MapMeshMask.TYPE_VERTICAL_LEFT },
-	[
-		"01" ..
-		"00"
-	] = { MapMeshMask.TYPE_HORIZONTAL_TOP, MapMeshMask.TYPE_VERTICAL_RIGHT },
-	[
-		"00" ..
-		"10"
-	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM, MapMeshMask.TYPE_VERTICAL_LEFT },
-	[
-		"00" ..
-		"01"
-	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM, MapMeshMask.TYPE_VERTICAL_RIGHT },
-	[
-		"11" ..
-		"00"
-	] = { MapMeshMask.TYPE_HORIZONTAL_TOP },
-	[
-		"00" ..
-		"11"
-	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM },
-	[
-		"10" ..
-		"10"
-	] = { MapMeshMask.TYPE_VERTICAL_LEFT },
-	[
-		"01" ..
-		"01"
-	] = { MapMeshMask.TYPE_VERTICAL_RIGHT },
-	[
-		"01" ..
-		"11"
-	] = { MapMeshMask.TYPE_CORNER_TL },
-	[
-		"10" ..
-		"11"
-	] = { MapMeshMask.TYPE_CORNER_TR },
-	[
-		"11" ..
-		"01"
-	] = { MapMeshMask.TYPE_CORNER_BL },
-	[
-		"11" ..
-		"10"
-	] = { MapMeshMask.TYPE_CORNER_BR }
+MapMesh.MASK_OFFSETS_ADJACENT = {
+	{ -1,  0, MapMeshMask.TYPE_VERTICAL_LEFT     },
+	{  1,  0, MapMeshMask.TYPE_VERTICAL_RIGHT    },
+	{  0, -1, MapMeshMask.TYPE_HORIZONTAL_TOP    },
+	{  0,  1, MapMeshMask.TYPE_HORIZONTAL_BOTTOM }
 }
 
-MapMesh.MASK_OFFSETS = {
-	{ -1, -1 },
-	{  0, -1 },
-	{  1, -1 },
-	{ -1,  0 },
-	{  0,  0 },
-	{ -1,  1 },
-	{  0,  1 },
-	{  1,  1 }
+MapMesh.MASK_OFFSETS_DIAGONAL = {
+	{ -1, -1, MapMeshMask.TYPE_CORNER_TL },
+	{  1, -1, MapMeshMask.TYPE_CORNER_TR },
+	{ -1,  1, MapMeshMask.TYPE_CORNER_BL },
+	{  1,  1, MapMeshMask.TYPE_CORNER_BR }
 }
 
-function MapMesh:_buildMaskName(a, b, c, d)
-	local x = (a and "1") or "0"
-	local y = (b and "1") or "0"
-	local z = (c and "1") or "0"
-	local w = (d and "1") or "0"
+MapMesh.MASK_OFFSET_CORNER_SKIP = {
+	[MapMeshMask.TYPE_CORNER_TL] = { MapMeshMask.TYPE_VERTICAL_LEFT, MapMeshMask.TYPE_HORIZONTAL_TOP },
+	[MapMeshMask.TYPE_CORNER_TR] = { MapMeshMask.TYPE_VERTICAL_RIGHT, MapMeshMask.TYPE_HORIZONTAL_TOP },
+	[MapMeshMask.TYPE_CORNER_BL] = { MapMeshMask.TYPE_VERTICAL_LEFT, MapMeshMask.TYPE_HORIZONTAL_BOTTOM },
+	[MapMeshMask.TYPE_CORNER_BR] = { MapMeshMask.TYPE_VERTICAL_RIGHT, MapMeshMask.TYPE_HORIZONTAL_BOTTOM }
+}
 
-	return x .. y .. z .. w
-end
+function MapMesh:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
+	if offsetI ~= 0 and offsetJ ~= 0 then
+		local otherOffsetTile1 = self.map:getTile(offsetI + islandTile.i, islandTile.j)
+		local otherOffsetTile2 = self.map:getTile(islandTile.i, offsetJ + islandTile.j)
 
-function MapMesh:_maskTile(i, j, reference, referenceI, referenceJ)
-	local topLeft = self.map:getTile(i, j)
-	local topLeftMask = self:_shouldMask(topLeft, i, j, reference, referenceI, referenceJ)
+		local shouldMask1 = self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, otherOffsetTile1, offsetI + islandTile.i, islandTile.j)
+		local shouldMask2 = self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, otherOffsetTile2, islandTile.i, offsetJ + islandTile.j)
 
-	local topRight = self.map:getTile(i + 1, j)
-	local topRightMask = self:_shouldMask(topRight, i + 1, j, reference, referenceI, referenceJ)
+		if not shouldMask1 and not shouldMask2 then
+			return
+		end
 
-	local bottomLeft = self.map:getTile(i, j + 1)
-	local bottomLeftMask = self:_shouldMask(topRight, i, j + 1, reference, referenceI, referenceJ)
+		-- if islandTile.i == 22 and islandTile.j == 29 then
+		-- 	print("YES!", 'off', offsetI, offsetJ, 'ij', islandTile.i, islandTile.j)
+		-- 	print('>', 'cur', islandTile.tile.tileSetID, self.tileSet:getTileProperty(islandTile.tile.flat, "name", "<>"))
+		-- 	print(">", '1', otherOffsetTile1.tileSetID, self.tileSet:getTileProperty(otherOffsetTile1.flat, "name", "<>"), '2', otherOffsetTile2.tileSetID, self.tileSet:getTileProperty(otherOffsetTile2.flat, "name", "<>"))
+		-- 	print()
+		-- end
+	end
 
-	local bottomRight = self.map:getTile(i + 1, j + 1)
-	local bottomRightMask = self:_shouldMask(topRight, i + 1, j + 1, reference, referenceI, referenceJ)
+	offsetI = offsetI + islandTile.i
+	offsetJ = offsetJ + islandTile.j
 
-	local maskName = self:_buildMaskName(topLeftMask, topRightMask, bottomLeftMask, bottomRightMask)
-	return MapMesh.MASKS[maskName],
-		(topLeftMask and topLeft) or
-		(topRightMask and topRight) or
-		(bottomLeftMask and bottomLeft) or
-		(bottomRightMask and bottomRight)
+	local offsetTile = self.map:getTile(offsetI, offsetJ)
+	local maskedTiles = self.maskedTiles[islandTile.tile] or {}
+	wasOffsetTileMasked = maskedTiles[offsetTile]
+
+	local shouldMask = not wasOffsetTileMasked and self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, offsetTile, offsetI, offsetJ)
+
+	if islandTile.i == 22 and islandTile.j == 29 then
+		print("YES!", 'off', offsetI - islandTile.i, offsetJ - islandTile.j, 'ij', islandTile.i, islandTile.j)
+		print('>', 'cur', islandTile.tile.tileSetID, self.tileSet:getTileProperty(islandTile.tile.flat, "name", "<>"))
+		print('>', 'offset', offsetTile.tileSetID, self.tileSet:getTileProperty(offsetTile.flat, "name", "<>"))
+		print(">", "mask", mask)
+		for k, v in pairs(masks) do
+			print("", k, v)
+		end
+		print("wasOffsetTileMasked", wasOffsetTileMasked, "shouldMask", shouldMask)
+		print()
+	end
+
+	if shouldMask then
+		masks[mask] = true
+		self:_addFlat(islandTile.i, islandTile.j, islandTile.tile, 'flat', mask, offsetTile)
+	end
+
+	maskedTiles[offsetTile] = true
+	self.maskedTiles[islandTile.tile] = maskedTiles
 end
 
 function MapMesh:_maskIsland(left, right, top, bottom, island)
 	local islandTiles = self.islandProcessor:getTilesInIsland(island)
 
-	local masks = {}
+	local children = self.islandProcessor:getChildrenIslands(island)
+	for i = 1, #children do
+		self:_maskIsland(left, right, top, bottom, children[i])
+	end
+
+	self.masks = {}
 	for i = 1, #islandTiles do
 		local islandTile = islandTiles[i]
+		local masks = self.masks[islandTile.index] or {}
 
 		if islandTile.i >= left and islandTile.i <= right and
 		   islandTile.j >= top and islandTile.j <= bottom
 		then
-			for j = 1, #MapMesh.MASK_OFFSETS do
-				local offsetI, offsetJ = unpack(MapMesh.MASK_OFFSETS[j])
+			for j = 1, #MapMesh.MASK_OFFSETS_ADJACENT do
+				local offsetI, offsetJ, mask = unpack(MapMesh.MASK_OFFSETS_ADJACENT[j])
+				self:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
+			end
 
-				offsetI = offsetI + islandTile.i
-				offsetJ = offsetJ + islandTile.j
-
-				local result, resultTile = self:_maskTile(offsetI, offsetJ, islandTile.tile, islandTile.i, islandTile.j)
-				if result then
-					for k = 1, #result do
-						if not masks[result[k]] then
-							self:_addFlat(islandTile.i, islandTile.j, islandTile.tile, 'flat', result[k], resultTile)
-							masks[result[k]] = true
-						end
-					end
+			for j = 1, #MapMesh.MASK_OFFSETS_DIAGONAL do
+				local offsetI, offsetJ, mask = unpack(MapMesh.MASK_OFFSETS_DIAGONAL[j])
+				local skip1, skip2 = unpack(MapMesh.MASK_OFFSET_CORNER_SKIP[mask])
+				if islandTile.i == 22 and islandTile.j == 29 then print('skip1', masks[skip1], 'skip2', masks[skip2]) end
+				if not masks[skip1] and not masks[skip2] then
+					self:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
 				end
 			end
 		end
 
-		table.clear(masks)
+		self.masks[islandTile.index] = masks
 	end
 end
 
 function MapMesh:_mask(left, right, top, bottom)
-	local islands = {}
+	local rootIsland = self.islandProcessor:getRootIsland()
+	local rootIslandChildren = self.islandProcessor:getChildrenIslands(rootIsland)
 
-	for j = top, bottom do
-		for i = left, right do
-			local island = self.islandProcessor:getIslandForTile(i, j)
-			if not islands[island] then
-				islands[island] = true
-				self:_maskIsland(left, right, top, bottom, island)
-			end
-		end
+	self.maskedTiles = {}
+	for i = 1, #rootIslandChildren do
+		self:_maskIsland(left, right, top, bottom, rootIslandChildren[i])
 	end
 end
 
