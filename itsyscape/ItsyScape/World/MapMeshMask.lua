@@ -16,6 +16,8 @@ MapMeshMask.DEFAULT_SIZE = 128
 
 MapMeshMask.MASK_FILENAME = "Resources/Game/TileSets/Common/Mask_Default.png"
 
+MapMeshMask.TYPE_NONE              = 0
+
 -- A horizontal slice positioned on the top of the tile
 MapMeshMask.TYPE_HORIZONTAL_TOP    = 1
 

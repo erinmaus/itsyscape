@@ -31,12 +31,12 @@ function MapMeshSceneNode:new()
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 end
 
-function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask)
+function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
 	end
 
-	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask)
+	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor)
 	self.isOwner = true
 
 	self:setBounds(self.mapMesh:getBounds())

@@ -41,12 +41,13 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
 	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
 	self.mask = mask
+	self.islandProcessor = islandProcessor
 	self.min, self.max = Vector(math.huge), Vector(-math.huge)
 
 	left = math.max(left or 1, 1)
@@ -93,22 +94,22 @@ function MapMesh:_getTileLayer(tileSetID)
 	end
 end
 
-function MapMesh:_shouldMask(currentTile, currentTileS, currentTileT, otherTile, otherTileS, otherTileT)
+function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI, otherJ)
 	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
 		return false
 	end
 
-	local isCurrentSharp = self:_getTileProperty(currentTile.tileSetID, currentTile.flat, 'sharp', false)
-	local isOtherSharp = self:_getTileProperty(otherTile.tileSetID, otherTile.flat, 'sharp', false)
-	if isCurrentSharp or isOtherSharp then
-		return false
-	end
+	-- local isCurrentSharp = self:_getTileProperty(currentTile.tileSetID, currentTile.flat, 'sharp', false)
+	-- local isOtherSharp = self:_getTileProperty(otherTile.tileSetID, otherTile.flat, 'sharp', false)
+	-- if isCurrentSharp or isOtherSharp then
+	-- 	return false
+	-- end
 
-	local currentTileY = currentTile:getCorner(currentTileS, currentTileT)
-	local otherTileY = otherTile:getCorner(otherTileS, otherTileT)
-	if currentTileY ~= otherTileY then
-		return false
-	end
+	-- local currentTileY = currentTile:getCorner(currentTileS, currentTileT)
+	-- local otherTileY = otherTile:getCorner(otherTileS, otherTileT)
+	-- if currentTileY ~= otherTileY then
+	-- 	return false
+	-- end
 
 	return true
 end
@@ -147,18 +148,152 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 		end
 	end
 
-	-- if self.mask then
-	-- 	for j = top, bottom do
-	-- 		for i = left, right do
-	-- 			local tile = self.map:getTile(i, j)
-	-- 		end
-	-- 	end
-	-- end
+	if self.mask and self.islandProcessor then
+		self:_mask(left, right, top, bottom)
+	end
 
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
 	for i = 1, #MapMesh.FORMAT do
 		self.mesh:setAttributeEnabled(MapMesh.FORMAT[i][1], true)
+	end
+end
+
+MapMesh.MASKS = {
+	[
+		"10" ..
+		"00"
+	] = { MapMeshMask.TYPE_HORIZONTAL_TOP, MapMeshMask.TYPE_VERTICAL_LEFT },
+	[
+		"01" ..
+		"00"
+	] = { MapMeshMask.TYPE_HORIZONTAL_TOP, MapMeshMask.TYPE_VERTICAL_RIGHT },
+	[
+		"00" ..
+		"10"
+	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM, MapMeshMask.TYPE_VERTICAL_LEFT },
+	[
+		"00" ..
+		"01"
+	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM, MapMeshMask.TYPE_VERTICAL_RIGHT },
+	[
+		"11" ..
+		"00"
+	] = { MapMeshMask.TYPE_HORIZONTAL_TOP },
+	[
+		"00" ..
+		"11"
+	] = { MapMeshMask.TYPE_HORIZONTAL_BOTTOM },
+	[
+		"10" ..
+		"10"
+	] = { MapMeshMask.TYPE_VERTICAL_LEFT },
+	[
+		"01" ..
+		"01"
+	] = { MapMeshMask.TYPE_VERTICAL_RIGHT },
+	[
+		"01" ..
+		"11"
+	] = { MapMeshMask.TYPE_CORNER_TL },
+	[
+		"10" ..
+		"11"
+	] = { MapMeshMask.TYPE_CORNER_TR },
+	[
+		"11" ..
+		"01"
+	] = { MapMeshMask.TYPE_CORNER_BL },
+	[
+		"11" ..
+		"10"
+	] = { MapMeshMask.TYPE_CORNER_BR }
+}
+
+MapMesh.MASK_OFFSETS = {
+	{ -1, -1 },
+	{  0, -1 },
+	{  1, -1 },
+	{ -1,  0 },
+	{  0,  0 },
+	{ -1,  1 },
+	{  0,  1 },
+	{  1,  1 }
+}
+
+function MapMesh:_buildMaskName(a, b, c, d)
+	local x = (a and "1") or "0"
+	local y = (b and "1") or "0"
+	local z = (c and "1") or "0"
+	local w = (d and "1") or "0"
+
+	return x .. y .. z .. w
+end
+
+function MapMesh:_maskTile(i, j, reference, referenceI, referenceJ)
+	local topLeft = self.map:getTile(i, j)
+	local topLeftMask = self:_shouldMask(topLeft, i, j, reference, referenceI, referenceJ)
+
+	local topRight = self.map:getTile(i + 1, j)
+	local topRightMask = self:_shouldMask(topRight, i + 1, j, reference, referenceI, referenceJ)
+
+	local bottomLeft = self.map:getTile(i, j + 1)
+	local bottomLeftMask = self:_shouldMask(topRight, i, j + 1, reference, referenceI, referenceJ)
+
+	local bottomRight = self.map:getTile(i + 1, j + 1)
+	local bottomRightMask = self:_shouldMask(topRight, i + 1, j + 1, reference, referenceI, referenceJ)
+
+	local maskName = self:_buildMaskName(topLeftMask, topRightMask, bottomLeftMask, bottomRightMask)
+	return MapMesh.MASKS[maskName],
+		(topLeftMask and topLeft) or
+		(topRightMask and topRight) or
+		(bottomLeftMask and bottomLeft) or
+		(bottomRightMask and bottomRight)
+end
+
+function MapMesh:_maskIsland(left, right, top, bottom, island)
+	local islandTiles = self.islandProcessor:getTilesInIsland(island)
+
+	local masks = {}
+	for i = 1, #islandTiles do
+		local islandTile = islandTiles[i]
+
+		if islandTile.i >= left and islandTile.i <= right and
+		   islandTile.j >= top and islandTile.j <= bottom
+		then
+			for j = 1, #MapMesh.MASK_OFFSETS do
+				local offsetI, offsetJ = unpack(MapMesh.MASK_OFFSETS[j])
+
+				offsetI = offsetI + islandTile.i
+				offsetJ = offsetJ + islandTile.j
+
+				local result, resultTile = self:_maskTile(offsetI, offsetJ, islandTile.tile, islandTile.i, islandTile.j)
+				if result then
+					for k = 1, #result do
+						if not masks[result[k]] then
+							self:_addFlat(islandTile.i, islandTile.j, islandTile.tile, 'flat', result[k], resultTile)
+							masks[result[k]] = true
+						end
+					end
+				end
+			end
+		end
+
+		table.clear(masks)
+	end
+end
+
+function MapMesh:_mask(left, right, top, bottom)
+	local islands = {}
+
+	for j = top, bottom do
+		for i = left, right do
+			local island = self.islandProcessor:getIslandForTile(i, j)
+			if not islands[island] then
+				islands[island] = true
+				self:_maskIsland(left, right, top, bottom, island)
+			end
+		end
 	end
 end
 
