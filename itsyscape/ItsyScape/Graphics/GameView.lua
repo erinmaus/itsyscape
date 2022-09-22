@@ -25,6 +25,7 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local Map = require "ItsyScape.World.Map"
+local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
 local TileSet = require "ItsyScape.World.TileSet"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
@@ -146,7 +147,7 @@ function GameView:attach(game)
 
 	self._onPropPlaced = function(_, propID, prop)
 		Log.info("Placing prop '%s' (%s).", propID, prop and prop:getPeepID())
-		self:addProp(propID, prop)
+		--self:addProp(propID, prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -173,7 +174,7 @@ function GameView:attach(game)
 
 	self._onDecorate = function(_, group, decoration, layer)
 		Log.info("Decorating '%s' on layer %d.", group, layer)
-		self:decorate(group, decoration, layer)
+		--self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
@@ -349,7 +350,8 @@ function GameView:addMap(map, layer, tileSetID, maskID)
 		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
 		maskID = maskID,
-		mapMeshMask = mapMeshMask
+		mapMeshMask = mapMeshMask,
+		islandProcessor = mapMeshMask and MapMeshIslandProcessor(map, tileSet)
 	}
 
 	m.weatherMap:addMap(m.map)
@@ -450,6 +452,9 @@ function GameView:updateMap(map, layer)
 
 		if map then
 			m.map = map
+			if m.islandProcessor then
+				m.islandProcessor = MapMeshIslandProcessor(map, m.tileSet)
+			end
 		end
 
 		for i = 1, #m.parts do
@@ -491,7 +496,8 @@ function GameView:updateMap(map, layer)
 						x, y,
 						GameView.MAP_MESH_DIVISIONS,
 						GameView.MAP_MESH_DIVISIONS,
-						m.mapMeshMask ~= nil)
+						m.mapMeshMask ~= nil,
+						m.islandProcessor)
 
 					if m.mapMeshMask then
 						node:getMaterial():setTextures(m.texture, m.mapMeshMask:getTexture())
