@@ -149,7 +149,7 @@ end
 
 function MapMeshIslandProcessor:getIslandForTile(i, j)
 	local index = self:_getTileIndex(i, j)
-	return self.visited[index].island
+	return self.visited[index] and self.visited[index].island
 end
 
 function MapMeshIslandProcessor:getTilesInIsland(island)
