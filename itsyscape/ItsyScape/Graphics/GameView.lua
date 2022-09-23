@@ -314,8 +314,6 @@ function GameView:addMap(map, layer, tileSetID, maskID)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
-	maskID = true
-
 	local mapMeshMask
 	if maskID then
 		local mapMeshMaskTypeName
