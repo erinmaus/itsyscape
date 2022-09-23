@@ -27,6 +27,20 @@ local DimensionConfig = {
 					0.1, 0.1,
 					0.1, 0.1,
 					0.3, 0.3
+				},
+				tiles = {
+					{
+						tile = "rock",
+						sample = -0.5
+					},
+					{
+						tile = "dirt",
+						sample = -0.75,
+					},
+					{
+						tile = "grass",
+						sample = 0.0
+					}
 				}
 			},
 			{

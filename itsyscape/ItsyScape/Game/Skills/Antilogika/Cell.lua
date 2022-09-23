@@ -47,7 +47,13 @@ function Cell:mutateMap(map, dimensionBuilder)
 			local x = self.i + (i - 1) / (map:getWidth())
 			local z = self.j + (j - 1) / (map:getHeight())
 
+			local zone = dimensionBuilder:getZone(x, z)
+
 			local tile = map:getTile(i, j)
+			local flat = zone:sampleTileFlat(x, z)
+			tile.flat = flat
+			tile.edge = 2
+
 			for s = 1, 2 do
 				for t = 1, 2 do
 					local xOffset = (s - 1) / map:getWidth()
@@ -56,11 +62,10 @@ function Cell:mutateMap(map, dimensionBuilder)
 					local subTileX = x + xOffset
 					local subTileZ = z + zOffset
 
-					local zone = dimensionBuilder:getZone(subTileX, subTileZ)
-					local sample = zone:sample(subTileX, subTileZ)
+					local subZone = dimensionBuilder:getZone(subTileX, subTileZ)
+					local sample = subZone:sample(subTileX, subTileZ)
 
 					tile[tile:getCornerName(s, t)] = sample
-					tile.edge = 2
 					tile.tileSetID = zone:getTileSetID()
 
 					tileSetIDs[zone:getTileSetID()] = true

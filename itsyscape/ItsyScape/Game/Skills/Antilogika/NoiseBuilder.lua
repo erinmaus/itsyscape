@@ -113,11 +113,19 @@ function NoiseBuilder:sampleTestImage(width, height, z, w)
 end
 
 NoiseBuilder.DEFAULT = NoiseBuilder()
+
 NoiseBuilder.TERRAIN = NoiseBuilder {
 	persistence = 3,
 	lacunarity  = -3,
 	octaves     = 2,
 	scale       = 8
+}
+
+NoiseBuilder.TILE = NoiseBuilder {
+	persistence = 2,
+	lacunarity  = -3,
+	octaves     = 2,
+	scale       = 2
 }
 
 return NoiseBuilder
