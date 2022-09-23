@@ -147,7 +147,7 @@ function GameView:attach(game)
 
 	self._onPropPlaced = function(_, propID, prop)
 		Log.info("Placing prop '%s' (%s).", propID, prop and prop:getPeepID())
-		--self:addProp(propID, prop)
+		self:addProp(propID, prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -174,7 +174,7 @@ function GameView:attach(game)
 
 	self._onDecorate = function(_, group, decoration, layer)
 		Log.info("Decorating '%s' on layer %d.", group, layer)
-		--self:decorate(group, decoration, layer)
+		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
 

@@ -95,7 +95,12 @@ function MapMesh:_getTileLayer(tileSetID)
 end
 
 function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI, otherJ)
-	if self.maskedTiles[otherTile] and self.maskedTiles[otherTile][currentTile] then
+	local currentTileIsland = self.islandProcessor:getIslandForTile(currentI, currentJ)
+	local currentTileIslandParentID = currentTileIsland and currentTileIsland.parent and currentTileIsland.parent.id
+	local otherTileIsland = self.islandProcessor:getIslandForTile(otherI, otherJ)
+	local otherTileIslandParentID = otherTileIsland and otherTileIsland.parent and otherTileIsland.parent.id
+
+	if (currentTileIslandParentID or 0) < (otherTileIslandParentID or 0) then
 		return false
 	end
 
@@ -103,17 +108,53 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 		return false
 	end
 
-	-- local isCurrentSharp = self:_getTileProperty(currentTile.tileSetID, currentTile.flat, 'sharp', false)
-	-- local isOtherSharp = self:_getTileProperty(otherTile.tileSetID, otherTile.flat, 'sharp', false)
-	-- if isCurrentSharp or isOtherSharp then
-	-- 	return false
-	-- end
+	if currentI ~= otherI and currentJ ~= otherJ then
+		if currentI < otherI and currentJ < otherJ then
+			if currentTile.bottomRight ~= otherTile.topLeft then
+				return false
+			end
+		elseif currentI < otherI and currentJ > otherJ then
+			if currentTile.topRight ~= otherTile.bottomLeft then
+				return false
+			end
+		elseif currentI > otherI and currentJ > otherJ then
+			if currentTile.topLeft ~= otherTile.bottomRight then
+				return false
+			end
+		elseif currentI > otherI and currentJ < otherJ then
+			if currentTile.topRight ~= otherTile.bottomLeft then
+				return false
+			end
+		end
+	else
+		if currentI < otherI then
+			if currentTile.topRight ~= otherTile.topLeft or
+			   currentTile.bottomRight ~= otherTile.bottomLeft
+			then
+				return false
+			end
+		else
+			if currentTile.topRight ~= otherTile.topLeft or
+			   currentTile.bottomRight ~= otherTile.bottomLeft
+			then
+				return false
+			end
+		end
 
-	-- local currentTileY = currentTile:getCorner(currentTileS, currentTileT)
-	-- local otherTileY = otherTile:getCorner(otherTileS, otherTileT)
-	-- if currentTileY ~= otherTileY then
-	-- 	return false
-	-- end
+		if currentJ < otherJ then
+			if currentTile.bottomLeft ~= otherTile.topLeft or
+			   currentTile.bottomRight ~= otherTile.topRight
+			then
+				return false
+			end
+		else
+			if currentTile.topLeft ~= otherTile.bottomLeft or
+			   currentTile.topRight ~= otherTile.bottomRight
+			then
+				return false
+			end
+		end
+	end
 
 	return true
 end
@@ -189,19 +230,12 @@ function MapMesh:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
 		local otherOffsetTile1 = self.map:getTile(offsetI + islandTile.i, islandTile.j)
 		local otherOffsetTile2 = self.map:getTile(islandTile.i, offsetJ + islandTile.j)
 
-		local shouldMask1 = self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, otherOffsetTile1, offsetI + islandTile.i, islandTile.j)
-		local shouldMask2 = self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, otherOffsetTile2, islandTile.i, offsetJ + islandTile.j)
+		local shouldMask1 = otherOffsetTile1.tileSetID == islandTile.tile.tileSetID and otherOffsetTile1.flat == islandTile.tile.flat
+		local shouldMask2 = otherOffsetTile2.tileSetID == islandTile.tile.tileSetID and otherOffsetTile2.flat == islandTile.tile.flat
 
-		if not shouldMask1 and not shouldMask2 then
+		if not (shouldMask1 and shouldMask2) then
 			return
 		end
-
-		-- if islandTile.i == 22 and islandTile.j == 29 then
-		-- 	print("YES!", 'off', offsetI, offsetJ, 'ij', islandTile.i, islandTile.j)
-		-- 	print('>', 'cur', islandTile.tile.tileSetID, self.tileSet:getTileProperty(islandTile.tile.flat, "name", "<>"))
-		-- 	print(">", '1', otherOffsetTile1.tileSetID, self.tileSet:getTileProperty(otherOffsetTile1.flat, "name", "<>"), '2', otherOffsetTile2.tileSetID, self.tileSet:getTileProperty(otherOffsetTile2.flat, "name", "<>"))
-		-- 	print()
-		-- end
 	end
 
 	offsetI = offsetI + islandTile.i
@@ -212,18 +246,6 @@ function MapMesh:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
 	wasOffsetTileMasked = maskedTiles[offsetTile]
 
 	local shouldMask = not wasOffsetTileMasked and self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, offsetTile, offsetI, offsetJ)
-
-	if islandTile.i == 22 and islandTile.j == 29 then
-		print("YES!", 'off', offsetI - islandTile.i, offsetJ - islandTile.j, 'ij', islandTile.i, islandTile.j)
-		print('>', 'cur', islandTile.tile.tileSetID, self.tileSet:getTileProperty(islandTile.tile.flat, "name", "<>"))
-		print('>', 'offset', offsetTile.tileSetID, self.tileSet:getTileProperty(offsetTile.flat, "name", "<>"))
-		print(">", "mask", mask)
-		for k, v in pairs(masks) do
-			print("", k, v)
-		end
-		print("wasOffsetTileMasked", wasOffsetTileMasked, "shouldMask", shouldMask)
-		print()
-	end
 
 	if shouldMask then
 		masks[mask] = true
@@ -258,7 +280,6 @@ function MapMesh:_maskIsland(left, right, top, bottom, island)
 			for j = 1, #MapMesh.MASK_OFFSETS_DIAGONAL do
 				local offsetI, offsetJ, mask = unpack(MapMesh.MASK_OFFSETS_DIAGONAL[j])
 				local skip1, skip2 = unpack(MapMesh.MASK_OFFSET_CORNER_SKIP[mask])
-				if islandTile.i == 22 and islandTile.j == 29 then print('skip1', masks[skip1], 'skip2', masks[skip2]) end
 				if not masks[skip1] and not masks[skip2] then
 					self:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
 				end
