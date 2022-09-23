@@ -64,6 +64,16 @@ local DimensionConfig = {
 					0.0, 0.0,
 					0.5, 0.5,
 					1.1, 1.1
+				},
+				tiles = {
+					{
+						tile = "cave_ground",
+						sample = -0.3
+					},
+					{
+						tile = "grass",
+						sample = -0.4
+					}
 				}
 			}
 		}
