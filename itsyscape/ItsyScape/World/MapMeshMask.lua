@@ -45,7 +45,7 @@ MapMeshMask.TYPE_CORNER_BR         = 8
 -- A fully visible tile
 MapMeshMask.TYPE_UNMASKED          = 9
 
-MapMeshMask.MAX_TYPE_COMBINATIONS  = 7
+MapMeshMask.MAX_TYPE_COMBINATIONS  = 9
 
 MapMeshMask.SEGMENT_OFFSETS = {
 	[MapMeshMask.TYPE_HORIZONTAL_TOP]    = {    0, -128, 0,  1,  1,   0,   0 },
