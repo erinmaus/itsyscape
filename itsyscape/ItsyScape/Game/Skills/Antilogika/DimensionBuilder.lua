@@ -60,7 +60,7 @@ function DimensionBuilder:_initializeCells()
 
 	for i = 1, self.width do
 		for j = 1, self.height do
-			local index = j * self.width + i
+			local index = (j - 1) * self.width + (i - 1)
 
 			local rng = love.math.newRandomGenerator(
 				(2 ^ 32 - 1) * self.rng:random(),
@@ -108,7 +108,7 @@ function DimensionBuilder:getSeed()
 end
 
 function DimensionBuilder:getCell(i, j)
-	return self.cells[j * self.width + i]
+	return self.cells[(j - 1) * self.width + (i - 1)]
 end
 
 function DimensionBuilder:getZone(x, z)

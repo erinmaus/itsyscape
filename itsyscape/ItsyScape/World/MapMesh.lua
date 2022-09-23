@@ -77,7 +77,7 @@ end
 
 function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)
 	local tileSet
-	if self.multiTexture then
+	if self.isMultiTexture then
 		tileSet = self.tileSet:getTileSetByID(tileSetID)
 	else
 		tileSet = self.tileSet
@@ -87,11 +87,16 @@ function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)
 end
 
 function MapMesh:_getTileLayer(tileSetID)
-	if self.multiTexture then
+	if self.isMultiTexture then
 		return (self.tileSet:getTileSetLayerByID(tileSetID) or 1) - 1
 	else
 		return 0
 	end
+end
+
+function MapMesh:_subTileElevationDifferent(a, b)
+	local E = 0.01
+	return math.abs(a - b) > E
 end
 
 function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI, otherJ)
@@ -101,57 +106,57 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 	local otherTileIslandParentID = otherTileIsland and otherTileIsland.parent and otherTileIsland.parent.id
 
 	if (currentTileIslandParentID or 0) < (otherTileIslandParentID or 0) then
-		return false
+		return false, "curID < othrID"
 	end
 
 	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
-		return false
+		return false, "same tileset/flat"
 	end
 
 	if currentI ~= otherI and currentJ ~= otherJ then
 		if currentI < otherI and currentJ < otherJ then
-			if currentTile.bottomRight ~= otherTile.topLeft then
-				return false
+			if self:_subTileElevationDifferent(currentTile.bottomRight, otherTile.topLeft) then
+				return false, "currentI < otherI and currentJ < otherJ"
 			end
 		elseif currentI < otherI and currentJ > otherJ then
-			if currentTile.topRight ~= otherTile.bottomLeft then
-				return false
+			if self:_subTileElevationDifferent(currentTile.topRight, otherTile.bottomLeft) then
+				return false, "currentI < otherI and currentJ > otherJ"
 			end
 		elseif currentI > otherI and currentJ > otherJ then
-			if currentTile.topLeft ~= otherTile.bottomRight then
-				return false
+			if self:_subTileElevationDifferent(currentTile.topLeft, otherTile.bottomRight) then
+				return false, "currentI > otherI and currentJ > otherJ"
 			end
 		elseif currentI > otherI and currentJ < otherJ then
-			if currentTile.topRight ~= otherTile.bottomLeft then
-				return false
+			if self:_subTileElevationDifferent(currentTile.topRight, otherTile.bottomLeft) then
+				return false, "currentI > otherI and currentJ < otherJ"
 			end
 		end
 	else
 		if currentI < otherI then
-			if currentTile.topRight ~= otherTile.topLeft or
-			   currentTile.bottomRight ~= otherTile.bottomLeft
+			if self:_subTileElevationDifferent(currentTile.topRight, otherTile.topLeft) and
+			   self:_subTileElevationDifferent(currentTile.bottomRight, otherTile.bottomLeft)
 			then
-				return false
+				return false, "currentI < otherI"
 			end
-		else
-			if currentTile.topRight ~= otherTile.topLeft or
-			   currentTile.bottomRight ~= otherTile.bottomLeft
+		elseif currentI > otherI then
+			if self:_subTileElevationDifferent(currentTile.topLeft, otherTile.topRight) and
+			   self:_subTileElevationDifferent(currentTile.bottomLeft, otherTile.bottomRight)
 			then
-				return false
+				return false, "currentI > otherI"
 			end
 		end
 
 		if currentJ < otherJ then
-			if currentTile.bottomLeft ~= otherTile.topLeft or
-			   currentTile.bottomRight ~= otherTile.topRight
+			if self:_subTileElevationDifferent(currentTile.bottomLeft, otherTile.topLeft) and
+			   self:_subTileElevationDifferent(currentTile.bottomRight, otherTile.topRight)
 			then
-				return false
+				return false, "currentJ < otherJ"
 			end
-		else
-			if currentTile.topLeft ~= otherTile.bottomLeft or
-			   currentTile.topRight ~= otherTile.bottomRight
+		elseif currentJ > otherJ then
+			if self:_subTileElevationDifferent(currentTile.topLeft, otherTile.bottomLeft) and
+			   self:_subTileElevationDifferent(currentTile.topRight, otherTile.bottomRight)
 			then
-				return false
+				return false, "currentJ > otherJ"
 			end
 		end
 	end
@@ -188,7 +193,7 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 
 			self:_addFlat(i, j, tile, 'flat')
 			for k = 1, #tile.decals do
-				--self:_addFlat(i, j, tile, k)
+				self:_addFlat(i, j, tile, k)
 			end
 		end
 	end
@@ -245,7 +250,7 @@ function MapMesh:_maskTile(masks, islandTile, offsetI, offsetJ, mask)
 	local maskedTiles = self.maskedTiles[islandTile.tile] or {}
 	wasOffsetTileMasked = maskedTiles[offsetTile]
 
-	local shouldMask = not wasOffsetTileMasked and self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, offsetTile, offsetI, offsetJ)
+	local shouldMask, reason = self:_shouldMask(islandTile.tile, islandTile.i, islandTile.j, offsetTile, offsetI, offsetJ)
 
 	if shouldMask then
 		masks[mask] = true
@@ -352,16 +357,16 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 		end
 
 		if localPosition.z < 0 then
-			t = 0.0
+			t = 0
 		else
-			t = 1.0
+			t = 1
 		end
 	elseif index == 'edge' then
 		t = localPosition.y / 4
 		if side < 0 then
-			s = 0.0
+			s = 0
 		elseif side > 0 then
-			s = 1.0
+			s = 1
 		else
 			assert(false, "side no good :(")
 		end

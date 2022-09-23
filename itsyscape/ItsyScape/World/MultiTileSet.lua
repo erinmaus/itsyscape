@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local TileSet = require "ItsyScape.World.TileSet"
 
 MultiTileSet = Class()
 
@@ -24,7 +25,7 @@ function MultiTileSet:new(tileSetIDs)
 		table.insert(self.tileSetIDs, tileSetID)
 
 		local tileSetFilename = string.format("Resources/Game/TileSets/%s/Layout.lua", tileSetID)
-		local tileSet = TileSet.loadFromFile(tileSetFilename, false)
+		local tileSet = TileSet.loadFromFile(tileSetFilename, true)
 
 		if self.tileSets[tileSetID] then
 			Log.warn("Duplicate tile set ID '%s' at index %d.", tileSetID, i)

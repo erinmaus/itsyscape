@@ -26,10 +26,11 @@ Instance.LOCAL_ID_START = 1
 
 Instance.Map = Class()
 
-function Instance.Map:new(layer, map, tileSetID)
+function Instance.Map:new(layer, map, tileSetID, maskID)
 	self.layer = layer
 	self.map = map
 	self.tileSetID = tileSetID
+	self.maskID = maskID
 end
 
 function Instance.Map:getLayer()
@@ -42,6 +43,10 @@ end
 
 function Instance.Map:getTileSetID()
 	return self.tileSetID
+end
+
+function Instance.Map:getMaskID()
+	return self.maskID
 end
 
 Instance.MapScript = Class()
@@ -216,14 +221,14 @@ function Instance:new(id, filename, stage)
 	self.onPlayerLeave = Callback()
 	self.onUnload = Callback()
 
-	self._onLoadMap = function(_, map, layer, tileSetID)
+	self._onLoadMap = function(_, map, layer, tileSetID, maskID)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Adding map to instance %s (%d) on layer %d.",
 				self:getFilename(),
 				self:getID(),
 				layer)
-			self.maps[layer] = Instance.Map(layer, map, tileSetID)
+			self.maps[layer] = Instance.Map(layer, map, tileSetID, maskID)
 		else
 			Log.engine(
 				"Did not add map to instance %s (%d) on layer %d; layer is not in instance.",
@@ -267,7 +272,7 @@ function Instance:new(id, filename, stage)
 
 			local previousMap = self.maps[layer]
 			if previousMap then
-				self.maps[layer] = Instance.Map(layer, map, previousMap:getTileSetID())
+				self.maps[layer] = Instance.Map(layer, map, previousMap:getTileSetID(), previousMap:getMaskID())
 			end
 		else
 			Log.engine(
@@ -1192,7 +1197,7 @@ function Instance:unloadPlayer(localGameManager, player)
 end
 
 function Instance:loadPlayer(localGameManager, player)
-	Log.engine("Restoring instance for player '%s'...", (player:getActor() and player:getActor():getName()) or tostring(player:getID()))
+	Log.info("Restoring instance for player '%s'...", (player:getActor() and player:getActor():getName()) or tostring(player:getID()))
 
 	for _, layer in self:iterateLayers() do
 		if not self:hasLayer(layer, player) then
@@ -1206,7 +1211,7 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onLoadMap",
-				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID()))
+				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID()))
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",

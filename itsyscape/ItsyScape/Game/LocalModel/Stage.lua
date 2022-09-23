@@ -566,24 +566,26 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 	return actorInstance, propInstance
 end
 
-function LocalStage:loadMapFromFile(filename, layer, tileSetID)
+function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID)
 	self:unloadMap(layer)
 
 	local map = Map.loadFromFile(filename)
-	for i = 1, map:getWidth() do
-		for j = 1, map:getHeight() do
-			map:getTile(i, j).tileSetID = tileSetID
+	if type(tileSetID) == 'string' then
+		for i = 1, map:getWidth() do
+			for j = 1, map:getHeight() do
+				map:getTile(i, j).tileSetID = tileSetID
+			end
 		end
 	end
 
 	if map then
-		self.onLoadMap(self, map, layer, tileSetID)
+		self.onLoadMap(self, map, layer, tileSetID, maskID)
 		self.game:getDirector():setMap(layer, map)
 
 		self:updateMap(layer, map)
 	end
 
-	if tileSetID then
+	if tileSetID and type(tileSetID) == 'string' then
 		local tileSetFilename = string.format(
 			"Resources/Game/TileSets/%s/Layout.lua",
 			tileSetID)
@@ -602,7 +604,7 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	end
 end
 
-function LocalStage:newMap(width, height, tileSetID, layer)
+function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 	local map = Map(width, height, Stage.CELL_SIZE)
 
 	for i = 1, map:getWidth() do
@@ -611,7 +613,7 @@ function LocalStage:newMap(width, height, tileSetID, layer)
 		end
 	end
 
-	self.onLoadMap(self, map, layer, tileSetID)
+	self.onLoadMap(self, map, layer, tileSetID, maskID)
 	self.game:getDirector():setMap(layer, map)
 
 	self:updateMap(layer)
@@ -961,7 +963,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 			baseLayer = baseLayer or globalLayer
 			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, meta.maskID)
 		end
 	end
 
