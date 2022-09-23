@@ -85,6 +85,16 @@ function TileSet:getTextureFilename()
 	return self.textureFilename
 end
 
+function TileSet:getTileIndex(name)
+	for i = 1, #self.tiles do
+		if self.tiles[i].name == name then
+			return i
+		end
+	end
+
+	return nil
+end
+
 -- Gets the tile at 'index'.
 function TileSet:getTile(index)
 	return self.tiles[index]
