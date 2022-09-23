@@ -39,12 +39,13 @@ function InstanceManager:buildMap(i, j, layer)
 
 	local stage = self:getStage()
 	local map = Map(InstanceManager.MAP_SIZE, InstanceManager.MAP_SIZE, 2)
-	cell:mutateMap(map, self:getDimensionBuilder())
+	local mutateMapResults = cell:mutateMap(map, self:getDimensionBuilder())
 
 	stage:newMap(
 		InstanceManager.MAP_SIZE,
 		InstanceManager.MAP_SIZE,
-		map:getTile(1, 1).tileSetID,
+		mutateMapResults:getTileSetIDs(),
+		true,
 		layer)
 	stage:updateMap(layer, map)
 

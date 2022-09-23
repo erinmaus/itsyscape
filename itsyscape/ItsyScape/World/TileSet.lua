@@ -46,6 +46,8 @@ function TileSet.loadFromFile(filename, loadTexture)
 	end
 
 	local result = TileSet()
+	result.textureFilename = t.texture
+
 	for i = 1, #t do
 		local tile = t[i]
 
@@ -77,6 +79,10 @@ end
 -- Constructs the tile set.
 function TileSet:new()
 	self.tiles = {}
+end
+
+function TileSet:getTextureFilename()
+	return self.textureFilename
 end
 
 -- Gets the tile at 'index'.

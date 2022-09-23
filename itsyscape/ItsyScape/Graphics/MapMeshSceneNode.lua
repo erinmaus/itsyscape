@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local MapMesh = require "ItsyScape.World.MapMesh"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local MapMeshSceneNode = Class(SceneNode)
@@ -34,6 +35,12 @@ end
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
+	end
+
+	if Class.isCompatibleType(tileSet, MultiTileSet) then
+		self:getMaterial():setShader(MapMeshSceneNode.MULTITEXTURE_SHADER)
+	else
+		self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 	end
 
 	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor)

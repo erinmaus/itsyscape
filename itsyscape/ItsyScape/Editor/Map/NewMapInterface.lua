@@ -121,7 +121,7 @@ function NewMapInterface:createMap()
 	local height = tonumber(self.heightInput:getText()) or 32
 	local elevation = tonumber(self.elevationInput:getText()) or 1
 	if width and height then
-		stage:newMap(width, height, 1, self.tileSetIDInput:getText())
+		stage:newMap(width, height, self.tileSetIDInput:getText(), true, 1)
 		local map = stage:getMap(1)
 		if map then
 			for j = 1, map:getHeight() do

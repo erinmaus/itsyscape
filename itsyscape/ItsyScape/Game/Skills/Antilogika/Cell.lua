@@ -11,6 +11,22 @@ local Class = require "ItsyScape.Common.Class"
 
 local Cell = Class()
 
+Cell.MutateMapResult = Class()
+
+function Cell.MutateMapResult:new(t)
+	t = t or {}
+
+	self.tileSetIDs = {}
+
+	for key in pairs(t.tileSetIDs) do
+		table.insert(self.tileSetIDs, key)
+	end
+end
+
+function Cell.MutateMapResult:getTileSetIDs()
+	return self.tileSetIDs
+end
+
 function Cell:new(i, j, rng)
 	self.i = i
 	self.j = j
@@ -24,7 +40,7 @@ end
 function Cell:mutateMap(map, dimensionBuilder)
 	local rngState = self.rng:getState()
 
-	local initialZone
+	local tileSetIDs = {}
 
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
@@ -43,22 +59,21 @@ function Cell:mutateMap(map, dimensionBuilder)
 					local zone = dimensionBuilder:getZone(subTileX, subTileZ)
 					local sample = zone:sample(subTileX, subTileZ)
 
-					initialZone = initialZone or zone
-					if initialZone ~= zone then
-						tile.red = 0.2
-						tile.green = 0.2
-						tile.blue = 0.2
-					end
-
 					tile[tile:getCornerName(s, t)] = sample
 					tile.edge = 2
 					tile.tileSetID = zone:getTileSetID()
+
+					tileSetIDs[zone:getTileSetID()] = true
 				end
 			end
 		end
 	end
 
 	self.rng:setState(rngState)
+
+	return Cell.MutateMapResult {
+		tileSetIDs = tileSetIDs
+	}
 end
 
 return Cell

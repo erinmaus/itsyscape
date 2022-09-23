@@ -450,6 +450,7 @@ function GameView:updateMap(map, layer)
 
 		if map then
 			m.map = map
+
 			if m.islandProcessor then
 				m.islandProcessor = MapMeshIslandProcessor(map, m.tileSet)
 			end
