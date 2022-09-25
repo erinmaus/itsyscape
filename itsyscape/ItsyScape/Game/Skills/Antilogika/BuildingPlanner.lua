@@ -51,20 +51,25 @@ function BuildingPlanner:build(buildingID)
 
 	local graph = { id = buildingConfig.root, anchors = {} }
 	local state = { buildingConfig = buildingConfig, rooms = {}, roomCount = 1 }
-
 	local queue = {
 		graph
 	}
+
+	self:place(graph, state)
+	table.insert(state.rooms, graph)
 
 	while #queue > 0 do
 		local g = table.remove(queue, 1)
 		self:expand(g, state, queue)
 	end
 
-	table.insert(queue, graph)
-	while #queue > 0 do
-		local g = table.remove(queue, 1)
-		self:place(g, state, queue)
+	for i = 1, #state.rooms do
+		local room = state.rooms[i]
+
+		state.left = math.min(room.left, state.left or math.huge)
+		state.right = math.max(room.right, state.right or -math.huge)
+		state.top = math.min(room.top, state.top or math.huge)
+		state.bottom = math.max(room.bottom, state.bottom or -math.huge)
 	end
 
 	return graph, state
@@ -104,7 +109,7 @@ function BuildingPlanner:resolve(graph, state, queue)
 		end)
 
 		while #unshuffledAnchors > 0 do
-			local anchor = table.remove(unshuffledAnchors, math.random(1, #unshuffledAnchors))
+			local anchor = table.remove(unshuffledAnchors, self.rng:random(1, #unshuffledAnchors))
 			table.insert(anchors, anchor)
 		end
 	end
@@ -115,7 +120,7 @@ function BuildingPlanner:resolve(graph, state, queue)
 		local room
 		if rooms and BuildingAnchor.REFLEX[graph.from] ~= anchors[i] then
 			repeat
-				local roomIndex = math.random(1, #rooms)
+				local roomIndex = self.rng:random(1, #rooms)
 				local roomID = rooms[roomIndex]
 				local roomConfig = self:getRoomConfig(roomID) or {
 					id = roomID
@@ -146,35 +151,54 @@ function BuildingPlanner:resolve(graph, state, queue)
 				state.roomCount = state.roomCount + 1
 			end
 
-			graph.anchors[anchors[i]] = {
+			local childGraph = {
 				from = anchors[i],
 				id = room.id,
 				parent = graph,
-				anchors = {}
+				anchors = {},
+				isHallway = room.isHallway
 			}
 
-			table.insert(queue, graph.anchors[anchors[i]])
+			local wasPlaced = self:place(childGraph, state)
+			if wasPlaced then
+				graph.anchors[anchors[i]] = childGraph
+
+				if not childGraph.isHallway then
+					table.insert(state.rooms, childGraph)
+				end
+
+				table.insert(queue, childGraph)
+			else
+				graph.anchors[anchors[i]] = nil
+			end
 		else
 			graph.anchors[anchors[i]] = nil
 		end
 	end
 end
 
-function BuildingPlanner:place(graph, state, queue)
+function BuildingPlanner:place(graph, state)
 	local roomConfig = self:getRoomConfig(graph.id) or BuildingPlanner.DEFAULT_ROOM
 
-	graph.width = math.random(
+	graph.width = self.rng:random(
 		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).min or BuildingPlanner.DEFAULT_ROOM.width.min,
 		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).max or BuildingPlanner.DEFAULT_ROOM.width.max)
-	graph.depth = math.random(
+	graph.depth = self.rng:random(
 		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).min or BuildingPlanner.DEFAULT_ROOM.depth.min,
 		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).max or BuildingPlanner.DEFAULT_ROOM.depth.max)
 
 	if graph.from then
-		local offset = BuildingAnchor.OFFSET[graph.from]
+		local parent = graph.parent
+		while parent and parent.isHallway do
+			parent = parent.parent
+		end
 
-		graph.i = graph.parent.i + math.floor(graph.parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i
-		graph.j = graph.parent.j + math.floor(graph.parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j
+		if parent then
+			local offset = BuildingAnchor.OFFSET[graph.from]
+
+			graph.i = parent.i + math.floor(parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i
+			graph.j = parent.j + math.floor(parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j
+		end
 	else
 		graph.i = 0
 		graph.j = 0
@@ -185,16 +209,22 @@ function BuildingPlanner:place(graph, state, queue)
 	graph.top = graph.j - math.floor(graph.depth / 2)
 	graph.bottom = graph.j + math.floor(graph.depth / 2)
 
-	state.left = math.min(graph.left, state.left or math.huge)
-	state.right = math.max(graph.right, state.right or -math.huge)
-	state.top = math.min(graph.top, state.top or math.huge)
-	state.bottom = math.max(graph.bottom, graph.bottom or -math.huge)
+	return not self:overlaps(graph, state)
+end
 
-	table.insert(state.rooms, graph)
+function BuildingPlanner:overlaps(graph, state)
+	for i = 1, #state.rooms do
+		local otherGraph = state.rooms[i]
+		local overlapI = graph.left < otherGraph.right and graph.right > otherGraph.left
+		local overlapJ = graph.top < otherGraph.bottom and graph.bottom > otherGraph.top
 
-	for _, g in pairs(graph.anchors) do
-		table.insert(queue, g)
+		if overlapI and overlapJ then
+			print(graph.id, "OVERLAPS", otherGraph.id)
+			return true
+		end
 	end
+
+	return false
 end
 
 return BuildingPlanner
