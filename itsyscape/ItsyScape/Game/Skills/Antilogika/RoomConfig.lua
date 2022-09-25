@@ -35,16 +35,20 @@ local RoomConfig = {
 		aspectRatio = 2 / 1,
 		rooms = { min = 1, max = 1 },
 		anchors = {
-			[BuildingAnchor.BACK] = {
-				"Chapel"
-			},
-			[BuildingAnchor.LEFT] = {
-				"Hallway_Kitchen",
-				"Hallway_PrivateQuarters"
-			},
-			[BuildingAnchor.RIGHT] = {
-				"Hallway_Kitchen",
-				"Hallway_PrivateQuarters"
+			[BuildingAnchor.PLANE_XZ] = {
+				"Chapel",
+				"Hallway_KitchenFromGreathall",
+				"Hallway_PrivateQuartersFromGreathall"
+			}
+		}
+	},
+	{
+		id = "Hallway_KitchenFromGreathall",
+		rooms = { max = 1 },
+		isHallway = true,
+		anchors = {
+			[BuildingAnchor.PLANE_XZ] = {
+				"Hallway_Kitchen"
 			}
 		}
 	},
@@ -78,12 +82,21 @@ local RoomConfig = {
 		}
 	},
 	{
+		id = "Hallway_PrivateQuartersFromGreathall",
+		rooms = { max = 1 },
+		isHallway = true,
+		anchors = {
+			[BuildingAnchor.PLANE_XZ] = {
+				"Hallway_PrivateQuarters"
+			}
+		}
+	},
+	{
 		id = "Hallway_PrivateQuarters",
 		isHallway = true,
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Hallway_PrivateQuarters",
-				"Solary",
 				"Bedroom_Fancy"
 			},
 		}
@@ -100,7 +113,9 @@ local RoomConfig = {
 	},
 	{
 		id = "Foyer",
-		rooms = { min = 1 },
+		rooms = { max = 1 },
+		width = { min = 8, max = 12 },
+		height = { min = 8, max = 12 },
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Hallway_PrivateQuarters"
@@ -125,6 +140,10 @@ local RoomConfig = {
 				"Bedroom_Soldiers"
 			}
 		}
+	},
+	{
+		id = "Chapel",
+		rooms = { max = 1 }
 	}
 }
 
