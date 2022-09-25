@@ -147,10 +147,6 @@ function BuildingPlanner:resolve(graph, state, queue)
 		end
 
 		if room and state.roomCount < state.buildingConfig.rooms.max then
-			if not room.isHallway then
-				state.roomCount = state.roomCount + 1
-			end
-
 			local childGraph = {
 				from = anchors[i],
 				id = room.id,
@@ -163,7 +159,8 @@ function BuildingPlanner:resolve(graph, state, queue)
 			if wasPlaced then
 				graph.anchors[anchors[i]] = childGraph
 
-				if not childGraph.isHallway then
+				if not room.isHallway then
+					state.roomCount = state.roomCount + 1
 					table.insert(state.rooms, childGraph)
 				end
 
@@ -180,6 +177,11 @@ end
 function BuildingPlanner:place(graph, state)
 	local roomConfig = self:getRoomConfig(graph.id) or BuildingPlanner.DEFAULT_ROOM
 
+	local parent = graph.parent
+	while parent and parent.isHallway do
+		parent = parent.parent
+	end
+
 	graph.width = self.rng:random(
 		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).min or BuildingPlanner.DEFAULT_ROOM.width.min,
 		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).max or BuildingPlanner.DEFAULT_ROOM.width.max)
@@ -187,29 +189,48 @@ function BuildingPlanner:place(graph, state)
 		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).min or BuildingPlanner.DEFAULT_ROOM.depth.min,
 		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).max or BuildingPlanner.DEFAULT_ROOM.depth.max)
 
-	if graph.from then
-		local parent = graph.parent
-		while parent and parent.isHallway do
-			parent = parent.parent
+	if graph.parent and graph.parent.isHallway and parent then
+		local offset = BuildingAnchor.OFFSET[graph.from]
+		local w = math.abs(offset.i * parent.width)
+		local d = math.abs(offset.j * parent.depth)
+		local max = math.max(w, d)
+
+		for index = 1, max do
+			local offsetI = index * (1 - math.abs(offset.i))
+			local offsetJ = index * (1 - math.abs(offset.j))
+
+			graph.i = parent.i + math.floor(parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i + offsetI
+			graph.j = parent.j + math.floor(parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j + offsetJ
+
+			self:buildBounds(graph)
+
+			if not self:overlaps(graph, state) then
+				return true
+			end
 		end
 
-		if parent then
-			local offset = BuildingAnchor.OFFSET[graph.from]
+		return false
+	elseif parent then
+		local offset = BuildingAnchor.OFFSET[graph.from]
+		graph.i = parent.i + math.floor(parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i
+		graph.j = parent.j + math.floor(parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j
+		self:buildBounds(graph)
 
-			graph.i = parent.i + math.floor(parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i
-			graph.j = parent.j + math.floor(parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j
-		end
+		return not self:overlaps(graph, state)
 	else
 		graph.i = 0
 		graph.j = 0
-	end
+		self:buildBounds(graph)
 
+		return true
+	end
+end
+
+function BuildingPlanner:buildBounds(graph)
 	graph.left = graph.i - math.floor(graph.width / 2)
 	graph.right = graph.i + math.floor(graph.width / 2)
 	graph.top = graph.j - math.floor(graph.depth / 2)
 	graph.bottom = graph.j + math.floor(graph.depth / 2)
-
-	return not self:overlaps(graph, state)
 end
 
 function BuildingPlanner:overlaps(graph, state)
