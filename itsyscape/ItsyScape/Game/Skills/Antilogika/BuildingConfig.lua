@@ -16,7 +16,8 @@ local BuildingConfig = {
 		rooms = { min = 6, max = 32 },
 		width = { min = 32, max = 48 },
 		depth = { min = 32, max = 48 },
-		root = "Courtyard"
+		root = "Courtyard",
+		rootPosition = { x = 0.5, y = 0.5 }
 	}
 }
 

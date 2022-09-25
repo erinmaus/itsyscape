@@ -17,10 +17,13 @@ local RoomConfig = {
 		depth = { min = 12, max = 16 },
 		aspectRatio = 1,
 		anchors = {
-			[BuildingAnchor.PLANE_XZ] = {
+			[{ BuildingAnchor.BACK, BuildingAnchor.LEFT, BuildingAnchor.RIGHT }] = {
 				"GreatHall",
-				"Armory",
 				"Foyer",
+				"Armory"
+			},
+			[BuildingAnchor.FRONT] = {
+				"Entrance"
 			}
 		}
 	},

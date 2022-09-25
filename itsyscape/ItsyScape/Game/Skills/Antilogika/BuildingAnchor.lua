@@ -26,6 +26,15 @@ BuildingAnchor.REFLEX = {
 	[BuildingAnchor.TOP] = BuildingAnchor.BOTTOM
 }
 
+BuildingAnchor.OFFSET = {
+	[BuildingAnchor.BACK]   = { i =  0, j = -1, k =  0 },
+	[BuildingAnchor.FRONT]  = { i =  0, j =  1, k =  0 },
+	[BuildingAnchor.LEFT]   = { i = -1, j =  0, k =  0 },
+	[BuildingAnchor.RIGHT]  = { i =  1, j =  0, k =  0 },
+	[BuildingAnchor.TOP]    = { i =  0, j =  0, k =  1 },
+	[BuildingAnchor.BOTTOM] = { i =  0, j =  0, k = -1 }
+}
+
 BuildingAnchor.PLANE_XZ = {
 	BuildingAnchor.BACK,
 	BuildingAnchor.FRONT,

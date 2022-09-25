@@ -11,6 +11,11 @@ local Class = require "ItsyScape.Common.Class"
 local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 
 local BuildingPlanner = Class()
+BuildingPlanner.DEFAULT_ROOM = {
+	width = { min = 4, max = 8 },
+	depth = { min = 4, max = 8 },
+	anchors = {}
+}
 
 function BuildingPlanner:new(buildingConfig, roomConfig, rng)
 	self.buildingConfig = buildingConfig
@@ -56,7 +61,13 @@ function BuildingPlanner:build(buildingID)
 		self:expand(g, state, queue)
 	end
 
-	return graph
+	table.insert(queue, graph)
+	while #queue > 0 do
+		local g = table.remove(queue, 1)
+		self:place(g, state, queue)
+	end
+
+	return graph, state
 end
 
 function BuildingPlanner:expand(graph, state, queue)
@@ -74,6 +85,8 @@ function BuildingPlanner:expand(graph, state, queue)
 			end
 		end
 	end
+
+	graph.config = roomConfig
 
 	self:resolve(graph, state, queue)
 end
@@ -136,6 +149,7 @@ function BuildingPlanner:resolve(graph, state, queue)
 			graph.anchors[anchors[i]] = {
 				from = anchors[i],
 				id = room.id,
+				parent = graph,
 				anchors = {}
 			}
 
@@ -143,6 +157,43 @@ function BuildingPlanner:resolve(graph, state, queue)
 		else
 			graph.anchors[anchors[i]] = nil
 		end
+	end
+end
+
+function BuildingPlanner:place(graph, state, queue)
+	local roomConfig = self:getRoomConfig(graph.id) or BuildingPlanner.DEFAULT_ROOM
+
+	graph.width = math.random(
+		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).min or BuildingPlanner.DEFAULT_ROOM.width.min,
+		(roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width).max or BuildingPlanner.DEFAULT_ROOM.width.max)
+	graph.depth = math.random(
+		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).min or BuildingPlanner.DEFAULT_ROOM.depth.min,
+		(roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth).max or BuildingPlanner.DEFAULT_ROOM.depth.max)
+
+	if graph.from then
+		local offset = BuildingAnchor.OFFSET[graph.from]
+
+		graph.i = graph.parent.i + math.floor(graph.parent.width / 2) * offset.i + math.floor(graph.width / 2) * offset.i + offset.i
+		graph.j = graph.parent.j + math.floor(graph.parent.depth / 2) * offset.j + math.floor(graph.depth / 2) * offset.j + offset.j
+	else
+		graph.i = 0
+		graph.j = 0
+	end
+
+	graph.left = graph.i - math.floor(graph.width / 2)
+	graph.right = graph.i + math.floor(graph.width / 2)
+	graph.top = graph.j - math.floor(graph.depth / 2)
+	graph.bottom = graph.j + math.floor(graph.depth / 2)
+
+	state.left = math.min(graph.left, state.left or math.huge)
+	state.right = math.max(graph.right, state.right or -math.huge)
+	state.top = math.min(graph.top, state.top or math.huge)
+	state.bottom = math.max(graph.bottom, graph.bottom or -math.huge)
+
+	table.insert(state.rooms, graph)
+
+	for _, g in pairs(graph.anchors) do
+		table.insert(queue, g)
 	end
 end
 
