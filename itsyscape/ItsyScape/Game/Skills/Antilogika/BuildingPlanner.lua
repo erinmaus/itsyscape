@@ -11,17 +11,184 @@ local Class = require "ItsyScape.Common.Class"
 local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 
 local BuildingPlanner = Class()
+
+BuildingPlanner.Graph = Class()
+
+function BuildingPlanner.Graph:new(roomID, roomConfig)
+	self.id = roomID
+	self.roomConfig = roomConfig
+	self.anchors = {}
+	self.children = {}
+	self.i = 0
+	self.j = 0
+	self.width = 0
+	self.depth = 0
+
+	self:expand()
+end
+
+function BuildingPlanner.Graph:getRoomID()
+	return self.id
+end
+
+function BuildingPlanner.Graph:getRoomConfig()
+	return self.roomConfig
+end
+
+function BuildingPlanner.Graph:getParent()
+	return self.parent
+end
+
+function BuildingPlanner.Graph:getFromAnchor()
+	return self.from or BuildingAnchor.NONE
+end
+
+function BuildingPlanner.Graph:iterateChildren()
+	return ipairs(self.children)
+end
+
+function BuildingPlanner.Graph:getDirectionFromParent()
+	return self.from
+end
+
+function BuildingPlanner.Graph:setPosition(i, j)
+	self.i = i
+	self.j = j
+	self.bounds = nil
+end
+
+function BuildingPlanner.Graph:getPosition()
+	return self.i, self.j
+end
+
+function BuildingPlanner.Graph:setSize(width, depth)
+	self.width = width
+	self.depth = depth
+	self.bounds = nil
+end
+
+function BuildingPlanner.Graph:getSize()
+	return self.width, self.depth
+end
+
+function BuildingPlanner.Graph:getBounds()
+	if not self.bounds then
+		self.bounds = {
+			left = self.i,
+			right = self.i + self.width,
+			top = self.j,
+			bottom = self.j + self.depth
+		}
+	end
+
+	return self.bounds
+end
+
+function BuildingPlanner.Graph:attach(parent, from)
+	self.parent = parent
+	self.from = from
+	table.insert(parent.children, self)
+end
+
+function BuildingPlanner.Graph:expand()
+	for anchors, rooms in pairs((self.roomConfig and self.roomConfig.anchors) or {}) do
+		local a = (type(anchors) == 'number' and { anchors }) or anchors
+
+		for i = 1, #a do
+			local anchor = a[i]
+
+			self.anchors[anchor] = {}
+			for j = 1, #rooms do
+				table.insert(self.anchors[anchor], rooms[j])
+			end
+		end
+	end
+end
+
+function BuildingPlanner.Graph:resolve(buildingPlanner)
+	local anchors = {}
+	do
+		local unshuffledAnchors = {}
+		for anchor, rooms in pairs(self.anchors) do
+			table.insert(unshuffledAnchors, anchor)
+		end
+
+		table.sort(unshuffledAnchors, function(a, b)
+			return a < b
+		end)
+
+		while #unshuffledAnchors > 0 do
+			local anchor = table.remove(unshuffledAnchors, buildingPlanner:getRNG():random(1, #unshuffledAnchors))
+			table.insert(anchors, anchor)
+		end
+	end
+
+	local didPlace = false
+	for i = 1, #anchors do
+		local rooms = {}
+		do
+			local r = self.anchors[anchors[i]]
+			for i = 1, #r do
+				table.insert(rooms, r[i])
+			end
+		end
+
+		local roomConfig, roomID
+		if rooms and BuildingAnchor.REFLEX[self.from] ~= anchors[i] then
+			repeat
+				local roomIndex = buildingPlanner:getRNG():random(1, #rooms)
+				local pendingRoomID = rooms[roomIndex]
+				local pendingRoomConfig = buildingPlanner:getRoomConfig(pendingRoomID) or BuildingPlanner.DEFAULT_ROOM
+
+				-- if state.rooms[roomID] then
+				-- 	if state.rooms[roomID].count >= ((roomConfig.rooms and roomConfig.rooms.max) or math.huge) then
+				-- 		table.remove(rooms, roomIndex)
+				-- 	else
+				-- 		state.rooms[roomID].count = state.rooms[roomID].count + 1
+				-- 		room = roomConfig
+				-- 	end
+				-- else
+				-- 	state.rooms[roomID] = {
+				-- 		count = 1
+				-- 	}
+				-- 	room = roomConfig
+				-- end
+
+				if #rooms == 0 then
+					break
+				end
+
+				roomConfig = pendingRoomConfig
+				roomID = pendingRoomID
+			until roomConfig
+		end
+
+		if roomConfig then
+			local childGraph = BuildingPlanner.Graph(roomID, roomConfig)
+
+			local wasPlaced = buildingPlanner:tryPlace(childGraph, self, anchors[i])
+			if wasPlaced then
+				childGraph:attach(self, anchors[i])
+
+				buildingPlanner:addRoom(childGraph)
+				buildingPlanner:enqueue(childGraph)
+				print("enqueued", roomID)
+
+				didPlace = true
+			end
+		end
+	end
+
+	if didPlace then
+		buildingPlanner:enqueue(self)
+	end
+end
+
 BuildingPlanner.DEFAULT_ROOM = {
+	id = "Default",
 	width = { min = 4, max = 8 },
 	depth = { min = 4, max = 8 },
 	anchors = {}
-}
-
-BuildingPlanner.SPLIT_I = 1
-BuildingPlanner.SPLIT_J = 2
-BuildingPlanner.SPLITS = {
-	BuildingPlanner.SPLIT_I,
-	BuildingPlanner.SPLIT_J
 }
 
 function BuildingPlanner:new(buildingConfig, roomConfig, rng)
@@ -50,315 +217,213 @@ function BuildingPlanner:getRoomConfig(roomID)
 	return nil
 end
 
+function BuildingPlanner:getRNG()
+	return self.rng
+end
+
+function BuildingPlanner:getCurrentBuildingConfig()
+	return self.currentBuildingConfig
+end
+
+function BuildingPlanner:getRoot()
+	return self.graph
+end
+
+function BuildingPlanner:setRoot(graph)
+	self.graph = graph
+end
+
+function BuildingPlanner:getRooms()
+	return self.rooms or {}
+end
+
+function BuildingPlanner:getBounds()
+	return self.bounds
+end
+
 function BuildingPlanner:build(buildingID)
 	local buildingConfig = self:getBuildingConfig(buildingID)
 	if not buildingConfig then
 		return nil
 	end
 
-	local state = { buildingConfig = buildingConfig, rooms = {} }
-	self:measure(state)
+	self.currentBuildingConfig = buildingConfig
 
-	local graph = { id = buildingConfig.root, anchors = {} }
-	self:place(graph, state)
-	table.insert(state.rooms, graph)
+	self.graph = nil
+	self.rooms = {}
+	self.queue = {}
 
-	local queue = { graph }
+	local LayoutType = require(self.currentBuildingConfig.layout)
+	self.layout = LayoutType(48, 48)
+	self.layout:apply(self)
 
-	while #queue > 0 do
-		local g = table.remove(queue, 1)
-		self:expand(g, state, queue)
+	while #self.queue > 0 do
+		local g = table.remove(self.queue, 1)
+		g:resolve(self)
 	end
 
-	for i = 1, #state.rooms do
-		local room = state.rooms[i]
+	self.bounds = {}
+	for i = 1, #self.rooms do
+		local bounds = self.rooms[i]:getBounds()
 
-		state.left = math.min(room.left, state.left or math.huge)
-		state.right = math.max(room.right, state.right or -math.huge)
-		state.top = math.min(room.top, state.top or math.huge)
-		state.bottom = math.max(room.bottom, state.bottom or -math.huge)
-	end
-
-	return graph, state
-end
-
-function BuildingPlanner:expand(graph, state, queue)
-	local roomConfig = self:getRoomConfig(graph.id)
-
-	for anchors, rooms in pairs((roomConfig and roomConfig.anchors) or {}) do
-		local a = (type(anchors) == 'number' and { anchors }) or anchors
-
-		for i = 1, #a do
-			local anchor = a[i]
-
-			graph.anchors[anchor] = {}
-			for j = 1, #rooms do
-				table.insert(graph.anchors[anchor], rooms[j])
-			end
-		end
-	end
-
-	graph.config = roomConfig
-
-	self:resolve(graph, state, queue)
-end
-
-function BuildingPlanner:resolve(graph, state, queue)
-	local anchors = {}
-	do
-		local unshuffledAnchors = {}
-		for anchor, rooms in pairs(graph.anchors) do
-			table.insert(unshuffledAnchors, anchor)
-		end
-
-		table.sort(unshuffledAnchors, function(a, b)
-			return a < b
-		end)
-
-		while #unshuffledAnchors > 0 do
-			local anchor = table.remove(unshuffledAnchors, self.rng:random(1, #unshuffledAnchors))
-			table.insert(anchors, anchor)
-		end
-	end
-
-	for i = 1, #anchors do
-		local rooms = graph.anchors[anchors[i]]
-
-		local room
-		if rooms and BuildingAnchor.REFLEX[graph.from] ~= anchors[i] then
-			repeat
-				local roomIndex = self.rng:random(1, #rooms)
-				local roomID = rooms[roomIndex]
-				local roomConfig = self:getRoomConfig(roomID) or {
-					id = roomID
-				}
-
-				if state.rooms[roomID] then
-					if state.rooms[roomID].count >= ((roomConfig.rooms and roomConfig.rooms.max) or math.huge) then
-						table.remove(rooms, roomIndex)
-					else
-						state.rooms[roomID].count = state.rooms[roomID].count + 1
-						room = roomConfig
-					end
-				else
-					state.rooms[roomID] = {
-						count = 1
-					}
-					room = roomConfig
-				end
-
-				if #rooms == 0 then
-					break
-				end
-			until room
-		end
-
-		if room and #state.rooms < state.buildingConfig.rooms.max then
-			local childGraph = {
-				from = anchors[i],
-				id = room.id,
-				parent = graph,
-				anchors = {}
-			}
-
-			local wasPlaced = self:place(childGraph, state, rooms.extrude)
-			if wasPlaced then
-				graph.anchors[anchors[i]] = childGraph
-				table.insert(state.rooms, childGraph)
-				table.insert(queue, childGraph)
-			else
-				graph.anchors[anchors[i]] = nil
-			end
-		else
-			graph.anchors[anchors[i]] = nil
-		end
+		self.bounds.left = math.min(bounds.left, self.bounds.left or math.huge)
+		self.bounds.right = math.max(bounds.right, self.bounds.right or -math.huge)
+		self.bounds.top = math.min(bounds.top, self.bounds.top or math.huge)
+		self.bounds.bottom = math.max(bounds.bottom, self.bounds.bottom or -math.huge)
 	end
 end
 
+function BuildingPlanner:enqueue(graph)
+	table.insert(self.queue, graph)
+end
 
-function BuildingPlanner:place(graph, state)
-	local roomConfig = self:getRoomConfig(graph.id) or BuildingPlanner.DEFAULT_ROOM
+function BuildingPlanner:addRoom(graph)
+	table.insert(self.rooms, graph)
+end
 
-	if graph.parent then
-		local offset = BuildingAnchor.OFFSET[graph.from]
+function BuildingPlanner:tryPlace(graph, parent, from)
+	local offset = BuildingAnchor.OFFSET[from]
+	local parentBounds = parent:getBounds()
 
-		local bounds = {}
-		do
-			if offset.i < 0 then
-				bounds.i = graph.parent.left - 1
-				bounds.width = 1
-			elseif offset.i > 0 then
-				bounds.i = graph.parent.right + 1
-				bounds.width = 1
-			else
-				bounds.i = graph.parent.left
-				bounds.width = graph.parent.width
-			end
-
-			if offset.j < 0 then
-				bounds.j = graph.parent.top - 1
-				bounds.depth = 1
-			elseif offset.j > 0 then
-				bounds.j = graph.parent.bottom + 1
-				bounds.depth = 1
-			else
-				bounds.j = graph.parent.top
-				bounds.depth = graph.parent.depth
-			end
-		end
-		self:buildBounds(bounds)
-
-		local leaf = self:findLeafs(state.space, bounds)[1]
-		if not leaf then
-			return false
-		end
-
-		graph.i = leaf.i
-		graph.j = leaf.j
-		graph.width = leaf.width
-		graph.depth = leaf.depth
-		graph.leaf = leaf
-		self:buildBounds(graph)
-
-		leaf.occupied = graph
-
-		return true
+	local searchBounds = {}
+	if offset.i < 0 then
+		searchBounds.left = parentBounds.left + offset.i
+		searchBounds.right = searchBounds.left + 1
+	elseif offset.i > 0 then
+		searchBounds.left = parentBounds.right
+		searchBounds.right = searchBounds.left + offset.i
 	else
-		local desiredI = state.space.width * state.buildingConfig.rootPosition.x
-		local desiredJ = state.space.depth * state.buildingConfig.rootPosition.z
-
-		local leaf = self:findLeafs(state.space, {
-			left = desiredI - 1, right = desiredI + 1,
-			top = desiredJ - 1, bottom = desiredJ + 1
-		})[1]
-
-		graph.i = leaf.i
-		graph.j = leaf.j
-		graph.width = leaf.width
-		graph.depth = leaf.depth
-		graph.leaf = leaf
-		self:buildBounds(graph)
-
-		leaf.occupied = graph
-
-		return true
+		searchBounds.left = parentBounds.left
+		searchBounds.right = parentBounds.right
 	end
+
+	if offset.j < 0 then
+		searchBounds.top = parentBounds.top + offset.j
+		searchBounds.bottom = searchBounds.top + 1
+	elseif offset.j > 0 then
+		searchBounds.top = parentBounds.bottom
+		searchBounds.bottom = searchBounds.top + offset.j
+	else
+		searchBounds.top = parentBounds.top
+		searchBounds.bottom = parentBounds.bottom
+	end
+
+	local rectangles = self.layout:getAvailableRectangles()
+	for i = 1, #rectangles do
+		local rectangle = rectangles[i]
+		if self:overlaps(rectangle, searchBounds) then
+			if self:trySplit(rectangle, graph, parent, from) then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
-function BuildingPlanner:overlaps(space, bounds)
-	local overlapI = space.left < bounds.right and space.right > bounds.left
-	local overlapJ = space.top < bounds.bottom and space.bottom > bounds.top
+function BuildingPlanner:trySplit(rectangle, graph, parent, from)
+	local offset = BuildingAnchor.OFFSET[from]
+	local parentBounds = parent:getBounds()
+
+	local widthConstraint, depthConstraint
+	do
+		local roomConfig = graph:getRoomConfig()
+		widthConstraint = roomConfig.width or BuildingPlanner.DEFAULT_ROOM.width
+		depthConstraint = roomConfig.depth or BuildingPlanner.DEFAULT_ROOM.depth
+	end
+
+	local maxWidth, minWidth, maxDepth, minDepth
+	do
+		maxWidth = widthConstraint.max or BuildingPlanner.DEFAULT_ROOM.width.max
+		minWidth = widthConstraint.min or BuildingPlanner.DEFAULT_ROOM.width.min
+		maxDepth = depthConstraint.max or BuildingPlanner.DEFAULT_ROOM.depth.max
+		minDepth = depthConstraint.min or BuildingPlanner.DEFAULT_ROOM.depth.min
+	end
+
+	local searchBounds = {}
+	if offset.i < 0 then
+		searchBounds.left = parentBounds.left - maxWidth
+		searchBounds.right = searchBounds.left + maxWidth
+	elseif offset.i > 0 then
+		searchBounds.left = parentBounds.right
+		searchBounds.right = searchBounds.left + maxWidth
+	else
+		searchBounds.left = parentBounds.left - math.floor(maxWidth / 2)
+		searchBounds.right = parentBounds.right + math.floor(maxWidth / 2)
+	end
+
+	if offset.j < 0 then
+		searchBounds.top = parentBounds.top - maxDepth
+		searchBounds.bottom = searchBounds.top + maxDepth
+	elseif offset.j > 0 then
+		searchBounds.top = parentBounds.bottom
+		searchBounds.bottom = searchBounds.top + maxDepth
+	else
+		searchBounds.top = parentBounds.top - math.floor(maxDepth / 2)
+		searchBounds.bottom = parentBounds.bottom + math.floor(maxDepth / 2)
+	end
+
+	local intersection = self:intersects(rectangle, searchBounds)
+
+	if (intersection.right - intersection.left) < minWidth or
+	   (intersection.bottom - intersection.top) < (depthConstraint.min or BuildingPlanner.DEFAULT_ROOM.depth.min)
+	then
+		print("can't fit (that's what she said")
+	else
+		print("can fit!!!!")
+
+		local i = self.rng:random(intersection.left, intersection.right - minWidth)
+		local j = self.rng:random(intersection.top, intersection.bottom - minDepth)
+		local width = self.rng:random(minWidth, intersection.right - i)
+		local depth = self.rng:random(minDepth, intersection.bottom - j)
+
+		if offset.i < 0 then
+			i = searchBounds.right - width
+		elseif offset.i > 0 then
+			i = searchBounds.left
+		end
+
+		if offset.j < 0 then
+			j = searchBounds.bottom - depth
+		elseif offset.j > 0 then
+			j = searchBounds.bottom
+		end
+
+		if self.layout:isUnassigned(i, j, width, depth) then
+			self.layout:assign(i, j, width, depth, graph)
+			graph:setPosition(i, j)
+			graph:setSize(width, depth)
+			return true
+		end
+	end
+
+	return false
+end
+
+function BuildingPlanner:place(graph, i, j, width, depth)
+	self.layout:assign(i, j, width, depth, graph)
+	graph:setPosition(i, j)
+	graph:setSize(width, depth)
+end
+
+function BuildingPlanner:overlaps(a, b)
+	local overlapI = a.left < b.right and a.right > b.left
+	local overlapJ = a.top < b.bottom and a.bottom > b.top
 	return overlapI and overlapJ
 end
 
-function BuildingPlanner:findLeafs(space, bounds, result)
-	result = result or {}
+function BuildingPlanner:intersects(a, b)
+	local left = math.max(a.left, b.left)
+	local right = math.min(a.right, b.right)
+	local top = math.max(a.top, b.top)
+	local bottom = math.min(a.bottom, b.bottom)
 
-	if (not space.a or not space.b) and not space.occupied then
-		table.insert(result, space)
-	elseif space.a and space.b then
-		if self:overlaps(space.a, bounds) then
-			self:findLeafs(space.a, bounds, result)
-		end
-
-		if self:overlaps(space.b, bounds) then
-			self:findLeafs(space.b, bounds, result)
-		end
-	end
-
-	return result
-end
-
-function BuildingPlanner:measure(state)
-	local width = self.rng:random(
-		state.buildingConfig.width.min,
-		state.buildingConfig.width.max)
-	local depth = self.rng:random(
-		state.buildingConfig.depth.min,
-		state.buildingConfig.width.max)
-
-	local space, leafs = self:extrude(0, 0, width, depth, state)
-	state.space = space
-	state.leafs = leafs
-end
-
-function BuildingPlanner:extrude(i, j, width, depth, state)
-	local space = {
-		i = i,
-		j = j,
-		width = width,
-		depth = depth
+	return {
+		left = left,
+		right = right,
+		top = top,
+		bottom = bottom
 	}
-
-	local leafs = {}
-	self:split(space, state, leafs, 1)
-
-	return space, leafs
-end
-
-function BuildingPlanner:split(space, state, leafs, currentSplitDepth)
-	self:buildBounds(space)
-
-	if currentSplitDepth > state.buildingConfig.split.maxDepth then
-		table.insert(leafs, space)
-		return
-	end
-
-	local splitDirection
-	if space.width > space.depth then
-		splitDirection = BuildingPlanner.SPLIT_I
-	else
-		splitDirection = BuildingPlanner.SPLIT_J
-	end
-
-	local split = self.rng:random() * (state.buildingConfig.split.max - state.buildingConfig.split.min) + state.buildingConfig.split.min
-
-	if splitDirection == BuildingPlanner.SPLIT_I then
-		local width = math.floor(space.width * split)
-
-		local left = {
-			parent = space,
-			i = space.i,
-			j = space.j,
-			width = width,
-			depth = space.depth
-		}
-
-		local right = {
-			parent = space,
-			i = space.i + width,
-			j = space.j,
-			width = space.width - width,
-			depth = space.depth
-		}
-
-		space.a = left
-		space.b = right
-	elseif splitDirection == BuildingPlanner.SPLIT_J then
-		local depth = math.floor(space.depth * split)
-
-		local top = {
-			parent = space,
-			i = space.i,
-			j = space.j,
-			width = space.width,
-			depth = depth
-		}
-
-		local bottom = {
-			parent = space,
-			i = space.i,
-			j = space.j + depth,
-			width = space.width,
-			depth = space.depth - depth
-		}
-
-		space.a = top
-		space.b = bottom
-	end
-
-	self:split(space.a, state, leafs, currentSplitDepth + 1)
-	self:split(space.b, state, leafs, currentSplitDepth + 1)
 end
 
 function BuildingPlanner:buildBounds(graph)

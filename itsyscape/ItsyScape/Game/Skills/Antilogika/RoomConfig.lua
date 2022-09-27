@@ -12,12 +12,19 @@ local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local RoomConfig = {
 	{
 		id = "CastleEntrance",
-
+		width = { min = 4, max = 4 },
+		depth = { min = 8, max = 12 },
 		anchors = {
 			[BuildingAnchor.BACK] = {
 				"Courtyard"
 			}
 		}
+	},
+	{
+		id = "CastleTower",
+		width = { min = 6, max = 8 },
+		depth = { min = 6, max = 8 },
+		aspectRatio = 1
 	},
 	{
 		id = "Courtyard",

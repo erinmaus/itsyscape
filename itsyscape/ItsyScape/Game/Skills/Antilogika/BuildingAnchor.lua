@@ -10,6 +10,7 @@
 
 local BuildingAnchor = {}
 
+BuildingAnchor.NONE   = 0
 BuildingAnchor.BACK   = 1
 BuildingAnchor.FRONT  = 2
 BuildingAnchor.LEFT   = 3
