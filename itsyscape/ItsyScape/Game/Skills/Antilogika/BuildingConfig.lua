@@ -12,6 +12,7 @@ local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local BuildingConfig = {
 	{
 		id = "Castle",
+		layout = "ItsyScape.Game.Skills.Antilogika.CastleFloorLayout",
 		floors = { min = 4, max = 6 },
 		rooms = { min = 6, max = 32 },
 		width = { min = 32, max = 48 },
