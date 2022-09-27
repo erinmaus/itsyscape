@@ -172,7 +172,6 @@ function BuildingPlanner.Graph:resolve(buildingPlanner)
 
 				buildingPlanner:addRoom(childGraph)
 				buildingPlanner:enqueue(childGraph)
-				print("enqueued", roomID)
 
 				didPlace = true
 			end
@@ -348,8 +347,8 @@ function BuildingPlanner:trySplit(rectangle, graph, parent, from)
 		searchBounds.left = parentBounds.right
 		searchBounds.right = searchBounds.left + maxWidth
 	else
-		searchBounds.left = parentBounds.left - math.floor(maxWidth / 2)
-		searchBounds.right = parentBounds.right + math.floor(maxWidth / 2)
+		searchBounds.left = parentBounds.left-- - math.floor(maxWidth / 2)
+		searchBounds.right = parentBounds.right-- + math.floor(maxWidth / 2)
 	end
 
 	if offset.j < 0 then
@@ -359,23 +358,19 @@ function BuildingPlanner:trySplit(rectangle, graph, parent, from)
 		searchBounds.top = parentBounds.bottom
 		searchBounds.bottom = searchBounds.top + maxDepth
 	else
-		searchBounds.top = parentBounds.top - math.floor(maxDepth / 2)
-		searchBounds.bottom = parentBounds.bottom + math.floor(maxDepth / 2)
+		searchBounds.top = parentBounds.top-- - math.floor(maxDepth / 2)
+		searchBounds.bottom = parentBounds.bottom-- + math.floor(maxDepth / 2)
 	end
 
 	local intersection = self:intersects(rectangle, searchBounds)
 
-	if (intersection.right - intersection.left) < minWidth or
-	   (intersection.bottom - intersection.top) < (depthConstraint.min or BuildingPlanner.DEFAULT_ROOM.depth.min)
+	if (intersection.right - intersection.left) >= minWidth and
+	   (intersection.bottom - intersection.top) >= minDepth
 	then
-		print("can't fit (that's what she said")
-	else
-		print("can fit!!!!")
-
 		local i = self.rng:random(intersection.left, intersection.right - minWidth)
 		local j = self.rng:random(intersection.top, intersection.bottom - minDepth)
-		local width = self.rng:random(minWidth, intersection.right - i)
-		local depth = self.rng:random(minDepth, intersection.bottom - j)
+		local width = self.rng:random(minWidth, maxWidth)
+		local depth = self.rng:random(minDepth, maxDepth)
 
 		if offset.i < 0 then
 			i = searchBounds.right - width
@@ -386,7 +381,7 @@ function BuildingPlanner:trySplit(rectangle, graph, parent, from)
 		if offset.j < 0 then
 			j = searchBounds.bottom - depth
 		elseif offset.j > 0 then
-			j = searchBounds.bottom
+			j = searchBounds.top
 		end
 
 		if self.layout:isUnassigned(i, j, width, depth) then
