@@ -87,9 +87,16 @@ function love.load(args)
 		end
 	end
 
-	local s, r = pcall(require, main)
+	local s, r = xpcall(require, debug.traceback, main)
 	if not s then
-		Log.warn("failed to run %s: %s", main, r)
+		Log.warn("Failed to run %s: %s", main, r)
+		Log.quit()
+
+		if _DEBUG then
+			os.exit(1)
+		else
+			error(r, 0)
+		end
 	else
 		_APP = r(args)
 		_APP:initialize()
