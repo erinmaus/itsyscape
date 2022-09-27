@@ -16,8 +16,9 @@ local BuildingConfig = {
 		rooms = { min = 6, max = 32 },
 		width = { min = 32, max = 48 },
 		depth = { min = 32, max = 48 },
-		root = "Courtyard",
-		rootPosition = { x = 0.5, y = 0.5 }
+		root = "CastleEntrance",
+		split = { min = 0.5, max = 0.5, maxDepth = 6 },
+		rootPosition = { x = 0.5, z = 1 }
 	}
 }
 
