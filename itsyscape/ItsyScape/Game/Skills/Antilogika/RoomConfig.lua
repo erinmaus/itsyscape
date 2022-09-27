@@ -34,41 +34,27 @@ local RoomConfig = {
 		depth = { min = 16, max = 24 },
 		aspectRatio = 2 / 1,
 		rooms = { min = 1, max = 1 },
+		required = {
+			"Chapel",
+			"Kitchen",
+			"Foyer"
+		},
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Chapel",
-				"Hallway_KitchenFromGreathall",
-				"Hallway_PrivateQuartersFromGreathall"
+				"Kitchen",
+				"Foyer"
 			}
 		}
 	},
 	{
-		id = "Hallway_KitchenFromGreathall",
-		rooms = { max = 1 },
-		isHallway = true,
+		id = "Kitchen",
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_Kitchen"
-			}
-		}
-	},
-	{
-		id = "Hallway_Kitchen",
-		isHallway = true,
-		anchors = {
-			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_Kitchen",
 				"Kitchen",
 				"Pantry",
-				"Larder"
-			},
-			[BuildingAnchor.TOP] = {
+				"Larder",
 				"Bedroom_Servants"
-			},
-			[BuildingAnchor.BOTTOM] = {
-				"Buttery",
-				"Cellar",
-				"Basement"
 			}
 		}
 	},
@@ -76,39 +62,20 @@ local RoomConfig = {
 		id = "Bedroom_Servants",
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_Kitchen",
-				"Bedroom_Servants"
+				"Bedroom_Servants",
+				"Bathroom_Servants"
 			}
-		}
-	},
-	{
-		id = "Hallway_PrivateQuartersFromGreathall",
-		rooms = { max = 1 },
-		isHallway = true,
-		anchors = {
-			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_PrivateQuarters"
-			}
-		}
-	},
-	{
-		id = "Hallway_PrivateQuarters",
-		isHallway = true,
-		anchors = {
-			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_PrivateQuarters",
-				"Bedroom_Fancy"
-			},
 		}
 	},
 	{
 		id = "Bedroom_Fancy",
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_PrivateQuarters",
+				"Bedroom_Fancy",
 				"Solary",
-				"Study"
-			},
+				"Study",
+				"Bathroom_Fancy"
+			}
 		}
 	},
 	{
@@ -118,7 +85,7 @@ local RoomConfig = {
 		height = { min = 8, max = 12 },
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_PrivateQuarters"
+				"Bedroom_Fancy"
 			}
 		}
 	},
@@ -127,17 +94,9 @@ local RoomConfig = {
 		rooms = { max = 1 },
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_Armory"
-			}
-		}
-	},
-	{
-		id = "Hallway_Armory",
-		isHallway = true,
-		anchors = {
-			[BuildingAnchor.PLANE_XZ] = {
-				"Hallway_Armory",
-				"Bedroom_Soldiers"
+				"Smithy",
+				"Bedroom_Soldiers",
+				"Closet"
 			}
 		}
 	},
