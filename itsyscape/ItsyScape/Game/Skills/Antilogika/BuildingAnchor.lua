@@ -28,6 +28,7 @@ BuildingAnchor.REFLEX = {
 }
 
 BuildingAnchor.OFFSET = {
+	[BuildingAnchor.NONE]   = { i =  0, j =  0, k =  0 },
 	[BuildingAnchor.BACK]   = { i =  0, j = -1, k =  0 },
 	[BuildingAnchor.FRONT]  = { i =  0, j =  1, k =  0 },
 	[BuildingAnchor.LEFT]   = { i = -1, j =  0, k =  0 },
