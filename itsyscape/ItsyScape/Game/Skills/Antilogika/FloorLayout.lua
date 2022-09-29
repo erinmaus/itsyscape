@@ -8,51 +8,136 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 
 local FloorLayout = Class()
 
+FloorLayout.TILE_TYPE_UNDECIDED = 0
+FloorLayout.TILE_TYPE_WALL      = 1
+FloorLayout.TILE_TYPE_HALLWAY   = 2
+FloorLayout.TILE_TYPE_ROOM      = 3
+FloorLayout.TILE_TYPE_OUTSIDE   = 4
+
 FloorLayout.Tile = Class()
 
-function FloorLayout.Tile:new()
-	self.isBuilding = false
-	self.room = false
+function FloorLayout.Tile:new(floorLayout, i, j)
+	self.floorLayout = floorLayout
+	self.i = i
+	self.j = j
+	self.type = FloorLayout.TILE_TYPE_UNDECIDED
 end
 
-function FloorLayout.Tile:setRoomGraph(room)
-	self.room = room or false
+function FloorLayout.Tile:getFloorLayout()
+	return self.floorLayout
 end
 
-function FloorLayout.Tile:getRoomGraph()
-	return self.room
+function FloorLayout.Tile:getI()
+	return self.i
 end
 
-function FloorLayout.Tile:setIsOutside(isOutside)
-	self.isBuilding = not isOutside
+function FloorLayout.Tile:getJ()
+	return self.j
 end
 
-function FloorLayout.Tile:getIsOutside()
-	return not self.isBuilding
+function FloorLayout.Tile:setTileType(type)
+	self.type = type or FloorLayout.TILE_TYPE_UNDECIDED
 end
 
-function FloorLayout.Tile:setIsInside(isInside)
-	self.isBuilding = isInside
+function FloorLayout.Tile:getTileType()
+	return self.type
 end
 
-function FloorLayout.Tile:getIsInside()
-	return self.isBuilding
+function FloorLayout.Tile:setRoomID(roomID)
+	self.roomID = roomID
 end
 
-function FloorLayout:new(width, depth)
+function FloorLayout.Tile:getRoomID()
+	return self.roomID
+end
+
+function FloorLayout:new(width, depth, cellSize)
 	self.width = width
 	self.depth = depth
+	self.cellSize = cellSize
+
+	assert(self.width % self.cellSize == 0)
+	assert(self.depth % self.cellSize == 0)
 
 	self.tiles = {}
 	for i = 1, width do
 		for j = 1, depth do
 			local index = self:getTileIndex(i, j)
-			self.tiles[index] = FloorLayout.Tile()
+			self.tiles[index] = FloorLayout.Tile(self, i, j)
 		end
 	end
+end
+
+function FloorLayout:makeConstraint(s, t, constraint)
+	local cellDefinition = {}
+	for j = 1, self.cellSize do
+		cellDefinition[j] = {}
+	end
+
+	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+	for offsetI = 1, self.cellSize do
+		for offsetJ = 1, self.cellSize do
+			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+			if tile then
+				if tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
+					constraint:setRoomID(tile:getRoomID())
+				end
+
+				cellDefinition[offsetJ][offsetI] = tile:getTileType()
+			end
+		end
+	end
+
+	constraint:setCellDefinition(cellDefinition)
+	constraint:setIsUndecided(self:isUndecided(s, t))
+end
+
+function FloorLayout:getRoom(s, t)
+	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+
+	for offsetI = 1, self.cellSize do
+		for offsetJ = 1, self.cellSize do
+			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+			if tile and tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
+				return tile:getRoomID()
+			end
+		end
+	end
+
+	return nil
+end
+
+function FloorLayout:setRoom(s, t, roomID)
+	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+
+	for offsetI = 1, self.cellSize do
+		for offsetJ = 1, self.cellSize do
+			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+			if tile then
+				tile:setTileType(FloorLayout.TILE_TYPE_ROOM)
+				tile:setRoomID(roomID)
+			end
+		end
+	end
+end
+
+function FloorLayout:isUndecided(s, t)
+	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+
+	for offsetI = 1, self.cellSize do
+		for offsetJ = 1, self.cellSize do
+			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+			if not tile or tile:getTileType() ~= FloorLayout.TILE_TYPE_UNDECIDED then
+				return false
+			end
+		end
+	end
+
+	return true
 end
 
 function FloorLayout:getWidth()
@@ -63,66 +148,16 @@ function FloorLayout:getDepth()
 	return self.depth
 end
 
+function FloorLayout:getCellSize()
+	return self.cellSize
+end
+
 function FloorLayout:getTileIndex(i, j)
 	return (j - 1) * self.width + (i - 1) + 1
 end
 
 function FloorLayout:getTile(i, j)
 	return self.tiles[self:getTileIndex(i, j)]
-end
-
-function FloorLayout:fill(i, j, width, depth, isInside)
-	for currentI = i, i + width - 1 do
-		for currentJ = j, j + depth - 1 do
-			local index = self:getTileIndex(currentI, currentJ)
-			local tile = self.tiles[index]
-			if tile then
-				tile:setIsInside(isInside or false)
-			end
-		end
-	end
-end
-
-function FloorLayout:assign(i, j, width, depth, room)
-	for currentI = i, i + width - 1 do
-		for currentJ = j, j + depth - 1 do
-			local index = self:getTileIndex(currentI, currentJ)
-			local tile = self.tiles[index]
-			if tile then
-				tile:setRoomGraph(room)
-			end
-		end
-	end
-end
-
-function FloorLayout:isInside(i, j, width, depth)
-	for currentI = i, i + width - 1 do
-		for currentJ = j, j + depth - 1 do
-			local index = self:getTileIndex(currentI, currentJ)
-			local tile = self.tiles[index]
-
-			if not tile or not tile:getIsInside() then
-				return false
-			end
-		end
-	end
-
-	return true
-end
-
-function FloorLayout:isUnassigned(i, j, width, depth)
-	for currentI = i, i + width - 1 do
-		for currentJ = j, j + depth - 1 do
-			local index = self:getTileIndex(currentI, currentJ)
-			local tile = self.tiles[index]
-
-			if not tile or tile:getRoomGraph() then
-				return false
-			end
-		end
-	end
-
-	return true
 end
 
 function FloorLayout:getAvailableRectangles()
@@ -134,7 +169,7 @@ function FloorLayout:getAvailableRectangles()
 			local index = self:getTileIndex(i, j)
 			local tile = self.tiles[index]
 
-			if tile:getIsInside() and not tile:getRoomGraph() then
+			if tile:getTileType() == FloorLayout.TILE_TYPE_ROOM and (not currentRectangle or currentRectangle.roomID == tile:getRoomID()) then
 				if currentRectangle then
 					currentRectangle.right = currentRectangle.right + 1
 					currentRectangle.width = currentRectangle.width + 1
@@ -145,7 +180,8 @@ function FloorLayout:getAvailableRectangles()
 						top = j,
 						bottom = j + 1,
 						width = 1,
-						depth = 1
+						depth = 1,
+						roomID = tile:getRoomID()
 					}
 				end
 			else
@@ -169,7 +205,8 @@ function FloorLayout:getAvailableRectangles()
 
 			if b.bottom == a.top and
 			   a.left == b.left and a.right == b.right and
-			   a.depth > 0 and b.depth > 0
+			   a.depth > 0 and b.depth > 0 and
+			   a.roomID == b.roomID
 			then
 				a.depth = a.depth - 1
 

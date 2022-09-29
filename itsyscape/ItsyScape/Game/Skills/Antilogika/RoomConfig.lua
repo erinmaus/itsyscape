@@ -37,6 +37,9 @@ local RoomConfig = {
 				"GreatHall",
 				"Foyer",
 				"Armory"
+			},
+			[BuildingAnchor.FRONT] = {
+				"CastleEntrance"
 			}
 		}
 	},
