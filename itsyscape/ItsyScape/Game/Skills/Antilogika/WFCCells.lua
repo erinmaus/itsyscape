@@ -55,34 +55,34 @@ local WFCCells = {
 	},
 
 	-- -- U greebling
-	{
-		type = "U_top",
-		{ W, W, W, W },
-		{ W, R, R, W },
-		{ W, R, R, W },
-		{ W, R, R, W }
-	},
-	{
-		type = "U_bottom",
-		{ W, R, R, W },
-		{ W, R, R, W },
-		{ W, R, R, W },
-		{ W, W, W, W }
-	},
-	{
-		type = "U_left",
-		{ W, W, W, W },
-		{ W, R, R, R },
-		{ W, R, R, R },
-		{ W, W, W, W }
-	},
-	{
-		type = "U_right",
-		{ W, W, W, W },
-		{ R, R, R, W },
-		{ R, R, R, W },
-		{ W, W, W, W }
-	},
+	-- {
+	-- 	type = "U_top",
+	-- 	{ W, W, W, W },
+	-- 	{ W, R, R, W },
+	-- 	{ W, R, R, W },
+	-- 	{ W, R, R, W }
+	-- },
+	-- {
+	-- 	type = "U_bottom",
+	-- 	{ W, R, R, W },
+	-- 	{ W, R, R, W },
+	-- 	{ W, R, R, W },
+	-- 	{ W, W, W, W }
+	-- },
+	-- {
+	-- 	type = "U_left",
+	-- 	{ W, W, W, W },
+	-- 	{ W, R, R, R },
+	-- 	{ W, R, R, R },
+	-- 	{ W, W, W, W }
+	-- },
+	-- {
+	-- 	type = "U_right",
+	-- 	{ W, W, W, W },
+	-- 	{ R, R, R, W },
+	-- 	{ R, R, R, W },
+	-- 	{ W, W, W, W }
+	-- },
 
 	-- -- Inflex corners
 	-- {
@@ -173,64 +173,64 @@ local WFCCells = {
 	},
 
 	-- -- Hallways (lines)
-	{
-		type = "HLINE_bottom",
-		{ R, R, R, R },
-		{ W, W, W, W },
-		{ H, H, H, H },
-		{ H, H, H, H }
-	},
-	{
-		type = "HLINE_top",
-		{ H, H, H, H },
-		{ H, H, H, H },
-		{ W, W, W, W },
-		{ R, R, R, R }
-	},
-	{
-		type = "HLINE_right",
-		{ R, W, H, H },
-		{ R, W, H, H },
-		{ R, W, H, H },
-		{ R, W, H, H }
-	},
-	{
-		type = "HLINE_left",
-		{ H, H, W, R },
-		{ H, H, W, R },
-		{ H, H, W, R },
-		{ H, H, W, R }
-	},
+	-- {
+	-- 	type = "HLINE_bottom",
+	-- 	{ R, R, R, R },
+	-- 	{ W, W, W, W },
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H }
+	-- },
+	-- {
+	-- 	type = "HLINE_top",
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H },
+	-- 	{ W, W, W, W },
+	-- 	{ R, R, R, R }
+	-- },
+	-- {
+	-- 	type = "HLINE_right",
+	-- 	{ R, W, H, H },
+	-- 	{ R, W, H, H },
+	-- 	{ R, W, H, H },
+	-- 	{ R, W, H, H }
+	-- },
+	-- {
+	-- 	type = "HLINE_left",
+	-- 	{ H, H, W, R },
+	-- 	{ H, H, W, R },
+	-- 	{ H, H, W, R },
+	-- 	{ H, H, W, R }
+	-- },
 
 	-- -- Hallways (corners)
-	{
-		type = "HL_bottomleft",
-		{ H, H, W, R },
-		{ H, H, W, W },
-		{ H, H, H, H },
-		{ H, H, H, H }
-	},
-	{
-		type = "HL_topright",
-		{ H, H, H, H },
-		{ H, H, H, H },
-		{ W, W, H, H },
-		{ R, W, H, H }
-	},
-	{
-		type = "HL_bottomright",
-		{ R, W, H, H },
-		{ W, W, H, H },
-		{ H, H, H, H },
-		{ H, H, H, H }
-	},
-	{
-		type = "HL_topleft",
-		{ H, H, H, H },
-		{ H, H, H, H },
-		{ H, H, W, W },
-		{ H, H, W, R }
-	}
+	-- {
+	-- 	type = "HL_bottomleft",
+	-- 	{ H, H, W, R },
+	-- 	{ H, H, W, W },
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H }
+	-- },
+	-- {
+	-- 	type = "HL_topright",
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H },
+	-- 	{ W, W, H, H },
+	-- 	{ R, W, H, H }
+	-- },
+	-- {
+	-- 	type = "HL_bottomright",
+	-- 	{ R, W, H, H },
+	-- 	{ W, W, H, H },
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H }
+	-- },
+	-- {
+	-- 	type = "HL_topleft",
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, H, H },
+	-- 	{ H, H, W, W },
+	-- 	{ H, H, W, R }
+	-- }
 }
 
 return WFCCells
