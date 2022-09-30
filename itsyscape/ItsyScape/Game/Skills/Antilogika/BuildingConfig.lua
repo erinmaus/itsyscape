@@ -17,9 +17,18 @@ local BuildingConfig = {
 		rooms = { min = 6, max = 32 },
 		width = { min = 32, max = 48 },
 		depth = { min = 32, max = 48 },
-		root = "Courtyard",
-		split = { min = 0.5, max = 0.5, maxDepth = 6 },
-		rootPosition = { x = 0.5, z = 1 }
+		split = {
+			min = 0.35, max = 0.75,
+			minWidth = 3,
+			minDepth = 3,
+			iterations = 2
+		},
+
+		props = {
+			numTowers = { min = 1, max = 4 },
+			relativeTowerSize = { min = 0.2, max = 0.3 },
+			towerOffsets = {}
+		}
 	}
 }
 
