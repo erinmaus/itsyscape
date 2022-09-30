@@ -82,55 +82,10 @@ function FloorLayout:new(width, depth, cellSize)
 	end
 end
 
-function FloorLayout:makeConstraint(s, t, constraint)
-	local cellDefinition = {}
-	for j = 1, self.cellSize do
-		cellDefinition[j] = {}
-	end
-
-	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
-
-	for offsetI = 1, self.cellSize do
-		for offsetJ = 1, self.cellSize do
-			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
-			if tile then
-				if tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
-					constraint:setRoomID(tile:getRoomID())
-					constraint:setRoomIndex(tile:getRoomIndex())
-				end
-
-				cellDefinition[offsetJ][offsetI] = tile:getTileType()
-			end
-		end
-	end
-
-	constraint:setCellDefinition(cellDefinition)
-	constraint:setIsUndecided(self:isUndecided(s, t))
-	constraint:setPosition(s, t)
-	constraint:setFloorLayout(self)
-end
-
-function FloorLayout:getRoom(s, t)
-	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
-
-	for offsetI = 1, self.cellSize do
-		for offsetJ = 1, self.cellSize do
-			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
-			if tile and tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
-				return tile:getRoomID(), tile:getRoomIndex()
-			end
-		end
-	end
-
-	return nil
-end
-
-function FloorLayout:setRoom(s, t, roomID, roomIndex)
-	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
-
-	for offsetI = 1, self.cellSize do
-		for offsetJ = 1, self.cellSize do
-			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+function FloorLayout:setRoom(i, j, width, depth, roomID, roomIndex)
+	for currentI = i, i + width - 1 do
+		for currentJ = j, j + depth - 1 do
+			local tile = self:getTile(currentI, currentJ)
 			if tile then
 				tile:setTileType(FloorLayout.TILE_TYPE_ROOM)
 				tile:setRoomID(roomID)
@@ -138,34 +93,6 @@ function FloorLayout:setRoom(s, t, roomID, roomIndex)
 			end
 		end
 	end
-end
-
-function FloorLayout:setNothing(s, t)
-	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
-
-	for offsetI = 1, self.cellSize do
-		for offsetJ = 1, self.cellSize do
-			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
-			if tile then
-				tile:setTileType(FloorLayout.TILE_TYPE_NOTHING)
-			end
-		end
-	end
-end
-
-function FloorLayout:isUndecided(s, t)
-	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
-
-	for offsetI = 1, self.cellSize do
-		for offsetJ = 1, self.cellSize do
-			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
-			if not tile or tile:getTileType() ~= FloorLayout.TILE_TYPE_UNDECIDED then
-				return false
-			end
-		end
-	end
-
-	return true
 end
 
 function FloorLayout:getWidth()
@@ -188,7 +115,7 @@ function FloorLayout:getTile(i, j)
 	return self.tiles[self:getTileIndex(i, j)]
 end
 
-function FloorLayout:getAvailableRectangles()
+function FloorLayout:getAvailableRectangles(tileType)
 	local rectangles = {}
 	local currentRectangle
 	local lastTile
@@ -197,7 +124,16 @@ function FloorLayout:getAvailableRectangles()
 			local index = self:getTileIndex(i, j)
 			local tile = self.tiles[index]
 
-			if tile:getTileType() == FloorLayout.TILE_TYPE_ROOM and (not currentRectangle or currentRectangle.roomID == tile:getRoomID()) then
+			local isMatch = tile:getTileType() == (tileType or FloorLayout.TILE_TYPE_ROOM)
+			local isRoomMatch
+			if not tileType or tileType == FloorLayout.TILE_TYPE_ROOM then
+				isRoomMatch = not currentRectangle or (currentRectangle.roomID == tile:getRoomID() and currentRectangle.roomIndex == tile:getRoomIndex())
+			else
+				isRoomMatch = true
+			end
+
+
+			if isMatch and isRoomMatch then
 				if currentRectangle then
 					currentRectangle.right = currentRectangle.right + 1
 					currentRectangle.width = currentRectangle.width + 1
@@ -209,7 +145,8 @@ function FloorLayout:getAvailableRectangles()
 						bottom = j + 1,
 						width = 1,
 						depth = 1,
-						roomID = tile:getRoomID()
+						roomID = tile:getRoomID(),
+						roomIndex = tile:getRoomIndex()
 					}
 				end
 			else
@@ -234,7 +171,8 @@ function FloorLayout:getAvailableRectangles()
 			if b.bottom == a.top and
 			   a.left == b.left and a.right == b.right and
 			   a.depth > 0 and b.depth > 0 and
-			   a.roomID == b.roomID
+			   a.roomID == b.roomID and
+			   a.roomIndex == b.roomIndex
 			then
 				a.depth = a.depth - 1
 
@@ -249,6 +187,7 @@ function FloorLayout:getAvailableRectangles()
 	for i = 1, #rectangles do
 		local a = rectangles[i]
 		if a.depth > 0 then
+			print("i", a.left, a.top, a.width, a.depth)
 			table.insert(result, a)
 		end
 	end
