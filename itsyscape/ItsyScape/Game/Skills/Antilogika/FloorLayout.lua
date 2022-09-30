@@ -187,7 +187,6 @@ function FloorLayout:getAvailableRectangles(tileType)
 	for i = 1, #rectangles do
 		local a = rectangles[i]
 		if a.depth > 0 then
-			print("i", a.left, a.top, a.width, a.depth)
 			table.insert(result, a)
 		end
 	end
