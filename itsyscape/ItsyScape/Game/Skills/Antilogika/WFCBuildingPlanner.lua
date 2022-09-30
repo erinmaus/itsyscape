@@ -25,10 +25,12 @@ WFCBuildingPlanner.DEFAULT_ROOM = {
 
 WFCBuildingPlanner.Cell = Class()
 
-function WFCBuildingPlanner.Cell:new(s, t)
+function WFCBuildingPlanner.Cell:new(s, t, parent)
 	self.s = s
 	self.t = t
 	self.constraints = {}
+	self.parent = parent
+	self.roomIndex = false
 end
 
 function WFCBuildingPlanner.Cell:getS()
@@ -41,6 +43,18 @@ end
 
 function WFCBuildingPlanner.Cell:getEntropy()
 	return #self.constraints
+end
+
+function WFCBuildingPlanner.Cell:getParent()
+	return self.parent
+end
+
+function WFCBuildingPlanner.Cell:setRoomIndex(value)
+	self.roomIndex = value
+end
+
+function WFCBuildingPlanner.Cell:getRoomIndex()
+	return self.roomIndex
 end
 
 function WFCBuildingPlanner.Cell:constrainRooms(buildingPlanner)
@@ -87,11 +101,22 @@ function WFCBuildingPlanner.Cell:constrainConstraints(buildingPlanner)
 	table.clear(self.constraints)
 	for i = 1, #self.possibleRooms do
 		local roomID = self.possibleRooms[i]
+		local roomIndex
+		if self:getParent() then
+			local parentRoomID, parentRoomIndex = layout:getRoom(self:getParent():getS(), self:getParent():getT())
+			if roomID == parentRoomID then
+				roomIndex = parentRoomIndex
+			else
+				roomIndex = 0
+			end
+		end
 
 		for j = 1, #WFCCells do
 			local cellDefinition = WFCCells[j]
 
-			local constraint = WFCConstraint(cellDefinition, roomID)
+			local constraint = WFCConstraint(cellDefinition, roomID, roomIndex)
+			constraint:setFloorLayout(layout)
+			constraint:setPosition(self.s, self.t)
 
 			local isCompatible = true
 			for k = 1, #BuildingAnchor.PLANE_XZ do
@@ -125,8 +150,11 @@ function WFCBuildingPlanner.Cell:resolve(buildingPlanner, index)
 
 	local constraint = self.constraints[index or buildingPlanner:getRNG():random(1, self:getEntropy())]
 	if not constraint then
+		layout:setNothing(self.s, self.t)
 		return false
 	end
+
+	buildingPlanner:assignRoomIndex(self, constraint:getRoomID())
 
 	local cellDefinition = constraint:getCellDefinition()
 	for j = 1, #cellDefinition do
@@ -141,7 +169,8 @@ function WFCBuildingPlanner.Cell:resolve(buildingPlanner, index)
 				tile:setTileType(tileType)
 
 				if tileType == FloorLayout.TILE_TYPE_ROOM then
-					tile:setRoomID(constraint.roomID)
+					tile:setRoomID(constraint:getRoomID())
+					tile:setRoomIndex(self:getRoomIndex())
 				end
 			end
 		end
@@ -154,7 +183,7 @@ function WFCBuildingPlanner.Cell:resolve(buildingPlanner, index)
 		local s = self.s + offset.i
 		local t = self.t + offset.j
 		if layout:isUndecided(s, t) then
-			buildingPlanner:enqueue(s, t)
+			buildingPlanner:enqueue(s, t, self)
 		end
 	end
 
@@ -219,10 +248,13 @@ function WFCBuildingPlanner:build(buildingID)
 
 	self.currentBuildingConfig = buildingConfig
 
+	self.visited = {}
 	self.queue = {}
 
+	self.currentRoomIndex = 1
+
 	local LayoutType = require(self.currentBuildingConfig.layout)
-	self.layout = LayoutType(32, 32, 4)
+	self.layout = LayoutType(64, 64, 4)
 	self.layout:apply(self)
 
 	while #self.queue > 0 do
@@ -233,11 +265,32 @@ function WFCBuildingPlanner:build(buildingID)
 	end
 end
 
-function WFCBuildingPlanner:enqueue(s, t)
-	local cell = WFCBuildingPlanner.Cell(s, t)
+function WFCBuildingPlanner:enqueue(s, t, parent)
+	local cellIndex = (t - 1) * (self.layout:getWidth() / self.layout:getCellSize()) + (s - 1) + 1
+	if self.visited[cellIndex] then
+		return
+	end
+
+	local cell = WFCBuildingPlanner.Cell(s, t, parent)
 	table.insert(self.queue, cell)
+	self.visited[cellIndex] = cell
 
 	return cell
+end
+
+function WFCBuildingPlanner:assignRoomIndex(cell, currentRoomID)
+	local parent = cell:getParent()
+	local parentRoomID = parent and self.layout:getRoom(parent:getS(), parent:getT())
+	currentRoomID = currentRoomID or self.layout:getRoom(cell:getS(), cell:getT())
+
+	if not parent or not parentRoomID or parentRoomID ~= currentRoomID then
+		local index = self.currentRoomIndex
+		self.currentRoomIndex = self.currentRoomIndex + 1
+
+		cell:setRoomIndex(index)
+	else
+		cell:setRoomIndex(parent:getRoomIndex())
+	end
 end
 
 function WFCBuildingPlanner:getFloorLayout()

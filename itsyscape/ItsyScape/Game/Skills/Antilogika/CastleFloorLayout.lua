@@ -41,12 +41,17 @@ function CastleFloorLayout:apply(buildingPlanner)
 
 	local centerS = math.floor(self:getWidth() / self:getCellSize() / 2 + 0.5)
 	local centerT = math.floor(self:getDepth() / self:getCellSize() / 2 + 0.5)
-	self:setRoom(centerS, centerT, "Courtyard")
+
+	local parent = WFCBuildingPlanner.Cell(centerS, centerT)
+	buildingPlanner:assignRoomIndex(parent)
+
+	self:setRoom(centerS, centerT, "Courtyard", parent:getRoomIndex())
 	print("center", centerS, centerT)
-	buildingPlanner:enqueue(centerS - 1, centerT)
-	buildingPlanner:enqueue(centerS + 1, centerT)
-	buildingPlanner:enqueue(centerS, centerT - 1)
-	buildingPlanner:enqueue(centerS, centerT + 1)
+
+	buildingPlanner:enqueue(centerS - 1, centerT, parent)
+	buildingPlanner:enqueue(centerS + 1, centerT, parent)
+	buildingPlanner:enqueue(centerS, centerT - 1, parent)
+	buildingPlanner:enqueue(centerS, centerT + 1, parent)
 
 	--local cell = WFCBuildingPlanner.Cell(centerS, centerT)
 	--cell:constrain(buildingPlanner)

@@ -17,6 +17,7 @@ FloorLayout.TILE_TYPE_WALL      = 1
 FloorLayout.TILE_TYPE_HALLWAY   = 2
 FloorLayout.TILE_TYPE_ROOM      = 3
 FloorLayout.TILE_TYPE_OUTSIDE   = 4
+FloorLayout.TILE_TYPE_NOTHING   = 5
 
 FloorLayout.Tile = Class()
 
@@ -25,6 +26,7 @@ function FloorLayout.Tile:new(floorLayout, i, j)
 	self.i = i
 	self.j = j
 	self.type = FloorLayout.TILE_TYPE_UNDECIDED
+	self.roomIndex = false
 end
 
 function FloorLayout.Tile:getFloorLayout()
@@ -55,6 +57,14 @@ function FloorLayout.Tile:getRoomID()
 	return self.roomID
 end
 
+function FloorLayout.Tile:setRoomIndex(value)
+	self.roomIndex = value or false
+end
+
+function FloorLayout.Tile:getRoomIndex()
+	return self.roomIndex
+end
+
 function FloorLayout:new(width, depth, cellSize)
 	self.width = width
 	self.depth = depth
@@ -79,12 +89,14 @@ function FloorLayout:makeConstraint(s, t, constraint)
 	end
 
 	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+
 	for offsetI = 1, self.cellSize do
 		for offsetJ = 1, self.cellSize do
 			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
 			if tile then
 				if tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
 					constraint:setRoomID(tile:getRoomID())
+					constraint:setRoomIndex(tile:getRoomIndex())
 				end
 
 				cellDefinition[offsetJ][offsetI] = tile:getTileType()
@@ -94,6 +106,8 @@ function FloorLayout:makeConstraint(s, t, constraint)
 
 	constraint:setCellDefinition(cellDefinition)
 	constraint:setIsUndecided(self:isUndecided(s, t))
+	constraint:setPosition(s, t)
+	constraint:setFloorLayout(self)
 end
 
 function FloorLayout:getRoom(s, t)
@@ -103,7 +117,7 @@ function FloorLayout:getRoom(s, t)
 		for offsetJ = 1, self.cellSize do
 			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
 			if tile and tile:getTileType() == FloorLayout.TILE_TYPE_ROOM then
-				return tile:getRoomID()
+				return tile:getRoomID(), tile:getRoomIndex()
 			end
 		end
 	end
@@ -111,7 +125,7 @@ function FloorLayout:getRoom(s, t)
 	return nil
 end
 
-function FloorLayout:setRoom(s, t, roomID)
+function FloorLayout:setRoom(s, t, roomID, roomIndex)
 	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
 
 	for offsetI = 1, self.cellSize do
@@ -120,6 +134,20 @@ function FloorLayout:setRoom(s, t, roomID)
 			if tile then
 				tile:setTileType(FloorLayout.TILE_TYPE_ROOM)
 				tile:setRoomID(roomID)
+				tile:setRoomIndex(roomIndex)
+			end
+		end
+	end
+end
+
+function FloorLayout:setNothing(s, t)
+	local i, j = (s - 1) * self.cellSize + 1, (t - 1) * self.cellSize + 1
+
+	for offsetI = 1, self.cellSize do
+		for offsetJ = 1, self.cellSize do
+			local tile = self:getTile(i + offsetI - 1, j + offsetJ - 1)
+			if tile then
+				tile:setTileType(FloorLayout.TILE_TYPE_NOTHING)
 			end
 		end
 	end

@@ -27,9 +27,10 @@ local ADJACENT_OFFSETS = {
 	{ i =  0, j =  1 }
 }
 
-function WFCConstraint:new(cellDefinition, roomID)
+function WFCConstraint:new(cellDefinition, roomID, roomIndex)
 	self.cellDefinition = cellDefinition or false
 	self.roomID = roomID or false
+	self.roomIndex = roomIndex
 	self.isUndecided = false
 end
 
@@ -49,6 +50,14 @@ function WFCConstraint:getRoomID()
 	return self.roomID
 end
 
+function WFCConstraint:setRoomIndex(value)
+	self.roomIndex = value or false
+end
+
+function WFCConstraint:getRoomIndex()
+	return self.roomIndex
+end
+
 function WFCConstraint:setIsUndecided(value)
 	self.isUndecided = value or false
 end
@@ -57,12 +66,29 @@ function WFCConstraint:getIsUndecided()
 	return self.isUndecided
 end
 
+function WFCConstraint:setFloorLayout(floorLayout)
+	self.floorLayout = floorLayout
+end
+
+function WFCConstraint:getFloorLayout()
+	return self.floorLayout
+end
+
+function WFCConstraint:setPosition(s, t)
+	self.s = s
+	self.t = t
+end
+
+function WFCConstraint:getPosition(s, t)
+	return self.s, self.t
+end
+
 function WFCConstraint:_makeGrid(width, height)
 	local grid = {}
 	for j = 1, height do
 		grid[j] = {}
 		for i = 1, width do
-			grid[j][i] = { checked = false, tileType = 0, roomID = "" }
+			grid[j][i] = { checked = false, tileType = 0, roomID = "", roomIndex = 0 }
 		end
 	end
 
@@ -72,14 +98,43 @@ end
 function WFCConstraint:_paintGrid(grid, constraint, i, j)
 	for currentJ = 1, 4 do
 		for currentI = 1, 4 do
-			grid[currentJ + j - 1][currentI + i - 1].tileType = constraint.cellDefinition[currentJ][currentI]
-			grid[currentJ + j - 1][currentI + i - 1].roomID = constraint.roomID
+			local g = grid[currentJ + j - 1][currentI + i - 1]
+			g.tileType = constraint.cellDefinition[currentJ][currentI]
+			g.roomID = constraint.roomID
+			g.roomIndex = constraint.roomIndex
+			g.s = constraint.s
+			g.t = constraint.t
+			g.i = currentI
+			g.j = currentJ
 		end
 	end
 end
 
+function WFCConstraint:print(grid)
+	local patterns = {}
+
+	for j = 1, #grid do
+		local p = ""
+		for i = 1, #grid[j] do
+			if grid[j][i].tileType == FloorLayout.TILE_TYPE_ROOM then
+				p = p .. "."
+			elseif grid[j][i].tileType == FloorLayout.TILE_TYPE_HALLWAY then
+				p = p .. "-"
+			elseif grid[j][i].tileType == FloorLayout.TILE_TYPE_WALL then
+				p = p .. "#"
+			else
+				p = p .. "?"
+			end
+		end
+
+		patterns[j] = p
+	end
+
+	print(table.concat(patterns, "\n"))
+end
+
 function WFCConstraint:_isWallValid(grid, i, j)
-	local corners = 0
+	local corners, empty = 0, 0
 
 	for index = 1, #DIAGONAL_OFFSETS do
 		local offset = DIAGONAL_OFFSETS[index]
@@ -97,10 +152,34 @@ function WFCConstraint:_isWallValid(grid, i, j)
 			elseif not isVerticalWall and not isHorizontalWall then
 				return false
 			end
+		else
+			if not isDiagonalWall and not isVerticalWall and not isHorizontalWall then
+				empty = empty + 1
+			end
 		end
 	end
 
-	return corners <= 1
+	-- This requires looking to surrounding tiles outside the constraints' area
+	-- if corners == 0 and empty == #DIAGONAL_OFFSETS then
+	-- 	local g = grid[j][i]
+
+	-- 	local adjacentOffsets = 0
+	-- 	if self.floorLayout and g.s and g.t then
+	-- 		for index = 1, #ADJACENT_OFFSETS do
+	-- 			local offset = ADJACENT_OFFSETS[index]
+	-- 			local tile = self.floorLayout:getTile(
+	-- 				(g.s - 1) * self.floorLayout:getCellSize() + g.i + offset.i,
+	-- 				(g.t - 1) * self.floorLayout:getCellSize() + g.j + offset.j)
+	-- 			if tile and tile:getTileType() == FloorLayout.TILE_TYPE_WALL then
+	-- 				adjacentOffsets = adjacentOffsets + 1
+	-- 			end
+	-- 		end
+	-- 	end
+
+	-- 	return adjacentOffsets == 2
+	-- end
+
+	return corners <= 1 and empty < (#DIAGONAL_OFFSETS)
 end
 
 function WFCConstraint:_areRoomsDifferent(grid, i, j)
@@ -112,11 +191,13 @@ function WFCConstraint:_areRoomsDifferent(grid, i, j)
 		local isLeftRoom = grid[leftJ] ~= nil and grid[leftJ][leftI] ~= nil and grid[leftJ][leftI].tileType == FloorLayout.TILE_TYPE_ROOM
 		local isLeftWall = grid[leftJ] ~= nil and grid[leftJ][leftI] ~= nil and grid[leftJ][leftI].tileType == FloorLayout.TILE_TYPE_WALL
 		local leftRoomID = grid[leftJ] ~= nil and grid[leftJ][leftI] ~= nil and grid[leftJ][leftI].roomID
+		local leftRoomIndex = grid[leftJ] ~= nil and grid[leftJ][leftI] ~= nil and grid[leftJ][leftI].roomIndex
 		local isRightRoom = grid[rightJ] ~= nil and grid[rightJ][rightI] ~= nil and grid[rightJ][rightI].tileType == FloorLayout.TILE_TYPE_ROOM
 		local isRightWall = grid[rightJ] ~= nil and grid[rightJ][rightI] ~= nil and grid[rightJ][rightI].tileType == FloorLayout.TILE_TYPE_WALL
 		local rightRoomID = grid[rightJ] ~= nil and grid[rightJ][rightI] ~= nil and grid[rightJ][rightI].roomID
+		local rightRoomIndex = grid[rightJ] ~= nil and grid[rightJ][rightI] ~= nil and grid[rightJ][rightI].roomIndex
 
-		if isLeftRoom and isRightRoom and leftRoomID == rightRoomID then
+		if isLeftRoom and isRightRoom and leftRoomID == rightRoomID and leftRoomIndex == rightRoomIndex then
 			return false
 		elseif (isLeftRoom and isRightWall) or (isLeftWall and isRightRoom) then
 			return false
@@ -159,7 +240,9 @@ function WFCConstraint:_verifyWalls(grid)
 	for j = 1, #grid do
 		for i = 1, #grid[j] do
 			if grid[j][i].tileType == FloorLayout.TILE_TYPE_WALL then
-				local isValid = self:_isWallValid(grid, i, j) and self:_areRoomsDifferent(grid, i, j)
+				local isWallValid = self:_isWallValid(grid, i, j)
+				local areRoomsDifferent = self:_areRoomsDifferent(grid, i, j)
+				local isValid = isWallValid and areRoomsDifferent
 				if not isValid then
 					return false
 				end
@@ -175,13 +258,15 @@ function WFCConstraint:_verifyRooms(grid)
 		for i = 1, #grid[j] - 1 do
 			if grid[j][i].tileType == FloorLayout.TILE_TYPE_ROOM then
 				if grid[j + 1][i].tileType == FloorLayout.TILE_TYPE_ROOM and
-				   grid[j + 1][i].roomID ~= grid[j][i].roomID
+				   (grid[j + 1][i].roomID ~= grid[j][i].roomID or
+				   grid[j + 1][i].roomIndex ~= grid[j][i].roomIndex)
 				then
 					return false
 				end
 
 				if grid[j][i + 1].tileType == FloorLayout.TILE_TYPE_ROOM and
-				   grid[j][i + 1].roomID ~= grid[j][i].roomID
+				   (grid[j][i + 1].roomID ~= grid[j][i].roomID or
+				   grid[j][i + 1].roomIndex ~= grid[j][i].roomIndex)
 				then
 					return false
 				end
@@ -204,6 +289,7 @@ function WFCConstraint:_verifyRooms(grid)
 			end
 		end
 	end
+
 	return true
 end
 
@@ -211,15 +297,15 @@ function WFCConstraint:_verifyHallways(grid)
 	for j = 1, #grid - 1 do
 		for i = 1, #grid[j] - 1 do
 			if grid[j][i].tileType == FloorLayout.TILE_TYPE_HALLWAY then
-				if grid[j + 1][i].tileType ~= FloorLayout.TILE_TYPE_HALLWAY or
-				   grid[j + 1][i].tileType ~= FloorLayout.TILE_TYPE_WALL or
+				if grid[j + 1][i].tileType ~= FloorLayout.TILE_TYPE_HALLWAY and
+				   grid[j + 1][i].tileType ~= FloorLayout.TILE_TYPE_WALL and
 				   grid[j + 1][i].tileType ~= FloorLayout.TILE_TYPE_UNDECIDED
 				then
 					return false
 				end
 
-				if grid[j][i + 1].tileType ~= FloorLayout.TILE_TYPE_HALLWAY or
-				   grid[j][i + 1].tileType ~= FloorLayout.TILE_TYPE_WALL or
+				if grid[j][i + 1].tileType ~= FloorLayout.TILE_TYPE_HALLWAY and
+				   grid[j][i + 1].tileType ~= FloorLayout.TILE_TYPE_WALL and
 				   grid[j][i + 1].tileType ~= FloorLayout.TILE_TYPE_UNDECIDED
 				then
 					return false
@@ -237,7 +323,12 @@ function WFCConstraint:isCompatible(otherConstraint, otherConstraintAnchor)
 	end
 
 	local grid = self:_getGrid(otherConstraint, otherConstraintAnchor)
-	return self:_verifyRooms(grid) and self:_verifyWalls(grid) and self:_verifyHallways(grid)
+
+	local rooms = self:_verifyRooms(grid)
+	local walls = self:_verifyWalls(grid)
+	local hallways = self:_verifyHallways(grid)
+	
+	return rooms and walls and hallways
 end
 
 return WFCConstraint
