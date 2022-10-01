@@ -941,7 +941,7 @@ static int nbunny_scene_node_transform_get_local_delta_transform(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodetransform(lua_State* L)
 {
-	sol::usertype<nbunny::SceneNodeTransform> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNodeTransform>("NSceneNodeTransform",
 		"getSceneNode", &nbunny_scene_node_transform_get_scene_node,
 		"getCurrentRotation", &nbunny_scene_node_transform_get_current_rotation,
 		"setCurrentRotation", &nbunny_scene_node_transform_set_current_rotation,
@@ -1029,7 +1029,7 @@ static int nbunny_scene_node_material_get_textures(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 {
-	sol::usertype<nbunny::SceneNodeMaterial> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNodeMaterial>("NSceneNodeMaterial",
 		"getSceneNode", &nbunny_scene_node_material_get_scene_node,
 		"setIsTranslucent", &nbunny::SceneNodeMaterial::set_is_translucent,
 		"getIsTranslucent", &nbunny::SceneNodeMaterial::get_is_translucent,
@@ -1218,7 +1218,7 @@ static int nbunny_scene_node_walk_by_position(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 {
-	sol::usertype<nbunny::SceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNode>("NSceneNode",
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SceneNode>),
 		"getParent", &nbunny_scene_node_get_parent,
 		"setParent", &nbunny_scene_node_set_parent,
@@ -1328,7 +1328,7 @@ static int nbunny_camera_move_eye(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
-	sol::usertype<nbunny::Camera> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Camera>("NCamera",
 		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
 		"setIsCullEnabled", &nbunny::Camera::set_is_cull_enabled,
 		"getIsCullEnabled", &nbunny::Camera::get_is_cull_enabled,

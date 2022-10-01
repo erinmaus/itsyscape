@@ -70,7 +70,7 @@ static int nbunny_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_resourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::ResourceInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ResourceInstance>("NResourceInstance",
 		"getID", &nbunny::ResourceInstance::get_id,
 		"getResource", &nbunny_resource_instance_get_resource);
 	sol::stack::push(L, T);
@@ -80,7 +80,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_resourceinstance(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_resource(lua_State* L)
 {
-	sol::usertype<nbunny::Resource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Resource>("NResource",
 		sol::call_constructor, sol::constructors<nbunny::Resource()>(),
 		"getCurrentID", &nbunny::Resource::get_current_id,
 		"allocateID", &nbunny::Resource::allocate_id,
