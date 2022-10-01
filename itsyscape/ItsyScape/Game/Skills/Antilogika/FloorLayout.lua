@@ -132,12 +132,15 @@ function FloorLayout:getAvailableRectangles(tileType)
 				isRoomMatch = true
 			end
 
-
-			if isMatch and isRoomMatch then
-				if currentRectangle then
+			if isMatch then
+				if currentRectangle and isRoomMatch then
 					currentRectangle.right = currentRectangle.right + 1
 					currentRectangle.width = currentRectangle.width + 1
 				else
+					if currentRectangle then
+						table.insert(rectangles, currentRectangle)
+					end
+
 					currentRectangle = {
 						left = i,
 						right = i + 1,

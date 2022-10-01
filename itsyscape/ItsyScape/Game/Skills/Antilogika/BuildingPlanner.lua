@@ -12,6 +12,12 @@ local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 
 local BuildingPlanner = Class()
 
+BuildingPlanner.DEFAULT_ROOM_CONFIG = {
+	width = { min = 5, max = 8 },
+	depth = { min = 5, max = 8 },
+	anchors = {}
+}
+
 BuildingPlanner.Graph = Class()
 
 function BuildingPlanner.Graph:new(parent, i, j, width, depth)
@@ -85,7 +91,7 @@ function BuildingPlanner.Graph:_splitBSP(buildingPlanner, bsp, currentIteration)
 	local minWidth = buildingConfig.split and buildingConfig.split.minWidth or 4
 	local minDepth = buildingConfig.split and buildingConfig.split.minDepth or 4
 
-	local ratio = (math.random() * (maxSplit - minSplit)) + minSplit
+	local ratio = buildingPlanner:randomRange(minSplit, maxSplit)
 
 	local definition1, definition2
 	if bsp.graph.width > bsp.graph.depth then
@@ -171,8 +177,57 @@ function BuildingPlanner.Graph:cut(i, j, width, depth)
 	return graph
 end
 
+function BuildingPlanner.Graph:getSideGraphs(i, j, width, depth, anchor, results)
+	results = results or {}
+
+	if #self.children == 0 then
+		local offset = BuildingAnchor.OFFSET[anchor]
+
+		local isHorizontalMatch = true
+		if offset.i < 0 then
+			if self.i + self.width ~= i then
+				isHorizontalMatch = false
+			end
+		elseif offset.i > 0 then
+			if self.i ~= i + width then
+				isHorizontalMatch = false
+			end
+		else
+			if not (self.i < i + width and self.i + self.width > i) then
+				isHorizontalMatch = false
+			end
+		end
+
+		local isVerticalMatch = true
+		if offset.j < 0 then
+			if self.j + self.depth ~= j then
+				isVerticalMatch = false
+			end
+		elseif offset.j > 0 then
+			if self.j ~= j + depth then
+				isVerticalMatch = false
+			end
+		else
+			if not (self.j < j + depth and self.j + self.depth > j) then
+				isVerticalMatch = false
+			end
+		end
+
+		if isHorizontalMatch and isVerticalMatch then
+			table.insert(results, self)
+		end
+	end
+
+	for index = 1, #self.children do
+		self.children[index]:getSideGraphs(i, j, width, depth, anchor, results)
+	end
+
+	return results
+end
+
 function BuildingPlanner.Graph:resolve(buildingPlanner, room)
 	self.room = room
+	room:attach(self)
 
 	buildingPlanner:getFloorLayout():setRoom(
 		self.i, self.j,
@@ -184,11 +239,21 @@ function BuildingPlanner.Graph:getRoom()
 	return self.room
 end
 
+function BuildingPlanner.Graph:iterate()
+	return ipairs(self.children)
+end
+
 BuildingPlanner.Room = Class()
 
-function BuildingPlanner.Room:new(roomID, roomIndex)
+function BuildingPlanner.Room:new(roomID, roomIndex, roomConfig)
 	self.roomID = roomID
 	self.roomIndex = roomIndex
+	self.roomConfig = roomConfig
+
+	self.graphs = {}
+
+	self.left, self.top = math.huge, math.huge
+	self.right, self.bottom = -math.huge, -math.huge
 end
 
 function BuildingPlanner.Room:getRoomID()
@@ -199,8 +264,106 @@ function BuildingPlanner.Room:getRoomIndex()
 	return self.roomIndex
 end
 
-function BuildingPlanner.Graph:iterate()
-	return ipairs(self.children)
+function BuildingPlanner.Room:attach(graph)
+	table.insert(self.graphs, graph)
+
+	self.left = math.min(self.left, graph:getI())
+	self.right = math.max(self.right, graph:getI() + graph:getWidth())
+	self.top = math.min(self.top, graph:getJ())
+	self.bottom = math.max(self.right, graph:getJ() + graph:getDepth())
+end
+
+function BuildingPlanner.Room:getExpandedRoomAnchors(room)
+	local anchors = {}
+	for a, rooms in pairs(self.roomConfig.anchors or {}) do
+		a = (type(a) == 'number' and { a }) or a
+
+		for i = 1, #a do
+			local anchor = a[i]
+
+			anchors[anchor] = {}
+			for j = 1, #rooms do
+				table.insert(anchors[anchor], rooms[j])
+			end
+		end
+	end
+
+	return anchors
+end
+
+function BuildingPlanner.Room:_isBigEnough()
+	if #self.graphs == 0 then
+		return false
+	end
+
+	local width = self.right - self.left
+	local depth = self.bottom - self.top
+
+	local area = width * depth
+
+	local minWidth = (self.roomConfig.width and self.roomConfig.width.min) or BuildingPlanner.DEFAULT_ROOM_CONFIG.width.min
+	local minDepth = (self.roomConfig.depth and self.roomConfig.depth.min) or BuildingPlanner.DEFAULT_ROOM_CONFIG.depth.min
+	local minArea = minWidth * minDepth
+
+	return area >= minArea, width >= minWidth, depth >= minDepth
+end
+
+function BuildingPlanner.Room:resolve(buildingPlanner, graph, anchor)
+	local reflexAnchor = BuildingAnchor.REFLEX[anchor]
+
+	local areaGood, widthGood, depthGood = self:_isBigEnough()
+	if areaGood and widthGood and depthGood then
+		local anchors = self:getExpandedRoomAnchors()
+
+		for a, rooms in pairs(anchors) do
+			if a ~= reflexAnchor then
+				local roomID = rooms[buildingPlanner:getRNG():random(1, #rooms)]
+				local roomConfig = buildingPlanner:getRoomConfig(roomID) or BuildingPlanner.DEFAULT_ROOM_CONFIG
+
+				if not roomConfig.rooms or not roomConfig.rooms.max or buildingPlanner:countRooms(roomID) < roomConfig.rooms.max then
+					local graphs = buildingPlanner:getGraph():getSideGraphs(graph:getI(), graph:getJ(), graph:getWidth(), graph:getDepth(), a)
+					for i = 1, #graphs do
+						if not graphs[i]:getRoom() then
+							local room = buildingPlanner:newRoom(roomID)
+							graphs[i]:resolve(buildingPlanner, room)
+							buildingPlanner:enqueue(room, graphs[i], a)
+							break
+						end
+					end
+				end
+			end
+		end
+	else
+		local offset = BuildingAnchor.OFFSET[anchor]
+		if widthGood and offset.i ~= 0 and
+		   depthGood and offset.j ~= 0
+		then
+			for i = 1, #self.graphs do
+				for j = 1, #BuildingAnchor.PLANE_XZ do
+					buildingPlanner:enqueue(self, self.graphs[i], BuildingPlanner.PLANE_XZ[j])
+				end
+			end
+
+			return
+		end
+
+		local graphs = buildingPlanner:getGraph():getSideGraphs(graph:getI(), graph:getJ(), graph:getWidth(), graph:getDepth(), anchor)
+
+		for i = 1, #graphs do
+			if not graphs[i]:getRoom() then
+				graph:resolve(buildingPlanner, self)
+
+				for j = 1, #BuildingAnchor.PLANE_XZ do
+					local a = BuildingAnchor.PLANE_XZ[j]
+					if a ~= reflexAnchor then
+						buildingPlanner:enqueue(self, graphs[i], a)
+					end
+				end
+
+				break
+			end
+		end
+	end
 end
 
 function BuildingPlanner:new(buildingConfig, roomConfig, rng)
@@ -257,10 +420,22 @@ function BuildingPlanner:build(buildingID)
 
 	self.currentRoomIndex = 1
 	self.rooms = {}
+	self.roomsByID = {}
+
+	self.queue = {}
 
 	local LayoutType = require(self.currentBuildingConfig.layout)
-	self.layout = LayoutType(32, 32, 4)
+	self.layout = LayoutType(48, 48, 4)
 	self.layout:apply(self)
+
+	while #self.queue > 0 do
+		local room, graph, anchor = unpack(table.remove(self.queue, 1))
+		room:resolve(self, graph, anchor)
+	end
+end
+
+function BuildingPlanner:enqueue(room, graph, anchor)
+	table.insert(self.queue, { room, graph, anchor })
 end
 
 function BuildingPlanner:randomRange(min, max)
@@ -271,10 +446,22 @@ function BuildingPlanner:newRoom(roomID)
 	local roomIndex = self.currentRoomIndex
 	self.currentRoomIndex = self.currentRoomIndex + 1
 
-	local room = BuildingPlanner.Room(roomID, roomIndex)
+	local room = BuildingPlanner.Room(roomID, roomIndex, self:getRoomConfig(roomID) or BuildingPlanner.DEFAULT_ROOM_CONFIG)
 	table.insert(self.rooms, room)
 
+	local rooms = self.roomsByID[roomID] or {}
+	table.insert(rooms, room)
+	self.roomsByID[roomID] = rooms
+
 	return room
+end
+
+function BuildingPlanner:countRooms(roomID)
+	if self.roomsByID[roomID] then
+		return #self.roomsByID[roomID]
+	end
+
+	return 0
 end
 
 return BuildingPlanner

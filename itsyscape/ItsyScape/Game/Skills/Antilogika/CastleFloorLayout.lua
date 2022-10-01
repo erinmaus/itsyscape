@@ -43,7 +43,8 @@ function CastleFloorLayout:apply(buildingPlanner)
 	local graph = buildingPlanner:getGraph()
 
 	local defaultProps = CastleFloorLayout.DEFAULT_PROPS
-	local props = buildingPlanner:getCurrentBuildingConfig().props or defaultProps
+	local buildingConfig = buildingPlanner:getCurrentBuildingConfig()
+	local props = buildingConfig.props or defaultProps
 
 	local relativeTowerSizeProps = props.relativeTowerSize or defaultProps.relativeTowerSize
 	local towerSize = math.floor(
@@ -58,12 +59,13 @@ function CastleFloorLayout:apply(buildingPlanner)
 	local courtyardWidth = math.floor(self:getWidth() - towerSize * 2)
 	local courtyardDepth = math.floor(self:getDepth() - towerSize * 2)
 
-	local courtyard = graph:cut(
+	local courtyardGraph = graph:cut(
 		towerSize + 1,
 		towerSize + 1,
 		courtyardWidth,
 		courtyardDepth)
-	courtyard:resolve(buildingPlanner, buildingPlanner:newRoom("Courtyard"))
+	local courtyardRoom = buildingPlanner:newRoom("Courtyard")
+	courtyardGraph:resolve(buildingPlanner, courtyardRoom)
 
 	local numTowersProps = props.numTowers or defaultProps.numTowers
 	local numTowers = buildingPlanner:getRNG():random(
@@ -110,10 +112,16 @@ function CastleFloorLayout:apply(buildingPlanner)
 	local rectangles = self:getAvailableRectangles(FloorLayout.TILE_TYPE_UNDECIDED)
 	for i = 1, #rectangles do
 		local r = rectangles[i]
-		local child = graph:cut(r.left, r.top, r.width, r.depth)
-		if child then
-			self:split(buildingPlanner, child)
+		if r.width > buildingConfig.split.minWidth and r.depth > buildingConfig.split.minDepth then
+			local child = graph:cut(r.left, r.top, r.width, r.depth)
+			if child then
+				self:split(buildingPlanner, child)
+			end
 		end
+	end
+
+	for i = 1, #BuildingAnchor.PLANE_XZ do
+		buildingPlanner:enqueue(courtyardRoom, courtyardGraph, BuildingAnchor.PLANE_XZ[i])
 	end
 end
 
@@ -121,9 +129,7 @@ function CastleFloorLayout:split(buildingPlanner, graph)
 	graph:split(buildingPlanner)
 
 	for _, child in graph:iterate() do
-		if buildingPlanner:getRNG():random() < 1 then
-			self:split(buildingPlanner, child)
-		end
+		self:split(buildingPlanner, child)
 	end
 end
 
