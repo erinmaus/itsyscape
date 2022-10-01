@@ -1,3 +1,5 @@
+require "nbunny.init"
+
 require "love"
 require "love.data"
 require "love.event"
