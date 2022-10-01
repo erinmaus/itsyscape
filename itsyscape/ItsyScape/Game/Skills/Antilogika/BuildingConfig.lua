@@ -19,8 +19,8 @@ local BuildingConfig = {
 		depth = { min = 32, max = 48 },
 		split = {
 			min = 0.35, max = 0.75,
-			minWidth = 3,
-			minDepth = 3,
+			minWidth = 5,
+			minDepth = 5,
 			iterations = 2
 		},
 

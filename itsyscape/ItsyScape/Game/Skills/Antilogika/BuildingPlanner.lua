@@ -264,6 +264,10 @@ function BuildingPlanner.Room:getRoomIndex()
 	return self.roomIndex
 end
 
+function BuildingPlanner.Room:getroomConfig()
+	return self.roomConfig
+end
+
 function BuildingPlanner.Room:attach(graph)
 	table.insert(self.graphs, graph)
 
@@ -281,9 +285,17 @@ function BuildingPlanner.Room:getExpandedRoomAnchors(room)
 		for i = 1, #a do
 			local anchor = a[i]
 
-			anchors[anchor] = {}
+			anchors[anchor] = anchors[anchor] or { required = {} }
 			for j = 1, #rooms do
 				table.insert(anchors[anchor], rooms[j])
+
+				if self.roomConfig.requiredRooms then
+					for k = 1, #self.roomConfig.requiredRooms do
+						if self.roomConfig.requiredRooms[k] == rooms[j] then
+							table.insert(anchors[anchor].required, rooms[j])
+						end
+					end
+				end
 			end
 		end
 	end
@@ -308,6 +320,38 @@ function BuildingPlanner.Room:_isBigEnough()
 	return area >= minArea, width >= minWidth, depth >= minDepth
 end
 
+function BuildingPlanner.Room:_resolveRooms(buildingPlanner, graph, anchor, rooms)
+	while #rooms > 0 do
+		local index = buildingPlanner:getRNG():random(1, #rooms)
+		local roomID = table.remove(rooms, index)
+
+		local roomConfig = buildingPlanner:getRoomConfig(roomID) or BuildingPlanner.DEFAULT_ROOM_CONFIG
+
+		if not roomConfig.rooms or not roomConfig.rooms.max or buildingPlanner:countRooms(roomID) < roomConfig.rooms.max then
+			local graphs = buildingPlanner:getGraph():getSideGraphs(graph:getI(), graph:getJ(), graph:getWidth(), graph:getDepth(), anchor)
+			for i = 1, #graphs do
+				if not graphs[i]:getRoom() then
+					local room = buildingPlanner:newRoom(roomID)
+					graphs[i]:resolve(buildingPlanner, room)
+
+
+					for j = 1, #BuildingAnchor.PLANE_XZ do
+						if BuildingAnchor.PLANE_XZ[j] ~= BuildingAnchor.REFLEX[anchor] then
+							buildingPlanner:enqueue(room, graphs[i], BuildingAnchor.PLANE_XZ[j])
+						end
+					end
+
+					break
+				end
+			end
+
+			return true
+		end
+	end
+
+	return false
+end
+
 function BuildingPlanner.Room:resolve(buildingPlanner, graph, anchor)
 	local reflexAnchor = BuildingAnchor.REFLEX[anchor]
 
@@ -317,19 +361,8 @@ function BuildingPlanner.Room:resolve(buildingPlanner, graph, anchor)
 
 		for a, rooms in pairs(anchors) do
 			if a ~= reflexAnchor then
-				local roomID = rooms[buildingPlanner:getRNG():random(1, #rooms)]
-				local roomConfig = buildingPlanner:getRoomConfig(roomID) or BuildingPlanner.DEFAULT_ROOM_CONFIG
-
-				if not roomConfig.rooms or not roomConfig.rooms.max or buildingPlanner:countRooms(roomID) < roomConfig.rooms.max then
-					local graphs = buildingPlanner:getGraph():getSideGraphs(graph:getI(), graph:getJ(), graph:getWidth(), graph:getDepth(), a)
-					for i = 1, #graphs do
-						if not graphs[i]:getRoom() then
-							local room = buildingPlanner:newRoom(roomID)
-							graphs[i]:resolve(buildingPlanner, room)
-							buildingPlanner:enqueue(room, graphs[i], a)
-							break
-						end
-					end
+				if not self:_resolveRooms(buildingPlanner, graph, a, rooms.required) then
+					self:_resolveRooms(buildingPlanner, graph, a, rooms)
 				end
 			end
 		end
