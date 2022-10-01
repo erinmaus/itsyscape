@@ -113,7 +113,7 @@ int nbunny_vorono_points_buffer_inside(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_world_voronoipointsbuffer(lua_State* L)
 {
-	sol::usertype<nbunny::VoronoiPointsBuffer> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::VoronoiPointsBuffer>("NVoronoiPointsBuffer",
 		sol::call_constructor, sol::constructors<nbunny::VoronoiPointsBuffer(std::size_t)>(),
 		"getSize", &nbunny::VoronoiPointsBuffer::get_size,
 		"resize", &nbunny::VoronoiPointsBuffer::resize,
@@ -216,7 +216,7 @@ std::size_t nbunny::VoronoiDiagram::get_point_index_from_polygon(std::size_t pol
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_world_voronoidiagram(lua_State* L)
 {
-	sol::usertype<nbunny::VoronoiDiagram> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::VoronoiDiagram>("NVoronoiDiagram",
 		sol::call_constructor, sol::constructors<nbunny::VoronoiDiagram(const nbunny::VoronoiPointsBuffer&)>(),
 		"relax", &nbunny::VoronoiDiagram::relax,
 		"getNumPolygons", &nbunny::VoronoiDiagram::get_num_polygons,

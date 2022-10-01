@@ -519,7 +519,7 @@ static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pa
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_deferredrendererpass(lua_State* L)
 {
-	sol::usertype<nbunny::DeferredRendererPass> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DeferredRendererPass>("NDeferredRendererPass",
 		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		sol::call_constructor, sol::factories(&nbunny_deferred_renderer_pass_create),
 		"getGBuffer", &nbunny::DeferredRendererPass::get_g_buffer,

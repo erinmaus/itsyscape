@@ -29,7 +29,7 @@ static int nbunny_texture_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_textureresource(lua_State* L)
 {
-	sol::usertype<nbunny::TextureResource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::TextureResource>("NTextureResource",
 		sol::base_classes, sol::bases<nbunny::Resource>(),
 		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::TextureResource>),
 		"instantiate", &nbunny_texture_resource_instantiate);
@@ -89,7 +89,7 @@ static int nbunny_texture_instance_get_texture(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_textureresourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::TextureInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::TextureInstance>("NTextureInstance",
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::constructors<nbunny::TextureInstance()>(),
 		"setTexture", &nbunny_texture_instance_set_texture,

@@ -321,7 +321,7 @@ static int nbunny_renderer_draw(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 {
-	sol::usertype<nbunny::Renderer> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Renderer>("NRenderer",
 		sol::call_constructor, sol::factories(&nbunny_renderer_create),
 		"addRendererPass", &nbunny::Renderer::add_renderer_pass,
 		"setClearColor", &nbunny_renderer_set_clear_color,
@@ -340,7 +340,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_rendererpass(lua_State* L)
 {
-	sol::usertype<nbunny::RendererPass> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::RendererPass>("NRendererPass",
 		"new", sol::no_constructor,
 		"getRendererPassID", &nbunny::RendererPass::get_renderer_pass_id);
 

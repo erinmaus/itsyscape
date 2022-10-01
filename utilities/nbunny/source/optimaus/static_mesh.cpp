@@ -29,7 +29,7 @@ static int nbunny_static_mesh_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_staticmeshresource(lua_State* L)
 {
-	sol::usertype<nbunny::StaticMeshResource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::StaticMeshResource>("NStaticMeshResource",
 		sol::base_classes, sol::bases<nbunny::Resource>(),
 		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::StaticMeshResource>),
 		"instantiate", &nbunny_static_mesh_resource_instantiate);
@@ -98,7 +98,7 @@ static int nbunny_static_mesh_instance_get_mesh(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_staticmeshresourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::StaticMeshInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::StaticMeshInstance>("NStaticMeshInstance",
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::constructors<nbunny::StaticMeshInstance()>(),
 		"setMesh", &nbunny_static_mesh_instance_set_mesh,

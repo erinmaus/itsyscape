@@ -33,4 +33,10 @@ extern "C"
 	#define NBUNNY_EXPORT
 #endif
 
+namespace nbunny
+{
+	lua_State* get_lua_state(lua_State* L);
+	void set_lua_state(lua_State* L);
+}
+
 #endif

@@ -52,7 +52,7 @@ solution "ItsyScape.Utilities"
 		language "C++"
 		kind "SharedLib"
 
-		cppdialect "C++17"
+		cppdialect "C++20"
 
 		configuration "Debug"
 			targetsuffix "_debug"
@@ -76,6 +76,7 @@ solution "ItsyScape.Utilities"
 
 		includedirs {
 			"nbunny/include/",
+			"nbunny/include/nbunny/deps",
 			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include"),
 			path.join(_OPTIONS["deps"] or _DEFAULTS["deps"], "include", "modules"),
 		}
