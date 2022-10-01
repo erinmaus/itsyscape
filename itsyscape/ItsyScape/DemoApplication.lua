@@ -684,6 +684,111 @@ function DemoApplication:draw(delta)
 	if self.titleScreen then
 		self.titleScreen:draw()
 	end
+
+	if BUILDING then
+		love.graphics.draw(BUILDING)
+	end
+end
+
+do
+	local Antilogika = require "ItsyScape.Game.Skills.Antilogika"
+	--local rng = love.math.newRandomGenerator(os.time())
+	local rng = love.math.newRandomGenerator()
+	--rng:setSeed("1664477894")
+	--print(">>>> seed =", rng:getSeed())
+	local bp = Antilogika.BuildingPlanner(Antilogika.BuildingConfig, Antilogika.RoomConfig, rng)
+	bp:build("Castle")
+
+	local SIZE = 16
+	local layout = bp:getFloorLayout()
+
+	local canvas = love.graphics.newCanvas((layout:getWidth() + 2) * SIZE, (layout:getDepth() + 2) * SIZE)
+
+	love.graphics.push('all')
+	love.graphics.setCanvas(canvas)
+	love.graphics.clear(1, 1, 1, 1)
+
+	love.graphics.setColor(0, 0, 0, 1)
+
+	local function iterate(graph)
+		love.graphics.rectangle('line', graph:getI() * SIZE, graph:getJ() * SIZE, graph:getWidth() * SIZE, graph:getDepth() * SIZE)
+
+		for _, child in graph:iterate() do
+			iterate(child)
+		end
+	end
+
+	-- local rooms = bp:getRooms()
+	-- for i = 1, #rooms do 
+	-- 		love.graphics.rectangle('line', x1, y1, x2 - x1, y2 - y1)
+
+	-- 		local label = rooms[i]:getRoomID()
+
+	-- 		if x2 - x1 > 0 and y2 - y1 > 0 then
+	-- 		love.graphics.setColor(0.2, 0.2, 0.2, 1)
+	-- 		love.graphics.print(label, labelX - love.graphics.getFont():getWidth(label) / 2 + 1, labelY + 1)
+
+	-- 		love.graphics.setColor(0, 0, 0, 1)
+	-- 		love.graphics.print(label, labelX - love.graphics.getFont():getWidth(label) / 2, labelY)
+	-- 	end
+	-- 	end
+	-- end
+
+	for i = 1, layout:getWidth() do
+		for j = 1, layout:getDepth() do
+			local tile = layout:getTile(i, j)
+			if tile:getTileType() == Antilogika.FloorLayout.TILE_TYPE_ROOM then
+				love.graphics.setColor(0.8, 0.8, 0.8, 1.0)
+				love.graphics.rectangle('fill', i * SIZE, j * SIZE, SIZE, SIZE)
+			elseif tile:getTileType() == Antilogika.FloorLayout.TILE_TYPE_WALL then
+				love.graphics.setColor(0.0, 0.0, 0.0, 1.0)
+				love.graphics.rectangle('fill', i * SIZE, j * SIZE, SIZE, SIZE)
+			elseif tile:getTileType() == Antilogika.FloorLayout.TILE_TYPE_OUTSIDE then
+				love.graphics.setColor(0.0, 1.0, 0.0, 1.0)
+				love.graphics.rectangle('fill', i * SIZE, j * SIZE, SIZE, SIZE)
+			end
+		end
+	end
+
+	love.graphics.setColor(0, 0, 0, 1)
+	iterate(bp:getGraph())
+
+	local rooms = layout:getAvailableRectangles()
+	for i = 1, #rooms do
+		local roomIndex = layout:getTile(rooms[i].left, rooms[i].top):getRoomIndex()
+		local label = rooms[i].roomID .. "@" .. (roomIndex or 0)
+		--local label = "@" .. (roomIndex or 0)
+
+		love.graphics.setColor(0, 01, 1, 1)
+		love.graphics.rectangle(
+			"line",
+			rooms[i].left * SIZE,
+			rooms[i].top * SIZE,
+			(rooms[i].right - rooms[i].left) * SIZE,
+			(rooms[i].bottom - rooms[i].top) * SIZE)
+
+		love.graphics.setColor(1, 0, 0, 1)
+		love.graphics.print(
+			label,
+			(rooms[i].left + rooms[i].width / 2) * SIZE - love.graphics.getFont():getWidth(label) / 2,
+			(rooms[i].top + rooms[i].depth / 2) * SIZE)
+	end
+
+	-- for i = 1, layout:getWidth(), 4 do
+	-- 	for j = 1, layout:getDepth(), 4 do
+	-- 		local label = string.format("%d, %d", i / 4 + 1, j / 4 + 1)
+	-- 		love.graphics.print(
+	-- 			label,
+	-- 			(i + 1) * SIZE - love.graphics.getFont():getWidth(label) / 2,
+	-- 			(j + 1) * SIZE)
+	-- 	end
+	-- end
+
+	love.graphics.pop()
+
+	--BUILDING = canvas
+
+	--os.exit()
 end
 
 return DemoApplication

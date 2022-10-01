@@ -16,7 +16,7 @@ local ORES = {
 		secondaries = {
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrunblySulfur"
+			"CrumblySulfur"
 		}
 	},
 
@@ -27,7 +27,7 @@ local ORES = {
 		secondaries = {
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrunblySulfur"
+			"CrumblySulfur"
 		}
 	},
 
@@ -41,7 +41,7 @@ local ORES = {
 		secondaries = {
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrunblySulfur"
+			"CrumblySulfur"
 		}
 	},
 

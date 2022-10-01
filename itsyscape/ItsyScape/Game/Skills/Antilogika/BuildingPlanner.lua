@@ -399,6 +399,10 @@ function BuildingPlanner.Room:resolve(buildingPlanner, graph, anchor)
 	end
 end
 
+function BuildingPlanner.Room:iterate()
+	return ipairs(self.graphs)
+end
+
 function BuildingPlanner:new(buildingConfig, roomConfig, rng)
 	self.buildingConfig = buildingConfig
 	self.roomConfig = roomConfig
@@ -465,6 +469,55 @@ function BuildingPlanner:build(buildingID)
 		local room, graph, anchor = unpack(table.remove(self.queue, 1))
 		room:resolve(self, graph, anchor)
 	end
+end
+
+function BuildingPlanner:getState()
+	local state = { rooms = {} }
+
+	local left, right = math.huge, -math.huge
+	local top, bottom = math.huge, -math.huge
+
+	for i = 1, #self.rooms do
+		local room = self.rooms[i]
+
+		local r = { graphs = {} }
+		for _, graph in room:iterate() do
+			local g = {
+				i = graph:getI(),
+				j = graph:getJ(),
+				width = graph:getWidth(),
+				depth = graph:getDepth(),
+
+				left = graph:getI(),
+				right = graph:getI() + graph:getWidth(),
+				top = graph:getJ(),
+				bottom = graph:getJ() + graph:getDepth()
+			}
+
+			table.insert(r.graphs, g)
+
+			left = math.min(left, g.left)
+			right = math.max(right, g.right)
+			top = math.min(top, g.top)
+			bottom = math.max(bottom, g.bottom)
+		end
+
+		table.insert(state.rooms, r)
+	end
+
+	state.root = {
+		i = left,
+		j = top,
+		width = right - left,
+		depth = bottom - top,
+
+		left = left,
+		right = right,
+		top = top,
+		bottom = bottom
+	}
+
+	return state
 end
 
 function BuildingPlanner:enqueue(room, graph, anchor)

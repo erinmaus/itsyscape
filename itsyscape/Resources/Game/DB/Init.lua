@@ -996,6 +996,7 @@ include "Resources/Game/DB/Props/OldOnesTech.lua"
 include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
+include "Resources/Game/DB/Props/CSGBuilding.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
