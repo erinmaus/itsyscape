@@ -12,13 +12,9 @@ local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local RoomConfig = {
 	{
 		id = "CastleEntrance",
-		width = { min = 4, max = 4 },
-		depth = { min = 8, max = 12 },
-		anchors = {
-			[BuildingAnchor.BACK] = {
-				"Courtyard"
-			}
-		}
+		width = { min = 12, max = 16 },
+		depth = { min = 12, max = 16 },
+		rooms = { min = 1, max = 1 }
 	},
 	{
 		id = "CastleTower",
@@ -45,7 +41,7 @@ local RoomConfig = {
 	},
 	{
 		id = "GreatHall",
-		width = { min = 12, max = 18 },
+		width = { min = 16, max = 24 },
 		height = { min = 2, max = 3 },
 		depth = { min = 16, max = 24 },
 		aspectRatio = 2 / 1,
@@ -59,7 +55,7 @@ local RoomConfig = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Chapel",
 				"Kitchen",
-				"Foyer"
+				"LordFoyer"
 			}
 		}
 	},
@@ -95,10 +91,21 @@ local RoomConfig = {
 		}
 	},
 	{
+		id = "LordFoyer",
+		rooms = { max = 1 },
+		width = { min = 16, max = 18 },
+		height = { min = 16, max = 18 },
+		anchors = {
+			[BuildingAnchor.PLANE_XZ] = {
+				"Bedroom_Fancy"
+			}
+		}
+	},
+	{
 		id = "Foyer",
 		rooms = { max = 1 },
-		width = { min = 8, max = 12 },
-		height = { min = 8, max = 12 },
+		width = { min = 16, max = 18 },
+		height = { min = 16, max = 18 },
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Bedroom_Fancy"

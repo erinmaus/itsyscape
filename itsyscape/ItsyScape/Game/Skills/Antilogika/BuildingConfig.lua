@@ -26,7 +26,7 @@ local BuildingConfig = {
 
 		props = {
 			numTowers = { min = 1, max = 4 },
-			relativeTowerSize = { min = 0.2, max = 0.3 },
+			relativeTowerSize = { min = 0.3, max = 0.35 },
 			towerOffsets = {}
 		}
 	}
