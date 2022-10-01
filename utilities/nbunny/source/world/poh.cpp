@@ -69,11 +69,15 @@ void nbunny::POHBuilder::cube(csg::volume_t volume, const glm::mat4& transform)
 	}
 
 	brush->set_planes(transformed_planes);
+
+	building_brushes.push_back(brush);
 }
 
 love::graphics::Mesh* nbunny::POHBuilder::build()
 {
 	std::vector<Vertex> mesh_vertices;
+
+	building.rebuild();
 
 	for (auto brush: building_brushes)
 	{
@@ -88,7 +92,7 @@ love::graphics::Mesh* nbunny::POHBuilder::build()
 
 				auto& vertices = fragment.vertices;
 
-				auto flip = fragment.back_volume == POH_SOLID;
+				auto flip = fragment.back_volume == POH_AIR;
 				auto normal = face.plane->normal;
 				if (flip)
 				{
@@ -113,6 +117,11 @@ love::graphics::Mesh* nbunny::POHBuilder::build()
 				}
 			}
 		}
+	}
+
+	if (mesh_vertices.empty())
+	{
+		return nullptr;
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);

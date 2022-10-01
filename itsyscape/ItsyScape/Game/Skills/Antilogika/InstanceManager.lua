@@ -10,10 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local BuildingPlanner = require "ItsyScape.Game.Skills.Antilogika.BuildingPlanner"
+local BuildingConfig = require "ItsyScape.Game.Skills.Antilogika.BuildingConfig"
+local RoomConfig = require "ItsyScape.Game.Skills.Antilogika.RoomConfig"
 local Map = require "ItsyScape.World.Map"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 local InstanceManager = Class()
-InstanceManager.MAP_SIZE = 16
+InstanceManager.MAP_SIZE = 48
 
 function InstanceManager:new(game, dimensionBuilder)
 	self.game = game
@@ -80,6 +84,53 @@ function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position
 	end)
 end
 
+function InstanceManager:_instantiateBuilding(instance)
+	local buildingPlanner = BuildingPlanner(BuildingConfig, RoomConfig)
+	buildingPlanner:build("Castle")
+
+	local mapScript = instance:getMapScriptByMapFilename("Antilogika")
+	local map = self:getStage():getMap(instance:getBaseLayer())
+
+	local tileSets = {}
+
+	local layout = buildingPlanner:getFloorLayout()
+	for i = 1, layout:getWidth() do
+		for j = 1, layout:getDepth() do
+			local layoutTile = layout:getTile(i, j)
+			local mapTile = map:getTile(i, j)
+			local tileSet = tileSets[mapTile.tileSetID] or MultiTileSet({ mapTile.tileSetID }, false):getTileSetByIndex(1)
+
+			if layoutTile:getRoomID() == "Courtyard" then
+				mapTile.flat = tileSet:getTileIndex("grass") or mapTile.flat
+			else
+				mapTile.flat = tileSet:getTileIndex("wood") or mapTile.flat
+			end
+
+			mapTile.topLeft = 4
+			mapTile.topRight = 4
+			mapTile.bottomLeft = 4
+			mapTile.bottomRight = 4
+
+			tileSets[mapTile.tileSetID] = tileSet
+		end
+	end
+	self:getStage():updateMap(instance:getBaseLayer(), map)
+
+	mapScript:listen('postLoad', function()
+		local center = map:getTileCenter(1, 1)
+		local building = Utility.spawnPropAtPosition(
+			mapScript,
+			"CSGBuilding",
+			center.x,
+			center.y,
+			center.z,
+			0)
+		local peep = building:getPeep()
+
+		peep:setPropState(buildingPlanner:getState())
+	end)
+end
+
 function InstanceManager:instantiateMapObjects(i, j, instance)
 	local map = self:getStage():getMap(instance:getBaseLayer())
 
@@ -88,7 +139,7 @@ function InstanceManager:instantiateMapObjects(i, j, instance)
 		self:_instantiatePortal(i - 1, j, instance, position)
 	end
 
-	if i < InstanceManager.MAP_SIZE then
+	if i < self:getDimensionBuilder():getWidth() then
 		local position = map:getTileCenter(InstanceManager.MAP_SIZE, InstanceManager.MAP_SIZE / 2)
 		self:_instantiatePortal(i + 1, j, instance, position)
 	end
@@ -98,9 +149,15 @@ function InstanceManager:instantiateMapObjects(i, j, instance)
 		self:_instantiatePortal(i, j - 1, instance, position)
 	end
 
-	if j < InstanceManager.MAP_SIZE then
+	if j < self:getDimensionBuilder():getHeight() then
 		local position = map:getTileCenter(InstanceManager.MAP_SIZE / 2, InstanceManager.MAP_SIZE)
 		self:_instantiatePortal(i, j + 1, instance, position)
+	end
+
+	if i == self:getDimensionBuilder():getScale() + 1 and
+	   j == self:getDimensionBuilder():getScale() + 1
+	then
+		self:_instantiateBuilding(instance)
 	end
 end
 

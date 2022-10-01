@@ -18,6 +18,7 @@ local ZoneMap = require "ItsyScape.Game.Skills.Antilogika.ZoneMap"
 local DimensionBuilder = Class()
 
 function DimensionBuilder:new(seed, scale, dimensionConfig)
+	self.scale = scale
 	self.size = scale * 2 + 1
 	self.width = self.size
 	self.height = self.size
@@ -93,6 +94,10 @@ function DimensionBuilder:_initializeCells()
 			self.zoneMap:assignZone(i, j, param1Sample, param2Sample)
 		end
 	end
+end
+
+function DimensionBuilder:getScale()
+	return self.scale
 end
 
 function DimensionBuilder:getWidth()
