@@ -51,6 +51,7 @@ function CastleFloorLayout:apply(buildingPlanner)
 		buildingPlanner:randomRange(
 			relativeTowerSizeProps.min or defaultProps.relativeTowerSize.min,
 			relativeTowerSizeProps.max or defaultProps.relativeTowerSize.max) * math.min(self:getWidth(), self:getDepth()))
+	local halfTowerSize = math.ceil(towerSize / 2)
 
 	local relativeCourtyardSizeProps = props.relativeCourtyardSize or defaultProps.relativeCourtyardSize
 	local relativeCourtyardSize = buildingPlanner:randomRange(
@@ -76,11 +77,11 @@ function CastleFloorLayout:apply(buildingPlanner)
 	local towerOffset = towerOffsetsProps[buildingPlanner:getRNG():random(1, #towerOffsetsProps)] or defaultProps.towerOffsets[1]
 
 	for index = 1, numTowers do
-		local angle = math.pi * 2 * ((index - 1) / numTowers) + towerOffset
+		local angle = math.pi * 2 * ((index - 1) / (numTowersProps.max or defaultProps.numTowers.max)) + towerOffset
 		local x, z = math.cos(angle), math.sin(angle)
 
 		local i, j
-		if math.abs(x) < math.abs(z) then
+		if math.abs(x) <= math.abs(z) then
 			j = math.floor(((z + 1) * 0.5) * self:getDepth())
 			if x <= 0 then
 				i = 1
@@ -96,14 +97,14 @@ function CastleFloorLayout:apply(buildingPlanner)
 			end
 		end
 
-		i = math.max(1, math.min(self:getWidth() - towerSize + 1, i))
-		j = math.max(1, math.min(self:getDepth() - towerSize + 1, j))
+		i = math.max(1, math.min(self:getWidth() - halfTowerSize + 1, i))
+		j = math.max(1, math.min(self:getDepth() - halfTowerSize + 1, j))
 
 		local tower = graph:cut(
 			i,
 			j,
-			towerSize,
-			towerSize)
+			halfTowerSize,
+			halfTowerSize)
 		if tower then
 			tower:resolve(buildingPlanner, buildingPlanner:newRoom("CastleTower"))
 		end

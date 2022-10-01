@@ -41,15 +41,14 @@ local RoomConfig = {
 	},
 	{
 		id = "GreatHall",
-		width = { min = 16, max = 24 },
+		width = { min = 13, max = 21 },
 		height = { min = 2, max = 3 },
-		depth = { min = 16, max = 24 },
+		depth = { min = 13, max = 21 },
 		aspectRatio = 2 / 1,
 		rooms = { min = 1, max = 1 },
-		required = {
+		requiredRooms = {
 			"Chapel",
-			"Kitchen",
-			"Foyer"
+			"LordFoyer"
 		},
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
@@ -91,10 +90,20 @@ local RoomConfig = {
 		}
 	},
 	{
+		id = "Bedroom_Soldiers",
+		anchors = {
+			[BuildingAnchor.PLANE_XZ] = {
+				"Bedroom_Soldiers",
+				"Closet",
+				"Bathroom_Servants"
+			}
+		}
+	},
+	{
 		id = "LordFoyer",
 		rooms = { max = 1 },
-		width = { min = 16, max = 18 },
-		height = { min = 16, max = 18 },
+		width = { min = 8, max = 13 },
+		height = { min = 8, max = 13 },
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Bedroom_Fancy"
