@@ -27,6 +27,7 @@ local RoomConfig = {
 		width = { min = 12, max = 16 },
 		height = { min = math.huge, max = math.huge },
 		depth = { min = 12, max = 16 },
+		doorSize = 2,
 		aspectRatio = 1,
 		anchors = {
 			[{ BuildingAnchor.BACK, BuildingAnchor.LEFT, BuildingAnchor.RIGHT }] = {
@@ -46,6 +47,7 @@ local RoomConfig = {
 		depth = { min = 13, max = 21 },
 		aspectRatio = 2 / 1,
 		rooms = { min = 1, max = 1 },
+		doorSize = 2,
 		requiredRooms = {
 			"Chapel",
 			"LordFoyer"
@@ -104,6 +106,7 @@ local RoomConfig = {
 		rooms = { max = 1 },
 		width = { min = 8, max = 13 },
 		height = { min = 8, max = 13 },
+		doorSize = 2,
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Bedroom_Fancy"
@@ -115,6 +118,7 @@ local RoomConfig = {
 		rooms = { max = 1 },
 		width = { min = 16, max = 18 },
 		height = { min = 16, max = 18 },
+		doorSize = 2,
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Bedroom_Fancy"
@@ -124,6 +128,7 @@ local RoomConfig = {
 	{
 		id = "Armory",
 		rooms = { max = 1 },
+		doorSize = 2,
 		anchors = {
 			[BuildingAnchor.PLANE_XZ] = {
 				"Smithy",

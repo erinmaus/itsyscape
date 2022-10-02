@@ -50,6 +50,22 @@ function BuildingPlanner.Graph:getDepth()
 	return self.depth
 end
 
+function BuildingPlanner.Graph:getLeft()
+	return self.i
+end
+
+function BuildingPlanner.Graph:getRight()
+	return self.i + self.width
+end
+
+function BuildingPlanner.Graph:getTop()
+	return self.j
+end
+
+function BuildingPlanner.Graph:getBottom()
+	return self.j + self.depth
+end
+
 function BuildingPlanner.Graph:split(buildingPlanner)
 	if #self.children > 0 then
 		return false
@@ -256,6 +272,79 @@ function BuildingPlanner.Room:new(roomID, roomIndex, roomConfig)
 	self.right, self.bottom = -math.huge, -math.huge
 end
 
+function BuildingPlanner.Room:connect(room, fromGraph, toGraph)
+	self.parent = room
+	self.fromGraph = fromGraph
+	self.toGraph = toGraph
+
+	self.door = {}
+
+	local left, right, top, bottom, anchor
+	if fromGraph:getRight() == toGraph:getLeft() or
+	   fromGraph:getLeft() == toGraph:getRight()
+	then
+		anchor = (fromGraph:getRight() == toGraph:getLeft() and BuildingAnchor.RIGHT) or BuildingAnchor.LEFT
+
+		left = (fromGraph:getRight() == toGraph:getLeft() and fromGraph:getRight()) or fromGraph:getLeft()
+		right = left + 1
+
+		local j1, j2, depth
+		j1 = math.max(fromGraph:getTop(), toGraph:getTop())
+		j2 = math.min(fromGraph:getBottom(), toGraph:getBottom())
+		depth = j2 - j1
+
+		top = j1 + math.floor((depth - (self.roomConfig.doorSize or 1)) / 2)
+		bottom = top + (self.roomConfig.doorSize or 1)
+	elseif fromGraph:getBottom() == toGraph:getTop() or
+	       fromGraph:getTop() == toGraph:getBottom()
+	then
+		anchor = (fromGraph:getBottom() == toGraph:getTop() and BuildingAnchor.FRONT) or BuildingAnchor.BACK
+
+		top = (fromGraph:getBottom() == toGraph:getTop() and fromGraph:getBottom()) or fromGraph:getTop()
+		bottom = top + 1
+
+		local i1, i2, width
+		i1 = math.max(fromGraph:getLeft(), toGraph:getLeft())
+		i2 = math.min(fromGraph:getRight(), toGraph:getRight())
+		width = i2 - i1
+
+		left = i1 + math.floor((width - (self.roomConfig.doorSize or 1)) / 2)
+		right = left + (self.roomConfig.doorSize or 1)
+	end
+
+	if left and right and top and bottom and anchor then
+		self.door = {
+			left = left,
+			right = right,
+			top = top,
+			bottom = bottom,
+
+			i = left,
+			j = top,
+			width = right - left,
+			depth = bottom - top,
+
+			anchor = anchor
+		}
+	end
+end
+
+function BuildingPlanner.Room:getParent()
+	return self.parent
+end
+
+function BuildingPlanner.Room:getFromGraphConnection()
+	return self.fromGraph
+end
+
+function BuildingPlanner.Room:getToGraphConnection()
+	return self.toGraph
+end
+
+function BuildingPlanner.Room:getDoor()
+	return self.door
+end
+
 function BuildingPlanner.Room:getRoomID()
 	return self.roomID
 end
@@ -264,7 +353,7 @@ function BuildingPlanner.Room:getRoomIndex()
 	return self.roomIndex
 end
 
-function BuildingPlanner.Room:getroomConfig()
+function BuildingPlanner.Room:getRoomConfig()
 	return self.roomConfig
 end
 
@@ -333,7 +422,7 @@ function BuildingPlanner.Room:_resolveRooms(buildingPlanner, graph, anchor, room
 				if not graphs[i]:getRoom() then
 					local room = buildingPlanner:newRoom(roomID)
 					graphs[i]:resolve(buildingPlanner, room)
-
+					room:connect(self, graph, graphs[i])
 
 					for j = 1, #BuildingAnchor.PLANE_XZ do
 						if BuildingAnchor.PLANE_XZ[j] ~= BuildingAnchor.REFLEX[anchor] then
@@ -488,11 +577,25 @@ function BuildingPlanner:getState()
 				width = graph:getWidth(),
 				depth = graph:getDepth(),
 
-				left = graph:getI(),
-				right = graph:getI() + graph:getWidth(),
-				top = graph:getJ(),
-				bottom = graph:getJ() + graph:getDepth()
+				left = graph:getLeft(),
+				right = graph:getRight(),
+				top = graph:getTop(),
+				bottom = graph:getBottom()
 			}
+
+			if graph == room:getToGraphConnection() then
+				local door = room:getDoor()
+				g.door = {
+					i = door.i,
+					j = door.j,
+					width = door.width,
+					depth = door.depth,
+					left = door.left,
+					right = door.right,
+					top = door.top,
+					bottom = door.bottom
+				}
+			end
 
 			table.insert(r.graphs, g)
 
@@ -548,6 +651,10 @@ function BuildingPlanner:countRooms(roomID)
 	end
 
 	return 0
+end
+
+function BuildingPlanner:iterate()
+	return ipairs(self.rooms)
 end
 
 return BuildingPlanner
