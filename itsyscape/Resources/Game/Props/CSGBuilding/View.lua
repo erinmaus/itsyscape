@@ -22,7 +22,7 @@ CSGBuilding.HEIGHT = 2
 CSGBuilding.Node = Class(SceneNode)
 CSGBuilding.Node.SHADER = ShaderResource()
 do
-	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/LightBeam")
+	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/TriPlanar")
 end
 
 function CSGBuilding.Node:new()
@@ -41,7 +41,20 @@ function CSGBuilding.Node:getMesh()
 	return self.mesh
 end
 
-function CSGBuilding.Node:draw()
+function CSGBuilding.Node:draw(renderer)
+	local shader = renderer:getCurrentShader()
+	local diffuseTexture = self:getMaterial():getTexture(1)
+	if shader:hasUniform("scape_DiffuseTexture") and
+	   diffuseTexture and diffuseTexture:getIsReady()
+	then
+		diffuseTexture:getResource():setWrap("repeat")
+		shader:send("scape_DiffuseTexture", diffuseTexture:getResource())
+	end
+
+	if shader:hasUniform("scape_Scale") then
+		shader:send("scape_Scale", 1)
+	end
+
 	if self.mesh then
 		love.graphics.draw(self.mesh)
 	end
@@ -54,6 +67,13 @@ function CSGBuilding:load()
 	local root = self:getRoot()
 
 	self.csgNode = CSGBuilding.Node()
+
+	resources:queue(
+		TextureResource,
+		"Resources/Game/Props/CSGBuilding/Texture.png",
+		function(texture)
+			self.csgNode:getMaterial():setTextures(texture)
+		end)
 
 	resources:queueEvent(
 		function()
