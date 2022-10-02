@@ -121,9 +121,9 @@ function InstanceManager:_instantiateBuilding(instance)
 		local building = Utility.spawnPropAtPosition(
 			mapScript,
 			"CSGBuilding",
-			center.x,
+			0,
 			center.y,
-			center.z,
+			0,
 			0)
 		local peep = building:getPeep()
 

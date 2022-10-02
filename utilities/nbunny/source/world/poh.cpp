@@ -54,12 +54,12 @@ void nbunny::POHBuilder::cube(csg::volume_t volume, const glm::mat4& transform)
 
 	static std::vector<csg::plane_t> cube_planes =
 	{
-		make_plane(glm::vec3(+1, 0, 0), glm::vec3(+1, 0, 0)),
-		make_plane(glm::vec3(-1, 0, 0), glm::vec3(-1, 0, 0)),
-		make_plane(glm::vec3(0, +1, 0), glm::vec3(0, +1, 0)),
-		make_plane(glm::vec3(0, -1, 0), glm::vec3(0, -1, 0)),
-		make_plane(glm::vec3(0, 0, +1), glm::vec3(0, 0, +1)),
-		make_plane(glm::vec3(0, 0, -1), glm::vec3(0, 0, -1))
+		make_plane((glm::vec3(+1, 0, 0) + glm::vec3(1)) / glm::vec3(2), glm::vec3(+1, 0, 0)),
+		make_plane((glm::vec3(-1, 0, 0) + glm::vec3(1)) / glm::vec3(2), glm::vec3(-1, 0, 0)),
+		make_plane((glm::vec3(0, +1, 0) + glm::vec3(1)) / glm::vec3(2), glm::vec3(0, +1, 0)),
+		make_plane((glm::vec3(0, -1, 0) + glm::vec3(1)) / glm::vec3(2), glm::vec3(0, -1, 0)),
+		make_plane((glm::vec3(0, 0, +1) + glm::vec3(1)) / glm::vec3(2), glm::vec3(0, 0, +1)),
+		make_plane((glm::vec3(0, 0, -1) + glm::vec3(1)) / glm::vec3(2), glm::vec3(0, 0, -1))
 	};
 
 	std::vector<csg::plane_t> transformed_planes;

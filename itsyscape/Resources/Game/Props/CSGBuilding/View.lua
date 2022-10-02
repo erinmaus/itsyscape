@@ -59,6 +59,11 @@ function CSGBuilding:load()
 		function()
 			self.csgNode:setMesh(self:generate())
 			self.csgNode:setParent(root)
+
+			local state = self:getProp():getState()
+			self.csgNode:setBounds(
+				Vector((state.root.i - 2 + 0.1) * 2, 0, (state.root.j - 2 + 0.1) * 2),
+				Vector((state.root.i - 2 + 0.1 + state.root.width + 0.1) * 2, CSGBuilding.HEIGHT * 2, (state.root.j - 2 + 0.1 + state.root.width + 0.1)) * 2)
 		end)
 end
 
@@ -73,19 +78,106 @@ function CSGBuilding:cube(builder, volumeType, x, z, width, depth)
 	builder:cube(volumeType, transform)
 end
 
+function CSGBuilding:cube(builder, volumeType, graph)
+	local transform = love.math.newTransform()
+
+	-- Scale to the size of a map cell.
+	transform:scale(2, 2, 2)
+
+	-- Translate to (0, 0, 0).
+	-- The graph starts at (1, 0, 1) but the world starts at (0, 0, 0).
+	transform:translate(-1, 0, -1)
+
+	-- Translate to the top-left corner of the graph.
+	transform:translate(graph.i, 0, graph.j)
+
+	-- Scale to the size of the cube.
+	transform:scale(graph.width, CSGBuilding.HEIGHT, graph.depth)
+
+	-- Apply.
+	builder:cube(volumeType, transform)
+end
+
+function CSGBuilding:exterior(builder, volumeType, graph)
+	self:cube(builder, volumeType, {
+		i = graph.i + 0.1,
+		j = graph.j + 0.1,
+		width = graph.width - 0.2,
+		depth = graph.depth - 0.2
+	})
+end
+
+function CSGBuilding:interior(builder, volumeType, graph)
+	self:cube(builder, volumeType, {
+		i = graph.i + 0.25,
+		j = graph.j + 0.25,
+		width = graph.width - 0.5,
+		depth = graph.depth - 0.5
+	})
+end
+
+function CSGBuilding:wall(builder, volumeType, graph)
+	self:cube(builder, volumeType, {
+		i = graph.i,
+		j = graph.j,
+		width = graph.width,
+		depth = graph.depth
+	})
+end
+
 function CSGBuilding:generate()
 	local state = self:getProp():getState()
 	local rooms = state.rooms or {}
 
 	local builder = NPOHBuilder()
-	self:cube(builder, NPOHVolumes.TYPE_SOLID, state.root.i - 2 + 0.1, state.root.j - 2 + 0.1, state.root.width - 0.2, state.root.depth - 0.2)
+	--self:cube(builder, NPOHVolumes.TYPE_SOLID, state.root.i - 2 + 0.1, state.root.j - 2 + 0.1, state.root.width - 0.2, state.root.depth - 0.2)
+	self:exterior(builder, NPOHVolumes.TYPE_SOLID, state.root)
 
 	for i = 1, #rooms do
 		local room = rooms[i]
 
 		for j = 1, #room.graphs do
 			local graph = room.graphs[j]
-			self:cube(builder, NPOHVolumes.TYPE_AIR, graph.i - 1 - 0.5, graph.j - 1 - 0.5, graph.width - 2 + 1, graph.depth - 2 + 1)
+			self:interior(builder, NPOHVolumes.TYPE_AIR, graph)
+		end
+
+		for j = 1, #room.graphs do
+			local a = room.graphs[j]
+			for k = j + 1, #room.graphs do
+				local b = room.graphs[k]
+
+				local i, j, width, depth
+				if a.right == b.left then
+					i = a.right - 1
+					j = math.max(a.top, b.top)
+					width = 2
+					depth = math.min(a.bottom, b.bottom) - j
+				elseif a.left == b.right then
+					i = a.left - 1
+					j = math.max(a.top, b.top)
+					width = 2
+					depth = math.min(a.bottom, b.bottom) - j
+				elseif a.bottom == b.top then
+					i = math.max(a.left, b.left)
+					j = a.bottom - 1
+					width = math.min(a.right, b.right) - i
+					depth = 2
+				elseif a.top == b.bottom then
+					i = math.max(a.left, b.left)
+					j = a.top - 1
+					width = math.min(a.right, b.right) - i
+					depth = 2
+				end
+
+				if i and j and width and depth and width > 0 and depth > 0 then
+					self:interior(builder, NPOHVolumes.TYPE_AIR, {
+						i = i,
+						j = j,
+						width = width,
+						depth = depth
+					})
+				end
+			end
 		end
 	end
 
