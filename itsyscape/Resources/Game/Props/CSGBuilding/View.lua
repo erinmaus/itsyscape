@@ -136,10 +136,10 @@ function CSGBuilding:interior(builder, volumeType, graph)
 	})
 end
 
-function CSGBuilding:wall(builder, volumeType, graph)
+function CSGBuilding:door(builder, volumeType, graph)
 	self:cube(builder, volumeType, {
-		i = graph.i,
-		j = graph.j,
+		i = graph.i - 0.5,
+		j = graph.j - 0.5,
 		width = graph.width,
 		depth = graph.depth
 	})
@@ -159,6 +159,10 @@ function CSGBuilding:generate()
 		for j = 1, #room.graphs do
 			local graph = room.graphs[j]
 			self:interior(builder, NPOHVolumes.TYPE_AIR, graph)
+
+			if graph.door then
+				self:door(builder, NPOHVolumes.TYPE_AIR, graph.door)
+			end
 		end
 
 		for j = 1, #room.graphs do

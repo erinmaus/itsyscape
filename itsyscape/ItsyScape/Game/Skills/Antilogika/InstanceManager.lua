@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
+local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local BuildingPlanner = require "ItsyScape.Game.Skills.Antilogika.BuildingPlanner"
 local BuildingConfig = require "ItsyScape.Game.Skills.Antilogika.BuildingConfig"
 local RoomConfig = require "ItsyScape.Game.Skills.Antilogika.RoomConfig"
@@ -117,17 +119,70 @@ function InstanceManager:_instantiateBuilding(instance)
 	self:getStage():updateMap(instance:getBaseLayer(), map)
 
 	mapScript:listen('postLoad', function()
-		local center = map:getTileCenter(1, 1)
-		local building = Utility.spawnPropAtPosition(
-			mapScript,
-			"CSGBuilding",
-			0,
-			center.y,
-			0,
-			0)
-		local peep = building:getPeep()
+		do
+			local center = map:getTileCenter(1, 1)
+			local building = Utility.spawnPropAtPosition(
+				mapScript,
+				"CSGBuilding",
+				0,
+				center.y,
+				0,
+				0)
+			local peep = building:getPeep()
 
-		peep:setPropState(buildingPlanner:getState())
+			peep:setPropState(buildingPlanner:getState())
+		end
+
+		for _, room in buildingPlanner:iterate() do
+			local door = room:getDoor()
+
+			if door and (door.width == 2 or door.depth == 2) then
+				local center = map:getTileCenter(door.i, door.j)
+
+				if door.anchor == BuildingAnchor.BACK then
+					Utility.spawnPropAtPosition(
+						mapScript,
+						"Door_RumbridgeCastle",
+						center.x,
+						center.y,
+						center.z - 0.5,
+						0)
+				elseif door.anchor == BuildingAnchor.FRONT then
+					local prop = Utility.spawnPropAtPosition(
+						mapScript,
+						"Door_RumbridgeCastle",
+						center.x,
+						center.y,
+						center.z + 0.5,
+						0)
+					local peep = prop:getPeep()
+
+					Utility.Peep.setRotation(peep, Quaternion.Y_180)
+				elseif door.anchor == BuildingAnchor.LEFT then
+					local prop = Utility.spawnPropAtPosition(
+						mapScript,
+						"Door_RumbridgeCastle",
+						center.x - 0.5,
+						center.y,
+						center.z,
+						0)
+					local peep = prop:getPeep()
+
+					Utility.Peep.setRotation(peep, Quaternion.Y_90)
+				elseif door.anchor == BuildingAnchor.RIGHT then
+					local prop = Utility.spawnPropAtPosition(
+						mapScript,
+						"Door_RumbridgeCastle",
+						center.x - 1,
+						center.y,
+						center.z,
+						0)
+					local peep = prop:getPeep()
+
+					Utility.Peep.setRotation(peep, Quaternion.Y_270)
+				end
+			end
+		end
 	end)
 end
 
