@@ -102,6 +102,26 @@ function InstanceManager:_instantiateBuilding(instance)
 			local mapTile = map:getTile(i, j)
 			local tileSet = tileSets[mapTile.tileSetID] or MultiTileSet({ mapTile.tileSetID }, false):getTileSetByIndex(1)
 
+			for k = 1, #BuildingAnchor.PLANE_XZ do
+				local anchor = BuildingAnchor.PLANE_XZ[k]
+				local offset = BuildingAnchor.OFFSET[anchor]
+
+				local otherLayoutTile = layout:getTile(i + offset.i, j + offset.j)
+				if otherLayoutTile then
+					if otherLayoutTile:getRoomIndex() ~= layoutTile:getRoomIndex() then
+						if anchor == BuildingAnchor.LEFT then
+							mapTile:setFlag("wall-left")
+						elseif anchor == BuildingAnchor.RIGHT then
+							mapTile:setFlag("wall-right")
+						elseif anchor == BuildingAnchor.BACK then
+							mapTile:setFlag("wall-top")
+						elseif anchor == BuildingAnchor.FRONT then
+							mapTile:setFlag("wall-bottom")
+						end
+					end
+				end
+			end
+
 			if layoutTile:getRoomID() == "Courtyard" then
 				mapTile.flat = tileSet:getTileIndex("grass") or mapTile.flat
 			else

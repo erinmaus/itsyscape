@@ -34,7 +34,10 @@ function Map:new(width, height, cellSize)
 	self.tiles = {}
 	for j = 1, height do
 		for i = 1, width do
-			self.tiles[j * self.width + i] = Tile()
+			local tile = Tile()
+			self.tiles[j * self.width + i] = tile
+			tile:setData("x-map-i", i)
+			tile:setData("x-map-j", j)
 		end
 	end
 end
@@ -129,80 +132,6 @@ function Map:getTileCenter(i, j)
 	return Vector(x, y, z)
 end
 
-function Map:snapToTile(newX, newZ, oldX, oldZ, isImpassable)
-	local _, newI, newJ = self:getTileAt(newX, newZ)
-	local _, oldI, oldJ = self:getTileAt(oldX, oldZ)
-
-	local differenceI = newI - oldI
-	local differenceJ = newJ - oldJ
-
-	local reflectionX1, reflectionZ1
-	local reflectionX2, reflectionZ2
-	if math.abs(differenceI) > 0 and math.abs(differenceJ) > 0 then
-		local tile1 = self:getTile(oldI + differenceI, oldJ)
-		local tile2 = self:getTile(oldI, oldJ + differenceJ)
-		local tile3 = self:getTile(oldI + differenceI, oldJ + differenceJ)
-		local tile1Impassable = not tile1:getIsPassable() or not self:canMove(oldI, oldJ, differenceI, 0)
-		local tile2Impassable = not tile2:getIsPassable() or not self:canMove(oldI, oldJ, 0, differenceJ)
-		local tile3Impassable = not tile3:getIsPassable() or not not self:canMove(oldI, oldJ, differenceI, differenceJ)
-
-		local areAdjacentTilesImpassable = tile1Impassable and tile2Impassable
-		local areAdjacentTilesPassable = not tile1Impassable and not tile2Impassable
-		local isCornerImpassable = areAdjacentTilesPassable and tile3Impassable
-
-		if areAdjacentTilesImpassable or isCornerImpassable then
-			return oldX - newX, oldZ - newZ
-		end
-
-		if tile1Impassable then
-			reflectionX1, reflectionZ1 = self:_doSnapToTile(oldI + differenceI, oldJ, newX, newZ, oldX, oldZ)
-		else
-			reflectionX1, reflectionZ1 = 0, 0
-		end
-
-		if tile2Impassable then
-			reflectionX2, reflectionZ2 = self:_doSnapToTile(oldI, oldJ + differenceJ, newX, newZ, oldX, oldZ)
-		else
-			reflectionX2, reflectionZ2 = 0, 0
-		end
-	else
-		reflectionX1, reflectionZ1 = self:_doSnapToTile(newI, newJ, newX, newZ, oldX, oldZ)
-		reflectionX2, reflectionZ2 = 0, 0
-	end
-
-	return reflectionX1 + reflectionX2, reflectionZ1 + reflectionZ2
-end
-
-function Map:_doSnapToTile(i, j, newX, newZ, oldX, oldZ)
-	local tileCenter = self:getTileCenter(i, j)
-	local min = tileCenter - Vector(self.cellSize / 2)
-	local max = tileCenter + Vector(self.cellSize / 2)
-
-	if oldX > min.x and oldX < max.x and
-	   oldZ > min.z and oldZ < max.z
-	then
-		return 0, 0
-	end
-
-	local normal
-	if oldX < min.x and oldZ > min.z and oldZ < max.z then
-		normal = -Vector.UNIT_X
-	elseif oldX > max.x and oldZ > min.z and oldZ < max.z then
-		normal = Vector.UNIT_X
-	elseif oldZ < min.z and oldX > min.x and oldX < max.x then
-		normal = -Vector.UNIT_Z
-	elseif oldZ > max.z and oldX > min.x and oldX < max.x then
-		normal = Vector.UNIT_Z
-	else
-		normal = Vector.ZERO
-	end
-
-	local direction = Vector(newX, 0, newZ) - Vector(oldX, 0, oldZ)
-	local reflection = direction - 2 * (direction:dot(normal)) * normal
-
-	return reflection.x, reflection.z
-end
-
 -- Gets the interpolated height at (x, z).
 --
 -- If x or z are outside the bounds, they are clamped to the nearest tile.
@@ -275,7 +204,8 @@ function Map:canMove(i, j, di, dj)
 		local left = self:getTile(i - 1, j)
 		if (left.topRight <= tile.topLeft or
 		    left.bottomRight <= tile.bottomLeft) and
-		   left:getIsPassable()
+		   left:getIsPassable() and
+		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
 			isLeftPassable = true
 		end
@@ -285,7 +215,8 @@ function Map:canMove(i, j, di, dj)
 		local right = self:getTile(i + 1, j)
 		if (right.topLeft <= tile.topRight or
 		    right.bottomLeft <= tile.bottomRight) and
-		   right:getIsPassable()
+		   right:getIsPassable() and
+		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right"))
 		then
 			isRightPassable = true
 		end
@@ -295,7 +226,8 @@ function Map:canMove(i, j, di, dj)
 		local top = self:getTile(i, j - 1)
 		if (top.bottomLeft <= tile.topLeft or
 		    top.bottomRight <= tile.topRight) and
-		   top:getIsPassable()
+		   top:getIsPassable() and
+		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top"))
 		then
 			isTopPassable = true
 		end
@@ -305,7 +237,8 @@ function Map:canMove(i, j, di, dj)
 		local bottom = self:getTile(i, j + 1)
 		if (bottom.topLeft <= tile.bottomLeft or
 		    bottom.topRight <= tile.bottomRight) and
-		   bottom:getIsPassable()
+		   bottom:getIsPassable() and
+		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom"))
 		then
 			isBottomPassable = true
 		end
@@ -475,6 +408,7 @@ function Map:toString()
 				r:pushFormatLine(
 					"topLeft = %d, topRight = %d, bottomLeft = %d, bottomRight = %d,",
 					tile.topLeft, tile.topRight, tile.bottomLeft, tile.bottomRight)
+				r:pushIndent(3)
 				r:pushFormatLine(
 					"red = %f, green = %f, blue = %f,",
 					tile.red, tile.green, tile.blue)
@@ -489,17 +423,19 @@ function Map:toString()
 				r:pushIndent(3)
 				r:pushLine("{")
 				for key, value in tile:iterateData() do
-					local v
-					if type(value) == 'string' then
-						v = StringBuilder.stringify(value, "%q")
-					elseif type(value) ~= 'table' then
-						v = StringBuilder.stringify(value)
-					else
-						-- TODO
-						v = "nil --[[ table ]]"
+					if not key:match("^x-") then
+						local v
+						if type(value) == 'string' then
+							v = StringBuilder.stringify(value, "%q")
+						elseif type(value) ~= 'table' then
+							v = StringBuilder.stringify(value)
+						else
+							-- TODO
+							v = "nil --[[ table ]]"
+						end
+						
+						r:pushFormatLine("[%q] = %s", key, v)
 					end
-					
-					r:pushFormatLine("[%q] = %s", key, v)
 				end
 				r:pushIndent(3)
 				r:pushLine("},")
