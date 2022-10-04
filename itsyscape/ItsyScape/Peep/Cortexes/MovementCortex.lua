@@ -27,6 +27,15 @@ MovementCortex.GROUND_EPSILON = 0.1
 -- +/- CLAMP_EPSILON, then the component is clamped to zero.
 MovementCortex.CLAMP_EPSILON = 0.05
 
+MovementCortex.OFFSETS = {
+	{ -1,  0 },
+	{  1,  0 },
+	{  0, -1 },
+	{  0,  1 }
+}
+
+MovementCortex.BUFFER = 0.01
+
 function MovementCortex:new()
 	Cortex.new(self)
 
@@ -80,6 +89,11 @@ function MovementCortex:addWorld(layer, map)
 		peeps = {},
 		layer = layer
 	}
+
+	world:addResponse("slide-left", MovementCortex.slide(-1, 0))
+	world:addResponse("slide-right", MovementCortex.slide(1, 0))
+	world:addResponse("slide-up", MovementCortex.slide(0, -1))
+	world:addResponse("slide-down", MovementCortex.slide(0, 1))
 end
 
 function MovementCortex:addPeepToWorld(layer, peep)
@@ -112,6 +126,17 @@ function MovementCortex:removePeepFromWorld(peep)
 	end
 end
 
+function MovementCortex:_addProxyTileToWorld(world, flags, x, y, w, h)
+	local tile = Tile()
+	for i = 1, #flags do
+		tile:setFlag(flags[i])
+	end
+
+	world.world:add(tile, x, y, w, h)
+
+	table.insert(world.tiles, tile)
+end
+
 function MovementCortex:updateWorld(layer, map)
 	local w = self.worlds[layer]
 	if not w then
@@ -123,22 +148,60 @@ function MovementCortex:updateWorld(layer, map)
 	end
 	table.clear(w.tiles)
 
+	local buffer = map:getCellSize() * MovementCortex.BUFFER
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local tile = map:getTile(i, j)
 			local tileCenter = map:getTileCenter(i, j)
 			local min = tileCenter - Vector(map:getCellSize() / 2)
+			local isWall = tile:hasFlag("wall-left") or tile:hasFlag("wall-right") or tile:hasFlag("wall-top") or tile:hasFlag("wall-bottom")
 
 			if tile:hasFlag("wall-left") then
-				w.world:add(tile, min.x, min.z, map:getCellSize() / 2, map:getCellSize())
-			elseif tile:hasFlag("wall-right") then
-				w.world:add(tile, min.x + map:getCellSize() / 2, min.z, map:getCellSize() / 2, map:getCellSize())
-			elseif tile:hasFlag("wall-top") then
-				w.world:add(tile, min.x, min.z, map:getCellSize(), map:getCellSize() / 2)
-			elseif tile:hasFlag("wall-bottom") then
-				w.world:add(tile, min.x, min.z + map:getCellSize() / 2, map:getCellSize(), map:getCellSize() / 2)
-			else
+				self:_addProxyTileToWorld(w, { "wall-left" }, min.x, min.z, map:getCellSize() / 2, map:getCellSize())
+			end
+
+			if tile:hasFlag("wall-right") then
+				self:_addProxyTileToWorld(w, { "wall-right" }, min.x + map:getCellSize() / 2, min.z, map:getCellSize() / 2, map:getCellSize())
+			end
+
+			if tile:hasFlag("wall-top") then
+				self:_addProxyTileToWorld(w, { "wall-top" }, min.x, min.z, map:getCellSize(), map:getCellSize() / 2)
+			end
+
+			if tile:hasFlag("wall-bottom") then
+				self:_addProxyTileToWorld(w, { "wall-bottom" }, min.x, min.z + map:getCellSize() / 2, map:getCellSize(), map:getCellSize() / 2)
+			end
+
+			if not isWall then
 				w.world:add(tile, min.x, min.z, map:getCellSize(), map:getCellSize())
+			end
+
+			if not isWall and tile:getIsPassable() then
+				for k = 1, #MovementCortex.OFFSETS do
+					local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])
+
+					if not map:canMove(i, j, offsetI, offsetJ) and map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
+						local t = Tile()
+
+						if offsetI < 0 then
+							t:setFlag("x-movement-slide-right")
+							w.world:add(t, min.x, min.z, buffer, map:getCellSize())
+						elseif offsetI > 0 then
+							t:setFlag("x-movement-slide-left")
+							w.world:add(t, min.x + map:getCellSize() - buffer, min.z, buffer, map:getCellSize())
+						end
+
+						if offsetJ < 0 then
+							t:setFlag("x-movement-slide-up")
+							w.world:add(t, min.x, min.z, map:getCellSize(), buffer)
+						elseif offsetJ > 0 then
+							t:setFlag("x-movement-slide-down")
+							w.world:add(t, min.x, min.z + map:getCellSize() - buffer, map:getCellSize(), buffer)
+						end
+
+						table.insert(w.tiles, t)
+					end
+				end
 			end
 
 			table.insert(w.tiles, tile)
@@ -152,21 +215,43 @@ function MovementCortex:unloadWorld(layer)
 	end
 end
 
+function MovementCortex.slide(normalX, normalY)
+	return function(world, col, x, y, w, h, goalX, goalY, filter)
+		goalX = goalX or x
+		goalY = goalY or y
+
+		local tch, move  = col.touch, col.move
+		if move.x ~= 0 or move.y ~= 0 then
+			if col.normal.x == normalX and normalX ~= 0 then
+				goalX = tch.x
+			elseif col.normal.y == -normalY and normalY ~= 0 then
+				goalY = tch.y
+			end
+		end
+
+		col.slide = { x = goalX, y = goalY }
+
+		x,y = tch.x, tch.y
+		local cols, len  = world:project(col.item, x, y, w, h, goalX, goalY, filter)
+		return goalX, goalY, cols, len
+	end
+end
+
 function MovementCortex:filter(item, other)
 	if Class.isCompatibleType(other, Tile) then
-		-- local peepI, peepJ, layer = Utility.Peep.getTile(item)
-		-- local map = self.worlds[layer] and self:getDirector():getMap(layer)
-		-- local tileI, tileJ = other:getData("x-map-i"), other:getData("x-map-j")
 		if (other:hasFlag("impassable") or other:hasFlag("door") or
 		   other:hasFlag("wall-left") or other:hasFlag("wall-right") or
 		   other:hasFlag("wall-top") or other:hasFlag("wall-bottom"))
 	    then
 			return "slide"
-		-- elseif map and tileI and tileJ and not map:canMove(peepI, peepJ, tileI - peepI, tileJ - peepJ) then
-		-- 	if (math.abs(tileI - peepI) == 1 or math.abs(tileJ - peepJ) == 1) and math.abs(tileI - peepI) + math.abs(tileJ - peepJ) == 1 then
-		-- 		print("SLIDE!", tileI - peepI, tileJ - peepJ)
-		-- 		return "slide"
-		-- 	end
+		elseif other:hasFlag("x-movement-slide-left") then
+			return "slide-left"
+		elseif other:hasFlag("x-movement-slide-right") then
+			return "slide-right"
+		elseif other:hasFlag("x-movement-slide-up") then
+			return "slide-up"
+		elseif other:hasFlag("x-movement-slide-down") then
+			return "slide-down"
 		end
 	end
 
@@ -270,28 +355,28 @@ function MovementCortex:update(delta)
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
-			position.position = position.position + velocity
+			local newPosition = position.position + velocity
 
-			local actualX, actualZ = w.world:move(
+			local actualX, actualZ, collisions = w.world:move(
 				peep,
-				position.position.x - halfSize.x,
-				position.position.z - halfSize.z,
+				newPosition.x - halfSize.x,
+				newPosition.z - halfSize.z,
 				self._filter)
 			actualX = actualX + halfSize.x
 			actualZ = actualZ + halfSize.z
 
 			local newTile, newI, newJ = map:getTileAt(actualX, actualZ)
-			if newTile:hasFlag('impassable') or
-			   newTile:hasFlag('door') or
-			   not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or
-			   map:isOutOfBounds(position.position.x, position.position.z)
+			if not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or
+			   map:isOutOfBounds(actualX, actualZ)
 			then
 				-- Last fail safe.
 				position.position = Vector(oldPosition:get())
-
-				peep:poke('movedOutOfBounds')
 			else
-				position.position = Vector(actualX, position.position.y, actualZ)
+				position.position = Vector(actualX, newPosition.y, actualZ)
+
+				if #collisions > 0 then
+					peep:poke('movedOutOfBounds')
+				end
 			end
 
 			local y = map:getInterpolatedHeight(
