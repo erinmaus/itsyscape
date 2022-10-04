@@ -54,6 +54,17 @@ function Tile:new(t)
 	self.tileSetID = ""
 end
 
+function Tile:_getSerializedData()
+	local result = {}
+	for k, v in pairs(self.data) do
+		if not Class.isClass(v) and not getmetatable(v) then
+			result[k] = v
+		end
+	end
+
+	return result
+end
+
 function Tile:serialize()
 	return {
 		edge = self.edge,
@@ -65,7 +76,7 @@ function Tile:serialize()
 		bottomRight = self.bottomRight,
 		flags = self.flags,
 		runtimeFlags = self.runtimeFlags,
-		data = self.data,
+		data = self:_getSerializedData(),
 		red = self.red,
 		green = self.green,
 		blue = self.blue,
