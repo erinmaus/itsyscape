@@ -27,6 +27,7 @@ function FloorLayout.Tile:new(floorLayout, i, j)
 	self.j = j
 	self.type = FloorLayout.TILE_TYPE_UNDECIDED
 	self.roomIndex = false
+	self.isDoor = false
 end
 
 function FloorLayout.Tile:getFloorLayout()
@@ -63,6 +64,14 @@ end
 
 function FloorLayout.Tile:getRoomIndex()
 	return self.roomIndex
+end
+
+function FloorLayout.Tile:setIsDoor(value)
+	self.isDoor = value or false
+end
+
+function FloorLayout.Tile:getIsDoor()
+	return self.isDoor
 end
 
 function FloorLayout:new(width, depth, cellSize)

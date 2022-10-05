@@ -107,7 +107,7 @@ function InstanceManager:_instantiateBuilding(instance)
 				local offset = BuildingAnchor.OFFSET[anchor]
 
 				local otherLayoutTile = layout:getTile(i + offset.i, j + offset.j)
-				if otherLayoutTile then
+				if otherLayoutTile and not layoutTile:getIsDoor() and not otherLayoutTile:getIsDoor() then
 					if otherLayoutTile:getRoomIndex() ~= layoutTile:getRoomIndex() then
 						if anchor == BuildingAnchor.LEFT then
 							mapTile:setFlag("wall-left")

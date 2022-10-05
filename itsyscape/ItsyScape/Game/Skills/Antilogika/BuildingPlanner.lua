@@ -327,6 +327,8 @@ function BuildingPlanner.Room:connect(room, fromGraph, toGraph)
 			anchor = anchor
 		}
 	end
+
+	return self.door
 end
 
 function BuildingPlanner.Room:getParent()
@@ -422,7 +424,18 @@ function BuildingPlanner.Room:_resolveRooms(buildingPlanner, graph, anchor, room
 				if not graphs[i]:getRoom() then
 					local room = buildingPlanner:newRoom(roomID)
 					graphs[i]:resolve(buildingPlanner, room)
-					room:connect(self, graph, graphs[i])
+
+					local door = room:connect(self, graph, graphs[i])
+					if door then
+						for i = door.left, door.right - 1 do
+							for j = door.top, door.bottom - 1 do
+								local tile = buildingPlanner:getFloorLayout():getTile(i, j)
+								if tile then
+									tile:setIsDoor(true)
+								end
+							end
+						end
+					end
 
 					for j = 1, #BuildingAnchor.PLANE_XZ do
 						if BuildingAnchor.PLANE_XZ[j] ~= BuildingAnchor.REFLEX[anchor] then
@@ -655,6 +668,10 @@ end
 
 function BuildingPlanner:iterate()
 	return ipairs(self.rooms)
+end
+
+function BuildingPlanner:getRoomByIndex(roomIndex)
+	return self.rooms[roomIndex]
 end
 
 return BuildingPlanner
