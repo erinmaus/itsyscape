@@ -219,6 +219,7 @@ do
 	}
 
 	Nyan {
-		TalkAction
+		TalkAction,
+		ItsyScape.Action.Pet()
 	}
 end
