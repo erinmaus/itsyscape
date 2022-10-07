@@ -19,7 +19,7 @@ local Map = require "ItsyScape.World.Map"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 local InstanceManager = Class()
-InstanceManager.MAP_SIZE = 48
+InstanceManager.MAP_SIZE = 24
 
 function InstanceManager:new(game, dimensionBuilder)
 	self.game = game
@@ -232,7 +232,7 @@ function InstanceManager:instantiateMapObjects(i, j, instance)
 	if i == self:getDimensionBuilder():getScale() + 1 and
 	   j == self:getDimensionBuilder():getScale() + 1
 	then
-		self:_instantiateBuilding(instance)
+		--self:_instantiateBuilding(instance)
 	end
 end
 

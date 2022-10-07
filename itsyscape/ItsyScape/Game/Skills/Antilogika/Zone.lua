@@ -25,6 +25,7 @@ function Zone:new(t)
 	self.amplitude = t.amplitude or 1
 	self.tileSetID = t.tileSetID or "Draft"
 	self.bedrockHeight = t.bedrockHeight or 4
+	self.cliff = t.cliff or "cliff"
 
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
@@ -89,6 +90,10 @@ function Zone:sampleTileFlat(x, y, z, w)
 	end
 
 	return self.tileSet:getTileIndex(previousTile.tile)
+end
+
+function Zone:sampleTileEdge(x, y, z, w)
+	return self.tileSet:getTileIndex(self.cliff)
 end
 
 return Zone

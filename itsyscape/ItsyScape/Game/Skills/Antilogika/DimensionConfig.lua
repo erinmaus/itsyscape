@@ -10,6 +10,108 @@
 
 local DimensionConfig = {
 	{
+		id = "Azathoth",
+		param1 = "Temperature",
+		param2 = "Moisture",
+		defaultID = "Azathoth_Mountain",
+		zoneThreshold = 0.0,
+
+		zones = {
+			{
+				id = "Azathoth_IcySea",
+				tileSetID = "Antilogika_AzathothIce",
+				amplitude = 2,
+				bedrockHeight = 4,
+				cliff = "cliff",
+				tiles = {
+					{
+						tile = "sand",
+						sample = -0.8
+					},
+					{
+						tile = "dirt",
+						sample = -0.4
+					},
+					{
+						tile = "grass_snowy",
+						sample = 0.0,
+					},
+					{
+						tile = "grass",
+						sample = 0.5
+					}
+				}
+			},
+			{
+				id = "Azathoth_Tundra",
+				tileSetID = "Antilogika_AzathothIce",
+				amplitude = 1.5,
+				bedrockHeight = 5,
+				cliff = "cliff_brown",
+				tiles = {
+					{
+						tile = "dirt",
+						sample = -0.9
+					},
+					{
+						tile = "rock",
+						sample = -0.6
+					},
+					{
+						tile = "snow_drift",
+						sample = 0.2
+					}
+				}
+			},
+			{
+				id = "Azathoth_Glacier",
+				tileSetID = "Antilogika_AzathothIce",
+				amplitude = 0.5,
+				bedrockHeight = 3,
+				cliff = "cliff_glacier",
+				tiles = {
+					{
+						tile = "ice",
+						sample = -0.5
+					},
+					{
+						tile = "snow",
+						sample = 0.0
+					},
+					{
+						tile = "snow_drift",
+						sample = 0.5
+					}
+				}
+			},
+			{
+				id = "Azathoth_Mountain",
+				tileSetID = "Antilogika_AzathothIce",
+				amplitude = 2.5,
+				bedrockHeight = 4,
+				cliff = "cliff_brown",
+				tiles = {
+					{
+						tile = "dirt",
+						sample = -0.7
+					},
+					{
+						tile = "rock",
+						sample = -0.3,
+					},
+					{
+						tile = "snow",
+						sample = 0.0
+					},
+					{
+						tile = "grass",
+						sample = 0.3
+					}
+				}
+			}
+		}
+	},
+	{
 		id = "Realm",
 		param1 = "Temperature",
 		param2 = "Moisture",
