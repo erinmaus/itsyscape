@@ -106,7 +106,7 @@ function MoveToTileCortex:update(delta)
 
 					position.position = position.position + velocitySlice
 
-					if didOvershoot then
+					if didOvershoot or distance == 0 then
 						peep:removeBehavior(TargetTileBehavior)
 
 						if targetTile.nextPathNode then
