@@ -186,6 +186,7 @@ Game "ItsyScape"
 
 	ActionType "Talk"
 	ActionType "Yell"
+	ActionType "Pet"
 
 	Meta "TalkSpeaker" {
 		Name = Meta.TYPE_TEXT,
