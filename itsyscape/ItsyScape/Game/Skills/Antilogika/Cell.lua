@@ -52,7 +52,7 @@ function Cell:mutateMap(map, dimensionBuilder)
 			local tile = map:getTile(i, j)
 			local flat = zone:sampleTileFlat(x, z)
 			tile.flat = flat
-			tile.edge = 2
+			tile.edge = zone:sampleTileEdge(x, z)
 
 			for s = 1, 2 do
 				for t = 1, 2 do
