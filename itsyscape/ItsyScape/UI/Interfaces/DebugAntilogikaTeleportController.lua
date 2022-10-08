@@ -35,11 +35,12 @@ end
 
 function DebugAntilogikaTeleportController:teleport(e)
 	local seed = Antilogika.Seed(e.x, e.y, e.z, e.w, tonumber(e.time) or 0)
+	local playerConfig = Antilogika.PlayerConfig(Utility.Peep.getPlayerModel(self:getPeep()))
 
 	local size = tonumber(e.size) or DebugAntilogikaTeleportController.DEFAULT_SIZE
 	size = math.max(math.min(size, DebugAntilogikaTeleportController.MAX_SIZE), DebugAntilogikaTeleportController.MIN_SIZE)
 
-	local dimensionBuilder = Antilogika.DimensionBuilder(seed, size)
+	local dimensionBuilder = Antilogika.DimensionBuilder(seed, size, nil, playerConfig)
 	local instanceManager = Antilogika.InstanceManager(self:getGame(), dimensionBuilder)
 	local instance = instanceManager:instantiate(size + 1, size + 1)
 	self:getGame():getStage():movePeep(self:getPeep(), instance, Vector(24, 10, 24))

@@ -55,7 +55,7 @@ function InstanceManager:buildMap(i, j, layer)
 		layer)
 	stage:updateMap(layer, map)
 
-	return layer
+	return layer, mutateMapResults
 end
 
 function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position)
@@ -206,7 +206,7 @@ function InstanceManager:_instantiateBuilding(instance)
 	end)
 end
 
-function InstanceManager:instantiateMapObjects(i, j, instance)
+function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
 	local map = self:getStage():getMap(instance:getBaseLayer())
 
 	if i > 1 then
@@ -229,6 +229,13 @@ function InstanceManager:instantiateMapObjects(i, j, instance)
 		self:_instantiatePortal(i, j + 1, instance, position)
 	end
 
+	local mapScript = instance:getMapScriptByMapFilename("Antilogika")
+	mapScript:listen('postLoad', function()
+		local cell = self:getDimensionBuilder():getCell(i, j)
+		cell:populate(mutateMapResults, map, mapScript, self:getDimensionBuilder())
+	end)
+
+
 	if i == self:getDimensionBuilder():getScale() + 1 and
 	   j == self:getDimensionBuilder():getScale() + 1
 	then
@@ -247,12 +254,12 @@ function InstanceManager:instantiate(i, j)
 		i = i,
 		j = j
 	})
-	self:buildMap(i, j, instance:getBaseLayer())
+	local _, mutateMapResults = self:buildMap(i, j, instance:getBaseLayer())
 
 	instance.onUnload:register(self.onUnloadInstance, self, index)
 	self.instances[index] = instance
 
-	self:instantiateMapObjects(i, j, instance)
+	self:instantiateMapObjects(i, j, instance, mutateMapResults)
 
 	return instance
 end

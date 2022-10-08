@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Cell = require "ItsyScape.Game.Skills.Antilogika.Cell"
+local ContentConfig = require "ItsyScape.Game.Skills.Antilogika.ContentConfig"
 local DimensionConfig = require "ItsyScape.Game.Skills.Antilogika.DimensionConfig"
 local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 local Zone = require "ItsyScape.Game.Skills.Antilogika.Zone"
@@ -17,7 +18,7 @@ local ZoneMap = require "ItsyScape.Game.Skills.Antilogika.ZoneMap"
 
 local DimensionBuilder = Class()
 
-function DimensionBuilder:new(seed, scale, dimensionConfig)
+function DimensionBuilder:new(seed, scale, dimensionConfig, playerConfig)
 	self.scale = scale
 	self.size = scale * 2 + 1
 	self.width = self.size
@@ -27,6 +28,7 @@ function DimensionBuilder:new(seed, scale, dimensionConfig)
 	self.rng = love.math.newRandomGenerator(seed:toSeed())
 
 	self.dimensionConfig = dimensionConfig or DimensionConfig[1]
+	self.playerConfig = playerConfig
 
 	self.zoneNoiseOffset = Vector(0, (self:_randomNoiseOffset()), 0)
 	self.zoneNoise = NoiseBuilder.TERRAIN {
@@ -143,6 +145,70 @@ function DimensionBuilder:getZoneFromParams(param1, param2)
 	})
 
 	return zone
+end
+
+function DimensionBuilder:buildContentConfig(configIDs)
+	-- This also ensures we collapse repeat config IDs into a single occurrence
+	-- This makes this method easier to use by just concatenating a list of zone content IDs
+	-- into a single list.
+	local configIDsByID = {}
+	for i = 1, #configIDs do
+		configIDsByID[configIDs[i]] = true
+	end
+
+	local newConfig = {}
+	for i = 1, #ContentConfig do
+		local rootConfig = ContentConfig[i]
+		if configIDsByID[rootConfig.id] then
+			for category, content in pairs(rootConfig.content) do
+				local newSubConfig = newConfig[category] or { config = { props = {}, peeps = {} } }
+
+				newSubConfig.constructor = newSubConfig.constructor or content.constructor
+				if newSubConfig.constructor ~= content.constructor then
+					Log.warn(
+						"Content config for '%s' (sub-config '%s') has mismatch constructor ('%s' vs '%s'); might be a problem.",
+						rootConfig.id, category, newSubConfig.constructor, content.constructor)
+				end
+
+				newSubConfig.config.min = math.min(newSubConfig.config.min or content.config.min or 0, content.config.min or newSubConfig.config.min or 0)
+				newSubConfig.config.max = math.max(newSubConfig.config.max or content.config.max or 0, content.config.max or newSubConfig.config.min or 0)
+
+				for j = 1, #content.config.props do
+					local propConfig = content.config.props[j]
+
+					local newPropConfig
+					for k = 1, #newSubConfig.config.props do
+						if newSubConfig.config.props[k].prop == propConfig.prop then
+							newPropConfig = newSubConfig.config.props[k]
+							break
+						end
+					end
+
+					if not newPropConfig then
+						newPropConfig = { prop = propConfig.prop }
+
+						table.insert(newSubConfig.config.props, newPropConfig)
+					end
+
+					newPropConfig.tier = math.min(propConfig.tier, newPropConfig.tier or propConfig.tier)
+					newPropConfig.weight = (newPropConfig.weight or 0) + propConfig.weight
+				end
+
+				local index = 1
+				while index < #newSubConfig.config.props do
+					if newSubConfig.config.props[index].weight <= 0 then
+						table.remove(newSubConfig.config.props, index)
+					else
+						index = index + 1
+					end
+				end
+
+				newConfig[category] = newSubConfig
+			end
+		end
+	end
+
+	return newConfig
 end
 
 return DimensionBuilder
