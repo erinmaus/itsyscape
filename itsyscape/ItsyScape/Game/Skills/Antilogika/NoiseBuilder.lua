@@ -116,9 +116,9 @@ NoiseBuilder.DEFAULT = NoiseBuilder()
 
 NoiseBuilder.TERRAIN = NoiseBuilder {
 	persistence = 3,
-	lacunarity  = -3,
-	octaves     = 2,
-	scale       = 8
+	lacunarity  = -1,
+	octaves     = 3,
+	scale       = 4
 }
 
 NoiseBuilder.TILE = NoiseBuilder {

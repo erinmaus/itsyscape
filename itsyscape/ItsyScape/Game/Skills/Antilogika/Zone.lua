@@ -13,8 +13,8 @@ local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 local Zone = Class()
 Zone.DEFAULT_CURVE = {
+	-1.0, 1.0,
 	0.0, 0.0,
-	0.5, 0.5,
 	1.0, 1.0
 }
 
@@ -73,7 +73,7 @@ function Zone:sample(x, y, z, w)
 	local noise = NoiseBuilder.TERRAIN:sample4D(x or 0, y or 0, z or 0, w or 0)
 	local clampedNoise = math.min(math.max((noise + 1) / 2, 0), 1)
 
-	return math.abs(self.curve:evaluate(clampedNoise)) * self.amplitude + self.bedrockHeight
+	return self.curve:evaluate(clampedNoise) * self.amplitude + self.bedrockHeight
 end
 
 function Zone:sampleTileFlat(x, y, z, w)
