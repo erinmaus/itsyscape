@@ -47,9 +47,11 @@ function PropConstructor:place(map, mapScript)
 
 	for treeIndex = 1, numProps do
 		local i, j = points:get(treeIndex - 1)
+		local tile = map:getTile(i, j)
 
 		if i >= 1 and i <= map:getWidth() and
-		   j >= 1 and j <= map:getHeight()
+		   j >= 1 and j <= map:getHeight() and
+		   tile:getIsPassable({ "impassable", "door", "blocking" })
 		then
 			local position = map:getTileCenter(i, j)
 			self:placeProp(map, mapScript, position, config.props or PropConstructor.DEFAULT_CONFIG.props)
