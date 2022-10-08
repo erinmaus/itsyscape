@@ -78,6 +78,11 @@ Game "ItsyScape"
 
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
+	Meta "PropAlias" {
+		Alias = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Map"
 	ResourceType "MapObject"
 

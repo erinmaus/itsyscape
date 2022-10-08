@@ -271,6 +271,20 @@ function LocalStage:notifyDropItem(layer, item, key, source)
 		layer)
 end
 
+function LocalStage:lookupPropAlias(resourceID)
+	local gameDB = self.game:getGameDB()
+	local resource = gameDB:getResource(resourceID, "Prop")
+	if not resource then
+		return resourceID
+	end
+
+	local alias = gameDB:getRecord("PropAlias", {
+		Resource = resource
+	})
+
+	return (alias and alias:get("Alias").name) or resourceID
+end
+
 function LocalStage:lookupResource(resourceID, resourceType)
 	local Type
 	local realResourceID, resource
@@ -391,7 +405,7 @@ function LocalStage:placeProp(propID, layer, layerName)
 				p.layer = layer
 			end
 
-			self.onPropPlaced(self, realID, prop)
+			self.onPropPlaced(self, self:lookupPropAlias(realID), prop)
 		end)
 
 		return true, prop
