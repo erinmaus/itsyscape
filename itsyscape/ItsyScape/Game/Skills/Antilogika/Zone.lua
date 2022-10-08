@@ -21,11 +21,13 @@ Zone.DEFAULT_CURVE = {
 function Zone:new(t)
 	t = t or {}
 
+	self.id = t.id
 	self.curve = love.math.newBezierCurve(unpack(t.curve or Zone.DEFAULT_CURVE))
 	self.amplitude = t.amplitude or 1
 	self.tileSetID = t.tileSetID or "Draft"
 	self.bedrockHeight = t.bedrockHeight or 4
 	self.cliff = t.cliff or "cliff"
+	self.content = { unpack(t.content or {}) }
 
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
@@ -53,6 +55,10 @@ function Zone:new(t)
 	end
 end
 
+function Zone:getID()
+	return self.id
+end
+
 function Zone:getCurve()
 	return self.curve
 end
@@ -67,6 +73,10 @@ end
 
 function Zone:getBedrockHeight()
 	return self.bedrockHeight
+end
+
+function Zone:getContent()
+	return self.content
 end
 
 function Zone:sample(x, y, z, w)

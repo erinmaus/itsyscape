@@ -21,16 +21,30 @@ function Cell.MutateMapResult:new(t)
 	for key in pairs(t.tileSetIDs) do
 		table.insert(self.tileSetIDs, key)
 	end
+
+	self.zones = {}
+
+	for key in pairs(t.zones) do
+		table.insert(self.zones, key)
+	end
 end
 
 function Cell.MutateMapResult:getTileSetIDs()
 	return self.tileSetIDs
 end
 
+function Cell.MutateMapResult:getZones()
+	return self.zones
+end
+
 function Cell:new(i, j, rng)
 	self.i = i
 	self.j = j
 	self.rng = rng
+end
+
+function Cell:getRNG()
+	return self.rng
 end
 
 function Cell:getPosition()
@@ -41,6 +55,7 @@ function Cell:mutateMap(map, dimensionBuilder)
 	local rngState = self.rng:getState()
 
 	local tileSetIDs = {}
+	local zones = {}
 
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
@@ -48,10 +63,10 @@ function Cell:mutateMap(map, dimensionBuilder)
 			local z = self.j + (j - 1) / (map:getHeight())
 
 			local zone = dimensionBuilder:getZone(x, z)
+			zones[zone] = true
 
 			local tile = map:getTile(i, j)
-			local flat = zone:sampleTileFlat(x, z)
-			tile.flat = flat
+			tile.flat = zone:sampleTileFlat(x, z)
 			tile.edge = zone:sampleTileEdge(x, z)
 
 			for s = 1, 2 do
@@ -77,8 +92,33 @@ function Cell:mutateMap(map, dimensionBuilder)
 	self.rng:setState(rngState)
 
 	return Cell.MutateMapResult {
-		tileSetIDs = tileSetIDs
+		tileSetIDs = tileSetIDs,
+		zones = zones
 	}
+end
+
+function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
+	local rngState = self.rng:getState()
+
+	local zones = mutateMapResult:getZones()
+
+	local contentIDs = {}
+	for i = 1, #zones do
+		local c = zones[i]:getContent()
+		for j = 1, #c do
+			table.insert(contentIDs, c[j])
+		end
+	end
+
+	local contentConfig = dimensionBuilder:buildContentConfig(contentIDs)
+
+	for _, content in pairs(contentConfig) do
+		local ConstructorType = require(string.format("ItsyScape.Game.Skills.Antilogika.%sConstructor", content.constructor))
+		local constructor = ConstructorType(self, content.config)
+		constructor:place(map, mapScript)
+	end
+
+	self.rng:setState(rngState)
 end
 
 return Cell
