@@ -31,6 +31,11 @@ ItsyScape.Resource.Prop "InvisiblePortal_Antilogika" {
 	ItsyScape.Action.Travel_Antilogika()
 }
 
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "InvisiblePortal",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
