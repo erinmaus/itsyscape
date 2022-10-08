@@ -42,7 +42,7 @@ function DebugAntilogikaTeleportController:teleport(e)
 	local dimensionBuilder = Antilogika.DimensionBuilder(seed, size)
 	local instanceManager = Antilogika.InstanceManager(self:getGame(), dimensionBuilder)
 	local instance = instanceManager:instantiate(size + 1, size + 1)
-	self:getGame():getStage():movePeep(self:getPeep(), instance, Vector(48, 10, 48))
+	self:getGame():getStage():movePeep(self:getPeep(), instance, Vector(24, 10, 24))
 
 	self:getGame():getUI():closeInstance(self)
 end

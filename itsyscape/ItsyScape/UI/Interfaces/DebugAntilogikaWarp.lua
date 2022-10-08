@@ -42,7 +42,7 @@ function DebugAntilogikaWarp.Graph:setZone(zone)
 	end
 
 	do
-		local s, r = pcall(love.math.newBezierCurve, unpack(zone.curve))
+		local s, r = pcall(love.math.newBezierCurve, unpack(zone.curve or {}))
 		if not s then
 			Log.warn("Error creating curve: %s.", r)
 			self.curve = nil
@@ -58,7 +58,13 @@ function DebugAntilogikaWarp.Graph:drawCurve(x, y, w, h)
 	for i = 1, DebugAntilogikaWarp.Graph.STEPS_CURVE do
 		local delta = (i - 1) / (DebugAntilogikaWarp.Graph.STEPS_CURVE - 1)
 		local currentX = delta * w
-		local currentY = h - (((self.curve:evaluate(delta) + 1) / 2)  * h)
+
+		local s, t = pcall(self.curve, self.curve.evaluate, self, delta)
+		if not s then
+			t = 0
+		end
+
+		local currentY = h - (((t + 1) / 2)  * h)
 		
 		table.insert(points, currentX + x)
 		table.insert(points, currentY + y)
