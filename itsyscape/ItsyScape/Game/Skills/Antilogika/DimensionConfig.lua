@@ -22,7 +22,7 @@ local DimensionConfig = {
 				content = { "Azathoth_Common", "Azathoth_Icy" },
 				tileSetID = "Antilogika_AzathothIce",
 				amplitude = 2,
-				bedrockHeight = 4,
+				bedrockHeight = 2.5,
 				cliff = "cliff",
 				tiles = {
 					{
@@ -91,8 +91,14 @@ local DimensionConfig = {
 				id = "Azathoth_Mountain",
 				content = { "Azathoth_Common", "Azathoth_Icy" },
 				tileSetID = "Antilogika_AzathothIce",
-				amplitude = 2.5,
+				amplitude = 8,
 				bedrockHeight = 4,
+				tileNoise = {
+					persistence = 3,
+					lacunarity = -1,
+					octaves = 3,
+					scale = 4
+				},
 				cliff = "cliff_brown",
 				tiles = {
 					{

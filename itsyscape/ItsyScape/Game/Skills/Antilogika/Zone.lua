@@ -13,7 +13,7 @@ local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 local Zone = Class()
 Zone.DEFAULT_CURVE = {
-	-1.0, 1.0,
+	-1.0, -1.0,
 	0.0, 0.0,
 	1.0, 1.0
 }
@@ -28,6 +28,8 @@ function Zone:new(t)
 	self.bedrockHeight = t.bedrockHeight or 4
 	self.cliff = t.cliff or "cliff"
 	self.content = { unpack(t.content or {}) }
+	self.terrainNoise = NoiseBuilder.TERRAIN(t.terrainNoise or {})
+	self.tileNoise = NoiseBuilder.TILE(t.tileNoise or {})
 
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
@@ -80,14 +82,14 @@ function Zone:getContent()
 end
 
 function Zone:sample(x, y, z, w)
-	local noise = NoiseBuilder.TERRAIN:sample4D(x or 0, y or 0, z or 0, w or 0)
+	local noise = self.terrainNoise:sample4D(x or 0, y or 0, z or 0, w or 0)
 	local clampedNoise = math.min(math.max((noise + 1) / 2, 0), 1)
 
 	return self.curve:evaluate(clampedNoise) * self.amplitude + self.bedrockHeight
 end
 
 function Zone:sampleTileFlat(x, y, z, w)
-	local noise = NoiseBuilder.TILE:sample4D(x or 0, y or 0, z or 0, w or 0)
+	local noise = self.tileNoise:sample4D(x or 0, y or 0, z or 0, w or 0)
 
 	local previousTile = self.tiles[1]
 	for i = 2, #self.tiles do
