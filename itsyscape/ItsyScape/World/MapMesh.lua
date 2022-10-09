@@ -15,6 +15,7 @@ local Tile = require "ItsyScape.World.Tile"
 
 -- Map mesh. Builds a mesh from a map.
 local MapMesh = Class()
+MapMesh.EDGE_THRESHOLD = 0
 
 -- Vertex format.
 --
@@ -438,7 +439,7 @@ local function getTopVertices(tile, neighbor)
 	local difference2 = tileRef2 - neighborRef2
 
 	local t
-	if difference1 >= 1 and difference2 >= 1 then
+	if difference1 > MapMesh.EDGE_THRESHOLD and difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, tileRef1, -1),
 			Vector(1, tileRef2, -1),
@@ -447,13 +448,13 @@ local function getTopVertices(tile, neighbor)
 			Vector(-1, tileRef1, -1),
 			Vector(1, neighborRef2, -1)
 		}
-	elseif difference1 >= 1 then
+	elseif difference1 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, tileRef1, -1),
 			Vector(1, tileRef2, -1),
 			Vector(-1, neighborRef1, -1)
 		}
-	elseif difference2 >= 1 then
+	elseif difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, tileRef1, -1),
 			Vector(1, tileRef2, -1),
@@ -473,7 +474,7 @@ local function getBottomVertices(tile, neighbor)
 	local difference2 = tileRef2 - neighborRef2
 
 	local t
-	if difference1 >= 1 and difference2 >= 1 then
+	if difference1 > MapMesh.EDGE_THRESHOLD and difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef2, 1),
 			Vector(-1, tileRef1, 1),
@@ -482,13 +483,13 @@ local function getBottomVertices(tile, neighbor)
 			Vector(-1, tileRef1, 1),
 			Vector(-1, neighborRef1, 1)
 		}
-	elseif difference1 >= 1 then
+	elseif difference1 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef2, 1),
 			Vector(-1, tileRef1, 1),
 			Vector(-1, neighborRef1, 1)
 		}
-	elseif difference2 >= 1 then
+	elseif difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef2, 1),
 			Vector(-1, tileRef1, 1),
@@ -508,7 +509,7 @@ local function getLeftVertices(tile, neighbor)
 	local difference2 = tileRef2 - neighborRef2
 
 	local t
-	if difference1 >= 1 and difference2 >= 1 then
+	if difference1 > MapMesh.EDGE_THRESHOLD and difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, tileRef2, 1),
 			Vector(-1, tileRef1, -1),
@@ -517,13 +518,13 @@ local function getLeftVertices(tile, neighbor)
 			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef1, -1)
 		}
-	elseif difference1 >= 1 then
+	elseif difference1 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, tileRef2, 1),
 			Vector(-1, tileRef1, -1),
 			Vector(-1, neighborRef1, -1)
 		}
-	elseif difference2 >= 1 then
+	elseif difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(-1, neighborRef2, 1),
 			Vector(-1, tileRef2, 1),
@@ -543,7 +544,7 @@ local function getRightVertices(tile, neighbor)
 	local difference2 = tileRef2 - neighborRef2
 
 	local t
-	if difference1 >= 1 and difference2 >= 1 then
+	if difference1 > MapMesh.EDGE_THRESHOLD and difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef1, -1),
 			Vector(1, tileRef2, 1),
@@ -552,13 +553,13 @@ local function getRightVertices(tile, neighbor)
 			Vector(1, tileRef1, -1),
 			Vector(1, neighborRef2, 1)
 		}
-	elseif difference1 >= 1 then
+	elseif difference1 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef1, -1),
 			Vector(1, tileRef2, 1),
 			Vector(1, neighborRef1, -1)
 		}
-	elseif difference2 >= 1 then
+	elseif difference2 > MapMesh.EDGE_THRESHOLD then
 		t = {
 			Vector(1, tileRef2, 1),
 			Vector(1, neighborRef2, 1),

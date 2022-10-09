@@ -259,6 +259,10 @@ function BuildingPlanner.Graph:iterate()
 	return ipairs(self.children)
 end
 
+function BuildingPlanner.Graph:hasChildren()
+	return #self.children > 0
+end
+
 BuildingPlanner.Room = Class()
 
 function BuildingPlanner.Room:new(roomID, roomIndex, roomConfig)
@@ -563,6 +567,7 @@ function BuildingPlanner:build(buildingID)
 	self.currentRoomIndex = 1
 	self.rooms = {}
 	self.roomsByID = {}
+	self.doors = {}
 
 	self.queue = {}
 
@@ -633,8 +638,24 @@ function BuildingPlanner:getState()
 		left = left,
 		right = right,
 		top = top,
-		bottom = bottom
+		bottom = bottom,
+
+		doors = {}
 	}
+
+	for i = 1, #self.doors do
+		local door = self.doors[i]
+		table.insert(state.root.doors, {
+			i = door.i,
+			j = door.j,
+			width = door.width,
+			depth = door.depth,
+			left = door.left,
+			right = door.right,
+			top = door.top,
+			bottom = door.bottom
+		})
+	end
 
 	return state
 end
@@ -675,6 +696,22 @@ end
 
 function BuildingPlanner:getRoomByIndex(roomIndex)
 	return self.rooms[roomIndex]
+end
+
+function BuildingPlanner:addDoor(i, j, width, depth, anchor)
+	table.insert(self.doors, {
+		left = i,
+		right = i + width,
+		top = j,
+		bottom = j + depth,
+
+		i = i,
+		j = j,
+		width = width,
+		depth = depth,
+
+		anchor = anchor
+	})
 end
 
 return BuildingPlanner
