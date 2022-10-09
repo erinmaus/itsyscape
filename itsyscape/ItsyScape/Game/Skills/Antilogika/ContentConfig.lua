@@ -13,8 +13,9 @@ local ContentConfig = {
 		id = "Azathoth_Common",
 
 		content = {
-			["General"] = {
+			["GeneralBuilding"] = {
 				constructor = "Building",
+				priority = 1,
 
 				config = {
 					min = 1,
@@ -37,6 +38,7 @@ local ContentConfig = {
 
 			["Woodcutting"] = {
 				constructor = "Prop",
+				priority = 10,
 
 				config = {
 					min = 30,

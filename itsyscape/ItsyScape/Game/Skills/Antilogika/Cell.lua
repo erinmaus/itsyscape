@@ -112,7 +112,7 @@ function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 
 	local contentConfig = dimensionBuilder:buildContentConfig(contentIDs)
 
-	for _, content in pairs(contentConfig) do
+	for _, content in ipairs(contentConfig) do
 		local ConstructorType = require(string.format("ItsyScape.Game.Skills.Antilogika.%sConstructor", content.constructor))
 		local constructor = ConstructorType(self, content.config)
 		constructor:place(map, mapScript)
