@@ -712,6 +712,13 @@ function BuildingPlanner:addDoor(i, j, width, depth, anchor)
 
 		anchor = anchor
 	})
+
+	for currentI = i, i + width - 1 do
+		for currentJ = j, j + depth - 1 do
+			self.layout:getTile(currentI, currentJ):setIsDoor(true)
+			print("door", currentI, currentJ)
+		end
+	end
 end
 
 return BuildingPlanner
