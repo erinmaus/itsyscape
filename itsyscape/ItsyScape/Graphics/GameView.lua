@@ -729,6 +729,11 @@ function GameView:decorate(group, decoration, layer)
 		local d = {}
 
 		self.resourceManager:queueEvent(function()
+			if self.decorations[groupName] ~= d then
+				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
+				return
+			end
+
 			local tileSetFilename = string.format(
 				"Resources/Game/TileSets/%s/Layout.lstatic",
 				decoration:getTileSetID())
