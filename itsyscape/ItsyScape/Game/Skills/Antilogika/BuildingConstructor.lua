@@ -43,7 +43,7 @@ function BuildingConstructor:placeBuilding(map, mapScript, i, j, buildings)
 		return
 	end
 
-	local buildingPlanner = BuildingPlanner(BuildingConfig, RoomConfig)
+	local buildingPlanner = BuildingPlanner(BuildingConfig, RoomConfig, self:getRNG())
 	buildingPlanner:build(building.resource)
 
 	local layout = buildingPlanner:getFloorLayout()
@@ -103,12 +103,12 @@ function BuildingConstructor:placeBuilding(map, mapScript, i, j, buildings)
 				local flatName = (roomConfig and roomConfig.flat) or "wood"
 				mapTile.flat = tileSet:getTileIndex(flatName) or mapTile.flat
 				mapTile:setFlag("building")
-			end
 
-			mapTile.topLeft = y
-			mapTile.topRight = y
-			mapTile.bottomLeft = y
-			mapTile.bottomRight = y
+				mapTile.topLeft = y
+				mapTile.topRight = y
+				mapTile.bottomLeft = y
+				mapTile.bottomRight = y
+			end
 
 			tileSets[mapTile.tileSetID] = tileSet
 		end

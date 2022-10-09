@@ -153,6 +153,10 @@ function CSGBuilding:generate()
 	--self:cube(builder, NPOHVolumes.TYPE_SOLID, state.root.i - 2 + 0.1, state.root.j - 2 + 0.1, state.root.width - 0.2, state.root.depth - 0.2)
 	self:exterior(builder, NPOHVolumes.TYPE_SOLID, state.root)
 
+	for i = 1, #state.root.doors do
+		self:door(builder, NPOHVolumes.TYPE_AIR, state.root.doors[i])
+	end
+
 	for i = 1, #rooms do
 		local room = rooms[i]
 
