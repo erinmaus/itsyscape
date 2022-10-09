@@ -74,13 +74,9 @@ function FloorLayout.Tile:getIsDoor()
 	return self.isDoor
 end
 
-function FloorLayout:new(width, depth, cellSize)
+function FloorLayout:new(width, depth)
 	self.width = width
 	self.depth = depth
-	self.cellSize = cellSize
-
-	assert(self.width % self.cellSize == 0)
-	assert(self.depth % self.cellSize == 0)
 
 	self.tiles = {}
 	for i = 1, width do
@@ -110,10 +106,6 @@ end
 
 function FloorLayout:getDepth()
 	return self.depth
-end
-
-function FloorLayout:getCellSize()
-	return self.cellSize
 end
 
 function FloorLayout:getTileIndex(i, j)

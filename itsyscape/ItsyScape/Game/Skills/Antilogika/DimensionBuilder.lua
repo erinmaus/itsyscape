@@ -161,7 +161,7 @@ function DimensionBuilder:buildContentConfig(configIDs)
 		local rootConfig = ContentConfig[i]
 		if configIDsByID[rootConfig.id] then
 			for category, content in pairs(rootConfig.content) do
-				local newSubConfig = newConfig[category] or { config = { props = {}, peeps = {} } }
+				local newSubConfig = newConfig[category] or { config = {} }
 
 				newSubConfig.constructor = newSubConfig.constructor or content.constructor
 				if newSubConfig.constructor ~= content.constructor then
@@ -173,33 +173,39 @@ function DimensionBuilder:buildContentConfig(configIDs)
 				newSubConfig.config.min = math.min(newSubConfig.config.min or content.config.min or 0, content.config.min or newSubConfig.config.min or 0)
 				newSubConfig.config.max = math.max(newSubConfig.config.max or content.config.max or 0, content.config.max or newSubConfig.config.min or 0)
 
-				for j = 1, #content.config.props do
-					local propConfig = content.config.props[j]
+				for key, values in pairs(content.config) do
+					if type(values) == 'table' then
+						newSubConfig.config[key] = newSubConfig.config[key] or {}
 
-					local newPropConfig
-					for k = 1, #newSubConfig.config.props do
-						if newSubConfig.config.props[k].prop == propConfig.prop then
-							newPropConfig = newSubConfig.config.props[k]
-							break
+						for j = 1, #content.config[key] do
+							local valueConfig = content.config[key][j]
+
+							local newValueConfig
+							for k = 1, #newSubConfig.config[key] do
+								if newSubConfig.config[key][k].resource == valueConfig.resource then
+									newValueConfig = newSubConfig.config[key][k]
+									break
+								end
+							end
+
+							if not newValueConfig then
+								newValueConfig = { resource = valueConfig.resource }
+
+								table.insert(newSubConfig.config[key], newValueConfig)
+							end
+
+							newValueConfig.tier = math.min(valueConfig.tier, newValueConfig.tier or valueConfig.tier)
+							newValueConfig.weight = (newValueConfig.weight or 0) + valueConfig.weight
 						end
-					end
 
-					if not newPropConfig then
-						newPropConfig = { prop = propConfig.prop }
-
-						table.insert(newSubConfig.config.props, newPropConfig)
-					end
-
-					newPropConfig.tier = math.min(propConfig.tier, newPropConfig.tier or propConfig.tier)
-					newPropConfig.weight = (newPropConfig.weight or 0) + propConfig.weight
-				end
-
-				local index = 1
-				while index < #newSubConfig.config.props do
-					if newSubConfig.config.props[index].weight <= 0 then
-						table.remove(newSubConfig.config.props, index)
-					else
-						index = index + 1
+						local index = 1
+						while index < #newSubConfig.config[key] do
+							if newSubConfig.config[key][index].weight <= 0 then
+								table.remove(newSubConfig.config[key], index)
+							else
+								index = index + 1
+							end
+						end
 					end
 				end
 

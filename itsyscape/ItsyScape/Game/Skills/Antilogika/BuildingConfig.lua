@@ -29,6 +29,24 @@ local BuildingConfig = {
 			relativeTowerSize = { min = 0.3, max = 0.35 },
 			towerOffsets = {}
 		}
+	},
+	{
+		id = "Azathoth_Cabin",
+		layout = "ItsyScape.Game.Skills.Antilogika.SmallBuildingLayout",
+		floors = { min = 1, max = 2 },
+		rooms = { min = 1, max = 3 },
+		width = { min = 8, max = 13 },
+		depth = { min = 8, max = 13 },
+		split = {
+			min = 0.45, max = 0.55,
+			minWidth = 5,
+			minDepth = 5,
+			iterations = 2
+		},
+
+		props = {
+			seedRoom = { "Foyer_AzathothCabin" }
+		}
 	}
 }
 
