@@ -18,6 +18,7 @@ local RoomConfig = require "ItsyScape.Game.Skills.Antilogika.RoomConfig"
 local BuildingConstructor = Class(Constructor)
 
 BuildingConstructor.NIL_BUILDING = "None"
+BuildingConstructor.MAX_PLACEMENT_ITERATIONS = 5
 
 BuildingConstructor.DEFAULT_CONFIG = {
 	min = 1,
@@ -49,14 +50,20 @@ function BuildingConstructor:placeBuilding(map, mapScript, i, j, buildings)
 	i = i - math.ceil(layout:getWidth() / 2)
 	j = j - math.ceil(layout:getDepth() / 2)
 
-	while i < 1 or i + math.ceil(layout:getWidth() / 2) >= map:getWidth() or
-	      j < 1 or j + math.ceil(layout:getDepth() / 2) >= map:getHeight()
+	local iteration = 0
+	while i < 1 or i + math.ceil(layout:getWidth()) >= map:getWidth() or
+	      j < 1 or j + math.ceil(layout:getDepth()) >= map:getHeight()
 	do
-		i = math.random(1, map:getWidth())
-		j = math.random(1, map:getHeight())
+		i = self:getRNG():random(1, map:getWidth())
+		j = self:getRNG():random(1, map:getHeight())
 
 		i = i - math.ceil(layout:getWidth() / 2)
 		j = j - math.ceil(layout:getDepth() / 2)
+
+		iteration = iteration + 1
+		if iteration >= BuildingConstructor.MAX_PLACEMENT_ITERATIONS then
+			return
+		end
 	end
 
 	local y = map:getTileCenter(i, j).y
@@ -95,6 +102,7 @@ function BuildingConstructor:placeBuilding(map, mapScript, i, j, buildings)
 				local roomConfig = buildingPlanner:getRoomConfig(layoutTile:getRoomID())
 				local flatName = (roomConfig and roomConfig.flat) or "wood"
 				mapTile.flat = tileSet:getTileIndex(flatName) or mapTile.flat
+				mapTile:setFlag("building")
 			end
 
 			mapTile.topLeft = y

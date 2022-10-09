@@ -172,6 +172,7 @@ function DimensionBuilder:buildContentConfig(configIDs)
 
 				newSubConfig.config.min = math.min(newSubConfig.config.min or content.config.min or 0, content.config.min or newSubConfig.config.min or 0)
 				newSubConfig.config.max = math.max(newSubConfig.config.max or content.config.max or 0, content.config.max or newSubConfig.config.min or 0)
+				newSubConfig.priority = content.priority or newSubConfig.priority
 
 				for key, values in pairs(content.config) do
 					if type(values) == 'table' then
@@ -214,7 +215,17 @@ function DimensionBuilder:buildContentConfig(configIDs)
 		end
 	end
 
-	return newConfig
+	local newSortedConfig = {}
+	for key, content in pairs(newConfig) do
+		table.insert(newSortedConfig, content)
+		content.key = key
+	end
+
+	table.sort(newSortedConfig, function(a, b)
+		return a.priority < b.priority
+	end)
+
+	return newSortedConfig
 end
 
 return DimensionBuilder
