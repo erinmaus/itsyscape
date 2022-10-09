@@ -44,7 +44,7 @@ function Constructor:choose(values)
 		currentWeight = value.weight
 	end
 
-	local roll = math.random(0, maxWeight)
+	local roll = rng:random(0, maxWeight)
 	for i = 2, #values do
 		if currentWeight > roll then
 			break

@@ -21,11 +21,11 @@ FloorLayout.TILE_TYPE_NOTHING   = 5
 
 FloorLayout.Tile = Class()
 
-function FloorLayout.Tile:new(floorLayout, i, j)
+function FloorLayout.Tile:new(floorLayout, i, j, tileType)
 	self.floorLayout = floorLayout
 	self.i = i
 	self.j = j
-	self.type = FloorLayout.TILE_TYPE_UNDECIDED
+	self.type = tileType or FloorLayout.TILE_TYPE_UNDECIDED
 	self.roomIndex = false
 	self.isDoor = false
 end
@@ -113,6 +113,10 @@ function FloorLayout:getTileIndex(i, j)
 end
 
 function FloorLayout:getTile(i, j)
+	if i < 1 or i > self:getWidth() or j < 1 or j > self:getDepth() then
+		return nil
+	end
+
 	return self.tiles[self:getTileIndex(i, j)]
 end
 
