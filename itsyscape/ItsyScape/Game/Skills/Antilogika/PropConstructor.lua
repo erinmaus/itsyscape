@@ -51,7 +51,7 @@ function PropConstructor:place(map, mapScript)
 
 		if i >= 1 and i <= map:getWidth() and
 		   j >= 1 and j <= map:getHeight() and
-		   tile:getIsPassable({ "impassable", "door", "blocking" })
+		   tile:getIsPassable({ "impassable", "door", "blocking", "building" })
 		then
 			local position = map:getTileCenter(i, j)
 			self:placeProp(map, mapScript, position, config.props or PropConstructor.DEFAULT_CONFIG.props)

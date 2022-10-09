@@ -555,7 +555,10 @@ function BuildingPlanner:build(buildingID)
 
 	self.currentBuildingConfig = buildingConfig
 
-	self.graph = BuildingPlanner.Graph(nil, 1, 1, 64, 64)
+	local width = self.rng:random(buildingConfig.width.min, buildingConfig.width.max)
+	local depth = self.rng:random(buildingConfig.depth.min, buildingConfig.depth.max)
+
+	self.graph = BuildingPlanner.Graph(nil, 1, 1, width, depth)
 
 	self.currentRoomIndex = 1
 	self.rooms = {}
@@ -564,7 +567,7 @@ function BuildingPlanner:build(buildingID)
 	self.queue = {}
 
 	local LayoutType = require(self.currentBuildingConfig.layout)
-	self.layout = LayoutType(48, 48, 4)
+	self.layout = LayoutType(width, depth)
 	self.layout:apply(self)
 
 	while #self.queue > 0 do

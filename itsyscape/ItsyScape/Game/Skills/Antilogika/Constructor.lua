@@ -30,35 +30,40 @@ function Constructor:getRNG()
 	return self.cell:getRNG()
 end
 
-function Constructor:placeProp(map, mapScript, position, props)
+function Constructor:choose(values)
 	local rng = self:getRNG()
-	local config = self:getConfig()
 
 	local maxWeight = 0
-	for i = 1, #props do
-		maxWeight = maxWeight + props[i].weight
+	for i = 1, #values do
+		maxWeight = maxWeight + values[i].weight
 	end
 
-	local prop = props[1]
+	local value = values[1]
 	local currentWeight = 0
-	if prop then
-		currentWeight = prop.weight
+	if value then
+		currentWeight = value.weight
 	end
 
 	local roll = math.random(0, maxWeight)
-	for i = 2, #props do
+	for i = 2, #values do
 		if currentWeight > roll then
 			break
 		end
 
-		prop = props[i]
-		currentWeight = currentWeight + prop.weight
+		value = values[i]
+		currentWeight = currentWeight + value.weight
 	end
+
+	return value
+end
+
+function Constructor:placeProp(map, mapScript, position, props)
+	local prop = self:choose(props)
 
 	if prop then
 		Utility.spawnPropAtPosition(
 			mapScript,
-			prop.prop,
+			prop.resource,
 			position.x,
 			position.y,
 			position.z,

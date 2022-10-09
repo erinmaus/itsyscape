@@ -233,6 +233,7 @@ function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
 	mapScript:listen('postLoad', function()
 		local cell = self:getDimensionBuilder():getCell(i, j)
 		cell:populate(mutateMapResults, map, mapScript, self:getDimensionBuilder())
+		self:getStage():updateMap(instance:getBaseLayer(), map)
 	end)
 
 

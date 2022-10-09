@@ -13,6 +13,28 @@ local ContentConfig = {
 		id = "Azathoth_Common",
 
 		content = {
+			["General"] = {
+				constructor = "Building",
+
+				config = {
+					min = 1,
+					max = 2,
+
+					buildings = {
+						{
+							resource = "None",
+							weight = 1000,
+							tier = 1
+						},
+						{
+							resource = "Azathoth_Cabin",
+							weight = 300,
+							tier = 1
+						}
+					}
+				}
+			},
+
 			["Woodcutting"] = {
 				constructor = "Prop",
 
@@ -21,12 +43,12 @@ local ContentConfig = {
 					max = 50,
 					props = {
 						{
-							prop = "ShadowTree_Default",
+							resource = "ShadowTree_Default",
 							weight = 1000,
 							tier = 1
 						},
 						{
-							prop = "AzathothianTree_Default",
+							resource = "AzathothianTree_Default",
 							weight = 1,
 							tier = 90
 						}
@@ -45,12 +67,12 @@ local ContentConfig = {
 				config = {
 					props = {
 						{
-							prop = "CommonTree_Snowy",
+							resource = "CommonTree_Snowy",
 							weight = 1000,
 							tier = 1
 						},
 						{
-							prop = "ShadowTree_Default",
+							resource = "ShadowTree_Default",
 							weight = -750,
 							tier = 1
 						}
