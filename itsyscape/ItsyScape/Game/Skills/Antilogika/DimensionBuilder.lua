@@ -195,8 +195,9 @@ function DimensionBuilder:buildContentConfig(configIDs)
 								table.insert(newSubConfig.config[key], newValueConfig)
 							end
 
-							newValueConfig.tier = math.min(valueConfig.tier, newValueConfig.tier or valueConfig.tier)
+							newValueConfig.tier = math.min(valueConfig.tier or 1, newValueConfig.tier or valueConfig.tier or 1)
 							newValueConfig.weight = (newValueConfig.weight or 0) + valueConfig.weight
+							newValueConfig.props = newValueConfig.props or valueConfig.props or {}
 						end
 
 						local index = 1

@@ -39,12 +39,17 @@ function BasicFog:setFarDistance(value)
 	self.farDistance = value or self.farDistance
 end
 
-function BasicFog:makeFollowEye()
+function BasicFog:setFollowEye()
 	self.followTarget = false
 end
 
-function BasicFog:makeFollowTarget()
+function BasicFog:setFollowTarget()
 	self.followTarget = true
+end
+
+function BasicFog:setFollowSelf()
+	self.followTarget = false
+	self.followSelf = true
 end
 
 function BasicFog:getColor()

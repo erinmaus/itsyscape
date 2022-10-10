@@ -20,6 +20,10 @@ function BasicBuilding:new(...)
 	self.propState = {}
 end
 
+function BasicBuilding:spawnOrPoofTile()
+	-- Nothing.
+end
+
 function BasicBuilding:setPropState(value)
 	self.propState = value
 end

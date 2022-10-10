@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 
 local Cell = Class()
 
@@ -23,9 +24,11 @@ function Cell.MutateMapResult:new(t)
 	end
 
 	self.zones = {}
+	self.zoneWeights = {}
 
-	for key in pairs(t.zones) do
+	for key, weight in pairs(t.zones) do
 		table.insert(self.zones, key)
+		self.zoneWeights[key] = weight
 	end
 end
 
@@ -35,6 +38,22 @@ end
 
 function Cell.MutateMapResult:getZones()
 	return self.zones
+end
+
+function Cell.MutateMapResult:getBestZone()
+	local bestZone = self.zones[1]
+	local bestWeight = self.zoneWeights[bestZone]
+	for i = 2, #self.zones do
+		local key = self.zones[i]
+		local weight = self.zoneWeights[key]
+
+		if weight > bestWeight then
+			bestZone = key
+			bestWeight = weight
+		end
+	end
+
+	return bestZone
 end
 
 function Cell:new(i, j, rng)
@@ -63,7 +82,7 @@ function Cell:mutateMap(map, dimensionBuilder)
 			local z = self.j + (j - 1) / (map:getHeight())
 
 			local zone = dimensionBuilder:getZone(x, z)
-			zones[zone] = true
+			zones[zone] = (zones[zone] or 0) + 1
 
 			local tile = map:getTile(i, j)
 			tile.flat = zone:sampleTileFlat(x, z)
@@ -97,6 +116,26 @@ function Cell:mutateMap(map, dimensionBuilder)
 	}
 end
 
+function Cell:populateLights(mapScript, prop, lights)
+	for i = 1, #lights do
+		local lightConfig = lights[i]
+
+		local light = Utility.spawnPropAtPosition(
+			mapScript,
+			prop,
+			0, 0, 0,
+			0)
+		local lightPeep = light:getPeep()
+
+		for key, value in pairs(lightConfig) do
+			local p = "set" .. key
+			if lightPeep[p] then
+				lightPeep[p](lightPeep, value)
+			end
+		end
+	end
+end
+
 function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 	local rngState = self.rng:getState()
 
@@ -117,6 +156,11 @@ function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 		local constructor = ConstructorType(self, content.config)
 		constructor:place(map, mapScript)
 	end
+
+	local lightingConfig = mutateMapResult:getBestZone():getLightingConfig()
+	self:populateLights(mapScript, "AmbientLight_Default", lightingConfig.ambient or {})
+	self:populateLights(mapScript, "DirectionalLight_Default", lightingConfig.directional or {})
+	self:populateLights(mapScript, "Fog_Default", lightingConfig.fog or {})
 
 	self.rng:setState(rngState)
 end

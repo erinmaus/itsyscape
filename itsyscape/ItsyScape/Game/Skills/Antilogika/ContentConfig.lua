@@ -36,6 +36,32 @@ local ContentConfig = {
 				}
 			},
 
+			["Weather"] = {
+				constructor = "Weather",
+				priority = 1,
+
+				config = {
+					min = 0,
+					max = 1,
+
+					weather = {
+						{
+							resource = "None",
+							weight = 600
+						},
+						{
+							resource = "Rain",
+							props = {
+								wind = { -15, 0, 0 },
+								heaviness = 0.25,
+								color = { 1, 0, 0, 0.7 },
+							},
+							weight = 200
+						}
+					}
+				}
+			},
+
 			["Woodcutting"] = {
 				constructor = "Prop",
 				priority = 10,
@@ -53,6 +79,33 @@ local ContentConfig = {
 							resource = "AzathothianTree_Default",
 							weight = 1,
 							tier = 90
+						}
+					}
+				}
+			},
+
+			["Combat"] = {
+				constructor = "Creep",
+				priority = 20,
+
+				config = {
+					min = 1,
+					max = 5,
+					actors = {
+						{
+							resource = "Yendorian_Ballista",
+							weight = 100,
+							tier = 50
+						},
+						{
+							resource = "Yendorian_Swordfish",
+							weight = 100,
+							tier = 50
+						},
+						{
+							resource = "Yendorian_Mast",
+							weight = 100,
+							tier = 50
 						}
 					}
 				}
@@ -77,6 +130,32 @@ local ContentConfig = {
 							resource = "ShadowTree_Default",
 							weight = -750,
 							tier = 1
+						}
+					}
+				}
+			},
+
+			["Weather"] = {
+				constructor = "Weather",
+
+				config = {
+					min = 0,
+					max = 1,
+
+					weather = {
+						{
+							resource = "Fungal",
+							props = {
+								gravity = { 0, -10, 0 },
+								wind = { -6, 0, 0 },
+								colors = {
+									{ 1, 1, 1, 1 }
+								},
+								minHeight = 20,
+								maxHeight = 25,
+								heaviness = 0.25
+							},
+							weight = 200
 						}
 					}
 				}

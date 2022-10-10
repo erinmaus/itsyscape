@@ -30,6 +30,7 @@ function Zone:new(t)
 	self.content = { unpack(t.content or {}) }
 	self.terrainNoise = NoiseBuilder.TERRAIN(t.terrainNoise or {})
 	self.tileNoise = NoiseBuilder.TILE(t.tileNoise or {})
+	self.lightingConfig = t.lighting or {}
 
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
@@ -79,6 +80,10 @@ end
 
 function Zone:getContent()
 	return self.content
+end
+
+function Zone:getLightingConfig()
+	return self.lightingConfig
 end
 
 function Zone:sample(x, y, z, w)

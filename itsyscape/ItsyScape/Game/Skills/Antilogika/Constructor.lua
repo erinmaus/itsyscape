@@ -57,6 +57,20 @@ function Constructor:choose(values)
 	return value
 end
 
+function Constructor:placeActor(map, mapScript, position, actors)
+	local actor = self:choose(actors)
+
+	if actor then
+		Utility.spawnActorAtPosition(
+			mapScript,
+			actor.resource,
+			position.x,
+			position.y,
+			position.z,
+			map:getCellSize())
+	end
+end
+
 function Constructor:placeProp(map, mapScript, position, props)
 	local prop = self:choose(props)
 
