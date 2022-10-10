@@ -220,7 +220,7 @@ function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
 	end
 
 	if j > 1 then
-		local position = map:getTileCenter(InstanceManager.MAP_SIZE / 2, j)
+		local position = map:getTileCenter(InstanceManager.MAP_SIZE / 2, 1)
 		self:_instantiatePortal(i, j - 1, instance, position)
 	end
 

@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Color = require "ItsyScape.Graphics.Color"
 
 local DimensionConfig = {
 	{
@@ -41,6 +42,33 @@ local DimensionConfig = {
 						tile = "grass",
 						sample = 0.5
 					}
+				},
+				lighting = {
+					fog = {
+						{
+							Color = Color(33 / 255, 33 / 255, 33 / 255),
+							NearDistance = 5,
+							FarDistance = 10,
+							FollowTarget = true
+						},
+						{
+							Color = Color(83 / 255, 103 / 255, 108 / 255),
+							NearDistance = 30,
+							FarDistance = 60
+						}
+					},
+					directional = {
+						{
+							Color = Color(66 / 255, 66 / 255, 132 / 255),
+							Direction = { 4, 5, 4 }
+						}
+					},
+					ambient = {
+						{
+							Color = Color(128 / 255, 128 / 255, 255 / 255),
+							Ambience = 0.4
+						}
+					}
 				}
 			},
 			{
@@ -63,6 +91,33 @@ local DimensionConfig = {
 						tile = "snow_drift",
 						sample = 0.2
 					}
+				},
+				lighting = {
+					fog = {
+						{
+							Color = Color(33 / 255, 33 / 255, 33 / 255),
+							NearDistance = 5,
+							FarDistance = 10,
+							FollowTarget = true
+						},
+						{
+							Color = Color(83 / 255, 103 / 255, 108 / 255),
+							NearDistance = 30,
+							FarDistance = 60
+						}
+					},
+					directional = {
+						{
+							Color = Color(66 / 255, 66 / 255, 132 / 255),
+							Direction = { 4, 5, 4 }
+						}
+					},
+					ambient = {
+						{
+							Color = Color(128 / 255, 128 / 255, 255 / 255),
+							Ambience = 0.4
+						}
+					}
 				}
 			},
 			{
@@ -84,6 +139,32 @@ local DimensionConfig = {
 					{
 						tile = "snow_drift",
 						sample = 0.5
+					}
+				},
+				lighting = {
+					fog = {
+						{
+							Color = Color(90 / 255, 90 / 255, 160 / 255),
+							NearDistance = 30,
+							FarDistance = 60
+						},
+						{
+							Color = Color(76 / 255, 76 / 255, 180 / 255),
+							NearDistance = 50,
+							FarDistance = 100
+						}
+					},
+					directional = {
+						{
+							Color = Color(234 / 255, 162 / 255, 33 / 255),
+							Direction = { 4, 5, 4 }
+						}
+					},
+					ambient = {
+						{
+							Color = Color(124 / 255, 111 / 255, 245 / 255),
+							Ambience = 0.6
+						}
 					}
 				}
 			},
@@ -116,6 +197,32 @@ local DimensionConfig = {
 					{
 						tile = "grass",
 						sample = 0.3
+					}
+				},
+				lighting = {
+					fog = {
+						{
+							Color = Color(90 / 255, 44 / 255, 160 / 255),
+							NearDistance = 30,
+							FarDistance = 60
+						},
+						{
+							Color = Color(170 / 255, 76 / 255, 76 / 255),
+							NearDistance = 50,
+							FarDistance = 100
+						}
+					},
+					directional = {
+						{
+							Color = Color(234 / 255, 162 / 255, 33 / 255),
+							Direction = { 4, 5, 4 }
+						}
+					},
+					ambient = {
+						{
+							Color = Color(124 / 255, 111 / 255, 145 / 255),
+							Ambience = 0.6
+						}
 					}
 				}
 			}
