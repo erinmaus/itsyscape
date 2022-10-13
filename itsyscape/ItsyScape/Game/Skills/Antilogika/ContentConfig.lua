@@ -13,6 +13,27 @@ local ContentConfig = {
 		id = "Azathoth_Common",
 
 		content = {
+			["River"] = {
+				constructor = "River",
+				priority = 0,
+
+				config = {
+					min = 0,
+					max = 1,
+
+					buildings = {
+						{
+							resource = "None",
+							weight = 500
+						},
+						{
+							resource = "River",
+							weight = 100
+						}
+					}
+				}
+			},
+
 			["GeneralBuilding"] = {
 				constructor = "Building",
 				priority = 1,
@@ -105,6 +126,62 @@ local ContentConfig = {
 						{
 							resource = "Yendorian_Mast",
 							weight = 100,
+							tier = 50
+						}
+					}
+				}
+			}
+		}
+	},
+	{
+		id = "Azathoth_Mountain",
+		content = {
+			["Mining"] = {
+				constructor = "Prop",
+				priority = 10,
+
+				config = {
+					min = 1,
+					max = 5,
+
+					props = {
+						{
+							resource = "CopperRock_Default",
+							weight = 100,
+							tier = 1
+						},
+						{
+							resource = "TinRock_Default",
+							weight = 100,
+							tier = 1
+						},
+						{
+							resource = "IronRock_Default",
+							weight = 75,
+							tier = 10
+						}
+					}
+				}
+			},
+
+			["Combat"] = {
+				constructor = "Creep",
+
+				config = {
+					actors = {
+						{
+							resource = "CopperSkelemental",
+							weight = 200,
+							tier = 50
+						},
+						{
+							resource = "TinSkelemental",
+							weight = 200,
+							tier = 50
+						},
+						{
+							resource = "IronSkelemental",
+							weight = 200,
 							tier = 50
 						}
 					}

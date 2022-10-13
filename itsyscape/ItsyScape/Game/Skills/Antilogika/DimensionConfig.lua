@@ -170,7 +170,7 @@ local DimensionConfig = {
 			},
 			{
 				id = "Azathoth_Mountain",
-				content = { "Azathoth_Common", "Azathoth_Icy" },
+				content = { "Azathoth_Common", "Azathoth_Icy", "Azathoth_Mountain" },
 				tileSetID = "Antilogika_AzathothIce",
 				amplitude = 8,
 				bedrockHeight = 4,

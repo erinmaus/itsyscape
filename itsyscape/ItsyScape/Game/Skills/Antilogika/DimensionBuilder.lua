@@ -223,7 +223,7 @@ function DimensionBuilder:buildContentConfig(configIDs)
 	end
 
 	table.sort(newSortedConfig, function(a, b)
-		return a.priority < b.priority
+		return (a.priority or math.huge) < (b.priority or math.huge)
 	end)
 
 	return newSortedConfig

@@ -65,13 +65,20 @@ function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position
 	local mapScript = instance:getMapScriptByMapFilename("Antilogika")
 	local map = self:getStage():getMap(instance:getBaseLayer())
 
-	mapScript:listen('postLoad', function()
+	local onPlayerEnter = function(_, player)
+		local _, tileI, tileJ = map:getTileAt(position.x, position.z)
+		local walk = Utility.Peep.getWalk(player:getActor():getPeep(), tileI, tileJ, instance:getBaseLayer(), math.huge, {
+			asCloseAsPossible = true
+		})
+		local node = walk and walk:getPath() and walk:getPath():getNodeAtIndex(-1)
+		local newPosition = (node and map:getTileCenter(node.i, node.j)) or position
+
 		local portal = Utility.spawnPropAtPosition(
 			mapScript,
 			"InvisiblePortal_Antilogika",
-			position.x,
-			position.y,
-			position.z,
+			newPosition.x,
+			newPosition.y,
+			newPosition.z,
 			0)
 		local peep = portal:getPeep()
 
@@ -83,127 +90,11 @@ function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position
 
 		local _, size = peep:addBehavior(SizeBehavior)
 		size.size = Vector(2.5, 2, 2.5)
-	end)
-end
 
-function InstanceManager:_instantiateBuilding(instance)
-	local buildingPlanner = BuildingPlanner(BuildingConfig, RoomConfig)
-	buildingPlanner:build("Castle")
-
-	local mapScript = instance:getMapScriptByMapFilename("Antilogika")
-	local map = self:getStage():getMap(instance:getBaseLayer())
-
-	local tileSets = {}
-
-	local layout = buildingPlanner:getFloorLayout()
-	for i = 1, layout:getWidth() do
-		for j = 1, layout:getDepth() do
-			local layoutTile = layout:getTile(i, j)
-			local mapTile = map:getTile(i, j)
-			local tileSet = tileSets[mapTile.tileSetID] or MultiTileSet({ mapTile.tileSetID }, false):getTileSetByIndex(1)
-
-			for k = 1, #BuildingAnchor.PLANE_XZ do
-				local anchor = BuildingAnchor.PLANE_XZ[k]
-				local offset = BuildingAnchor.OFFSET[anchor]
-
-				local otherLayoutTile = layout:getTile(i + offset.i, j + offset.j)
-				if otherLayoutTile and not layoutTile:getIsDoor() and not otherLayoutTile:getIsDoor() then
-					if otherLayoutTile:getRoomIndex() ~= layoutTile:getRoomIndex() then
-						if anchor == BuildingAnchor.LEFT then
-							mapTile:setFlag("wall-left")
-						elseif anchor == BuildingAnchor.RIGHT then
-							mapTile:setFlag("wall-right")
-						elseif anchor == BuildingAnchor.BACK then
-							mapTile:setFlag("wall-top")
-						elseif anchor == BuildingAnchor.FRONT then
-							mapTile:setFlag("wall-bottom")
-						end
-					end
-				end
-			end
-
-			if layoutTile:getRoomID() == "Courtyard" then
-				mapTile.flat = tileSet:getTileIndex("grass") or mapTile.flat
-			else
-				mapTile.flat = tileSet:getTileIndex("wood") or mapTile.flat
-			end
-
-			mapTile.topLeft = 4
-			mapTile.topRight = 4
-			mapTile.bottomLeft = 4
-			mapTile.bottomRight = 4
-
-			tileSets[mapTile.tileSetID] = tileSet
-		end
+		mapScript:silence('postPlayerEnter', player:getActor():getPeep())
 	end
-	self:getStage():updateMap(instance:getBaseLayer(), map)
 
-	mapScript:listen('postLoad', function()
-		do
-			local center = map:getTileCenter(1, 1)
-			local building = Utility.spawnPropAtPosition(
-				mapScript,
-				"CSGBuilding",
-				0,
-				center.y,
-				0,
-				0)
-			local peep = building:getPeep()
-
-			peep:setPropState(buildingPlanner:getState())
-		end
-
-		for _, room in buildingPlanner:iterate() do
-			local door = room:getDoor()
-
-			if door and (door.width == 2 or door.depth == 2) then
-				local center = map:getTileCenter(door.i, door.j)
-
-				if door.anchor == BuildingAnchor.BACK then
-					Utility.spawnPropAtPosition(
-						mapScript,
-						"Door_RumbridgeCastle",
-						center.x,
-						center.y,
-						center.z - 0.5,
-						0)
-				elseif door.anchor == BuildingAnchor.FRONT then
-					local prop = Utility.spawnPropAtPosition(
-						mapScript,
-						"Door_RumbridgeCastle",
-						center.x,
-						center.y,
-						center.z + 0.5,
-						0)
-					local peep = prop:getPeep()
-
-					Utility.Peep.setRotation(peep, Quaternion.Y_180)
-				elseif door.anchor == BuildingAnchor.LEFT then
-					local prop = Utility.spawnPropAtPosition(
-						mapScript,
-						"Door_RumbridgeCastle",
-						center.x - 0.5,
-						center.y,
-						center.z,
-						0)
-					local peep = prop:getPeep()
-
-					Utility.Peep.setRotation(peep, Quaternion.Y_90)
-				elseif door.anchor == BuildingAnchor.RIGHT then
-					local prop = Utility.spawnPropAtPosition(
-						mapScript,
-						"Door_RumbridgeCastle",
-						center.x - 1,
-						center.y,
-						center.z,
-						0)
-					local peep = prop:getPeep()
-
-					Utility.Peep.setRotation(peep, Quaternion.Y_270)
-				end
-			end
-		end
-	end)
+	mapScript:listen('postPlayerEnter', onPlayerEnter)
 end
 
 function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
@@ -236,12 +127,13 @@ function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
 		self:getStage():updateMap(instance:getBaseLayer(), map)
 	end)
 
-
-	if i == self:getDimensionBuilder():getScale() + 1 and
-	   j == self:getDimensionBuilder():getScale() + 1
-	then
-		--self:_instantiateBuilding(instance)
-	end
+	mapScript:listen('playerEnter', function(_, player)
+		local position = Utility.Peep.getPosition(player:getActor():getPeep())
+		local tile = map:getTileAt(position.x, position.z)
+		if tile:hasFlag("impassable") then
+			Utility.Peep.setPosition(player:getActor():getPeep(), map:getTileCenter(map:getWidth() / 2, map:getHeight() / 2))
+		end
+	end)
 end
 
 function InstanceManager:instantiate(i, j)
