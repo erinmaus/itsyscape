@@ -441,7 +441,7 @@ function GameView:updateMap(map, layer)
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',
 				key = layer,
-				data = buffer.encode(m.map:serialize())
+				data = buffer.encode(map:serialize())
 			})
 			local after = love.timer.getTime()
 
