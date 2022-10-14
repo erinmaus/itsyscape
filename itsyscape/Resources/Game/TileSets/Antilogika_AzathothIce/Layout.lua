@@ -36,7 +36,7 @@
 		y = 768,
 		width = 128,
 		height = 256,
-		name = "brick_wall"
+		name = "stone_wall"
 	},
 
 	{

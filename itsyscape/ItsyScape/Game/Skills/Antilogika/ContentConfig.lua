@@ -21,14 +21,10 @@ local ContentConfig = {
 					min = 0,
 					max = 1,
 
-					buildings = {
+					rivers = {
 						{
 							resource = "None",
 							weight = 500
-						},
-						{
-							resource = "River",
-							weight = 100
 						}
 					}
 				}
@@ -136,6 +132,22 @@ local ContentConfig = {
 	{
 		id = "Azathoth_Mountain",
 		content = {
+			["River"] = {
+				config = {
+					rivers = {
+						{
+							resource = "Azathoth_Mountain_River",
+							weight = 200,
+							props = {
+								bridgeFlat = "stone",
+								bridgeEdge = "stone_wall",
+								waterTexture = "PurpleFoamyWater1"
+							}
+						}
+					}
+				}
+			},
+
 			["Mining"] = {
 				constructor = "Prop",
 				priority = 10,
@@ -183,6 +195,48 @@ local ContentConfig = {
 							resource = "IronSkelemental",
 							weight = 200,
 							tier = 50
+						}
+					}
+				}
+			}
+		}
+	},
+	{
+		id = "Azathoth_Glacier",
+		content = {
+			["River"] = {
+				config = {
+					rivers = {
+						{
+							resource = "Azathoth_Glacier_River",
+							weight = 300,
+							props = {
+								bridgeFlat = "wood",
+								bridgeEdge = "wood",
+								waterTexture = "LightFoamyWater1",
+								elevation = { min = 2, max = 3 }
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	{
+		id = "Azathoth_IcySea",
+		content = {
+			["River"] = {
+				config = {
+					rivers = {
+						{
+							resource = "Azathoth_Glacier_River",
+							weight = 300,
+							props = {
+								bridgeFlat = "wood",
+								bridgeEdge = "wood",
+								waterTexture = "LightFoamyWater1",
+								elevation = { min = 2, max = 3 }
+							}
 						}
 					}
 				}

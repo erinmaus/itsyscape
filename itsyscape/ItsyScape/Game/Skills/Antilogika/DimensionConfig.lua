@@ -20,7 +20,7 @@ local DimensionConfig = {
 		zones = {
 			{
 				id = "Azathoth_IcySea",
-				content = { "Azathoth_Common", "Azathoth_Icy" },
+				content = { "Azathoth_Common", "Azathoth_IcySea", "Azathoth_Icy" },
 				tileSetID = "Antilogika_AzathothIce",
 				amplitude = 2,
 				bedrockHeight = 2.5,
@@ -122,7 +122,7 @@ local DimensionConfig = {
 			},
 			{
 				id = "Azathoth_Glacier",
-				content = { "Azathoth_Common", "Azathoth_Icy" },
+				content = { "Azathoth_Common", "Azathoth_Glacier", "Azathoth_Icy" },
 				tileSetID = "Antilogika_AzathothIce",
 				amplitude = 0.5,
 				bedrockHeight = 3,
@@ -170,7 +170,7 @@ local DimensionConfig = {
 			},
 			{
 				id = "Azathoth_Mountain",
-				content = { "Azathoth_Common", "Azathoth_Icy", "Azathoth_Mountain" },
+				content = { "Azathoth_Common", "Azathoth_Mountain", "Azathoth_Icy" },
 				tileSetID = "Antilogika_AzathothIce",
 				amplitude = 8,
 				bedrockHeight = 4,
