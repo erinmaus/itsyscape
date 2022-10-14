@@ -13,6 +13,8 @@ local Constructor = require "ItsyScape.Game.Skills.Antilogika.Constructor"
 local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 local RiverConstructor = Class(Constructor)
+RiverConstructor.NIL_RIVER = "None"
+
 RiverConstructor.START_ANGLE = -math.pi / 8
 RiverConstructor.STOP_ANGLE  = math.pi * 2 + math.pi / 8
 
@@ -33,7 +35,7 @@ RiverConstructor.DEFAULT_PROPS = {
 	underwaterFlat = "sand",
 	bridgeFlat = "wood",
 	bridgeEdge = "wood",
-	waterTexture = "PurpleFoamyWater1"
+	waterTexture = "LightFoamyWater1"
 }
 
 function RiverConstructor:getSplitIJ()
@@ -177,7 +179,11 @@ function RiverConstructor:placeRiver(map, mapScript, water)
 end
 
 function RiverConstructor:place(map, mapScript)
-	self:placeRiver(map, mapScript, {})
+	local config = self:getConfig()
+	local choice = self:choose(config.rivers or {})
+	if choice and choice.resource ~= RiverConstructor.NIL_RIVER then
+		self:placeRiver(map, mapScript, choice)
+	end
 end
 
 return RiverConstructor
