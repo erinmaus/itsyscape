@@ -318,7 +318,7 @@ function MovementCortex:update(delta)
 
 			movement:clampMovement()
 
-			movement.acceleration = movement.acceleration + movement.acceleration * delta + gravity
+			movement.acceleration = movement.acceleration + movement.acceleration * delta
 			clampVector(movement.acceleration)
 
 			local wasMoving
@@ -355,7 +355,7 @@ function MovementCortex:update(delta)
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
-			local newPosition = position.position + velocity
+			local newPosition = position.position + velocity + gravity * delta
 
 			local actualX, actualZ, collisions = w.world:move(
 				peep,
@@ -418,11 +418,6 @@ function MovementCortex:update(delta)
 			end
 
 			position.position = self:accumulate(peep, self.accumulatePosition, position.position, y)
-
-			local stepY = position.position.y - oldPosition.y 
-			if stepY > movement.maxStepHeight then
-				position.position = oldPosition
-			end
 
 			if movement.velocity.x < -0.5 then
 				movement.facing = MovementBehavior.FACING_LEFT
