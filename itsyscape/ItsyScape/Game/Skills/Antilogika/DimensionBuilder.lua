@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local Cell = require "ItsyScape.Game.Skills.Antilogika.Cell"
 local ContentConfig = require "ItsyScape.Game.Skills.Antilogika.ContentConfig"
 local DimensionConfig = require "ItsyScape.Game.Skills.Antilogika.DimensionConfig"
@@ -17,6 +18,7 @@ local Zone = require "ItsyScape.Game.Skills.Antilogika.Zone"
 local ZoneMap = require "ItsyScape.Game.Skills.Antilogika.ZoneMap"
 
 local DimensionBuilder = Class()
+DimensionBuilder.CONNECT_ITERATIONS = 2
 
 function DimensionBuilder:new(seed, scale, dimensionConfig, playerConfig)
 	self.scale = scale
@@ -58,12 +60,82 @@ function DimensionBuilder:_randomNoiseOffset()
 	return ((self.rng:random() * 2) - 1) * self.size
 end
 
+function DimensionBuilder:_queueNeighbors(cellIndex, queue)
+	local cell = self.cells[cellIndex]
+
+	local i, j = cell:getPosition()
+
+	local neighbors = {}
+	if i > 1 then
+		table.insert(neighbors, self:_getCellIndex(i - 1, j))
+	end
+
+	if i < self.width then
+		table.insert(neighbors, self:_getCellIndex(i + 1, j))
+	end
+
+	if j > 1 then
+		table.insert(neighbors, self:_getCellIndex(i, j - 1))
+	end
+
+	if j < self.height then
+		table.insert(neighbors, self:_getCellIndex(i, j + 1))
+	end
+
+	while #neighbors > 0 do
+		table.insert(queue, {
+			a = cellIndex,
+			b = table.remove(neighbors, self.rng:random(#neighbors))
+		})
+	end
+end
+
+function DimensionBuilder:_connectCell(parentIndex, childIndex)
+	local parent = self.cells[parentIndex]
+	local child = self.cells[childIndex]
+
+	if not parent or not child then
+		return
+	end
+
+	local parentI, parentJ = parent:getPosition()
+	local childI, childJ = child:getPosition()
+
+	if parentI < childI then
+		parent:addNeighbor(BuildingAnchor.RIGHT, child)
+		child:addNeighbor(BuildingAnchor.LEFT, parent)
+	elseif parentI > childI then
+		parent:addNeighbor(BuildingAnchor.LEFT, child)
+		child:addNeighbor(BuildingAnchor.RIGHT, parent)
+	elseif parentJ < childJ then
+		parent:addNeighbor(BuildingAnchor.FRONT, child)
+		child:addNeighbor(BuildingAnchor.BACK, parent)
+	elseif parentJ > childJ then
+		parent:addNeighbor(BuildingAnchor.BACK, child)
+		child:addNeighbor(BuildingAnchor.FRONT, parent)
+	end
+end
+
+function DimensionBuilder:_connectCells()
+	local queue = { { a = 0, b = self:_getCellIndex(1, 1) } }
+	local visited = {}
+	while #queue > 0 do
+		local q = table.remove(queue, 1)
+		if not visited[q.b] then
+			self:_connectCell(q.a, q.b)
+			self:_queueNeighbors(q.b, queue)
+
+			visited[q.b] = true
+		end
+	end
+end
+
 function DimensionBuilder:_initializeCells()
 	self.cells = {}
 
 	for i = 1, self.width do
 		for j = 1, self.height do
-			local index = (j - 1) * self.width + (i - 1)
+			local index = self:_getCellIndex(i, j)
 
 			local rng = love.math.newRandomGenerator(
 				(2 ^ 32 - 1) * self.rng:random(),
@@ -78,6 +150,10 @@ function DimensionBuilder:_initializeCells()
 				self.zoneMap:assignZone(i, j, param1Sample, param2Sample)
 			end
 		end
+	end
+
+	for i = 1, self.CONNECT_ITERATIONS do
+		self:_connectCells()
 	end
 
 	local requiredZones = {
@@ -114,8 +190,12 @@ function DimensionBuilder:getSeed()
 	return self.seed
 end
 
+function DimensionBuilder:_getCellIndex(i, j)
+	return (j - 1) * self.width + (i - 1)
+end
+
 function DimensionBuilder:getCell(i, j)
-	return self.cells[(j - 1) * self.width + (i - 1)]
+	return self.cells[self:_getCellIndex(i, j)]
 end
 
 function DimensionBuilder:getZone(x, z)

@@ -99,23 +99,24 @@ end
 
 function InstanceManager:instantiateMapObjects(i, j, instance, mutateMapResults)
 	local map = self:getStage():getMap(instance:getBaseLayer())
+	local cell = self.dimensionBuilder:getCell(i, j)
 
-	if i > 1 then
+	if i > 1 and cell:hasNeighbor(BuildingAnchor.LEFT) then
 		local position = map:getTileCenter(1, InstanceManager.MAP_SIZE / 2)
 		self:_instantiatePortal(i - 1, j, instance, position)
 	end
 
-	if i < self:getDimensionBuilder():getWidth() then
+	if i < self:getDimensionBuilder():getWidth() and cell:hasNeighbor(BuildingAnchor.RIGHT) then
 		local position = map:getTileCenter(InstanceManager.MAP_SIZE, InstanceManager.MAP_SIZE / 2)
 		self:_instantiatePortal(i + 1, j, instance, position)
 	end
 
-	if j > 1 then
+	if j > 1 and cell:hasNeighbor(BuildingAnchor.BACK) then
 		local position = map:getTileCenter(InstanceManager.MAP_SIZE / 2, 1)
 		self:_instantiatePortal(i, j - 1, instance, position)
 	end
 
-	if j < self:getDimensionBuilder():getHeight() then
+	if j < self:getDimensionBuilder():getHeight() and cell:hasNeighbor(BuildingAnchor.FRONT) then
 		local position = map:getTileCenter(InstanceManager.MAP_SIZE / 2, InstanceManager.MAP_SIZE)
 		self:_instantiatePortal(i, j + 1, instance, position)
 	end
