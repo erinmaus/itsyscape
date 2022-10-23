@@ -56,10 +56,27 @@ function Cell.MutateMapResult:getBestZone()
 	return bestZone
 end
 
+Cell.Anchor = Class()
+
+function Cell.Anchor:new(anchor, neighbor)
+	self.anchor = anchor
+	self.neighbor = neighbor
+end
+
+function Cell.Anchor:getAnchor()
+	return self.anchor
+end
+
+function Cell.Anchor:getNeighbor()
+	return self.neighbor
+end
+
 function Cell:new(i, j, rng)
 	self.i = i
 	self.j = j
 	self.rng = rng
+
+	self.neighbors = {}
 end
 
 function Cell:getRNG()
@@ -68,6 +85,32 @@ end
 
 function Cell:getPosition()
 	return self.i, self.j
+end
+
+function Cell:addNeighbor(anchor, neighbor)
+	for i = 1, #self.neighbors do
+		if self.neighbors[i]:getAnchor() == anchor then
+			table.remove(self.neighbors, i)
+			break
+		end
+	end
+
+	print("ij", self.i, self.j, "anchor", anchor, "next", neighbor.i, neighbor.j)
+	table.insert(self.neighbors, Cell.Anchor(anchor, neighbor))
+end
+
+function Cell:hasNeighbor(anchor)
+	for i = 1, #self.neighbors do
+		if self.neighbors[i]:getAnchor() == anchor then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Cell:iterateNeighbors()
+	return ipairs(self.neighbors)
 end
 
 function Cell:mutateMap(map, dimensionBuilder)
