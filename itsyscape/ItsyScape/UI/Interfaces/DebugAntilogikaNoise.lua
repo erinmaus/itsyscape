@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Button = require "ItsyScape.UI.Button"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Interface = require "ItsyScape.UI.Interface"
@@ -32,6 +33,7 @@ end
 
 function DebugAntilogikaNoise.Noise:refresh()
 	local noise = NoiseBuilder.TERRAIN(self.params)
+	noise = noise({ offset = Vector(self.params.x, self.params.y, self.params.z) })
 
 	local w, h = self:getSize()
 	self.texture = love.graphics.newImage(noise:sampleTestImage(w, h))
@@ -42,7 +44,7 @@ function DebugAntilogikaNoise.Noise:draw()
 end
 
 DebugAntilogikaNoise.WIDTH  = 480
-DebugAntilogikaNoise.HEIGHT = 480
+DebugAntilogikaNoise.HEIGHT = 640
 
 DebugAntilogikaNoise.NOISE_SIZE = 256
 
@@ -55,7 +57,10 @@ DebugAntilogikaNoise.PARAMS = {
 	"Scale",
 	"Octaves",
 	"Amplitude",
-	"Lacunarity"
+	"Lacunarity",
+	"X",
+	"Y",
+	"Z"
 }
 
 function DebugAntilogikaNoise:new(id, index, ui)
@@ -86,7 +91,10 @@ function DebugAntilogikaNoise:new(id, index, ui)
 		scale = NoiseBuilder.TERRAIN:getScale(),
 		octaves = NoiseBuilder.TERRAIN:getOctaves(),
 		amplitude = NoiseBuilder.TERRAIN:getAmplitude(),
-		lacunarity = NoiseBuilder.TERRAIN:getLacunarity()
+		lacunarity = NoiseBuilder.TERRAIN:getLacunarity(),
+		x = NoiseBuilder.TERRAIN:getOffset().x,
+		y = NoiseBuilder.TERRAIN:getOffset().y,
+		z = NoiseBuilder.TERRAIN:getOffset().z
 	}
 
 	for i = 1, #DebugAntilogikaNoise.PARAMS do
