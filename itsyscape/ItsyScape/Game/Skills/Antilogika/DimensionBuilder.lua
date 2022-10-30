@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local BuildingAnchor = require "ItsyScape.Game.Skills.Antilogika.BuildingAnchor"
 local Cell = require "ItsyScape.Game.Skills.Antilogika.Cell"
+local CivilizationContentConfig = require "ItsyScape.Game.Skills.Antilogika.CivilizationContentConfig"
 local ContentConfig = require "ItsyScape.Game.Skills.Antilogika.ContentConfig"
 local DimensionConfig = require "ItsyScape.Game.Skills.Antilogika.DimensionConfig"
 local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
@@ -50,6 +51,22 @@ function DimensionBuilder:new(seed, scale, dimensionConfig, playerConfig)
 		offset = self.param2Offset
 	}
 
+	self.livingScaleOffset = Vector(
+		self:_randomNoiseOffset(),
+		0,
+		self:_randomNoiseOffset())
+	self.livingNoise = NoiseBuilder.TERRAIN {
+		offset = self.livingScaleOffset
+	}
+
+	self.populationScaleOffset = Vector(
+		self:_randomNoiseOffset(),
+		0,
+		self:_randomNoiseOffset())
+	self.populationNoise = NoiseBuilder.TERRAIN {
+		offset = self.populationScaleOffset
+	}
+
 	self.zoneMap = ZoneMap()
 	self.zoneByParamCache = {}
 
@@ -57,7 +74,7 @@ function DimensionBuilder:new(seed, scale, dimensionConfig, playerConfig)
 end
 
 function DimensionBuilder:_randomNoiseOffset()
-	return ((self.rng:random() * 2) - 1) * self.size
+	return ((self.rng:random() * 2) - 1)
 end
 
 function DimensionBuilder:_queueNeighbors(cellIndex, queue)
@@ -133,6 +150,9 @@ end
 function DimensionBuilder:_initializeCells()
 	self.cells = {}
 
+	local minLivingScale, maxLivingScale = math.huge, -math.huge
+	local minPopulationScale, maxPopulationScale = math.huge, -math.huge
+
 	for i = 1, self.width do
 		for j = 1, self.height do
 			local index = self:_getCellIndex(i, j)
@@ -141,7 +161,18 @@ function DimensionBuilder:_initializeCells()
 				(2 ^ 32 - 1) * self.rng:random(),
 				(2 ^ 32 - 1) * self.rng:random())
 
-			self.cells[index] = Cell(i, j, rng)
+			local livingScale = self.livingNoise:sample4D(i / self.width, 0, j / self.height)
+			local populationScale = self.populationNoise:sample4D(i / self.width, 0, j / self.height)
+
+			minLivingScale = math.min(livingScale, minLivingScale)
+			maxLivingScale = math.max(livingScale, maxLivingScale)
+			minPopulationScale = math.min(livingScale, minPopulationScale)
+			maxPopulationScale = math.max(livingScale, maxPopulationScale)
+
+			local cell = Cell(i, j, rng)
+			cell:setCivilizationParams(livingScale, populationScale)
+
+			self.cells[index] = cell
 
 			local noiseSample = self.zoneNoise:sample4D(i, 0, j, self.seed:getTime())
 			if noiseSample >= self.dimensionConfig.zoneThreshold then
@@ -149,6 +180,19 @@ function DimensionBuilder:_initializeCells()
 				local param2Sample = self.param2Noise:sample4D(i, self.param2Offset.y, j, self.seed:getTime())
 				self.zoneMap:assignZone(i, j, param1Sample, param2Sample)
 			end
+		end
+	end
+
+	for i = 1, self.width do
+		for j = 1, self.height do
+			local index = self:_getCellIndex(i, j)
+			local cell = self.cells[index]
+
+			local livingScale, populationScale = cell:getCivilizationParams()
+			livingScale = ((livingScale - minLivingScale) / (maxLivingScale - minLivingScale)) * 2 - 1
+			populationScale = ((populationScale - minPopulationScale) / (maxPopulationScale - minPopulationScale)) * 2 - 1
+
+			cell:setCivilizationParams(livingScale, populationScale)
 		end
 	end
 
@@ -225,6 +269,21 @@ function DimensionBuilder:getZoneFromParams(param1, param2)
 	})
 
 	return zone
+end
+
+function DimensionBuilder:getCivilizationFromParams(livingScale, populationScale)
+	local bestDistance = math.huge
+	local bestCivilization
+	for i = 1, #CivilizationContentConfig do
+		local civilization = CivilizationContentConfig[i]
+		local distance = (Vector(livingScale, populationScale) - Vector(civilization.livingScale, civilization.populationScale)):getLengthSquared()
+		if distance <= bestDistance then
+			bestDistance = distance
+			bestCivilization = civilization
+		end
+	end
+
+	return bestCivilization
 end
 
 function DimensionBuilder:buildContentConfig(configIDs)
