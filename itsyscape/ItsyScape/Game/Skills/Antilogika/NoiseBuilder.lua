@@ -15,7 +15,7 @@ local NoiseBuilder, Metatable = Class()
 function NoiseBuilder:new(t)
 	t = t or {}
 	self.persistence = t.persistence or 1
-	self.offset = Vector(unpack(t.offset or { 0, 0, 0 }))
+	self.offset = t.offset or Vector(0)
 	self.scale = t.scale or 1
 	self.octaves = t.octaves or 1
 	self.amplitude = 1
@@ -27,7 +27,7 @@ function Metatable:__call(t)
 
 	local r = {
 		persistence = t.persistence or self.persistence,
-		offset = t.offset or { self.offset:get() },
+		offset = t.offset or self.offset,
 		scale = t.scale or self.scale,
 		octaves = t.octaves or self.octaves,
 		amplitude = t.amplitude or self.amplitude,
