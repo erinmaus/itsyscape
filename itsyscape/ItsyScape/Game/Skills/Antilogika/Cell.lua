@@ -87,6 +87,15 @@ function Cell:getPosition()
 	return self.i, self.j
 end
 
+function Cell:setCivilizationParams(livingScale, populationScale)
+	self.livingScale = livingScale
+	self.populationScale = populationScale
+end
+
+function Cell:getCivilizationParams()
+	return self.livingScale, self.populationScale
+end
+
 function Cell:addNeighbor(anchor, neighbor)
 	for i = 1, #self.neighbors do
 		if self.neighbors[i]:getAnchor() == anchor then
@@ -95,7 +104,6 @@ function Cell:addNeighbor(anchor, neighbor)
 		end
 	end
 
-	print("ij", self.i, self.j, "anchor", anchor, "next", neighbor.i, neighbor.j)
 	table.insert(self.neighbors, Cell.Anchor(anchor, neighbor))
 end
 
@@ -193,11 +201,22 @@ function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 	end
 
 	local contentConfig = dimensionBuilder:buildContentConfig(contentIDs)
+	local civilization = dimensionBuilder:getCivilizationFromParams(self:getCivilizationParams())
+	print(">>> civ", self:getCivilizationParams())
+
+	local relevantContentIDs = {}
+	for i = 1, #civilization.content do
+		relevantContentIDs[civilization.content[i]] = true
+	end
+
+	Log.info("Cell (%d, %d) is a '%s' civilization.", self.i, self.j, civilization.id)
 
 	for _, content in ipairs(contentConfig) do
-		local ConstructorType = require(string.format("ItsyScape.Game.Skills.Antilogika.%sConstructor", content.constructor))
-		local constructor = ConstructorType(self, content.config)
-		constructor:place(map, mapScript)
+		if relevantContentIDs[content.key] then
+			local ConstructorType = require(string.format("ItsyScape.Game.Skills.Antilogika.%sConstructor", content.constructor))
+			local constructor = ConstructorType(self, content.config)
+			constructor:place(map, mapScript)
+		end
 	end
 
 	local lightingConfig = mutateMapResult:getBestZone():getLightingConfig()

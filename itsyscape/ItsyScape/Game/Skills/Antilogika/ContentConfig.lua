@@ -30,7 +30,7 @@ local ContentConfig = {
 				}
 			},
 
-			["GeneralBuilding"] = {
+			["SmallBuilding"] = {
 				constructor = "Building",
 				priority = 1,
 
@@ -39,11 +39,6 @@ local ContentConfig = {
 					max = 2,
 
 					buildings = {
-						{
-							resource = "None",
-							weight = 1000,
-							tier = 1
-						},
 						{
 							resource = "Azathoth_Cabin",
 							weight = 300,
