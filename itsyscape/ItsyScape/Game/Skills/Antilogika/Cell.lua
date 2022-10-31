@@ -201,12 +201,16 @@ function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 	end
 
 	local contentConfig = dimensionBuilder:buildContentConfig(contentIDs)
+	local dimensionConfig = dimensionBuilder:getDimensionConfig()
 	local civilization = dimensionBuilder:getCivilizationFromParams(self:getCivilizationParams())
-	print(">>> civ", self:getCivilizationParams())
 
 	local relevantContentIDs = {}
 	for i = 1, #civilization.content do
 		relevantContentIDs[civilization.content[i]] = true
+	end
+
+	for i = 1, #dimensionConfig.atmosphere do
+		relevantContentIDs[dimensionConfig.atmosphere[i]] = true
 	end
 
 	Log.info("Cell (%d, %d) is a '%s' civilization.", self.i, self.j, civilization.id)

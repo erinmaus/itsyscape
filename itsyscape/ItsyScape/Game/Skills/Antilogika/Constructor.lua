@@ -74,6 +74,8 @@ end
 function Constructor:placeProp(map, mapScript, position, props)
 	local prop = self:choose(props)
 
+	print(prop.resource)
+
 	if prop then
 		Utility.spawnPropAtPosition(
 			mapScript,

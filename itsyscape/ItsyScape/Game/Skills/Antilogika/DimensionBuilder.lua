@@ -73,6 +73,10 @@ function DimensionBuilder:new(seed, scale, dimensionConfig, playerConfig)
 	self:_initializeCells()
 end
 
+function DimensionBuilder:getDimensionConfig()
+	return self.dimensionConfig
+end
+
 function DimensionBuilder:_randomNoiseOffset()
 	return ((self.rng:random() * 2) - 1)
 end

@@ -89,7 +89,7 @@ local ContentConfig = {
 						},
 						{
 							resource = "AzathothianTree_Default",
-							weight = 1,
+							weight = 25,
 							tier = 90
 						}
 					}
@@ -118,6 +118,43 @@ local ContentConfig = {
 							resource = "Yendorian_Mast",
 							weight = 100,
 							tier = 50
+						}
+					}
+				}
+			},
+
+			["AtmosphereProps"] = {
+				constructor = "Prop",
+				priority = 10,
+
+				config = {
+					min = 20,
+					max = 30,
+					props = {
+						{
+							resource = "CommonTree_Snowy",
+							weight = 1000,
+							tier = 1
+						},
+						{
+							resource = "ShadowTree_Default",
+							weight = 250,
+							tier = 1
+						},
+						{
+							resource = "Azathothian_Mushroom_Variant1",
+							weight = 200,
+							tier = 1
+						},
+						{
+							resource = "Azathothian_Mushrooms_Variant1",
+							weight = 200,
+							tier = 1
+						},
+						{
+							resource = "Azathothian_Egg",
+							weight = 100,
+							tier = 1
 						}
 					}
 				}
