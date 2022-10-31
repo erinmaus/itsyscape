@@ -17,6 +17,12 @@ local DimensionConfig = {
 		defaultID = "Azathoth_Mountain",
 		zoneThreshold = 0.0,
 
+		atmosphere = {
+			"Weather",
+			"Combat",
+			"AtmosphereProps"
+		},
+
 		zones = {
 			{
 				id = "Azathoth_IcySea",
