@@ -74,6 +74,27 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Portal_Default"
 }
 
+ItsyScape.Resource.Prop "Portal_Antilogika" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A split in the fabric of reality.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
 ItsyScape.Resource.Prop "Portal_Chasm" {
 	-- Nothing.
 }

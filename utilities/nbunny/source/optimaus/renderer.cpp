@@ -11,13 +11,15 @@
 #include "common/Module.h"
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
+#include "modules/timer/Timer.h"
 #include "modules/filesystem/Filesystem.h"
 #include "nbunny/optimaus/renderer.hpp"
 
 nbunny::Renderer::Renderer(int reference) :
 	reference(reference), camera(&default_camera)
 {
-	// Nothing.
+	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	time = timer_instance->getTime();
 }
 
 void nbunny::Renderer::add_renderer_pass(RendererPass* renderer_pass)
@@ -97,12 +99,21 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
+	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	auto shader = get_current_shader();
+
+	auto time_uniform = shader->getUniformInfo("scape_Time");
+	if (time_uniform)
+	{
+        *time_uniform->floats = timer_instance->getTime() - time;
+		shader->updateUniform(time_uniform, 1);
+	}
+
 	if (!node.is_base_type())
 	{
 		node.before_draw(*this, delta);
 		node.draw(*this, delta);
 		node.after_draw(*this, delta);
-		return;
 	}
 
 	if (!reference)

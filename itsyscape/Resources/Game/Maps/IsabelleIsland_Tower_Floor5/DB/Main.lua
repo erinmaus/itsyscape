@@ -80,20 +80,17 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Portal_Default",
+		Prop = ItsyScape.Resource.Prop "Portal_Antilogika",
 		MapObject = M["UnstablePortal"]
 	}
 
-	ItsyScape.Meta.ResourceName {
-		Value = "Unstable portal",
-		Language = "en-US",
-		Resource = M["UnstablePortal"]
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Value = "The portal is unstable and can't be used.",
-		Language = "en-US",
-		Resource = M["UnstablePortal"]
+	M["UnstablePortal"] {
+		ItsyScape.Action.Teleport_Antilogika() {
+			Requirement {
+				Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm",
+				Count = 1
+			}
+		}
 	}
 end
 
