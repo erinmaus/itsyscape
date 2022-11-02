@@ -541,6 +541,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Teleport"
+	ActionType "Teleport_Antilogika"
 
 	ResourceType "SailingShip"
 	ResourceType "SailingItem"

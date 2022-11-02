@@ -47,6 +47,8 @@ namespace nbunny
 
 		love::graphics::Shader* current_shader = nullptr;
 
+		float time = 0.0f;
+
 	public:
 		Renderer(int reference);
 		~Renderer() = default;
