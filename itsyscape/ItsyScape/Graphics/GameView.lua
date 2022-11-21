@@ -1059,6 +1059,14 @@ function GameView:tick()
 	end
 end
 
+function GameView:quit()
+	love.thread.getChannel('ItsyScape.Map::input'):push({
+		type = 'quit'
+	})
+
+	self.mapThread:wait()
+end
+
 function GameView:dumpStatsToCSV()
 	self.propViewDebugStats:dumpStatsToCSV("GameView_PropView_Update")
 end

@@ -32,9 +32,23 @@ function AntilogikaTeleportController:poke(actionID, actionIndex, e)
 	end
 end
 
+function AntilogikaTeleportController:getReturn()
+	local mapObject = Utility.Peep.getMapObject(self.portal)
+	local destination = self:getDirector():getGameDB():getRecord("AntilogikaTeleportDestination", {
+		Portal = mapObject
+	})
+
+	if destination then
+		return destination:get("ReturnAnchor"), destination:get("ReturnMap")
+	end
+
+	return nil, nil
+end
+
 function AntilogikaTeleportController:teleport(e)
 	local seed = Antilogika.Seed(e.x, e.y, e.z, e.w, 0)
 	local playerConfig = Antilogika.PlayerConfig(Utility.Peep.getPlayerModel(self:getPeep()))
+	playerConfig:setReturn(self:getReturn())
 
 	local size = AntilogikaTeleportController.SIZE
 

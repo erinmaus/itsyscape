@@ -77,6 +77,10 @@ function DimensionBuilder:getDimensionConfig()
 	return self.dimensionConfig
 end
 
+function DimensionBuilder:getPlayerConfig()
+	return self.playerConfig
+end
+
 function DimensionBuilder:_randomNoiseOffset()
 	return ((self.rng:random() * 2) - 1)
 end
@@ -203,6 +207,11 @@ function DimensionBuilder:_initializeCells()
 	for i = 1, self.CONNECT_ITERATIONS do
 		self:_connectCells()
 	end
+
+	local exitI = self.rng:random(1, self.width)
+	local exitJ = self.rng:random(1, self.height)
+	local exitCell = self.cells[self:_getCellIndex(exitI, exitJ)]
+	exitCell:setHasExitPortal(true)
 
 	local requiredZones = {
 		{ i = 1, j = 1 },

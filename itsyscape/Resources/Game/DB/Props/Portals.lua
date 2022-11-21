@@ -95,6 +95,32 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
 }
 
+ItsyScape.Resource.Prop "Portal_Antilogika_Return" {
+	ItsyScape.Action.Teleport_AntilogikaReturn()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "Portal_Antilogika",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Returns you to the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
 ItsyScape.Resource.Prop "Portal_Chasm" {
 	-- Nothing.
 }

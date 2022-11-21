@@ -19,4 +19,13 @@ function PlayerConfig:getPlayer()
 	return self.player
 end
 
+function PlayerConfig:setReturn(anchor, map)
+	self.returnAnchor = anchor
+	self.returnMap = map
+end
+
+function PlayerConfig:getReturn()
+	return self.returnAnchor, self.returnMap
+end
+
 return PlayerConfig

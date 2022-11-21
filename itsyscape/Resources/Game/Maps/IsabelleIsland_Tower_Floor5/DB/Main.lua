@@ -92,6 +92,12 @@ do
 			}
 		}
 	}
+
+	ItsyScape.Meta.AntilogikaTeleportDestination {
+		ReturnAnchor = "Anchor_StartGame",
+		ReturnMap = M._MAP,
+		Portal = M["UnstablePortal"]
+	}
 end
 
 do
