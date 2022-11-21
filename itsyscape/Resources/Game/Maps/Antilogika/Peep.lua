@@ -21,6 +21,10 @@ function AntilogikaMap:new(resource, name, ...)
 	self:addBehavior(AntilogikaInstanceBehavior)
 end
 
+function AntilogikaMap:getInstanceManager()
+	return self.instanceManager
+end
+
 function AntilogikaMap:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 

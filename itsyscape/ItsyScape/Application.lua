@@ -454,6 +454,7 @@ function Application:quit()
 	if self.multiThreaded then
 		self.game:quit()
 		self.remoteGameManager:pushTick()
+		self.gameView:quit()
 
 		if self.rpcService then
 			self.rpcService:close()

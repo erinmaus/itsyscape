@@ -23,3 +23,19 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "Message_GuardianDoorLocked"
 }
+
+ItsyScape.Resource.KeyItem "Message_AntilogikaPortalSealed" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Antilogika Portal (sealed)",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_AntilogikaPortalSealed"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The boss must be slain to restore access to the portal.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_AntilogikaPortalSealed"
+}

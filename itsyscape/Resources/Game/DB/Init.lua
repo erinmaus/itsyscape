@@ -542,6 +542,13 @@ Game "ItsyScape"
 
 	ActionType "Teleport"
 	ActionType "Teleport_Antilogika"
+	ActionType "Teleport_AntilogikaReturn"
+
+	Meta "AntilogikaTeleportDestination" {
+		ReturnAnchor = Meta.TYPE_TEXT,
+		ReturnMap = Meta.TYPE_RESOURCE,
+		Portal = Meta.TYPE_RESOURCE
+	}
 
 	ResourceType "SailingShip"
 	ResourceType "SailingItem"

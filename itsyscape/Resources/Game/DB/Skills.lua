@@ -269,6 +269,20 @@ ItsyScape.Resource.Skill "Antilogika"
 			Type = "Travel_Antilogika"
 		}
 
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Teleport",
+		XProgressive = "Teleporting",
+		Language = "en-US",
+		Type = "Teleport_AntilogikaReturn"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Teleport",
+		XProgressive = "Teleporting",
+		Language = "en-US",
+		Type = "Teleport_Antilogika"
+	}
+
 ItsyScape.Resource.Skill "Necromancy"
 
 	ItsyScape.Meta.SkillAction {

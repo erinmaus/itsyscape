@@ -77,6 +77,8 @@ function Cell:new(i, j, rng)
 	self.rng = rng
 
 	self.neighbors = {}
+
+	self.hasExitPortal = false
 end
 
 function Cell:getRNG()
@@ -119,6 +121,14 @@ end
 
 function Cell:iterateNeighbors()
 	return ipairs(self.neighbors)
+end
+
+function Cell:setHasExitPortal(value)
+	self.hasExitPortal = value
+end
+
+function Cell:getHasExitPortal()
+	return self.hasExitPortal
 end
 
 function Cell:mutateMap(map, dimensionBuilder)
@@ -227,6 +237,15 @@ function Cell:populate(mutateMapResult, map, mapScript, dimensionBuilder)
 	self:populateLights(mapScript, "AmbientLight_Default", lightingConfig.ambient or {})
 	self:populateLights(mapScript, "DirectionalLight_Default", lightingConfig.directional or {})
 	self:populateLights(mapScript, "Fog_Default", lightingConfig.fog or {})
+
+	if self:getHasExitPortal() then
+		local position = map:getTileCenter(map:getWidth() / 2, map:getHeight() / 2)
+		Utility.spawnPropAtPosition(
+			mapScript,
+			"Portal_Antilogika_Return",
+			position.x, position.y, position.z,
+			0)
+	end
 
 	self.rng:setState(rngState)
 end
