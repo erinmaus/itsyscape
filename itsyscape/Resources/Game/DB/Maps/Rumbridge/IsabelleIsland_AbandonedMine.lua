@@ -296,7 +296,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Item "UnfocusedRune",
-			Count = 30
+			Count = 50
 		}
 	}
 
@@ -311,7 +311,7 @@ do
 
 	ItsyScape.Meta.GatherableProp {
 		Health = 5,
-		SpawnTime = 30,
+		SpawnTime = 20,
 		Resource = ItsyScape.Resource.Prop "IsabelleIsland_AbandonedMine_Pillar"
 	}
 

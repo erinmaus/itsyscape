@@ -23,12 +23,12 @@ ItsyScape.Resource.Spell "FireStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 5
+			Count = 1
 		},
 
 		Output {
@@ -62,12 +62,12 @@ ItsyScape.Resource.Spell "WaterStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 5
+			Count = 1
 		},
 
 		Output {
@@ -101,12 +101,12 @@ ItsyScape.Resource.Spell "EarthStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 5
+			Count = 1
 		},
 
 		Output {
@@ -140,7 +140,7 @@ ItsyScape.Resource.Spell "AirStrike" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
 		Output {
@@ -174,12 +174,12 @@ ItsyScape.Resource.Spell "FireBlast" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -213,12 +213,12 @@ ItsyScape.Resource.Spell "WaterBlast" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -252,12 +252,12 @@ ItsyScape.Resource.Spell "EarthBlast" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -291,7 +291,7 @@ ItsyScape.Resource.Spell "AirBlast" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
@@ -331,17 +331,17 @@ ItsyScape.Resource.Spell "Lightning" {
 
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 20
+			Count = 10
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 20
+			Count = 10
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "CosmicRune",
-			Count = 10
+			Count = 5
 		},
 
 		Output {
