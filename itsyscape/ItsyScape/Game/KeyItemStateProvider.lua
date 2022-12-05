@@ -77,7 +77,6 @@ function KeyItemStateProvider:give(name, count, flags)
 			name)
 
 		local quest = QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[name]
-		print("quest", quest, quest.name)
 		if quest and Utility.Quest.didComplete(quest, self.peep) then
 			Utility.UI.openInterface(self.peep, "QuestCompleteNotification", false, quest)
 		end
