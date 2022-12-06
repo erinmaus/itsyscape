@@ -22,7 +22,7 @@ extern "C"
 #define SOL_SAFE_FUNCTION 1
 #define SOL_CHECK_ARGUMENTS 1
 #define SOL_SAFE_GETTER 1
-#define SOL_EXCEPTIONS_SAFE_PROPAGATION 1
+#define SOL_PROPAGATE_EXCEPTIONS 1
 
 #include "deps/sol.hpp"
 #include "skeleton.hpp"
@@ -32,5 +32,11 @@ extern "C"
 #else
 	#define NBUNNY_EXPORT
 #endif
+
+namespace nbunny
+{
+	lua_State* get_lua_state(lua_State* L);
+	void set_lua_state(lua_State* L);
+}
 
 #endif

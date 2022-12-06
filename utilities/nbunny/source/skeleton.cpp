@@ -131,7 +131,7 @@ static int nbunny_keyframe_interpolate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_skeletonkeyframe(lua_State* L)
 {
-	sol::usertype<nbunny::KeyFrame> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::KeyFrame>("NKeyFrame",
 		sol::call_constructor, sol::constructors<nbunny::KeyFrame()>(),
 		"getTime", &nbunny_keyframe_get_time,
 		"setTime", &nbunny_keyframe_set_time,

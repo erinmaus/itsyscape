@@ -10,12 +10,17 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local MapMesh = require "ItsyScape.World.MapMesh"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local MapMeshSceneNode = Class(SceneNode)
 MapMeshSceneNode.DEFAULT_SHADER = ShaderResource()
 do
 	MapMeshSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/BasicMapMesh")
+end
+MapMeshSceneNode.MULTITEXTURE_SHADER = ShaderResource()
+do
+	MapMeshSceneNode.MULTITEXTURE_SHADER:loadFromFile("Resources/Shaders/MultiTextureMapMesh")
 end
 
 function MapMeshSceneNode:new()
@@ -27,18 +32,24 @@ function MapMeshSceneNode:new()
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 end
 
-function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h)
+function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
 	end
 
-	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1))
+	if Class.isCompatibleType(tileSet, MultiTileSet) then
+		self:getMaterial():setShader(MapMeshSceneNode.MULTITEXTURE_SHADER)
+	else
+		self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
+	end
+
+	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor)
 	self.isOwner = true
 
 	self:setBounds(self.mapMesh:getBounds())
 end
 
-function MapMeshSceneNode:setMapMesh(mapMesh)
+function MapMeshSceneNode:setMapMesh(mapMesh, isMultiTexture)
 	if self.isOwner then
 		if self.mapMesh then
 			self.mapMesh:release()
@@ -49,16 +60,25 @@ function MapMeshSceneNode:setMapMesh(mapMesh)
 	end
 
 	self.mapMesh = mapMesh or false
+	self.isMultiTexture = isMultiTexture
 end
 
 function MapMeshSceneNode:draw(renderer, delta)
 	local shader = renderer:getCurrentShader()
-	local texture = self:getMaterial():getTexture(1)
+	local diffuse = self:getMaterial():getTexture(1)
 	if shader:hasUniform("scape_DiffuseTexture") and
-	   texture and texture:getIsReady()
+	   diffuse and diffuse:getIsReady()
 	then
-		texture:getResource():setFilter('nearest', 'nearest')
-		shader:send("scape_DiffuseTexture", texture:getResource())
+		diffuse:getResource():setFilter('nearest', 'nearest')
+		shader:send("scape_DiffuseTexture", diffuse:getResource())
+	end
+
+	local mask = self:getMaterial():getTexture(2)
+	if shader:hasUniform("scape_MaskTexture") and
+	   mask and mask:getIsReady()
+	then
+		mask:getResource():setFilter('nearest', 'nearest')
+		shader:send("scape_MaskTexture", mask:getResource())
 	end
 
 	if self.mapMesh then

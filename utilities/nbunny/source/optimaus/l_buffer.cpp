@@ -145,7 +145,7 @@ static int nbunny_l_buffer_get_depth_stencil(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_lbuffer(lua_State* L)
 {
-	sol::usertype<nbunny::LBuffer> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LBuffer>("NLBuffer",
 		sol::call_constructor, sol::factories(&nbunny_l_buffer_create),
 		"getWidth", &nbunny::LBuffer::get_width,
 		"getHeight", &nbunny::LBuffer::get_height,

@@ -116,7 +116,7 @@ static int nbunny_light_scene_node_get_previous_color(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_lightscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::LightSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LightSceneNode>("NLightSceneNode",
 		sol::base_classes, sol::bases<nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LightSceneNode>),
 		"setCurrentColor", &nbunny_light_scene_node_set_current_color,
@@ -183,7 +183,7 @@ void nbunny::AmbientLightSceneNode::tick()
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_ambientlightscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::AmbientLightSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::AmbientLightSceneNode>("NAmbientLightSceneNode",
 		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::AmbientLightSceneNode>),
 		"setCurrentAmbience", &nbunny::AmbientLightSceneNode::set_current_ambience,
@@ -290,7 +290,7 @@ static int nbunny_directional_light_scene_node_get_previous_direction(lua_State*
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_directionallightscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::DirectionalLightSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DirectionalLightSceneNode>("NDirectionalLightSceneNode",
 		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::DirectionalLightSceneNode>),
 		"setCurrentDirection", &nbunny_directional_light_scene_node_set_current_direction,
@@ -359,7 +359,7 @@ void nbunny::PointLightSceneNode::tick()
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_pointlightscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::PointLightSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::PointLightSceneNode>("NPointLightSceneNode",
 		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::PointLightSceneNode>),
 		"setCurrentAttenuation", &nbunny::PointLightSceneNode::set_current_attenuation,
@@ -467,7 +467,7 @@ void nbunny::FogSceneNode::tick()
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_fogscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::FogSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::FogSceneNode>("NFogSceneNode",
 		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::FogSceneNode>),
 		"setCurrentNearDistance", &nbunny::FogSceneNode::set_current_near_distance,

@@ -111,7 +111,7 @@ static int nbunny_decoration_feature_get_color(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_decorationfeature(lua_State* L)
 {
-	sol::usertype<nbunny::DecorationFeature> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DecorationFeature>("NDecorationFeature",
 		sol::call_constructor, sol::constructors<nbunny::DecorationFeature()>(),
 		"setID", &nbunny_decoration_feature_set_tile_id,
 		"getID", &nbunny_decoration_feature_get_tile_id,
@@ -165,7 +165,7 @@ nbunny::DecorationFeature* nbunny::Decoration::get_feature_by_index(std::size_t 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_decoration(lua_State* L)
 {
-	sol::usertype<nbunny::Decoration> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Decoration>("NDecoration",
 		sol::call_constructor, sol::constructors<nbunny::Decoration()>(),
 		"addFeature", &nbunny::Decoration::add_feature,
 		"removeFeature", &nbunny::Decoration::remove_feature,
@@ -483,7 +483,7 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_decorationscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::DecorationSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DecorationSceneNode>("NDecorationSceneNode",
 		sol::base_classes, sol::bases<nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::DecorationSceneNode>),
 		"fromDecoration", &nbunny::DecorationSceneNode::from_decoration,

@@ -27,6 +27,32 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
 
+ItsyScape.Resource.Prop "InvisiblePortal_Antilogika" {
+	ItsyScape.Action.Travel_Antilogika()
+}
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "InvisiblePortal",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Leads you somewhere different.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
 ItsyScape.Resource.Prop "Portal_Default" {
 	ItsyScape.Action.Teleport()
 }
@@ -46,6 +72,53 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A split in the fabric of reality.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Portal_Default"
+}
+
+ItsyScape.Resource.Prop "Portal_Antilogika" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A split in the fabric of reality.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika"
+}
+
+ItsyScape.Resource.Prop "Portal_Antilogika_Return" {
+	ItsyScape.Action.Teleport_AntilogikaReturn()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "Portal_Antilogika",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Portal",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Returns you to the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
 }
 
 ItsyScape.Resource.Prop "Portal_Chasm" {

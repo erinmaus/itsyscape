@@ -36,43 +36,43 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(99),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
 
@@ -83,14 +83,14 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(100, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1),
-	Prayer = 100,
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
+	Prayer = 55,
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
 }
@@ -123,43 +123,43 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(99),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
@@ -170,14 +170,14 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(90, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1),
-	Prayer = 100,
-	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(120),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1),
+	Prayer = 55,
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
@@ -223,43 +223,43 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(99),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
@@ -270,14 +270,14 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(90, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(100, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1),
-	Prayer = 100,
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(120),
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
+	Prayer = 55,
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
@@ -323,43 +323,43 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(90),
+	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(99),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
@@ -370,14 +370,14 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(90, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(80, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(70, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(100, 1),
-	Prayer = 100,
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(120),
+	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 1),
+	Prayer = 55,
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }

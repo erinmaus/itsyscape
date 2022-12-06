@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 local GroundDecorations = Class()
 GroundDecorations.FUDGE = 50.3385959375047693
@@ -19,6 +20,7 @@ function GroundDecorations:new(id)
 		tileSetID = id
 	})
 
+	self.tileSetID = id
 	self.tileFunctions = {}
 end
 
@@ -53,13 +55,23 @@ end
 
 function GroundDecorations:emit(tileSet, map, i, j)
 	local mapTile = map:getTile(i, j)
-	local tileSetTile = tileSet:getTile(mapTile.flat)
 
-	if tileSetTile then
+	local tileSetTile, actualTileSet
+	do
+		if Class.isCompatibleType(tileSet, MultiTileSet) then
+			actualTileSet = tileSet:getTileSetByID(mapTile.tileSetID)
+		else
+			actualTileSet = tileSet
+		end
+
+		tileSetTile = actualTileSet:getTile(mapTile.flat)
+	end
+
+	if tileSetTile and mapTile.tileSetID == self.tileSetID then
 		local name = tileSetTile.name
 		local tileFunction = self.tileFunctions[name]
 		if tileFunction then
-			tileFunction(tileSet, map, i, j, tileSetTile, mapTile)
+			tileFunction(actualTileSet, map, i, j, tileSetTile, mapTile)
 		end
 	end
 end

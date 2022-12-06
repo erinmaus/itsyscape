@@ -81,7 +81,7 @@ float nbunny::WeatherMap::get_height_at_tile(int i, int j) const
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_weathermap(lua_State* L)
 {
-	sol::usertype<nbunny::WeatherMap> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::WeatherMap>("NWeatherMap",
 		sol::call_constructor, sol::constructors<nbunny::WeatherMap()>(),
 		"resize", &nbunny::WeatherMap::resize,
 		"getWidth", &nbunny::WeatherMap::get_width,
@@ -395,7 +395,7 @@ static int nbunny_rain_weather_get_color(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_rainweather(lua_State* L)
 {
-	sol::usertype<nbunny::RainWeather> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::RainWeather>("NRainWeather",
 		sol::call_constructor, sol::constructors<nbunny::RainWeather()>(),
 		"getMesh", &nbunny_rain_weather_get_mesh,
 		"setGravity", &nbunny_rain_weather_set_gravity,
@@ -790,7 +790,7 @@ static int nbunny_fungal_weather_get_colors(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_fungalweather(lua_State* L)
 {
-	sol::usertype<nbunny::FungalWeather> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::FungalWeather>("NFungalWeather",
 		sol::call_constructor, sol::constructors<nbunny::FungalWeather()>(),
 		"getMesh", &nbunny_fungal_weather_get_mesh,
 		"setGravity", &nbunny_fungal_weather_set_gravity,

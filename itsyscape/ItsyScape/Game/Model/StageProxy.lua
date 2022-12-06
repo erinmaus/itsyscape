@@ -20,12 +20,14 @@ StageProxy.loadMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
 	Event.KeyArgument("layer", true),
-	Event.Argument("tileSetID"))
+	Event.Argument("tileSetID"),
+	Event.Argument("mask"))
 StageProxy.loadMap:link(
 	"onLoadMap",
 	Event.Argument("map"),
 	Event.Argument("layer"),
-	Event.Argument("tileSetID"))
+	Event.Argument("tileSetID"),
+	Event.Argument("mask"))
 StageProxy.getMap = Event.Get(
 	StageProxy.MAP,
 	Event.Return("map"),

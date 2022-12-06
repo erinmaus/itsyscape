@@ -77,8 +77,14 @@ end
 --
 -- Returns the poke.
 function Peep:addPoke(name)
+	local base = name:sub(1, 1):upper() .. name:sub(2)
+	local post = "post" .. base
+	local preview = "preview" .. base
+
 	if self.pokes[name] == nil then
 		self.pokes[name] = Callback()
+		self.pokes[preview] = Callback()
+		self.pokes[post] = Callback()
 	end
 
 	return self.pokes[name]
@@ -132,6 +138,11 @@ function Peep:poke(name, ...)
 	local base = name:sub(1, 1):upper() .. name:sub(2)
 	local callback = "on" .. base
 	local preview = "preview" .. base
+	local post = "post" .. base
+
+	if self.pokes[preview] then
+		self.pokes[preview](self, ...)
+	end
 
 	if self[preview] then
 		self[preview](self, ...)
@@ -143,6 +154,14 @@ function Peep:poke(name, ...)
 
 	if self[callback] then
 		self[callback](self, ...)
+	end
+
+	if self.pokes[post] then
+		self.pokes[post](self, ...)
+	end
+
+	if self[post] then
+		self[post](self, ...)
 	end
 end
 

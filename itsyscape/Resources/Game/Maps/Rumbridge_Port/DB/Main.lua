@@ -180,9 +180,9 @@ end
 M["Anchor_FirstMateUnlocked"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
+		PositionX = 32.5,
 		PositionY = 4,
-		PositionZ = 27,
+		PositionZ = 28,
 		Direction = -1,
 		Name = "Anchor_FirstMateUnlocked",
 		Map = M._MAP,

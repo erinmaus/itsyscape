@@ -1,7 +1,10 @@
+require "nbunny.init"
+
 require "love"
 require "love.data"
 require "love.event"
 require "love.filesystem"
+require "love.image"
 require "love.keyboard"
 require "love.math"
 require "love.mouse"
