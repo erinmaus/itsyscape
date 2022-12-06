@@ -97,7 +97,7 @@ static std::shared_ptr<nbunny::Discord> nbunny_discord_create(sol::this_state S)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_discord(lua_State* L)
 {
-	sol::usertype<nbunny::Discord> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Discord>("NDiscord",
 		sol::call_constructor, sol::factories(&nbunny_discord_create),
 		"tick", &nbunny::Discord::tick,
 		"updateActivity", &nbunny::Discord::update_activity);

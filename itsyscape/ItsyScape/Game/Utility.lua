@@ -1593,6 +1593,24 @@ function Utility.Peep.getAbsolutePosition(peep)
 	end
 end
 
+function Utility.Peep.getSize(peep)
+	local size = peep:getBehavior(SizeBehavior)
+	if size then
+		return size.size
+	else
+		return Vector.ZERO
+	end
+end
+
+function Utility.Peep.setSize(peep, size)
+	local size = peep:getBehavior(SizeBehavior)
+	if size then
+		size.size = size
+	else
+		Log.warn("Peep '%s' doesn't have a size; can't set new size.", peep:getName())
+	end
+end
+
 function Utility.Peep.getTargetLineOfSight(peep, target, offset)
 	offset = offset or Vector.UNIT_Y
 
@@ -3197,6 +3215,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionMix_1/Script.lua")
 	peep:addResource("animation-action-mix", actionMix)
+	local actionPet = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionPet_1/Script.lua")
+	peep:addResource("animation-action-pet", actionPet)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")

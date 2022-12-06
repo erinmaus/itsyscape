@@ -78,6 +78,11 @@ Game "ItsyScape"
 
 	ResourceType "Prop" -- Trees, rocks, furnace, ...
 
+	Meta "PropAlias" {
+		Alias = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Map"
 	ResourceType "MapObject"
 
@@ -186,6 +191,7 @@ Game "ItsyScape"
 
 	ActionType "Talk"
 	ActionType "Yell"
+	ActionType "Pet"
 
 	Meta "TalkSpeaker" {
 		Name = Meta.TYPE_TEXT,
@@ -535,6 +541,14 @@ Game "ItsyScape"
 	}
 
 	ActionType "Teleport"
+	ActionType "Teleport_Antilogika"
+	ActionType "Teleport_AntilogikaReturn"
+
+	Meta "AntilogikaTeleportDestination" {
+		ReturnAnchor = Meta.TYPE_TEXT,
+		ReturnMap = Meta.TYPE_RESOURCE,
+		Portal = Meta.TYPE_RESOURCE
+	}
 
 	ResourceType "SailingShip"
 	ResourceType "SailingItem"
@@ -996,6 +1010,7 @@ include "Resources/Game/DB/Props/OldOnesTech.lua"
 include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
+include "Resources/Game/DB/Props/CSGBuilding.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
@@ -1039,6 +1054,9 @@ do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
 	ActionType "Debug_Save"
+	ActionType "Debug_AntilogikaTeleport"
+	ActionType "Debug_AntilogikaWarp"
+	ActionType "Debug_AntilogikaNoise"
 
 	local equipAction =  ItsyScape.Action.Equip() {
 		Requirement {
@@ -1050,6 +1068,9 @@ do
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
 	local saveAction = ItsyScape.Action.Debug_Save()
+	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
+	local antilogikaWarpAction = ItsyScape.Action.Debug_AntilogikaWarp()
+	local antilogikaNoiseAction = ItsyScape.Action.Debug_AntilogikaNoise()
 
 	ItsyScape.Meta.ActionVerb {
 		Value = "Ascend",
@@ -1066,6 +1087,27 @@ do
 	}
 
 	ItsyScape.Meta.ActionVerb {
+		Value = "Teleport-Antilogika",
+		Language = "en-US",
+		XProgressive = "Teleporting-through-random-dimensions",
+		Action = antilogikaTeleportAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Warp-Dimensions-Antilogika",
+		Language = "en-US",
+		XProgressive = "Warping-dimensions'",
+		Action = antilogikaWarpAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Generate-Noise-Antilogika",
+		Language = "en-US",
+		XProgressive = "Warping-dimensions'",
+		Action = antilogikaNoiseAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
 		Value = "Save",
 		XProgressive = "Saving-the-world",
 		Language = "en-US",
@@ -1077,6 +1119,9 @@ do
 		ItsyScape.Action.Dequip(),
 		ascendAction,
 		teleportAction,
+		antilogikaTeleportAction,
+		antilogikaWarpAction,
+		antilogikaNoiseAction,
 		saveAction
 	}
 

@@ -25,7 +25,9 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local Map = require "ItsyScape.World.Map"
+local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
 local TileSet = require "ItsyScape.World.TileSet"
+local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 
 local GameView = Class()
@@ -109,9 +111,9 @@ function GameView:attach(game)
 	self.game = game or self.game
 	local stage = self.game:getStage()
 
-	self._onLoadMap = function(_, map, layer, tileSetID)
-		Log.info("Adding map to layer %d.", layer)
-		self:addMap(map, layer, tileSetID)
+	self._onLoadMap = function(_, map, layer, tileSetID, mask)
+		Log.info("Adding map to layer %d (has mask = %s).", layer, Log.boolean(mask))
+		self:addMap(map, layer, tileSetID, mask)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
@@ -300,11 +302,37 @@ function GameView:release()
 	stage.onStopMusic:unregister(self._onStopMusic)
 end
 
-function GameView:addMap(map, layer, tileSetID)
-	local tileSetFilename = string.format(
-		"Resources/Game/TileSets/%s/Layout.lua",
-		tileSetID or "GrassyPlain")
-	local tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
+function GameView:addMap(map, layer, tileSetID, maskID)
+	local tileSet, texture
+	if type(tileSetID) == 'table' then
+		tileSet = MultiTileSet(tileSetID)
+		texture = tileSet:getMultiTexture()
+	else
+		local tileSetFilename = string.format(
+			"Resources/Game/TileSets/%s/Layout.lua",
+			tileSetID or "GrassyPlain")
+		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
+	end
+
+	local mapMeshMask
+	if maskID then
+		local mapMeshMaskTypeName
+		if maskID == true then
+			mapMeshMaskTypeName = "ItsyScape.World.MapMeshMask"
+		else
+			mapMeshMaskTypeName = string.format("ItsyScape.World.%sMapMeshMask", maskID)
+		end
+
+		if mapMeshMaskTypeName then
+			local s, r = xpcall(require, debug.traceback, mapMeshMaskTypeName)
+			if not s then
+				Log.warn("Error loading map mesh mask '%s': %s", mapMeshMaskTypeName, r)
+				maskID = false
+			else
+				mapMeshMask = r()
+			end
+		end
+	end
 
 	if self.mapMeshes[layer] then
 		self:removeMap(layer)
@@ -318,7 +346,10 @@ function GameView:addMap(map, layer, tileSetID)
 		node = SceneNode(),
 		parts = {},
 		layer = layer,
-		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16)
+		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
+		maskID = maskID,
+		mapMeshMask = mapMeshMask,
+		islandProcessor = mapMeshMask and MapMeshIslandProcessor(map, tileSet)
 	}
 
 	m.weatherMap:addMap(m.map)
@@ -353,21 +384,33 @@ function GameView:updateGroundDecorations(m)
 		return
 	end
 
-	local groundDecorationsFilename = string.format(
-		"Resources/Game/TileSets/%s/Ground.lua",
-		m.tileSetID)
-	local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
+	local tileSetIDs
+	if type(m.tileSetID) == 'string' then
+		tileSetIDs = { m.tileSetID }
+	else
+		tileSetIDs = m.tileSetID
+	end
 
-	if groundExists then
-		local chunk = love.filesystem.load(groundDecorationsFilename)
+	for i = 1, #tileSetIDs do
+		local tileSetID = tileSetIDs[i] or "GrassyPlain"
 
-		local GroundType = chunk()
-		if GroundType then
-			local ground = GroundType()
-			ground:emitAll(m.tileSet, m.map)
+		local groundDecorationsFilename = string.format(
+			"Resources/Game/TileSets/%s/Ground.lua",
+			tileSetID)
+		local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
 
-			local decoration = ground:getDecoration()
-			self:decorate("_x_GroundDecorations", decoration, m.layer)
+		if groundExists then
+			local chunk = love.filesystem.load(groundDecorationsFilename)
+
+			local GroundType = chunk()
+			if GroundType then
+				local ground = GroundType()
+				ground:emitAll(m.tileSet, m.map)
+
+				local decoration = ground:getDecoration()
+				local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
+				self:decorate(groupName, decoration, m.layer)
+			end
 		end
 	end
 end
@@ -398,7 +441,7 @@ function GameView:updateMap(map, layer)
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',
 				key = layer,
-				data = buffer.encode(m.map:serialize())
+				data = buffer.encode(map:serialize())
 			})
 			local after = love.timer.getTime()
 
@@ -407,6 +450,10 @@ function GameView:updateMap(map, layer)
 
 		if map then
 			m.map = map
+
+			if m.islandProcessor then
+				m.islandProcessor = MapMeshIslandProcessor(map, m.tileSet)
+			end
 		end
 
 		for i = 1, #m.parts do
@@ -447,8 +494,15 @@ function GameView:updateMap(map, layer)
 						m.tileSet,
 						x, y,
 						GameView.MAP_MESH_DIVISIONS,
-						GameView.MAP_MESH_DIVISIONS)
-					node:getMaterial():setTextures(m.texture)
+						GameView.MAP_MESH_DIVISIONS,
+						m.mapMeshMask ~= nil,
+						m.islandProcessor)
+
+					if m.mapMeshMask then
+						node:getMaterial():setTextures(m.texture, m.mapMeshMask:getTexture())
+					else
+						node:getMaterial():setTextures(m.texture)
+					end
 				end)
 			end
 		end
@@ -675,6 +729,11 @@ function GameView:decorate(group, decoration, layer)
 		local d = {}
 
 		self.resourceManager:queueEvent(function()
+			if self.decorations[groupName] ~= d then
+				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
+				return
+			end
+
 			local tileSetFilename = string.format(
 				"Resources/Game/TileSets/%s/Layout.lstatic",
 				decoration:getTileSetID())
@@ -998,6 +1057,14 @@ function GameView:tick()
 	for projectile in pairs(self.projectiles) do
 		projectile:tick()
 	end
+end
+
+function GameView:quit()
+	love.thread.getChannel('ItsyScape.Map::input'):push({
+		type = 'quit'
+	})
+
+	self.mapThread:wait()
 end
 
 function GameView:dumpStatsToCSV()

@@ -271,6 +271,20 @@ function LocalStage:notifyDropItem(layer, item, key, source)
 		layer)
 end
 
+function LocalStage:lookupPropAlias(resourceID)
+	local gameDB = self.game:getGameDB()
+	local resource = gameDB:getResource(resourceID, "Prop")
+	if not resource then
+		return resourceID
+	end
+
+	local alias = gameDB:getRecord("PropAlias", {
+		Resource = resource
+	})
+
+	return (alias and alias:get("Alias").name) or resourceID
+end
+
 function LocalStage:lookupResource(resourceID, resourceType)
 	local Type
 	local realResourceID, resource
@@ -391,7 +405,7 @@ function LocalStage:placeProp(propID, layer, layerName)
 				p.layer = layer
 			end
 
-			self.onPropPlaced(self, realID, prop)
+			self.onPropPlaced(self, self:lookupPropAlias(realID), prop)
 		end)
 
 		return true, prop
@@ -566,18 +580,26 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 	return actorInstance, propInstance
 end
 
-function LocalStage:loadMapFromFile(filename, layer, tileSetID)
+function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID)
 	self:unloadMap(layer)
 
 	local map = Map.loadFromFile(filename)
+	if type(tileSetID) == 'string' then
+		for i = 1, map:getWidth() do
+			for j = 1, map:getHeight() do
+				map:getTile(i, j).tileSetID = tileSetID
+			end
+		end
+	end
+
 	if map then
-		self.onLoadMap(self, map, layer, tileSetID)
+		self.onLoadMap(self, map, layer, tileSetID, maskID)
 		self.game:getDirector():setMap(layer, map)
 
 		self:updateMap(layer, map)
 	end
 
-	if tileSetID then
+	if tileSetID and type(tileSetID) == 'string' then
 		local tileSetFilename = string.format(
 			"Resources/Game/TileSets/%s/Layout.lua",
 			tileSetID)
@@ -596,14 +618,21 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID)
 	end
 end
 
-function LocalStage:newMap(width, height, tileSetID)
-	local layer = self:newLayer()
-
+function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 	local map = Map(width, height, Stage.CELL_SIZE)
-	self.onLoadMap(self, map, layer, tileSetID)
+
+	for i = 1, map:getWidth() do
+		for j = 1, map:getHeight() do
+			map:getTile(i, j).tileSetID = tileSetID
+		end
+	end
+
+	self.onLoadMap(self, map, layer, tileSetID, maskID)
 	self.game:getDirector():setMap(layer, map)
 
 	self:updateMap(layer)
+
+	return map
 end
 
 function LocalStage:updateMap(layer, map)
@@ -948,9 +977,16 @@ function LocalStage:loadMapResource(instance, filename, args)
 			baseLayer = baseLayer or globalLayer
 			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, meta.maskID)
 		end
 	end
+
+	if not baseLayer then
+		baseLayer = self:newLayer(instance)
+		instance:addLayer(baseLayer)
+	end
+
+	self:spawnGround(layerName, baseLayer)
 
 	if not instance:getBaseLayer() then
 		instance:setBaseLayer(baseLayer)
@@ -975,8 +1011,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 			self:decorate(key, decoration, baseLayer)
 		end
 	end
-
-	self:spawnGround(layerName, baseLayer)
 
 	local mapScript
 

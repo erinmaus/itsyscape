@@ -33,7 +33,7 @@ static int nbunny_skeleton_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresource(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonResource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonResource>("NSkeletonResource",
 		sol::base_classes, sol::bases<nbunny::Resource>(),
 		sol::call_constructor, sol::constructors<nbunny::SkeletonResource()>(),
 		"instantiate", &nbunny_skeleton_resource_instantiate);
@@ -168,7 +168,7 @@ static int nbunny_skeleton_bone_get_inverse_bind_pose(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonbone(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonBone> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonBone>("NSkeletonBone",
 		"getName", &nbunny_skeleton_bone_get_name,
 		"getIndex", &nbunny_skeleton_bone_get_index,
 		"getParentName", &nbunny_skeleton_bone_get_parent_name,
@@ -193,7 +193,7 @@ static int nbunny_skeleton_instance_add_bone(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonInstance>("NSkeletonInstance",
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::SkeletonInstance>),
 		"addBone", &nbunny_skeleton_instance_add_bone,
@@ -227,7 +227,7 @@ static int nbunny_skeleton_animation_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresource(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonAnimationResource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonAnimationResource>("NSkeletonAnimationResource",
 		sol::base_classes, sol::bases<nbunny::Resource>(),
 		sol::call_constructor, sol::constructors<nbunny::SkeletonAnimationResource>(),
 		"instantiate", &nbunny_skeleton_animation_resource_instantiate);
@@ -338,7 +338,7 @@ static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonAnimationInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonAnimationInstance>("NSkeletonAnimationInstance",
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::SkeletonAnimationInstance>),
 		"setKeyFrames", &nbunny_skeleton_animation_instance_set_key_frames,
@@ -461,7 +461,7 @@ static int nbunny_skeleton_transforms_get_transforms(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletontransforms(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonTransforms> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonTransforms>("NSkeletonTransforms",
 		sol::call_constructor, sol::factories(&nbunny_skeleton_transforms_create),
 		"applyTransform", &nbunny_skeleton_transforms_apply_transform,
 		"setTransform", &nbunny_skeleton_transforms_set_transform,
@@ -524,7 +524,7 @@ static std::shared_ptr<nbunny::SkeletonTransformsFilter> nbunny_skeleton_transfo
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletontransformsfilter(lua_State* L)
 {
-	sol::usertype<nbunny::SkeletonTransformsFilter> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonTransformsFilter>("NSkeletonTransformsFilter",
 		sol::call_constructor, sol::factories(&nbunny_skeleton_transforms_filter_create),
 		"enableAllBones", &nbunny::SkeletonTransformsFilter::enable_all_bones,
 		"disableAllBones", &nbunny::SkeletonTransformsFilter::disable_all_bones,

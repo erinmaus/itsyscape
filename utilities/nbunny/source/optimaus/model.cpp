@@ -33,7 +33,7 @@ static int nbunny_model_resource_instantiate(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresource(lua_State* L)
 {
-	sol::usertype<nbunny::ModelResource> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelResource>("NModelResource",
 		sol::base_classes, sol::bases<nbunny::Resource>(),
 		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::ModelResource>),
 		"instantiate", &nbunny_model_resource_instantiate);
@@ -93,7 +93,7 @@ static int nbunny_model_instance_get_mesh(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 {
-	sol::usertype<nbunny::ModelInstance> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelInstance>("NModelInstance",
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::constructors<nbunny::ModelInstance()>(),
 		"setMesh", &nbunny_model_instance_set_mesh,
@@ -273,7 +273,7 @@ static int nbunny_model_scene_node_get_transforms(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_modelscenenode(lua_State* L)
 {
-	sol::usertype<nbunny::ModelSceneNode> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelSceneNode>("NModelSceneNode",
 		sol::base_classes, sol::bases<nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::ModelSceneNode>),
 		"setModel", &nbunny_model_scene_node_set_model,

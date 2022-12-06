@@ -175,7 +175,7 @@ static int nbunny_shader_cache_build(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_shadercache(lua_State* L)
 {
-	sol::usertype<nbunny::ShaderCache> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ShaderCache>("NShaderCache",
 		sol::call_constructor, sol::constructors<nbunny::ShaderCache()>(),
 		"release", &nbunny::ShaderCache::release,
 		"registerRendererPass", &nbunny::ShaderCache::register_renderer_pass,

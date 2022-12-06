@@ -333,7 +333,7 @@ static std::shared_ptr<nbunny::ForwardRendererPass> nbunny_forward_renderer_pass
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_forwardrendererpass(lua_State* L)
 {
-	sol::usertype<nbunny::ForwardRendererPass> T(
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ForwardRendererPass>("NForwardRendererPass",
 		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		sol::call_constructor, sol::factories(&nbunny_forward_renderer_pass_create));
 
