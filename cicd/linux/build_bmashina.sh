@@ -2,7 +2,7 @@
 
 set -xe
 
-git clone https://github.com/bkdoormaus/bmashina || true
+git clone https://github.com/erinmaus/bmashina || true
 cd bmashina
 sed -i 's/lua51/luajit-5.1/g' premake5.lua
 sed -i 's/platforms { "x64" }//g' premake5.lua
