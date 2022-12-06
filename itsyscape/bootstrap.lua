@@ -1,5 +1,3 @@
-require "nbunny.init"
-
 require "love"
 require "love.data"
 require "love.event"
@@ -52,6 +50,8 @@ do
 		end
 	end
 end
+
+require "nbunny.init"
 
 do
 	local B = require "B"
