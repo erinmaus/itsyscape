@@ -82,6 +82,10 @@ function MirrorView:load()
 
 		self.reflectionNode:onWillRender(function(renderer)
 			local texture = self.renderer:getOutputBuffer():getColor()
+			if not texture then
+				return
+			end
+		
 			local shader = renderer:getCurrentShader()
 			if shader:hasUniform("scape_ReflectionTexture") then
 				texture:setFilter('linear', 'linear')

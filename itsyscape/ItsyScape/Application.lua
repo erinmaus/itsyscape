@@ -260,11 +260,11 @@ function Application:update(delta)
 
 	-- Only update at the specified intervals.
 	if not self.multiThreaded then
-		while self.time > self.localGame:getDelta() do
+		while self.time > self.localGame:getTargetDelta() do
 			self:tickSingleThread()
 
 			-- Handle cases where 'delta' exceeds TICK_RATE
-			self.time = self.time - self.localGame:getDelta()
+			self.time = self.time - self.localGame:getTargetDelta()
 
 			-- Store the previous frame time.
 			self.previousTickTime = love.timer.getTime()

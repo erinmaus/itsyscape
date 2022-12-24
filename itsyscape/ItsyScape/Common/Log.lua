@@ -47,6 +47,7 @@ function Log.errorOnce(format, ...)
 		if not ERRORS[key] then
 			Log.print("error", r)
 			Log.print("traceback", traceback)
+			ERRORS[key] = true
 		end
 	else
 		-- At least print something
