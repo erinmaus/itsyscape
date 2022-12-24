@@ -1114,7 +1114,7 @@ end
 
 function LocalStage:getLayers()
 	local layers = {}
-	for index in pairs(self.map) do
+	for index in pairs(self.instancesByLayer) do
 		if type(index) == 'number' then
 			table.insert(layers, index)
 		end
