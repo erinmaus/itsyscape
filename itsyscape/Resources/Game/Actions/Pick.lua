@@ -42,10 +42,11 @@ function Pick:perform(state, player, target)
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)
+			local pokeTarget = CallbackCommand(self.pokeTarget, self, player, target)
 			local wait = WaitCommand(Pick.DURATION, false)
 			local poof = CallbackCommand(Utility.Peep.poof, target)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, wait, transfer, perform, poof)
+			local command = CompositeCommand(true, walk, wait, transfer, pokeTarget, perform, poof)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
@@ -53,6 +54,10 @@ function Pick:perform(state, player, target)
 	end
 
 	return false
+end
+
+function Pick:pokeTarget(player, target)
+	target:poke('pick', player)
 end
 
 return Pick
