@@ -109,6 +109,8 @@ function MapEditorApplication:new()
 	self.propNames = {}
 
 	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
+
+	self:getGameView():getResourceManager():setFrameDuration(1)
 end
 
 function MapEditorApplication:setTool(tool)
@@ -143,7 +145,7 @@ end
 function MapEditorApplication:initialize()
 	EditorApplication.initialize(self)
 
-	self:getGame():getStage():newMap(1, 1, 1, "Draft")
+	self:getGame():getStage():newMap(1, 1, "Draft", nil, 1)
 
 	local newMapInterface = NewMapInterface(self)
 	self:getUIView():getRoot():addChild(newMapInterface)
@@ -884,7 +886,7 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local stage = self:getGame():getStage()
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID, true)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, nil, 1)
 			stage:updateMap(layer, map)
 			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end

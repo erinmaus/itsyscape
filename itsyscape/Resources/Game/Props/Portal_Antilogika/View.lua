@@ -90,6 +90,10 @@ function PortalView:load()
 
 		self.portal:onWillRender(function(renderer)
 			local texture = self.renderer:getOutputBuffer():getColor()
+			if not texture then
+				return
+			end
+
 			local shader = renderer:getCurrentShader()
 			if shader:hasUniform("scape_PortalTexture") then
 				texture:setFilter('linear', 'linear')

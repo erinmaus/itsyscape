@@ -630,7 +630,7 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 	self.onLoadMap(self, map, layer, tileSetID, maskID)
 	self.game:getDirector():setMap(layer, map)
 
-	self:updateMap(layer)
+	self:updateMap(layer, map)
 
 	return map
 end
