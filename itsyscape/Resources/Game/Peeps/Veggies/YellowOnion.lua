@@ -32,6 +32,8 @@ function YellowOnion:ready(director, game)
 		"Resources/Game/Skins/Veggies/YellowOnion.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
+	Utility.Peep.equipXWeapon(self, "YellowOnion_Attack_Magic")
+
 	BaseVeggie.ready(self, director, game)
 end
 
