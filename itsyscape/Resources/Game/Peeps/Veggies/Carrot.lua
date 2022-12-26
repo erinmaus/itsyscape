@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Peeps/Veggies/Celery.lua
+-- Resources/Game/Peeps/Veggies/Carrot.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,9 +14,9 @@ local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local BaseVeggie = require "Resources.Game.Peeps.Veggies.BaseVeggie"
 
-local Celery = Class(BaseVeggie)
+local Carrot = Class(BaseVeggie)
 
-function Celery:ready(director, game)
+function Carrot:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -29,12 +29,12 @@ function Celery:ready(director, game)
 
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Veggies/Celery.lua")
+		"Resources/Game/Skins/Veggies/Carrot.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
-	Utility.Peep.equipXWeapon(self, "Celery_Attack_Melee")
+	Utility.Peep.equipXWeapon(self, "Carrot_Attack_Melee")
 
 	BaseVeggie.ready(self, director, game)
 end
 
-return Celery
+return Carrot
