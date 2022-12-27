@@ -284,4 +284,94 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Carrot"
 }
 
+ItsyScape.Resource.Prop "GreenPepper" {
+	ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(5),
+		},
 
+		Output {
+			Resource = ItsyScape.Resource.Item "GreenPepper",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green pepper",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "GreenPepper"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Yum!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "GreenPepper"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Veggies.BaseVeggieProp",
+	Resource = ItsyScape.Resource.Prop "GreenPepper"
+}
+
+ItsyScape.Resource.Peep "GreenPepper" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Veggies.GreenPepper",
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green pepper",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A hot-headed green pepper!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(20),
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(25),
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(25),
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.9),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 0.6),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1.2),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(35),
+	Resource = ItsyScape.Resource.Peep "GreenPepper"
+}
