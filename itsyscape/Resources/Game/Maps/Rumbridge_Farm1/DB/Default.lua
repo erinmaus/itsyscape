@@ -2,7 +2,7 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "Rumbridge_Farm1"
 
-M["GreenPepper1"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 3.000000,
@@ -15,18 +15,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper1",
+		Name = "GreenOnion1",
 		Map = M._MAP,
-		Resource = M["GreenPepper1"]
+		Resource = M["GreenOnion1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper1"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion1"]
 	}
 end
 
-M["GreenPepper2"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 21.000000,
@@ -39,18 +39,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper2",
+		Name = "GreenOnion2",
 		Map = M._MAP,
-		Resource = M["GreenPepper2"]
+		Resource = M["GreenOnion2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper2"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion2"]
 	}
 end
 
-M["GreenPepper4"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29.000000,
@@ -63,18 +63,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper4",
+		Name = "GreenOnion4",
 		Map = M._MAP,
-		Resource = M["GreenPepper4"]
+		Resource = M["GreenOnion4"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper4"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion4"]
 	}
 end
 
-M["GreenPepper6"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion6"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37.000000,
@@ -87,18 +87,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper6",
+		Name = "GreenOnion6",
 		Map = M._MAP,
-		Resource = M["GreenPepper6"]
+		Resource = M["GreenOnion6"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper6"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion6"]
 	}
 end
 
-M["GreenPepper5"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33.000000,
@@ -111,18 +111,18 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper5",
+		Name = "GreenOnion5",
 		Map = M._MAP,
-		Resource = M["GreenPepper5"]
+		Resource = M["GreenOnion5"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper5"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion5"]
 	}
 end
 
-M["GreenPepper3"] = ItsyScape.Resource.MapObject.Unique()
+M["GreenOnion3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 25.000000,
@@ -135,14 +135,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "GreenPepper3",
+		Name = "GreenOnion3",
 		Map = M._MAP,
-		Resource = M["GreenPepper3"]
+		Resource = M["GreenOnion3"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GreenPepper",
-		MapObject = M["GreenPepper3"]
+		Prop = ItsyScape.Resource.Prop "GreenOnion",
+		MapObject = M["GreenOnion3"]
 	}
 end
 

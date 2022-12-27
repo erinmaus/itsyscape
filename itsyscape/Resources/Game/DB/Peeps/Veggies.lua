@@ -375,3 +375,95 @@ ItsyScape.Meta.Equipment {
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(35),
 	Resource = ItsyScape.Resource.Peep "GreenPepper"
 }
+
+ItsyScape.Resource.Prop "GreenOnion" {
+	ItsyScape.Action.Pick() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(1),
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "GreenOnion",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green onion",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "GreenOnion"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Yum!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "GreenOnion"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Veggies.BaseVeggieProp",
+	Resource = ItsyScape.Resource.Prop "GreenOnion"
+}
+
+ItsyScape.Resource.Peep "GreenOnion" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Veggies.GreenOnion",
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green onion",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Such a cute lil' angry creature!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(25),
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(15),
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Value = ItsyScape.Utility.xpForLevel(15),
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Value = ItsyScape.Utility.xpForLevel(15),
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(15),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.9),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 1.3),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.6),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20),
+	Resource = ItsyScape.Resource.Peep "GreenOnion"
+}
