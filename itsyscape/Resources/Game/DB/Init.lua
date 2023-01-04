@@ -15,6 +15,7 @@ local Curve = require "ItsyScape.Game.Curve"
 Game "ItsyScape"
 	ResourceType "Object"
 	ResourceType "Item"
+	ResourceType "ItemUserdata"
 	ResourceType "Skill"
 
 	ResourceType "Peep" -- NPCs, mobs, whatever

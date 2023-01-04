@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Item = require "ItsyScape.Game.Item"
+local ItemUserdata = require "ItsyScape.Game.ItemUserdata"
 local ItemInstance = require "ItsyScape.Game.ItemInstance"
 
 local ItemManager = Class()
@@ -48,7 +49,7 @@ function ItemManager:isStackable(id)
 	if not item then
 		return false
 	else
-		return item:get("Stackable") ~= 0 and not self:hasUserdata(id)
+		return item:get("Stackable") ~= 0
 	end
 end
 
@@ -68,6 +69,23 @@ function ItemManager:isTradeable(id)
 	else
 		return item:get("Untradeable") ~= 0
 	end
+end
+
+function ItemManager:newUserdata(id)
+	local typeName = string.format("Resources.Game.ItemUserdata.%s", id)
+	local s, r = pcall(require, typeName)
+	if not s then
+		Log.error("Could not create item userdata '%s': %s", id, r)
+		return nil
+	end
+
+	if not Class.isDerived(r, ItemUserdata) then
+		Log.error("Item userdata '%s' (type name: '%s') is not derived from 'ItsyScape.Game.ItemUserdata'")
+		return nil
+	end
+
+	local instance = r(id, self)
+	return instance
 end
 
 function ItemManager:getLogic(id, unique, tryXWeapon)
