@@ -37,17 +37,56 @@ function ItemInstance:note()
 	end
 end
 
-function ItemInstance:getUserdata()
+function ItemInstance:addUserdata(userdataID, data)
 	if self.manager:hasUserdata(self.id) then
-		return self.userdata
+		local userdata = self.userdata[userdataID] or self.manager:newUserdata(userdataID)
+
+		if not userdata then
+			return
+		end
+
+		userdata:deserialize(data)
+
+		self.userdata[userdataID] = userdata
+	end
+end
+
+function ItemInstance:removeUserdata(userdataID)
+	if self.manager:hasUserdata(self.id) then
+		self.userdata[userdataID] = nil
+	end
+end
+
+function ItemInstance:getUserdata(userdataID)
+	if self.manager:hasUserdata(self.id) then
+		if userdataID then
+			return self.userdataID[userdataID]
+		else
+			return self.userdata
+		end
 	else
 		return nil
 	end
 end
 
+function ItemInstance:getSerializedUserdata()
+	local result = {}
+
+	if self.manager:hasUserdata(self.id) then
+		for userdataID, userdata in pairs(self.userdata) do
+			result[userdataID] = userdata:serialize()
+		end
+	end
+
+	return result
+end
+
 function ItemInstance:setUserdata(userdata)
 	if self.manager:hasUserdata(self.id) and type(userdata) == 'table' then
-		self.userdata = userdata
+		table.clear(self.userdata)
+		for userdataID, userdata in pairs(userdata) do
+			self:addUserdata(userdataID, userdata)
+		end
 	end
 end
 
@@ -67,17 +106,6 @@ function ItemInstance:setCount(count)
 	if self:isNoted() or self.manager:isStackable(self.id) then
 		self.count = math.max(math.floor(count or 1), 1)
 	end
-end
-
-function ItemInstance:clone()
-	local instance = ItemInstance(self.id, self.manager)
-	instance.count = count
-	instance.noted = self.noted
-	instance.count = self.count
-	-- TODO clone userdata
-	instance.userdata = self.userdata
-
-	return instance
 end
 
 return ItemInstance
