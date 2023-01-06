@@ -36,6 +36,11 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "YellowOnion"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "YellowOnion",
+	Ingredient = ItsyScape.Resource.Ingredient "Onion"
+}
+
 ItsyScape.Resource.Item "Celery" {
 	-- Nothing.
 }
@@ -62,6 +67,11 @@ ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(6),
 	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "Celery"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "Celery",
+	Ingredient = ItsyScape.Resource.Ingredient "Celery"
 }
 
 ItsyScape.Resource.Item "Carrot" {
@@ -92,6 +102,11 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "Carrot"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "Carrot",
+	Ingredient = ItsyScape.Resource.Ingredient "Carrot"
+}
+
 ItsyScape.Resource.Item "GreenPepper" {
 	-- Nothing.
 }
@@ -120,6 +135,11 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "GreenPepper"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "GreenPepper",
+	Ingredient = ItsyScape.Resource.Ingredient "BellPepper"
+}
+
 ItsyScape.Resource.Item "GreenOnion" {
 	-- Nothing.
 }
@@ -146,4 +166,9 @@ ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(2),
 	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "GreenOnion"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "GreenOnion",
+	Ingredient = ItsyScape.Resource.Ingredient "Onion"
 }

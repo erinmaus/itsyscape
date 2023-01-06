@@ -865,6 +865,7 @@ end
 
 -- Skills
 include "Resources/Game/DB/Skills.lua"
+include "Resources/Game/DB/Cooking/Init.lua"
 
 -- Important key items
 include "Resources/Game/DB/KeyItems.lua"
@@ -1014,6 +1015,10 @@ include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
 include "Resources/Game/DB/Props/CSGBuilding.lua"
+
+-- Cooking
+include "Resources/Game/DB/Cooking/Ingredients.lua"
+include "Resources/Game/DB/Cooking/Recipes.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"
