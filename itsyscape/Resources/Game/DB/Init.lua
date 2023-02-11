@@ -15,6 +15,7 @@ local Curve = require "ItsyScape.Game.Curve"
 Game "ItsyScape"
 	ResourceType "Object"
 	ResourceType "Item"
+	ResourceType "ItemUserdata"
 	ResourceType "Skill"
 
 	ResourceType "Peep" -- NPCs, mobs, whatever
@@ -864,6 +865,7 @@ end
 
 -- Skills
 include "Resources/Game/DB/Skills.lua"
+include "Resources/Game/DB/Cooking/Init.lua"
 
 -- Important key items
 include "Resources/Game/DB/KeyItems.lua"
@@ -892,6 +894,7 @@ include "Resources/Game/DB/Items/FruitTrees.lua"
 include "Resources/Game/DB/Items/Meat.lua"
 include "Resources/Game/DB/Items/MiningSecondaries.lua"
 include "Resources/Game/DB/Items/Gunpowder.lua"
+include "Resources/Game/DB/Items/Veggies.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -956,6 +959,7 @@ include "Resources/Game/DB/Peeps/Tinkerer.lua"
 include "Resources/Game/DB/Peeps/TheEmptyKing.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
+include "Resources/Game/DB/Peeps/Veggies.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1011,6 +1015,10 @@ include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
 include "Resources/Game/DB/Props/CSGBuilding.lua"
+
+-- Cooking
+include "Resources/Game/DB/Cooking/Ingredients.lua"
+include "Resources/Game/DB/Cooking/Recipes.lua"
 
 -- Sailing
 include "Resources/Game/DB/Props/Sails.lua"

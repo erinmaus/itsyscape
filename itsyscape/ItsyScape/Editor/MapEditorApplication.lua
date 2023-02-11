@@ -109,6 +109,8 @@ function MapEditorApplication:new()
 	self.propNames = {}
 
 	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
+
+	self:getGameView():getResourceManager():setFrameDuration(1)
 end
 
 function MapEditorApplication:setTool(tool)
@@ -143,7 +145,7 @@ end
 function MapEditorApplication:initialize()
 	EditorApplication.initialize(self)
 
-	self:getGame():getStage():newMap(1, 1, 1, "Draft")
+	self:getGame():getStage():newMap(1, 1, "Draft", nil, 1)
 
 	local newMapInterface = NewMapInterface(self)
 	self:getUIView():getRoot():addChild(newMapInterface)
@@ -368,7 +370,7 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
 				local prop = self.propPalette:getCurrentProp()
 				if prop then
-					local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name)
+					local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
 					if s then
 						local motion = MapMotion(self:getGame():getStage():getMap(1))
 						motion:onMousePressed(self:makeMotionEvent(x, y, button))
@@ -748,7 +750,7 @@ function MapEditorApplication:save(filename)
 			end
 		end
 
-		local layers = self:getGame():getStage():getLayers()
+		local layers = { 1 }
 		for i = 1, #layers do
 			local map = self:getGame():getStage():getMap(layers[i])
 			local index = tonumber(layers[i])
@@ -884,7 +886,7 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local stage = self:getGame():getStage()
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layer, layerMeta.tileSetID, true)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, nil, 1)
 			stage:updateMap(layer, map)
 			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
@@ -930,7 +932,7 @@ function MapEditorApplication:load(filename, preferExisting)
 					if prop then
 						prop = prop:get("Prop")
 						if prop then
-							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name)
+							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
 
 							if s then
 								local peep = p:getPeep()

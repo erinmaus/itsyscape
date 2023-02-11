@@ -13,7 +13,7 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION = 1 / 30
+ResourceManager.DESKTOP_FRAME_DURATION = 1 / 60
 ResourceManager.MOBILE_FRAME_DURATION  = 1 / 10
 
 function ResourceManager:new()

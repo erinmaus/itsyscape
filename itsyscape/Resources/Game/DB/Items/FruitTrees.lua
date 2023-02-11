@@ -11,6 +11,7 @@
 local TREES = {
 	["Pecan"] = {
 		niceName = "Pecan",
+		ingredients = { "Fruit", "Pecan" },
 		fruit = {
 			{ name = "Pecan", tier = 1, factor = 1.5, health = -1 },
 			{ name = "RegalPecan", tier = 30, factor = 1.5, health = -1 },
@@ -19,6 +20,7 @@ local TREES = {
 	},
 	["Apple"] = {
 		niceName = "Apple",
+		ingredients = { "Fruit", "Apple" },
 		fruit = {
 			{ name = "RedApple", tier = 1, factor = 1.5, health = 1 },
 			{ name = "GreenApple", tier = 15, factor = 1.5, health = 1 },
@@ -29,6 +31,7 @@ local TREES = {
 	},
 	["Pear"] = {
 		niceName = "Pear",
+		ingredients = { "Fruit", "Pear" },
 		fruit = {
 			{ name = "Pear", tier = 1, factor = 1.5, health = 1 },
 			{ name = "DisgustingPear", tier = 30, factor = 1.5, health = -2 },
@@ -37,6 +40,7 @@ local TREES = {
 	},
 	["Peach"] = {
 		niceName = "Peach",
+		ingredients = { "Fruit", "Peach" },
 		fruit = {
 			{ name = "Peach", tier = 1, factor = 1.5, health = 1 },
 			{ name = "JuicyPeach", tier = 30, factor = 1.5, health = 2 },
@@ -45,6 +49,7 @@ local TREES = {
 	},
 	["Orange"] = {
 		niceName = "Orange",
+		ingredients = { "Fruit", "Orange" },
 		fruit = {
 			{ name = "Orange", tier = 1, factor = 1.5, health = 1 },
 			{ name = "SunnyOrange", tier = 30, factor = 3, health = 2 },
@@ -72,6 +77,13 @@ for name, tree in spairs(TREES) do
 		local fruit = tree.fruit[i]
 
 		local Item = ItsyScape.Resource.Item(fruit.name)
+
+		for j = 1, #tree.ingredients do
+			ItsyScape.Meta.Ingredient {
+				Item = Item,
+				Ingredient = ItsyScape.Resource.Ingredient(tree.ingredients[j])
+			}
+		end
 
 		local GatherAction = ItsyScape.Action.Gather() {
 			Requirement {
