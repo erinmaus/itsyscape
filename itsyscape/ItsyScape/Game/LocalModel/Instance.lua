@@ -774,6 +774,10 @@ function Instance:getBaseLayer()
 	return self.baseLayer
 end
 
+function Instance:getBaseMapScript()
+	return self:getMapScriptByLayer(self:getBaseLayer())
+end
+
 function Instance:iterateLayers()
 	return ipairs(self.layers)
 end

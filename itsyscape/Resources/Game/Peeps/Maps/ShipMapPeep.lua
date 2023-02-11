@@ -38,6 +38,7 @@ function ShipMapPeep:new(resource, name, ...)
 	self:addPoke('sink')
 	self:addPoke('sunk')
 	self:addPoke('beach')
+	self:addPoke('rock')
 
 	self:addPoke('leak')
 	self.leaks = 0
@@ -192,6 +193,10 @@ function ShipMapPeep:onHit(p)
 		self:poke('sink')
 		self.isSinking = true
 	end
+end
+
+function ShipMapPeep:onRock()
+	self:_rock()
 end
 
 function ShipMapPeep:_rock()
