@@ -630,7 +630,7 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 	self.onLoadMap(self, map, layer, tileSetID, maskID)
 	self.game:getDirector():setMap(layer, map)
 
-	self:updateMap(layer)
+	self:updateMap(layer, map)
 
 	return map
 end
@@ -1114,7 +1114,7 @@ end
 
 function LocalStage:getLayers()
 	local layers = {}
-	for index in pairs(self.map) do
+	for index in pairs(self.instancesByLayer) do
 		if type(index) == 'number' then
 			table.insert(layers, index)
 		end

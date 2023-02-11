@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local ItemInstance = require "ItsyScape.Game.ItemInstance"
+local RPCState = require "ItsyScape.Game.RPC.State"
 
 -- Manages items and inventories.
 --
@@ -173,10 +174,12 @@ function ItemBroker.Transaction:destroy(item, force)
 	table.insert(self.steps, step)
 end
 
-function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
+function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force, serializedUserdata)
 	if merge == nil then
 		merge = true
 	end
+
+	serializedUserdata = serializedUserdata or {}
 
 	count = count or 1
 
@@ -203,7 +206,7 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 
 		local inventory = self.broker.inventories[provider]
 		if merge and isStackable then
-			local item = inventory:findFirst(id, true, noted)
+			local item = inventory:findFirst(id, true, noted, serializedUserdata)
 			if not item then
 				local c = state[provider].count
 
@@ -237,7 +240,7 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 
 		local item
 		if merge then
-			item = inventory:findFirst(id, true, noted)
+			item = inventory:findFirst(id, true, noted, serializedUserdata)
 		end
 
 		local items
@@ -258,6 +261,8 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force)
 		end
 
 		for i = 1, #items do
+			items[i]:setUserdata(serializedUserdata)
+
 			local s, r = pcall(provider.onSpawn, provider, items[i], count)
 			if not s then
 				return false, r
@@ -293,11 +298,13 @@ function ItemBroker.Transaction:note(destination, id, count)
 		assert(count >= #items, "not enough items in inventory")
 
 		local p = state[destination]
-		local destinationItem = inventory:findFirst(id, true, true)
-		if destinationItem then
-			p.count = p.count - #items
-		else
-			p.count = p.count - #items + 1
+		for i = 1, #items do
+			local destinationItem = inventory:findFirst(id, true, true, items[i]:getSerializedUserdata())
+			if destinationItem then
+				p.count = p.count - #items
+			else
+				p.count = p.count - #items + 1
+			end
 		end
 	end
 
@@ -315,21 +322,26 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		assert(count >= #items, "not enough items in inventory")
 
-		local destinationItem = inventory:findFirst(id, true, true)
-		for _, item in pairs(items) do
-			self.broker:removeItem(item)
+		for i = 1, #items do
+			local destinationItem = inventory:findFirst(id, true, true, items[i]:getSerializedUserdata())
+			for _, item in pairs(items) do
+				self.broker:removeItem(item)
+			end
+
+			if not destinationItem then
+				destinationItem = self.broker:addItem(destination, id, count, true)
+				destinationItem:setUserdata(items[i]:getSerializedUserdata())
+			else
+				destinationItem:setCount(destinationItem:getCount() + #items)
+			end
+
+			local s, r = pcall(destination.onNote, destination, destinationItem, items)
+			if not s then
+				return false, r
+			end
 		end
 
-		if not destinationItem then
-			destinationItem = self.broker:addItem(destination, id, count, true)
-		else
-			destinationItem:setCount(destinationItem:getCount() + #items)
-		end
-
-		local s, r = pcall(destination.onNote, destination, destinationItem, items)
-		if not s then
-			return false, r
-		end
+		return true
 	end
 
 	table.insert(self.conditions, condition)
@@ -436,7 +448,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 		if merge then
 			local inventory = self.broker.inventories[destination]
-			local item = inventory:findFirst(id, true, noted)
+			local item = inventory:findFirst(id, true, noted, item:getSerializedUserdata())
 			if not item then
 				if self.broker.manager:isStackable(id) or
 				   (noted and self.broker.manager:isNoteable(id))
@@ -473,11 +485,12 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 		local destinationItem
 		if merge then
 			local inventory = self.broker.inventories[destination]
-			destinationItem = inventory:findFirst(id, true, noted)
+			destinationItem = inventory:findFirst(id, true, noted, destinationItem:getSerializedUserdata())
 		end
 
 		if not destinationItem then
 			destinationItem = self.broker:addItem(destination, id, count, noted)
+			destinationItem:setUserdata(destinationItem:getSerializedUserdata())
 		else
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
@@ -607,12 +620,12 @@ function ItemBroker.Inventory:has(item)
 end
 
 -- Finds all the items in the inventory matching the arguments.
-function ItemBroker.Inventory:findFirst(id, stackable, noted)
-	return self:findAll(id, stackable, noted)()
+function ItemBroker.Inventory:findFirst(id, stackable, noted, serializedUserdata)
+	return self:findAll(id, stackable, noted, serializedUserdata)()
 end
 
 -- Finds all the items in the inventory matching the arguments.
-function ItemBroker.Inventory:findAll(id, stackable, noted)
+function ItemBroker.Inventory:findAll(id, stackable, noted, serializedUserdata)
 	local iterator, current = self:iterate()
 	return function()
 		local item = iterator(current)
@@ -621,6 +634,7 @@ function ItemBroker.Inventory:findAll(id, stackable, noted)
 			if item:getID() == id
 			   and item:isStackable() == stackable
 			   and item:isNoted() == noted
+			   and RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata)
 			then
 				return item
 			else
@@ -1150,7 +1164,7 @@ function ItemBroker:itemToStorage(item, storage, key)
 		["item-count"] = item:getCount()
 	})
 
-	local userdata = item:getUserdata()
+	local userdata = item:getSerializedUserdata()
 	if userdata then
 		itemStorage:set("item-userdata", userdata)
 	end
