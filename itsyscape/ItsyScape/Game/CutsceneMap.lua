@@ -15,6 +15,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local CutsceneMap = Class()
 
@@ -24,12 +25,58 @@ function CutsceneMap:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneMap:sail(anchors, duration, tween)
+	return function()
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local anchorPositions = {}
+
+		for i = 1, #anchors do
+			print(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i]))
+			table.insert(anchorPositions, Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i])))
+		end
+
+		local curve
+		do
+			local c = {}
+			for i = 1, #anchorPositions do
+				table.insert(c, anchorPositions[i].x)
+				table.insert(c, anchorPositions[i].z)
+			end
+
+			curve = love.math.newBezierCurve(unpack(c))
+		end
+
+		self.peep:addBehavior(MapOffsetBehavior)
+		self.peep:addBehavior(RotationBehavior)
+		local peepPosition = self.peep:getBehavior(MapOffsetBehavior).offset
+
+		local currentTime = 0
+		repeat
+			currentTime = currentTime + self.game:getDelta()
+			local mu = math.min(math.max(currentTime / duration, 0), duration)
+			local delta = math.min(math.max(tween(mu), 0), 1)
+			local currentPosition = self.peep:getBehavior(MapOffsetBehavior).offset
+
+			local x, z = curve:evaluate(delta)
+			local position = Vector(x, peepPosition.y, z)
+			local rotation = Quaternion.lookAt(position, currentPosition)
+
+			self.peep:getBehavior(MapOffsetBehavior).offset = position
+			self.peep:getBehavior(RotationBehavior).rotation = rotation * Quaternion.Y_90
+
+			coroutine.yield()
+		until currentTime > duration
+	end
+end
+
 function CutsceneMap:lerpPosition(anchor, duration, tween)
 	return function()
 		local E = 0.1
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
 		local anchorPosition = Vector(
 			Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 
@@ -64,7 +111,7 @@ function CutsceneMap:lerpScale(anchor, duration, tween)
 		local E = 0.1
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
 		local anchorScale = Vector(
 			Utility.Map.getAnchorScale(self.game, mapResource, anchor))
 
@@ -99,7 +146,7 @@ function CutsceneMap:slerpRotation(anchor, duration, tween)
 		local E = 0.01
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(self.peep)
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
 		local anchorRotation = Quaternion(
 			Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
 

@@ -1189,7 +1189,7 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 		return x or 0, y or 0, z or 0
 	end
 
-	return nil, nil, nil
+	return 0, 0, 0
 end
 
 function Utility.Map.getAnchorRotation(game, map, anchor)
@@ -1213,7 +1213,7 @@ function Utility.Map.getAnchorRotation(game, map, anchor)
 		end
 	end
 
-	return nil, nil, nil
+	return 0, 0, 0, 1
 end
 
 function Utility.Map.getAnchorScale(game, map, anchor)
@@ -1237,7 +1237,7 @@ function Utility.Map.getAnchorScale(game, map, anchor)
 		return x, y, z
 	end
 
-	return nil, nil, nil
+	return 1, 1, 1
 end
 
 function Utility.Map.getAnchorDirection(game, map, anchor)
