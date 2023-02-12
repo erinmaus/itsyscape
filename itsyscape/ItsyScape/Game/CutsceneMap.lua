@@ -33,7 +33,6 @@ function CutsceneMap:sail(anchors, duration, tween)
 		local anchorPositions = {}
 
 		for i = 1, #anchors do
-			print(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i]))
 			table.insert(anchorPositions, Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i])))
 		end
 

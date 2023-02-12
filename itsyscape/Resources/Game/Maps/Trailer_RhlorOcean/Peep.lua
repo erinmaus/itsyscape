@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
@@ -53,12 +54,21 @@ function Ocean:onPlayerEnter(player)
 end
 
 function Ocean:onPlayCutscene(player)
+	Utility.UI.closeAll(player)
 	Utility.Map.playCutscene(self, "Trailer_RhlorOcean_Cthulhu", "StandardCutscene", player)
 end
 
 function Ocean:onLightningZap(anchor)
+	if not self.cthulhu then
+		return
+	end
+
 	local game = self:getDirector():getGameInstance()
-	local position = Vector(Utility.Map.getAnchorPosition(game, Utility.Peep.getMapResource(self), anchor))
+	local cthulhuPosition = Utility.Peep.getPosition(self.cthulhu:getPeep())
+	local radius = love.math.random(10, 15)
+	local x = love.math.random() * 2 - 1
+	local z = love.math.random() * 2 - 1
+	local position = Vector(x, 0, z):getNormal() * radius + cthulhuPosition
 
 	if self.cthulhu then
 		local stage = game:getStage()
@@ -76,6 +86,45 @@ function Ocean:onSpawnCthulhu(anchor)
 
 	if self.pirateShip then
 		self.pirateShip:poke("rock")
+	end
+
+	self.cthulhu:getPeep():listen('finalize', function(peep)
+		Utility.UI.openInterface(
+			Utility.Peep.getInstance(self),
+			"BossHUD",
+			false,
+			peep)
+	end)
+end
+
+function Ocean:onFirePiratesCannons()
+	if not self.pirateShip then
+		return
+	end
+
+	local pirateShipLayer = Utility.Peep.getLayer(self.pirateShip)
+	local hits = self:getDirector():probe(self:getLayerName(), function(peep)
+		local peepLayer = Utility.Peep.getLayer(peep)
+		if peepLayer ~= pirateShipLayer then
+			return false
+		end
+
+		local resource = Utility.Peep.getResource(peep)
+		if not resource or resource.name ~= "Sailing_IronCannon_Default" then
+			return false
+		end
+
+		local rotation = Utility.Peep.getRotation(peep)
+		if rotation == Quaternion.IDENTITY then
+			return false
+		end
+
+		return true
+	end)
+
+	for i = 1, #hits do
+		local cannon = hits[i]
+		cannon:poke('fire')
 	end
 end
 
