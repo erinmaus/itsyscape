@@ -91,19 +91,29 @@ end
 
 function BasicCannon:onFire(peep)
 	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
 	if resource then
 		local gameDB = self:getDirector():getGameDB()
 
 		self:onCooldown(peep)
 
 		do
-			local cannon = gameDB:getRecord("Cannon", {
-				Resource = resource
-			})
+			local cannon
+			do
+				if mapObject then
+					cannon = gameDB:getRecord("Cannon", {
+						Resource = mapObject
+					})
+				end
+
+				cannon = cannon or gameDB:getRecord("Cannon", {
+					Resource = resource
+				})
+			end
 
 			local range
 			if cannon then
-				range = math.min(cannon:get("Range"), 10)
+				range = math.max(cannon:get("Range"), 10)
 			else
 				range = 10
 			end
@@ -155,7 +165,7 @@ function BasicCannon:onFire(peep)
 			director:broadcast(hits, 'receiveAttack', poke)
 
 			local stage = director:getGameInstance():getStage()
-			stage:fireProjectile(cannon:get("Cannonball").name .. "_Small", ray.origin, ray:project(range))
+			stage:fireProjectile(cannon:get("Cannonball").name, self, ray:project(range))
 		end
 	end
 end

@@ -198,7 +198,7 @@ end
 M["Anchor_PlayerShip_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 64,
+		PositionX = 48,
 		PositionY = 0,
 		PositionZ = 64,
 		Map = M._MAP,
@@ -246,9 +246,9 @@ end
 M["Anchor_PirateShip_2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0 + 32,
+		PositionX = 0 + 64,
 		PositionY = 0,
-		PositionZ = 64 + 32,
+		PositionZ = -48,
 		Map = M._MAP,
 		Name = "Anchor_PirateShip_2",
 		Resource = M["Anchor_PirateShip_2"]
@@ -258,9 +258,9 @@ end
 M["Anchor_PirateShip_3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0 - 32,
+		PositionX = -16,
 		PositionY = 0,
-		PositionZ = 0 + 32,
+		PositionZ = 0 + 64,
 		Map = M._MAP,
 		Name = "Anchor_PirateShip_3",
 		Resource = M["Anchor_PirateShip_3"]
