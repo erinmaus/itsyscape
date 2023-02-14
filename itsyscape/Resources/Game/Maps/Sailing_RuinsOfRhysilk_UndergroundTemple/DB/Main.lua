@@ -370,7 +370,7 @@ do
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_Fromtemple",
+		Anchor = "Anchor_FromTemple",
 		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk",
 		Action = TravelAction
 	}
@@ -384,5 +384,35 @@ do
 
 	M["Exit"] {
 		TravelAction
+	}
+end
+
+-- M["Trailer_MeleePlayer"] = ItsyScape.Resource.MapObject.Unique()
+-- do
+-- 	ItsyScape.Meta.PeepMapObject {
+-- 		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
+-- 		MapObject = M["Trailer_MeleePlayer"]
+-- 	}
+
+-- 	ItsyScape.Meta.PeepEquipmentItem {
+-- 		Item = ItsyScape.Resource.Item "EmptyZealot_Cutscene",
+-- 		Count = 1,
+-- 		Resource = M["Trailer_MeleePlayer"]
+-- 	}
+
+-- 	ItsyScape.Meta.PeepEquipmentItem {
+-- 		Item = ItsyScape.Resource.Item "DinkyStaff",
+-- 		Count = 1,
+-- 		Resource = M["Trailer_MeleePlayer"]
+-- 	}
+-- end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_RuinsOfRhysilk_UndergroundTemple_Trailer"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yendor",
+		Cutscene = Cutscene,
+		Resource = M["Yendor"]
 	}
 end

@@ -154,6 +154,18 @@ do
 	}
 end
 
+M["Anchor_Spawn"]= ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -64,
+		PositionY = 0,
+		PositionZ = -64,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
+	}
+end
+
 M["Anchor_Cthulhu_Spawn1"]= ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -170,7 +182,7 @@ M["Anchor_Cthulhu_Spawn2"]= ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33,
-		PositionY = 12,
+		PositionY = 16,
 		PositionZ = 33,
 		Name = "Anchor_Cthulhu_Spawn2",
 		Map = M._MAP,
@@ -246,7 +258,7 @@ end
 M["Anchor_PirateShip_2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0 + 64,
+		PositionX = 0 + 64 + 16,
 		PositionY = 0,
 		PositionZ = -48,
 		Map = M._MAP,
