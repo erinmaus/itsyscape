@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Command = require "ItsyScape.Game.Animation.Commands.Command"
 local Color = require "ItsyScape.Graphics.Color"
 local ParticlesInstance = require "ItsyScape.Game.Animation.Commands.ParticlesInstance"
@@ -26,6 +27,7 @@ function Particles:new(t)
 	self.particleSystem = t.system or {}
 	self.attach = t.attach or false
 	self.rotation = t.rotation or 'IDENTITY'
+	self.scale = Vector(unpack(t.scale or { 1, 1, 1 }))
 end
 
 function Particles:getDuration()
@@ -58,6 +60,14 @@ end
 
 function Particles:setRotation(value)
 	self.rotation = value
+end
+
+function Particles:getScale()
+	return self.scale
+end
+
+function Particles:setScale(value)
+	self.scale = value
 end
 
 function Particles:instantiate()
