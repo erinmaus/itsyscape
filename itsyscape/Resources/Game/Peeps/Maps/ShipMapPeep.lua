@@ -23,6 +23,7 @@ local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 local ShipMapPeep = Class(Map)
 ShipMapPeep.SINK_TIME = 2.0
 ShipMapPeep.SINK_DEPTH = 1
+ShipMapPeep.BOB_MULTIPLIER = math.pi / 2
 
 function ShipMapPeep:new(resource, name, ...)
 	Map.new(self, resource, name or 'ShipMapPeep', ...)
@@ -244,8 +245,22 @@ function ShipMapPeep:updateFoam()
 		end
 	end
 
-	x = x + map:getWidth() / 2 * map:getCellSize()
-	z = z + map:getHeight() / 2 * map:getCellSize()
+	local rotation = self:getBehavior(RotationBehavior)
+	if rotation then
+		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(RotationBehavior)
+		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(RotationBehavior)
+
+		boatFoamPropScale.rotation = rotation.rotation
+		boatFoamTrailPropScale.rotation = rotation.rotation
+
+		local offset = rotation.rotation:transformVector(Vector(map:getWidth() / 2 * map:getCellSize(), 0, map:getHeight() / 2 * map:getCellSize()))
+		x = x + offset.x
+		z = z + offset.z
+	else
+		x = x + map:getWidth() / 2 * map:getCellSize()
+		z = z + map:getHeight() / 2 * map:getCellSize()
+	end
+
 	do
 		local _, boatFoamPropPosition = self.boatFoamProp:addBehavior(PositionBehavior)
 		local _, boatFoamTrailPropPosition = self.boatFoamTrailProp:addBehavior(PositionBehavior)
@@ -261,15 +276,6 @@ function ShipMapPeep:updateFoam()
 
 		boatFoamPropScale.scale = scale.scale
 		boatFoamTrailPropScale.scale = scale.scale
-	end
-
-	local rotation = self:getBehavior(RotationBehavior)
-	if rotation then
-		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(RotationBehavior)
-		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(RotationBehavior)
-
-		boatFoamPropScale.rotation = rotation.rotation
-		boatFoamTrailPropScale.rotation = rotation.rotation
 	end
 end
 
@@ -307,7 +313,7 @@ function ShipMapPeep:update(director, game)
 		else
 			position.position = Vector(
 				position.position.x,
-				(math.sin(self.time * math.pi / 2) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
+				(math.sin(self.time * self.BOB_MULTIPLIER) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
 				position.position.z) + (position.offset or Vector.ZERO)
 			if self.isSinking then
 				position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH
