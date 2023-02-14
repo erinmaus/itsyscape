@@ -2226,7 +2226,7 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
-function Utility.Peep.lookAt(self, target)
+function Utility.Peep.lookAt(self, target, delta)
 	local rotation = self:getBehavior(RotationBehavior)
 	if rotation then
 		local selfPosition = Utility.Peep.getAbsolutePosition(self)
@@ -2235,6 +2235,11 @@ function Utility.Peep.lookAt(self, target)
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
 		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+
+		if delta then
+			rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta):getNormal()
+		end
+
 		return true
 	end
 
