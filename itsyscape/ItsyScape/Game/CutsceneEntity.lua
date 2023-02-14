@@ -29,6 +29,23 @@ function CutsceneEntity:getPeep()
 	return self.peep
 end
 
+function CutsceneEntity:fireProjectile(target, projectile)
+	return function()
+		if type(target) == 'string' then
+			local mapResource = Utility.Peep.getMapResource(self.peep)
+			target = Utility.Map.getAnchorPosition(self.game, mapResource, target)
+		elseif Class.isCompatibleType(target, CutsceneEntity) then
+			target = target:getPeep()
+		else
+			-- Bail out early and don't do anything.
+			return
+		end
+
+		local stage = self.peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile(projectile, self.peep, target)
+	end
+end
+
 function CutsceneEntity:playAttackAnimation(target)
 	return function()
 		local animation, projectile
@@ -71,22 +88,39 @@ function CutsceneEntity:playAttackAnimation(target)
 	end
 end
 
-function CutsceneEntity:lookAt(target)
+function CutsceneEntity:lookAt(target, duration)
 	return function()
-		if Class.isCompatibleType(target, CutsceneEntity) then
-			Utility.Peep.lookAt(self.peep, target:getPeep())
-		elseif type(target) == 'string' then
-			local mapResource = Utility.Peep.getMapResource(self.peep)
-			local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
-			local rotation = self.peep:getBehavior(RotationBehavior)
-			if rotation then
-				local selfPosition = Utility.Peep.getPosition(self)
-				local anchorPosition = Vector(anchorX, anchorY, anchorZ)
-				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-				local xzAnchorPosition = peepPosition * Vector.PLANE_XZ
-				rotation.rotation = (Quaternion.lookAt(xzAnchorPosition, xzSelfPosition):getNormal())
+		local currentDuration = duration
+		repeat
+			local delta
+			if currentDuration then
+				delta = 1 - math.max(currentDuration / duration, 0)
 			end
-		end
+
+			if Class.isCompatibleType(target, CutsceneEntity) then
+				Utility.Peep.lookAt(self.peep, target:getPeep(), delta)
+			elseif type(target) == 'string' then
+				local mapResource = Utility.Peep.getMapResource(self.peep)
+				local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
+				local rotation = self.peep:getBehavior(RotationBehavior)
+				if rotation then
+					local selfPosition = Utility.Peep.getPosition(self)
+					local anchorPosition = Vector(anchorX, anchorY, anchorZ)
+					local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+					local xzAnchorPosition = peepPosition * Vector.PLANE_XZ
+					rotation.rotation = (Quaternion.lookAt(xzAnchorPosition, xzSelfPosition):getNormal())
+
+					if delta then
+						rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta)
+					end
+				end
+			end
+
+			if currentDuration then
+				currentDuration = currentDuration - self.game:getDelta()
+				coroutine.yield()
+			end
+		until not currentDuration or currentDuration <= 0
 	end
 end
 
