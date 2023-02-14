@@ -154,11 +154,17 @@ function Ruins:onTriggerCutscene(player)
 		Utility.Peep.poof(door)
 	end
 
-	self:pushPoke('playCutscene', player)
+	local archerActor = Utility.spawnMapObjectAtAnchor(self, "Trailer_ArcheryPlayer", "Anchor_ArcheryPlayer_Spawn", 0)
+	local meleeActor = Utility.spawnMapObjectAtAnchor(self, "Trailer_MeleePlayer", "Anchor_MeleePlayer_Spawn", 0)
+
+	self:pushPoke('playCutscene', player, {
+		Archer = archerActor:getPeep(),
+		Warrior = meleeActor:getPeep(),
+	})
 end
 
-function Ruins:onPlayCutscene(player)
-	local cutscene = Utility.Map.playCutscene(self, "Sailing_RuinsOfRhysilk_UndergroundTemple_Trailer", "StandardCutscene", player)
+function Ruins:onPlayCutscene(player, entities)
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_RuinsOfRhysilk_UndergroundTemple_Trailer", "StandardCutscene", player, entities)
 	cutscene:listen('done', self.onFinishCutscene, self, player)
 end
 
