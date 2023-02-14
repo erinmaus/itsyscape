@@ -59,7 +59,7 @@ function CutsceneMap:sail(anchors, duration, tween)
 			local currentPosition = self.peep:getBehavior(MapOffsetBehavior).offset
 
 			local x, z = curve:evaluate(delta)
-			local position = Vector(x, peepPosition.y, z)
+			local position = Vector(x, 0, z)
 			local rotation = Quaternion.lookAt(position, currentPosition)
 
 			self.peep:getBehavior(MapOffsetBehavior).offset = position
