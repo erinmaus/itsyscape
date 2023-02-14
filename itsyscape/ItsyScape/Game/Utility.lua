@@ -1294,7 +1294,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, shipScript:getLayerName())
+		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, peep:getLayerName())
 		if boatFoamProp then
 			local peep = boatFoamProp:getPeep()
 			peep:listen('finalize', function()
@@ -1308,7 +1308,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, shipScript:getLayerName())
+		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, peep:getLayerName())
 		if boatFoamTrailProp then
 			local peep = boatFoamTrailProp:getPeep()
 			peep:listen('finalize', function()
