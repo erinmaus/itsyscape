@@ -29,6 +29,7 @@ function Ocean:onLoad(filename, args, layer)
 		0, 0,
 		2.25)
 	self.playerShip = playerShip
+	self.playerShip.BOB_MULTIPLIER = math.pi
 
 	local _, pirateShip = Utility.Map.spawnShip(
 		self,
@@ -41,6 +42,7 @@ function Ocean:onLoad(filename, args, layer)
 	end)
 
 	self.pirateShip = pirateShip
+	self.pirateShip.BOB_MULTIPLIER = math.pi
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'IsabelleIsland_Ocean_HeavyRain', 'Rain', {
@@ -55,7 +57,11 @@ end
 
 function Ocean:onPlayCutscene(player)
 	Utility.UI.closeAll(player)
-	Utility.Map.playCutscene(self, "Trailer_RhlorOcean_Cthulhu", "StandardCutscene", player)
+
+	local cutscene = Utility.Map.playCutscene(self, "Trailer_RhlorOcean_Cthulhu", "StandardCutscene", player)
+	cutscene:listen('done', function()
+		Utility.UI.openGroup(player, Utility.UI.Groups.WORLD)
+	end)
 end
 
 function Ocean:onLightningZap(anchor)
@@ -89,11 +95,8 @@ function Ocean:onSpawnCthulhu(anchor)
 	end
 
 	self.cthulhu:getPeep():listen('finalize', function(peep)
-		Utility.UI.openInterface(
-			Utility.Peep.getInstance(self),
-			"BossHUD",
-			false,
-			peep)
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("CthulhuSplash", Vector.ZERO, peep)
 	end)
 end
 
