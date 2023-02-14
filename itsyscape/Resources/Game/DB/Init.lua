@@ -733,6 +733,15 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+do
+	local Human = ItsyScape.Resource.Peep "Human"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Human.BaseHuman",
+		Resource = Human
+	}
+end
+
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
 
