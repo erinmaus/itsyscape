@@ -42,6 +42,7 @@ function ParticlesInstance:play(animatable, time)
 	if self.command then
 		local attach = self.command:getAttach()
 		local rotation = Quaternion[self.command:getRotation()]
+		local scale = self.command:getScale()
 		if attach then
 			local transform = love.math.newTransform()
 
@@ -49,26 +50,11 @@ function ParticlesInstance:play(animatable, time)
 				transform:applyQuaternion(rotation:get())
 			end
 
+			transform:scale(scale:get())
+
 			do
-				local transforms = animatable:getTransforms()
-				local skeleton = animatable:getSkeleton()
-				local boneIndex = skeleton:getBoneIndex(attach)
-
-				local parents = {}
-				local bone
-				repeat
-					bone = skeleton:getBoneByIndex(boneIndex)
-					if bone then
-						table.insert(parents, 1, boneIndex)
-
-						boneIndex = bone:getParentIndex()
-						bone = skeleton:getBoneByIndex(boneIndex)
-					end
-				until not bone
-
-				for i = 1, #parents do
-					transform:apply(transforms:getTransform(parents[i]))
-				end
+				local otherTransform = animatable:getComposedTransform(attach)
+				transform:apply(otherTransform)
 			end
 
 			local localPosition = Vector(transform:transformPoint(0, 0, 0))
