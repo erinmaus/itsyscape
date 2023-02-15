@@ -33,7 +33,7 @@ function CutsceneEntity:fireProjectile(target, projectile)
 	return function()
 		if type(target) == 'string' then
 			local mapResource = Utility.Peep.getMapResource(self.peep)
-			target = Utility.Map.getAnchorPosition(self.game, mapResource, target)
+			target = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, target))
 		elseif Class.isCompatibleType(target, CutsceneEntity) then
 			target = target:getPeep()
 		else
@@ -147,6 +147,13 @@ function CutsceneEntity:teleport(anchor)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		Utility.Peep.setPosition(self.peep, anchorPosition)
+
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			actor:onTeleport(anchorPosition)
+		end
 	end
 end
 
@@ -227,7 +234,7 @@ end
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
 	return function()
 		slot = slot or 'x-cutscene'
-		priority = priority or 1
+		priority = priority or 10000
 		resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
 		time = time or 0
 		animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
@@ -255,6 +262,26 @@ function CutsceneEntity:yell(message, duration)
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor.actor:flash('Yell', 1, message, nil, duration)
+		end
+	end
+end
+
+function CutsceneEntity:usePower(power)
+	local gameDB = self.director:getGameDB()
+	local resource = gameDB:getResource(power, "Power")
+	local powerName
+	if resource then
+		powerName = Utility.getName(resource, gameDB) or power
+	end
+
+	return function()
+		if not powerName then
+			return
+		end
+
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor.actor:flash('Power', 0.5, power, powerName)
 		end
 	end
 end
