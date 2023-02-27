@@ -67,6 +67,18 @@ do
 	}
 end
 
+M["Anchor_FromYeastBeastLair"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 3,
+		Name = "Anchor_FromYeastBeastLair",
+		Map = M._MAP,
+		Resource = M["Anchor_FromYeastBeastLair"]
+	}
+end
+
 M["Anchor_FromKitchen"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
