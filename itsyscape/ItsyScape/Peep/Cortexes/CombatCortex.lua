@@ -239,6 +239,8 @@ function CombatCortex:update(delta)
 								peep:removeBehavior(CombatTargetBehavior)
 								peep:poke('targetFled', { target = target, distance = distanceToTarget })
 							else
+								local hasTarget = peep:hasBehavior(TargetTileBehavior)
+
 								walk.onCanceled:register(function()
 									local s, t = Utility.Peep.getTile(target)
 									if s ~= targetI or t ~= targetJ then
@@ -251,6 +253,10 @@ function CombatCortex:update(delta)
 									return s == targetI and t == targetJ
 								end, walk, callback)
 								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
+
+								if hasTarget then
+									peep:addBehavior(TargetTileBehavior)
+								end
 							end
 
 							self.walking[peep] = { i = targetI, j = targetJ }

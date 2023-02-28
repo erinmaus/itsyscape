@@ -67,7 +67,7 @@ function MoveToTileCortex:update(delta)
 		   movement.velocityMultiplier == 0 or movement.accelerationMultiplier == 0
 		then
 			peep:removeBehavior(TargetTileBehavior)
-		elseif targetTile and movement and position then
+		elseif targetTile and movement and position and targetTile.pathNode then
 			local speed = math.min(self.speed[peep] + movement.maxSpeed * delta, movement.maxSpeed)
 			local map = game:getDirector():getMap(peep:getBehavior(PositionBehavior).layer or 1)
 			if map then
