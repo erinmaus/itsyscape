@@ -2076,7 +2076,15 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
 		local queue = peep:getCommandQueue()
-		return queue:interrupt(command)
+		local success = queue:interrupt(command)
+
+		-- In the event the peep was walking, we don't want to interrupt the animator cortexes.
+		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
+		-- is walking. So pre-emptively signal the peep is walking, so a walking animation isn't
+		-- interrupted.
+		peep:addBehavior(TargetTileBehavior)
+
+		return success
 	end
 
 	return false, reason
