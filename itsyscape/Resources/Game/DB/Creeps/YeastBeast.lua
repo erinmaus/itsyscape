@@ -28,3 +28,37 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "YeastBeast"
 }
+
+ItsyScape.Resource.Peep "YeastMite" {
+	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Arachnid.YeastMite",
+	Resource = ItsyScape.Resource.Peep "YeastMite"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Saccharomyte",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "YeastMite"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Also known as the common yeast mite.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "YeastMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "YeastMite"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Bug/Chocoroach_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "YeastMite"
+}
