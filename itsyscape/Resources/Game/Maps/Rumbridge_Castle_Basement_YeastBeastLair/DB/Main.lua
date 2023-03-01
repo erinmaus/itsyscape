@@ -12,6 +12,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Rumbridge_Castle_Basement_YeastBeastLair.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -2238,7 +2238,14 @@ function Utility.Peep.lookAt(self, target, delta)
 	local rotation = self:getBehavior(RotationBehavior)
 	if rotation then
 		local selfPosition = Utility.Peep.getAbsolutePosition(self)
-		local peepPosition = Utility.Peep.getAbsolutePosition(target)
+		local peepPosition
+
+		if Class.isCompatibleType(target, Vector) then
+			peepPosition = target
+		else
+			peepPosition = Utility.Peep.getAbsolutePosition(target)
+		end
+
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
