@@ -28,6 +28,7 @@ function YeastMite:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 8
+	status.currentHitpoints = 100000
 end
 
 function YeastMite:ready(director, game)
@@ -40,8 +41,6 @@ function YeastMite:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/YeastMite/YeastMite.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-
-	Utility.Peep.equipXWeapon(self, "ChocoroachVomit")
 
 	Mite.ready(self, director, game)
 end

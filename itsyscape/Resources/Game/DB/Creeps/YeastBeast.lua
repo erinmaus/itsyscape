@@ -52,13 +52,13 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(100),
+	Value = ItsyScape.Utility.xpForLevel(1),
 	Resource = ItsyScape.Resource.Peep "YeastMite"
 }
 
 ItsyScape.Meta.PeepMashinaState {
 	State = "idle",
-	Tree = "Resources/Game/Peeps/Bug/Chocoroach_IdleLogic.lua",
+	Tree = "Resources/Game/Peeps/Arachnid/YeastMite_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "YeastMite"
 }

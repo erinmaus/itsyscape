@@ -19,8 +19,6 @@ end
 
 function Lair:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
-
-	self:initMites()
 end
 
 function Lair:initMites()
@@ -29,9 +27,59 @@ function Lair:initMites()
 		return
 	end
 
+	self.yeastMites = {}
 	for i = 1, 20 do
 		local position = map:getTileCenter(math.random(1, map:getWidth()), math.random(1, map:getHeight()))
-		Utility.spawnActorAtPosition(self, "YeastMite", position:get())
+		local yeastMite = Utility.spawnActorAtPosition(self, "YeastMite", position:get())
+
+		table.insert(self.yeastMites, yeastMite)
+	end
+end
+
+function Lair:onAttack(player)
+	for i = 1, #self.yeastMites do
+		Utility.Peep.attack(self.yeastMites[i]:getPeep(), player, math.huge)
+	end
+end
+
+function Lair:onPlayerEnter(player)
+	self:prepareDebugCutscene(player:getActor():getPeep())
+end
+
+function Lair:prepareDebugCutscene(player)
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene', player)
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		player,
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Lair:onPlayCutscene(player)
+	Utility.UI.closeAll(player)
+
+	self:initMites()
+
+	local cutscene = Utility.Map.playCutscene(self, "Rumbridge_Castle_Basement_YeastBeastLair_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self, player)
+end
+
+function Lair:onFinishCutscene(player)
+	Utility.UI.openGroup(
+		player,
+		Utility.UI.Groups.WORLD)
+
+	for i = 1, #self.yeastMites do
+		Utility.Peep.poof(self.yeastMites[i]:getPeep())
 	end
 end
 
