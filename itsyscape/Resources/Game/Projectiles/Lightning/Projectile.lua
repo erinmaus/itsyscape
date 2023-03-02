@@ -40,7 +40,7 @@ function Lightning:load()
 	local root = self:getRoot()
 
 	self.lightning = AmbientLightSceneNode()
-	--self.lightning:setParent(root)
+	self.lightning:setParent(root)
 
 	self.lightningBeam = LightBeamSceneNode()
 	self.lightningBeam:setParent(root)
