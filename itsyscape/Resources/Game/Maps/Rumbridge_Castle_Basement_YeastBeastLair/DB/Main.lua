@@ -108,6 +108,59 @@ do
 	}
 end
 
+M["Anchor_YeastBeast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 42,
+		PositionY = 2,
+		PositionZ = 36,
+		Map = M._MAP,
+		Name = "Anchor_YeastBeast",
+		Resource = M["Anchor_YeastBeast"]
+	}
+end
+
+M["CameraDolly"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "CameraDolly",
+		Map = M._MAP,
+		Resource = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CameraDolly",
+		MapObject = M["CameraDolly"]
+	}
+end
+
+M["Anchor_Corner1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 16,
+		PositionY = 0,
+		PositionZ = 48,
+		Map = M._MAP,
+		Name = "Anchor_Corner1",
+		Resource = M["Anchor_Corner1"]
+	}
+end
+
+M["Anchor_Corner2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 48,
+		PositionY = 0,
+		PositionZ = 16,
+		Map = M._MAP,
+		Name = "Anchor_Corner2",
+		Resource = M["Anchor_Corner2"]
+	}
+end
+
 M["Ladder_ToUpperBasement"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -141,5 +194,21 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
 		MapObject = M["Ladder_ToUpperBasement"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_Basement_YeastBeastLair_Debug"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "YeastBeast",
+		Cutscene = Cutscene,
+		Resource = M["YeastBeast"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
 	}
 end

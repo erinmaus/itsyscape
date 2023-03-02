@@ -76,6 +76,8 @@ function YeastBeast:ready(director, game)
 		"Resources/Game/Animations/YeastBeast_Walk/Script.lua")
 	self:addResource("animation-walk", walkAnimation)
 
+	Utility.Peep.equipXWeapon(self, "ChocoroachVomit")
+
 	Creep.ready(self, director, game)
 end
 
