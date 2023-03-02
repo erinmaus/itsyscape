@@ -101,7 +101,6 @@ function Splosion:update(elapsed)
 	if self.spawnPosition then
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
-		root:getTransform():setPreviousTransform(self.spawnPosition)
 	end
 end
 
