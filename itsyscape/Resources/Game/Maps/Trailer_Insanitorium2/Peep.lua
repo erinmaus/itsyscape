@@ -38,4 +38,39 @@ function Trailer:onLoad(filename, args, layer)
 	})
 end
 
+function Trailer:onPlayerEnter(player)
+	self:prepareDebugCutscene(player:getActor():getPeep())
+end
+
+function Trailer:prepareDebugCutscene(player)
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('playCutscene', player)
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		player,
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Trailer:onPlayCutscene(player)
+	Utility.UI.closeAll(player)
+
+	local cutscene = Utility.Map.playCutscene(self, "Trailer_Insanitorium2_Debug", "StandardCutscene")
+	cutscene:listen('done', self.onFinishCutscene, self, player)
+end
+
+function Trailer:onFinishCutscene(player)
+	Utility.UI.openGroup(
+		player,
+		Utility.UI.Groups.WORLD)
+end
+
 return Trailer

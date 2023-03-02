@@ -17,7 +17,7 @@ local Projectile = require "ItsyScape.Graphics.Projectile"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local IceBarrage = Class(Projectile)
-IceBarrage.DURATION = 2
+IceBarrage.DURATION = 3
 IceBarrage.ALPHA_MULTIPLIER = 1.75
 IceBarrage.COLOR = Color(0.8, 0.7, 1.0)
 
