@@ -80,7 +80,7 @@ function CutsceneEntity:playAttackAnimation(target)
 				end
 			end
 
-			if projectile then
+			if projectile and target then
 				local stage = self.peep:getDirector():getGameInstance():getStage()
 				stage:fireProjectile(projectile, self.peep, target:getPeep())
 			end
@@ -154,6 +154,13 @@ function CutsceneEntity:teleport(anchor)
 		if actor then
 			actor:onTeleport(anchorPosition)
 		end
+	end
+end
+
+function CutsceneEntity:face(direction)
+	return function()
+		local movement = self.peep:getBehavior(MovementBehavior)
+		movement.facing = direction
 	end
 end
 

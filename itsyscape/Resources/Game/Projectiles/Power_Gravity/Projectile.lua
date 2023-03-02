@@ -24,9 +24,9 @@ Gravity.DURATION = 4
 Gravity.ALPHA_MULTIPLIER = 2.5
 Gravity.MAX_SIZE = 2
 
-Gravity.FOG_NEAR_MAX = 5
+Gravity.FOG_NEAR_MAX = 3
 Gravity.FOG_NEAR_MIN = 0
-Gravity.FOG_FAR      = 2.5
+Gravity.FOG_FAR      = 1.5
 
 Gravity.SINGULARITY_COLOR   = Color(0)
 Gravity.EVENT_HORIZON_COLOR = Color.fromHexString("ff9f29")
