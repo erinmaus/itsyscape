@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Command = require "ItsyScape.Peep.Command"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
@@ -23,12 +24,10 @@ function ExecutePathCommand:new(path, distance, canceled)
 
 	for i = 1, path:getNumNodes() do
 		local node = path:getNodeAtIndex(i)
-		node.onBegin:register(ExecutePathCommand.next, self)
 		node.onInterrupt:register(ExecutePathCommand.cancel, self)
 	end
 
 	self.path = path
-	self.index = 1
 	self.canceled = false
 	self.onCanceled = Callback()
 
@@ -40,11 +39,7 @@ function ExecutePathCommand:getPath()
 end
 
 function ExecutePathCommand:getIsFinished()
-	return self.index > self.path:getNumNodes() or self.canceled
-end
-
-function ExecutePathCommand:next()
-	self.index = self.index + 1
+	return self.peep and self.peep:hasBehavior(TargetTileBehavior)
 end
 
 function ExecutePathCommand:cancel()
@@ -53,32 +48,22 @@ function ExecutePathCommand:cancel()
 end
 
 function ExecutePathCommand:step(peep)
-	local game = peep:getDirector():getGameInstance()
 	local position = peep:getBehavior(PositionBehavior)
 	if position then
+		local layer = position.layer
 		position = position.position
 
-		local map = game:getDirector():getMap(position.layer or 1)
+		local map = peep:getDirector():getMap(layer or 1)
 		if map then
-			local tile, i, j = map:getTileAt(position.x, position.z)
-			if tile then
-				local target = self.path:getNodeAtIndex(-1)
-				if target then
-					local di = math.abs(i - target.i)
-					local dj = math.abs(j - target.j)
+			local target = self.path:getNodeAtIndex(-1)
+			if target then
+				local center = map:getTileCenter(target.i, target.j) * Vector.PLANE_XZ
+				local distance = (center - (Utility.Peep.getPosition(peep) * Vector.PLANE_XZ)):getLength()
 
-					if di + dj <= self.distance or
-					   di == dj and di == self.distance
-					then
-						local n = self.path:getNodeAtIndex(self.index)
-						if n then
-							n:interrupt(peep)
-						end
+				if distance <= self.distance then
+					self:onInterrupt(peep)
 
-						self.index = self.path:getNumNodes() + 1
-
-						return false
-					end
+					return false
 				end
 			end
 		end
@@ -96,13 +81,17 @@ function ExecutePathCommand:onBegin(peep)
 		})
 
 		self.path:activate(peep)
+
+		self.peep = peep
 	end
 end
 
 function ExecutePathCommand:onInterrupt(peep)
-	local n = self.path:getNodeAtIndex(self.index)
-	if n then
-		n:interrupt(peep)
+	local targetTile = peep:getBehavior(TargetTileBehavior)
+	if targetTile and targetTile.pathNode then
+		print(">>> interrupted")
+
+		targetTile.pathNode:interrupt(peep)
 	end
 end
 
