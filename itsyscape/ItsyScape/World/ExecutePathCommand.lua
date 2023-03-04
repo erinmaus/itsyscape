@@ -39,7 +39,7 @@ function ExecutePathCommand:getPath()
 end
 
 function ExecutePathCommand:getIsFinished()
-	return self.peep and self.peep:hasBehavior(TargetTileBehavior)
+	return self.peep and not self.peep:hasBehavior(TargetTileBehavior)
 end
 
 function ExecutePathCommand:cancel()
