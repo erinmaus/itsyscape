@@ -277,7 +277,6 @@ function CombatCortex:update(delta)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
 							if not selfIsPlayer then
 								if distanceToTarget <= targetRadius and not self.strafing[target] then
-									print("distanceToTarget", distanceToTarget, "radius", selfRadius + targetRadius)
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then
@@ -314,7 +313,6 @@ function CombatCortex:update(delta)
 									end
 
 									if i and j then
-										print(">>> strafing")
 										peep:addBehavior(TargetTileBehavior)
 										local targetTile = peep:getBehavior(TargetTileBehavior)
 										targetTile.pathNode = TilePathNode(i, j, position.layer or 1)
