@@ -14,7 +14,7 @@ local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local ChocoroachVomit = Class(MagicWeapon)
 
 function ChocoroachVomit:getAttackRange(peep)
-	return 5
+	return 2
 end
 
 function ChocoroachVomit:getProjectile()

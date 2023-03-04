@@ -55,6 +55,8 @@ function InstanceManager:buildMap(i, j, layer)
 		layer)
 	stage:updateMap(layer, map)
 
+	love.filesystem.write("1.lmap", map:toString())
+
 	return layer, mutateMapResults
 end
 
@@ -91,7 +93,7 @@ function InstanceManager:_instantiatePortal(targetI, targetJ, instance, position
 		local _, size = peep:addBehavior(SizeBehavior)
 		size.size = Vector(2.5, 2, 2.5)
 
-		mapScript:silence('postPlayerEnter', player:getActor():getPeep())
+		mapScript:silence('postPlayerEnter', onPlayerEnter)
 	end
 
 	mapScript:listen('postPlayerEnter', onPlayerEnter)

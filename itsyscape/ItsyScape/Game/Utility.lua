@@ -2313,19 +2313,19 @@ function Utility.Peep.attack(peep, other, distance)
 		if peep:getCommandQueue():interrupt(AttackCommand()) then
 			local _, target = peep:addBehavior(CombatTargetBehavior)
 			target.actor = actor.actor
+		end
 
-			local mashina = peep:getBehavior(MashinaBehavior)
-			if mashina then
-				if mashina.currentState == 'idle' or
-				   mashina.currentState == false
-				then
-					if mashina.states['begin-attack'] then
-						mashina.currentState = 'begin-attack'
-					elseif mashina.states['attack'] then
-						mashina.currentState = 'attack'
-					else
-						mashina.currentState = false
-					end
+		local mashina = peep:getBehavior(MashinaBehavior)
+		if mashina then
+			if mashina.currentState ~= 'begin-attack' and
+			   mashina.currentState ~= 'attack'
+			then
+				if mashina.states['begin-attack'] then
+					mashina.currentState = 'begin-attack'
+				elseif mashina.states['attack'] then
+					mashina.currentState = 'attack'
+				else
+					mashina.currentState = false
 				end
 			end
 		end

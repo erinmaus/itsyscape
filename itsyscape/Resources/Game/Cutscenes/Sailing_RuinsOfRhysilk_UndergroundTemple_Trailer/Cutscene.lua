@@ -32,12 +32,11 @@ return Sequence {
 	Warrior:playAnimation("Human_AttackZweihanderSlash_Tornado", "combat", 1000),
 	Warrior:wait(2),
 
-	Yendor:lookAt(Warrior, 0.5),
-	Yendor:playAttackAnimation(Warrior),
+	Yendor:lookAt(Archer, 0.5),
+	Yendor:playAttackAnimation(Archer),
 
-	Camera:target(Archer),
-	Archer:playAttackAnimation(Yendor),
 	Archer:wait(1),
+	Archer:playAttackAnimation(Yendor),
 
 	Camera:target(Yendor),
 	Camera:zoom(60),

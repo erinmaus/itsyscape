@@ -5,6 +5,7 @@ return Sequence {
 
 	Camera:target(CameraDolly),
 	CameraDolly:teleport("Anchor_Corner1"),
+	Player:face(-1),
 	Player:teleport("Anchor_YeastBeast"),
 
 	Parallel {
@@ -22,7 +23,7 @@ return Sequence {
 
 	Camera:target(Player),
 	Camera:verticalRotate(-math.pi / 2),
-	Camera:zoom(10),
+	Camera:zoom(15),
 
 	Player:yell("Oh no!"),
 	Map:poke("attack", Player:getPeep()),
@@ -34,8 +35,8 @@ return Sequence {
 	YeastBeast:wait(1),
 
 	Player:playAttackAnimation(YeastBeast),
+	YeastBeast:fireProjectile(Player, "Power_Confuse"),
 	Player:wait(1),
 
-	Player:playAnimation("Human_Die_1", "combat"),
 	Map:wait(5)
 }
