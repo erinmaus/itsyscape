@@ -89,8 +89,6 @@ end
 function ExecutePathCommand:onInterrupt(peep)
 	local targetTile = peep:getBehavior(TargetTileBehavior)
 	if targetTile and targetTile.pathNode then
-		print(">>> interrupted")
-
 		targetTile.pathNode:interrupt(peep)
 	end
 end
