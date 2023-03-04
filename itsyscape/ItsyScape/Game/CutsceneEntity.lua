@@ -29,6 +29,23 @@ function CutsceneEntity:getPeep()
 	return self.peep
 end
 
+function CutsceneEntity:fireProjectile(target, projectile)
+	return function()
+		if type(target) == 'string' then
+			local mapResource = Utility.Peep.getMapResource(self.peep)
+			target = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, target))
+		elseif Class.isCompatibleType(target, CutsceneEntity) then
+			target = target:getPeep()
+		else
+			-- Bail out early and don't do anything.
+			return
+		end
+
+		local stage = self.peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile(projectile, self.peep, target)
+	end
+end
+
 function CutsceneEntity:playAttackAnimation(target)
 	return function()
 		local animation, projectile
@@ -63,7 +80,7 @@ function CutsceneEntity:playAttackAnimation(target)
 				end
 			end
 
-			if projectile then
+			if projectile and target then
 				local stage = self.peep:getDirector():getGameInstance():getStage()
 				stage:fireProjectile(projectile, self.peep, target:getPeep())
 			end
@@ -71,22 +88,39 @@ function CutsceneEntity:playAttackAnimation(target)
 	end
 end
 
-function CutsceneEntity:lookAt(target)
+function CutsceneEntity:lookAt(target, duration)
 	return function()
-		if Class.isCompatibleType(target, CutsceneEntity) then
-			Utility.Peep.lookAt(self.peep, target:getPeep())
-		elseif type(target) == 'string' then
-			local mapResource = Utility.Peep.getMapResource(self.peep)
-			local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
-			local rotation = self.peep:getBehavior(RotationBehavior)
-			if rotation then
-				local selfPosition = Utility.Peep.getPosition(self)
-				local anchorPosition = Vector(anchorX, anchorY, anchorZ)
-				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-				local xzAnchorPosition = peepPosition * Vector.PLANE_XZ
-				rotation.rotation = (Quaternion.lookAt(xzAnchorPosition, xzSelfPosition):getNormal())
+		local currentDuration = duration
+		repeat
+			local delta
+			if currentDuration then
+				delta = 1 - math.max(currentDuration / duration, 0)
 			end
-		end
+
+			if Class.isCompatibleType(target, CutsceneEntity) then
+				Utility.Peep.lookAt(self.peep, target:getPeep(), delta)
+			elseif type(target) == 'string' then
+				local mapResource = Utility.Peep.getMapResource(self.peep)
+				local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
+				local rotation = self.peep:getBehavior(RotationBehavior)
+				if rotation then
+					local selfPosition = Utility.Peep.getPosition(self)
+					local anchorPosition = Vector(anchorX, anchorY, anchorZ)
+					local xzSelfPosition = selfPosition * Vector.PLANE_XZ
+					local xzAnchorPosition = peepPosition * Vector.PLANE_XZ
+					rotation.rotation = (Quaternion.lookAt(xzAnchorPosition, xzSelfPosition):getNormal())
+
+					if delta then
+						rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta)
+					end
+				end
+			end
+
+			if currentDuration then
+				currentDuration = currentDuration - self.game:getDelta()
+				coroutine.yield()
+			end
+		until not currentDuration or currentDuration <= 0
 	end
 end
 
@@ -113,6 +147,20 @@ function CutsceneEntity:teleport(anchor)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		Utility.Peep.setPosition(self.peep, anchorPosition)
+
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			actor:onTeleport(anchorPosition)
+		end
+	end
+end
+
+function CutsceneEntity:face(direction)
+	return function()
+		local movement = self.peep:getBehavior(MovementBehavior)
+		movement.facing = direction
 	end
 end
 
@@ -193,7 +241,7 @@ end
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
 	return function()
 		slot = slot or 'x-cutscene'
-		priority = priority or 1
+		priority = priority or 10000
 		resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
 		time = time or 0
 		animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
@@ -211,6 +259,36 @@ function CutsceneEntity:talk(message, duration)
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			actor.actor:flash('Message', 1, message, nil, duration)
+		end
+	end
+end
+
+function CutsceneEntity:yell(message, duration)
+	duration = duration or #message / 8
+	return function()
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor.actor:flash('Yell', 1, message, nil, duration)
+		end
+	end
+end
+
+function CutsceneEntity:usePower(power)
+	local gameDB = self.director:getGameDB()
+	local resource = gameDB:getResource(power, "Power")
+	local powerName
+	if resource then
+		powerName = Utility.getName(resource, gameDB) or power
+	end
+
+	return function()
+		if not powerName then
+			return
+		end
+
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor.actor:flash('Power', 0.5, power, powerName)
 		end
 	end
 end

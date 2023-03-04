@@ -48,6 +48,10 @@ function Ruins:onPlayerEnter(player)
 	local peep = player:getActor():getPeep()
 	self:initTroll(peep)
 	self:hurtPlayer(peep)
+
+	if _DEBUG then
+		self:initCutscene(peep)
+	end
 end
 
 function Ruins:initTroll(player)
@@ -104,6 +108,68 @@ function Ruins:onDamageYendor(player, yendor, target)
 	else
 		self:pushPoke('damageYendor', player, yendor, target)
 	end
+end
+
+function Ruins:initCutscene(player)
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('triggerCutscene', player)
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		player,
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Ruins:onTriggerCutscene(player)
+	Utility.UI.closeAll(player)
+
+	local fog1 = self:getDirector():probe(self:getLayerName(), Probe.namedMapObject("Light_Fog1"))[1]
+	local fog2 = self:getDirector():probe(self:getLayerName(), Probe.namedMapObject("Light_Fog2"))[1]
+	fog1:setNearDistance(60)
+	fog1:setFarDistance(90)
+	fog2:setNearDistance(90)
+	fog2:setFarDistance(120)
+
+	local director = self:getDirector()
+	local hits = director:probe(self:getLayerName(), Probe.resource("Peep", "RuinsOfRhysilk_Maggot"))
+	for i = 1, #hits do
+		Utility.Peep.poof(hits[i])
+	end
+
+	local axe = self:getDirector():probe(self:getLayerName(), Probe.namedMapObject("Axe"))[1]
+	if axe then
+		Utility.Peep.poof(axe)
+	end
+
+	local door = self:getDirector():probe(self:getLayerName(), Probe.namedMapObject("Door"))[1]
+	if door then
+		Utility.Peep.poof(door)
+	end
+
+	local archerActor = Utility.spawnMapObjectAtAnchor(self, "Trailer_ArcheryPlayer", "Anchor_ArcheryPlayer_Spawn", 0)
+	local meleeActor = Utility.spawnMapObjectAtAnchor(self, "Trailer_MeleePlayer", "Anchor_MeleePlayer_Spawn", 0)
+
+	self:pushPoke('playCutscene', player, {
+		Archer = archerActor:getPeep(),
+		Warrior = meleeActor:getPeep(),
+	})
+end
+
+function Ruins:onPlayCutscene(player, entities)
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_RuinsOfRhysilk_UndergroundTemple_Trailer", "StandardCutscene", player, entities)
+	cutscene:listen('done', self.onFinishCutscene, self, player)
+end
+
+function Ruins:onFinishCutscene(player)
+	Utility.UI.openGroup(player, Utility.UI.Groups.WORLD)
 end
 
 return Ruins

@@ -65,9 +65,10 @@ function Earthquake:tick()
 		local x = max.x - min.z
 		local z = max.z - min.z
 
-		self.size = Vector(math.max(x, z))
+		self.size = Vector(math.max(x, z)) * 3
 
 		self.destinationPosition.y = self.destinationPosition.y - (max.y - min.y) / 2
+		self.destinationPosition = self.sourcePosition:lerp(self.destinationPosition, 0.5)
 	end
 end
 

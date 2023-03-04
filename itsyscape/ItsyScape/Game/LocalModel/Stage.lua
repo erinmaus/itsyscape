@@ -636,6 +636,8 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 end
 
 function LocalStage:updateMap(layer, map)
+	map = map or self.game:getDirector():getMap(layer)
+
 	if map then
 		self.game:getDirector():setMap(layer, map)
 		self.onMapModified(self, map, layer)
@@ -977,7 +979,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 			baseLayer = baseLayer or globalLayer
 			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, meta.maskID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, layerMeta.maskID)
 		end
 	end
 

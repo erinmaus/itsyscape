@@ -97,6 +97,14 @@ do
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default1"]
 	}
+
+	ItsyScape.Meta.Cannon {
+		Range = 40,
+		MinDamage = 1000,
+		MaxDamage = 2000,
+		Cannonball = ItsyScape.Resource.Item "IronCannonball",
+		Resource = M["Sailing_IronCannon_Default1"]
+	}
 end
 
 M["Sailing_IronCannon_Default2"] = ItsyScape.Resource.MapObject.Unique()
@@ -120,6 +128,14 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default2"]
+	}
+
+	ItsyScape.Meta.Cannon {
+		Range = 40,
+		MinDamage = 1000,
+		MaxDamage = 2000,
+		Cannonball = ItsyScape.Resource.Item "IronCannonball",
+		Resource = M["Sailing_IronCannon_Default2"]
 	}
 end
 
@@ -145,6 +161,14 @@ do
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default3"]
 	}
+
+	ItsyScape.Meta.Cannon {
+		Range = 40,
+		MinDamage = 1000,
+		MaxDamage = 2000,
+		Cannonball = ItsyScape.Resource.Item "IronCannonball",
+		Resource = M["Sailing_IronCannon_Default3"]
+	}
 end
 
 M["Sailing_IronCannon_Default4"] = ItsyScape.Resource.MapObject.Unique()
@@ -168,6 +192,14 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default4"]
+	}
+
+	ItsyScape.Meta.Cannon {
+		Range = 40,
+		MinDamage = 1000,
+		MaxDamage = 2000,
+		Cannonball = ItsyScape.Resource.Item "IronCannonball",
+		Resource = M["Sailing_IronCannon_Default4"]
 	}
 end
 
@@ -204,5 +236,32 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
 		MapObject = M["Cannon_Pirate1"]
+	}
+end
+
+M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "CapnRaven",
+		Map = M._MAP,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
+		MapObject = M["CapnRaven"]
+	}
+end
+
+M["Anchor_CapnRaven_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.0,
+		PositionY = 4.0,
+		PositionZ = 11.0,
+		Direction = -1,
+		Name = "Anchor_CapnRaven_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_CapnRaven_Spawn"]
 	}
 end

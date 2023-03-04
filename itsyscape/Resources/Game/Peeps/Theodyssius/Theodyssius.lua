@@ -59,7 +59,8 @@ function Theodyssius:ready(director, game)
 		"Resources/Game/Animations/Theodyssius_Resurrect/Script.lua")
 	self:addResource("animation-resurrect", resurrectAnimation)
 
-	self:fly()
+	self:poke('fly')
+	self:poke('equipJudgment')
 
 	Utility.spawnPropAtPosition(
 		self,
@@ -69,7 +70,7 @@ function Theodyssius:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function Theodyssius:fly()
+function Theodyssius:onFly()
 	local wingAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Theodyssius_Wings_Flying/Script.lua")
@@ -79,6 +80,30 @@ function Theodyssius:fly()
 		actor = actor.actor
 		actor:playAnimation('x-theodyssius-wings', 10, wingAnimation)
 	end
+end
+
+function Theodyssius:onEquipJudgment()
+	local idleAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Theodyssius_Idle_Judgment/Script.lua")
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+		actor:playAnimation('x-theodyssius-judgment', 10, idleAnimation)
+	end
+
+	Utility.Peep.equipXWeapon(self, "Theodyssius_Judgment")
+
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Theodyssius_Attack_Judgment/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
+	local weaponSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Theodyssius/Judgment.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_EQUIPMENT, weaponSkin)
 end
 
 function Theodyssius:update(...)

@@ -370,7 +370,7 @@ do
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_Fromtemple",
+		Anchor = "Anchor_FromTemple",
 		Map = ItsyScape.Resource.Map "Sailing_RuinsOfRhysilk",
 		Action = TravelAction
 	}
@@ -384,5 +384,166 @@ do
 
 	M["Exit"] {
 		TravelAction
+	}
+end
+
+M["Anchor_MeleePlayer_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 2,
+		PositionZ = 35,
+		Direction = -1,
+		Name = "Anchor_MeleePlayer_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_MeleePlayer_Spawn"]
+	}
+end
+
+M["Trailer_MeleePlayer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Trailer_MeleePlayer",
+		Map = M._MAP,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Human",
+		MapObject = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientCeremonialHelm",
+		Count = 1,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientCeremonialRobe",
+		Count = 1,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientCeremonialBoots",
+		Count = 1,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientCeremonialGloves",
+		Count = 1,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AncientZweihander",
+		Count = 1,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = math.huge,
+		Resource = M["Trailer_MeleePlayer"]
+	}
+end
+
+M["Anchor_ArcheryPlayer_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 2,
+		PositionZ = 35,
+		Name = "Anchor_ArcheryPlayer_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_ArcheryPlayer_Spawn"]
+	}
+end
+
+M["Trailer_ArcheryPlayer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Trailer_ArcheryPlayer",
+		Map = M._MAP,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Human",
+		MapObject = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GreenDragonhideCoif",
+		Count = 1,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GreenDragonhideBody",
+		Count = 1,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GreenDragonhideBoots",
+		Count = 1,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GreenDragonhideGloves",
+		Count = 1,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GanymedesBow",
+		Count = 1,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GanymedesStunningStrikeArrow",
+		Count = 10000,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Head/Minifig.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Black.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = math.huge,
+		Resource = M["Trailer_ArcheryPlayer"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_RuinsOfRhysilk_UndergroundTemple_Trailer"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yendor",
+		Cutscene = Cutscene,
+		Resource = M["Yendor"]
 	}
 end

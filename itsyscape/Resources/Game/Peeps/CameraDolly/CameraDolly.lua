@@ -12,6 +12,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local CameraDolly = Class(Peep)
 
@@ -19,6 +21,8 @@ function CameraDolly:new(resource, ...)
 	Peep.new(self, ...)
 
 	self:addBehavior(PositionBehavior)
+	self:addBehavior(MovementBehavior)
+	self:addBehavior(SizeBehavior)
 	self:addBehavior(ActorReferenceBehavior)
 end
 
