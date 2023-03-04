@@ -979,7 +979,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 			baseLayer = baseLayer or globalLayer
 			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, meta.maskID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, layerMeta.maskID)
 		end
 	end
 

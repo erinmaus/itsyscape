@@ -42,6 +42,8 @@ function YeastMite:ready(director, game)
 		"Resources/Game/Skins/YeastMite/YeastMite.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
+	Utility.Peep.equipXWeapon(self, "ChocoroachVomit")
+
 	Mite.ready(self, director, game)
 end
 

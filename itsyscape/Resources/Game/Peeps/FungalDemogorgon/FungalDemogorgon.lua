@@ -46,7 +46,7 @@ function FungalDemogorgon:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
-	movement.maxSpeed = 11
+	movement.maxSpeed = 12
 	movement.maxAcceleration = 9
 	movement.stoppingForce = 4
 
@@ -107,6 +107,16 @@ function FungalDemogorgon:playOpenOrCloseAnimation()
 	end
 end
 
+function FungalDemogorgon:onOpenFlower()
+	self.isOpen = true
+	self:playOpenOrCloseAnimation()
+end
+
+function FungalDemogorgon:onCloseFlower()
+	self.isOpen = false
+	self:playOpenOrCloseAnimation()
+end
+
 function FungalDemogorgon:onWander()
 	local _, _, layer = Utility.Peep.getTile(self)
 	local map = self:getDirector():getMap(layer)
@@ -136,8 +146,8 @@ function FungalDemogorgon:update(...)
 		local peep = actor:getPeep()
 
 		if peep then
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+			local selfPosition = Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
+			local peepPosition = Utility.Peep.getAbsolutePosition(peep) * Vector.PLANE_XZ
 
 			rotation.rotation = (Quaternion.lookAt(peepPosition, selfPosition):getNormal())
 		end
@@ -152,17 +162,15 @@ function FungalDemogorgon:update(...)
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			local selfPosition = Utility.Peep.getAbsolutePosition(self)
-			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+			local selfPosition = Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
+			local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j) * Vector.PLANE_XZ
 
 			rotation.rotation = Quaternion.lookAt(tilePosition, selfPosition):getNormal()
-		else
-			rotation.rotation = Quaternion.IDENTITY
-		end
 
-		if self.isOpen then
-			self.isOpen = false
-			self:playOpenOrCloseAnimation()
+			if self.isOpen then
+				self.isOpen = false
+				self:playOpenOrCloseAnimation()
+			end
 		end
 	end
 

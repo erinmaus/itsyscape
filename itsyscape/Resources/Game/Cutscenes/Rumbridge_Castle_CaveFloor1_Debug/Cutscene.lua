@@ -40,7 +40,8 @@ return Parallel {
 			Player:yell("Argh!"),
 			Player:playAnimation("Human_Defend_Shield_Right_1"),
 			Player:wait(1),
-			Player:playAnimation("Human_Die_1", "combat"),
+			Player:playAnimation("Human_Run_Crazy_1", "x-cutscene", math.huge, true),
+			Player:walkTo("Anchor_FromDungeon"),
 			Camera:zoom(40, 1),
 			Player:wait(1.5)
 		}

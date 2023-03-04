@@ -45,7 +45,7 @@ function DramaticText:new(id, index, ui)
 		label:setPosition(
 			(line.x or 0) / DramaticText.CANVAS_WIDTH * w,
 			(line.y or 0) / DramaticText.CANVAS_HEIGHT * h)
-		label:setText(line.text)
+		label:setText({ line.text })
 
 		self:addChild(label)
 		table.insert(self.styles, labelStyle)

@@ -8,7 +8,7 @@ return Sequence {
 	Map:wait(4),
 
 	Camera:translate(Vector(0, 15, 0), 8),
-	Camera:zoom(100, 4),
+	Camera:zoom(40, 4),
 
 	Parallel {
 		Map:wait(2),
@@ -30,7 +30,7 @@ return Sequence {
 	Player:wait(2),
 
 	Camera:target(Theodyssius),
-	Camera:zoom(40),
+	Camera:zoom(55),
 	Camera:verticalRotate(-math.pi / 2 - math.pi / 8),
 	Player:fireProjectile(Theodyssius, "Power_Gravity"),
 
@@ -45,7 +45,7 @@ return Sequence {
 	Theodyssius:wait(2),
 
 	Camera:target(Player),
-	Camera:zoom(20),
+	Camera:zoom(25),
 	Camera:verticalRotate(-math.pi / 2),
 
 	Theodyssius:fireProjectile(Player, "Power_IceBarrage"),
