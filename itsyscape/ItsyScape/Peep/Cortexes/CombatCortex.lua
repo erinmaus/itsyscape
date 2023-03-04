@@ -62,6 +62,10 @@ function CombatCortex:resetPeep(peep)
 end
 
 function CombatCortex:resume(peep, target)
+	if peep:wasPoofed() or target:wasPoofed() then
+		return
+	end
+
 	local actor = target:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -178,6 +182,8 @@ function CombatCortex:update(delta)
 			if targetPosition then
 				local map = game:getDirector():getMap(position.layer or 1)
 				if map then
+					weaponRange = weaponRange * map:getCellSize()
+
 					local selfI, selfJ = map:toTile(
 						position.position.x,
 						position.position.z)
@@ -209,18 +215,16 @@ function CombatCortex:update(delta)
 					do
 						local peepSize = peep:getBehavior(SizeBehavior).size
 						peepSize = math.max(peepSize.x, peepSize.z)
-						selfRadius = math.max(math.floor(peepSize / map:getCellSize()) - 1, 0)
+						selfRadius = math.max(peepSize, 0)
 
 						local targetSize = target:getBehavior(SizeBehavior).size
 						targetSize = math.max(targetSize.x, targetSize.z)
-						targetRadius = math.max(math.floor(targetSize / map:getCellSize()) - 1, 0)
+						targetRadius = math.max(targetSize, 0)
 					end
 					
 					local combat = peep:getBehavior(CombatStatusBehavior)
 
-					local differenceI = math.abs(selfI - targetI)
-					local differenceJ = math.abs(selfJ - targetJ)
-					local distanceToTarget = math.floor(math.sqrt(differenceI ^ 2 + differenceJ ^ 2))
+					local distanceToTarget = (Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)):getLength()
 
 					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
@@ -229,7 +233,7 @@ function CombatCortex:update(delta)
 					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange / 2, 0), { asCloseAsPossible = false })
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange + selfRadius + targetRadius, 0), { asCloseAsPossible = false })
 
 							if not walk then
 								Log.info(
@@ -239,6 +243,8 @@ function CombatCortex:update(delta)
 								peep:removeBehavior(CombatTargetBehavior)
 								peep:poke('targetFled', { target = target, distance = distanceToTarget })
 							else
+								local hasTarget = peep:hasBehavior(TargetTileBehavior)
+
 								walk.onCanceled:register(function()
 									local s, t = Utility.Peep.getTile(target)
 									if s ~= targetI or t ~= targetJ then
@@ -250,7 +256,12 @@ function CombatCortex:update(delta)
 									local s, t = Utility.Peep.getTile(target)
 									return s == targetI and t == targetJ
 								end, walk, callback)
+
 								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
+
+								if hasTarget then
+									peep:addBehavior(TargetTileBehavior)
+								end
 							end
 
 							self.walking[peep] = { i = targetI, j = targetJ }
@@ -258,20 +269,14 @@ function CombatCortex:update(delta)
 					else
 						if self.walking[peep] then
 							self.walking[peep] = nil
-							self.strafing[peep] = true
 
-							peep:addBehavior(TargetTileBehavior)
-							local targetTile = peep:getBehavior(TargetTileBehavior)
-							targetTile.pathNode = TilePathNode(selfI, selfJ, position.layer or 1)
-							targetTile.distance = 0.25
-							targetTile.pathNode.onEnd:register(function()
-								self.strafing[peep] = nil
-							end)
+							peep:getCommandQueue(CombatCortex.QUEUE):clear()
+							peep:removeBehavior(TargetTileBehavior)
 						elseif not self.strafing[peep] then
 							local targetIsPlayer = target:hasBehavior(PlayerBehavior)
 							local selfIsPlayer = peep:hasBehavior(PlayerBehavior)
 							if not selfIsPlayer then
-								if distanceToTarget <= selfRadius + targetRadius and not self.strafing[target] then
+								if distanceToTarget <= targetRadius and not self.strafing[target] then
 									local i, j
 									if selfI > targetI then
 										if map:canMove(selfI, selfJ, 1, 0) then

@@ -17,7 +17,7 @@ Animation "Saber Tooth Shrimp Attack (Lava)" {
 						xRange = { 0, 0.125 },
 						yRange = { -0.25, 0 },
 						zRange = { 1, 0.125 },
-						position = { 0, 6, 2 },
+						position = { 0, 3, 5 },
 						acceleration = { 0, 0 }
 					},
 					{

@@ -28,6 +28,10 @@ function SaberToothShrimp:new(resource, name, ...)
 	size.size = Vector(4, 4, 4)
 end
 
+function SaberToothShrimp:onStareAt(target)
+	self.target = target
+end
+
 function SaberToothShrimp:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
@@ -80,9 +84,9 @@ end
 function SaberToothShrimp:update(...)
 	Creep.update(self, ...)
 
-	local player = Utility.Peep.getPlayer(self)
-	if player then
-		Utility.Peep.lookAt(self, player)
+	local target = self.target or Utility.Peep.getPlayer(self)
+	if target then
+		Utility.Peep.lookAt(self, target)
 	end
 end
 

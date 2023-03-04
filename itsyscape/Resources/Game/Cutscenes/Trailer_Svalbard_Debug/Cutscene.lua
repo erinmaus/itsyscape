@@ -7,6 +7,7 @@ return Sequence {
 		Svalbard:poke('fly'),
 		Svalbard:teleport("Svalbard"),
 		Player:teleport("Anchor_Spawn"),
+		Player:face(-1),
 		Svalbard:lookAt(Player),
 		Map:wait(2)
 	},

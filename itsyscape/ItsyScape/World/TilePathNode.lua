@@ -19,9 +19,10 @@ function TilePathNode:activate(peep)
 
 	if peep:hasBehavior(TargetTileBehavior) then
 		local target = peep:getBehavior(TargetTileBehavior)
-		target.pathNode:interrupt(peep)
 
-		peep:removeBehavior(TargetTileBehavior)
+		if target.pathNode then
+			target.pathNode:interrupt(peep)
+		end
 	end
 
 	local _, c = peep:addBehavior(TargetTileBehavior)

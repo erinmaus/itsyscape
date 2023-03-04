@@ -1189,7 +1189,7 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 		return x or 0, y or 0, z or 0
 	end
 
-	return nil, nil, nil
+	return 0, 0, 0
 end
 
 function Utility.Map.getAnchorRotation(game, map, anchor)
@@ -1213,7 +1213,7 @@ function Utility.Map.getAnchorRotation(game, map, anchor)
 		end
 	end
 
-	return nil, nil, nil
+	return 0, 0, 0, 1
 end
 
 function Utility.Map.getAnchorScale(game, map, anchor)
@@ -1237,7 +1237,7 @@ function Utility.Map.getAnchorScale(game, map, anchor)
 		return x, y, z
 	end
 
-	return nil, nil, nil
+	return 1, 1, 1
 end
 
 function Utility.Map.getAnchorDirection(game, map, anchor)
@@ -1294,7 +1294,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamPropName = string.format("resource://BoatFoam_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, shipScript:getLayerName())
+		local _, boatFoamProp = stage:placeProp(boatFoamPropName, layer, peep:getLayerName())
 		if boatFoamProp then
 			local peep = boatFoamProp:getPeep()
 			peep:listen('finalize', function()
@@ -1308,7 +1308,7 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 		end
 
 		local boatFoamTrailPropName = string.format("resource://BoatFoamTrail_%s_%s", shipScript:getPrefix(), shipScript:getSuffix())
-		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, shipScript:getLayerName())
+		local _, boatFoamTrailProp = stage:placeProp(boatFoamTrailPropName, layer, peep:getLayerName())
 		if boatFoamTrailProp then
 			local peep = boatFoamTrailProp:getPeep()
 			peep:listen('finalize', function()
@@ -2076,7 +2076,15 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
 		local queue = peep:getCommandQueue()
-		return queue:interrupt(command)
+		local success = queue:interrupt(command)
+
+		-- In the event the peep was walking, we don't want to interrupt the animator cortexes.
+		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
+		-- is walking. So pre-emptively signal the peep is walking, so a walking animation isn't
+		-- interrupted.
+		peep:addBehavior(TargetTileBehavior)
+
+		return success
 	end
 
 	return false, reason
@@ -2226,15 +2234,27 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
-function Utility.Peep.lookAt(self, target)
+function Utility.Peep.lookAt(self, target, delta)
 	local rotation = self:getBehavior(RotationBehavior)
 	if rotation then
 		local selfPosition = Utility.Peep.getAbsolutePosition(self)
-		local peepPosition = Utility.Peep.getAbsolutePosition(target)
+		local peepPosition
+
+		if Class.isCompatibleType(target, Vector) then
+			peepPosition = target
+		else
+			peepPosition = Utility.Peep.getAbsolutePosition(target)
+		end
+
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
 		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+
+		if delta then
+			rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta):getNormal()
+		end
+
 		return true
 	end
 
@@ -2293,19 +2313,19 @@ function Utility.Peep.attack(peep, other, distance)
 		if peep:getCommandQueue():interrupt(AttackCommand()) then
 			local _, target = peep:addBehavior(CombatTargetBehavior)
 			target.actor = actor.actor
+		end
 
-			local mashina = peep:getBehavior(MashinaBehavior)
-			if mashina then
-				if mashina.currentState == 'idle' or
-				   mashina.currentState == false
-				then
-					if mashina.states['begin-attack'] then
-						mashina.currentState = 'begin-attack'
-					elseif mashina.states['attack'] then
-						mashina.currentState = 'attack'
-					else
-						mashina.currentState = false
-					end
+		local mashina = peep:getBehavior(MashinaBehavior)
+		if mashina then
+			if mashina.currentState ~= 'begin-attack' and
+			   mashina.currentState ~= 'attack'
+			then
+				if mashina.states['begin-attack'] then
+					mashina.currentState = 'begin-attack'
+				elseif mashina.states['attack'] then
+					mashina.currentState = 'attack'
+				else
+					mashina.currentState = false
 				end
 			end
 		end

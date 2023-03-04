@@ -147,8 +147,11 @@ function Smoke:update(elapsed)
 		local actorView = gameView:getActor(actor)
 		if actorView then
 			local headTransform = actorView:getLocalBoneTransform("head")
-			headTransform:scale(3, -3, 3)
-			headPosition = Vector(headTransform:transformPoint(0, 3, 0))
+			local transform = love.math.newTransform()
+			transform:scale(2, 2, 2)
+			transform:apply(headTransform)
+
+			headPosition = Vector(transform:transformPoint(0, 0, 0))
 
 			self.particleSystemNode:setParent(actorView:getSceneNode())
 		else

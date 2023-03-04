@@ -254,7 +254,7 @@ function LocalGameManager:sendToPlayer(player)
 				local isSourceMatch = hasSourceAndDestination and
 					((Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.source.value, player)) or
 					 (Class.isCompatibleType(key.source.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.source.value, player)))
-				local isSourceMatch = hasSourceAndDestination and
+				local isDestinationMatch = hasSourceAndDestination and
 					((Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.destination.value, player)) or
 					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value, player)))
 

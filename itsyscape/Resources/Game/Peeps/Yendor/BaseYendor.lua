@@ -15,12 +15,34 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseYendor = Class(Creep)
 
 function BaseYendor:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Yendor', ...)
+
+	self:addBehavior(RotationBehavior)
+end
+
+function BaseYendor:onResurrect()
+	local idleAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Yendor_Idle_Alive/Script.lua")
+	self:addResource("animation-idle", idleAnimation)
+
+	local riseAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Yendor_Rise/Script.lua")
+	self:addResource("animation-idle", riseAnimation)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if actor then
+		actor:playAnimation('combat', 1000, riseAnimation, true, 0)
+		actor:playAnimation('main', 1, idleAnimation)
+	end
 end
 
 function BaseYendor:ready(director, game)
@@ -62,6 +84,11 @@ function BaseYendor:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Yendor_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Yendor_Attack_Magic/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
 
 	Creep.ready(self, director, game)
 end

@@ -485,7 +485,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 		local destinationItem
 		if merge then
 			local inventory = self.broker.inventories[destination]
-			destinationItem = inventory:findFirst(id, true, noted, destinationItem:getSerializedUserdata())
+			destinationItem = inventory:findFirst(id, true, noted, item:getSerializedUserdata())
 		end
 
 		if not destinationItem then
