@@ -215,11 +215,11 @@ function CombatCortex:update(delta)
 					do
 						local peepSize = peep:getBehavior(SizeBehavior).size
 						peepSize = math.max(peepSize.x, peepSize.z)
-						selfRadius = math.max(peepSize, 0)
+						selfRadius = math.max(peepSize - 1, 0)
 
 						local targetSize = target:getBehavior(SizeBehavior).size
 						targetSize = math.max(targetSize.x, targetSize.z)
-						targetRadius = math.max(targetSize, 0)
+						targetRadius = math.max(targetSize - 1, 0)
 					end
 					
 					local combat = peep:getBehavior(CombatStatusBehavior)
