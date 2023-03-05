@@ -81,15 +81,17 @@ function ExecutePathCommand:onBegin(peep)
 		})
 
 		self.path:activate(peep)
-
-		self.peep = peep
 	end
+
+	self.peep = peep
 end
 
 function ExecutePathCommand:onInterrupt(peep)
 	local targetTile = peep:getBehavior(TargetTileBehavior)
 	if targetTile and targetTile.pathNode then
 		targetTile.pathNode:interrupt(peep)
+	elseif targetTile then
+		peep:removeBehavior(TargetTileBehavior)
 	end
 end
 
