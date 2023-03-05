@@ -22,7 +22,8 @@ extern "C"
 #define SOL_SAFE_FUNCTION 1
 #define SOL_CHECK_ARGUMENTS 1
 #define SOL_SAFE_GETTER 1
-#define SOL_PROPAGATE_EXCEPTIONS 1
+#define SOL_EXCEPTIONS_ALWAYS_UNSAFE 1
+#define SOL_LUAJIT_USE_EXCEPTION_TRAMPOLINE 0
 
 #include "deps/sol.hpp"
 #include "skeleton.hpp"
