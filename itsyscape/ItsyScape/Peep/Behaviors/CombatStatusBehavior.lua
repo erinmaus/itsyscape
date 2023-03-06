@@ -29,7 +29,7 @@ function CombatStatusBehavior:new()
 	self.maximumHitpoints = 1
 	self.currentPrayer = 1
 	self.maximumPrayer = 1
-	self.maxChaseDistance = 4
+	self.maxChaseDistance = 8
 
 	self.damage = {}
 end
