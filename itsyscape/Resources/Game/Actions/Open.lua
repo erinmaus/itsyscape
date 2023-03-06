@@ -15,6 +15,7 @@ local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Action = require "ItsyScape.Peep.Action"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local Open = Class(Action)
 Open.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }

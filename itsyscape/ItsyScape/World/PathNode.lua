@@ -79,4 +79,8 @@ function PathNode:finish(peep)
 	self.onEnd(self, peep)
 end
 
+function PathNode:getIsPending()
+	return false
+end
+
 return PathNode

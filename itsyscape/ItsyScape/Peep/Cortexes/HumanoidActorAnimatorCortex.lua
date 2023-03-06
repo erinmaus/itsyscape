@@ -20,6 +20,7 @@ local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TilePathNode = require "ItsyScape.World.TilePathNode"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
@@ -322,19 +323,27 @@ function HumanoidActorAnimatorCortex:peekStyle(peep, e)
 	end
 end
 
+function HumanoidActorAnimatorCortex:isWalking(peep)
+	local movement = peep:getBehavior(MovementBehavior)
+	local velocity = movement.velocity
+	local canMove = movement.maxSpeed > 0 and movement.maxAcceleration > 0
+	                and movement.velocityMultiplier > 0 and movement.accelerationMultiplier > 0
+
+    local targetTile = peep:getBehavior(TargetTileBehavior)
+    local isMoving = targetTile and (Class.isCompatibleType(targetTile.pathNode, TilePathNode) or not targetTile.pathNode)
+
+    return (velocity:getLength() > 0.1 or isMoving) and canMove
+end
+
 function HumanoidActorAnimatorCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
 
 	for peep in self:iterate() do
-		local movement = peep:getBehavior(MovementBehavior)
-		local velocity = movement.velocity
-		local canMove = movement.maxSpeed > 0 and movement.maxAcceleration > 0
-		                and movement.velocityMultiplier > 0 and movement.accelerationMultiplier > 0
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if (velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior)) and canMove then
+		if self:isWalking(peep) then
 			if not self.walking[actor] then
 				local resource = self:getWalkAnimation(peep)
 				if resource then
