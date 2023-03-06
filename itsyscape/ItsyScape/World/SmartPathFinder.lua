@@ -32,7 +32,7 @@ function SmartPathFinder:new(map, peep, t)
 	self.game = peep:getDirector():getGameInstance()
 
 	if t.canUseObjects ~= false and peep:getBehavior(HumanoidBehavior) then
-		self.canUseObjects = peep:getBehavior(HumanoidBehavior)
+		self.canUseObjects = peep:hasBehavior(HumanoidBehavior)
 	end
 
 	self.maxDistanceFromGoal = t.maxDistanceFromGoal or math.huge
