@@ -224,7 +224,7 @@ function CombatCortex:update(delta)
 					
 					local combat = peep:getBehavior(CombatStatusBehavior)
 
-					local distanceToTarget = (Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)):getLength()
+					local distanceToTarget = ((Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)) * Vector.PLANE_XZ):getLength()
 
 					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()

@@ -324,15 +324,13 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		for i = 1, #items do
 			local destinationItem = inventory:findFirst(id, true, true, items[i]:getSerializedUserdata())
-			for _, item in pairs(items) do
-				self.broker:removeItem(item)
-			end
+			self.broker:removeItem(items[i])
 
 			if not destinationItem then
-				destinationItem = self.broker:addItem(destination, id, count, true)
+				destinationItem = self.broker:addItem(destination, id, items[i]:getCount(), true)
 				destinationItem:setUserdata(items[i]:getSerializedUserdata())
 			else
-				destinationItem:setCount(destinationItem:getCount() + #items)
+				destinationItem:setCount(destinationItem:getCount() + items[i]:getCount())
 			end
 
 			local s, r = pcall(destination.onNote, destination, destinationItem, items)
@@ -634,7 +632,7 @@ function ItemBroker.Inventory:findAll(id, stackable, noted, serializedUserdata)
 			if item:getID() == id
 			   and item:isStackable() == stackable
 			   and item:isNoted() == noted
-			   and RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata)
+			   and RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata or {})
 			then
 				return item
 			else
