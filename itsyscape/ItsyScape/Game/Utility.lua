@@ -2324,8 +2324,6 @@ function Utility.Peep.attack(peep, other, distance)
 					mashina.currentState = 'begin-attack'
 				elseif mashina.states['attack'] then
 					mashina.currentState = 'attack'
-				else
-					mashina.currentState = false
 				end
 			end
 		end

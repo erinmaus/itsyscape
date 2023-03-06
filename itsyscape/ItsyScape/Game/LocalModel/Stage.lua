@@ -224,7 +224,6 @@ function LocalStage:spawnGround(filename, layer)
 		filename)
 
 	local ground = self.game:getDirector():addPeep(filename, require "Resources.Game.Peeps.Ground")
-	self.grounds[filename] = ground
 	self.grounds[layer] = ground
 
 	local inventory = ground:getBehavior(InventoryBehavior).inventory
@@ -1168,8 +1167,8 @@ end
 function LocalStage:dropItem(item, count, owner)
 	local broker = self.game:getDirector():getItemBroker()
 	local provider = broker:getItemProvider(item)
-	local map = provider:getPeep():getLayerName()
-	local destination = self.grounds[map]:getBehavior(InventoryBehavior).inventory
+	local layer = Utility.Peep.getLayer(provider:getPeep())
+	local destination = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
 	local transaction = broker:createTransaction()
 	provider:getPeep():poke('dropItem', {
 		item = item,
@@ -1183,7 +1182,12 @@ function LocalStage:dropItem(item, count, owner)
 end
 
 function LocalStage:takeItem(i, j, layer, ref, player)
+	if not self.grounds[layer] then
+		return
+	end
+
 	local inventory = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
+
 	if inventory then
 		local key = GroundInventoryProvider.Key(i, j, layer)
 		local broker = self.game:getDirector():getItemBroker()
