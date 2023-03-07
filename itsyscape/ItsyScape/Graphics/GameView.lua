@@ -927,8 +927,24 @@ function GameView:playMusic(track, song)
 	if song and #song > 0 and not isSame then
 		local newTracks = { index = 1 }
 		for i = 1, #song do
-			local sounds = {}
+			local sounds, instances
 			do
+				for i = 1, #self.pendingMusic do
+					local pendingTrack = self.pendingMusic[i]
+					if pendingTrack.song == song[i] then
+						table.remove(self.pendingMusic, i)
+
+						sounds = pendingTrack.sounds
+						instances = pendingTrack.instances
+
+						break
+					end
+				end
+			end
+
+			if not sounds then
+				sounds = {}
+
 				local directoryPath = string.format("Resources/Game/Music/%s", song[i])
 				local items = love.filesystem.getDirectoryItems(directoryPath)
 				table.sort(items)
@@ -947,14 +963,20 @@ function GameView:playMusic(track, song)
 			end
 
 			-- Play the first song in the playlist immediately.
-			local instances
 			if i == 1 then
-				instances = {}
-				for i = 1, #sounds do
-					table.insert(instances, sounds[i]:play({
-						loop = true,
-						fadeDuration = GameView.FADE_DURATION
-					}))
+				if instances then
+					for i = 1, #instances do
+						instances[i]:resume(GameView.FADE_DURATION)
+						instances[i].loop = true
+					end
+				else
+					instances = {}
+					for i = 1, #sounds do
+						table.insert(instances, sounds[i]:play({
+							loop = true,
+							fadeDuration = GameView.FADE_DURATION
+						}))
+					end
 				end
 			end
 
