@@ -222,6 +222,7 @@ StageProxy.projectile:link(
 
 StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
+	StageProxy.MUSIC,
 	Event.KeyArgument("track"),
 	Event.Argument("song"),
 	Event.KeyArgument("layer"))
@@ -231,6 +232,7 @@ StageProxy.playMusic:link(
 	Event.Argument("song"),
 	Event.Argument("layer"))
 StageProxy.stopMusic = Event.Unset(
+	StageProxy.MUSIC,
 	Event.KeyArgument("track"),
 	Event.Argument("song"),
 	Event.KeyArgument("layer"))

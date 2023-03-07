@@ -949,18 +949,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	-- local musicMeta
-	-- do
-	-- 	local metaFilename = directoryPath .. "/meta.music"
-	-- 	local data = "return " .. (love.filesystem.read(metaFilename) or "")
-	-- 	local chunk = assert(loadstring(data))
-	-- 	musicMeta = setfenv(chunk, {})() or {}
-	-- end
-
-	-- for key, song in pairs(musicMeta) do
-	-- 	self:playMusic(self.stageName, key, song)
-	-- end
-
 	local baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
 		local localLayer = item:match(".*(-?%d)%.lmap$")
@@ -985,6 +973,26 @@ function LocalStage:loadMapResource(instance, filename, args)
 	if not baseLayer then
 		baseLayer = self:newLayer(instance)
 		instance:addLayer(baseLayer)
+	end
+
+	local musicMeta
+	do
+		local metaFilename = directoryPath .. "/meta.music"
+		local data = "return " .. (love.filesystem.read(metaFilename) or "")
+		local chunk = assert(loadstring(data))
+		musicMeta = setfenv(chunk, {})() or {}
+	end
+
+	for key, song in pairs(musicMeta) do
+		self:playMusic(baseLayer, key, song)
+	end
+
+	if not musicMeta["ambience"] then
+		self:stopMusic(baseLayer, "ambience", false)
+	end
+
+	if not musicMeta["main"] then
+		self:stopMusic(baseLayer, "main", false)
 	end
 
 	self:spawnGround(layerName, baseLayer)

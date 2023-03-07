@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local ripple = require "ripple"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -32,6 +33,7 @@ local WeatherMap = require "ItsyScape.World.WeatherMap"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
+GameView.FADE_DURATION = 2
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -48,8 +50,6 @@ function GameView:new(game)
 	self.scene = SceneNode()
 	self.mapMeshes = {}
 	self.tests = { id = 1 }
-
-	self.music = {}
 
 	self.water = {}
 
@@ -85,6 +85,15 @@ function GameView:new(game)
 
 	self.mapThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Map.lua")
 	self.mapThread:start()
+
+	self.soundTags = {
+		main = ripple.newTag(),
+		ambience = ripple.newTag(),
+		soundEffects = ripple.newTag()
+	}
+
+	self.music = {}
+	self.pendingMusic = {}
 end
 
 function GameView:getGame()
@@ -216,7 +225,12 @@ function GameView:attach(game)
 	stage.onProjectile:register(self._onProjectile)
 
 	self._onPlayMusic = function(_, track, song)
-		Log.info("Playing song '%s' on track '%s'.", song, track)
+		if type(song) == 'table' then
+			Log.info("Playing songs '%s' on track '%s'.", table.concat(song, ", "), track)
+		else
+			Log.info("Playing song '%s' on track '%s'.", song, track)
+		end
+
 		self:playMusic(track, song)
 	end
 	stage.onPlayMusic:register(self._onPlayMusic)
@@ -871,26 +885,69 @@ function GameView:fireProjectile(projectileID, source, destination, time)
 end
 
 function GameView:playMusic(track, song)
-	if not song or _CONF.musicVolume == 0 then
-		local t = self.music[track]
-		if t then
-			table.insert(t, false)
+	-- An empty playlist should stop playing music
+	if type(song) == 'table' and #song == 0 then
+		song = false
+	end
+
+	-- A single song should be converted into a playlist
+	if type(song) == 'string' then
+		song = { song }
+	end
+
+	local currentTracks = self.music[track]
+
+	-- Determine if this is the same playlist
+	local isSame = true
+	if currentTracks and type(song) == 'table' and #song == #currentTracks then
+		for i = 1, #song do
+			if currentTracks[i].song ~= song[i] then
+				isSame = false
+				break
+			end
 		end
 	else
-		local filename = string.format("Resources/Game/Music/%s/Music.ogg", song)
-		local song = love.audio.newSource(filename, 'stream')
-		song:setVolume(0)
-		song:setLooping(true)
-		song:play()
+		isSame = false
+	end
 
-		local t = self.music[track]
-		if t then
-			table.insert(t, song)
-		else
-			t = { song }
+	-- If it's not the same playlist, stop playing
+	if currentTracks and not isSame then
+		currentTracks[currentTracks.index].sound:stop(GameView.FADE_DURATION)
+
+		for i = 1, #currentTracks do
+			table.insert(self.pendingMusic, currentTracks[i])
 		end
 
-		self.music[track] = t
+		self.music[track] = nil
+	end
+
+	-- Prepare the new playlist
+	if song and #song > 0 and not isSame then
+		local newTracks = { index = 1 }
+		for i = 1, #song do
+			local filename = string.format("Resources/Game/Music/%s/Music.ogg", song[i])
+			local stream = love.audio.newSource(filename, 'stream')
+			local sound = ripple.newSound(stream, {
+				tags = { self.soundTags[track] or self.soundTags.music }
+			})
+
+			-- Play the first song in the playlist immediately.
+			local instance
+			if i == 1 then
+				instance = sound:play({
+					loop = true,
+					fadeDuration = GameView.FADE_DURATION
+				})
+			end
+
+			table.insert(newTracks, {
+				sound = sound,
+				instance = instance,
+				song = song[i]
+			})
+		end
+
+		self.music[track] = newTracks
 	end
 end
 
@@ -962,32 +1019,54 @@ function GameView:updateSprites(delta)
 end
 
 function GameView:updateMusic(delta)
-	for track, songs in pairs(self.music) do
-		local index = 1
-		while index < #songs do
-			local song = songs[index]
-			if song then
-				song:setVolume(math.max(song:getVolume() - 0.5 * delta, 0))
-			end
+	-- Update tags
+	self.soundTags.soundEffects.volume = _CONF.soundEffectsVolume or 1
+	self.soundTags.main.volume = _CONF.musicVolume or 1
+	self.soundTags.ambience.volume = _CONF.ambienceVolume or 1
 
-			if not song or song:getVolume() <= 0.01 then
-				if song then
-					song:stop()
-					song:release()
-				end
-				table.remove(songs, index)
+	-- Clear out pending music.
+	do
+		local index = 1
+		while index <= #self.pendingMusic do
+			if not self.pendingMusic[index].instance or self.pendingMusic[index].instance:isStopped() then
+				table.remove(self.pendingMusic, index)
 			else
+				self.pendingMusic[index].sound:update(delta)
 				index = index + 1
 			end
 		end
+	end
 
-		local lastSong = songs[#songs]
-		if not lastSong then
-			if #songs == 1 then
-				table.remove(songs, 1)
+	-- Updating existing tracks
+	for track, songs in pairs(self.music) do
+		if #songs > 1 then
+			local s = songs[songs.index]
+
+			-- Play the next track if the current is stopped
+			if s.instance and s.instance:isStopped() then
+				local nextIndex = songs.index + 1
+				if nextIndex > #songs then
+					nextIndex = 1
+				end
+
+				local n = songs[nextIndex]
+				if n.instance then
+					n.instance:resume(GameView.FADE_DURATION)
+				elseif s.sound then
+					n.instance = s.sound:play({
+						loop = true,
+						fadeDuration = GameView.FADE_DURATION
+					})
+				end
+			-- If we're near the end of the track, fade out the last 1/2 second
+			elseif s.instance and (s.instance.duration - s.instance.offset) <= 0.5 then
+				s.instance:stop(GameView.FADE_DURATION)
 			end
-		else
-			lastSong:setVolume(math.min(lastSong:getVolume() + 0.5 * delta, 1))
+		end
+
+		for i = 1, #songs do
+			local s = songs[i]
+			s.sound:update(delta)
 		end
 	end
 end
