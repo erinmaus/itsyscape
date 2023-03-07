@@ -912,7 +912,9 @@ function GameView:playMusic(track, song)
 
 	-- If it's not the same playlist, stop playing
 	if currentTracks and not isSame then
-		currentTracks[currentTracks.index].sound:stop(GameView.FADE_DURATION)
+		for i = 1, #currentTracks[currentTracks.index].sounds do
+			currentTracks[currentTracks.index].sounds[i]:stop(GameView.FADE_DURATION)
+		end
 
 		for i = 1, #currentTracks do
 			table.insert(self.pendingMusic, currentTracks[i])
@@ -925,24 +927,40 @@ function GameView:playMusic(track, song)
 	if song and #song > 0 and not isSame then
 		local newTracks = { index = 1 }
 		for i = 1, #song do
-			local filename = string.format("Resources/Game/Music/%s/Music.ogg", song[i])
-			local stream = love.audio.newSource(filename, 'stream')
-			local sound = ripple.newSound(stream, {
-				tags = { self.soundTags[track] or self.soundTags.music }
-			})
+			local sounds = {}
+			do
+				local directoryPath = string.format("Resources/Game/Music/%s", song[i])
+				local items = love.filesystem.getDirectoryItems(directoryPath)
+				table.sort(items)
+
+				for _, item in ipairs(items) do
+					if item:match(".*%.ogg$") then
+						local filename = directoryPath .. "/" .. item
+						local stream = love.audio.newSource(filename, 'stream')
+						local sound = ripple.newSound(stream, {
+							tags = { self.soundTags[track] or self.soundTags.music }
+						})
+
+						table.insert(sounds, sound)
+					end
+				end
+			end
 
 			-- Play the first song in the playlist immediately.
-			local instance
+			local instances
 			if i == 1 then
-				instance = sound:play({
-					loop = true,
-					fadeDuration = GameView.FADE_DURATION
-				})
+				instances = {}
+				for i = 1, #sounds do
+					table.insert(instances, sounds[i]:play({
+						loop = true,
+						fadeDuration = GameView.FADE_DURATION
+					}))
+				end
 			end
 
 			table.insert(newTracks, {
-				sound = sound,
-				instance = instance,
+				sounds = sounds,
+				instances = instances,
 				song = song[i]
 			})
 		end
@@ -1028,10 +1046,13 @@ function GameView:updateMusic(delta)
 	do
 		local index = 1
 		while index <= #self.pendingMusic do
-			if not self.pendingMusic[index].instance or self.pendingMusic[index].instance:isStopped() then
+			if not self.pendingMusic[index].instances or #self.pendingMusic[index].instances < 1 or self.pendingMusic[index].instances[1]:isStopped() then
 				table.remove(self.pendingMusic, index)
 			else
-				self.pendingMusic[index].sound:update(delta)
+				for i = 1, #self.pendingMusic[index].sounds do
+					self.pendingMusic[index].sounds[i]:update(delta)
+				end
+
 				index = index + 1
 			end
 		end
@@ -1043,30 +1064,43 @@ function GameView:updateMusic(delta)
 			local s = songs[songs.index]
 
 			-- Play the next track if the current is stopped
-			if s.instance and s.instance:isStopped() then
+			if s.instances and #s.instances[1] >= 1 and s.instances[1]:isStopped() then
 				local nextIndex = songs.index + 1
 				if nextIndex > #songs then
 					nextIndex = 1
 				end
 
 				local n = songs[nextIndex]
-				if n.instance then
-					n.instance:resume(GameView.FADE_DURATION)
-				elseif s.sound then
-					n.instance = s.sound:play({
-						loop = true,
-						fadeDuration = GameView.FADE_DURATION
-					})
+
+				if n.instances then
+					for i = 1, #n.instances do
+						n.instances[i]:resume(GameView.FADE_DURATION)
+					end
+				elseif s.sounds then
+					local instances = {}
+					for i = 1, #n.instances do
+						local instance = s.sound:play({
+							loop = true,
+							fadeDuration = GameView.FADE_DURATION
+						})
+
+						table.insert(instances, instance)
+					end
 				end
 			-- If we're near the end of the track, fade out the last 1/2 second
-			elseif s.instance and (s.instance.duration - s.instance.offset) <= 0.5 then
-				s.instance:stop(GameView.FADE_DURATION)
+			elseif s.instance and #s.intances >= 1 and (s.instance[1].duration - s.instance[1].offset) <= 0.5 then
+				for i = 1, #s.instances do
+					s.instances[i]:stop(GameView.FADE_DURATION)
+				end
 			end
 		end
 
 		for i = 1, #songs do
 			local s = songs[i]
-			s.sound:update(delta)
+
+			for j = 1, #s.sounds do
+				s.sounds[j]:update(delta)
+			end
 		end
 	end
 end
