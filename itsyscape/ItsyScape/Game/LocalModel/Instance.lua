@@ -1133,16 +1133,16 @@ function Instance:unloadPlayer(localGameManager, player)
 		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 
-	for _, music in ipairs(self.music) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onStopMusic",
-			localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
-		localGameManager:assignTargetToLastPush(player)
+	-- for _, music in ipairs(self.music) do
+	-- 	localGameManager:pushCallback(
+	-- 		"ItsyScape.Game.Model.Stage",
+	-- 		0,
+	-- 		"onStopMusic",
+	-- 		localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+	-- 	localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
-	end
+	-- 	Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+	-- end
 
 	for _, item in ipairs(self.items) do
 		localGameManager:pushCallback(
