@@ -45,16 +45,19 @@ function ActorView.Animatable:setColor(value)
 	end
 end
 
-function ActorView.Animatable:playSound(filename)
+function ActorView.Animatable:playSound(filename, attenuation)
 	local sound = self.sounds[filename]
 	if not sound then
 		sound = love.audio.newSource(filename, 'static')
 		self.sounds[filename] = sound
 		sound:setVolume((_CONF.soundEffectsVolume or 1))
+
+		if attenuation then
+			sound:setAttenuationDistances(unpack(attenuation))
+		end
 	end
 
-	sound:seek(0)
-	sound:play()
+	return sound
 end
 
 function ActorView.Animatable:getSkeleton()
