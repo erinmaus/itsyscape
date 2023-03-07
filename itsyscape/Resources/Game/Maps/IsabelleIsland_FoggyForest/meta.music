@@ -1,3 +1,4 @@
 {
-	['main'] = "IsabelleIsland_FoggyForest"
+	['main'] = "IsabelleIsland_FoggyForest",
+	['ambience'] = "Forest1"
 }
