@@ -114,20 +114,6 @@ function Instance.Weather:getProps()
 	return self.props
 end
 
-Instance.Music = Class()
-
-function Instance.Music:new(track, song)
-	self.track = track
-end
-
-function Instance.Music:getTrack()
-	return self.track
-end
-
-function Instance.Music:getSong()
-	return self.song
-end
-
 Instance.Decoration = Class()
 
 function Instance.Decoration:new(layer, group, decoration)

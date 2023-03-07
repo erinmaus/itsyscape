@@ -949,18 +949,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	-- local musicMeta
-	-- do
-	-- 	local metaFilename = directoryPath .. "/meta.music"
-	-- 	local data = "return " .. (love.filesystem.read(metaFilename) or "")
-	-- 	local chunk = assert(loadstring(data))
-	-- 	musicMeta = setfenv(chunk, {})() or {}
-	-- end
-
-	-- for key, song in pairs(musicMeta) do
-	-- 	self:playMusic(self.stageName, key, song)
-	-- end
-
 	local baseLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
 		local localLayer = item:match(".*(-?%d)%.lmap$")
@@ -1064,49 +1052,33 @@ function LocalStage:stopMusic(layer, channel, song)
 	self.onStopMusic(self, channel, song, layer)
 end
 
+function LocalStage:loadMusic(baseLayer, filename)
+	local directoryPath = "Resources/Game/Maps/" .. filename
+
+	local musicMeta
+	do
+		local metaFilename = directoryPath .. "/meta.music"
+		local data = "return " .. (love.filesystem.read(metaFilename) or "")
+		local chunk = assert(loadstring(data))
+		musicMeta = setfenv(chunk, {})() or {}
+	end
+
+	for key, song in pairs(musicMeta) do
+		self:playMusic(baseLayer, key, song)
+	end
+
+	if not musicMeta["ambience"] then
+		self:stopMusic(baseLayer, "ambience", false)
+	end
+
+	if not musicMeta["main"] then
+		self:stopMusic(baseLayer, "main", false)
+	end
+end
+
 function LocalStage:loadStage(instance, filename, args)
-
-	-- TODO
-	-- do
-	-- 	local director = self.game:getDirector()
-	-- 	director:movePeep(self.game:getPlayer():getActor():getPeep(), "::safe")
-	-- end
-
-	-- for i = 1, #self.music do
-	-- 	self.music[i].stopping = true
-	-- end
-
-	self:loadMapResource(instance, filename, args)
-
-	-- TODO
-	-- local index = 1
-	-- while index <= #self.music do
-	-- 	local m = self.music[index]
-	-- 	if m.stopping then
-	-- 		self.onStopMusic(self.stageName, m.channel, m.song)
-	-- 		table.remove(self.music, index)
-	-- 	else
-	-- 		index = index + 1
-	-- 	end
-	-- end
-
-	-- TODO
-	-- do
-	-- 	local director = self.game:getDirector()
-	-- 	local player = self.game:getPlayer():getActor():getPeep()
-	-- 	director:movePeep(player, filename)
-
-	-- 	local resource = director:getGameDB():getResource(filename, "Map")
-
-	-- 	player:addBehavior(MapResourceReferenceBehavior)
-	-- 	local m = player:getBehavior(MapResourceReferenceBehavior)
-	-- 	m.map = resource or false
-
-	-- 	player:poke('travel', {
-	-- 		from = oldStageName,
-	-- 		to = filename
-	-- 	})
-	-- end
+	local baseLayer = self:loadMapResource(instance, filename, args)
+	self:loadMusic(baseLayer, filename)
 end
 
 function LocalStage:getMap(layer)
