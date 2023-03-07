@@ -913,7 +913,7 @@ function GameView:playMusic(track, song)
 	-- If it's not the same playlist, stop playing
 	if currentTracks and not isSame then
 		for i = 1, #currentTracks[currentTracks.index].sounds do
-			currentTracks[currentTracks.index].sounds[i]:stop(GameView.FADE_DURATION)
+			currentTracks[currentTracks.index].sounds[i]:pause(GameView.FADE_DURATION)
 		end
 
 		for i = 1, #currentTracks do
@@ -1112,7 +1112,7 @@ function GameView:updateMusic(delta)
 			-- If we're near the end of the track, fade out the last 1/2 second
 			elseif s.instance and #s.intances >= 1 and (s.instance[1].duration - s.instance[1].offset) <= 0.5 then
 				for i = 1, #s.instances do
-					s.instances[i]:stop(GameView.FADE_DURATION)
+					s.instances[i]:pause(GameView.FADE_DURATION)
 				end
 			end
 		end
