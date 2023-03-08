@@ -865,8 +865,10 @@ function LocalStage:movePeep(peep, path, anchor)
 				Map = map
 			})
 
-			local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-			Utility.Peep.setPosition(peep, Vector(x, y, z))
+			if mapObject then
+				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
+				Utility.Peep.setPosition(peep, Vector(x, y, z))
+			end
 		end
 	end
 
