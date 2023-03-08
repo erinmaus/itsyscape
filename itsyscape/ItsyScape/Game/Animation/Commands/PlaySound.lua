@@ -24,8 +24,8 @@ local PlaySound, Metatable = Class(Command)
 function PlaySound:new(filename)
 	self.soundFilename = filename
 	self.attenuation = false
-	self.minPitch = 0.8
-	self.maxPitch = 1.2
+	self.minPitch = 0.5
+	self.maxPitch = 1.5
 end
 
 -- Sets some properties. See type description above. 
