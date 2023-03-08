@@ -1,4 +1,4 @@
-Animation "Human Attack (Weapon: Blunderbuss, Style: Ranged) 1" {
+Animation "Human Attack (Weapon: Pistol, Style: Ranged) 1" {
 	Channel {
 		Wait(5 / 24),
 
@@ -8,7 +8,7 @@ Animation "Human Attack (Weapon: Blunderbuss, Style: Ranged) 1" {
 
 			system = {
 				numParticles = 30,
-				texture = "Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Smoke.png",
+				texture = "Resources/Game/Animations/Human_AttackPistolRanged_1/Smoke.png",
 				columns = 1,
 
 				emitters = {
@@ -79,7 +79,7 @@ Animation "Human Attack (Weapon: Blunderbuss, Style: Ranged) 1" {
 
 			system = {
 				numParticles = 50,
-				texture = "Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Fire.png",
+				texture = "Resources/Game/Animations/Human_AttackPistolRanged_1/Fire.png",
 				columns = 4,
 
 				emitters = {
@@ -135,7 +135,8 @@ Animation "Human Attack (Weapon: Blunderbuss, Style: Ranged) 1" {
 	},
 
 	Target {
-		PlayAnimation "Resources/Game/Animations/Human_AttackBlunderbussRanged_1/Animation.lanim" {
+		PlaySound "Resources/Game/Animations/Human_AttackPistolRanged_1/Sound.wav",
+		PlayAnimation "Resources/Game/Animations/Human_AttackPistolRanged_1/Animation.lanim" {
 			bones = {
 				"root",
 				"body",

@@ -27,7 +27,10 @@ end
 
 function PlaySoundInstance:play(animatable, time)
 	if not self.played and self.command then
-		animatable:playSound(self.command:getFilename())
+		local s = animatable:playSound(self.command:getFilename(), self.command:getAttenuation())
+		s:setPitch(math.random() * (self.command:getMaxPitch() - self.command:getMinPitch()) + self.command:getMinPitch())
+		s:seek(0)
+		s:play()
 	end
 
 	self.played = true

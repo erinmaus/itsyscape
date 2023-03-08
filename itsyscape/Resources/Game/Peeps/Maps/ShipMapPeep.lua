@@ -115,6 +115,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 			instance = self
 		})
 
+		stage:loadMusic(layer, map)
+
 		-- TODO: get this from the map
 		local WATER_ELEVATION = 1.75
 

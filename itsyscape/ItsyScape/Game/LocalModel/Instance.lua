@@ -114,20 +114,6 @@ function Instance.Weather:getProps()
 	return self.props
 end
 
-Instance.Music = Class()
-
-function Instance.Music:new(track, song)
-	self.track = track
-end
-
-function Instance.Music:getTrack()
-	return self.track
-end
-
-function Instance.Music:getSong()
-	return self.song
-end
-
 Instance.Decoration = Class()
 
 function Instance.Decoration:new(layer, group, decoration)
@@ -461,7 +447,8 @@ function Instance:new(id, filename, stage)
 				end
 			end
 
-			Log.engine("Warning; music not found.")
+			Log.engine("Warning; music not found. Stopping anyway.")
+			self:onStopMusic(track, song, layer)
 		else
 			Log.engine(
 				"Did not stop music on track '%s' (layer = %d) from instance %s (%d); layer not in instance.",
@@ -1147,16 +1134,16 @@ function Instance:unloadPlayer(localGameManager, player)
 		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 
-	for _, music in ipairs(self.music) do
-		localGameManager:pushCallback(
-			"ItsyScape.Game.Model.Stage",
-			0,
-			"onStopMusic",
-			localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
-		localGameManager:assignTargetToLastPush(player)
+	-- for _, music in ipairs(self.music) do
+	-- 	localGameManager:pushCallback(
+	-- 		"ItsyScape.Game.Model.Stage",
+	-- 		0,
+	-- 		"onStopMusic",
+	-- 		localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+	-- 	localGameManager:assignTargetToLastPush(player)
 
-		Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
-	end
+	-- 	Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+	-- end
 
 	for _, item in ipairs(self.items) do
 		localGameManager:pushCallback(

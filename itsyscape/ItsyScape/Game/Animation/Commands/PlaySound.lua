@@ -23,11 +23,18 @@ local PlaySound, Metatable = Class(Command)
 -- filename is the name of the sound.
 function PlaySound:new(filename)
 	self.soundFilename = filename
+	self.attenuation = false
+	self.minPitch = 0.5
+	self.maxPitch = 1.5
 end
 
 -- Sets some properties. See type description above. 
 function Metatable:__call(t)
 	t = t or {}
+
+	self:setAttenuation(t.attenuation)
+	self:setMinPitch(t.minPitch)
+	self:setMaxPitch(t.maxPitch)
 
 	return self
 end
@@ -35,6 +42,30 @@ end
 -- Gets the filename of the lanim.
 function PlaySound:getFilename()
 	return self.soundFilename
+end
+
+function PlaySound:setMinPitch(value)
+	self.minPitch = value or self.minPitch
+end
+
+function PlaySound:getMinPitch()
+	return self.minPitch
+end
+
+function PlaySound:setMaxPitch(value)
+	self.maxPitch = value or self.maxPitch
+end
+
+function PlaySound:getMaxPitch()
+	return self.maxPitch
+end
+
+function PlaySound:setAttenuation(value)
+	self.attenuation = value
+end
+
+function PlaySound:getAttenuation()
+	return self.attenuation or nil
 end
 
 function PlaySound:instantiate()
