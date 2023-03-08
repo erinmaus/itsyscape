@@ -1,3 +1,4 @@
 {
-	['main'] = { "HighChambersYendor1", "HighChambersYendor2" }
+	['main'] = { "HighChambersYendor1", "HighChambersYendor2" },
+	['ambience'] = { "Dungeon1", "Dungeon2" }
 }

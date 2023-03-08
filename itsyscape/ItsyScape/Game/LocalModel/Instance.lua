@@ -447,7 +447,8 @@ function Instance:new(id, filename, stage)
 				end
 			end
 
-			Log.engine("Warning; music not found.")
+			Log.engine("Warning; music not found. Stopping anyway.")
+			self:onStopMusic(track, song, layer)
 		else
 			Log.engine(
 				"Did not stop music on track '%s' (layer = %d) from instance %s (%d); layer not in instance.",
