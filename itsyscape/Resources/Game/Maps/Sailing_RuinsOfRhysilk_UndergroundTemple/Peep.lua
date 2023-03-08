@@ -62,13 +62,13 @@ function Ruins:initTroll(player)
 		if not encounteredYendor then
 			Utility.UI.openInterface(player, "BossHUD", false, yendor)
 			self:pushPoke('damageYendor', player, yendor, love.timer.getTime() + Ruins.INITIAL_DRAMATIC_WAIT)
-			self:playMusic("V2_VsPirates")
+			self:playMusic("SeaAttack2")
 		else
 			local status = yendor:getBehavior(CombatStatusBehavior)
 			status.dead = true
 			status.currentHitpoints = 0
 
-			self:playMusic("V2_RuinsOfRhysilk_UndergroundTemple")
+			self:playMusic({ "HighChambersYendor1", "HighChambersYendor2" })
 		end
 	end
 end

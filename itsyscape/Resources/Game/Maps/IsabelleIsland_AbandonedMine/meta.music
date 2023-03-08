@@ -1,3 +1,4 @@
 {
-	['main'] = "IsabelleIsland_AbandonedMine"
+	['main'] = "IsabelleIsland_AbandonedMine",
+	['ambience'] = "Cave1",
 }
