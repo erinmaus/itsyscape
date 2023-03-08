@@ -135,6 +135,9 @@ function DemoApplication:closeTitleScreen()
 	self.pendingTitleScreenOpen = true
 
 	self:closeMainMenu()
+
+	self:getGameView():playMusic('main', false)
+	self:getGameView():playMusic('ambience', false)
 end
 
 function DemoApplication:tryOpenTitleScreen()
