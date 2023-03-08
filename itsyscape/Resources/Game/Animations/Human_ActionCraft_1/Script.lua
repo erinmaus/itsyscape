@@ -7,6 +7,7 @@ Animation "Human Action (Craft) 1" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Human_ActionCraft_1/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Human_ActionCraft_1/Animation.lanim"
 	}
 }

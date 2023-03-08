@@ -3209,6 +3209,14 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_IdleFlamethrower_1/Script.lua")
 	peep:addResource("animation-idle-flamethrower", idleFlamethrowerAnimation)
+	local actionOpen = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionOpen_1/Script.lua")
+	peep:addResource("animation-action-open", actionOpen)
+	local actionClose = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionClose_1/Script.lua")
+	peep:addResource("animation-action-close", actionClose)
 	local actionBury = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
