@@ -163,8 +163,6 @@ function DemoApplication:openTitleScreen()
 	})
 
 	self:getGame():getPlayer():spawn(storage, false, self:getPassword())
-
-	self:getGameView():playMusic('main', "IsabelleIsland")
 end
 
 function DemoApplication:quit()
