@@ -115,7 +115,14 @@ NominomiconController.CREDITS = {
 				t = "header",
 				"Music",
 			},
-			"Speak",
+			{
+				t = 'text',
+				{
+					t = 'link',
+					destination = 'https://speakmusic.bandcamp.com',
+					text = "speak (speakmusic.bandcamp.com)"
+				}
+			},
 			"Elaine Williams"
 		}
 	}
