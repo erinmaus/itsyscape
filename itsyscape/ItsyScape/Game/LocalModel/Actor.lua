@@ -353,7 +353,7 @@ end
 
 function LocalActor:stopAnimation(slot)
 	self.animations[slot] = nil
-	self.onAnimationStopped(self, slot, math.huge)
+	self.onAnimationStopped(self, slot, math.huge, true)
 end
 
 function LocalActor:iterateAnimationSlots()
