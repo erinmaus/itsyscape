@@ -120,7 +120,7 @@ function ActorView.Animatable:update()
 
 	local pending
 	for filename, sound in pairs(self.sounds) do
-		sound:setPosition(x, y, z)
+		--sound:setPosition(x, y, z)
 
 		if not sound:isPlaying() then
 			pending = pending or {}
