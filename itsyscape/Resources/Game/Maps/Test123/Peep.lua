@@ -13,12 +13,12 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local TestMap = Class(Map)
 
-function TestMap:onLoad(...)
-	Map.onLoad(self, ...)
+function TestMap:onPlayerEnter(player)
+	player = player:getActor():getPeep()
 
 	local function actionCallback(action)
 		if action == "pressed" then
-			Utility.Map.playCutscene(self, "Test123_Skilling")
+			Utility.Map.playCutscene(self, "Test123_Skilling", "StandardCutscene", player)
 		end
 	end
 
@@ -27,7 +27,7 @@ function TestMap:onLoad(...)
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player,
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
