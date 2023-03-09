@@ -109,7 +109,7 @@ function ConstraintsPanel:performLayout(doLogic)
 				left = Icon()
 				left:setSize(leftWidth, rowHeight)
 				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", c.resource))
-			elseif c.type:lower() == 'item' then
+			elseif c.type:lower() == 'item' or c.type:lower() == 'ingredient' then
 				left = ItemIcon()
 				left:setSize(leftWidth, rowHeight)
 				left:setItemID(c.resource)

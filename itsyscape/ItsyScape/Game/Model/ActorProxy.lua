@@ -72,6 +72,11 @@ ActorProxy.playAnimation = Event.Set(
 	Event.Argument("animation"),
 	Event.OverrideKeyArgument("force"),
 	Event.TimeArgument("time"))
+ActorProxy.stopAnimation = Event.Unset(
+	ActorProxy.ANIMATIONS,
+	Event.KeyArgument("slot"),
+	Event.SortedKeyArgument("priority"),
+	Event.OverrideKeyArgument("force"))
 ActorProxy.playAnimation:link(
 	"onAnimationPlayed",
 	Event.Argument("slot"),
@@ -79,6 +84,11 @@ ActorProxy.playAnimation:link(
 	Event.Argument("animation"),
 	Event.Argument("force"),
 	Event.Argument("time"))
+ActorProxy.stopAnimation:link(
+	"onAnimationStopped",
+	Event.Argument("slot"),
+	Event.Argument("priority"))
+
 
 ActorProxy.damage = Event.ServerToClientRPC(Event.Arguments())
 ActorProxy.damage:link("onDamage", Event.Arguments())

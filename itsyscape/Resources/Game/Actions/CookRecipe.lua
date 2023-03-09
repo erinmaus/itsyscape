@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Cooking/Init.lua
+-- Resources/Game/Actions/CookRecipe.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -7,14 +7,13 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Action = require "ItsyScape.Peep.Action"
 
-ResourceType "Recipe"
-ResourceType "Ingredient"
+local CookRecipe = Class(Action)
 
-ActionType "CookRecipe"
-ActionType "CookIngredient"
+function CookRecipe:perform(state, peep, item)
+	return false
+end
 
-Meta "Ingredient" {
-	Item = Meta.TYPE_RESOURCE,
-	Ingredient = Meta.TYPE_RESOURCE
-}
+return CookRecipe

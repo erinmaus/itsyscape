@@ -26,8 +26,9 @@ function MapTable:new(resource, name, ...)
 	self:addPoke('sail')
 end
 
-function MapTable:onLoad(filename, arguments, layer)
-	Map.onLoad(self, filename, arguments, layer)
+function MapTable:onPlayerEnter(player)
+	local player = player:getActor():getPeep()
+	local arguments = self:getArguments()
 
 	local gameDB = self:getDirector():getGameDB()
 	local seaChart = gameDB:getRecord("MapSeaChart", {
