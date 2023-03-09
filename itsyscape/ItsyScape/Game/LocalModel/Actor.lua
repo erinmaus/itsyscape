@@ -63,6 +63,13 @@ function LocalActor:spawn(id, group, resource, ...)
 	self.peep:listen("heal", function(_, p)
 		self.onDamage(self, 'heal', p.hitPoints)
 	end)
+	self.peep:listen("travel", function()
+		for animationSlot in self:iterateAnimationSlots() do
+			if animationSlot ~= "main" then
+				self:stopAnimation(animationSlot)
+			end
+		end
+	end)
 
 	self.id = id
 	self.oldID = nil
@@ -340,7 +347,17 @@ function LocalActor:setBody(body)
 end
 
 function LocalActor:playAnimation(slot, priority, animation, force, time)
+	self.animations[slot] = true
 	self.onAnimationPlayed(self, slot, priority, animation, force, time)
+end
+
+function LocalActor:stopAnimation(slot)
+	self.animations[slot] = nil
+	self.onAnimationStopped(self, slot, math.huge, true)
+end
+
+function LocalActor:iterateAnimationSlots()
+	return pairs(self.animations)
 end
 
 function LocalActor:setSkin(slot, priority, skin)
