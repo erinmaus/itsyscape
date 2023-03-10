@@ -37,17 +37,12 @@ ItsyScape.Resource.Recipe "Roux" {
 		},
 
 		Input {
-			Resource = ItsyScape.Resource.Ingredient "Oil",
+			Resource = ItsyScape.Resource.Ingredient "OilOrFat",
 			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Salt",
-			Count = 1
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Ingredient "Seasoning",
 			Count = 1
 		},
 
@@ -61,6 +56,11 @@ ItsyScape.Resource.Recipe "Roux" {
 			Count = ItsyScape.Utility.xpForLevel(11)
 		}
 	}
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "Roux"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -93,17 +93,12 @@ ItsyScape.Resource.Recipe "WellCookedRoux" {
 		},
 
 		Input {
-			Resource = ItsyScape.Resource.Ingredient "Oil",
+			Resource = ItsyScape.Resource.Ingredient "OilOrFat",
 			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Salt",
-			Count = 1
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Ingredient "Seasoning",
 			Count = 1
 		},
 
@@ -117,6 +112,11 @@ ItsyScape.Resource.Recipe "WellCookedRoux" {
 			Count = ItsyScape.Utility.xpForLevel(46)
 		}
 	}
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "WellCookedRoux"
 }
 
 ItsyScape.Meta.ResourceName {
