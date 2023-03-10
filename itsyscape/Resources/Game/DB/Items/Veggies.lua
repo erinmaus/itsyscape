@@ -208,7 +208,7 @@ ItsyScape.Resource.Item "GreenOnion" {
 		},
 
 		Input {
-			Resource = ItsyScape.Resource.Item "Green",
+			Resource = ItsyScape.Resource.Item "GreenOnion",
 			Count = 1
 		},
 

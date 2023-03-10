@@ -48,6 +48,11 @@ ItsyScape.Resource.Recipe "SeafoodGumbo" {
 		Output {
 			Resource = ItsyScape.Resource.Item "SeafoodGumbo",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(52)
 		}
 	}
 }
