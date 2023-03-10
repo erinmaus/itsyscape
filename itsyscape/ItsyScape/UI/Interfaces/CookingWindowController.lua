@@ -323,6 +323,7 @@ function CookingWindowController:addIngredient(e)
 
 	self.state.inventory[inventoryItemIndex].count = inventoryItem.item:getCount() - inventoryItem.count
 	self.state.currentRecipe[index].count = 1
+	self.state.currentRecipe[index].item = self.state.inventory[inventoryItemIndex]
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,

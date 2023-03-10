@@ -361,7 +361,10 @@ function CookingWindow:populateInventory(inventory)
 				usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
 			end
 
-			button:setToolTip(ToolTip.Header(item.name), ToolTip.Text(item.description), usable)
+			button:setToolTip(
+				ToolTip.Header("Add " .. item.name),
+				ToolTip.Text(item.description),
+				usable)
 
 			local itemIcon = button:getData("icon")
 			itemIcon:setItemID(item.resource)
@@ -393,7 +396,15 @@ function CookingWindow:updateCurrentRecipe()
 			icon:setItemID(ingredient.item.resource)
 			icon:setIsDisabled(ingredient.count == 0)
 
-			button:setToolTip(ToolTip.Header(ingredient.item.name), ToolTip.Text(ingredient.item.description))
+			if ingredient.count == 0 then
+				button:setToolTip(
+					ToolTip.Header(ingredient.item.name),
+					ToolTip.Text(ingredient.item.description))
+			else
+				button:setToolTip(
+					ToolTip.Header("Remove " .. ingredient.item.name),
+					ToolTip.Text(ingredient.item.description))
+			end
 		end
 	end
 end
