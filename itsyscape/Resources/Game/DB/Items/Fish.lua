@@ -82,23 +82,29 @@ do
 		Resource = ItsyScape.Resource.Prop "Sardine_Default"
 	}
 
-	ItsyScape.Resource.Item "Sardine" {
-		ItsyScape.Action.CookIngredient() {
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForLevel(1)
-			},
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
 
-			Input {
-				Resource = ItsyScape.Resource.Item "Sardine",
-				Count = 1
-			},
+		Input {
+			Resource = ItsyScape.Resource.Item "Sardine",
+			Count = 1
+		},
 
-			Output {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForResource(3)
-			}
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(3)
 		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "Sardine" {
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -311,23 +317,29 @@ do
 		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
 	}
 
-	ItsyScape.Resource.Item "SeaBass" {
-		ItsyScape.Action.CookIngredient() {
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForLevel(5)
-			},
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
 
-			Input {
-				Resource = ItsyScape.Resource.Item "SeaBass",
-				Count = 1
-			},
+		Input {
+			Resource = ItsyScape.Resource.Item "SeaBass",
+			Count = 1
+		},
 
-			Output {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForResource(6)
-			}
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
 		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "SeaBass" {
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -540,23 +552,29 @@ do
 		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
 	}
 
-	ItsyScape.Resource.Item "Coelacanth" {
-		ItsyScape.Action.CookIngredient() {
-			Requirement {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForLevel(20)
-			},
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
 
-			Input {
-				Resource = ItsyScape.Resource.Item "Coelacanth",
-				Count = 1
-			},
+		Input {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		},
 
-			Output {
-				Resource = ItsyScape.Resource.Skill "Cooking",
-				Count = ItsyScape.Utility.xpForResource(30)
-			}
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(30)
 		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "Coelacanth" {
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {

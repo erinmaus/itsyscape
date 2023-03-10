@@ -54,6 +54,11 @@ ItsyScape.Resource.Recipe "Roux" {
 		Output {
 			Resource = ItsyScape.Resource.Item "Roux",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(11)
 		}
 	}
 }
@@ -105,6 +110,11 @@ ItsyScape.Resource.Recipe "WellCookedRoux" {
 		Output {
 			Resource = ItsyScape.Resource.Item "WellCookedRoux",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(46)
 		}
 	}
 }

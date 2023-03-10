@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+include "Resources/Game/DB/Cooking/Essentials.lua"
+
 do
 	local Fruit = ItsyScape.Resource.Ingredient "Fruit"
 
@@ -165,5 +167,117 @@ do
 		Value = "You can obtain bell peppers from many farms.",
 		Language = "en-US",
 		Resource = BellPepper
+	}
+end
+
+do
+	local Flour = ItsyScape.Resource.Ingredient "Flour"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Flour",
+		Language = "en-US",
+		Resource = Flour
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain flour by milling grains and such.",
+		Language = "en-US",
+		Resource = Flour
+	}
+end
+
+do
+	local Butter = ItsyScape.Resource.Ingredient "Butter"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Butter",
+		Language = "en-US",
+		Resource = Butter
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain butter from cows.",
+		Language = "en-US",
+		Resource = Butter
+	}
+end
+
+do
+	local Oil = ItsyScape.Resource.Ingredient "Oil"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Oil",
+		Language = "en-US",
+		Resource = Oil
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain oil from mining or foraging.",
+		Language = "en-US",
+		Resource = Oil
+	}
+end
+
+do
+	local OilOrFat = ItsyScape.Resource.Ingredient "OilOrFat"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Oil or fat",
+		Language = "en-US",
+		Resource = OilOrFat
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Pick your poison!",
+		Language = "en-US",
+		Resource = OilOrFat
+	}
+end
+
+do
+	local Salt = ItsyScape.Resource.Ingredient "Salt"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Salt",
+		Language = "en-US",
+		Resource = Salt
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain salt from mining, among other things.",
+		Language = "en-US",
+		Resource = Salt
+	}
+end
+
+do
+	local Sugar = ItsyScape.Resource.Ingredient "Sugar"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Sugar",
+		Language = "en-US",
+		Resource = Sugar
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain sugar for mining sugar cubes and make it from sugar cane.",
+		Language = "en-US",
+		Resource = Sugar
+	}
+end
+
+do
+	local Chocolate = ItsyScape.Resource.Ingredient "Chocolate"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chocolate",
+		Language = "en-US",
+		Resource = Chocolate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain chocolate from chocoroaches and other bugs... But that's really gross.",
+		Language = "en-US",
+		Resource = Chocolate
 	}
 end

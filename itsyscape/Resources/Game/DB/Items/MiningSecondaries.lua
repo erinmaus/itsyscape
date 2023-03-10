@@ -25,6 +25,23 @@ ItsyScape.Resource.Item "PurpleSaltPeter" {
 			Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
 		}
 	},
+
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PurpleSaltPeter",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(16)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceName {
@@ -48,6 +65,11 @@ ItsyScape.Meta.Item {
 ItsyScape.Meta.SecondaryWeight {
 	Weight = 500,
 	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "PurpleSaltPeter",
+	Ingredient = ItsyScape.Resource.Ingredient "Salt"
 }
 
 ItsyScape.Resource.Item "BlackFlint" {

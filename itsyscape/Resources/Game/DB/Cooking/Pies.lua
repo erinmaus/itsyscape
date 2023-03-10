@@ -49,9 +49,41 @@ ItsyScape.Resource.Recipe "PieCrust" {
 		Output {
 			Resource = ItsyScape.Resource.Item "PieCrust",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(6)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PieCrust",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(6)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "PieCrust" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Pie crust",
@@ -95,9 +127,41 @@ ItsyScape.Resource.Recipe "SweetPieCrust" {
 		Output {
 			Resource = ItsyScape.Resource.Item "SweetPieCrust",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(8)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(7)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "SweetPieCrust",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(8)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "SweetPieCrust" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Sweet pie crust",
@@ -141,9 +205,41 @@ ItsyScape.Resource.Recipe "RichPieCrust" {
 		Output {
 			Resource = ItsyScape.Resource.Item "RichPieCrust",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(11)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "RichPieCrust",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(11)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "RichPieCrust" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Rich pie crust",
@@ -192,9 +288,41 @@ ItsyScape.Resource.Recipe "ChocolatePieCrust" {
 		Output {
 			Resource = ItsyScape.Resource.Item "ChocolatePieCrust",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(16)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "ChocolatePieCrust",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(16)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "ChocolatePieCrust" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Chocolate pie crust",
@@ -212,7 +340,7 @@ ItsyScape.Resource.Recipe "ApplePie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(1)
+			Count = ItsyScape.Utility.xpForLevel(6)
 		},
 
 		Input {
@@ -228,9 +356,41 @@ ItsyScape.Resource.Recipe "ApplePie" {
 		Output {
 			Resource = ItsyScape.Resource.Item "ApplePie",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(7)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(6)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "ApplePie",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(7)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "ApplePie" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Apple pie",
@@ -253,7 +413,7 @@ ItsyScape.Resource.Recipe "PecanPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(5)
+			Count = ItsyScape.Utility.xpForLevel(6)
 		},
 
 		Input {
@@ -269,9 +429,41 @@ ItsyScape.Resource.Recipe "PecanPie" {
 		Output {
 			Resource = ItsyScape.Resource.Item "PecanPie",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(7)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(6)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PecanPie",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(7)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "PecanPie" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Pecan pie",
@@ -310,9 +502,41 @@ ItsyScape.Resource.Recipe "FishPie" {
 		Output {
 			Resource = ItsyScape.Resource.Item "FishPie",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(21)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FishPie",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(21)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "FishPie" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Fish pie",
@@ -351,9 +575,41 @@ ItsyScape.Resource.Recipe "MeatPie" {
 		Output {
 			Resource = ItsyScape.Resource.Item "MeatPie",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(21)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "MeatPie",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(21)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "MeatPie" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Meat pie",
@@ -392,9 +648,41 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 		Output {
 			Resource = ItsyScape.Resource.Item "PieFlavoredPie",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(26)
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PieFlavoredPie",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(26)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "PieFlavoredPie" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.ResourceName {
 	Value = "Pie-flavored pie",
