@@ -13,6 +13,7 @@ ResourceType "Ingredient"
 
 ActionType "CookRecipe"
 ActionType "CookIngredient"
+ActionType "OpenCookingWindow"
 
 Meta "Ingredient" {
 	Item = Meta.TYPE_RESOURCE,

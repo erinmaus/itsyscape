@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Action = require "ItsyScape.Peep.Action"
 
 local CookRecipe = Class(Action)
+CookRecipe.SCOPES = { ['craft'] = true }
 
 function CookRecipe:perform(state, peep, item)
 	return false
