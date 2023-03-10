@@ -44,6 +44,12 @@ do
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Flour"
 	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(2),
+		Resource = Item
+	}
 end
 
 do
@@ -81,6 +87,12 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Flour"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(6),
+		Resource = Item
 	}
 end
 
@@ -120,6 +132,12 @@ do
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Flour"
 	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(11),
+		Resource = Item
+	}
 end
 
 do
@@ -157,6 +175,12 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Sugar"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(2),
+		Resource = Item
 	}
 end
 
@@ -196,6 +220,12 @@ do
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Sugar"
 	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(6),
+		Resource = Item
+	}
 end
 
 do
@@ -233,6 +263,12 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Sugar"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(2),
+		Resource = Item
 	}
 end
 
@@ -272,6 +308,12 @@ do
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Sugar"
 	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(11),
+		Resource = Item
+	}
 end
 
 do
@@ -309,6 +351,12 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Salt"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(2),
+		Resource = Item
 	}
 end
 
@@ -353,6 +401,12 @@ do
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
 	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(2),
+		Resource = Item
+	}
 end
 
 do
@@ -395,6 +449,12 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(6),
+		Resource = Item
 	}
 end
 
@@ -460,5 +520,158 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(11),
+		Resource = Item
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "VegetableOil" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "VegetableOil",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vegetable oil",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Good for cooking or baking!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Oil"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(6),
+		Resource = Item
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "PeanutOil" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "PeanutOil",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Peanut oil",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Good for cooking or baking!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Oil"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(6),
+		Resource = Item
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "BlackGold" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(45)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "BlackGold",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(46)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Black gold",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Explosive ingredient!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Oil"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.xpForResource(47),
+		Resource = Item
 	}
 end
