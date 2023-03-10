@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Controller = require "ItsyScape.UI.Controller"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local CookingWindowController = Class(Controller)
 
@@ -21,13 +22,91 @@ function CookingWindowController:new(peep, director)
 end
 
 function CookingWindowController:prepareState()
-	self.state = { recipes = {} }
+	self.state = { recipes = {}, inventory = {} }
 	self.recipes = {}
 	self.recipesByID = {}
+	self.inventory = {}
 
+	self:populateInventory()
 	self:populateRecipes()
 	self:sortRecipes()
 	self:marshalRecipes()
+end
+
+function CookingWindowController:populateInventory()
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+ 
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return
+	end
+
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			self:tryPopulateInventoryWithItem(broker, item)
+			break
+		end
+	end
+end
+
+function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
+	local gameDB = self:getDirector():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	local ingredient = gameDB:getRecord("Ingredient", {
+		Item = itemResource
+	})
+
+	if not ingredient then
+		return
+	end
+
+	local usable = false
+	do
+		local actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, 'craft')
+		for i = 1, #actions do
+			local action = actions[i]
+
+			local isCookAction = action.instance:is("CookIngredient")
+			local canPerformAction = action.instance:canPerform(self:getPeep():getState())
+
+			if isCookAction and canPerformAction then
+				usable = true
+			end
+		end
+	end
+
+	table.insert(self.inventory, {
+		item = item,
+		ingredient = ingredient,
+		count = 0,
+		usable = usable
+	})
+
+	table.insert(self.state.inventory, {
+		ref = broker:getItemRef(item),
+		count = item:getCount(),
+		resource = item:getID(),
+		name = Utility.getName(itemResource, gameDB) or ("*" .. itemResource.name),
+		description = Utility.getDescription(itemResource, gameDB),
+		usable = usable
+	})
+end
+
+function CookingWindowController:resetInventory()
+	if #self.inventory ~= #self.state.inventory then
+		Log.warn("Cooking window interface inventory state de-synced for peep '%s'.", self:getPeep():getName())
+		return
+	end
+
+	for i = 1, #self.inventory do
+		self.inventory[i].count = 0
+		self.state.inventory[i].count = self.inventory[i].item:getCount()
+	end
 end
 
 function CookingWindowController:populateRecipes()
@@ -172,11 +251,19 @@ function CookingWindowController:populateRecipe(e)
 		end
 	end
 
+	self:resetInventory()
+
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,
 		"populateRecipe",
 		nil,
 		{ self.state.currentRecipe })
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateInventory",
+		nil,
+		{ self.state.inventory })
 
 	self.currentRecipeIndex = e.index
 end

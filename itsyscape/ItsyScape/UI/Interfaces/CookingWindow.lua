@@ -135,7 +135,7 @@ function CookingWindow:new(id, index, ui)
 		ingredientPanel:setStyle(PanelStyle({
 			image = "Resources/Renderers/Widget/Panel/Group.9.png"
 		}, self:getView():getResources()))
-		ingredientPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (1 / 3) - CookingWindow.BUTTON_PADDING * 2)
+		ingredientPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (1 / 4) - CookingWindow.BUTTON_PADDING * 2)
 		ingredientPanel:setPosition(
 			CookingWindow.BUTTON_PADDING,
 			CookingWindow.BUTTON_PADDING + CookingWindow.BUTTON_SIZE)
@@ -149,7 +149,37 @@ function CookingWindow:new(id, index, ui)
 		self.ingredientsList:getInnerPanel():setUniformSize(true, CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
 		self.ingredientsList:getInnerPanel():setSize(w - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
 		self.ingredientsList:setSize(ingredientPanel:getSize())
+
+		local inventoryHeader = Label()
+		inventoryHeader:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE + CookingWindow.HEIGHT * (1 / 4))
+		inventoryHeader:setText("Ingredients")
+		inventoryHeader:setStyle(LabelStyle(CookingWindow.HEADER_LABEL, self:getView():getResources()))
+		self.recipeBuilderPanel:addChild(inventoryHeader)
+
+		w, h = self.recipeBuilderPanel:getSize()
+
 		ingredientPanel:addChild(self.ingredientsList)
+		local inventoryPanel = Panel()
+		inventoryPanel:setStyle(PanelStyle({
+			image = "Resources/Renderers/Widget/Panel/Group.9.png"
+		}, self:getView():getResources()))
+		inventoryPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (3 / 4) - CookingWindow.BUTTON_PADDING * 5 - CookingWindow.BUTTON_SIZE * 3)
+		inventoryPanel:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE * 2 + CookingWindow.HEIGHT * (1 / 4))
+		self.recipeBuilderPanel:addChild(inventoryPanel)
+
+		w, h = inventoryPanel:getSize()
+
+		self.inventoryList = ScrollablePanel(GridLayout)
+		self.inventoryList:getInnerPanel():setWrapContents(true)
+		self.inventoryList:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
+		self.inventoryList:getInnerPanel():setUniformSize(true, CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
+		self.inventoryList:getInnerPanel():setSize(w - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
+		self.inventoryList:setSize(inventoryPanel:getSize())
+		inventoryPanel:addChild(self.inventoryList)
 	end
 
 	local state = self:getState()
@@ -200,6 +230,7 @@ end
 
 function CookingWindow:populateRecipe(currentRecipe)
 	self.ingredientsList:getInnerPanel():clearChildren()
+	self.ingredientsList:getInnerPanel():setSize(self.ingredientsList:getInnerPanel():getSize(), 0)
 
 	self.currentRecipeIngredientButtons = {}
 	for i = 1, #currentRecipe do
@@ -220,8 +251,64 @@ function CookingWindow:populateRecipe(currentRecipe)
 		table.insert(self.currentRecipeIngredientButtons, button)
 	end
 
+	self.ingredientsList:setScrollSize(self.ingredientsList:getInnerPanel():getSize())
+	self.ingredientsList:setScroll(0, 0)
+
 	self:removeChild(self.recipeInstructionsPanel)
 	self:addChild(self.recipeBuilderPanel)
+end
+
+function CookingWindow:populateInventory(inventory)
+	local grid = self.inventoryList:getInnerPanel()
+
+	local resetScroll = false
+	if #inventory > grid:getNumChildren() then
+		while grid:getNumChildren() < #inventory do
+			local button = Button()
+			button:setStyle(ButtonStyle(
+				CookingWindow.INVENTORY_BUTTON_STYLE,
+				self:getView():getResources()))
+
+			local itemIcon = ItemIcon()
+			button:addChild(itemIcon)
+			button:setData("icon", itemIcon)
+
+			grid:addChild(button)
+		end
+
+		resetScroll = true
+	elseif #inventory < grid:getNumChildren() then
+		while grid:getNumChildren() > #inventory do
+			grid:removeChild(grid:getChildAt(grid:getNumChildren()))
+		end
+
+		resetScroll = true
+	end
+
+	for i = 1, #inventory do
+		local item = inventory[i]
+
+		local button = grid:getChildAt(i)
+
+		local usable
+		if item.usable then
+			usable = ToolTip.Text("You can cook with this ingredient.")
+		else
+			usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
+		end
+
+		button:setToolTip(ToolTip.Header(item.name), ToolTip.Text(item.description), usable)
+
+		local itemIcon = button:getData("icon")
+		itemIcon:setItemID(item.resource)
+		itemIcon:setItemCount(item.count)
+		itemIcon:setIsDisabled(not item.usable)
+	end
+
+	if resetScroll then
+		self.inventoryList:setScrollSize(grid:getSize())
+		self.inventoryList:setScroll(0, 0)
+	end
 end
 
 function CookingWindow:updateCurrentRecipe()
