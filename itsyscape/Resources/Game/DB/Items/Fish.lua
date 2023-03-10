@@ -83,7 +83,22 @@ do
 	}
 
 	ItsyScape.Resource.Item "Sardine" {
-		-- Nothing.
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Sardine",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(3)
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -108,6 +123,11 @@ do
 		Value = ItsyScape.Utility.valueForItem(3),
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "Sardine"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
 	local EatAction = ItsyScape.Action.Eat()
@@ -292,7 +312,22 @@ do
 	}
 
 	ItsyScape.Resource.Item "SeaBass" {
-		-- Nothing.
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SeaBass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -329,6 +364,11 @@ do
 		Value = ItsyScape.Utility.valueForItem(6),
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "SeaBass"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
 	local EatAction = ItsyScape.Action.Eat()
@@ -501,7 +541,22 @@ do
 	}
 
 	ItsyScape.Resource.Item "Coelacanth" {
-		-- Nothing.
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(20)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Coelacanth",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(30)
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -538,6 +593,11 @@ do
 		Value = 150000,
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
 	local EatAction = ItsyScape.Action.Eat()

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Cooking = require "ItsyScape.Game.Skills.Cooking"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Controller = require "ItsyScape.UI.Controller"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -74,6 +75,8 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 			local isCookAction = action.instance:is("CookIngredient")
 			local canPerformAction = action.instance:canPerform(self:getPeep():getState())
 
+			print(">>> item", item:getID(), isCookAction, canPerformAction)
+
 			if isCookAction and canPerformAction then
 				usable = true
 			end
@@ -82,6 +85,7 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 
 	table.insert(self.inventory, {
 		item = item,
+		ref = broker:getItemRef(item),
 		ingredient = ingredient,
 		count = 0,
 		usable = usable
@@ -121,6 +125,7 @@ function CookingWindowController:populateRecipes()
 				if actions[j].instance:is("cookrecipe") then
 					local recipe = {
 						resource = resource.name,
+						recipe = Cooking.Recipe(resource, game),
 						action = actions[j],
 						constraints = Utility.getActionConstraints(game, actions[j].instance:getAction()),
 						name = Utility.getName(resource, gameDB) or ("*" .. resource.name),
@@ -198,6 +203,8 @@ end
 function CookingWindowController:poke(actionID, actionIndex, e)
 	if actionID == "populateRecipe" then
 		self:populateRecipe(e)
+	elseif actionID == "addIngredient" then
+		self:addIngredient(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -228,7 +235,7 @@ function CookingWindowController:populateRecipe(e)
 					constraint = requirement,
 					type = 'requirement',
 					item = requirement,
-					slotted = false
+					count = 0
 				})
 			end
 		end
@@ -245,7 +252,7 @@ function CookingWindowController:populateRecipe(e)
 					constraint = input,
 					type = 'input',
 					item = input,
-					slotted = false
+					count = 0
 				})
 			end
 		end
@@ -270,6 +277,58 @@ end
 
 function CookingWindowController:pull()
 	return self.state
+end
+
+function CookingWindowController:addIngredient(e)
+	if not self.currentRecipeIndex then
+		Log.warn("Cannot add ingredient to recipe for peep '%s', no recipe selected.", self:getPeep():getName())
+		return
+	end
+
+	local inventoryItem, inventoryItemIndex
+	for i = 1, #self.inventory do
+		local inventory = self.inventory[i]
+		if inventory.ref == e.ref then
+			inventoryItem = inventory
+			inventoryItemIndex = i
+			break
+		end
+	end
+
+	if not inventoryItem then
+		Log.warn("Item (ref = %d) not found in inventory for peep '%s', cannot cook with it.", e.ref, self:getPeep():getName())
+		return
+	end
+
+	local recipe = self.recipes[self.currentRecipeIndex].recipe
+	if not recipe:canAddIngredient(self:getPeep(), inventoryItem.item) then
+		Utility.UI.notifyFailure(self:getPeep(), "Message_Cooking_IngredientNotInRecipe")
+		return
+	end
+
+	local success, index = recipe:addIngredient(self:getPeep(), inventoryItem.item)
+
+	if not success then
+		Log.warn("Could not add item (ref = %d) to recipe for peep '%s', maybe it has exceeded its count?", e.ref, self:getPeep():getName())
+		Utility.UI.notifyFailure(self:getPeep(), "Message_Cooking_TooManyIngredients")
+		return
+	end
+
+	if inventoryItem.count < inventoryItem.item:getCount() then
+		inventoryItem.count = inventoryItem.count + 1
+	else
+		Log.warn("Tried adding an inventory item (ref = %d) that is potentially used up for peep '%s'.", e.ref, self:getPeep():getName())
+		return
+	end
+
+	self.state.inventory[inventoryItemIndex].count = inventoryItem.item:getCount() - inventoryItem.count
+	self.state.currentRecipe[index].count = 1
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateInventory",
+		nil,
+		{ self.state.inventory })
 end
 
 return CookingWindowController

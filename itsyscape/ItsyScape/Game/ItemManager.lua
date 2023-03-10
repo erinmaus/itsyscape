@@ -132,8 +132,4 @@ function ItemManager:getLogic(id, unique, tryXWeapon)
 	return self.logic[id]
 end
 
-function ItemManager:instantiate(id)
-	return ItemInstance(id, self)
-end
-
 return ItemManager
