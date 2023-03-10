@@ -26,7 +26,7 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 local CookingWindow = Class(Interface)
 
 CookingWindow.WIDTH  = 800
-CookingWindow.HEIGHT = 480
+CookingWindow.HEIGHT = 640
 
 CookingWindow.BUTTON_SIZE    = 48
 CookingWindow.BUTTON_PADDING = 8
@@ -124,6 +124,7 @@ function CookingWindow:new(id, index, ui)
 	self.recipeBuilderPanel:setPosition(self.recipeInstructionsPanel:getPosition())
 	do
 		local w, h = self.recipeBuilderPanel:getSize()
+		w = w / 2
 
 		local recipeHeader = Label()
 		recipeHeader:setPosition(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
@@ -159,6 +160,7 @@ function CookingWindow:new(id, index, ui)
 		self.recipeBuilderPanel:addChild(inventoryHeader)
 
 		w, h = self.recipeBuilderPanel:getSize()
+		w = w / 2
 
 		ingredientPanel:addChild(self.ingredientsList)
 		local inventoryPanel = Panel()
@@ -180,6 +182,16 @@ function CookingWindow:new(id, index, ui)
 		self.inventoryList:getInnerPanel():setSize(w - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
 		self.inventoryList:setSize(inventoryPanel:getSize())
 		inventoryPanel:addChild(self.inventoryList)
+
+		local w, h = self.recipeBuilderPanel:getSize()
+		w = w / 2
+
+		self.requirementsPanel = ScrollablePanel(GridLayout)
+		self.requirementsPanel:getInnerPanel():setPadding(0, 0)
+		self.requirementsPanel:getInnerPanel():setWrapContents(true)
+		self.requirementsPanel:setSize(w, h)
+		self.requirementsPanel:setPosition(w + CookingWindow.BUTTON_PADDING)
+		self.recipeBuilderPanel:addChild(self.requirementsPanel)
 	end
 
 	local state = self:getState()
@@ -228,6 +240,36 @@ function CookingWindow:selectRecipe(index, buttonWidget, buttonIndex)
 	self:sendPoke("populateRecipe", nil, { index = index })
 end
 
+function CookingWindow:populateRequirements(constraints)
+	local width = self.requirementsPanel:getSize()
+	local height = 0
+
+	local function emitSection(t, title, options)
+		options = options or {}
+
+		local panel = ConstraintsPanel(self:getView())
+		panel:setText(title)
+		if options.skillAsLevel then
+			panel:setData("skillAsLevel", true)
+		end
+		panel:setSize(width - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+		panel:setConstraints(t)
+
+		self.requirementsPanel:addChild(panel)
+	end
+
+	self.requirementsPanel:getInnerPanel():clearChildren()
+
+	emitSection(constraints.requirements, "Requirements", { skillAsLevel = true })
+	emitSection(constraints.inputs, "Inputs")
+	emitSection(constraints.outputs, "Outputs")
+
+	local _, innerPanelHeight = self.requirementsPanel:getInnerPanel():getSize()
+	self.requirementsPanel:setScrollSize(width, innerPanelHeight)
+	self.requirementsPanel:getInnerPanel():setScroll(0, 0)
+	self.requirementsPanel:performLayout()
+end
+
 function CookingWindow:populateRecipe(currentRecipe)
 	self.ingredientsList:getInnerPanel():clearChildren()
 	self.ingredientsList:getInnerPanel():setSize(self.ingredientsList:getInnerPanel():getSize(), 0)
@@ -256,6 +298,9 @@ function CookingWindow:populateRecipe(currentRecipe)
 
 	self:removeChild(self.recipeInstructionsPanel)
 	self:addChild(self.recipeBuilderPanel)
+
+	local state = self:getState()
+	self:populateRequirements(state.recipes[currentRecipe.index].constraints)
 end
 
 function CookingWindow:populateInventory(inventory)
