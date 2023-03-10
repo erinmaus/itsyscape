@@ -215,7 +215,7 @@ function CookingWindowController:populateRecipe(e)
 	end
 
 	local recipe = self.recipes[e.index]
-	self.state.currentRecipe = {}
+	self.state.currentRecipe = { index = e.index }
 
 	for i = 1, #recipe.constraints.requirements do
 		local requirement = recipe.constraints.requirements[i]

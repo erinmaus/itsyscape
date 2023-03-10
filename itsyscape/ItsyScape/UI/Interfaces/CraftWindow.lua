@@ -32,7 +32,7 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 
 local CraftWindow = Class(Interface)
 CraftWindow.WIDTH = 800
-CraftWindow.HEIGHT = 480
+CraftWindow.HEIGHT = 640
 CraftWindow.BUTTON_SIZE = 48
 CraftWindow.BUTTON_PADDING = 4
 CraftWindow.PADDING = 4

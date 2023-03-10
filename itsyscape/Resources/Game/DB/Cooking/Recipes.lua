@@ -376,12 +376,17 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(20)
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Ingredient "PieCrust",
+			Count = 1
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Pie",
-			Count = 3
+			Count = 1
 		},
 
 		Output {
