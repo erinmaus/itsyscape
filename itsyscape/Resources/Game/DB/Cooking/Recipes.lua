@@ -8,6 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+do
+	local Pie = ItsyScape.Resource.Ingredient "Pie"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Pie",
+		Language = "en-US",
+		Resource = Pie
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can make all kinds of pies using the cooking skill.",
+		Language = "en-US",
+		Resource = Pie
+	}
+end
+
 ItsyScape.Resource.Recipe "PieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -228,6 +244,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "ApplePie"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "ApplePie",
+	Ingredient = ItsyScape.Resource.Ingredient "Pie"
+}
+
 ItsyScape.Resource.Recipe "PecanPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -262,6 +283,11 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Not good if you're allergic to nuts!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "PecanPie"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "PecanPie",
+	Ingredient = ItsyScape.Resource.Ingredient "Pie"
 }
 
 ItsyScape.Resource.Recipe "FishPie" {
@@ -300,6 +326,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "FishPie"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "FishPie",
+	Ingredient = ItsyScape.Resource.Ingredient "Pie"
+}
+
 ItsyScape.Resource.Recipe "MeatPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -334,4 +365,45 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A vegetarian's worst enemy.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "MeatPie"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "MeatPie",
+	Ingredient = ItsyScape.Resource.Ingredient "Pie"
+}
+
+ItsyScape.Resource.Recipe "PieFlavoredPie" {
+	ItsyScape.Action.CookRecipe() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Ingredient "Pie",
+			Count = 3
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "PieFlavoredPie",
+			Count = 1
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pie-flavored pie",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PieFlavoredPie"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "I baked you a pie!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PieFlavoredPie"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "PieFlavoredPie",
+	Ingredient = ItsyScape.Resource.Ingredient "Pie"
 }

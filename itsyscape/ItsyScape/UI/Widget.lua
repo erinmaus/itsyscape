@@ -230,6 +230,12 @@ function Widget:iterate()
 	return ipairs(self.children)
 end
 
+function Widget:clearChildren()
+	while self:getNumChildren() > 0 do
+		self:removeChild(self:getChildAt(1))
+	end
+end
+
 function Widget:getNumChildren()
 	return #self.children
 end
