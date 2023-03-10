@@ -75,7 +75,7 @@ function Recipe:_itemMatchesConstraint(itemResource, constraint)
 		})
 
 		for j = 1, #ingredientRecords do
-			if ingredientRecords[j].name == constraint.resource then
+			if ingredientRecords[j]:get("Ingredient").name == constraint.resource then
 				return true
 			end
 		end
