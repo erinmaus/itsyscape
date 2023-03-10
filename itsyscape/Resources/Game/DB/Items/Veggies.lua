@@ -9,7 +9,22 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Item "YellowOnion" {
-	-- Nothing.
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "YellowOnion",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceCategory {
@@ -42,7 +57,22 @@ ItsyScape.Meta.Ingredient {
 }
 
 ItsyScape.Resource.Item "Celery" {
-	-- Nothing.
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Celery",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceCategory {
@@ -75,7 +105,22 @@ ItsyScape.Meta.Ingredient {
 }
 
 ItsyScape.Resource.Item "Carrot" {
-	-- Nothing.
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Carrot",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceCategory {
@@ -108,7 +153,22 @@ ItsyScape.Meta.Ingredient {
 }
 
 ItsyScape.Resource.Item "GreenPepper" {
-	-- Nothing.
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "GreenPepper",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceCategory {
@@ -141,7 +201,22 @@ ItsyScape.Meta.Ingredient {
 }
 
 ItsyScape.Resource.Item "GreenOnion" {
-	-- Nothing.
+	ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Green",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(2)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceCategory {

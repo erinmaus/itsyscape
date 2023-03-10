@@ -906,6 +906,51 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
+function Utility.UI.notifyFailure(peep, message)
+	local director = peep:getDirector()
+	if not director then
+		return
+	end
+
+	local gameDB = director:getGameDB()
+	if type(message) == "string" then
+		local resource = gameDB:getResource(message, "KeyItem")
+		if resource then
+			message = resource
+		end
+	end
+
+	local requirement
+	if type(message) == "string" then
+		requirement = {
+			type = "KeyItem",
+			resource = "_MESSAGE",
+			name = "Message",
+			description = message,
+			count = 1
+		}
+	else
+		local name = Utility.getName(message, gameDB) or ("*" .. message.name)
+		local description = Utility.getDescription(message, gameDB, nil, 1)
+
+		requirement = {
+			type = "KeyItem",
+			resource = message.name,
+			name = name,
+			description = description,
+			count = 1
+		}
+	end
+
+	local constraints = {
+		requirements = { requirement },
+		inputs = {},
+		outputs = {}
+	}
+
+	Utility.UI.openInterface(peep, "Notification", false, constraints)
+end
+
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 

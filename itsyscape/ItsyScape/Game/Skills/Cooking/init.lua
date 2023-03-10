@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Cooking/Recipes.lua
+-- ItsyScape/Game/Skills/Cooking/init.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,6 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-include "Resources/Game/DB/Cooking/Pies.lua"
-include "Resources/Game/DB/Cooking/Roux.lua"
-include "Resources/Game/DB/Cooking/Gumbo.lua"
+local Cooking = setmetatable({}, {
+	__index = function(self, key)
+		local module = require(string.format("ItsyScape.Game.Skills.Cooking.%s", key))
+		rawset(self, key, module)
+
+		return module
+	end
+})
+
+return Cooking

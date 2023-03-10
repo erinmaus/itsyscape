@@ -11,12 +11,17 @@ local Class = require "ItsyScape.Common.Class"
 
 local ItemInstance = Class()
 
-function ItemInstance:new(id, manager)
+function ItemInstance:new(id, ref, manager)
 	self.id = id
+	self.ref = 0
 	self.manager = manager
 	self.count = 1
 	self.noted = false
 	self.userdata = {}
+end
+
+function ItemInstance:getRef()
+	return self.ref
 end
 
 function ItemInstance:getID()

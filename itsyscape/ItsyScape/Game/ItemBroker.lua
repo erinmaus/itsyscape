@@ -892,17 +892,19 @@ function ItemBroker:addItem(provider, id, count, noted)
 		error("inventory full")
 	end
 
-	local item = ItemInstance(id, self.manager)
+	local ref = self.itemRefs.n
+
+	local item = ItemInstance(id, ref, self.manager)
 	if noted then
 		item:note()
 	end
 	item:setCount(count or 1)
 
 	self.items[item] = provider
-	self.itemRefs[item] = self.itemRefs.n
+	self.itemRefs[item] = ref
 	self.inventories[provider]:add(item)
 
-	self.itemRefs.n = self.itemRefs.n + 1
+	self.itemRefs.n = ref + 1
 
 	return item
 end

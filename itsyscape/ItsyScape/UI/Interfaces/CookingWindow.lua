@@ -279,7 +279,7 @@ function CookingWindow:populateRecipe(currentRecipe)
 		local ingredient = currentRecipe[i]
 
 		local button = Button()
-		button:setStyle(ButtonStyle(CookingWindow.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+		button:setStyle(ButtonStyle(CookingWindow.INVENTORY_BUTTON_STYLE, self:getView():getResources()))
 		button:setSize(CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
 
 		local icon = ItemIcon()
@@ -303,12 +303,28 @@ function CookingWindow:populateRecipe(currentRecipe)
 	self:populateRequirements(state.recipes[currentRecipe.index].constraints)
 end
 
+function CookingWindow:addIngredient(button)
+	local inventoryIndex = button:getData("inventoryIndex")
+
+	local inventory = self:getState().inventory
+	local ref = inventory[inventoryIndex].ref
+
+	self:sendPoke("addIngredient", nil, { ref = ref })
+end
+
 function CookingWindow:populateInventory(inventory)
+	local inventorySize = 0
+	for i = 1, #inventory do
+		if inventory[i].count > 0 then
+			inventorySize = inventorySize + 1
+		end
+	end
+
 	local grid = self.inventoryList:getInnerPanel()
 
 	local resetScroll = false
-	if #inventory > grid:getNumChildren() then
-		while grid:getNumChildren() < #inventory do
+	if inventorySize > grid:getNumChildren() then
+		while grid:getNumChildren() < inventorySize do
 			local button = Button()
 			button:setStyle(ButtonStyle(
 				CookingWindow.INVENTORY_BUTTON_STYLE,
@@ -317,37 +333,43 @@ function CookingWindow:populateInventory(inventory)
 			local itemIcon = ItemIcon()
 			button:addChild(itemIcon)
 			button:setData("icon", itemIcon)
+			button.onClick:register(self.addIngredient, self)
 
 			grid:addChild(button)
 		end
 
 		resetScroll = true
-	elseif #inventory < grid:getNumChildren() then
-		while grid:getNumChildren() > #inventory do
+	elseif inventorySize < grid:getNumChildren() then
+		while grid:getNumChildren() > inventorySize do
 			grid:removeChild(grid:getChildAt(grid:getNumChildren()))
 		end
 
 		resetScroll = true
 	end
 
+	local currentButtonIndex = 1
 	for i = 1, #inventory do
 		local item = inventory[i]
+		if item.count > 0 then
+			local button = grid:getChildAt(currentButtonIndex)
+			button:setData("inventoryIndex", i)
 
-		local button = grid:getChildAt(i)
+			local usable
+			if item.usable then
+				usable = ToolTip.Text("You can cook with this ingredient.")
+			else
+				usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
+			end
 
-		local usable
-		if item.usable then
-			usable = ToolTip.Text("You can cook with this ingredient.")
-		else
-			usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
+			button:setToolTip(ToolTip.Header(item.name), ToolTip.Text(item.description), usable)
+
+			local itemIcon = button:getData("icon")
+			itemIcon:setItemID(item.resource)
+			itemIcon:setItemCount(item.count)
+			itemIcon:setIsDisabled(not item.usable)
+
+			currentButtonIndex = currentButtonIndex + 1
 		end
-
-		button:setToolTip(ToolTip.Header(item.name), ToolTip.Text(item.description), usable)
-
-		local itemIcon = button:getData("icon")
-		itemIcon:setItemID(item.resource)
-		itemIcon:setItemCount(item.count)
-		itemIcon:setIsDisabled(not item.usable)
 	end
 
 	if resetScroll then
@@ -369,6 +391,7 @@ function CookingWindow:updateCurrentRecipe()
 		if button then
 			local icon = button:getData("icon")
 			icon:setItemID(ingredient.item.resource)
+			icon:setIsDisabled(ingredient.count == 0)
 
 			button:setToolTip(ToolTip.Header(ingredient.item.name), ToolTip.Text(ingredient.item.description))
 		end
