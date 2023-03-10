@@ -63,7 +63,7 @@ function CookingWindowController:sortRecipes()
 		local aXP
 		for i = 1, #a.constraints.requirements do
 			if a.constraints.requirements[i].type:lower() == "skill" and
-			   a.constraints.requirements[i].name:lower() == "cooking"
+			   a.constraints.requirements[i].resource:lower() == "cooking"
 			then
 				aXP = a.constraints.requirements[i].count
 			end
@@ -73,7 +73,7 @@ function CookingWindowController:sortRecipes()
 		local bXP
 		for i = 1, #b.constraints.requirements do
 			if b.constraints.requirements[i].type:lower() == "skill" and
-			   b.constraints.requirements[i].name:lower() == "cooking"
+			   b.constraints.requirements[i].resource:lower() == "cooking"
 			then
 				bXP = b.constraints.requirements[i].count
 			end
@@ -117,11 +117,68 @@ function CookingWindowController:marshalRecipes()
 end
 
 function CookingWindowController:poke(actionID, actionIndex, e)
-	if actionID == "close" then
+	if actionID == "populateRecipe" then
+		self:populateRecipe(e)
+	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
+end
+
+function CookingWindowController:populateRecipe(e)
+	assert(type(e.index) == 'number', "index is not number")
+	assert(e.index > 0, "index is negative or zero")
+	assert(e.index <= #self.recipes, "index is out of bounds")
+
+	if e.index == self.currentRecipeIndex then
+		return
+	end
+
+	local recipe = self.recipes[e.index]
+	self.state.currentRecipe = {}
+
+	for i = 1, #recipe.constraints.requirements do
+		local requirement = recipe.constraints.requirements[i]
+
+		if requirement.type:lower() == "item" or requirement.type:lower() == "ingredient" then
+			for j = 1, requirement.count do
+				table.insert(self.state.currentRecipe, {
+					type = requirement.type,
+					resource = requirement.resource,
+					constraint = requirement,
+					type = 'requirement',
+					item = requirement,
+					slotted = false
+				})
+			end
+		end
+	end
+
+	for i = 1, #recipe.constraints.inputs do
+		local input = recipe.constraints.inputs[i]
+
+		if input.type:lower() == "item" or input.type:lower() == "ingredient" then
+			for j = 1, input.count do
+				table.insert(self.state.currentRecipe, {
+					type = input.type,
+					resource = input.resource,
+					constraint = input,
+					type = 'input',
+					item = input,
+					slotted = false
+				})
+			end
+		end
+	end
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateRecipe",
+		nil,
+		{ self.state.currentRecipe })
+
+	self.currentRecipeIndex = e.index
 end
 
 function CookingWindowController:pull()

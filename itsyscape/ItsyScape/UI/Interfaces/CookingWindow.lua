@@ -49,6 +49,27 @@ CookingWindow.ACTIVE_BUTTON_STYLE = {
 	textShadow = true
 }
 
+CookingWindow.INVENTORY_BUTTON_STYLE = {
+	pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+	inactive = "Resources/Renderers/Widget/Button/InventoryItem.9.png",
+	hover = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
+}
+
+CookingWindow.INSTRUCTIONS_LABEL = {
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 22,
+	textShadow = true,
+	color = { 1, 1, 1, 1 },
+	align = 'center'
+}
+
+CookingWindow.HEADER_LABEL = {
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 22,
+	textShadow = true,
+	color = { 1, 1, 1, 1 }
+}
+
 function CookingWindow:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -74,13 +95,62 @@ function CookingWindow:new(id, index, ui)
 
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setWrapContents(true)
-	self.grid:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING)
+	self.grid:getInnerPanel():setSize(CookingWindow.WIDTH * (1 / 3), 0)
+	self.grid:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
 	self.grid:getInnerPanel():setUniformSize(
 		true,
 		CookingWindow.WIDTH * (1 / 3) - CookingWindow.BUTTON_PADDING * 2,
 		CookingWindow.BUTTON_SIZE)
-	self.grid:setSize(CookingWindow.WIDTH * (1 / 3), CookingWindow.HEIGHT)
+	self.grid:setSize(CookingWindow.WIDTH * (1 / 3) + ScrollablePanel.DEFAULT_SCROLL_SIZE, CookingWindow.HEIGHT)
 	self:addChild(self.grid)
+
+	self.recipeInstructionsPanel = Panel()
+	self.recipeInstructionsPanel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+	self.recipeInstructionsPanel:setSize(CookingWindow.WIDTH * (2 / 3) - ScrollablePanel.DEFAULT_SCROLL_SIZE, CookingWindow.HEIGHT - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+	self.recipeInstructionsPanel:setPosition(CookingWindow.WIDTH * (1 / 3) + ScrollablePanel.DEFAULT_SCROLL_SIZE, ScrollablePanel.DEFAULT_SCROLL_SIZE)
+	do
+		local instructions = Label()
+		instructions:setPosition(0, CookingWindow.HEIGHT / 2 - CookingWindow.BUTTON_SIZE)
+		instructions:setText("Click a recipe to get started!")
+		instructions:setStyle(LabelStyle(CookingWindow.INSTRUCTIONS_LABEL, self:getView():getResources()))
+
+		self.recipeInstructionsPanel:addChild(instructions)
+	end
+	self:addChild(self.recipeInstructionsPanel)
+
+	self.recipeBuilderPanel = Panel()
+	self.recipeBuilderPanel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+	self.recipeBuilderPanel:setSize(self.recipeInstructionsPanel:getSize())
+	self.recipeBuilderPanel:setPosition(self.recipeInstructionsPanel:getPosition())
+	do
+		local w, h = self.recipeBuilderPanel:getSize()
+
+		local recipeHeader = Label()
+		recipeHeader:setPosition(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
+		recipeHeader:setText("Recipe")
+		recipeHeader:setStyle(LabelStyle(CookingWindow.HEADER_LABEL, self:getView():getResources()))
+		self.recipeBuilderPanel:addChild(recipeHeader)
+
+		local ingredientPanel = Panel()
+		ingredientPanel:setStyle(PanelStyle({
+			image = "Resources/Renderers/Widget/Panel/Group.9.png"
+		}, self:getView():getResources()))
+		ingredientPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (1 / 3) - CookingWindow.BUTTON_PADDING * 2)
+		ingredientPanel:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.BUTTON_PADDING + CookingWindow.BUTTON_SIZE)
+		self.recipeBuilderPanel:addChild(ingredientPanel)
+
+		w, h = ingredientPanel:getSize()
+
+		self.ingredientsList = ScrollablePanel(GridLayout)
+		self.ingredientsList:getInnerPanel():setWrapContents(true)
+		self.ingredientsList:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
+		self.ingredientsList:getInnerPanel():setUniformSize(true, CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
+		self.ingredientsList:getInnerPanel():setSize(w - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
+		self.ingredientsList:setSize(ingredientPanel:getSize())
+		ingredientPanel:addChild(self.ingredientsList)
+	end
 
 	local state = self:getState()
 	if state and state.recipes then
@@ -98,10 +168,85 @@ function CookingWindow:new(id, index, ui)
 			local itemIcon = ItemIcon()
 			itemIcon:setItemID(item.resource)
 			button:addChild(itemIcon)
+			button.onClick:register(CookingWindow.selectRecipe, self, i)
 
 			self.grid:addChild(button)
 		end
 	end
+
+	self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
+
+	self.currentRecipeIngredientButtons = {}
+end
+
+function CookingWindow:selectRecipe(index, buttonWidget, buttonIndex)
+	if buttonIndex ~= 1 then
+		return
+	end
+
+	if self.previousRecipeButton == buttonWidget then
+		return
+	end
+
+	if self.previousRecipeButton and self.previousRecipeButton ~= buttonWidget then
+		self.previousRecipeButton:setStyle(ButtonStyle(CookingWindow.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+	end
+
+	buttonWidget:setStyle(ButtonStyle(CookingWindow.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
+	self.previousRecipeButton = buttonWidget
+
+	self:sendPoke("populateRecipe", nil, { index = index })
+end
+
+function CookingWindow:populateRecipe(currentRecipe)
+	self.ingredientsList:getInnerPanel():clearChildren()
+
+	self.currentRecipeIngredientButtons = {}
+	for i = 1, #currentRecipe do
+		local ingredient = currentRecipe[i]
+
+		local button = Button()
+		button:setStyle(ButtonStyle(CookingWindow.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+		button:setSize(CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
+
+		local icon = ItemIcon()
+		icon:setItemID(ingredient.item.resource)
+		icon:setIsDisabled(not ingredient.slotted)
+
+		button:addChild(icon)
+		button:setData("icon", icon)
+
+		self.ingredientsList:addChild(button)
+		table.insert(self.currentRecipeIngredientButtons, button)
+	end
+
+	self:removeChild(self.recipeInstructionsPanel)
+	self:addChild(self.recipeBuilderPanel)
+end
+
+function CookingWindow:updateCurrentRecipe()
+	local currentRecipe = self:getState().currentRecipe
+	if not currentRecipe then
+		return
+	end
+
+	for i = 1, #currentRecipe do
+		local ingredient = currentRecipe[i]
+
+		local button = self.currentRecipeIngredientButtons[i]
+		if button then
+			local icon = button:getData("icon")
+			icon:setItemID(ingredient.item.resource)
+
+			button:setToolTip(ToolTip.Header(ingredient.item.name), ToolTip.Text(ingredient.item.description))
+		end
+	end
+end
+
+function CookingWindow:update(...)
+	Interface.update(self, ...)
+
+	self:updateCurrentRecipe()
 end
 
 return CookingWindow
