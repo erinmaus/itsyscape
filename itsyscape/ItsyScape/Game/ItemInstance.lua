@@ -13,7 +13,7 @@ local ItemInstance = Class()
 
 function ItemInstance:new(id, ref, manager)
 	self.id = id
-	self.ref = 0
+	self.ref = ref
 	self.manager = manager
 	self.count = 1
 	self.noted = false
