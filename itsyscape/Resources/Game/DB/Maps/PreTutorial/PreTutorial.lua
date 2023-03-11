@@ -208,6 +208,26 @@ do
 		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Larry",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Larry",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Larry",
+		Value = ItsyScape.Utility.valueForItem(3)
+	}
+
 	local EatAction = ItsyScape.Action.Eat()
 
 	ItsyScape.Meta.HealingPower {
