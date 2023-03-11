@@ -26,8 +26,14 @@ function ItemValueUserdata:getValue()
 	return self.value
 end
 
+local function formatQuantity(number)
+  local i, j, minus, int, fraction = tostring(number):find('([-]?)(%d+)([.]?%d*)')
+  int = int:reverse():gsub("(%d%d%d)", "%1,")
+  return minus .. int:reverse():gsub("^,", "") .. fraction
+end
+
 function ItemValueUserdata:getDescription()
-	return self:buildDescription("Message_ItemValueUserdata_Description", self.value)
+	return self:buildDescription("Message_ItemValueUserdata_Description", formatQuantity(self.value))
 end
 
 function ItemValueUserdata:combine(otherUserdata)
