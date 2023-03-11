@@ -53,6 +53,10 @@ local function inspectGameDB(gameDB)
 				Log.warn("Resource '%s' (%s) doesn't have description.", resource.name, resourceType)
 			end
 
+			if resourceType == "Item" and not love.filesystem.getInfo(string.format("Resources/Game/Items/%s/Icon.png", resource.name)) then
+				Log.warn("Resource '%s' (%s) doesn't have item icon.", resource.name, resourceType)
+			end
+
 			count = count + 1
 		end
 
