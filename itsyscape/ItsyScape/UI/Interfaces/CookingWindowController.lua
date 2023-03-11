@@ -35,6 +35,9 @@ function CookingWindowController:prepareState()
 end
 
 function CookingWindowController:populateInventory()
+	table.clear(self.state.inventory)
+	table.clear(self.inventory)
+
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	inventory = inventory and inventory.inventory
  
@@ -93,8 +96,8 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 		ref = broker:getItemRef(item),
 		count = item:getCount(),
 		resource = item:getID(),
-		name = Utility.getName(itemResource, gameDB) or ("*" .. itemResource.name),
-		description = Utility.getDescription(itemResource, gameDB),
+		name = Utility.Item.getInstanceName(item, gameDB),
+		description = Utility.Item.getInstanceDescription(item, gameDB),
 		usable = usable
 	})
 end
@@ -214,12 +217,12 @@ function CookingWindowController:poke(actionID, actionIndex, e)
 	end
 end
 
-function CookingWindowController:populateRecipe(e)
+function CookingWindowController:populateRecipe(e, force)
 	assert(type(e.index) == 'number', "index is not number")
 	assert(e.index > 0, "index is negative or zero")
 	assert(e.index <= #self.recipes, "index is out of bounds")
 
-	if e.index == self.currentRecipeIndex then
+	if e.index == self.currentRecipeIndex and not force then
 		return
 	end
 
@@ -397,7 +400,8 @@ function CookingWindowController:cook()
 
 	local action = self.recipes[self.currentRecipeIndex].action
 	if action.instance:perform(self:getPeep():getState(), self:getPeep(), recipe) then
-		self:getGame():getUI():closeInstance(self)
+		self:populateInventory()
+		self:populateRecipe({ index = self.currentRecipeIndex }, true)
 	end
 end
 
