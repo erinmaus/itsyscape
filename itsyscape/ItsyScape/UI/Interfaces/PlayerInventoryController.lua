@@ -64,6 +64,8 @@ function PlayerInventoryController:pullItem(item)
 	result.id = item:getID()
 	result.count = item:getCount()
 	result.noted = item:isNoted()
+	result.name = Utility.Item.getInstanceName(item)
+	result.description = Utility.Item.getInstanceDescription(item)
 
 	return result
 end
