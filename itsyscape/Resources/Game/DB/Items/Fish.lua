@@ -136,6 +136,26 @@ do
 		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 4,
+		Resource = ItsyScape.Resource.Item "Sardine"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Sardine",
+		Value = ItsyScape.Utility.valueForItem(3)
+	}
+
 	local EatAction = ItsyScape.Action.Eat()
 
 	ItsyScape.Meta.HealingPower {
@@ -383,6 +403,26 @@ do
 		Ingredient = ItsyScape.Resource.Ingredient "Fish"
 	}
 
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 6,
+		Resource = ItsyScape.Resource.Item "SeaBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "SeaBass",
+		Value = ItsyScape.Utility.valueForItem(6)
+	}
+
 	local EatAction = ItsyScape.Action.Eat()
 
 	ItsyScape.Meta.HealingPower {
@@ -616,6 +656,26 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = ItsyScape.Resource.Item "Coelacanth",
 		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 20,
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Coelacanth",
+		Value = 200000
 	}
 
 	local EatAction = ItsyScape.Action.Eat()
