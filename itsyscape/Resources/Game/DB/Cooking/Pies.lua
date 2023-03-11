@@ -69,7 +69,7 @@ ItsyScape.Resource.Recipe "PieCrust" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(6)
+			Count = ItsyScape.Utility.xpForResource(6)
 		}
 	}
 }
@@ -88,7 +88,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(6)
+			Count = ItsyScape.Utility.xpForResource(6)
 		}
 	}
 
@@ -147,7 +147,7 @@ ItsyScape.Resource.Recipe "SweetPieCrust" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(8)
+			Count = ItsyScape.Utility.xpForResource(8)
 		}
 	}
 }
@@ -166,7 +166,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(8)
+			Count = ItsyScape.Utility.xpForResource(8)
 		}
 	}
 
@@ -225,7 +225,7 @@ ItsyScape.Resource.Recipe "RichPieCrust" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(11)
+			Count = ItsyScape.Utility.xpForResource(11)
 		}
 	}
 }
@@ -244,7 +244,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(11)
+			Count = ItsyScape.Utility.xpForResource(11)
 		}
 	}
 
@@ -308,7 +308,7 @@ ItsyScape.Resource.Recipe "ChocolatePieCrust" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(16)
+			Count = ItsyScape.Utility.xpForResource(16)
 		}
 	}
 }
@@ -327,7 +327,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(16)
+			Count = ItsyScape.Utility.xpForResource(16)
 		}
 	}
 
@@ -376,7 +376,7 @@ ItsyScape.Resource.Recipe "ApplePie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(7)
+			Count = ItsyScape.Utility.xpForResource(7)
 		}
 	}
 }
@@ -395,7 +395,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(7)
+			Count = ItsyScape.Utility.xpForResource(7)
 		}
 	}
 
@@ -449,7 +449,7 @@ ItsyScape.Resource.Recipe "PecanPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(7)
+			Count = ItsyScape.Utility.xpForResource(7)
 		}
 	}
 }
@@ -468,7 +468,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(7)
+			Count = ItsyScape.Utility.xpForResource(7)
 		}
 	}
 
@@ -522,7 +522,7 @@ ItsyScape.Resource.Recipe "FishPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(21)
+			Count = ItsyScape.Utility.xpForResource(21)
 		}
 	}
 }
@@ -541,7 +541,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(21)
+			Count = ItsyScape.Utility.xpForResource(21)
 		}
 	}
 
@@ -595,7 +595,7 @@ ItsyScape.Resource.Recipe "MeatPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(21)
+			Count = ItsyScape.Utility.xpForResource(21)
 		}
 	}
 }
@@ -614,7 +614,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(21)
+			Count = ItsyScape.Utility.xpForResource(21)
 		}
 	}
 
@@ -668,7 +668,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(61)
+			Count = ItsyScape.Utility.xpForResource(61)
 		}
 	}
 }
@@ -687,7 +687,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(61)
+			Count = ItsyScape.Utility.xpForResource(61)
 		}
 	}
 

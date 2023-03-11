@@ -220,4 +220,10 @@ function Recipe:removeIngredient(peep, item)
 	return false
 end
 
+function Recipe:reset()
+	for i = 1, #self.slots do
+		self.slots[i].item = false
+	end
+end
+
 return Recipe
