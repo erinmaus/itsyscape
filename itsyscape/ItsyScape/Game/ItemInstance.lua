@@ -62,6 +62,10 @@ function ItemInstance:removeUserdata(userdataID)
 	self.userdata[userdataID] = nil
 end
 
+function ItemInstance:hasUserdata(userdataID)
+	return self.userdata[userdataID] ~= nil
+end
+
 function ItemInstance:getUserdata(userdataID)
 	if userdataID then
 		return self.userdata[userdataID]

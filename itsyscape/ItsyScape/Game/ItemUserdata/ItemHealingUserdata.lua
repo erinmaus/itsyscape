@@ -70,7 +70,7 @@ function ItemHealingBoostUserdata:deserialize(data)
 	self.zealous = data.zealous
 end
 
-function ItemValueUserdata:fromRecord(record)
+function ItemHealingBoostUserdata:fromRecord(record)
 	self:setHitpoints(record:get("Hitpoints"))
 	self:setZealous(record:get("Zealous") ~= 0)
 end

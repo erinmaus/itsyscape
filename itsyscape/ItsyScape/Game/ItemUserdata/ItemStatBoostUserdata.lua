@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local ItemUserdata = require "ItsyScape.Game.ItemUserdata"
+local Utility = require "ItsyScape.Game.Utility"
 
 local ItemStatBoostUserdata = Class(ItemUserdata)
 
@@ -40,14 +41,14 @@ function ItemStatBoostUserdata:getDescription()
 	end
 
 	local result = {}
-	for skill, boost self:iterateSkillBoosts() do
+	for skill, boost in self:iterateSkillBoosts() do
 		local skillResource = self:getGameDB():getResource(skill, "Skill")
 		local skillName = Utility.getName(skillResource, self:getGameDB()) or ("*" .. skillResource.name)
 
 		if boost < 0 then
-			table.insert("- " .. self:buildDescription("Message_ItemStatBoostUserdata_Debuff", skillName, math.abs(boost)))
-		else if boost > 0 then
-			table.insert("- " .. self:buildDescription("Message_ItemStatBoostUserdata_Buff", skillName, boost))
+			table.insert(result, "- " .. self:buildDescription("Message_ItemStatBoostUserdata_Debuff", skillName, math.abs(boost)))
+		elseif boost > 0 then
+			table.insert(result, "- " .. self:buildDescription("Message_ItemStatBoostUserdata_Buff", skillName, boost))
 		end
 	end
 
@@ -75,7 +76,7 @@ function ItemStatBoostUserdata:deserialize(data)
 	self.skillBoosts = data
 end
 
-function ItemValueUserdata:fromRecord(record)
+function ItemStatBoostUserdata:fromRecord(record)
 	self:setBoost(record:get("Skill").name, record:get("Boost"))
 end
 

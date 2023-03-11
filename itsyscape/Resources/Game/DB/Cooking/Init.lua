@@ -136,7 +136,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Worth %d coin(s).",
+		Value = "Worth %s coin(s).",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.KeyItem "Message_ItemValueUserdata_Description"
 	}
@@ -144,5 +144,39 @@ do
 	Meta "ItemValueUserdata" {
 		Value = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
+	}
+end
+
+do
+	ItsyScape.Resource.ItemUserdata "ItemIngredientsUserdata"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Item ingredients",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.ItemUserdata "ItemIngredientsUserdata"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lists the ingredients in food.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.ItemUserdata "ItemIngredientsUserdata"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Ingredients: %s",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.KeyItem "Message_ItemIngredientsUserdata_Prefix"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "%s",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.KeyItem "Message_ItemIngredientsUserdata_Single"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "%dx %s",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.KeyItem "Message_ItemIngredientsUserdata_Multiple"
 	}
 end

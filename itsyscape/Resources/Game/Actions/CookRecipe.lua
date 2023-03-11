@@ -49,6 +49,15 @@ function CookRecipe:perform(state, peep, recipe)
 				userdata[key] = u
 			end
 
+			if not item:hasUserdata("ItemIngredientsUserdata") then
+				local ingredientName = Utility.Item.getInstanceName(item)
+
+				local u = userdata["ItemIngredientsUserdata"] or itemManager:newUserdata("ItemIngredientsUserdata")
+				u:addIngredient(ingredientName, 1)
+
+				userdata["ItemIngredientsUserdata"] = u
+			end
+
 			local userdataTypes = self:getGameDB():getRecords("ItemUserdata", { Item = itemResource })
 			for j = 1, #userdataTypes do
 				local userdataType = userdataTypes[j]:get("Userdata").name
@@ -65,6 +74,25 @@ function CookRecipe:perform(state, peep, recipe)
 
 					userdata[userdataType] = u
 				end
+			end
+		end
+
+		local outputItemResource = self:getGameDB():getResource(itemID, "Item")
+		local userdataTypes = self:getGameDB():getRecords("ItemUserdata", { Item = outputItemResource })
+		for j = 1, #userdataTypes do
+			local userdataType = userdataTypes[j]:get("Userdata").name
+			local userdataRecords = self:getGameDB():getRecords(userdataType, {
+				Resource = itemResource
+			})
+
+			for k = 1, #userdataRecords do
+				local otherUserdata = itemManager:newUserdata(userdataType)
+				otherUserdata:fromRecord(userdataRecords[k])
+
+				local u = userdata[userdataType] or itemManager:newUserdata(userdataType)
+				u:combine(otherUserdata)
+
+				userdata[userdataType] = u
 			end
 		end
 	end
