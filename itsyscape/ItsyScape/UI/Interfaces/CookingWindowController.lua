@@ -203,6 +203,8 @@ function CookingWindowController:poke(actionID, actionIndex, e)
 		self:populateRecipe(e)
 	elseif actionID == "addIngredient" then
 		self:addIngredient(e)
+	elseif actionID == "removeIngredient" then
+		self:removeIngredient(e)
 	elseif actionID == "cook" then
 		self:cook()
 	elseif actionID == "close" then
@@ -324,6 +326,51 @@ function CookingWindowController:addIngredient(e)
 	self.state.inventory[inventoryItemIndex].count = inventoryItem.item:getCount() - inventoryItem.count
 	self.state.currentRecipe[index].count = 1
 	self.state.currentRecipe[index].item = self.state.inventory[inventoryItemIndex]
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateInventory",
+		nil,
+		{ self.state.inventory })
+end
+
+function CookingWindowController:removeIngredient(e)
+	if not self.currentRecipeIndex then
+		Log.warn("Cannot remove ingredient from recipe for peep '%s', no recipe selected.", self:getPeep():getName())
+		return
+	end
+
+	local recipe = self.recipes[self.currentRecipeIndex].recipe
+	local item = recipe:getSlottedIngredientItem(e.index)
+
+	if not item then
+		Log.warn("Cannot remove ingredient from recipe for peep '%s', no item in slot %d.", self:getPeep():getName(), e.index)
+		return
+	end
+
+	local inventoryItemIndex
+	for i = 1, #self.inventory do
+		if self.inventory[i].item:getRef() == item:getRef() then
+			inventoryItemIndex = i
+			break
+		end
+	end
+
+	if not inventoryItemIndex then
+		Log.warn("Cannot remove ingredient from recipe for peep '%s', item not in inventory.", self:getPeep():getName())
+		return
+	end
+
+	local success, slotIndex = recipe:removeIngredient(self:getPeep(), self.inventory[inventoryItemIndex].item)
+	if not success then
+		Log.warn("Cannot remove ingredient from recipe for peep '%s', item not slotted.", self:getPeep():getName())
+		return
+	end
+
+	self.inventory[inventoryItemIndex].count = self.inventory[inventoryItemIndex].count - 1
+	self.state.inventory[inventoryItemIndex].count = self.state.inventory[inventoryItemIndex].count + 1
+	self.state.currentRecipe[slotIndex].item = self.state.currentRecipe[slotIndex].constraint
+	self.state.currentRecipe[slotIndex].count = 0
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,

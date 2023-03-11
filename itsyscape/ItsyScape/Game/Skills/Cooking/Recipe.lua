@@ -65,6 +65,15 @@ function Recipe:getSlots()
 	return result
 end
 
+function Recipe:getNumSlots()
+	return #self.slots
+end
+
+function Recipe:getSlottedIngredientItem(index)
+	local slot = self.slots[index]
+	return slot and slot.item
+end
+
 function Recipe:getIsReady()
 	for i = 1, #self.slots do
 		if not self.slots[i].item then
@@ -191,6 +200,20 @@ function Recipe:addIngredient(peep, item)
 			if count > item:getCount() then
 				return false
 			end
+		end
+	end
+
+	return false
+end
+
+function Recipe:removeIngredient(peep, item)
+	for i = #self.slots, 1, -1 do
+		local slot = self.slots[i]
+
+		if slot.item and slot.item:getRef() == item:getRef() then
+			slot.item = false
+
+			return true, i
 		end
 	end
 

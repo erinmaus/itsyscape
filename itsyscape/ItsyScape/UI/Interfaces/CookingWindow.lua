@@ -194,8 +194,8 @@ function CookingWindow:new(id, index, ui)
 		self.recipeBuilderPanel:addChild(self.requirementsPanel)
 
 		self.cookButton = Button()
-		self.cookButton:setSize(w, CookingWindow.BUTTON_SIZE)
-		self.cookButton:setPosition(w + CookingWindow.BUTTON_PADDING - CookingWindow.BUTTON_PADDING * 2, h - CookingWindow.BUTTON_SIZE - CookingWindow.BUTTON_PADDING)
+		self.cookButton:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.BUTTON_SIZE)
+		self.cookButton:setPosition(w + CookingWindow.BUTTON_PADDING, h - CookingWindow.BUTTON_SIZE - CookingWindow.BUTTON_PADDING * 3)
 		self.cookButton:setText("Cook!")
 		self.cookButton.onClick:register(function()
 			self:sendPoke("cook", nil, {})
@@ -290,6 +290,7 @@ function CookingWindow:populateRecipe(currentRecipe)
 		local button = Button()
 		button:setStyle(ButtonStyle(CookingWindow.INVENTORY_BUTTON_STYLE, self:getView():getResources()))
 		button:setSize(CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
+		button.onClick:register(self.removeIngredient, self, i)
 
 		local icon = ItemIcon()
 		icon:setItemID(ingredient.item.resource)
@@ -319,6 +320,10 @@ function CookingWindow:addIngredient(button)
 	local ref = inventory[inventoryIndex].ref
 
 	self:sendPoke("addIngredient", nil, { ref = ref })
+end
+
+function CookingWindow:removeIngredient(index)
+	self:sendPoke("removeIngredient", nil, { index = index })
 end
 
 function CookingWindow:populateInventory(inventory)
