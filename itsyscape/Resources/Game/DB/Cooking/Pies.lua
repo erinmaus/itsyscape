@@ -113,6 +113,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "PieCrust"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "PieCrust",
+	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
+}
+
 ItsyScape.Resource.Recipe "SweetPieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -191,6 +196,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "SweetPieCrust"
 }
 
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "SweetPieCrust",
+	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
+}
+
 ItsyScape.Resource.Recipe "RichPieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -267,6 +277,11 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Flakey and delicous!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "RichPieCrust"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "RichPieCrust",
+	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
 }
 
 ItsyScape.Resource.Recipe "ChocolatePieCrust" {
@@ -350,6 +365,11 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A gourmet pie crust.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ChocolatePieCrust"
+}
+
+ItsyScape.Meta.Ingredient {
+	Item = ItsyScape.Resource.Item "ChocolatePieCrust",
+	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
 }
 
 ItsyScape.Resource.Recipe "ApplePie" {
