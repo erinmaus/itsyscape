@@ -32,6 +32,10 @@ function ItemInstance:isNoted()
 	return self.noted and self.manager:isNoteable(self.id)
 end
 
+function ItemInstance:getManager()
+	return self.manager
+end
+
 function ItemInstance:unnote()
 	self.noted = false
 end
@@ -65,13 +69,17 @@ end
 function ItemInstance:getUserdata(userdataID)
 	if self.manager:hasUserdata(self.id) then
 		if userdataID then
-			return self.userdataID[userdataID]
+			return self.userdata[userdataID]
 		else
 			return self.userdata
 		end
 	else
 		return nil
 	end
+end
+
+function ItemInstance:iterateUserdata()
+	return pairs(self.userdata)
 end
 
 function ItemInstance:getSerializedUserdata()

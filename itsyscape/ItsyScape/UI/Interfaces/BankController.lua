@@ -324,6 +324,9 @@ function BankController:pullItem(item, includeNoted)
 		result.noted = false
 	end
 
+	result.name = Utility.Item.getInstanceName(item)
+	result.description = Utility.Item.getInstanceDescription(item)
+
 	return result
 end
 

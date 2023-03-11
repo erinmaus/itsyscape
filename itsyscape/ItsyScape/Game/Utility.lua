@@ -1065,6 +1065,49 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.getInstanceName(instance, lang)
+	lang = lang or "en-US"
+
+	local gameDB = instance:getManager():getGameDB()
+	local itemResource = gameDB:getResource(instance:getID(), "Item")
+	local nameRecord = gameDB:getRecord("ResourceName", { Resource = itemResource, Language = lang }, 1)
+	if nameRecord then
+		return nameRecord:get("Value")
+	else
+		return "*" .. nameRecord
+	end
+end
+
+function Utility.Item.getInstanceDescription(instance, lang)
+	lang = lang or "en-US"
+
+	local baseDescription
+	do
+		local gameDB = instance:getManager():getGameDB()
+		local itemResource = gameDB:getResource(instance:getID(), "Item")
+		local descriptionRecord = gameDB:getRecord("ResourceDescription", { Resource = itemResource, Language = lang })
+		if descriptionRecord then
+			baseDescription = descriptionRecord:get("Value")
+		else
+			baseDescription = string.format("It's %s, as if you didn't know.", Utility.Item.getInstanceName(instance))
+		end
+	end
+
+	local userdata = {}
+	for name in instance:iterateUserdata() do
+		table.insert(userdata, name)
+	end
+	table.sort(userdata)
+
+	for i = 1, #userdata do
+		userdata[i] = instance:getUserdata(userdata[i]):getDescription()
+	end
+
+	table.insert(userdata, 1, baseDescription)
+
+	return table.concat(userdata, "\n")
+end
+
 function Utility.Item.getStats(id, gameDB)
 	local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 
