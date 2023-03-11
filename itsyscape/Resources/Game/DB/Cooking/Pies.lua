@@ -24,6 +24,22 @@ do
 	}
 end
 
+do
+	local PieCrust = ItsyScape.Resource.Ingredient "PieCrust"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Pie crust",
+		Language = "en-US",
+		Resource = PieCrust
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can make all kinds of pie crusts using the cooking skill.",
+		Language = "en-US",
+		Resource = PieCrust
+	}
+end
+
 ItsyScape.Resource.Recipe "PieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -632,7 +648,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(25)
+			Count = ItsyScape.Utility.xpForLevel(60)
 		},
 
 		Input {
@@ -642,7 +658,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Pie",
-			Count = 1
+			Count = 2
 		},
 
 		Output {
@@ -652,7 +668,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(26)
+			Count = ItsyScape.Utility.xpForLevel(61)
 		}
 	}
 }
@@ -661,7 +677,7 @@ do
 	local CookAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(25)
+			Count = ItsyScape.Utility.xpForLevel(60)
 		},
 
 		Input {
@@ -671,7 +687,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(26)
+			Count = ItsyScape.Utility.xpForLevel(61)
 		}
 	}
 

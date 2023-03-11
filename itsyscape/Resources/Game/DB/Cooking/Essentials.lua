@@ -815,3 +815,165 @@ do
 		Value = ItsyScape.Utility.valueForItem(47)
 	}
 end
+
+do
+	local Item = ItsyScape.Resource.Item "Chocolate" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Chocolate",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chocolate",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Excretion of a chocoroach! Super ew!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Chocolate"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(11),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(11)
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "DarkChocolate" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(14)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "DarkChocolate",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(15)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dark chocolate",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Dark excretion of a chocoroach! Super ew!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Chocolate"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(16),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(16)
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "WhiteChocolate" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(14)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "WhiteChocolate",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(15)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "White chocolate",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Despite the name, this isn't actually chocolate. But it's still from a chocoroach!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Chocolate"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(16),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(16)
+	}
+end
