@@ -58,6 +58,33 @@ ItsyScape.Resource.Recipe "Roux" {
 	}
 }
 
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Roux",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(11)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "Roux" {
+		CookAction
+	}
+end
+
 ItsyScape.Meta.Item {
 	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "Roux"
@@ -108,6 +135,33 @@ ItsyScape.Resource.Recipe "WellCookedRoux" {
 		}
 	}
 }
+
+do
+	local CookAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WellCookedRoux",
+			Count = 1,
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(46)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "WellCookedRoux" {
+		CookAction
+	}
+end
 
 ItsyScape.Meta.Item {
 	Stackable = 1,

@@ -23,6 +23,7 @@ function ItemIngredientsUserdata:addIngredient(ingredient, count)
 
 	for i = 1, #self.ingredients do
 		if self.ingredients[i].name == ingredient then
+			hasIngredient = true
 			self.ingredients[i].value = self.ingredients[i].value + math.max(count, 0)
 			break
 		end

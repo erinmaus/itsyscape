@@ -223,6 +223,10 @@ function CookingWindowController:populateRecipe(e)
 		return
 	end
 
+	if self.currentRecipeIndex then
+		self.recipes[self.currentRecipeIndex].recipe:reset()
+	end
+
 	local recipe = self.recipes[e.index]
 	self.state.currentRecipe = { index = e.index }
 

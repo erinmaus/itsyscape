@@ -44,7 +44,7 @@ function CookRecipe:perform(state, peep, recipe)
 
 			for key, otherUserdata in item:iterateUserdata() do
 				local u = userdata[key] or itemManager:newUserdata(key)
-				u:combine(userdata)
+				u:combine(otherUserdata)
 
 				userdata[key] = u
 			end
