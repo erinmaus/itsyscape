@@ -50,6 +50,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(2),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(2)
+	}
 end
 
 do
@@ -93,6 +103,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(6),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(6)
 	}
 end
 
@@ -138,6 +158,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(11),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(11)
+	}
 end
 
 do
@@ -181,6 +211,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(2),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(2)
 	}
 end
 
@@ -226,6 +266,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(6),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(6)
+	}
 end
 
 do
@@ -269,6 +319,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(2),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(2)
 	}
 end
 
@@ -314,6 +374,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(11),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(11)
+	}
 end
 
 do
@@ -357,6 +427,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(2),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(2)
 	}
 end
 
@@ -407,6 +487,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(2),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(2)
+	}
 end
 
 do
@@ -455,6 +545,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(6),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(6)
 	}
 end
 
@@ -527,6 +627,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(11),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(11)
+	}
 end
 
 do
@@ -575,6 +685,16 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(6),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(6)
 	}
 end
 
@@ -625,6 +745,16 @@ do
 		Value = ItsyScape.Utility.xpForResource(6),
 		Resource = Item
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(6)
+	}
 end
 
 do
@@ -673,5 +803,15 @@ do
 		Stackable = 1,
 		Value = ItsyScape.Utility.xpForResource(47),
 		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.xpForResource(47)
 	}
 end

@@ -47,34 +47,26 @@ function ItemInstance:note()
 end
 
 function ItemInstance:addUserdata(userdataID, data)
-	if self.manager:hasUserdata(self.id) then
-		local userdata = self.userdata[userdataID] or self.manager:newUserdata(userdataID)
+	local userdata = self.userdata[userdataID] or self.manager:newUserdata(userdataID)
 
-		if not userdata then
-			return
-		end
-
-		userdata:deserialize(data)
-
-		self.userdata[userdataID] = userdata
+	if not userdata then
+		return
 	end
+
+	userdata:deserialize(data)
+
+	self.userdata[userdataID] = userdata
 end
 
 function ItemInstance:removeUserdata(userdataID)
-	if self.manager:hasUserdata(self.id) then
-		self.userdata[userdataID] = nil
-	end
+	self.userdata[userdataID] = nil
 end
 
 function ItemInstance:getUserdata(userdataID)
-	if self.manager:hasUserdata(self.id) then
-		if userdataID then
-			return self.userdata[userdataID]
-		else
-			return self.userdata
-		end
+	if userdataID then
+		return self.userdata[userdataID]
 	else
-		return nil
+		return self.userdata
 	end
 end
 
@@ -85,17 +77,15 @@ end
 function ItemInstance:getSerializedUserdata()
 	local result = {}
 
-	if self.manager:hasUserdata(self.id) then
-		for userdataID, userdata in pairs(self.userdata) do
-			result[userdataID] = userdata:serialize()
-		end
+	for userdataID, userdata in pairs(self.userdata) do
+		result[userdataID] = userdata:serialize()
 	end
 
 	return result
 end
 
 function ItemInstance:setUserdata(userdata)
-	if self.manager:hasUserdata(self.id) and type(userdata) == 'table' then
+	if type(userdata) == 'table' then
 		table.clear(self.userdata)
 		for userdataID, userdata in pairs(userdata) do
 			self:addUserdata(userdataID, userdata)

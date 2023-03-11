@@ -19,10 +19,10 @@ function ItemValueUserdata:new(...)
 end
 
 function ItemValueUserdata:setValue(value)
-	self.value = math.min(value, 0)
+	self.value = math.max(value, 0)
 end
 
-function ItemValueUserdata:getHitpoints()
+function ItemValueUserdata:getValue()
 	return self.value
 end
 
@@ -48,6 +48,10 @@ end
 
 function ItemValueUserdata:deserialize(data)
 	self.value = data.value
+end
+
+function ItemValueUserdata:fromRecord(record)
+	self:setValue(record:get("Value"))
 end
 
 return ItemValueUserdata
