@@ -15,12 +15,12 @@ local ItemHealingBoostUserdata = Class(ItemUserdata)
 function ItemHealingBoostUserdata:new(...)
 	ItemUserdata.new(self, ...)
 
-	self.hitpoints = 1
+	self.hitpoints = 0
 	self.zealous = false
 end
 
 function ItemHealingBoostUserdata:setHitpoints(value)
-	self.hitpoints = math.min(value, 1)
+	self.hitpoints = math.max(value, 0)
 end
 
 function ItemHealingBoostUserdata:getHitpoints()
@@ -36,6 +36,10 @@ function ItemHealingBoostUserdata:getZealous()
 end
 
 function ItemHealingBoostUserdata:getDescription()
+	if self:getHitpoints() == 0 then
+		return nil
+	end
+
 	if self:getZealous() then
 		return self:buildDescription("Message_ItemHealingUserdata_ZealousDescription", self.hitpoints)
 	else
@@ -64,6 +68,11 @@ end
 function ItemHealingBoostUserdata:deserialize(data)
 	self.hitpoints = data.hitpoints
 	self.zealous = data.zealous
+end
+
+function ItemValueUserdata:fromRecord(record)
+	self:setHitpoints(record:get("Hitpoints"))
+	self:setZealous(record:get("Zealous") ~= 0)
 end
 
 return ItemHealingBoostUserdata

@@ -77,6 +77,10 @@ function ItemUserdata:deserialize(data)
 	-- Nothing.
 end
 
+function ItemUserdata:fromRecord(record)
+	-- Nothing.
+end
+
 function ItemUserdata:isSame(otherUserdata)
 	local isSameType = self:getType() == otherUserdata:getType()
 	local isStateEqual = RPCState.deepEquals(self:serialize(), otherUserdata:serialize())

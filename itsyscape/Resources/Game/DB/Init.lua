@@ -290,6 +290,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ItemUserdata" {
+		Item = Meta.TYPE_RESOURCE,
+		Userdata = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Prayer" {
 		Drain = Meta.TYPE_INTEGER,
 		IsNonCombat = Meta.TYPE_INTEGER,

@@ -23,7 +23,7 @@ function ItemStatBoostUserdata:getBoost(skill)
 end
 
 function ItemStatBoostUserdata:setBoost(skill, level)
-	if level = 0 then
+	if level == 0 then
 		self.skillBoosts[skill] = nil
 	else
 		self.skillBoosts[skill] = level
@@ -73,6 +73,10 @@ end
 
 function ItemStatBoostUserdata:deserialize(data)
 	self.skillBoosts = data
+end
+
+function ItemValueUserdata:fromRecord(record)
+	self:setBoost(record:get("Skill").name, record:get("Boost"))
 end
 
 return ItemStatBoostUserdata

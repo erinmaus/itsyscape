@@ -75,8 +75,6 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 			local isCookAction = action.instance:is("CookIngredient")
 			local canPerformAction = action.instance:canPerform(self:getPeep():getState())
 
-			print(">>> item", item:getID(), isCookAction, canPerformAction)
-
 			if isCookAction and canPerformAction then
 				usable = true
 			end
@@ -205,6 +203,8 @@ function CookingWindowController:poke(actionID, actionIndex, e)
 		self:populateRecipe(e)
 	elseif actionID == "addIngredient" then
 		self:addIngredient(e)
+	elseif actionID == "cook" then
+		self:cook()
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -330,6 +330,24 @@ function CookingWindowController:addIngredient(e)
 		"populateInventory",
 		nil,
 		{ self.state.inventory })
+end
+
+function CookingWindowController:cook()
+	if not self.currentRecipeIndex then
+		Log.warn("Cannot add ingredient to recipe for peep '%s', no recipe selected.", self:getPeep():getName())
+		return
+	end
+
+	local recipe = self.recipes[self.currentRecipeIndex].recipe
+	if not recipe:getIsReady() then
+		Utility.UI.notifyFailure(self:getPeep(), "Message_Cooking_RecipeNotReady")
+		return
+	end
+
+	local action = self.recipes[self.currentRecipeIndex].action
+	if action.instance:perform(self:getPeep():getState(), self:getPeep(), recipe) then
+		self:getGame():getUI():closeInstance(self)
+	end
 end
 
 return CookingWindowController

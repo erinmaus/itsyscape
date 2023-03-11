@@ -51,6 +51,38 @@ function Recipe:new(resource, game)
 	self:_addSlots(self.constraints.inputs)
 end
 
+function Recipe:getResource()
+	return self.resource
+end
+
+function Recipe:getSlots()
+	local result = {}
+
+	for i = 1, #self.slots do
+		table.insert(result, self.slots[i].item)
+	end
+
+	return result
+end
+
+function Recipe:getIsReady()
+	for i = 1, #self.slots do
+		if not self.slots[i].item then
+			return false
+		end
+	end
+
+	return true
+end
+
+function Recipe:getItemID()
+	for i = 1, #self.constraints.outputs do
+		if self.constraints.outputs[i].type:lower() == "item" then
+			return self.constraints.outputs[i].resource
+		end
+	end
+end
+
 function Recipe:_addSlots(constraints)
 	for i = 1, #constraints do
 		local constraint = constraints[i]

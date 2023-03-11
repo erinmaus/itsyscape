@@ -488,7 +488,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 		if not destinationItem then
 			destinationItem = self.broker:addItem(destination, id, count, noted)
-			destinationItem:setUserdata(destinationItem:getSerializedUserdata())
+			destinationItem:setUserdata(item:getSerializedUserdata())
 		else
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
