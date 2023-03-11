@@ -20,6 +20,22 @@ Meta "Ingredient" {
 	Ingredient = Meta.TYPE_RESOURCE
 }
 
+ItsyScape.Resource.KeyItem "Message_Cooking_RecipeNotReady" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Recipe error",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_Cooking_RecipeNotReady"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The recipe is missing ingredients!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_Cooking_RecipeNotReady"
+}
+
 ItsyScape.Resource.KeyItem "Message_Cooking_IngredientNotInRecipe" {
 	-- Nothing.
 }
