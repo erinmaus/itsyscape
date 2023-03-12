@@ -5,8 +5,8 @@ Animation "Bug Attack" {
 			bones = {
 				"head",
 				"neck",
-				"wing.l",
-				"wing.r"
+				"wing.left",
+				"wing.right"
 			}
 		}
 	}
