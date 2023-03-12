@@ -104,7 +104,6 @@ function Make:gatherSecondaries(state, player, prop)
 	-- The '0' is so there's a chance an action doesn't give any resources.
 	local numRolls = math.random(0, maxNumRolls)
 	for i = 1, maxNumRolls do
-
 		local item = actions[1]
 		local currentWeight = 0
 		if item then
@@ -114,6 +113,7 @@ function Make:gatherSecondaries(state, player, prop)
 		local roll = math.random(0, maxWeight)
 		for j = 2, #actions do
 			if currentWeight > roll then
+				print(">>> break", item.weight)
 				break
 			end
 
@@ -122,10 +122,13 @@ function Make:gatherSecondaries(state, player, prop)
 			local nextWeight = currentWeight + nextItemWeight
 
 			item = nextItem
-			currentWeight = nextItemWeight
+			currentWeight = nextWeight
+
+			print(">>> next", item.resource.name, nextItemWeight)
 		end
 
 		if item then
+			print(">>> droppping", item.resource.name, roll, maxWeight)
 			local l = loot[item.resource.name] or { item = item, count = 0}
 			l.count = l.count + 1
 			loot[item.resource.name] = l
