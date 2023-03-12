@@ -288,13 +288,13 @@ function Action:consume(state, player, flags)
 end
 
 -- Transfers inputs/outputs.
-function Action:transfer(state, player, flags)
+function Action:transfer(state, player, flags, force)
 	flags = flags or self.FLAGS or Action.DEFAULT_FLAGS
 
 	local multiplier = flags['action-count'] or 1
 	local outputMultiplier = flags['action-output-count'] or 1
 
-	if self:canTransfer(state, flags) then
+	if force or self:canTransfer(state, flags) then
 		local gameDB = self:getGameDB()
 		local brochure = gameDB:getBrochure()
 		local inputs, outputs = {}, {}
@@ -312,7 +312,7 @@ function Action:transfer(state, player, flags)
 			local resource = brochure:getConstraintResource(input)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			if not state:take(resourceType.name, resource.name, input.count * multiplier, flags) then
+			if not state:take(resourceType.name, resource.name, input.count * multiplier, flags) and not force then
 				reverse()
 				return false
 			else
@@ -328,7 +328,7 @@ function Action:transfer(state, player, flags)
 			local resource = brochure:getConstraintResource(output)
 			local resourceType = brochure:getResourceTypeFromResource(resource)
 
-			if not state:give(resourceType.name, resource.name, output.count * multiplier * outputMultiplier, flags) then
+			if not state:give(resourceType.name, resource.name, output.count * multiplier * outputMultiplier, flags) and not force then
 				reverse()
 				return false
 			else

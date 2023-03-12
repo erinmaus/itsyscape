@@ -105,7 +105,12 @@ function Loot:materializeDropTable(peep, inventory, loot)
 			t:spawn(inventory, resource.name, count, noted)
 			if t:commit() then
 				local stage = self:getGame():getStage()
+				local items = {}
 				for i in broker:iterateItems(inventory) do
+					table.insert(items, i)
+				end
+
+				for _, i in ipairs(items) do
 					stage:dropItem(i, i:getCount(), slayer)
 				end
 			end

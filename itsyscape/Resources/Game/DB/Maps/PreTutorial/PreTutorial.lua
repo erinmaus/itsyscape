@@ -161,7 +161,22 @@ do
 	}
 
 	ItsyScape.Resource.Item "Larry" {
-		-- Nothing.
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Larry",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(3)
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -186,6 +201,31 @@ do
 		Value = ItsyScape.Utility.valueForItem(3),
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Larry",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Larry",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = ItsyScape.Resource.Item "Larry"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Larry",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Larry",
+		Value = ItsyScape.Utility.valueForItem(3)
 	}
 
 	local EatAction = ItsyScape.Action.Eat()

@@ -1,4 +1,4 @@
- --------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- ItsyScape/Game/ItemUserdata.lua
 --
 -- This file is a part of ItsyScape.
@@ -26,12 +26,20 @@ function ItemUserdata:getItemManager()
 	return self.manager
 end
 
+function ItemUserdata:getGameDB()
+	return self.manager:getGameDB()
+end
+
 function ItemUserdata:getResource()
 	return self.resource
 end
 
 function ItemUserdata:getName()
-	return Class.ABSTRACT()
+	return Utility.getName(self.resource, self:getGameDB()) or ("*" .. self.resource.name)
+end
+
+function ItemUserdata:getDescription()
+	return Utility.getDescription(self.resource, self:getGameDB())
 end
 
 function ItemUserdata:buildDescription(stringID, ...)
@@ -54,7 +62,11 @@ function ItemUserdata:buildDescription(stringID, ...)
 end
 
 function ItemUserdata:getDescription()
-	return Class.ABSTRACT()
+	return nil
+end
+
+function ItemUserdata:combine(otherUserdata)
+	-- Nothing.
 end
 
 function ItemUserdata:serialize()
@@ -62,6 +74,10 @@ function ItemUserdata:serialize()
 end
 
 function ItemUserdata:deserialize(data)
+	-- Nothing.
+end
+
+function ItemUserdata:fromRecord(record)
 	-- Nothing.
 end
 

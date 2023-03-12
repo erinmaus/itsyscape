@@ -286,6 +286,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		local items = { count = 0 }
 		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			print(">>> condition found", item:getID())
 			table.insert(items, item)
 			if #items >= count then
 				assert(#items == count, "found more items than requested")
@@ -313,6 +314,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		local items = {}
 		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			print(">>> step found", item:getID())
 			table.insert(items, item)
 			if #items >= count then
 				assert(#items == count, "found more items than requested")
@@ -488,7 +490,7 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 
 		if not destinationItem then
 			destinationItem = self.broker:addItem(destination, id, count, noted)
-			destinationItem:setUserdata(destinationItem:getSerializedUserdata())
+			destinationItem:setUserdata(item:getSerializedUserdata())
 		else
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
@@ -632,7 +634,7 @@ function ItemBroker.Inventory:findAll(id, stackable, noted, serializedUserdata)
 			if item:getID() == id
 			   and item:isStackable() == stackable
 			   and item:isNoted() == noted
-			   and RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata or {})
+			   and (not serializedUserdata or RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata))
 			then
 				return item
 			else
@@ -892,17 +894,19 @@ function ItemBroker:addItem(provider, id, count, noted)
 		error("inventory full")
 	end
 
-	local item = ItemInstance(id, self.manager)
+	local ref = self.itemRefs.n
+
+	local item = ItemInstance(id, ref, self.manager)
 	if noted then
 		item:note()
 	end
 	item:setCount(count or 1)
 
 	self.items[item] = provider
-	self.itemRefs[item] = self.itemRefs.n
+	self.itemRefs[item] = ref
 	self.inventories[provider]:add(item)
 
-	self.itemRefs.n = self.itemRefs.n + 1
+	self.itemRefs.n = ref + 1
 
 	return item
 end

@@ -14,9 +14,12 @@ local ORES = {
 		weight = 10.5,
 		health = 8,
 		secondaries = {
+			"TableSalt",
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrumblySulfur"
+			"CrumblySulfur",
+			"VegetableOil",
+			"BlackGold"
 		}
 	},
 
@@ -25,9 +28,12 @@ local ORES = {
 		weight = 9.1,
 		health = 8,
 		secondaries = {
+			"TableSalt",
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrumblySulfur"
+			"CrumblySulfur",
+			"VegetableOil",
+			"BlackGold"
 		}
 	},
 
@@ -39,9 +45,13 @@ local ORES = {
 			"DeepSlate"
 		},
 		secondaries = {
+			"TableSalt",
 			"PurpleSaltPeter",
 			"BlackFlint",
-			"CrumblySulfur"
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold"
 		}
 	},
 

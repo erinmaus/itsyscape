@@ -8,22 +8,31 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-local CookAction = ItsyScape.Action.OpenCraftWindow()
+local CookAction1 = ItsyScape.Action.OpenCraftWindow()
 ItsyScape.Meta.DelegatedActionTarget {
 	CategoryKey = "CookingMethod",
 	CategoryValue = "Range",
-	Action = CookAction
+	Action = CookAction1
 }
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Cook",
 	XProgressive = "Cook",
 	Language = "en-US",
-	Action = CookAction
+	Action = CookAction1
+}
+
+local CookAction2 = ItsyScape.Action.OpenCookingWindow()
+ItsyScape.Meta.ActionVerb {
+	Value = "Cook-fancy",
+	XProgressive = "Cooking-fancy",
+	Language = "en-US",
+	Action = CookAction2
 }
 
 ItsyScape.Resource.Prop "CookingRange_Default" {
-	CookAction
+	CookAction1,
+	CookAction2
 }
 
 ItsyScape.Meta.PeepID {

@@ -899,16 +899,7 @@ function Bank:probe(source, button)
 	local items = self:getState()[source] or {}
 	local item = items[index]
 	if item then
-		local object
-		do
-			-- TODO: [LANG]
-			local gameDB = self:getView():getGame():getGameDB()
-			object = Utility.Item.getName(item.id, gameDB, "en-US")
-			if not object then
-				object = "*" .. item.id
-			end
-		end
-
+		local object = item.name
 		local actions = {}
 
 		if source == 'inventory' then
