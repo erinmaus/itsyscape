@@ -15,11 +15,11 @@ local Probe = require "ItsyScape.Peep.Probe"
 
 local Common = {}
 Common.WATER = {
-	texture = "LightFoamyWater1",
-	i = 24,
-	j = 31,
-	width = 5,
-	height = 5,
+	texture = "BloodyBrain1",
+	i = 23,
+	j = 30,
+	width = 7,
+	height = 7,
 	y = -0.5
 }
 function Common.targetPlayer(target)
