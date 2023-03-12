@@ -29,6 +29,12 @@ add('PLAYER_1_FOCUS',      'tab')
 add('PLAYER_1_CAMERA',     '/')
 add('PLAYER_1_CHAT',       'return')
 
+-- Camera
+add('CAMERA_UP',    'up')
+add('CAMERA_DOWN',  'down')
+add('CAMERA_LEFT',  'left')
+add('CAMERA_RIGHT', 'right')
+
 -- Strategy bar
 add('STRATEGY_BAR_SLOT_1',  '1')
 add('STRATEGY_BAR_SLOT_2',  '2')
