@@ -286,6 +286,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		local items = { count = 0 }
 		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			print(">>> condition found", item:getID())
 			table.insert(items, item)
 			if #items >= count then
 				assert(#items == count, "found more items than requested")
@@ -313,6 +314,7 @@ function ItemBroker.Transaction:note(destination, id, count)
 
 		local items = {}
 		for item in inventory:findAll(id, self.broker.manager:isStackable(id), false) do
+			print(">>> step found", item:getID())
 			table.insert(items, item)
 			if #items >= count then
 				assert(#items == count, "found more items than requested")
@@ -632,7 +634,7 @@ function ItemBroker.Inventory:findAll(id, stackable, noted, serializedUserdata)
 			if item:getID() == id
 			   and item:isStackable() == stackable
 			   and item:isNoted() == noted
-			   and RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata or {})
+			   and (not serializedUserdata or RPCState.deepEquals(item:getSerializedUserdata(), serializedUserdata))
 			then
 				return item
 			else
