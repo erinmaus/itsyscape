@@ -11,12 +11,17 @@ local Class = require "ItsyScape.Common.Class"
 
 local ItemInstance = Class()
 
-function ItemInstance:new(id, manager)
+function ItemInstance:new(id, ref, manager)
 	self.id = id
+	self.ref = ref
 	self.manager = manager
 	self.count = 1
 	self.noted = false
 	self.userdata = {}
+end
+
+function ItemInstance:getRef()
+	return self.ref
 end
 
 function ItemInstance:getID()
@@ -25,6 +30,10 @@ end
 
 function ItemInstance:isNoted()
 	return self.noted and self.manager:isNoteable(self.id)
+end
+
+function ItemInstance:getManager()
+	return self.manager
 end
 
 function ItemInstance:unnote()
@@ -38,51 +47,49 @@ function ItemInstance:note()
 end
 
 function ItemInstance:addUserdata(userdataID, data)
-	if self.manager:hasUserdata(self.id) then
-		local userdata = self.userdata[userdataID] or self.manager:newUserdata(userdataID)
+	local userdata = self.userdata[userdataID] or self.manager:newUserdata(userdataID)
 
-		if not userdata then
-			return
-		end
-
-		userdata:deserialize(data)
-
-		self.userdata[userdataID] = userdata
+	if not userdata then
+		return
 	end
+
+	userdata:deserialize(data)
+
+	self.userdata[userdataID] = userdata
 end
 
 function ItemInstance:removeUserdata(userdataID)
-	if self.manager:hasUserdata(self.id) then
-		self.userdata[userdataID] = nil
-	end
+	self.userdata[userdataID] = nil
+end
+
+function ItemInstance:hasUserdata(userdataID)
+	return self.userdata[userdataID] ~= nil
 end
 
 function ItemInstance:getUserdata(userdataID)
-	if self.manager:hasUserdata(self.id) then
-		if userdataID then
-			return self.userdataID[userdataID]
-		else
-			return self.userdata
-		end
+	if userdataID then
+		return self.userdata[userdataID]
 	else
-		return nil
+		return self.userdata
 	end
+end
+
+function ItemInstance:iterateUserdata()
+	return pairs(self.userdata)
 end
 
 function ItemInstance:getSerializedUserdata()
 	local result = {}
 
-	if self.manager:hasUserdata(self.id) then
-		for userdataID, userdata in pairs(self.userdata) do
-			result[userdataID] = userdata:serialize()
-		end
+	for userdataID, userdata in pairs(self.userdata) do
+		result[userdataID] = userdata:serialize()
 	end
 
 	return result
 end
 
 function ItemInstance:setUserdata(userdata)
-	if self.manager:hasUserdata(self.id) and type(userdata) == 'table' then
+	if type(userdata) == 'table' then
 		table.clear(self.userdata)
 		for userdataID, userdata in pairs(userdata) do
 			self:addUserdata(userdataID, userdata)

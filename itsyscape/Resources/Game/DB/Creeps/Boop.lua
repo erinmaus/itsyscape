@@ -17,6 +17,13 @@ ItsyScape.Resource.Peep "Boop" {
 			Count = 1
 		}
 	},
+
+	ItsyScape.Action.Loot() {
+		Output {
+			Resource = ItsyScape.Resource.DropTable "Boop_Secondary",
+			Count = 1
+		}
+	}
 }
 
 ItsyScape.Meta.PeepID {
@@ -88,4 +95,32 @@ ItsyScape.Meta.DropTableEntry {
 	Weight = 1,
 	Count = 1,
 	Resource = ItsyScape.Resource.DropTable "Boop_Primary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "WhiteSugar",
+	Weight = 100,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Boop_Secondary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "AllPurposeFlour",
+	Weight = 200,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Boop_Secondary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "AlmondFlour",
+	Weight = 100,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Boop_Secondary"
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "WholeWheatFlour",
+	Weight = 50,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Boop_Secondary"
 }

@@ -72,7 +72,7 @@ function ItemManager:isTradeable(id)
 end
 
 function ItemManager:newUserdata(id)
-	local typeName = string.format("Resources.Game.ItemUserdata.%s", id)
+	local typeName = string.format("ItsyScape.Game.ItemUserdata.%s", id)
 	local s, r = pcall(require, typeName)
 	if not s then
 		Log.error("Could not create item userdata '%s': %s", id, r)
@@ -130,10 +130,6 @@ function ItemManager:getLogic(id, unique, tryXWeapon)
 	end
 
 	return self.logic[id]
-end
-
-function ItemManager:instantiate(id)
-	return ItemInstance(id, self)
 end
 
 return ItemManager

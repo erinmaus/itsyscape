@@ -82,8 +82,29 @@ do
 		Resource = ItsyScape.Resource.Prop "Sardine_Default"
 	}
 
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Sardine",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(3)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
 	ItsyScape.Resource.Item "Sardine" {
-		-- Nothing.
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -108,6 +129,31 @@ do
 		Value = ItsyScape.Utility.valueForItem(3),
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "Sardine"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 4,
+		Resource = ItsyScape.Resource.Item "Sardine"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Sardine",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Sardine",
+		Value = ItsyScape.Utility.valueForItem(3)
 	}
 
 	local EatAction = ItsyScape.Action.Eat()
@@ -291,8 +337,29 @@ do
 		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
 	}
 
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "SeaBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(6)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
 	ItsyScape.Resource.Item "SeaBass" {
-		-- Nothing.
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -329,6 +396,31 @@ do
 		Value = ItsyScape.Utility.valueForItem(6),
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "SeaBass"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 6,
+		Resource = ItsyScape.Resource.Item "SeaBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "SeaBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "SeaBass",
+		Value = ItsyScape.Utility.valueForItem(6)
 	}
 
 	local EatAction = ItsyScape.Action.Eat()
@@ -500,8 +592,29 @@ do
 		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
 	}
 
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(30)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
 	ItsyScape.Resource.Item "Coelacanth" {
-		-- Nothing.
+		CookIngredientAction
 	}
 
 	ItsyScape.Meta.ResourceCategory {
@@ -538,6 +651,31 @@ do
 		Value = 150000,
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 20,
+		Resource = ItsyScape.Resource.Item "Coelacanth"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Coelacanth",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Coelacanth",
+		Value = 200000
 	}
 
 	local EatAction = ItsyScape.Action.Eat()

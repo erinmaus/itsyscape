@@ -31,8 +31,8 @@ local Widget = require "ItsyScape.UI.Widget"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local CraftWindow = Class(Interface)
-CraftWindow.WIDTH = 480
-CraftWindow.HEIGHT = 320
+CraftWindow.WIDTH = 800
+CraftWindow.HEIGHT = 640
 CraftWindow.BUTTON_SIZE = 48
 CraftWindow.BUTTON_PADDING = 4
 CraftWindow.PADDING = 4
@@ -233,14 +233,7 @@ function CraftWindow:populateRequirements(e)
 		self.requirementsPanel:addChild(panel)
 	end
 
-	local c = {}
-	for _, child in self.requirementsPanel:getInnerPanel():iterate() do
-		c[child] = true
-	end
-
-	for child in pairs(c) do
-		self.requirementsPanel:removeChild(child)
-	end
+	self.requirementsPanel:getInnerPanel():clearChildren()
 
 	emitSection(e.requirements, "Requirements", { skillAsLevel = true })
 	emitSection(e.inputs, "Inputs")

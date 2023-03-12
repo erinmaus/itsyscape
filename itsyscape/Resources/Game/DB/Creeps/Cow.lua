@@ -73,7 +73,31 @@ ItsyScape.Meta.DropTableEntry {
 
 ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "Beef",
-	Weight = 1,
+	Weight = 100,
+	Count = 2,
+	Range = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Butter",
+	Weight = 100,
+	Count = 2,
+	Range = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "ExtraCreamyButter",
+	Weight = 50,
+	Count = 2,
+	Range = 1,
+	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BrownButter",
+	Weight = 25,
 	Count = 1,
 	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	
 }

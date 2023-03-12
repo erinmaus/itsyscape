@@ -97,6 +97,9 @@ function Interface:examineItem(widget, inventory, index)
 	local object, description, stats = Utility.Item.getInfo(
 		item.id,
 		self:getView():getGame():getGameDB())
+	object = item.name or object
+	description = item.description or description
+	stats = item.stats or stats
 
 	local action = item.actions[1]
 	if action then

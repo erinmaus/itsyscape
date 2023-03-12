@@ -906,6 +906,51 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
+function Utility.UI.notifyFailure(peep, message)
+	local director = peep:getDirector()
+	if not director then
+		return
+	end
+
+	local gameDB = director:getGameDB()
+	if type(message) == "string" then
+		local resource = gameDB:getResource(message, "KeyItem")
+		if resource then
+			message = resource
+		end
+	end
+
+	local requirement
+	if type(message) == "string" then
+		requirement = {
+			type = "KeyItem",
+			resource = "_MESSAGE",
+			name = "Message",
+			description = message,
+			count = 1
+		}
+	else
+		local name = Utility.getName(message, gameDB) or ("*" .. message.name)
+		local description = Utility.getDescription(message, gameDB, nil, 1)
+
+		requirement = {
+			type = "KeyItem",
+			resource = message.name,
+			name = name,
+			description = description,
+			count = 1
+		}
+	end
+
+	local constraints = {
+		requirements = { requirement },
+		inputs = {},
+		outputs = {}
+	}
+
+	Utility.UI.openInterface(peep, "Notification", false, constraints)
+end
+
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
@@ -1018,6 +1063,49 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	else
 		return false
 	end
+end
+
+function Utility.Item.getInstanceName(instance, lang)
+	lang = lang or "en-US"
+
+	local gameDB = instance:getManager():getGameDB()
+	local itemResource = gameDB:getResource(instance:getID(), "Item")
+	local nameRecord = gameDB:getRecord("ResourceName", { Resource = itemResource, Language = lang }, 1)
+	if nameRecord then
+		return nameRecord:get("Value")
+	else
+		return "*" .. nameRecord
+	end
+end
+
+function Utility.Item.getInstanceDescription(instance, lang)
+	lang = lang or "en-US"
+
+	local baseDescription
+	do
+		local gameDB = instance:getManager():getGameDB()
+		local itemResource = gameDB:getResource(instance:getID(), "Item")
+		local descriptionRecord = gameDB:getRecord("ResourceDescription", { Resource = itemResource, Language = lang })
+		if descriptionRecord then
+			baseDescription = descriptionRecord:get("Value")
+		else
+			baseDescription = string.format("It's %s, as if you didn't know.", Utility.Item.getInstanceName(instance))
+		end
+	end
+
+	local userdata = {}
+	for name in instance:iterateUserdata() do
+		table.insert(userdata, name)
+	end
+	table.sort(userdata)
+
+	for i = 1, #userdata do
+		userdata[i] = instance:getUserdata(userdata[i]):getDescription()
+	end
+
+	table.insert(userdata, 1, baseDescription)
+
+	return table.concat(userdata, "\n")
 end
 
 function Utility.Item.getStats(id, gameDB)
