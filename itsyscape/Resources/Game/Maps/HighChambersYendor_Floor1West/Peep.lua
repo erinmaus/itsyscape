@@ -58,6 +58,10 @@ function HighChambersYendor:onFinalize(director, game)
 	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever1")
 end
 
+function HighChambersYendor:onPlayerEnter(player)
+	player:getActor():getPeep():getState():give("KeyItem", "CalmBeforeTheStorm_OpenedHighChambersYendor", 1)
+end
+
 function HighChambersYendor:initTorchPuzzle()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
