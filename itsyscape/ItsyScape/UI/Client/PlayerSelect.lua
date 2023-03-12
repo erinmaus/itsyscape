@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
@@ -119,6 +120,16 @@ function PlayerSelect:new(application)
 	self.camera:setDistance(5)
 	self.camera:setPosition(Vector.UNIT_Y)
 
+	self:addPlayers()
+end
+
+function PlayerSelect:getOverflow()
+	return true
+end
+
+function PlayerSelect:addPlayers()
+	self.layout:getInnerPanel():clearChildren()
+
 	self.players = {}
 	local players = self:getPlayers()
 	for i = 1, #players do
@@ -135,10 +146,6 @@ function PlayerSelect:new(application)
 	self.layout:addChild(newGameButton)
 
 	self.layout:setScrollSize(self.layout:getInnerPanel():getSize())
-end
-
-function PlayerSelect:getOverflow()
-	return true
 end
 
 function PlayerSelect:addPlayer(storage)
@@ -244,9 +251,17 @@ function PlayerSelect:addPlayerButton(player)
 		end
 	end
 
-	button.onClick:register(self.loadPlayer, self, player)
+	button.onClick:register(self.selectPlayer, self, player)
 
 	self.layout:addChild(button)
+end
+
+function PlayerSelect:selectPlayer(player, _, index)
+	if index == 1 then
+		self:loadPlayer(player)
+	else
+		self:probePlayer(player)
+	end
 end
 
 function PlayerSelect:loadPlayer(player)
@@ -258,6 +273,53 @@ function PlayerSelect:loadPlayer(player)
 	self.application:closeTitleScreen()
 
 	Log.analytic("START_GAME")
+end
+
+function PlayerSelect:deletePlayer(player)
+	local name = player.storage:getRoot():getSection("Player"):getSection("Info"):get("name") or "Player"
+
+	local WIDTH = 320
+	local HEIGHT = 240
+	local confirmWindow = ConfirmWindow(self.application)
+	confirmWindow:open(
+		string.format(
+			"Deleting player '%s' cannot be reversed.\n\n" ..
+			"Are you absolutely, positively sure you want to proceed?",
+			name),
+		"Delete player",
+		WIDTH,
+		HEIGHT)
+	confirmWindow.onSubmit:register(function()
+		local filename = player.storage:getRoot():get("filename")
+		Log.info("Deleting player file '%s'...", filename)
+		love.filesystem.remove(filename)
+		self:addPlayers()
+	end)
+end
+
+function PlayerSelect:probePlayer(player)
+	local name = player.storage:getRoot():getSection("Player"):getSection("Info"):get("name") or "Player"
+
+	local actions = {
+		{
+			id = "Load",
+			verb = "Load", -- TODO: [LANG]
+			object = name,
+			callback = function()
+				self:loadPlayer(player)
+			end
+		},
+		{
+			id = "Delete",
+			verb = "Delete", -- TODO: [LANG]
+			object = name,
+			callback = function()
+				self:deletePlayer(player)
+			end
+		}
+	}
+
+	self.application:getUIView():probe(actions)
 end
 
 function PlayerSelect:newPlayer(player)
