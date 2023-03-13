@@ -1,3 +1,4 @@
 {
-	['main'] = "SeaAttack1"
+	['main'] = "SeaAttack1",
+	['ambience'] = "Ocean1"
 }
