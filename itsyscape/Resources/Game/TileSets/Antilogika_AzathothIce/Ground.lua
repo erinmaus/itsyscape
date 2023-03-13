@@ -35,6 +35,7 @@ function AzathothIceGround:new()
 		FEATURE = "brick",
 		SCALE = Vector(2, 1, 1),
 		NUM_FEATURES = 3,
+		THRESHOLD = 0.85,
 		ONLY_FLAT = false
 	})
 
