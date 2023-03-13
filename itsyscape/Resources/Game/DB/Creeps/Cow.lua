@@ -96,7 +96,7 @@ ItsyScape.Meta.DropTableEntry {
 }
 
 ItsyScape.Meta.DropTableEntry {
-	Item = ItsyScape.Resource.Item "BrownButter",
+	Item = ItsyScape.Resource.Item "BrownedButter",
 	Weight = 25,
 	Count = 1,
 	Resource = ItsyScape.Resource.DropTable "Cow_Tertiary"	

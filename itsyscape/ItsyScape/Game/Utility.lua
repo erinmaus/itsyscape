@@ -1074,7 +1074,7 @@ function Utility.Item.getInstanceName(instance, lang)
 	if nameRecord then
 		return nameRecord:get("Value")
 	else
-		return "*" .. nameRecord
+		return "*" .. instance:getID()
 	end
 end
 
