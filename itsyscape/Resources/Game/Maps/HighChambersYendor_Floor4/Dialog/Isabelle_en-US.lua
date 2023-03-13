@@ -8,7 +8,7 @@ message {
 }
 
 local stage = _DIRECTOR:getGameInstance():getStage()
-stage:playMusic(_TARGET:getLayerName(), "main", "IsabelleFight")
+stage:playMusic(Utility.Peep.getLayer(_TARGET), "main", "SeaAttack2")
 
 local WHAT      = option "What are you doing?!"
 local WHO       = option "Who do you think you are?"
