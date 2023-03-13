@@ -100,7 +100,7 @@ function One:onChangeWardrobe(e)
 	local skins = { actor:getSkin(e.slot) }
 	for i = 1, #skins do
 		if skins[i].priority == e.priority then
-			actor:setSkin(e.slot, false, skins[i].skin)
+			actor:unsetSkin(e.slot, skins[i].priority, skins[i].skin)
 		end
 	end
 

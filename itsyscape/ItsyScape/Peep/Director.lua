@@ -155,6 +155,7 @@ function Director:removePeep(peep)
 		peep:poke('reaper')
 
 		self.oldPeeps[peep] = true
+		self.pendingPeeps[peep] = nil
 	end
 end
 

@@ -195,26 +195,8 @@ function PlayerSelect:addPlayerButton(player)
 
 	local gameDB = self.application:getGameDB()
 
-	if not player.storage:getRoot():getSection("Location"):get("name") then
-		local location = player.storage:getRoot():getSection("Location")
-		location:set("name", "IsabelleIsland_Tower")
-
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self.application:getGame(),
-			"IsabelleIsland_Tower",
-			"Anchor_StartGame")
-		location:set("x", x)
-		location:set("y", y)
-		location:set("z", z)
-
-		love.filesystem.createDirectory("Player")
-
-		local result = player.storage:toString()
-		love.filesystem.write(player.storage:getRoot():get("filename"), result)
-	end
-
 	local location = gameDB:getResource(
-		player.storage:getRoot():getSection("Location"):get("name"),
+		player.storage:getRoot():getSection("Location"):get("name") or "PreTutorial_MansionFloor1",
 		"Map")
 	if location then
 		local name = gameDB:getRecord("ResourceName", {
@@ -267,7 +249,10 @@ end
 function PlayerSelect:loadPlayer(player)
 	local game = self.application:getGame()
 
-	self.application:setPlayerFilename(player.storage:getRoot():get("filename"))
+	local filename = player.storage:getRoot():get("filename")
+	Log.info("Loading player file '%s'...", filename)
+	self.application:setPlayerFilename(filename)
+
 	game:getPlayer():spawn(player.storage, false, self.application:getPassword())
 
 	self.application:closeTitleScreen()
