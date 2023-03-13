@@ -21236,7 +21236,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -21249,7 +21249,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -21262,7 +21262,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -21275,7 +21275,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -21288,7 +21288,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -21301,7 +21301,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22016,7 +22016,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22029,7 +22029,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22042,7 +22042,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22055,7 +22055,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22068,7 +22068,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22081,7 +22081,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22770,7 +22770,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22783,7 +22783,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22796,7 +22796,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22809,7 +22809,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22822,7 +22822,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22835,7 +22835,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22848,7 +22848,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -22861,7 +22861,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -23550,7 +23550,33 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -23602,7 +23628,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -23615,33 +23641,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -24335,7 +24335,33 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -24387,7 +24413,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -24400,33 +24426,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25119,7 +25119,33 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["x-map-i"] = true,
+				["x-map-j"] = true,
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25171,7 +25197,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25184,33 +25210,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25903,7 +25903,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25916,7 +25916,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25929,7 +25929,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25942,7 +25942,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25955,7 +25955,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25968,7 +25968,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25981,7 +25981,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -25994,7 +25994,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26688,7 +26688,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26701,7 +26701,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26714,7 +26714,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26727,7 +26727,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26740,7 +26740,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26753,7 +26753,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26766,7 +26766,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26779,7 +26779,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -26852,6 +26852,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -26865,6 +26866,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -26878,6 +26880,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -26891,6 +26894,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -26904,6 +26908,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -27494,7 +27499,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -27507,7 +27512,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -27520,7 +27525,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -27533,7 +27538,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -27546,7 +27551,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -27559,7 +27564,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28274,7 +28279,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28287,7 +28292,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28300,7 +28305,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28313,7 +28318,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28326,7 +28331,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -28339,7 +28344,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 12, flat = 14, decals = {  },
+			edge = 12, flat = 10, decals = {  },
 			data =
 			{
 			},
@@ -36771,6 +36776,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -36784,6 +36790,7 @@
 			{
 				["x-map-i"] = true,
 				["x-map-j"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
