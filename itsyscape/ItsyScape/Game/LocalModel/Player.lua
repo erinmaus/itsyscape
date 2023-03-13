@@ -108,9 +108,14 @@ function LocalPlayer:spawn(storage, newGame, password)
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
 			else
-				local storage = self.game:getDirector():getPlayerStorage(self.id):getRoot()
-				if storage:hasSection("Location") then
-					local location = storage:getSection("Location")
+				local storage = self.game:getDirector():getPlayerStorage(self.id)
+				local root = storage:getRoot()
+				if not root:hasSection("Location") or not root:getSection("Location"):get("name") then
+					self:_updateLastLocation(storage)
+				end
+
+				if root:hasSection("Location") then
+					local location = root:getSection("Location")
 					if location:get("name") then
 						self.stage:movePeep(
 							actor:getPeep(),
@@ -125,6 +130,8 @@ function LocalPlayer:spawn(storage, newGame, password)
 							actor:getPeep():pushPoke('bootstrapComplete')
 						end
 					end
+				else
+					Log.warn("Couldn't place player (%d) peep - loading not continuing.", self.id)
 				end
 			end
 		end)
@@ -137,6 +144,42 @@ function LocalPlayer:spawn(storage, newGame, password)
 	self:changeCamera("Default")
 end
 
+function Player:_updateLastLocation(storage)
+	local playerActor = self.actor
+	local playerPeep = playerActor and playerActor:getPeep()
+
+	if not playerPeep then
+		Log.info("Couldn't update last location, player (%d) not ready.", self.id)
+		return false
+	end
+
+	local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
+
+	local map, anchor
+	if finishedQuest then
+		map = "IsabelleIsland_Tower_Floor5"
+		anchor = "Anchor_StartGame"
+	else
+		map = "PreTutorial_MansionFloor1"
+		anchor = "Anchor_Spawn"
+	end
+
+	if map and anchor then
+		local root = storage:getRoot()
+		local x, y, z = Utility.Map.getAnchorPosition(self.game, map, anchor)
+		local locationSection = root:getSection("Location")
+		locationSection:set({
+			name = map,
+			x = x,
+			y = y,
+			z = z,
+			layer = 1
+		})
+	end
+
+	return true
+end
+
 function Player:save()
 	local playerActor = self.actor
 	local playerPeep = playerActor and playerActor:getPeep()
@@ -146,29 +189,7 @@ function Player:save()
 
 		local hasLocation = root:hasSection("Location")
 		if not hasLocation then
-			local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
-			local startedQuest = playerPeep:getState():has('KeyItem', "PreTutorial_Start")
-
-			local map, anchor
-			if finishedQuest then
-				map = "IsabelleIsland_Tower_Floor5"
-				anchor = "Anchor_StartGame"
-			elseif startedQuest then
-				map = "PreTutorial_MansionFloor1"
-				anchor = "Anchor_Spawn"
-			end
-
-			if map and anchor then
-				local x, y, z = Utility.Map.getAnchorPosition(self.game, map, anchor)
-				local locationSection = root:getSection("Location")
-				locationSection:set({
-					name = map,
-					x = x,
-					y = y,
-					z = z,
-					layer = 1
-				})
-			end
+			self:_updateLastLocation(storage)
 		end
 
 		hasLocation = root:hasSection("Location")

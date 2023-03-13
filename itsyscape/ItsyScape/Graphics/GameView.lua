@@ -199,7 +199,7 @@ function GameView:attach(game)
 	end
 	stage.onWaterFlood:register(self._onWaterFlood)
 
-	self._onWaterDrain = function(_, key, water, layer)
+	self._onWaterDrain = function(_, key, layer)
 		Log.info("Water (%s) draining on layer %d.", key, layer)
 		self:drain(key, water)
 	end

@@ -72,8 +72,8 @@ function Countdown.Number:draw()
 	local currentFont = love.graphics.getFont()
 	love.graphics.setFont(self.font)
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.printf(
-		message,
+	itsyrealm.graphics.printf(
+		{ message },
 		2,
 		-height / 2 * scale + 2,
 		width,
@@ -84,8 +84,8 @@ function Countdown.Number:draw()
 		width / 2,
 		0)
 	love.graphics.setColor(finalColor.r, finalColor.g, finalColor.b, alpha)
-	love.graphics.printf(
-		message,
+	itsyrealm.graphics.printf(
+		{ message },
 		0,
 		-height / 2 * scale,
 		width,
