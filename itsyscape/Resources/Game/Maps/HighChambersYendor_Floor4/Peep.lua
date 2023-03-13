@@ -210,9 +210,9 @@ function HighChambersYendor:initWater(director)
 
 	local state = player:getState()
 
-	if state:has("KeyItem", "HighChambersYendor_Lever1") and
-	   state:has("KeyItem", "HighChambersYendor_Lever2") and
-	   state:has("KeyItem", "HighChambersYendor_Lever3")
+	if state:has("KeyItem", "HighChambersYendor_Lever1")
+	   --and state:has("KeyItem", "HighChambersYendor_Lever2")
+	   --and state:has("KeyItem", "HighChambersYendor_Lever3")
 	then
 		Log.info("Canal is not flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_DRAIN, self:getLayer())
