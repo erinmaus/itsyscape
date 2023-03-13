@@ -17,9 +17,10 @@ function LabelRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.defaultStyle = LabelStyle({
-		color = { 0, 0, 0, 1 },
+		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20
+		fontSize = 20,
+		textShadow = true
 	}, resources)
 end
 

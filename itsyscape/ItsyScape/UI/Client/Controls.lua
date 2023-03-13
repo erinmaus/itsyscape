@@ -60,6 +60,10 @@ Controls.NAMES = {
 	['PLAYER_1_MOVE_DOWN'] = 'Move Backwards',
 	['PLAYER_1_MOVE_LEFT'] = 'Move Left',
 	['PLAYER_1_MOVE_RIGHT'] = 'Move Right',
+	['CAMERA_UP'] = 'Camera Up',
+	['CAMERA_DOWN'] = 'Camera Down',
+	['CAMERA_LEFT'] = 'Camera Left',
+	['CAMERA_RIGHT'] = 'Camera Right',
 	['PLAYER_1_FLEE'] = 'Flee from Combat',
 	['PLAYER_1_FOCUS'] = 'Toggle Combat Menu',
 	['PLAYER_1_CAMERA'] = 'Toggle Camera Focus',
@@ -80,12 +84,12 @@ Controls.NAMES = {
 
 Controls.SetKeybind = Class(Widget)
 
-function Controls.SetKeybind:new(application)
+function Controls.SetKeybind:new(application, x, y)
 	Widget.new(self)
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(w, h)
-	self:setPosition(-w / 4, -h / 4)
+	self:setPosition(x, y)
 
 	self.panel = Panel()
 	self.panel:setSize(w, h)
@@ -248,7 +252,7 @@ function Controls:new(application)
 end
 
 function Controls:onSetKeybind(keybind, label)
-	local widget = Controls.SetKeybind(self.application)
+	local widget = Controls.SetKeybind(self.application, self:getScroll())
 
 	widget.onSet:register(function(_, binding)
 		keybind:bind(binding)

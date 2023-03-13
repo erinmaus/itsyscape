@@ -26,6 +26,8 @@ DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
 DefaultCameraController.CAMERA_BUTTON = 3
 
+DefaultCameraController.SPEED = math.pi / 2
+
 function DefaultCameraController:new(...)
 	CameraController.new(self, ...)
 
@@ -157,6 +159,60 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 	end
 end
 
+function DefaultCameraController:updateControls(delta)
+	if _DEBUG then
+		return
+	end
+
+	local upPressed = Keybinds['CAMERA_UP']:isDown()
+	local downPressed = Keybinds['CAMERA_DOWN']:isDown()
+	local leftPressed = Keybinds['CAMERA_LEFT']:isDown()
+	local rightPressed = Keybinds['CAMERA_RIGHT']:isDown()
+
+	local angle1 = self.cameraVerticalRotationOffset
+	do
+		if leftPressed then
+			angle1 = angle1 + DefaultCameraController.SPEED * delta
+		end
+
+		if rightPressed then
+			angle1 = angle1 - DefaultCameraController.SPEED * delta
+		end
+	end
+
+	local angle2 = self.cameraHorizontalRotationOffset
+	do
+		if upPressed then
+			angle2 = angle2 - DefaultCameraController.SPEED * delta
+		end
+
+		if downPressed then
+			angle2 = angle2 + DefaultCameraController.SPEED * delta
+		end
+	end
+
+	angle1 = math.max(
+		angle1,
+		-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	angle1 = math.min(
+		angle1,
+		DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	angle2 = math.max(
+		angle2,
+		-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+	angle2 = math.min(
+		angle2,
+		DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+
+	self:getCamera():setVerticalRotation(
+		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
+	self:getCamera():setHorizontalRotation(
+		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
+
+	self.cameraVerticalRotationOffset = angle1
+	self.cameraHorizontalRotationOffset = angle2
+end
+
 function DefaultCameraController:debugUpdate(delta)
 	local isShiftDown = love.keyboard.isDown('lshift') or
 	                    love.keyboard.isDown('rshift')
@@ -228,6 +284,8 @@ function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
 	end
+
+	self:updateControls(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if isFocusDown ~= self.isFocusDown and isFocusDown then

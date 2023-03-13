@@ -1,7 +1,10 @@
 speaker "Priest"
 
 TARGET_NAME = _TARGET:getName()
-message "Praise upon Yendor. Welcome His High Chambers, ${TARGET_NAME}."
+message {
+	"Praise upon Yendor.",
+	"Welcome to Her High Chambers, ${TARGET_NAME}."
+}
 
 do
 	local INFO   = option "What's this place?"
@@ -20,13 +23,14 @@ do
 
 		if result == INFO then
 			message {
-				"This is the High Chambers of Yendor. Yendor only allows His most faithful into the lower chambers.",
-				"The rest of His covenant are granted eternal life to roam the endless halls of the High Chambers.",
+				"This is the High Chambers of Yendor.",
+				"Only the most devout may see the chambers that lay below these."
 			}
 
 			message {
-				"Here, they are given the divine luxury of protecting the entrance to the lower chambers.",
-				"Unfortunately, someone--a person with fierce weaponry and excellent combat prowess--managed to escape."
+				"Unfortunately, someone has slain dozens",
+				"of her covenant on a foolhardy quest.",
+				"They seem formidable with all kinds of weapons."
 			}
 
 			message {
@@ -35,8 +39,9 @@ do
 			}
 
 			message {
-				"You may try and help them, or stop them. I won't get in the way.",
-				"I sense Yendor's will, and He has a role for you yet."
+				"You may try and help them or stop them.",
+				"I won't get in the way.",
+				"I sense Yendor's will. She has a role for you yet."
 			}
 
 			speaker "_TARGET"
@@ -46,35 +51,44 @@ do
 			speaker "Priest"
 
 			message {
-				"And neither have I. No one has seen Yendor in nearly a thousand years."
+				"And neither have I.",
+				"No one has seen Yendor in centuries."
 			}
 		elseif result == BOTTOM then
 			message {
-				"A person flew through these halls and slayed dozens of Yendor's children.",
-				"They carried a multitude of weapons and had extreme skill with blade, staff, and bow."
+				"A person rode through these halls,",
+				"slaying dozens of Yendor's children.",
+				"They carried a few weapons,",
+				"showing mastery of blade, staff, and bow."
 			}
 
 			message {
-				"Whoever they were, they lay at the bottom of this dungeon. Yendor tells me they seek his home.",
-				"But no human has ever seen Yendor, for He wills against it. Only us, his First Children, may lay eyes upon His holiness."
+				"Whoever they are, they lay at the bottom of the Chambers.",
+				"But no human has ever seen Yendor,",
+				"and neither will this invader."
 			}
 		elseif result == SELF then
 			message {
-				"I am a High Priest for Yendor. I serve at His command.",
-				"Yendor tells me you will be useful in the days to come, so I'm here to guide you."
+				"I am a High Priest for Yendor.",
+				"I serve at Her command.",
+				"She has a role for you yet."
 			}
 
 			speaker "_TARGET"
 
 			message {
-				"Of course! I'm ${TARGET_NAME} after all, up-and-coming adventure extraordinare."
+				"Of course! I'm ${TARGET_NAME} after all,",
+				"up-and-coming adventure extraordinare!"
 			}
 
 			speaker "Priest"
 
 			message "Yendor knows. Yendor knows all."
 		elseif result == QUIT then
-			message "Farewell, ${TARGET_NAME}. Stop the intruder and bring peace to these chambers."
+			message {
+				"Farewell, ${TARGET_NAME}.",
+				"Stop the intruder and bring peace to these chambers."
+			}
 		end
 	end
 end

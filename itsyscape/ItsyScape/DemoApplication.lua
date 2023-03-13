@@ -21,6 +21,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local Keybinds = require "ItsyScape.UI.Keybinds"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
@@ -567,10 +568,10 @@ function DemoApplication:updatePlayerMovement()
 		return
 	end
 
-	local up = love.keyboard.isDown('w')
-	local down = love.keyboard.isDown('s')
-	local left = love.keyboard.isDown('a')
-	local right = love.keyboard.isDown('d')
+	local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
+	local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
+	local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
+	local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
 
 	local x, z = 0, 0
 	do

@@ -280,66 +280,54 @@ do
 	}
 end
 
-M["SackOfHay_1"] = ItsyScape.Resource.MapObject.Unique()
+M["EntranceTorch_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 9,
 		PositionY = 1,
 		PositionZ = 109,
-		Name = "SackOfHay_1",
+		Name = "EntranceTorch_1",
 		Map = M._MAP,
-		Resource = M["SackOfHay_1"]
+		Resource = M["EntranceTorch_1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
-		MapObject = M["SackOfHay_1"]
-	}
-
-	M["SackOfHay_1"] {
-		ItsyScape.Action.None()
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["EntranceTorch_1"]
 	}
 end
 
-M["SackOfHay_2"] = ItsyScape.Resource.MapObject.Unique()
+M["EntranceTorch_2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13,
 		PositionY = 1,
 		PositionZ = 109,
-		Name = "SackOfHay_2",
+		Name = "EntranceTorch_2",
 		Map = M._MAP,
-		Resource = M["SackOfHay_2"]
+		Resource = M["EntranceTorch_2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
-		MapObject = M["SackOfHay_2"]
-	}
-
-	M["SackOfHay_2"] {
-		ItsyScape.Action.None()
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["EntranceTorch_2"]
 	}
 end
 
-M["SackOfHay_3"] = ItsyScape.Resource.MapObject.Unique()
+M["EntranceTorch_3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 17,
 		PositionY = 1,
 		PositionZ = 109,
-		Name = "SackOfHay_3",
+		Name = "EntranceTorch_3",
 		Map = M._MAP,
-		Resource = M["SackOfHay_3"]
+		Resource = M["EntranceTorch_3"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
-		MapObject = M["SackOfHay_3"]
-	}
-
-	M["SackOfHay_3"] {
-		ItsyScape.Action.None()
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["EntranceTorch_3"]
 	}
 end
 
@@ -503,6 +491,27 @@ do
 		Value = "Looks like there's no way to light this torch.",
 		Language = "en-US",
 		Resource = M["DoubleLockDoor_CreepRoomTorch"]
+	}
+end
+
+M["Door_Prison"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 1,
+		PositionZ = 95,
+		RotationX = 0,
+		RotationY = 1,
+		RotationZ = 0,
+		RotationW = 0,
+		Name = "Door_Prison",
+		Map = M._MAP,
+		Resource = M["Door_Prison"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_Prison"]
 	}
 end
 
@@ -1593,14 +1602,14 @@ do
 	ItsyScape.Meta.MapObjectGroup {
 		MapObjectGroup = "CthulhuianMiniboss",
 		Map = M._MAP,
-		MapObject = M["CthulhuianMiniboss2"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
+		MapObject = M["CthulhuianMiniboss2"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_CthulhuianParasite",
-		MapObject = M["CthulhuianMiniboss2"]
+		MapObject = M["CthulhuianMiniboss2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -1665,8 +1674,8 @@ do
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromFloor1West",
-		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor2",
+		Anchor = "Anchor_FromFloor3",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor4",
 		Action = TravelAction
 	}
 
@@ -1717,5 +1726,17 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Lever",
 		MapObject = M["Lever"]
+	}
+end
+
+M["Anchor_Lever"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = -1,
+		PositionZ = 55,
+		Name = "Anchor_Lever",
+		Map = M._MAP,
+		Resource = M["Anchor_Lever"]
 	}
 end

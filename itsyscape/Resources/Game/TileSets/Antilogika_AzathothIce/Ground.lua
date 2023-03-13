@@ -34,7 +34,7 @@ function AzathothIceGround:new()
 		COLOR = Color.fromHexString("444f58"),
 		FEATURE = "brick",
 		SCALE = Vector(2, 1, 1),
-		NUM_FEATURES = 3,
+		NUM_FEATURES = 4,
 		ONLY_FLAT = false
 	})
 
