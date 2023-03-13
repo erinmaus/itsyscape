@@ -39,7 +39,7 @@ function GenderBehavior:new()
 	self.description = "Non-Binary"
 end
 
-function GenderBehavior:unload(peep)
+function GenderBehavior:save(peep)
 	local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 	if peep:hasBehavior(PlayerBehavior) then
 		local director = peep:getDirector()
