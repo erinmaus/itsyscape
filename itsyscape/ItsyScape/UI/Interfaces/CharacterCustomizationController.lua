@@ -346,7 +346,7 @@ function CharacterCustomizationController:changeGender(e)
 			end
 		end
 
-		gender:unload(peep)
+		gender:save(peep)
 	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
@@ -364,7 +364,7 @@ function CharacterCustomizationController:changeGenderDescription(e)
 	if gender then
 		gender.description = e.description
 
-		gender:unload(peep)
+		gender:save(peep)
 	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
@@ -386,7 +386,7 @@ function CharacterCustomizationController:changePronoun(e)
 
 		gender.pronouns[pronounIndex] = e.value
 
-		gender:unload(peep)
+		gender:save(peep)
 	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(

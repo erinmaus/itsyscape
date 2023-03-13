@@ -58,6 +58,11 @@ function HighChambersYendor:onFinalize(director, game)
 	HighChambersYendorCommon.initLever(self, "HighChambersYendor_Lever1")
 end
 
+function HighChambersYendor:onPlayerEnter(player)
+	player:getActor():getPeep():getState():give("KeyItem", "CalmBeforeTheStorm_OpenedHighChambersYendor", 1)
+	self:openPrisonDoor()
+end
+
 function HighChambersYendor:initTorchPuzzle()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -615,6 +620,24 @@ function HighChambersYendor:giveMinibossLoot()
 				1,
 				{ ['item-inventory'] = true, ['item-drop-excess'] = true, ['force-item-drop'] = true })
 		end
+	end
+end
+
+function HighChambersYendor:openPrisonDoor()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local meta = gameDB:getRecord("MapObjectLocation", {
+		Name = "Door_Prison",
+		Map = Utility.Peep.getMapResource(self)
+	})
+
+	local door = director:probe(
+		self:getLayerName(),
+		Probe.mapObject(meta:get("Resource")))[1]
+
+	if door then
+		door:poke('open')
 	end
 end
 

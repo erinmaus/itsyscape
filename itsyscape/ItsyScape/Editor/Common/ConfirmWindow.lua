@@ -69,6 +69,7 @@ function ConfirmWindow:new(application)
 	self.okButton:setText("OK")
 
 	self:addChild(self.okButton)
+	self:addChild(self.cancelButton)
 
 	self:setSize(ConfirmWindow.DEFAULT_WIDTH, ConfirmWindow.DEFAULT_HEIGHT)
 end
@@ -107,8 +108,14 @@ function ConfirmWindow:performLayout()
 
 	self.panel:setSize(width, height)
 
+	self.messageLabel:setSize(width - self.PADDING, height - 32 - ConfirmWindow.PADDING)
+
 	self.okButton:setPosition(
 		ConfirmWindow.PADDING,
+		height - 32 - ConfirmWindow.PADDING)
+
+	self.cancelButton:setPosition(
+		ConfirmWindow.PADDING * 2 + 96,
 		height - 32 - ConfirmWindow.PADDING)
 end
 

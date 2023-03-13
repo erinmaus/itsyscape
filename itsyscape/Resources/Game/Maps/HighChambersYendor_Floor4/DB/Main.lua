@@ -174,8 +174,8 @@ do
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromFloor4",
-		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor3",
+		Anchor = "Anchor_FromFloor2",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor1West",
 		Action = TravelAction
 	}
 

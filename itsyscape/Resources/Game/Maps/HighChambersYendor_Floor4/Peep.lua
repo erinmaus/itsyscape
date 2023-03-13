@@ -22,7 +22,7 @@ local HighChambersYendorCommon = require "Resources.Game.Peeps.HighChambersYendo
 
 local HighChambersYendor = Class(Map)
 HighChambersYendor.WATER_FLOOD = {
-	texture = "LightFoamyWater1",
+	texture = "BloodyBrain1",
 	i = 1,
 	j = 16,
 	width = 24,
@@ -31,7 +31,7 @@ HighChambersYendor.WATER_FLOOD = {
 }
 
 HighChambersYendor.WATER_DRAIN = {
-	texture = "LightFoamyWater1",
+	texture = "BloodyBrain1",
 	i = 1,
 	j = 16,
 	width = 24,
@@ -210,9 +210,9 @@ function HighChambersYendor:initWater(director)
 
 	local state = player:getState()
 
-	if state:has("KeyItem", "HighChambersYendor_Lever1") and
-	   state:has("KeyItem", "HighChambersYendor_Lever2") and
-	   state:has("KeyItem", "HighChambersYendor_Lever3")
+	if state:has("KeyItem", "HighChambersYendor_Lever1")
+	   --and state:has("KeyItem", "HighChambersYendor_Lever2")
+	   --and state:has("KeyItem", "HighChambersYendor_Lever3")
 	then
 		Log.info("Canal is not flooded.")
 		stage:flood("HighChambersYendor_Floor4_Canal", HighChambersYendor.WATER_DRAIN, self:getLayer())
@@ -292,13 +292,16 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 		'world')
 	for i = 1, #actions do
 		if actions[i].instance:is("talk") then
-			return Utility.UI.openInterface(
+			Utility.UI.openInterface(
 				instance,
 				"DialogBox",
 				true,
 				actions[i].instance:getAction())
 		end
 	end
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:playMusic(self:getLayer(), "main", { "HighChambersYendor1", "HighChambersYendor2" })
 end
 
 return HighChambersYendor
