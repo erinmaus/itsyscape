@@ -1,5 +1,6 @@
 {
 	{
-		tileSetID = "HighChambersYendor",
+		tileSetID = "Antilogika_AzathothIce",
+		maskID = true
 	},
 }
