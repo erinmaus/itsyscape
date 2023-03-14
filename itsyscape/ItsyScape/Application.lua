@@ -12,6 +12,7 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Probe = require "ItsyScape.Game.Probe"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
@@ -89,7 +90,8 @@ function Application:new(multiThreaded)
 
 	self.multiThreaded = multiThreaded or false
 
-	self.adminChannel = love.thread.newChannel()
+	self.inputAdminChannel = love.thread.newChannel()
+	self.outputAdminChannel = love.thread.newChannel()
 	self.inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 	self.outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
@@ -102,7 +104,7 @@ function Application:new(multiThreaded)
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG
-		}, self.adminChannel)
+		}, self.inputAdminChannel, self.outputAdminChannel)
 
 		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
@@ -348,7 +350,7 @@ function Application:host(port, password)
 		self:disconnect()
 	end
 
-	self.adminChannel:push({
+	self.inputAdminChannel:push({
 		type = 'host',
 		address = "*",
 		port = tostring(port),
@@ -369,7 +371,7 @@ function Application:play(player)
 
 	if self:getPlayMode() == Application.PLAY_MODE_SINGLE_PLAYER then
 		Log.info("Playing as player %d; assigning as primary", player:getID())
-		self.adminChannel:push({
+		self.inputAdminChannel:push({
 			type = 'play',
 			playerID = player:getID()
 		})
@@ -386,19 +388,19 @@ function Application:disconnect()
 		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 
 		Log.info("Switching from multiplayer (host).")
-		self.adminChannel:push({
+		self.inputAdminChannel:push({
 			type = 'disconnect'
 		})
 	elseif playMode == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
 		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 
 		Log.info("Switching from multiplayer (client).")
-		self.adminChannel:push({
+		self.inputAdminChannel:push({
 			type = 'offline'
 		})
 	elseif playMode == Application.PLAY_MODE_SINGLE_PLAYER then
 		Log.info("Staying on single player.")
-		self.adminChannel:push({
+		self.inputAdminChannel:push({
 			type = 'play'
 		})
 	end
@@ -406,12 +408,12 @@ function Application:disconnect()
 	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 end
 
-function Application:setAdmin(clientID)
-	Log.info("Setting admin to client %d.")
+function Application:setAdmin(playerID)
+	Log.info("Setting admin to player %d.", playerID)
 
-	self.adminChannel:push({
+	self.inputAdminChannel:push({
 		type = 'admin',
-		admin = clientID
+		admin = playerID
 	})
 end
 
@@ -432,7 +434,7 @@ function Application:connect(address, port, password)
 
 	self.playMode = Application.PLAY_MODE_MULTIPLAYER_CLIENT
 
-	self.adminChannel:push({
+	self.inputAdminChannel:push({
 		type = 'connect'
 	})
 end
@@ -454,6 +456,10 @@ function Application:onNetworkError(_, message)
 	self:disconnect()
 end
 
+function Application:savePlayer(player, storage)
+	-- Nothing.
+end
+
 function Application:quit()
 	if self.multiThreaded then
 		self.game:quit()
@@ -465,7 +471,7 @@ function Application:quit()
 		end
 
 		if self.gameThread then
-			self.adminChannel:push({
+			self.inputAdminChannel:push({
 				type = 'quit'
 			})
 			self.gameThread:wait()
@@ -473,6 +479,17 @@ function Application:quit()
 			local e = self.gameThread:getError()
 			if e then
 				Log.warn("Error quitting logic thread: %s", e)
+			else
+				Log.info("Trying to save player...")
+				local event = self.outputAdminChannel:demand(1)
+				if event and event.type == 'save' then
+					local storage = PlayerStorage()
+					storage:deserialize(event.storage)
+
+					self:savePlayer(self.game:getPlayer(), storage)
+				else
+					Log.warn("Didn't receive save command from logic thread before timeout.")
+				end
 			end
 		end
 	end

@@ -62,10 +62,13 @@ function DemoApplication:new()
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
 
+		self:setPlayerFilename(nil)
+
 		self:getGameView():reset()
 		self:tryOpenTitleScreen()
 
 		self:play(player)
+		self:setAdmin(player:getID())
 	end)
 
 	self:getGame().onQuit:register(function()
@@ -100,12 +103,19 @@ function DemoApplication:setPlayerFilename(value)
 end
 
 function DemoApplication:savePlayer(_, storage)
-	love.filesystem.createDirectory("Player")
+	Application.savePlayer(self, _, storage)
 
+	if not self.playerFilename then
+		Log.info("Can't save player storage to file, player filename not set.")
+		return
+	end
+
+	love.filesystem.createDirectory("Player")
 	Log.info("Saving player data to '%s'...", self.playerFilename)
 
 	local result = storage:toString()
 	love.filesystem.write(self.playerFilename, result)
+	Log.info("Successfully saved player data.")
 end
 
 function DemoApplication:quitPlayer()
