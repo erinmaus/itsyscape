@@ -13,9 +13,10 @@ local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 
 local FoggyForest = Class(Map)
 FoggyForest.PEEPS = {
@@ -170,6 +171,7 @@ function FoggyForest:spawnFoes(e)
 		local actor = Utility.spawnActorAtAnchor(self, peep, anchor)
 		if actor then
 			Log.info("Spawned %s.", actor:getName())
+			actor:getPeep():silence('ready', Utility.Peep.Mashina.onReady)
 			actor:getPeep():listen('finalize', Utility.Peep.attack, actor:getPeep(), e.peep, math.huge)
 			actor:getPeep():listen('die', function()
 				self.numFoesStat[playerModel].currentValue = self.numFoesStat[playerModel].currentValue - 1
