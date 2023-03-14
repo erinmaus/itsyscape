@@ -15,6 +15,14 @@ function Log.boolean(value)
 	return (value and "true") or "false"
 end
 
+function Log.stringify(value)
+	if type(value) == 'table' then
+		return require("ItsyScape.Common.StringBuilder").stringify(value, '%t')
+	else
+		return require("ItsyScape.Common.StringBuilder").stringify(value)
+	end
+end
+
 function Log.profile(...)
 	local DebugStats = require "ItsyScape.Graphics.DebugStats"
 	DebugStats.GLOBAL:measure(...)

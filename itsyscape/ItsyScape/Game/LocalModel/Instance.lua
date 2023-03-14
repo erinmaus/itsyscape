@@ -166,10 +166,11 @@ end
 
 Instance.Music = Class()
 
-function Instance.Music:new(layer, track, song)
+function Instance.Music:new(layer, track, song, stopped)
 	self.layer = layer
 	self.track = track
 	self.song = song
+	self.stopped = stopped or false
 end
 
 function Instance.Music:getLayer()
@@ -182,6 +183,14 @@ end
 
 function Instance.Music:getSong()
 	return self.song
+end
+
+function Instance.Music:stop()
+	self.stopped = true
+end
+
+function Instance.Music:getIsStopped()
+	return self.stopped
 end
 
 function Instance:new(id, filename, stage)
@@ -440,14 +449,15 @@ function Instance:new(id, filename, stage)
 
 			for i = 1, #self.music do
 				if self.music[i]:getTrack() == track then
-					Log.engine("Music removed from index %d.", i)
-					table.remove(self.music, i)
+					Log.engine("Music stopped at index %d.", i)
+					self.music[i]:stop()
 					self:onStopMusic(track, song, layer)
 					return
 				end
 			end
 
-			Log.engine("Warning; music not found. Stopping anyway.")
+			Log.engine("Music not found. Stopping anyway.")
+			table.insert(self.music, Instance.Music(layer, track, song, true))
 			self:onStopMusic(track, song, layer)
 		else
 			Log.engine(
@@ -1134,17 +1144,6 @@ function Instance:unloadPlayer(localGameManager, player)
 		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
 	end
 
-	-- for _, music in ipairs(self.music) do
-	-- 	localGameManager:pushCallback(
-	-- 		"ItsyScape.Game.Model.Stage",
-	-- 		0,
-	-- 		"onStopMusic",
-	-- 		localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
-	-- 	localGameManager:assignTargetToLastPush(player)
-
-	-- 	Log.engine("Unloaded song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
-	-- end
-
 	for _, item in ipairs(self.items) do
 		localGameManager:pushCallback(
 			"ItsyScape.Game.Model.Stage",
@@ -1327,16 +1326,16 @@ function Instance:loadPlayer(localGameManager, player)
 		if not self:hasLayer(music:getLayer(), player) then
 			Log.engine(
 				"Layer %d is not visible to player, no need to update music track '%s'.",
-				music:getTrack(), music:getKey())
+				music:getLayer(), music:getTrack())
 		else
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
-				"onPlayMusic",
+				(music:getIsStopped() and "onStopMusic") or "onPlayMusic",
 				localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
 			localGameManager:assignTargetToLastPush(player)
 
-			Log.engine("Restored song '%s' on track '%s' for layer %d.", music:getSong(), music:getTrack(), music:getLayer())
+			Log.engine("Restored song '%s' on track '%s' for layer %d.", Log.stringify(music:getSong()), music:getTrack(), music:getLayer())
 		end
 	end
 
