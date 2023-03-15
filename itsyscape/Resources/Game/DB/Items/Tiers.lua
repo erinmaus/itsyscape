@@ -52,10 +52,26 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "BlackenedIron",
+		Language = "en-US",
+		Name = "Blackened iron",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Adamant",
 		Language = "en-US",
 		Name = "Adamant",
 		Tier = 40
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
+		Value = "Uranium",
+		Language = "en-US",
+		Name = "Itsy",
+		Tier = 45
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {

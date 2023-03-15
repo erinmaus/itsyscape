@@ -15,15 +15,22 @@ local METALS = {
 		hammer = "Hammer"
 	},
 
-	["Adamant"] = {
-		tier = 40,
-		weight = 25,
-		hammer = "Hammer"
-	},
-
 	["Iron"] = {
 		tier = 10,
 		weight = 31,
+		hammer = "Hammer"
+	},
+
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		weight = 31,
+		hammer = "Hammer"
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 25,
 		hammer = "Hammer"
 	},
 
@@ -160,7 +167,7 @@ for name, metal in spairs(METALS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format(itemProps.niceName, name),
+			Value = string.format(itemProps.niceName, metal.niceName or name),
 			Language = "en-US",
 			Resource = Item
 		}
@@ -194,7 +201,6 @@ do
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2, 0.3),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2, 0.2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(2, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "BronzeGloves"
 	}
@@ -211,7 +217,6 @@ do
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2, 0.2),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(2, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "BronzeBoots"
 	}
@@ -227,7 +232,6 @@ do
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(4, 0.3),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(4, 0.3),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 1),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(4, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "BronzeHelmet"
 	}
@@ -243,7 +247,6 @@ do
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(6, 0.3),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(6, 0.4),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(6, 1),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(6, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "BronzePlatebody"
 	}
@@ -259,7 +262,6 @@ do
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 0.4),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.5),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 0.5),
-		DefenseMagic = -ItsyScape.Utility.styleBonusForItem(10, 0.1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "BronzeShield"
 	}
@@ -457,6 +459,139 @@ do
 		Value = "At least there's a cool animation if you use Tornado.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IronZweihander"
+	}
+end
+
+-- Blackened iron
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(22, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(22, 0.9),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "BlackenedIronGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Show off your inner goth.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(24, 0.5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.2),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(11),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "BlackenedIronBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "These would be better if they were platforms.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(24, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(24, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(24, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "BlackenedIronHelmet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Look bad ass while slashing and bashing.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronHelmet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(26, 0.4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(27, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(26, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(28, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "BlackenedIronPlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Completes that classic 'Dark Knight' look!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronPlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(27, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(27, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(27, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(28, 0.7),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I wonder where the red comes from.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronShield"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(25, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(23),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronDagger"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Perfect for assassins.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronDagger"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(27, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(27),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronMace"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "For those pious ne'er-do-wells.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronMace"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(28, 1.0),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(28),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronLongsword"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Look great while slashing at your foes.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronLongsword"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(29, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(29, 0.65),
+		DefenseRanged = 1,
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(29),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BlackenedIronZweihander"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Stylishly slay those pesky archery users from afar.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronZweihander"
 	}
 end
 
