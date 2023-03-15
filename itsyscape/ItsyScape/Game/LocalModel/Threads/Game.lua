@@ -11,7 +11,7 @@
 _LOG_SUFFIX = "server"
 require "bootstrap"
 
-local conf, adminChannel = ...
+local conf, inputAdminChannel, outputAdminChannel = ...
 _DEBUG = conf._DEBUG
 
 local GameDB = require "ItsyScape.GameDB.GameDB"
@@ -25,7 +25,7 @@ local game = LocalGame(GameDB.create())
 local inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 local outputChannel = love.thread.getChannel('ItsyScape.Game::output')
 
-local serverRPCService, adminClientID
+local serverRPCService, adminPlayerID
 local channelRpcService = ChannelRPCService(inputChannel, outputChannel)
 
 local gameManager = LocalGameManager(channelRpcService, game)
@@ -94,7 +94,7 @@ local function saveOnErrorForMultiPlayer()
 			end
 		end
 
-		if player:getClientID() == adminClientID then
+		if player:getID() == adminPlayerID then
 			Log.info("Player is admin; saving now.")
 
 			local filename = storage and storage:getFilename()
@@ -215,12 +215,25 @@ while isRunning do
 
 	local e
 	repeat
-		e = adminChannel:pop()
+		e = inputAdminChannel:pop()
 		if e then
 			if e.type == 'quit' then
 				isRunning = false
+
+				local storage
+				for _, player in game:iteratePlayers() do
+					if player:getID() == adminPlayerID then
+						player:save()
+						storage = game:getDirector():getPlayerStorage(player:getID())
+					end
+				end
+
+				outputAdminChannel:push({
+					type = 'save',
+					storage = storage and storage:serialize()
+				})
 			elseif e.type == 'admin' then
-				adminClientID = e.admin
+				adminPlayerID = e.admin
 			elseif e.type == 'connect' then
 				Log.info("Clearing players because we are connecting to an external host...")
 
@@ -269,7 +282,7 @@ while isRunning do
 
 				gameManager:swapRPCService(serverRPCService)
 
-				adminClientID = nil
+				adminPlayerID = nil
 			elseif e.type == 'offline' then
 				for _, player in game:iteratePlayers() do
 					player:poof()
