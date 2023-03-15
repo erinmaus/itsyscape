@@ -223,6 +223,7 @@ while isRunning do
 				local storage
 				for _, player in game:iteratePlayers() do
 					if player:getID() == adminPlayerID then
+						player:save()
 						storage = game:getDirector():getPlayerStorage(player:getID())
 					end
 				end
