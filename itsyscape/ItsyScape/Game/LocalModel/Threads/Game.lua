@@ -14,6 +14,7 @@ require "bootstrap"
 local conf, inputAdminChannel, outputAdminChannel = ...
 _DEBUG = conf._DEBUG
 
+local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
@@ -230,7 +231,7 @@ while isRunning do
 
 				outputAdminChannel:push({
 					type = 'save',
-					storage = storage and storage:serialize()
+					storage = buffer.encode(storage and storage:serialize() or {})
 				})
 			elseif e.type == 'admin' then
 				adminPlayerID = e.admin

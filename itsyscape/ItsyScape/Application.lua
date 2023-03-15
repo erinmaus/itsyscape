@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -483,10 +484,13 @@ function Application:quit()
 				Log.info("Trying to save player...")
 				local event = self.outputAdminChannel:demand(1)
 				if event and event.type == 'save' then
-					local storage = PlayerStorage()
-					storage:deserialize(event.storage)
+					local serializedStorage = buffer.decode(event.storage)
+					if next(serializedStorage) then
+						local storage = PlayerStorage()
+						storage:deserialize(serializedStorage)
 
-					self:savePlayer(self.game:getPlayer(), storage)
+						self:savePlayer(self.game:getPlayer(), storage)
+					end
 				else
 					Log.warn("Didn't receive save command from logic thread before timeout.")
 				end
