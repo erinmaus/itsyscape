@@ -22,6 +22,19 @@ local METALS = {
 		hammer = "Hammer"
 	},
 
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		weight = 14.5,
+		hammer = "Hammer"
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		weight = 3.6,
+		hammer = "Hammer"
+	},
+
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
@@ -100,7 +113,7 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s pickaxe", name),
+		Value = string.format("%s pickaxe", metal.niceName or name),
 		Language = "en-US",
 		Resource = Item
 	}
@@ -138,6 +151,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Helps you mine a little bit better.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronPickaxe"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Good for mining coal, won't notice the coal dust!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronPickaxe"
 }
 
 ItsyScape.Meta.ResourceDescription {

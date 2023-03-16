@@ -55,22 +55,61 @@ local ORES = {
 		}
 	},
 
+	["Coal"] = {
+		tier = 20,
+		weight = 12,
+		health = 40,
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold"
+		}
+	},
+
+	["Lithium"] = {
+		tier = 25,
+		weight = 2,
+		health = 50
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		weight = 1.5,
+		health = 60
+	},
+
+	["Caesium"] = {
+		tier = 35,
+		weight = 2,
+		health = 90
+	},
+
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
 		health = 100
 	},
 
+	["Uranium"] = {
+		tier = 45,
+		weight = 40,
+		health = 100
+	},
+
 	["Itsy"] = {
 		tier = 50,
 		weight = 25,
-		health = 100
+		health = 200
 	},
 
 	["Gold"] = {
 		tier = 55,
 		weight = 20,
-		health = 200
+		health = 220
 	}
 }
 
@@ -226,6 +265,12 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Needs smelting.",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "UraniumOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Needs smelting.",
+	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ItsyOre"
 }
 
@@ -254,6 +299,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Contains coal.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CoalRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Contains adamant ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "AdamantRock_Default"
@@ -262,7 +313,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Contains itsy ore.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "AdamantRock_Default"
+	Resource = ItsyScape.Resource.Prop "ItsyRock_Default"
 }
 
 ItsyScape.Meta.ResourceDescription {
