@@ -133,6 +133,8 @@ end
 function SkillGuideController:poke(actionID, actionIndex, e)
 	if actionID == "select" then
 		self:select(e)
+	elseif actionID == "spawn" then
+		self:spawn(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -160,6 +162,17 @@ function SkillGuideController:select(e)
 		"populateRequirements",
 		nil,
 		{ result })
+end
+
+function SkillGuideController:spawn(e)
+	assert(_DEBUG ~= nil and _DEBUG, "debug mode must be enabled")
+
+	local state = self:getPeep():getState()
+	local success = state:give("Item", e.itemID, e.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+
+	if success then
+		Log.info("Spawned %d '%s' in the inventory of peep '%s' via skill guide debug cheat.", e.count or 1, e.itemID, self:getPeep():getName())
+	end
 end
 
 return SkillGuideController
