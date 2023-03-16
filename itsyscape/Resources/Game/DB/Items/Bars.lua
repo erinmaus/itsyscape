@@ -34,16 +34,32 @@ local BARS = {
 		{ name = "IronOre", count = 1 }
 	},
 
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		weight = 5,
+		{ name = "IronOre", count = 1 },
+		{ name = "CoalOre", count = 1 }
+	},
+
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
-		{ name = "AdamantOre", count = 1 }
+		{ name = "AdamantOre", count = 1 },
+		{ name = "CaesiumOre", count = 1 }
+	},
+
+	["Uranium"] = {
+		tier = 45,
+		weight = 35,
+		{ name = "UraniumOre", count = 1 }
 	},
 
 	["Itsy"] = {
 		tier = 50,
 		weight = 5,
-		{ name = "ItsyOre", count = 1 }
+		{ name = "ItsyOre", count = 1 },
+		{ name = "UraniumOre", count = 1 }
 	},
 
 	["Gold"] = {
@@ -97,7 +113,7 @@ for name, bar in spairs(BARS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s bar", name),
+		Value = string.format("%s bar", bar.niceName or name),
 		Language = "en-US",
 		Resource = Bar
 	}
@@ -135,6 +151,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Useful for making adamant weapons and armor.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "AdamantBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That looks dangerous to hold...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "UraniumBar"
 }
 
 ItsyScape.Meta.ResourceDescription {

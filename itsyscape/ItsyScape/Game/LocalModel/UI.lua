@@ -26,7 +26,13 @@ function LocalUI:poke(interfaceID, index, actionID, actionIndex, e)
 	if interfaces then
 		local interface = interfaces.v[index]
 		if interface then
-			interface:poke(actionID, actionIndex, e)
+			local success, error  = xpcall(interface.poke, debug.traceback, interface, actionID, actionIndex, e)
+			if not success then
+				Log.warn(
+					"Could not run poke '%s' (index = %d) on interface '%s' (index = %d) for peep '%s': %s",
+					actionID or "<none>", actionIndex or 0, interfaceID, index, interface:getPeep():getName(), error)
+				Log.engine("Argument passed to poke: %s", Log.stringify(e))
+			end
 		end
 	end
 end

@@ -258,7 +258,35 @@ function SkillGuide:update(...)
 	end
 end
 
-function SkillGuide:selectItem(action, button)
+function SkillGuide:selectItem(action, button, buttonIndex)
+	if buttonIndex == 2 and _DEBUG then
+		local actions = {
+			{
+				id = "Select",
+				verb = "Select",
+				object = button:getText(),
+				callback = function()
+					self:selectItem(action, button, 1)
+				end
+			},
+			{
+				id = "Steal",
+				verb = "Steal",
+				object = button:getText(),
+				callback = function()
+					local itemIcon = button:getChildAt(1)
+					if itemIcon and Class.isCompatibleType(itemIcon, ItemIcon) then
+						self:sendPoke("spawn", nil, { itemID = itemIcon:getItemID(), count = itemIcon:getItemCount() })
+					end
+				end
+			}
+		}
+
+		self:getView():probe(actions)
+
+		return
+	end
+
 	if self.previousSelection then
 		self.previousSelection:setStyle(
 			ButtonStyle(
