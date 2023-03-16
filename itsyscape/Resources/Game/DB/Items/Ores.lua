@@ -70,6 +70,18 @@ local ORES = {
 		}
 	},
 
+	["Lithium"] = {
+		tier = 25,
+		weight = 2,
+		health = 50
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		weight = 1.5,
+		health = 60
+	},
+
 	["Caesium"] = {
 		tier = 35,
 		weight = 2,
