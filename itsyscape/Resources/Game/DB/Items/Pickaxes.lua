@@ -29,6 +29,12 @@ local METALS = {
 		hammer = "Hammer"
 	},
 
+	["Mithril"] = {
+		tier = 30,
+		weight = 3.6,
+		hammer = "Hammer"
+	},
+
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
