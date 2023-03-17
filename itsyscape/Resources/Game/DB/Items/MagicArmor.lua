@@ -29,6 +29,14 @@ local FABRICS = {
 			slot = "Slippers",
 			fabric = 1
 		}
+	},
+
+	["SpiderSilk"] = {
+		name = "Spider silk",
+		tier = 20,
+		weight = 0.4,
+		thread = "PlainThread",
+		rune = "WaterRune"
 	}
 }
 
@@ -42,6 +50,12 @@ local SHIELDS = {
 	["CottonCloth"] = {
 		name = "Boo book",
 		logs = "WillowLogs",
+		fabric = 3
+	},
+
+	["SpiderSilk"] = {
+		name = "Spider web",
+		logs = "OakLogs",
 		fabric = 3
 	}
 }
@@ -456,3 +470,91 @@ do
 	}
 end
 
+-- SpiderSilk cloth
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(23, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "SpiderSilkGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Sticky but effective!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilkGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.8),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "SpiderSilkSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "These give you an extra bounce in your step...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilkSlippers"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(22, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(22, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(22, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 0.4),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.3),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(13, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "SpiderSilkHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Aw, comes with a little spider buddy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilkHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(23, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "SpiderSilkRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Fits like a glove. Don't get too comfy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilkRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1.0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(20, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "SpiderSilkShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "How can this provide any protection?!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilkShield"
+	}
+end
