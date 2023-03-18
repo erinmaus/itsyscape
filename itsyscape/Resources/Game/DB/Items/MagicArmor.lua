@@ -37,6 +37,14 @@ local FABRICS = {
 		weight = 0.4,
 		thread = "PlainThread",
 		rune = "WaterRune"
+	},
+
+	["MysticCotton"] = {
+		name = "Mystic cotton",
+		tier = 30,
+		weight = 1.2,
+		thread = "PlainThread",
+		rune = "FireRune"
 	}
 }
 
@@ -56,6 +64,12 @@ local SHIELDS = {
 	["SpiderSilk"] = {
 		name = "Spider web",
 		logs = "OakLogs",
+		fabric = 3
+	},
+
+	["MysticCotton"] = {
+		name = "Black book",
+		logs = "MapleLogs",
 		fabric = 3
 	}
 }
@@ -470,7 +484,7 @@ do
 	}
 end
 
--- SpiderSilk cloth
+-- Spider silk cloth
 do
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.5),
@@ -556,5 +570,94 @@ do
 		Value = "How can this provide any protection?!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "SpiderSilkShield"
+	}
+end
+
+-- Mystic cotton cloth
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(33, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "MysticCottonGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Asymmetric, the definition of cool.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCottonGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.8),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "MysticCottonSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "For when you need to be threatening and also getting ready for bed.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCottonSlippers"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(32, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(32, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, 0.4),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.3),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(23, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "MysticCottonHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Trying too hard to be threatening.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCottonHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(33, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "MysticCottonRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Robes to complement that inner evil wizard.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCottonRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 1.0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(30, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "MysticCottonShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Contains the names of every foe ever slain by you.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCottonShield"
 	}
 end
