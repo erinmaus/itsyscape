@@ -9,6 +9,51 @@
 --------------------------------------------------------------------------------
 
 local ARMOR = {
+	["AncientCeremonial"] = {
+		name = "AncientCeremonial",
+		niceName = "Ancient ceremonial",
+		category = "Fabric",
+		tags = { "magic" },
+		action = "Craft",
+		tier = 55,
+		weight = 3.2,
+		tool = "Needle",
+		primary = "ZealotSilk",
+		secondary = "GildedDragonBones",
+		skills = { "Crafting", "Magic" },
+
+		items = {
+			{
+				skills = { "Magic", "Wisdom" },
+				name = "Gloves",
+				slot = "Gloves",
+				niceName = "%s gloves",
+				count = 1
+			},
+			{
+				skills = { "Magic", "Wisdom" },
+				name = "Boots",
+				slot = "Boots",
+				niceName = "%s boots",
+				count = 1
+			},
+			{
+				skills = { "Magic", "Wisdom" },
+				name = "Helm",
+				slot = "Helmet",
+				niceName = "%s helm",
+				count = 1
+			},
+			{
+				skills = { "Magic", "Wisdom" },
+				name = "Robe",
+				slot = "Body",
+				niceName = "%s robe",
+				count = 1
+			},
+		}
+	},
+
 	["Itsy"] = {
 		name = "SuperiorItsy",
 		niceName = "Superior itsy",
@@ -109,15 +154,19 @@ for name, armor in spairs(ARMOR) do
 				},
 
 				Output {
-					Resource = ItsyScape.Resource.Skill "Smithing",
-					Count = ItsyScape.Utility.xpForResource(math.max(armor.tier + itemProps.count + 2, 1)) * itemProps.count * 3
-				},
-
-				Output {
 					Resource = Item,
 					Count = 1
 				}
 			}
+
+			for i = 1, #armor.skills do
+				MakeAction {
+					Output {
+						Resource = ItsyScape.Resource.Skill(armor.skills[i]),
+						Count = ItsyScape.Utility.xpForResource(math.max(armor.tier + itemProps.count, 1))
+					}
+				}
+			end
 		end
 
 		ItsyScape.Meta.Item {
@@ -154,6 +203,83 @@ for name, armor in spairs(ARMOR) do
 			ItsyScape.Utility.tag(Item, armor.tags[i])
 		end
 	end
+end
+
+-- Ancient ceremonial
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(50, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		Prayer         = 5,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "AncientCeremonialHelm"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A helmet made out of gold invoking the divine protection of The Empty King.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientCeremonialHelm"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(45, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		Prayer         = 10,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "AncientCeremonialRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Fine silk that smells like lavender even after a thousand years.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientCeremonialRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(40, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(40, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		Prayer         = 5,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "AncientCeremonialGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Somehow enchanted with the grace of the ancient wizard these were inspired by.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientCeremonialGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(40, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		Prayer         = 6,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "AncientCeremonialBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gives you the strength of a thousand wizards.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientCeremonialBoots"
+	}
 end
 
 -- Superior itsy
