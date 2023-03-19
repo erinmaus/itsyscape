@@ -47,6 +47,20 @@ local FABRICS = {
 		rune = "FireRune"
 	},
 
+	["NobleSilk"] = {
+		name = "Noble silk",
+		tier = 40,
+		weight = 2.3,
+		thread = "PlainThread",
+		rune = "WaterRune",
+
+		["Hat"] = {
+			niceName = "%s hood",
+			slot = "Hat",
+			fabric = 1
+		}
+	},
+
 	["ZealotSilk"] = {
 		name = "Zealot silk",
 		tier = 50,
@@ -90,6 +104,12 @@ local SHIELDS = {
 	["MysticCotton"] = {
 		name = "Black book",
 		logs = "MapleLogs",
+		fabric = 3
+	},
+
+	["NobleSilk"] = {
+		name = "Royal decree",
+		logs = "YewLogs",
 		fabric = 3
 	},
 
@@ -685,6 +705,95 @@ do
 		Value = "Contains the names of every foe ever slain by you.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MysticCottonShield"
+	}
+end
+
+-- Noble silk
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(43, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "NobleSilkGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "So light, they make casting spells easier.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "NobleSilkGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.8),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(42, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "NobleSilkSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Silk slippers perfect for a slumber party at the Vizier-King's.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "NobleSilkSlippers"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(42, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(42, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(42, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(42, 0.4),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.3),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(43, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "NobleSilkHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Worn by the elite wizards of the Royal Guard.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "NobleSilkHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(43, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "NobleSilkRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "These robes signify to others of the elite status of the Royal Guard, famed for preventing all sorts of assassinations and coups.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "NobleSilkRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 1.0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(40, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "NobleSilkShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The words are so dense, it makes an effective shield!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "NobleSilkShield"
 	}
 end
 

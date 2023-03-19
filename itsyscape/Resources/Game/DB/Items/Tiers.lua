@@ -221,6 +221,14 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Fabric",
+		Value = "NobleSilk",
+		Language = "en-US",
+		Name = "Noble Silk",
+		Tier = 30
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Fabric",
 		Value = "ZealotSilk",
 		Language = "en-US",
 		Name = "Zealot Silk",
