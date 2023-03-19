@@ -45,6 +45,26 @@ local FABRICS = {
 		weight = 1.2,
 		thread = "PlainThread",
 		rune = "FireRune"
+	},
+
+	["ZealotSilk"] = {
+		name = "Zealot silk",
+		tier = 50,
+		weight = 2.3,
+		thread = "PlainThread",
+		rune = "CosmicRune",
+
+		["Slippers"] = {
+			niceName = "%s boots",
+			slot = "Slippers",
+			fabric = 1
+		},
+
+		["Hat"] = {
+			niceName = "%s hood",
+			slot = "Hat",
+			fabric = 1
+		}
 	}
 }
 
@@ -70,6 +90,12 @@ local SHIELDS = {
 	["MysticCotton"] = {
 		name = "Black book",
 		logs = "MapleLogs",
+		fabric = 3
+	},
+
+	["ZealotSilk"] = {
+		name = "Powernomicon",
+		logs = "PetrifiedSpiderLogs",
 		fabric = 3
 	}
 }
@@ -659,5 +685,94 @@ do
 		Value = "Contains the names of every foe ever slain by you.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MysticCottonShield"
+	}
+end
+
+-- Zealot silk
+do
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(53, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "ZealotSilkGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps your hands cold.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilkGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.8),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.4),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(52, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.2),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "ZealotSilkSlippers"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Silk boots, not a lot of protection but they're definitely comfortable.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilkSlippers"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(52, 0.7),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(52, 0.7),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(52, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(52, 0.4),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.3),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(53, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "ZealotSilkHat"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Show your zealotry without showing your face.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilkHat"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(53, 0.6),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.7),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.4),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "ZealotSilkRobe"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Robes worn by zealots of The Empty King.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilkRobe"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 0.5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1.0),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.6),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1.0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 0.5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(50, 0.3),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "ZealotSilkShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Zealots of The Empty King carry the Powernomicon to recite prayers and blessings for their slain foes.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilkShield"
 	}
 end
