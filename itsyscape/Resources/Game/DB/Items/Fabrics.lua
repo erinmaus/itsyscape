@@ -87,3 +87,123 @@ do
 		Resource = ItsyScape.Resource.Item "CottonCloth"
 	}
 end
+
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Fabric",
+		CategoryValue = "SpiderSilk",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "SpiderSilk" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Spider silk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilk"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Fine silk made from spider webs.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpiderSilk"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(21),
+		Weight = 0.25,
+		Resource = ItsyScape.Resource.Item "SpiderSilk"
+	}
+end
+
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Fabric",
+		CategoryValue = "MysticCotton",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "MysticCotton" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mystic cotton",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCotton"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A cotton with a kurse.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MysticCotton"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(31),
+		Weight = 0.25,
+		Resource = ItsyScape.Resource.Item "MysticCotton"
+	}
+end
+
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Fabric",
+		CategoryValue = "ZealotSilk",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "ZealotSilk" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Zealot silk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilk"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The finest silk made by humans.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ZealotSilk"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(31),
+		Weight = 0.25,
+		Resource = ItsyScape.Resource.Item "ZealotSilk"
+	}
+end

@@ -202,6 +202,30 @@ do
 		Name = "Cheep Cotton",
 		Tier = 10
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Fabric",
+		Value = "SpiderSilk",
+		Language = "en-US",
+		Name = "Spider Silk",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Fabric",
+		Value = "MysticCotton",
+		Language = "en-US",
+		Name = "Mystic Cotton",
+		Tier = 30
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Fabric",
+		Value = "ZealotSilk",
+		Language = "en-US",
+		Name = "Zealot Silk",
+		Tier = 50
+	}
 end
 
 -- Glass
