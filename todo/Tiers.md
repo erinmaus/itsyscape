@@ -27,7 +27,7 @@
 * Ancient cedar
 * Yew (limp magic weapons, spindly archery weapons)
 * Fox fir
-* Petrified spider (sticky magic weapons, stretchy archery weapons)
+* Petrified spider (scary magic weapons, terrifying archery weapons)
 * Onyx birch
 
 # Fish
