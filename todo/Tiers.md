@@ -21,13 +21,13 @@
 * Runite (+ uranium = Runite)
 
 # Trees
-* Oak
+* Oak (moldy magic weapons, petty archery weapons)
 * Fossilized oak
-* Maple
+* Maple (springy magic weapons, shaky archery weapons)
 * Ancient cedar
-* Yew
+* Yew (limp magic weapons, spindly archery weapons)
 * Fox fir
-* Petrified spider
+* Petrified spider (sticky magic weapons, stretchy archery weapons)
 * Onyx birch
 
 # Fish

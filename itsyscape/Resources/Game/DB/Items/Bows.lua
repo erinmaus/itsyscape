@@ -21,6 +21,13 @@ local LOGS = {
 		weight = 6,
 		style = "Bendy",
 		bowstring = "Bowstring"
+	},
+
+	["Oak"] = {
+		tier = 20,
+		weight = 3.7,
+		style = "Petty",
+		bowstring = "Bowstring"
 	}
 }
 
@@ -257,5 +264,46 @@ do
 		Value = "Good range, but low arrow-power.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BendyLongbow"
+	}
+end
+
+-- Oak/blackened iron
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(24, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(23, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "PettyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Sometimes I wish it wouldn't come back.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "PettyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Pretty petty bow.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "PettyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better than a rock!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyLongbow"
 	}
 end
