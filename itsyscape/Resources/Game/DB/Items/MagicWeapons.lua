@@ -21,6 +21,12 @@ local TIERS = {
 		wood = "Willow"
 	},
 
+	["Moldy"] = {
+		tier = 20,
+		weight = 3.7,
+		wood = "Oak"
+	},
+
 	["Fungal"] = {
 		tier = 90,
 		weight = -6,
@@ -313,5 +319,51 @@ do
 		Value = "A staff made for a champion of the most primal horrors.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "FungalStaff"
+	}
+end
+
+-- Moldy (oak)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(24),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The mold on this wand can't be healthy...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(25),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An old, moldy cane, not suitable for even your grandpa's evil twin.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(26, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(26),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Might make you sneeze while casting a spell.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyStaff"
 	}
 end
