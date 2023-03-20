@@ -28,6 +28,13 @@ local LOGS = {
 		weight = 3.7,
 		style = "Petty",
 		bowstring = "Bowstring"
+	},
+
+	["Maple"] = {
+		tier = 30,
+		weight = 4.2,
+		style = "Shaky",
+		bowstring = "Bowstring"
 	}
 }
 
@@ -305,5 +312,46 @@ do
 		Value = "Better than a rock!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "PettyLongbow"
+	}
+end
+
+-- Maple
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(34, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(33, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ShakyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shakes when it spins.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ShakyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Hard to aim.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ShakyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Takes some time to become accustomed to the shakiness.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyLongbow"
 	}
 end
