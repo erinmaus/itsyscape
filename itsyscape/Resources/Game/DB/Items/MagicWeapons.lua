@@ -27,6 +27,12 @@ local TIERS = {
 		wood = "Oak"
 	},
 
+	["Springy"] = {
+		tier = 30,
+		weight = 4.2,
+		wood = "Maple"
+	},
+
 	["Fungal"] = {
 		tier = 90,
 		weight = -6,
@@ -365,5 +371,51 @@ do
 		Value = "Might make you sneeze while casting a spell.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MoldyStaff"
+	}
+end
+
+-- Springy (maple)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(34),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Makes spells pop!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(35, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(35),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This wood is not suited for a cane!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(35, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(36, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(36),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Can use it as a vaulting pole, too.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyStaff"
 	}
 end
