@@ -33,6 +33,12 @@ local TIERS = {
 		wood = "Maple"
 	},
 
+	["Tense"] = {
+		tier = 40,
+		weight = 3.1,
+		wood = "Yew"
+	},
+
 	["Fungal"] = {
 		tier = 90,
 		weight = -6,
@@ -417,5 +423,51 @@ do
 		Value = "Can use it as a vaulting pole, too.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "SpringyStaff"
+	}
+end
+
+-- Tense (yew)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(44),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gives an extra zap.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(45),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A refined cane for a refined individual.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(46, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(46),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A mystical staff.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseStaff"
 	}
 end
