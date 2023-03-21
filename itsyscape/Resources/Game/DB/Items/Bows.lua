@@ -35,6 +35,13 @@ local LOGS = {
 		weight = 4.2,
 		style = "Shaky",
 		bowstring = "Bowstring"
+	},
+
+	["Yew"] = {
+		tier = 40,
+		weight = 5,
+		style = "Spindly",
+		bowstring = "Bowstring"
 	}
 }
 
@@ -344,7 +351,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(35, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "ShakyLongbow"
 	}
@@ -353,5 +360,46 @@ do
 		Value = "Takes some time to become accustomed to the shakiness.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ShakyLongbow"
+	}
+end
+
+-- Yew
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(44, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(43, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpindlyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Cuts the opponent with its spindles.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "SpindlyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Made from yew, perfect for a bow.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "SpindlyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fierce longbow with a long reach.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyLongbow"
 	}
 end
