@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Resources/Game/Projectiles/SpindlyBoomerang/Projectile.lua
+-- ItsyScape/Resources/Game/Projectiles/TerrifyingBoomerang/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,10 +13,10 @@ local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local Boomerang = require "Resources.Game.Projectiles.Common.Boomerang"
 
-local SpindlyBoomerang = Class(Boomerang)
+local TerrifyingBoomerang = Class(Boomerang)
 
-function SpindlyBoomerang:getTextureFilename()
-	return "Resources/Game/Projectiles/SpindlyBoomerang/Texture.png"
+function TerrifyingBoomerang:getTextureFilename()
+	return "Resources/Game/Projectiles/TerrifyingBoomerang/Texture.png"
 end
 
-return SpindlyBoomerang
+return TerrifyingBoomerang
