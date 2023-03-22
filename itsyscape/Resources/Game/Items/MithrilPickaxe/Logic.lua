@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronPickaxe/Logic.lua
+-- Resources/Game/Items/MithrilPickaxe/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,6 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Pickaxe = require "Resources.Game.Items.Common.Pickaxe"
 
-local BlackenedIronPickaxe = Class(Pickaxe)
+local MithrilPickaxe = Class(Pickaxe)
 
-return BlackenedIronPickaxe
+return MithrilPickaxe

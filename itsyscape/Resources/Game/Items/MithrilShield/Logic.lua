@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronShield/Logic.lua
+-- Resources/Game/Items/MithrilShield/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,6 +10,6 @@
 local Class = require "ItsyScape.Common.Class"
 local Shield = require "ItsyScape.Game.Shield"
 
-local BlackenedIronShield = Class(Shield)
+local MithrilShield = Class(Shield)
 
-return BlackenedIronShield
+return MithrilShield

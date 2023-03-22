@@ -20,7 +20,13 @@ local METALS = {
 		tier = 20,
 		weight = 15,
 		wood = "OakLogs"
-	}
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		weight = 3.7,
+		wood = "MapleLogs"
+	},
 }
 
 local GUNS = {
@@ -159,7 +165,7 @@ end
 do
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "IronBlunderbuss"
 	}
@@ -172,7 +178,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "IronMusket"
 	}
@@ -185,7 +191,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1.2),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "IronPistol"
 	}
@@ -201,7 +207,7 @@ end
 do
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "BlackenedIronBlunderbuss"
 	}
@@ -214,7 +220,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "BlackenedIronMusket"
 	}
@@ -227,7 +233,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1.2),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
 	}
@@ -236,5 +242,47 @@ do
 		Value = "Small and convenient! Packs a punch.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
+	}
+end
+
+-- Mithril
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(35, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "MithrilBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This blunderbuss is a lot lighter than it looks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "MithrilMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Light, but the recoil is pretty hefty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MithrilPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "So light you may forget you're carrying it...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilPistol"
 	}
 end

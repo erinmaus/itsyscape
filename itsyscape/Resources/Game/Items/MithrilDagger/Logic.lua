@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronDagger/Logic.lua
+-- Resources/Game/Items/MithrilDagger/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,6 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Dagger = require "Resources.Game.Items.Common.Dagger"
 
-local BlackenedIronDagger = Class(Dagger)
+local MithrilDagger = Class(Dagger)
 
-return BlackenedIronDagger
+return MithrilDagger
