@@ -21,6 +21,30 @@ local TIERS = {
 		wood = "Willow"
 	},
 
+	["Moldy"] = {
+		tier = 20,
+		weight = 3.7,
+		wood = "Oak"
+	},
+
+	["Springy"] = {
+		tier = 30,
+		weight = 4.2,
+		wood = "Maple"
+	},
+
+	["Tense"] = {
+		tier = 40,
+		weight = 3.1,
+		wood = "Yew"
+	},
+
+	["Scary"] = {
+		tier = 50,
+		weight = 1.7,
+		wood = "PetrifiedSpider"
+	},
+
 	["Fungal"] = {
 		tier = 90,
 		weight = -6,
@@ -313,5 +337,189 @@ do
 		Value = "A staff made for a champion of the most primal horrors.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "FungalStaff"
+	}
+end
+
+-- Moldy (oak)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(24),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The mold on this wand can't be healthy...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(24, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(25),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An old, moldy cane, not suitable for even your grandpa's evil twin.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(26, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(26),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MoldyStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Might make you sneeze while casting a spell.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MoldyStaff"
+	}
+end
+
+-- Springy (maple)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(34),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Makes spells pop!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(34, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(35, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(35),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This wood is not suited for a cane!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(35, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(36, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(36),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpringyStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Can use it as a vaulting pole, too.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpringyStaff"
+	}
+end
+
+-- Tense (yew)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(44),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gives an extra zap.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(44, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(45),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A refined cane for a refined individual.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(46, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(46),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TenseStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A mystical staff.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TenseStaff"
+	}
+end
+
+-- Scary (petrified spider)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(54),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Intimdating.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(55),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The handle is sticky!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(60, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(59),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dangerous staff powered by the remains of an ancient spider.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryStaff"
 	}
 end
