@@ -16,6 +16,10 @@ local METALS = {
 	["BlackenedIron"] = {
 		niceName = "Blackened iron",
 		tier = 20
+	},
+
+	["Mithril"] = {
+		tier = 30
 	}
 }
 
@@ -233,6 +237,18 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Watch out! The shrapnel from this grenade hurts!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronGrenade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pierces weaker armors like butter.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronBullet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This shrapnel is so light it ricochets off everything.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "BlackenedIronGrenade"
 }

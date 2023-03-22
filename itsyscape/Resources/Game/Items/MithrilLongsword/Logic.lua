@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronLongsword/Logic.lua
+-- Resources/Game/Items/MithrilLongsword/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,6 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Longsword = require "Resources.Game.Items.Common.Longsword"
 
-local BlackenedIronLongsword = Class(Longsword)
+local MithrilLongsword = Class(Longsword)
 
-return BlackenedIronLongsword
+return MithrilLongsword

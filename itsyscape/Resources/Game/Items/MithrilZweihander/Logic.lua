@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronZweihander/Logic.lua
+-- Resources/Game/Items/MithrilZweihander/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,13 +11,13 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Zweihander = require "Resources.Game.Items.Common.Zweihander"
 
-local BlackenedIronZweihander = Class(Zweihander)
+local MithrilZweihander = Class(Zweihander)
 
-function BlackenedIronZweihander:rollDamage(peep, purpose, target)
+function MithrilZweihander:rollDamage(peep, purpose, target)
 	local roll = Zweihander.rollDamage(self, peep, purpose, target)
 	roll:setMinHit(roll:getMinHit() + 3)
 
 	return roll
 end
 
-return BlackenedIronZweihander
+return MithrilZweihander
