@@ -11,8 +11,33 @@
 local METALS = {
 	["Bronze"] = {
 		tier = 1,
-		weight = 12.5,
-		wood = "CommonLogs"
+		count = 15
+	},
+
+	["Iron"] = {
+		tier = 10,
+		count = 20
+	},
+
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		count = 25
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		count = 30
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		count = 35
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		count = 40
 	}
 }
 
@@ -40,27 +65,27 @@ for name, metal in spairs(METALS) do
 
 		Input {
 			Resource = ItsyScape.Resource.Item "Feather",
-			Count = 15
+			Count = metal.count
 		},
 
 		Input {
 			Resource = ItsyScape.Resource.Item "ArrowShaft",
-			Count = 15
+			Count = metal.count
 		},
 
 		Input {
 			Resource = ArrowheadItem,
-			Count = 15
+			Count = metal.count
 		},
 
 		Output {
 			Resource = Item,
-			Count = 15
+			Count = metal.count
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Engineering",
-			Count = math.max(ItsyScape.Utility.xpForResource(metal.tier + 1), 15)
+			Count = math.max(ItsyScape.Utility.xpForResource(metal.tier + 1), metal.count)
 		}
 	}
 
@@ -92,7 +117,7 @@ for name, metal in spairs(METALS) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Engineering",
-			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(metal.tier + 1) / 15), 1)
+			Count = math.max(math.floor(ItsyScape.Utility.xpForResource(metal.tier + 1) / metal.count), 1)
 		}
 	}
 
@@ -114,7 +139,7 @@ for name, metal in spairs(METALS) do
 
 		Output {
 			Resource = ArrowheadItem,
-			Count = 15
+			Count = metal.count
 		},
 
 		Output {
@@ -124,14 +149,14 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 2) / 10), 10) * metal.tier,
+		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 2) / metal.count), metal.count) * metal.tier,
 		Weight = 0,
 		Stackable = 1,
 		Resource = Item
 	}
 
 	ItsyScape.Meta.Item {
-		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 1) / 15), 15) * metal.tier,
+		Value = math.min(math.floor(ItsyScape.Utility.valueForItem(metal.tier + 1) / metal.count), metal.count) * metal.tier,
 		Weight = 0,
 		Stackable = 1,
 		Resource = ArrowheadItem
@@ -202,6 +227,66 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Pretty primitive, but not quite stone age.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "BronzeArrowhead"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sharp!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Iron age technology.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "IronArrowhead"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Just as good as steel.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Cutting edge medieval tech.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronArrowhead"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Light, but packs a punch.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "MithrilArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Delicate and hard to make.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "MithrilArrowhead"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Deadly!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That was tough to smith!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantArrowhead"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Make sure to shoot away from yourself.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ItsyArrow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Ready and waiting to become flighted arrows.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ItsyArrowhead"
 }
 
 do
