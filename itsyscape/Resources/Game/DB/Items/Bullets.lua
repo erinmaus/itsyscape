@@ -11,6 +11,11 @@
 local METALS = {
 	["Iron"] = {
 		tier = 10
+	},
+
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20
 	}
 }
 
@@ -138,7 +143,7 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s bullet", name),
+		Value = string.format("%s bullet", metal.niceName or name),
 		Language = "en-US",
 		Resource = Item
 	}
@@ -174,7 +179,7 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s grenade", name),
+		Value = string.format("%s grenade", metal.niceName or name),
 		Language = "en-US",
 		Resource = GrenadeItem
 	}
@@ -186,6 +191,7 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(metal.tier + 10),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(metal.tier + 15),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = GrenadeItem
@@ -217,4 +223,16 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Don't wanna drop this at your feet.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "IronGrenade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A bullet for my valentine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronBullet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Watch out! The shrapnel from this grenade hurts!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BlackenedIronGrenade"
 }
