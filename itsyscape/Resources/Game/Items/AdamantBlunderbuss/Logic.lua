@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/MithrilHatchet/Logic.lua
+-- Resources/Game/Items/AdamantBlunderbuss/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Hatchet = require "Resources.Game.Items.Common.Hatchet"
+local Blunderbuss = require "Resources.Game.Items.Common.Blunderbuss"
 
-local MithrilHatchet = Class(Hatchet)
+local AdamantBlunderbuss = Class(Blunderbuss)
 
-return MithrilHatchet
+return AdamantBlunderbuss

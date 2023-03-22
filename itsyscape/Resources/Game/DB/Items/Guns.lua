@@ -13,6 +13,31 @@ local METALS = {
 		tier = 10,
 		weight = 17.5,
 		wood = "WillowLogs"
+	},
+
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		weight = 15,
+		wood = "OakLogs"
+	},
+
+	["Mithril"] = {
+		tier = 30,
+		weight = 3.7,
+		wood = "MapleLogs"
+	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 22,
+		wood = "YewLogs"
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		weight = 19.5,
+		wood = "PetrifiedSpiderLogs"
 	}
 }
 
@@ -127,7 +152,7 @@ for gunName, gun in spairs(GUNS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format("%s %s", metalName, gun.niceName),
+			Value = string.format("%s %s", metal.niceName or metalName, gun.niceName),
 			Language = "en-US",
 			Resource = Item
 		}
@@ -148,10 +173,11 @@ for gunName, gun in spairs(GUNS) do
 	end
 end
 
+-- Iron
 do
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "IronBlunderbuss"
 	}
@@ -164,7 +190,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "IronMusket"
 	}
@@ -177,7 +203,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1.2),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "IronPistol"
 	}
@@ -186,5 +212,173 @@ do
 		Value = "Don't want to be on the recieving end of that.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IronPistol"
+	}
+end
+
+-- Blackened iron
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BlackenedIronBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fierce looking blunderbuss.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BlackenedIronMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shoots in a cone of terror!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Small and convenient! Packs a punch.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
+	}
+end
+
+-- Mithril
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(35, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "MithrilBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This blunderbuss is a lot lighter than it looks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "MithrilMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Light, but the recoil is pretty hefty.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "MithrilPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "So light you may forget you're carrying it...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "MithrilPistol"
+	}
+end
+
+-- Adamant
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "AdamantBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Very well built blunderbuss. Don't have to worry about it 'sploding in your face!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "AdamantMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Monstrous recoil, be prepared!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine pistol for a fine person.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantPistol"
+	}
+end
+
+-- Itsy
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ItsyBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The petrified spider stock feels gross, but it helps absorb the shot!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ItsyMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine weapon: little recoil and much power.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine choice for duels.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyPistol"
 	}
 end
