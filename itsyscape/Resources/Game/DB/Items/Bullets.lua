@@ -10,20 +10,34 @@
 
 local METALS = {
 	["Iron"] = {
-		tier = 10
+		tier = 10,
+		bulletCount = 15,
+		grenadeCount = 10
 	},
 
 	["BlackenedIron"] = {
 		niceName = "Blackened iron",
-		tier = 20
+		tier = 20,
+		bulletCount = 20,
+		grenadeCount = 15
 	},
 
 	["Mithril"] = {
-		tier = 30
+		tier = 30,
+		bulletCount = 25,
+		grenadeCount = 20
 	},
 
 	["Adamant"] = {
-		tier = 40
+		tier = 40,
+		bulletCount = 30,
+		grenadeCount = 25
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		bulletCount = 35,
+		grenadeCount = 30
 	}
 }
 
@@ -60,7 +74,7 @@ for name, metal in spairs(METALS) do
 
 		Input {
 			Resource = ItsyScape.Resource.Item "Gunpowder",
-			Count = 5
+			Count = math.max(math.floor(metal.bulletCount / 2), 1)
 		},
 
 		Input {
@@ -70,7 +84,7 @@ for name, metal in spairs(METALS) do
 
 		Output {
 			Resource = Item,
-			Count = 15
+			Count = metal.bulletCount
 		},
 
 		Output {
@@ -102,7 +116,7 @@ for name, metal in spairs(METALS) do
 
 		Input {
 			Resource = ItsyScape.Resource.Item "Gunpowder",
-			Count = 5
+			Count = math.max(math.floor(metal.grenadeCount / 2), 1)
 		},
 
 		Input {
@@ -112,7 +126,7 @@ for name, metal in spairs(METALS) do
 
 		Output {
 			Resource = GrenadeItem,
-			Count = 10
+			Count = metal.grenadeCount
 		},
 
 		Output {
