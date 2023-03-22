@@ -186,7 +186,7 @@ for name, metal in spairs(METALS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s arrow", name),
+		Value = string.format("%s arrow", metal.niceName or name),
 		Language = "en-US",
 		Resource = Item
 	}
