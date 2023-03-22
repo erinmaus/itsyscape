@@ -39,6 +39,12 @@ local TIERS = {
 		wood = "Yew"
 	},
 
+	["Scary"] = {
+		tier = 50,
+		weight = 1.7,
+		wood = "PetrifiedSpider"
+	},
+
 	["Fungal"] = {
 		tier = 90,
 		weight = -6,
@@ -469,5 +475,51 @@ do
 		Value = "A mystical staff.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "TenseStaff"
+	}
+end
+
+-- Scary (petrified spider)
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(54),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryWand"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Intimdating.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryWand"
+	}
+
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(54, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(55),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryCane"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The handle is sticky!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryCane"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(60, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(59),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ScaryStaff"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dangerous staff powered by the remains of an ancient spider.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ScaryStaff"
 	}
 end
