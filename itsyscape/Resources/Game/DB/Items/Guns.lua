@@ -32,6 +32,12 @@ local METALS = {
 		tier = 40,
 		weight = 22,
 		wood = "YewLogs"
+	},
+
+	["Itsy"] = {
+		tier = 50,
+		weight = 19.5,
+		wood = "PetrifiedSpiderLogs"
 	}
 }
 
@@ -332,5 +338,47 @@ do
 		Value = "A fine pistol for a fine person.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "AdamantPistol"
+	}
+end
+
+-- Itsy
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ItsyBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The petrified spider stock feels gross, but it helps absorb the shot!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ItsyMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine weapon: little recoil and much power.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ItsyPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine choice for duels.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ItsyPistol"
 	}
 end
