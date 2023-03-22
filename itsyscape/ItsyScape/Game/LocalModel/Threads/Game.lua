@@ -13,6 +13,7 @@ require "bootstrap"
 
 local conf, inputAdminChannel, outputAdminChannel = ...
 _DEBUG = conf._DEBUG
+_CONF = conf._CONF
 
 local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
@@ -235,6 +236,9 @@ while isRunning do
 				})
 			elseif e.type == 'admin' then
 				adminPlayerID = e.admin
+			elseif e.type == 'conf' then
+				_DEBUG = e.environment._DEBUG or false
+				_CONF = e.environment._CONF or _CONF
 			elseif e.type == 'connect' then
 				Log.info("Clearing players because we are connecting to an external host...")
 

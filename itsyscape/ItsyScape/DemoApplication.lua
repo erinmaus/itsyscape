@@ -354,6 +354,11 @@ function DemoApplication:openMainMenu()
 	if self.titleScreen then
 		self.titleScreen:enableLogo()
 	end
+
+	self:setConf({
+		_DEBUG = _CONF.debug,
+		_CONF = _CONF
+	})
 end
 
 function DemoApplication:onNetworkError(client, message)
