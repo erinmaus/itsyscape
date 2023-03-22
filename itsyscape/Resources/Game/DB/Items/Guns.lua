@@ -13,6 +13,13 @@ local METALS = {
 		tier = 10,
 		weight = 17.5,
 		wood = "WillowLogs"
+	},
+
+	["BlackenedIron"] = {
+		niceName = "Blackened iron",
+		tier = 20,
+		weight = 15,
+		wood = "OakLogs"
 	}
 }
 
@@ -127,7 +134,7 @@ for gunName, gun in spairs(GUNS) do
 		}
 
 		ItsyScape.Meta.ResourceName {
-			Value = string.format("%s %s", metalName, gun.niceName),
+			Value = string.format("%s %s", metal.niceName or metalName, gun.niceName),
 			Language = "en-US",
 			Resource = Item
 		}
@@ -148,6 +155,7 @@ for gunName, gun in spairs(GUNS) do
 	end
 end
 
+-- Iron
 do
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
@@ -186,5 +194,47 @@ do
 		Value = "Don't want to be on the recieving end of that.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IronPistol"
+	}
+end
+
+-- Blackened iron
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BlackenedIronBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fierce looking blunderbuss.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "BlackenedIronMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shoots in a cone of terror!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1.2),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Small and convenient! Packs a punch.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackenedIronPistol"
 	}
 end
