@@ -20,6 +20,10 @@ local METALS = {
 
 	["Mithril"] = {
 		tier = 30
+	},
+
+	["Adamant"] = {
+		tier = 40
 	}
 }
 

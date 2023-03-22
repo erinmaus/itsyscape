@@ -27,6 +27,12 @@ local METALS = {
 		weight = 3.7,
 		wood = "MapleLogs"
 	},
+
+	["Adamant"] = {
+		tier = 40,
+		weight = 22,
+		wood = "YewLogs"
+	}
 }
 
 local GUNS = {
@@ -284,5 +290,47 @@ do
 		Value = "So light you may forget you're carrying it...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MithrilPistol"
+	}
+end
+
+-- Adamant
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "AdamantBlunderbuss"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Very well built blunderbuss. Don't have to worry about it 'sploding in your face!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantBlunderbuss"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "AdamantMusket"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Monstrous recoil, be prepared!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantMusket"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1.2),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "AdamantPistol"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fine pistol for a fine person.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantPistol"
 	}
 end
