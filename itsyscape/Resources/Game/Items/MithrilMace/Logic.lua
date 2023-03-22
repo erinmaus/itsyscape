@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/BlackenedIronMace/Logic.lua
+-- Resources/Game/Items/MithrilMace/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,6 @@ local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mace = require "Resources.Game.Items.Common.Mace"
 
-local BlackenedIronMace = Class(Mace)
+local MithrilMace = Class(Mace)
 
-return BlackenedIronMace
+return MithrilMace

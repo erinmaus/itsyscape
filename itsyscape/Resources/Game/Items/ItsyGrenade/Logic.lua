@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/MithrilHatchet/Logic.lua
+-- Resources/Game/Items/ItsyGrenade/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Hatchet = require "Resources.Game.Items.Common.Hatchet"
+local Grenade = require "Resources.Game.Items.Common.Grenade"
 
-local MithrilHatchet = Class(Hatchet)
+local ItsyGrenade = Class(Grenade)
 
-return MithrilHatchet
+return ItsyGrenade

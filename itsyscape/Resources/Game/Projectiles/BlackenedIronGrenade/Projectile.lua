@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/MithrilHatchet/Logic.lua
+-- ItsyScape/Resources/Game/Projectiles/BlackenedIronGrenade/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Hatchet = require "Resources.Game.Items.Common.Hatchet"
+local Grenade = require "Resources.Game.Projectiles.Common.Grenade"
 
-local MithrilHatchet = Class(Hatchet)
+local BlackenedIronGrenade = Class(Grenade)
 
-return MithrilHatchet
+function BlackenedIronGrenade:getTextureFilename()
+	return "Resources/Game/Projectiles/BlackenedIronGrenade/Texture.png"
+end
+
+return BlackenedIronGrenade
