@@ -21,7 +21,35 @@ local LOGS = {
 		weight = 6,
 		style = "Bendy",
 		bowstring = "Bowstring"
-	}
+	},
+
+	["Oak"] = {
+		tier = 20,
+		weight = 3.7,
+		style = "Petty",
+		bowstring = "Bowstring"
+	},
+
+	["Maple"] = {
+		tier = 30,
+		weight = 4.2,
+		style = "Shaky",
+		bowstring = "Bowstring"
+	},
+
+	["Yew"] = {
+		tier = 40,
+		weight = 5,
+		style = "Spindly",
+		bowstring = "Bowstring"
+	},
+
+	["PetrifiedSpider"] = {
+		tier = 50,
+		weight = 1.7,
+		style = "Terrifying",
+		bowstring = "Spiderstring"
+	},
 }
 
 local ITEMS = {
@@ -176,6 +204,34 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "Bowstring"
 	}
+
+	ItsyScape.Resource.Item "Spiderstring" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Fiber",
+		Value = "Spiderstring",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(21),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Spiderstring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Can be used as bowstring when making terrifying weapons.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
 end
 
 -- Common/bronze
@@ -257,5 +313,169 @@ do
 		Value = "Good range, but low arrow-power.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BendyLongbow"
+	}
+end
+
+-- Oak/blackened iron
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(24, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(23, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "PettyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Sometimes I wish it wouldn't come back.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "PettyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Pretty petty bow.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(20, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "PettyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better than a rock!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PettyLongbow"
+	}
+end
+
+-- Maple
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(34, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(33, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "ShakyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shakes when it spins.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ShakyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Hard to aim.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(35, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "ShakyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Takes some time to become accustomed to the shakiness.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "ShakyLongbow"
+	}
+end
+
+-- Yew
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(44, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(43, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "SpindlyBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Cuts the opponent with its spindles.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "SpindlyBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Made from yew, perfect for a bow.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(45, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "SpindlyLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fierce longbow with a long reach.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SpindlyLongbow"
+	}
+end
+
+-- Yew
+do
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(54, 1),
+		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(53, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = ItsyScape.Resource.Item "TerrifyingBoomerang"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Thorny!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TerrifyingBoomerang"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "TerrifyingBow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The bow is as dangerous to shoot as it is to be shot by.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TerrifyingBow"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55, 1),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
+		Resource = ItsyScape.Resource.Item "TerrifyingLongbow"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A disgusting longbow made from spider parts.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TerrifyingLongbow"
 	}
 end
