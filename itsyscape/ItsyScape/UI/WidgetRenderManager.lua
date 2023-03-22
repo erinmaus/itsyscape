@@ -192,6 +192,13 @@ function WidgetRenderManager:stop()
 end
 
 function WidgetRenderManager:draw(widget, state, cursor)
+	do
+		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
+		if (w == 0 or h == 0) and not (widget:getParent() and widget:getParent():getOverflow()) then
+			return
+		end
+	end
+
 	if widget == self.cursor.widget and not cursor then
 		self.cursor.state = state
 		return
