@@ -104,7 +104,8 @@ function Application:new(multiThreaded)
 
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
-			_DEBUG = _DEBUG
+			_DEBUG = _DEBUG,
+			_CONF = _CONF
 		}, self.inputAdminChannel, self.outputAdminChannel)
 
 		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
@@ -415,6 +416,15 @@ function Application:setAdmin(playerID)
 	self.inputAdminChannel:push({
 		type = 'admin',
 		admin = playerID
+	})
+end
+
+function Application:setConf(t)
+	Log.info("Updating conf: %s", Log.stringify(t))
+
+	self.inputAdminChannel:push({
+		type = 'conf',
+		environment = t
 	})
 end
 
