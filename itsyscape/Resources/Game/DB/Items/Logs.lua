@@ -61,6 +61,7 @@ local LOGS = {
 	},
 
 	["PetrifiedSpider"] = {
+		niceName = "Petrified spider",
 		tier = 50,
 		weight = 2,
 		health = 250,
@@ -109,7 +110,7 @@ for name, log in spairs(LOGS) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s logs", name),
+		Value = string.format("%s logs", log.niceName or name),
 		Language = "en-US",
 		Resource = Log
 	}
@@ -337,6 +338,78 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "These logs are damp. Miracle they lit at all.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "WillowFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Some solid oak logs, good for weapon making and other things.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "OakLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A beautiful oak tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "OakTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A fire burning from some oak logs.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "OakFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What pretty pink logs!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "MapleLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Such a stand out tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MapleTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wow, even the fire is pink!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MapleFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sturdy logs perfect for crafting and engineering.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "YewLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What has this tree seen over the years?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "YewTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Probably can smoke some meat over that aromatic fire.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "YewFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Even though these aren't technically wooden logs, they can be used as such.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PetrifiedSpiderLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "An ancient species of spider, now extinct, petrified as a part of the horrible ritual that banished the gods.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wouldn't want to breathe those fumes in...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "PetrifiedSpiderFire"
 }
 
 ItsyScape.Meta.ResourceDescription {
