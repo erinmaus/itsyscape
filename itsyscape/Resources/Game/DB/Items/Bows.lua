@@ -204,6 +204,34 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "Bowstring"
 	}
+
+	ItsyScape.Resource.Item "Spiderstring" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Fiber",
+		Value = "Spiderstring",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(21),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Spiderstring",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Can be used as bowstring when making terrifying weapons.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Spiderstring"
+	}
 end
 
 -- Common/bronze
