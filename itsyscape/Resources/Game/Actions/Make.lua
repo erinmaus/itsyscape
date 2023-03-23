@@ -113,7 +113,6 @@ function Make:gatherSecondaries(state, player, prop)
 		local roll = math.random(0, maxWeight)
 		for j = 2, #actions do
 			if currentWeight > roll then
-				print(">>> break", item.weight)
 				break
 			end
 
@@ -123,12 +122,9 @@ function Make:gatherSecondaries(state, player, prop)
 
 			item = nextItem
 			currentWeight = nextWeight
-
-			print(">>> next", item.resource.name, nextItemWeight)
 		end
 
 		if item then
-			print(">>> droppping", item.resource.name, roll, maxWeight)
 			local l = loot[item.resource.name] or { item = item, count = 0}
 			l.count = l.count + 1
 			loot[item.resource.name] = l
