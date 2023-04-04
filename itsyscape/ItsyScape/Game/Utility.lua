@@ -2386,6 +2386,10 @@ end
 function Utility.Peep.attack(peep, other, distance)
 	do
 		local status = peep:getBehavior(CombatStatusBehavior)
+		if not status then
+			return false
+		end
+
 		if status and status.dead then
 			return false
 		end
@@ -2920,7 +2924,7 @@ end
 
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat.dead then
+	if not combat or combat.dead then
 		return
 	end
 
@@ -2994,6 +2998,10 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
 
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if not combat then
+		return
+	end
+
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
 	local attack = AttackPoke({
@@ -3028,7 +3036,7 @@ end
 
 function Utility.Peep.Attackable:onHeal(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat.currentHitpoints >= 0 then
+	if combat and combat.currentHitpoints >= 0 then
 		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
 		if not p.zealous then
 			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
@@ -3040,6 +3048,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if not combat then
+		return
+	end
+
 	if combat.currentHitpoints == 0 or combat.isDead then
 		return
 	end

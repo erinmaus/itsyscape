@@ -226,7 +226,7 @@ function CombatCortex:update(delta)
 
 					local distanceToTarget = ((Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)) * Vector.PLANE_XZ):getLength()
 
-					if distanceToTarget - selfRadius > combat.maxChaseDistance + targetRadius then
+					if distanceToTarget - selfRadius > ((combat and combat.maxChaseDistance) or 0) + targetRadius then
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
