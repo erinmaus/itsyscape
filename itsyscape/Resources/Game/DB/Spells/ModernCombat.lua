@@ -359,3 +359,93 @@ ItsyScape.Meta.CombatSpell {
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_combat_spell")
+
+ItsyScape.Meta.ResourceName {
+	Value = "Infect",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Infect"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Spawn shadow mites around your foe.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Infect"
+}
+
+ItsyScape.Resource.Spell "Infect" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 4
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 40
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = -16,
+	Resource = ItsyScape.Resource.Spell "Infect"
+}
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic_modern_spell")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic_combat_spell")
+
+ItsyScape.Resource.Peep "ShadowMite" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Arachnid.ShadowMite",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Shadow mite",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A mite molted in magic.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(1),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(40),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(200, 1.5),
+	StrengthCrush = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}

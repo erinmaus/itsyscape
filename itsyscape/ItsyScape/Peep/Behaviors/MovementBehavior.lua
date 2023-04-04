@@ -73,6 +73,7 @@ function MovementBehavior:new()
 	self.maxStepHeight = 1
 	self.clampToZero = true
 	self.float = 0
+	self.noClip = false
 end
 
 function MovementBehavior:clampMovement()
