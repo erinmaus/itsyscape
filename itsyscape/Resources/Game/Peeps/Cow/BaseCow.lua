@@ -23,9 +23,6 @@ function BaseCow:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(4, 2, 2)
-
-	local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-	self:getBehavior(CombatStatusBehavior).currentHitpoints = 5000
 end
 
 function BaseCow:ready(director, game)
