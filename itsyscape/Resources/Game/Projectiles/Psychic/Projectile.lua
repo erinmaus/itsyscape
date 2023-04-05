@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Resources/Game/Projectiles/Power_Corrupt/Projectile.lua
+-- ItsyScape/Resources/Game/Projectiles/Psychic/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -19,16 +19,17 @@ local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local Power_Corrupt = Class(Projectile)
-Power_Corrupt.SPEED = 6
+local Psychic = Class(Projectile)
+Psychic.SPEED = 6
+Psychic.LIGHT_COLOR = Color.fromHexString("FFAACC")
 
-function Power_Corrupt:attach()
+function Psychic:attach()
 	Projectile.attach(self)
 
 	self.duration = math.huge
 end
 
-function Power_Corrupt:load()
+function Psychic:load()
 	Projectile.load(self)
 
 	local resources = self:getResources()
@@ -39,7 +40,7 @@ function Power_Corrupt:load()
 		local quad = QuadSceneNode()
 		quad:setParent(root)
 		quad:setIsBillboarded(false)
-		quad:getTransform():setLocalScale(Vector(0.5, 1.0, 0.5))
+		quad:getTransform():setLocalScale(Vector(2, 4, 1))
 
 		local x = (math.random() - 0.5) * 2
 		local y = (math.random() - 0.5) * 2
@@ -51,12 +52,12 @@ function Power_Corrupt:load()
 	end
 
 	self.light = PointLightSceneNode()
-	self.light:setColor(Color(0.67, 0.21, 0.78, 1))
+	self.light:setColor(Psychic.LIGHT_COLOR)
 	self.light:setParent(root)
 
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Projectiles/Power_Corrupt/Texture.png",
+		"Resources/Game/Projectiles/Psychic/Texture.png",
 		function(texture)
 			for i = 1, #self.quads do
 				self.quads[i]:getMaterial():setTextures(texture)
@@ -64,11 +65,11 @@ function Power_Corrupt:load()
 		end)
 end
 
-function Power_Corrupt:getDuration()
+function Psychic:getDuration()
 	return self.duration
 end
 
-function Power_Corrupt:tick()
+function Psychic:tick()
 	if not self.spawnPosition or not self.hitPosition then
 		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
 		self.hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
@@ -77,15 +78,14 @@ function Power_Corrupt:tick()
 	end
 end
 
-function Power_Corrupt:update(elapsed)
+function Psychic:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	if self.spawnPosition then
-		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+	if self.spawnPosition and self.hitPosition then
 		local root = self:getRoot()
 		local delta = self:getDelta()
 		local mu = Tween.sineEaseOut(delta)
-		local position = self.spawnPosition:lerp(hitPosition, mu)
+		local position = self.spawnPosition:lerp(self.hitPosition, mu)
 
 		local alpha = 1
 		if delta > 0.5 then
@@ -93,8 +93,9 @@ function Power_Corrupt:update(elapsed)
 		end
 
 		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
-		local lookRotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
-		local rotation = lookRotation * xRotation
+		local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi / 2)
+		local lookRotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition)
+		local rotation = lookRotation * yRotation * xRotation
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
@@ -103,8 +104,8 @@ function Power_Corrupt:update(elapsed)
 			self.quads[i]:getMaterial():setColor(Color(1, 1, 1, alpha))
 		end
 
-		self.light:setAttenuation(alpha * 4 + 2)
+		self.light:setAttenuation(alpha * 8 + 4)
 	end
 end
 
-return Power_Corrupt
+return Psychic
