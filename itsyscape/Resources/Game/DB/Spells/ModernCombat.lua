@@ -568,3 +568,44 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Psychic"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Icicle",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Make an icicle out of thin air and crash it on your opponent, dealing physical stab damage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Resource.Spell "Icicle" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 3
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 25
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 16,
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/ErrinTheHeathensStaff/Logic.lua
+-- Resources/Game/Spells/Icicle/Spell.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,24 +9,18 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Staff = require "Resources.Game.Items.Common.Staff"
+local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local Utility = require "ItsyScape.Game.Utility"
 
-local ErrinTheHeathensStaff = Class(Staff)
+local Icicle = Class(CombatSpell)
 
-function ErrinTheHeathensStaff:getFarAttackRange(peep)
-	return 14
+function Icicle:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+	Utility.Peep.applyEffect(target, "Icicle", false, peep)
 end
 
-function ErrinTheHeathensStaff:getNearAttackRange(peep)
-	return 2
+function Icicle:getBonusForStance(peep)
+	return Weapon.BONUS_STAB
 end
 
-function ErrinTheHeathensStaff:getStyle()
-	return Weapon.STYLE_MAGIC
-end
-
-function ErrinTheHeathensStaff:getCooldown()
-	return 1.8
-end
-
-return ErrinTheHeathensStaff
+return Icicle

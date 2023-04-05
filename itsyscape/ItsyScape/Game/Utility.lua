@@ -3426,10 +3426,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
-	local attackAnimationStaffMagic = CacheRef(
+	local attackAnimationStaff = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
-	peep:addResource("animation-attack-magic-wand", attackAnimationStaffMagic)
+	peep:addResource("animation-attack-staff", attackAnimationStaff)
 	local attackAnimationWandStab = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackWandStab_1/Script.lua")
@@ -3438,6 +3438,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackWandMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-wand", attackAnimationWandMagic)
+	local attackAnimationWand = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
+	peep:addResource("animation-attack-magic-wand", attackAnimationWand)
 	local attackAnimationCaneSlash = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackCaneSlash_1/Script.lua")
@@ -3446,6 +3450,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackCaneMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-cane", attackAnimationCaneMagic)
+	local attackAnimationCane = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackCaneMagic_1/Script.lua")
+	peep:addResource("animation-attack-cane", attackAnimationCane)
 	local attackAnimationPickaxeStab = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")

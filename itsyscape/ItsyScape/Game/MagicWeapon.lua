@@ -39,12 +39,24 @@ function MagicWeapon:getSpell(peep)
 	return nil
 end
 
+function MagicWeapon:rollAttack(peep, target, bonus)
+	local spell = self:getSpell(peep)
+
+	local roll = Weapon.rollAttack(self, peep, target, bonus)
+	if spell then
+		spell:applyAccuracyRoll(roll)
+	end
+
+	return roll
+end
+
 function MagicWeapon:rollDamage(peep, purpose, target)
 	local spell = self:getSpell(peep)
 
 	local roll = Weapon.rollDamage(self, peep, purpose, target)
 	if target == Weapon.PURPOSE_KILL then
 		roll:setBonus(roll:getBonus() + spell:getStrengthBonus())
+		spell:applyDamageRoll(roll)
 	end
 
 	return roll
@@ -71,6 +83,15 @@ end
 
 function MagicWeapon:getStyle()
 	return Weapon.STYLE_MAGIC
+end
+
+function MagicWeapon:getBonusForStance(peep)
+	local spell = self:getSpell(peep)
+	if spell then
+		return spell:getBonusForStance(peep) or Weapon.BONUS_MAGIC
+	else
+		return Weapon.BONUS_MAGIC
+	end
 end
 
 function MagicWeapon:getProjectile(peep)
