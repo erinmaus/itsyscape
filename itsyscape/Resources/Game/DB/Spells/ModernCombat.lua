@@ -511,3 +511,60 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "SummonGoo"
 }
+
+ItsyScape.Meta.ResourceName {
+	Value = "Psychic",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pulls your opponent towards you.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Resource.Spell "Psychic" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "CosmicRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 35
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 30,
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Resource.Effect "Psychic" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Telepathic pull",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Psychic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pulls your opponent closer.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Psychic"
+}
