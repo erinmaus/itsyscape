@@ -34,6 +34,7 @@ function ShadowMite:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
+	status.canEngage = false
 end
 
 function ShadowMite:ready(director, game)

@@ -377,8 +377,9 @@ function ProCombatStatusHUDController:isAttacking()
 		local hasTarget = target and target.actor and target.actor:getPeep() == playerTarget
 		local isPlayerTarget = peep == playerTarget
 		local isAlive = status and not status.dead
+		local canEngage = status and status.canEngage
 
-		return (hasTarget or isPlayerTarget) and isAlive
+		return (hasTarget or isPlayerTarget) and isAlive and canEngage
 	end
 end
 

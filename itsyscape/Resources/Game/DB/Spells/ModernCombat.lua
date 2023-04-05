@@ -361,18 +361,18 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_modern_spell"
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_combat_spell")
 
 ItsyScape.Meta.ResourceName {
-	Value = "Infect",
+	Value = "Infest",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Spell "Infect"
+	Resource = ItsyScape.Resource.Spell "Infest"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Spawn shadow mites around your foe.",
+	Value = "Infest your foe with shadow mites.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Spell "Infect"
+	Resource = ItsyScape.Resource.Spell "Infest"
 }
 
-ItsyScape.Resource.Spell "Infect" {
+ItsyScape.Resource.Spell "Infest" {
 	ItsyScape.Action.Cast() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
@@ -398,12 +398,12 @@ ItsyScape.Resource.Spell "Infect" {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = -16,
-	Resource = ItsyScape.Resource.Spell "Infect"
+	Resource = ItsyScape.Resource.Spell "Infest"
 }
 
-ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic")
-ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic_modern_spell")
-ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infect", "magic_combat_spell")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic_modern_spell")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic_combat_spell")
 
 ItsyScape.Resource.Peep "ShadowMite" {
 	-- Nothing.
@@ -434,7 +434,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(40),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "ShadowMite"
 }
 
@@ -446,6 +446,6 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.Equipment {
 	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(200, 1.5),
-	StrengthCrush = ItsyScape.Utility.strengthBonusForWeapon(40, 1),
+	StrengthCrush = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
 	Resource = ItsyScape.Resource.Peep "ShadowMite"
 }
