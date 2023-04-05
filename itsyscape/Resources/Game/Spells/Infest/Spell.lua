@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Spells/Infect/Spell.lua
+-- Resources/Game/Spells/Infest/Spell.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,9 +12,9 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 
-local Infect = Class(CombatSpell)
+local Infest = Class(CombatSpell)
 
-function Infect:cast(peep, target)
+function Infest:cast(peep, target)
 	CombatSpell.cast(self, peep, target)
 
 	local stat = peep:getState():count("Skill", "Wisdom", {
@@ -39,4 +39,4 @@ function Infect:cast(peep, target)
 	Log.info("Spawned %d mites.", numMites)
 end
 
-return Infect
+return Infest
