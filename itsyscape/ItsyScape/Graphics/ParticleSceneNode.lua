@@ -221,6 +221,7 @@ function ParticleSceneNode:frame(delta)
 		self.mesh:setAttributeEnabled("VertexNormal", true)
 		self.mesh:setAttributeEnabled("VertexColor", true)
 		self.mesh:setAttributeEnabled("VertexTexture", true)
+		self:setBounds(self.min, self.max)
 	elseif self.mesh then
 		self.mesh:setVertices(self.vertexData, 1, self.numVertices)
 	end

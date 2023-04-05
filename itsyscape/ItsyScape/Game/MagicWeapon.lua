@@ -98,7 +98,7 @@ function MagicWeapon:getProjectile(peep)
 	local spell = self:getSpell(peep)
 
 	if spell then
-		return spell.id
+		return spell:getProjectile(peep)
 	end
 
 	return nil

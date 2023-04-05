@@ -39,6 +39,10 @@ function CombatSpell:getBonusForStance(peep)
 	return nil
 end
 
+function CombatSpell:getProjectile(peep)
+	return self:getResource().name
+end
+
 function CombatSpell:cast(peep, target)
 	self:consume(peep)
 	self:transfer(peep)

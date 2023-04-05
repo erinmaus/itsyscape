@@ -548,6 +548,27 @@ ItsyScape.Resource.Spell "Psychic" {
 	}
 }
 
+ItsyScape.Resource.Peep "MiasmaSkeleton" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Skeleton.MiasmaSkeleton",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma skeleton",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A horrible agent of death.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
 ItsyScape.Meta.CombatSpell {
 	Strength = 30,
 	Resource = ItsyScape.Resource.Spell "Psychic"
@@ -608,4 +629,71 @@ ItsyScape.Resource.Spell "Icicle" {
 ItsyScape.Meta.CombatSpell {
 	Strength = 16,
 	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Summon miasma to fly at your foe, slowing their attacks by up to 10% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Resource.Spell "Miasma" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(55)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 5
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 5
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 4
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 150
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 24,
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Resource.Effect "Miasma" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Miasma"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your fighting speed from 2% to 10% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Miasma"
 }
