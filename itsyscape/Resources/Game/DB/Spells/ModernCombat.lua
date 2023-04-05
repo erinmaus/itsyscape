@@ -367,7 +367,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Infest your foe with shadow mites.",
+	Value = "Infest your foe with shadow mites that pierce defense. The higher your wisdom level, the more mights infest your foe.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "Infest"
 }
@@ -448,4 +448,50 @@ ItsyScape.Meta.Equipment {
 	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(200, 1.5),
 	StrengthCrush = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
 	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Summon goo",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Surround your foe in goo, reducing their speed by up to 25% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
+}
+
+ItsyScape.Resource.Spell "SummonGoo" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 30
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 24,
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
 }

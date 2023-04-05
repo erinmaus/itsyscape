@@ -96,7 +96,7 @@ function MapMesh:_getTileLayer(tileSetID)
 end
 
 function MapMesh:_subTileElevationDifferent(a, b)
-	local E = 0.01
+	local E = 0.02
 	return math.abs(a - b) > E
 end
 
@@ -107,7 +107,7 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 	local otherTileIslandParentID = otherTileIsland and otherTileIsland.parent and otherTileIsland.parent.id
 
 	if (currentTileIslandParentID or 0) < (otherTileIslandParentID or 0) then
-		return false, "curID < othrID"
+		return false, "curID < otherID"
 	end
 
 	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
