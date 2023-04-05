@@ -2411,11 +2411,6 @@ function Utility.Peep.attack(peep, other, distance)
 		end
 	end
 
-	local target = peep:getBehavior(CombatTargetBehavior)
-	if not target then
-		target = peep:addBehavior(CombatTargetBehavior)
-	end
-
 	local actor = other:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		if peep:getCommandQueue():interrupt(AttackCommand()) then

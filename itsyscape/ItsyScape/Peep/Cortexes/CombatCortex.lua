@@ -38,6 +38,7 @@ function CombatCortex:new()
 	Cortex.new(self)
 
 	self:require(ActorReferenceBehavior)
+	self:require(CombatStatusBehavior)
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
 	self:require(SizeBehavior)
