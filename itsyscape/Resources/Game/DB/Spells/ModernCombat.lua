@@ -495,3 +495,19 @@ ItsyScape.Meta.CombatSpell {
 	Strength = 24,
 	Resource = ItsyScape.Resource.Spell "SummonGoo"
 }
+
+ItsyScape.Resource.Effect "SummonGoo" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sticky Goo",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SummonGoo"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your movement speed from 5% to 25% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SummonGoo"
+}

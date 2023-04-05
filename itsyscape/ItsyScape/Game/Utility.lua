@@ -2063,6 +2063,14 @@ function Utility.Peep.equipXWeapon(peep, id)
 end
 
 function Utility.Peep.getEffectType(resource, gameDB)
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Effect")
+	end
+
+	if not resource then
+		return nil
+	end
+
 	local EffectTypeName = string.format("Resources.Game.Effects.%s.Effect", resource.name)
 	local s, r = pcall(require, EffectTypeName)
 	if s then
@@ -2076,6 +2084,14 @@ end
 
 function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	local gameDB = peep:getDirector():getGameDB()
+
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Effect")
+	end
+
+	if not resource then
+		return false
+	end
 
 	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
 

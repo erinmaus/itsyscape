@@ -9,7 +9,20 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local Utility = require "ItsyScape.Game.Utility"
+local SummonGooEffect = require "Resources.Game.Effects.SummonGoo.Effect"
 
 local SummonGoo = Class(CombatSpell)
+
+function SummonGoo:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+
+	local effect = target:getEffect(SummonGooEffect)
+	if not effect then
+		Utility.Peep.applyEffect(target, "SummonGoo", true)
+	else
+		effect:boost()
+	end
+end
 
 return SummonGoo
