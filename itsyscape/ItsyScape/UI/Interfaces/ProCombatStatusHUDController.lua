@@ -328,6 +328,7 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 					z = resource.id.value,
 					name = Utility.getName(resource, gameDB),
 					description = Utility.getDescription(resource, gameDB),
+					tinyDescription = effect:getDescription(),
 					duration = effect:getDuration(),
 					debuff = effect:getBuffType() == Effect.BUFF_TYPE_NEGATIVE,
 					buff = effect:getBuffType() == Effect.BUFF_TYPE_POSITIVE

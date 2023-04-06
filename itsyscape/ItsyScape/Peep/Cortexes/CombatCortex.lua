@@ -114,7 +114,7 @@ function CombatCortex:usePower(peep, target, logic)
 			power:activate(peep, target)
 
 			if not power:getIsQuick() and logic and logic:isCompatibleType(Weapon) then
-				logic:applyCooldown(peep)
+				logic:applyCooldown(peep, target)
 			end
 
 			logicOverride = power:getXWeapon(peep)
@@ -332,8 +332,8 @@ function CombatCortex:update(delta)
 						do
 							local cooldown = peep:getBehavior(AttackCooldownBehavior)
 							if cooldown then
-								local cooldownFinishTicks = cooldown.cooldown + cooldown.ticks * game:getDelta()
-								canAttack = cooldownFinishTicks < game:getCurrentTick() * game:getDelta()
+								local cooldownFinishTicks = cooldown.cooldown + cooldown.ticks
+								canAttack = cooldownFinishTicks < game:getCurrentTime()
 							else
 								canAttack = true
 							end

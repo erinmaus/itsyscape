@@ -46,4 +46,14 @@ function CombatEffect:applyTargetToAttack(attackRoll)
 	-- Nothing.
 end
 
+-- Modifies a weapon cooldown from self vs a target, either increasing or decreasing it.
+function CombatEffect:applyToSelfWeaponCooldown(peep, cooldown)
+	return cooldown
+end
+
+-- Modifies a weapon cooldown from self vs a target, either increasing or decreasing it.
+function CombatEffect:applyToTargetWeaponCooldown(target, cooldown)
+	return cooldown
+end
+
 return CombatEffect

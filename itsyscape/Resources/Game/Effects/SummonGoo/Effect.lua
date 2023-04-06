@@ -25,6 +25,10 @@ function SummonGoo:new()
 	self.percent = SummonGoo.INTERVAL
 end
 
+function SummonGoo:getDescription()
+	return string.format("%d%%", self.percent * 100)
+end
+
 function SummonGoo:boost()
 	self.percent = math.min(SummonGoo.INTERVAL + self.percent, SummonGoo.MAX_DEBUFF)
 	self:setDuration(SummonGoo.DURATION)
