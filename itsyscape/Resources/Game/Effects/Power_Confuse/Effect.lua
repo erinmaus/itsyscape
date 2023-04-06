@@ -27,6 +27,10 @@ function Confuse:new(activator)
 	self.accuracyDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
 end
 
+function Confuse:getDescription()
+	return string.format("%d%%", (1 - self.accuracyDebuff) * 100)
+end
+
 function Confuse:getBuffType()
 	return Effect.BUFF_TYPE_NEGATIVE
 end
