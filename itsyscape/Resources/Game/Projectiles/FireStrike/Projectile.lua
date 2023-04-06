@@ -105,7 +105,7 @@ FireStrike.SMOKE_PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.6, 0.7 }
+			scale = { 0.2, 0.4 }
 		},
 		{
 			type = "RandomRotationEmitter",
@@ -151,7 +151,7 @@ function FireStrike:load()
 	self.fireParticleSystem:initParticleSystemFromDef(FireStrike.FIRE_PARTICLE_SYSTEM, resources)
 
 	self.smokeParticleSystem = ParticleSceneNode()
-	self.smokeParticleSystem:setParent(root)
+	--self.smokeParticleSystem:setParent(root)
 	self.smokeParticleSystem:initParticleSystemFromDef(FireStrike.SMOKE_PARTICLE_SYSTEM, resources)
 
 	self.light = PointLightSceneNode()

@@ -66,7 +66,7 @@ FireBlast.FIRE_PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 6, 8 },
+		count = { 8, 10 },
 		delay = { 1 / 30 },
 		duration = { math.huge }
 	}
@@ -101,7 +101,7 @@ FireBlast.SMOKE_PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.6, 0.7 }
+			scale = { 0.2, 0.5 }
 		},
 		{
 			type = "RandomRotationEmitter",
