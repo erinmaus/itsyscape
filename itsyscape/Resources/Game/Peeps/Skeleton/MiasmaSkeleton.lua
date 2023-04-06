@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
@@ -16,11 +17,13 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 
 local MiasmaSkeleton = Class(Player)
 
 MiasmaSkeleton.DESPAWN_DISTANCE = 0.5
 MiasmaSkeleton.DESPAWN_TIME = 0.25
+MiasmaSkeleton.SCALE = 2
 
 function MiasmaSkeleton:new(resource, name, ...)
 	Player.new(self, resource, name or 'MiasmaSkeleton', ...)
@@ -29,6 +32,10 @@ function MiasmaSkeleton:new(resource, name, ...)
 	movement.noClip = true
 
 	self:removeBehavior(CombatStatusBehavior)
+
+	self:addBehavior(ScaleBehavior)
+	local scale = self:getBehavior(ScaleBehavior)
+	scale.scale = Vector(MiasmaSkeleton.SCALE)
 end
 
 function MiasmaSkeleton:ready(director, game)
