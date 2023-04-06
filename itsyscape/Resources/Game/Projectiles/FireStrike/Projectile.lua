@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Resources/Game/Projectiles/WaterStrike/Projectile.lua
+-- ItsyScape/Resources/Game/Projectiles/FireStrike/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -19,11 +19,11 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local WaterStrike = Class(Projectile)
+local FireStrike = Class(Projectile)
 
-WaterStrike.PARTICLE_SYSTEM = {
-	numParticles = 40,
-	texture = "Resources/Game/Projectiles/WaterStrike/Particle.png",
+FireStrike.FIRE_PARTICLE_SYSTEM = {
+	numParticles = 100,
+	texture = "Resources/Game/Projectiles/FireStrike/Fire.png",
 	columns = 4,
 
 	emitters = {
@@ -33,16 +33,16 @@ WaterStrike.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "DirectionalEmitter",
-			direction = { 0, -1, 0 },
+			direction = { 0, 0, -1 },
 			speed = { 2.5, 3.5 },
 		},
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ Color.fromHexString("B8EBE6"):get() },
-				{ Color.fromHexString("5FBCD3"):get() },
-				{ Color.fromHexString("5FBCD3"):get() },
-				{ Color.fromHexString("5FBCD3"):get() }
+				{ 1, 0.4, 0.0, 0.0 },
+				{ 0.9, 0.4, 0.0, 0.0 },
+				{ 1, 0.5, 0.0, 0.0 },
+				{ 0.9, 0.5, 0.0, 0.0 }
 			}
 		},
 		{
@@ -71,39 +71,99 @@ WaterStrike.PARTICLE_SYSTEM = {
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 4, 6 },
-		delay = { 0.125 },
+		delay = { 1 / 30 },
 		duration = { math.huge }
 	}
 }
 
-WaterStrike.SPEED = 5
+FireStrike.SMOKE_PARTICLE_SYSTEM = {
+	numParticles = 40,
+	texture = "Resources/Game/Projectiles/FireStrike/Smoke.png",
+	columns = 1,
 
-function WaterStrike:attach()
+	emitters = {
+		{
+			type = "RadialEmitter",
+			radius = { 0.125 },
+			speed = { 2, 3 },
+			acceleration = { -1, -2 }
+		},
+		{
+			type = "DirectionalEmitter",
+			direction = { 0, 1, 0 },
+			speed = { 0.5, 1.5 },
+		},
+		{
+			type = "RandomColorEmitter",
+			colors = {
+				{ 0.5, 0.4, 0.4 }
+			}
+		},
+		{
+			type = "RandomLifetimeEmitter",
+			lifetime = { 1.0, 1.5 }
+		},
+		{
+			type = "RandomScaleEmitter",
+			scale = { 0.6, 0.7 }
+		},
+		{
+			type = "RandomRotationEmitter",
+			rotation = { 0, 360 },
+			velocity = { 30, 60 },
+			acceleration = { -40, -20 }
+		}
+	},
+
+	paths = {
+		{
+			type = "FadeInOutPath",
+			fadeInPercent = { 0.1 },
+			fadeOutPercent = { 0.8 },
+			tween = { 'sineEaseOut' }
+		}
+	},
+
+	emissionStrategy = {
+		type = "RandomDelayEmissionStrategy",
+		count = { 2, 4 },
+		delay = { 1 / 30 },
+		duration = { 2 }
+	}
+}
+
+FireStrike.SPEED = 6
+
+function FireStrike:attach()
 	Projectile.attach(self)
 
 	self.duration = math.huge
 end
 
-function WaterStrike:load()
+function FireStrike:load()
 	Projectile.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	self.particleSystem = ParticleSceneNode()
-	self.particleSystem:setParent(root)
-	self.particleSystem:initParticleSystemFromDef(WaterStrike.PARTICLE_SYSTEM, resources)
+	self.fireParticleSystem = ParticleSceneNode()
+	self.fireParticleSystem:setParent(root)
+	self.fireParticleSystem:initParticleSystemFromDef(FireStrike.FIRE_PARTICLE_SYSTEM, resources)
+
+	self.smokeParticleSystem = ParticleSceneNode()
+	self.smokeParticleSystem:setParent(root)
+	self.smokeParticleSystem:initParticleSystemFromDef(FireStrike.SMOKE_PARTICLE_SYSTEM, resources)
 
 	self.light = PointLightSceneNode()
 	self.light:setParent(root)
-	self.light:setColor(Color.fromHexString("5FBCD3"))
+	self.light:setColor(Color(1, 0.4, 0.0))
 end
 
-function WaterStrike:getDuration()
+function FireStrike:getDuration()
 	return self.duration
 end
 
-function WaterStrike:tick()
+function FireStrike:tick()
 	if not self.spawnPosition then
 		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
 
@@ -112,7 +172,7 @@ function WaterStrike:tick()
 	end
 end
 
-function WaterStrike:update(elapsed)
+function FireStrike:update(elapsed)
 	Projectile.update(self, elapsed)
 
 	if self.spawnPosition then
@@ -127,18 +187,20 @@ function WaterStrike:update(elapsed)
 			alpha = 1 - (delta - 0.5) / 0.5
 		end
 
-		local rotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
+		local fireParticleSystem = self.fireParticleSystem:getParticleSystem()
+		if fireParticleSystem then
+			fireParticleSystem:updateEmittersLocalPosition(position)
+		end
 
-		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
-		local lookRotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
-		local rotation = lookRotation * xRotation
+		local smokeParticleSystem = self.smokeParticleSystem:getParticleSystem()
+		if smokeParticleSystem then
+			smokeParticleSystem:updateEmittersLocalPosition(position + Vector.UNIT_Y)
+		end
 
-		root:getTransform():setLocalTranslation(position)
-		root:getTransform():setLocalRotation(rotation)
-
-		self.particleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
+		self.fireParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
+		self.smokeParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
 		self.light:setAttenuation((1 - alpha) * 3 + 2)
 	end
 end
 
-return WaterStrike
+return FireStrike
