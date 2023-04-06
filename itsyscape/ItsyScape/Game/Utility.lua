@@ -718,6 +718,11 @@ function Utility.Combat.calcDefenseRoll(level, bonus)
 	return (level + 8) * (bonus + 128)
 end
 
+function Utility.Combat.calcBoost(level, minLevel, maxLevel, minBoost, maxBoost)
+	local delta = math.min((math.max(level, minLevel) - minLevel) / (maxLevel - minLevel), 1)
+	return minBoost + (maxBoost - minBoost) * delta
+end
+
 -- Contains utility methods to deal with text.
 Utility.Text = {}
 

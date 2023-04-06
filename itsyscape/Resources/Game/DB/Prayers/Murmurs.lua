@@ -240,7 +240,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts your minimum ranged damage by 10% of your faith level.",
+	Value = "Boosts your minimum ranged damage by 10% of your Faith level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
 }
@@ -249,4 +249,85 @@ ItsyScape.Meta.Prayer {
 	Drain = 12,
 	Style = "Archery",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}
+
+ItsyScape.Resource.Effect "SwiftDagger" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 20,
+	Style = "Attack",
+	Resource = ItsyScape.Resource.Effect "SwiftDagger"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Swift Dagger",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SwiftDagger"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts melee weapon speed by 10% to 20%, based on Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SwiftDagger"
+}
+
+ItsyScape.Resource.Effect "SharpMind" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 20,
+	Style = "Magic",
+	Resource = ItsyScape.Resource.Effect "SharpMind"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sharp Mind",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SharpMind"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts magic weapon speed by 10% to 20%, based on Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SharpMind"
+}
+
+ItsyScape.Resource.Effect "StableHand" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 20,
+	Style = "Archery",
+	Resource = ItsyScape.Resource.Effect "StableHand"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Stable Hand",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "StableHand"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts archery weapon speed by 10% to 20%, based on faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "StableHand"
 }
