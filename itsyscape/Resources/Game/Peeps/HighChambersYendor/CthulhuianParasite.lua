@@ -42,7 +42,7 @@ function CthulhuianParasite:ready(director, game)
 	stance.useSpell = true
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
-	spell.spell = Utility.Magic.newSpell("EarthStrike", game)
+	spell.spell = Utility.Magic.newSpell("WaterStrike", game)
 
 	BaseCthulhuianParasite.ready(self, director, game)
 end
