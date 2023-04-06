@@ -2090,26 +2090,26 @@ function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	end
 
 	if not resource then
-		return false
+		return false, nil
 	end
 
 	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
 
 	if not EffectType then
 		Log.warn("Effect '%s' does not exist.", Utility.getName(resource, gameDB))
-		return false
+		return false, nil
 	end
 
 	if singular and peep:getEffect(EffectType) then
 		Log.info("Effect '%s' already applied.", Utility.getName(resource, gameDB))
-		return false
+		return false, nil
 	end
 
 	local effectInstance = EffectType(...)
 	effectInstance:setResource(resource)
 	peep:addEffect(effectInstance)
 
-	return true
+	return true, effectInstance
 end
 
 function Utility.Peep.toggleEffect(peep, resource, ...)
