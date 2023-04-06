@@ -9,7 +9,23 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local Utility = require "ItsyScape.Game.Utility"
+local FireStrikeEffect = require "Resources.Game.Effects.FireStrike.Effect"
 
 local FireStrike = Class(CombatSpell)
+
+function FireStrike:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+
+	local effect = target:getEffect(FireStrikeEffect)
+	if not effect then
+		local s, e = Utility.Peep.applyEffect(target, "FireStrike", true)
+		if s then
+			e:boost(false)
+		end
+	else
+		effect:boost(false)
+	end
+end
 
 return FireStrike

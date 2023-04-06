@@ -8,8 +8,30 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Effect "FireStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Fire Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "FireStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases damage received.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "FireStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fire Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "FireStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with fire. Applies a 10% damage-received debuff to opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "FireStrike"
 }
@@ -47,8 +69,30 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic_combat_spell")
 
+ItsyScape.Resource.Effect "WaterStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Water Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers defense roll.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Water Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with water. Applies a 10% defense debuff to the opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "WaterStrike"
 }
@@ -86,8 +130,30 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic_combat_spell")
 
+ItsyScape.Resource.Effect "EarthStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Earth Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers accuracy roll.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Earth Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with earth. Applies a 10% accuracy debuff to opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "EarthStrike"
 }
@@ -147,6 +213,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Spell "AirStrike"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with earth. Also knocks the foe back a tiny bit.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "EarthStrike"
+}
+
 ItsyScape.Resource.Spell "AirStrike" {
 	ItsyScape.Action.Cast() {
 		Requirement {
@@ -177,6 +249,12 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "AirStrike", "magic_combat_spell"
 
 ItsyScape.Meta.ResourceName {
 	Value = "Fire Blast",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "FireBlast"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with fire. Applies a 20% damage-received debuff to opponent for 10 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "FireBlast"
 }
@@ -220,6 +298,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Spell "WaterBlast"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with water. Applies a 20% defense debuff to the opponent for 10 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "WaterBlast"
+}
+
 ItsyScape.Resource.Spell "WaterBlast" {
 	ItsyScape.Action.Cast() {
 		Requirement {
@@ -259,6 +343,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Spell "EarthBlast"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with earth. Applies a 20% accuracy debuff to opponent for 10 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "EarthBlast"
+}
+
 ItsyScape.Resource.Spell "EarthBlast" {
 	ItsyScape.Action.Cast() {
 		Requirement {
@@ -294,6 +384,12 @@ ItsyScape.Meta.CombatSpell {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Air Blast",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "AirBlast"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with air. Also knocks the foe back a bit.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "AirBlast"
 }
