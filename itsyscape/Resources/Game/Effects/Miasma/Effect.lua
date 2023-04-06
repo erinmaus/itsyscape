@@ -41,7 +41,7 @@ function Miasma:getBuffType()
 end
 
 function Miasma:applyToSelfWeaponCooldown(peep, cooldown)
-	return cooldown * (1 - self.percent)
+	return cooldown * (1 + self.percent)
 end
 
 return Miasma
