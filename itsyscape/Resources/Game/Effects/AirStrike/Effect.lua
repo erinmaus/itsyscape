@@ -36,11 +36,11 @@ end
 
 function AirStrike:boost(strong)
 	if strong then
-		self.pullDuration = self.DURATION_WEAK
-		self.pullStrength = self.PULL_WEAK
-	else
 		self.pullDuration = self.DURATION_STRONG
 		self.pullStrength = self.PULL_STRONG
+	else
+		self.pullDuration = self.DURATION_WEAK
+		self.pullStrength = self.PULL_WEAK
 	end
 
 	self:setDuration(self.pullDuration)
