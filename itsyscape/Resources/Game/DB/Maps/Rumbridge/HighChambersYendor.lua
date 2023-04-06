@@ -364,7 +364,7 @@ do
 	ItsyScape.Meta.DropTableEntry {
 		Item = ItsyScape.Resource.Item "AirRune",
 		Weight = 400,
-		Count = 20,
+		Count = 40,
 		Range = 10,
 		Resource = PrimaryDropTable
 	}
@@ -372,8 +372,32 @@ do
 	ItsyScape.Meta.DropTableEntry {
 		Item = ItsyScape.Resource.Item "EarthRune",
 		Weight = 200,
-		Count = 10,
+		Count = 30,
 		Range = 5,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "WaterRune",
+		Weight = 100,
+		Count = 20,
+		Range = 10,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "FireRune",
+		Weight = 100,
+		Count = 20,
+		Range = 10,
+		Resource = PrimaryDropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CosmicRune",
+		Weight = 100,
+		Count = 20,
+		Range = 10,
 		Resource = PrimaryDropTable
 	}
 
@@ -1519,7 +1543,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A human recently turned by Cthulhu, Yendor's ancient avatar and the First High Priest of His faith.",
+		Value = "A human recently turned by Cthulhu, Yendor's ancient avatar and the First High Priest of Her Faith.",
 		Language = "en-US",
 		Resource = Parasite
 	}
@@ -1643,7 +1667,7 @@ do
 	local AirRuneReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 100
+			Count = 300
 		}
 	}
 
@@ -1652,15 +1676,15 @@ do
 		Weight = 100
 	}
 
-	local EarthRuneReward = ItsyScape.Action.Reward() {
+	local WaterRuneReward = ItsyScape.Action.Reward() {
 		Output {
-			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 30
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 100
 		}
 	}
 
 	ItsyScape.Meta.RewardEntry {
-		Action = EarthRuneReward,
+		Action = WaterRuneReward,
 		Weight = 100
 	}
 
@@ -1731,7 +1755,7 @@ do
 		CavePotatoReward,
 		SailorsHatReward,
 		AirRuneReward,
-		EarthRuneReward,
+		WaterRuneReward,
 		BoneShardsReward,
 		BonesReward,
 		EldritchMyrrhReward
