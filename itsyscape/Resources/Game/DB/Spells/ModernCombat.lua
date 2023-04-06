@@ -125,6 +125,22 @@ ItsyScape.Meta.CombatSpell {
 	Resource = ItsyScape.Resource.Spell "EarthStrike"
 }
 
+ItsyScape.Resource.Effect "AirStrike" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Air Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "AirStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pushes your foe away.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "AirStrike"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Air Strike",
 	Language = "en-US",
