@@ -214,9 +214,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Strike the foe with earth. Also knocks the foe back a tiny bit.",
+	Value = "Strike the foe with air. Also knocks the foe back a tiny bit.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Spell "EarthStrike"
+	Resource = ItsyScape.Resource.Spell "AirStrike"
 }
 
 ItsyScape.Resource.Spell "AirStrike" {
