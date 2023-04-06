@@ -27,6 +27,10 @@ function IronSkin:new(activator)
 	self.damageMultiplier = (1 - math.min(level / 50, 1)) * 0.5 + 0.5
 end
 
+function IronSkin:getDescription()
+	return string.format("%d%%", self.damageMultiplier * 100)
+end
+
 function IronSkin:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end

@@ -41,6 +41,8 @@ function Corrupt:new(activator)
 		self.damage = 0
 	end
 
+	self.damageRemaining = math.floor(self.damage / (Corrupt.DURATION / Corrupt.INTERVAL) + 0.5) * (Corrupt.DURATION / Corrupt.INTERVAL)
+
 	self.tick = 0
 	self.aggressor = activator
 end
@@ -49,6 +51,9 @@ function Corrupt:getBuffType()
 	return Effect.BUFF_TYPE_NEGATIVE
 end
 
+function Corrupt:getDescription()
+	string.format("%d dmg", self.damageRemaining)
+end
 
 function Corrupt:update(delta)
 	Effect.update(self, delta)
@@ -79,6 +84,8 @@ function Corrupt:update(delta)
 		end
 		
 		self.tick = Corrupt.INTERVAL
+
+		self.damageRemaining = self.damageRemaining - damage
 	end
 end
 

@@ -40,6 +40,10 @@ function Fury:new(activator)
 	self.currentDamageMultiplier = 0
 end
 
+function Fury:getDescription()
+	return string.format("%d%%", self.currentDamageMultiplier * 100)
+end
+
 function Fury:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
