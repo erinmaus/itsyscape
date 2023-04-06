@@ -25,7 +25,7 @@ function MagmaJellyfishAttack:perform(peep, target)
 		position.z,
 		0.0)
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return true
 end

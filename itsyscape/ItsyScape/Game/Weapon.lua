@@ -498,7 +498,7 @@ function Weapon:onAttackHit(peep, target)
 		peep:poke('initiateAttack', attack)
 	end
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return attack
 end
@@ -515,17 +515,27 @@ function Weapon:onAttackMiss(peep, target)
 	target:poke('receiveAttack', attack)
 	peep:poke('initiateAttack', attack)
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return attack
 end
 
-function Weapon:applyCooldown(peep)
+function Weapon:applyCooldown(peep, target)
 	peep:addBehavior(AttackCooldownBehavior)
 
 	local cooldown = peep:getBehavior(AttackCooldownBehavior)
 	cooldown.cooldown = self:getCooldown(peep)
-	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
+
+	do
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown.cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown.cooldown)
+		end
+
+		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+		end
+	end
 end
 
 function Weapon:perform(peep, target)

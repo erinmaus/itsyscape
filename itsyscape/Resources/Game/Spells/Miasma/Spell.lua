@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local SummonGooEffect = require "Resources.Game.Effects.Miasma.Effect"
 
 local Miasma = Class(CombatSpell)
 
@@ -38,6 +39,13 @@ function Miasma:cast(peep, target)
 
 			stage:fireProjectile("Miasma", peep, p)
 		end)
+	end
+
+	local effect = target:getEffect(MiasmaEffect)
+	if not effect then
+		Utility.Peep.applyEffect(target, "Miasma", true)
+	else
+		effect:boost()
 	end
 end
 

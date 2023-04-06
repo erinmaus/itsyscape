@@ -1659,12 +1659,19 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 		local icon = effects:getChildAt(i)
 		if not icon then
 			icon = Icon()
-			local label = Label()
-			label:setPosition(
+			local timeLabel = Label()
+			timeLabel:setPosition(
 				ProCombatStatusHUD.EFFECT_PADDING,
 				ProCombatStatusHUD.EFFECT_SIZE - 22 - ProCombatStatusHUD.EFFECT_PADDING)
-			icon:setData('label', label)
-			icon:addChild(icon:getData('label'))
+			icon:setData('timeLabel', timeLabel)
+			icon:addChild(icon:getData('timeLabel'))
+
+			local tinyDescriptionLabel = Label()
+			tinyDescriptionLabel:setPosition(
+				ProCombatStatusHUD.EFFECT_PADDING,
+				ProCombatStatusHUD.EFFECT_PADDING)
+			icon:setData('tinyDescriptionLabel', tinyDescriptionLabel)
+			icon:addChild(icon:getData('tinyDescriptionLabel'))
 
 			border = ProCombatStatusHUD.EffectBorder()
 			border:setSize(
@@ -1686,17 +1693,17 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 
 			local time, suffix
 			if duration > HOUR then
-				time = math.floor(duration / HOUR)
+				time = math.ceil(duration / HOUR)
 				suffix = 'h'
 			elseif duration > MINUTE then
-				time = math.floor(duration / MINUTE)
+				time = math.ceil(duration / MINUTE)
 				suffix = 'm'
 			else
-				time = math.floor(duration)
+				time = math.ceil(duration)
 				suffix = 's'
 			end
 
-			local label = icon:getData('label')
+			local label = icon:getData('timeLabel')
 			label:setText(string.format("%d%s", time, suffix))
 			label:setStyle(LabelStyle({
 				font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
@@ -1704,7 +1711,20 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 				textShadow = true
 			}, self:getView():getResources()))
 		else
-			icon:getData('label'):setText("")
+			icon:getData('timeLabel'):setText("")
+		end
+
+		local tinyDescription = state.effects[i].tinyDescription
+		if tinyDescription then
+			local label = icon:getData('tinyDescriptionLabel')
+			label:setText(tinyDescription)
+			label:setStyle(LabelStyle({
+				font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
+				fontSize = 16,
+				textShadow = true
+			}, self:getView():getResources()))
+		else
+			icon:getData('tinyDescriptionLabel'):setText("")
 		end
 
 		do
@@ -1755,7 +1775,7 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 
 		button:setToolTip(unpack(toolTip))
 
-		if power.coolDown then
+		if power.coolDown and power.coolDown ~= 0 then
 			coolDown:setText(tostring(power.coolDown))
 		else
 			coolDown:setText("")

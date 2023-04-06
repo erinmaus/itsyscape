@@ -86,7 +86,7 @@ function MiasmaSkeleton:update(director, game)
 		Utility.Peep.setPosition(self, selfPosition:lerp(targetPosition, game:getDelta()))
 
 		local movement = self:getBehavior(MovementBehavior)
-		if selfPosition.x < targetPosition.x then
+		if selfPosition.x > targetPosition.x then
 			movement.facing = MovementBehavior.FACING_LEFT
 		else
 			movement.facing = MovementBehavior.FACING_RIGHT
