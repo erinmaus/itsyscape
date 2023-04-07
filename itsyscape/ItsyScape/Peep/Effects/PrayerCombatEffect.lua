@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
 local PrayerCombatEffect = Class(CombatEffect)
 
@@ -24,6 +25,22 @@ function PrayerCombatEffect:enchant(peep)
 
 	if prayer then
 		self.drain = prayer:get("Drain")
+	end
+
+	self:playAnimation()
+end
+
+function PrayerCombatEffect:playAnimation()
+	local peep = self:getPeep()
+
+	local prayAnimation = peep:getResource("animation-action-pray", "ItsyRealm.Graphics.AnimationResource")
+	if prayAnimation then
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			actor:playAnimation("skill", 5, prayAnimation)
+		end
 	end
 end
 
