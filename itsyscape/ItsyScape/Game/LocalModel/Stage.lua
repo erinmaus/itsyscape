@@ -72,6 +72,7 @@ function LocalStage:newLayer(instance)
 end
 
 function LocalStage:deleteLayer(layer)
+	Log.engine("Deleting layer %d.", layer)
 	self.instancesByLayer[layer] = nil
 end
 
