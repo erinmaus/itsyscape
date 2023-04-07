@@ -3361,6 +3361,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionPet_1/Script.lua")
 	peep:addResource("animation-action-pet", actionPet)
+	local actionPray = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionPray_1/Script.lua")
+	peep:addResource("animation-action-pray", actionPray)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
