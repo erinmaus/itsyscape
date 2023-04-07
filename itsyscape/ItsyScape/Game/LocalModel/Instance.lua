@@ -204,6 +204,7 @@ function Instance:new(id, filename, stage)
 
 	self.layers = {}
 	self.layersByID = {}
+	self.layersPendingRemovalByID = {}
 	self.mapScripts = {}
 
 	self.players = {}
@@ -241,7 +242,17 @@ function Instance:new(id, filename, stage)
 				self:getFilename(),
 				self:getID(),
 				layer)
+
+			self.layersPendingRemovalByID[layer] = self.layersByID[layer]
+
 			self.maps[layer] = nil
+			for i = 1, #self.layers do
+				if self.layers[i] == layer then
+					table.remove(self.layers, i)
+					break
+				end
+			end
+			self.layersByID[layer] = nil
 
 			local mapScript = self.mapScripts[layer]
 			if mapScript then
@@ -560,7 +571,7 @@ function Instance:new(id, filename, stage)
 				end
 			end
 
-			Log.engine("Warning; deocration not found.")
+			Log.engine("Warning; decoration not found.")
 		else
 			Log.engine(
 				"Did not remove decoration '%s' (layer = %d) to instance %s (%d); layer not instance",
@@ -722,6 +733,10 @@ function Instance:getRaid()
 end
 
 function Instance:hasLayer(layer, player)
+	if player and player ~= true and not self:hasPlayer(player) then
+		return self.layersPendingRemovalByID[layer] == player:getID()
+	end
+
 	if player and player ~= true then
 		return self.layersByID[layer] == true or self.layersByID[layer] == player:getID()
 	else
@@ -1021,7 +1036,6 @@ function Instance:_clearInstancedMaps(player)
 
 			self:_clearInstancedMap(layer)
 			self.stage:unloadMap(layer)
-			self.stage:deleteLayer(layer)
 		end
 	end
 end
@@ -1036,13 +1050,13 @@ function Instance:_removePlayerFromInstance(player)
 			if mapScript then
 				local function onPlayerLeave()
 					mapScript:pushPoke('playerLeave', player)
-					mapScript:silence('finalize', onPlayerEnter)
+					mapScript:silence('finalize', onPlayerLeave)
 				end
 
 				if mapScript:getDirector() then
 					onPlayerLeave()
 				else
-					mapScript:listen('finalize', onPlayerEnter)
+					mapScript:listen('finalize', onPlayerLeave)
 				end
 			end
 		end
@@ -1442,6 +1456,11 @@ function Instance:tick()
 		end
 	end
 	table.clear(self.propsPendingRemoval)
+
+	for layer in pairs(self.layersPendingRemovalByID) do
+		self.stage:deleteLayer(layer)
+	end
+	table.clear(self.layersPendingRemovalByID)
 
 	table.clear(self.orphans)
 end
