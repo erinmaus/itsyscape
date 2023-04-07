@@ -136,7 +136,7 @@ function Log.print(scope, message)
 end
 
 function Log.write(message, writeOnly)
-	if not writeOnly then
+	if not writeOnly or (_CONF and _CONF.server) then
 		io.stderr:write(message)
 	end
 
