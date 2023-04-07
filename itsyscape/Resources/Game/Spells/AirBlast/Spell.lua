@@ -9,7 +9,17 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local Utility = require "ItsyScape.Game.Utility"
 
 local AirBlast = Class(CombatSpell)
+
+function AirBlast:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+
+	local s, e = Utility.Peep.applyEffect(target, "AirStrike", false, peep)
+	if s then
+		e:boost(true)
+	end
+end
 
 return AirBlast

@@ -19,13 +19,13 @@ MapMeshIslandProcessor.DIRECTIONS = {
 	{  0,  1 }
 }
 
-function MapMeshIslandProcessor:new(map, tileSet)
+function MapMeshIslandProcessor:new(map, tileSet, i, j)
 	self.map = map
 	self.tileSet = tileSet
 	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
 	self.currentIslandID = 1
 
-	self:_process()
+	self:_process(i or 1, j or 1)
 end
 
 function MapMeshIslandProcessor:_getTileIndex(i, j)
@@ -41,10 +41,10 @@ function MapMeshIslandProcessor:_buildVisitRecord(i, j)
 	}
 end
 
-function MapMeshIslandProcessor:_process()
+function MapMeshIslandProcessor:_process(i, j)
 	self.visited = {}
 
-	self.rootIsland = self:_processIsland(1, 1)
+	self.rootIsland = self:_processIsland(i, j)
 
 	if #self.visited ~= self.map:getWidth() * self.map:getWidth() then
 		local difference = self.map:getWidth() * self.map:getWidth() - #self.visited

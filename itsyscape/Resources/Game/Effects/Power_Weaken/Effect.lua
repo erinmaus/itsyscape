@@ -27,6 +27,10 @@ function Weaken:new(activator)
 	self.damageDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
 end
 
+function Weaken:getDescription()
+	return string.format("%d%%", (1 - self.damageDebuff) * 100)
+end
+
 function Weaken:getBuffType()
 	return Effect.BUFF_TYPE_NEGATIVE
 end

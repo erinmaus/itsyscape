@@ -47,7 +47,7 @@ function PartiallyDigestedAdventurerAttack:perform(peep, target)
 	target:poke('receiveAttack', attack)
 	peep:poke('initiateAttack', attack)
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 end
 
 return PartiallyDigestedAdventurerAttack

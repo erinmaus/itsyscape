@@ -8,31 +8,17 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
 local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
--- Increases ranged offensive bonuses by 10%.
 local HawksEye = Class(PrayerCombatEffect)
 
 function HawksEye:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
-function HawksEye:applySelfToAttack(roll)
-	local stat = roll:getAccuracyStat()
-	if stat == "Archery" then
-		roll:setAccuracyBonus(roll:getAccuracyBonus() * 1.1)
-		roll:setAttackLevel(roll:getAttackLevel() * 1.1)
-	end
-end
-
-function HawksEye:applySelfToDamage(roll)
-	local stat = roll:getDamageStat()
-	if stat == "Dexterity" then
-		roll:setBonus(roll:getBonus() * 1.1)
-		roll:setLevel(roll:getLevel() * 1.1)
-	end
+function HawksEye:applyToSelfWeaponRange(peep, range)
+	return range + 1.5
 end
 
 return HawksEye

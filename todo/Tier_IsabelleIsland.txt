@@ -135,9 +135,9 @@
 * Sharp Mind: Increases magic attack speed by 10-20% based on faith level
 * Stable Hand: Increases ranged attack speed by 10-20% based on faith level
 ### Level 40
-* Double-bladed Sword: boosts accuracy and damage by 20%-30% based on faith level, reduces defenses by 10%
-* Corrupted Magick: boosts accuracy and damage by 20%-30% based on faith level, reduces defenses by 10%
-* Thorny Bow: boost sccuracy and damage by 20%-30% based on faith level, reduces defense by 10%
+* Double-bladed Sword: boosts accuracy and damage by 20%-30% based on faith level, reduces defenses by 50%
+* Corrupted Magick: boosts accuracy and damage by 20%-30% based on faith level, reduces defenses by 50%
+* Thorny Bow: boost sccuracy and damage by 20%-30% based on faith level, reduces defense by 50%
 ### Level 50
 * Gammon's Grace: Protects from melee damage, scaling from 50%-100% based on faith level
 * Prisium's Protection: Protects from magic damage, scaling from 50%-100% based on faith level

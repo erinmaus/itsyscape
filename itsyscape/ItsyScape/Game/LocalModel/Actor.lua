@@ -255,7 +255,7 @@ function LocalActor:getTile()
 			return 0, 0, 0
 		end
 
-		local i, j = map:getTileAt(position.position.x, position.position.z)
+		local _, i, j = map:getTileAt(position.position.x, position.position.z)
 
 		return i, j, position.layer or 1
 	else

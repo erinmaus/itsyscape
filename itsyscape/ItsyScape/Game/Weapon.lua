@@ -61,14 +61,14 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		stats = false
 	end
 
-	local style = weapon:getStyle()
+	self.style = weapon:getStyle()
 	local bonusType, level, bonuses, skill
 	do
-		if style == Weapon.STYLE_MAGIC then
+		if self.style == Weapon.STYLE_MAGIC then
 			bonusType = 'StrengthMagic'
-		elseif style == Weapon.STYLE_ARCHERY then
+		elseif self.style == Weapon.STYLE_ARCHERY then
 			bonusType = 'StrengthRanged'
-		elseif style == Weapon.STYLE_MELEE then
+		elseif self.style == Weapon.STYLE_MELEE then
 			bonusType = 'StrengthMelee'
 		end
 
@@ -179,6 +179,10 @@ end
 
 function Weapon.DamageRoll:setLevel(value)
 	self.level = value or self.level
+end
+
+function Weapon.DamageRoll:getStyle()
+	return self.style
 end
 
 function Weapon.DamageRoll:getBonus()
@@ -494,11 +498,11 @@ function Weapon:onAttackHit(peep, target)
 			hitPoints = -damage
 		})
 	else
-		target:poke('receiveAttack', attack)
-		peep:poke('initiateAttack', attack)
+		target:poke('receiveAttack', attack, peep)
+		peep:poke('initiateAttack', attack, target)
 	end
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return attack
 end
@@ -512,20 +516,30 @@ function Weapon:onAttackMiss(peep, target)
 		delay = self:getDelay(peep, target)
 	})
 
-	target:poke('receiveAttack', attack)
-	peep:poke('initiateAttack', attack)
+	target:poke('receiveAttack', attack, peep)
+	peep:poke('initiateAttack', attack, target)
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return attack
 end
 
-function Weapon:applyCooldown(peep)
+function Weapon:applyCooldown(peep, target)
 	peep:addBehavior(AttackCooldownBehavior)
 
 	local cooldown = peep:getBehavior(AttackCooldownBehavior)
 	cooldown.cooldown = self:getCooldown(peep)
-	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
+
+	do
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown.cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown.cooldown)
+		end
+
+		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+		end
+	end
 end
 
 function Weapon:perform(peep, target)

@@ -27,6 +27,10 @@ function Curse:new(activator)
 	self.defenseDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
 end
 
+function Curse:getDescription()
+	return string.format("%d%%", (1 - self.defenseDebuff) * 100)
+end
+
 function Curse:getBuffType()
 	return Effect.BUFF_TYPE_NEGATIVE
 end

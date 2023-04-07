@@ -48,6 +48,7 @@ function IconRenderer:draw(widget, state)
 			local s, r = pcall(love.graphics.newImage, icon)
 			if not s then
 				Log.warnOnce("Couldn't load icon '%s'.", icon)
+				love.graphics.setColor(1, 1, 1, 1)
 				return
 			end
 

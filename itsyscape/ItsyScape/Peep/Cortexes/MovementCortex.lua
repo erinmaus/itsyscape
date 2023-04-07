@@ -357,26 +357,28 @@ function MovementCortex:update(delta)
 
 			local newPosition = position.position + velocity + gravity * delta
 
-			local actualX, actualZ, collisions = w.world:move(
-				peep,
-				newPosition.x - halfSize.x,
-				newPosition.z - halfSize.z,
-				self._filter)
-			actualX = actualX + halfSize.x
-			actualZ = actualZ + halfSize.z
+			if not movement.noClip then
+				local actualX, actualZ, collisions = w.world:move(
+					peep,
+					newPosition.x - halfSize.x,
+					newPosition.z - halfSize.z,
+					self._filter)
+				actualX = actualX + halfSize.x
+				actualZ = actualZ + halfSize.z
 
-			local newTile, newI, newJ = map:getTileAt(actualX, actualZ)
-			if not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or
-			   map:isOutOfBounds(actualX, actualZ)
-			then
-				-- Last fail safe.
-				position.position = Vector(oldPosition:get())
-			else
-				position.position = Vector(actualX, newPosition.y, actualZ)
+				local newTile, newI, newJ = map:getTileAt(actualX, actualZ)
+				if not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or map:isOutOfBounds(actualX, actualZ) then
+					-- Last fail safe.
+					position.position = Vector(oldPosition:get())
+				else
+					position.position = Vector(actualX, newPosition.y, actualZ)
 
-				if #collisions > 0 then
-					peep:poke('movedOutOfBounds')
+					if #collisions > 0 then
+						peep:poke('movedOutOfBounds')
+					end
 				end
+			else
+				position.position = newPosition
 			end
 
 			local y = map:getInterpolatedHeight(

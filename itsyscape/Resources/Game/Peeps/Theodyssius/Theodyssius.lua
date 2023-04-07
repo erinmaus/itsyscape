@@ -24,7 +24,7 @@ function Theodyssius:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Theodyssius', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(6, 6, 6)
+	size.size = Vector(7, 18, 7)
 
 	self:addBehavior(RotationBehavior)
 end

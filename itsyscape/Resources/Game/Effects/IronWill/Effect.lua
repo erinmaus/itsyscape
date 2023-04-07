@@ -8,33 +8,45 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Curve = require "ItsyScape.Game.Curve"
+local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Effect = require "ItsyScape.Peep.Effect"
 local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
--- Increases the defense bonuses and defense level by 10%-50%, scaled on
--- Faith level (topping out at 50% at level 50). The boosted Faith level is
--- used, thus if Faith is drained the effect is worse (and if Faith is boosted,
--- the effect is better).
---
--- Only applies to attacks targeting magic defenses.
 local IronWill = Class(PrayerCombatEffect)
+
+IronWill.MIN_LEVEL = 20
+IronWill.MAX_LEVEL = 70
+IronWill.MIN_BOOST = 0.2
+IronWill.MAX_BOOST = 0.3
+IronWill.DEBUFF    = 0.5
+
+function IronWill:new()
+	PrayerCombatEffect.new(self)
+end
+
+function IronWill:getDescription()
+	return string.format("%d%%", self:getBoost() * 100)
+end
 
 function IronWill:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
-function IronWill:applyTargetToAttack(roll)
-	local defenseBonus = roll:getDefenseBonus()
-	local defenseBonusType = roll:getDefenseBonusType()
-	if defenseBonusType == 'DefenseMagic' then
-		local state = roll:getTarget():getState()
-		local faithLevel = state:count("Skill", "Faith", { ['skill-as-level'] = true })
-		local scale = math.min(faithLevel, 50) / 50 * 0.4 + 0.1
+function IronWill:applySelfToAttack(roll)
+	roll:setMaxAttackRoll(math.floor(roll:getMaxAttackRoll() * (1 + self:getBoost())))
+end
 
-		roll:setDefenseBonus(defenseBonus * scale)
-		roll:setDefenseLevel(roll:getDefenseLevel() * scale)
-	end
+function IronWill:applySelfToDamage(roll)
+	roll:setMaxHit(math.floor(roll:getMaxHit() * (1 + self:getBoost())))
+end
+
+function IronWill:applyTargetToAttack(roll)
+	roll:setMaxDefenseRoll(math.floor(roll:getMaxDefenseRoll() * self.DEBUFF))
+end
+
+function IronWill:applyTargetToDamage(roll)
+	roll:setMaxHit(math.floor(roll:getMaxHit() * (1 + self.DEBUFF)))
 end
 
 return IronWill

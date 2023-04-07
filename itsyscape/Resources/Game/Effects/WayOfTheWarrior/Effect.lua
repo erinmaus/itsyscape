@@ -12,27 +12,24 @@ local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
 local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
--- Increases melee offensive bonuses by 10%.
 local WayOfTheWarrior = Class(PrayerCombatEffect)
 
 function WayOfTheWarrior:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
+function WayOfTheWarrior:getDescription()
+	return "10%"
+end
+
 function WayOfTheWarrior:applySelfToAttack(roll)
-	local stat = roll:getAccuracyStat()
-	if stat == "Attack" then
-		roll:setAccuracyBonus(roll:getAccuracyBonus() * 1.1)
-		roll:setAttackLevel(roll:getAttackLevel() * 1.1)
-	end
+	roll:setAccuracyBonus(roll:getAccuracyBonus() * 1.1)
+	roll:setAttackLevel(roll:getAttackLevel() * 1.1)
 end
 
 function WayOfTheWarrior:applySelfToDamage(roll)
-	local stat = roll:getDamageStat()
-	if stat == "Strength" then
-		roll:setBonus(roll:getBonus() * 1.1)
-		roll:setLevel(roll:getLevel() * 1.1)
-	end
+	roll:setBonus(roll:getBonus() * 1.1)
+	roll:setLevel(roll:getLevel() * 1.1)
 end
 
 return WayOfTheWarrior

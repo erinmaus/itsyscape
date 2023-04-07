@@ -22,8 +22,9 @@ function Staff:getNearAttackRange(peep)
 end
 
 function Staff:getBonusForStance(peep)
+	local spell = self:getSpell(peep)
 	if self:getSpell(peep) then
-		return Weapon.BONUS_MAGIC
+		return spell:getBonusForStance(peep) or Weapon.BONUS_MAGIC
 	else
 		return Weapon.BONUS_CRUSH
 	end

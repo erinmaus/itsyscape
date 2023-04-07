@@ -321,18 +321,21 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 
 	do
 		for effect in peep:getEffects() do
-			local resource = effect:getResource()
-			local e = {
-				id = resource.name,
-				z = resource.id.value,
-				name = Utility.getName(resource, gameDB),
-				description = Utility.getDescription(resource, gameDB),
-				duration = effect:getDuration(),
-				debuff = effect:getBuffType() == Effect.BUFF_TYPE_NEGATIVE,
-				buff = effect:getBuffType() == Effect.BUFF_TYPE_POSITIVE
-			}
+			if effect:getBuffType() ~= Effect.BUFF_TYPE_NONE then
+				local resource = effect:getResource()
+				local e = {
+					id = resource.name,
+					z = resource.id.value,
+					name = Utility.getName(resource, gameDB),
+					description = Utility.getDescription(resource, gameDB),
+					tinyDescription = effect:getDescription(),
+					duration = effect:getDuration(),
+					debuff = effect:getBuffType() == Effect.BUFF_TYPE_NEGATIVE,
+					buff = effect:getBuffType() == Effect.BUFF_TYPE_POSITIVE
+				}
 
-			table.insert(result.effects, e)
+				table.insert(result.effects, e)
+			end
 		end
 
 		table.sort(result.effects, function(a, b) return a.z < b.z end)
@@ -377,8 +380,9 @@ function ProCombatStatusHUDController:isAttacking()
 		local hasTarget = target and target.actor and target.actor:getPeep() == playerTarget
 		local isPlayerTarget = peep == playerTarget
 		local isAlive = status and not status.dead
+		local canEngage = status and status.canEngage
 
-		return (hasTarget or isPlayerTarget) and isAlive
+		return (hasTarget or isPlayerTarget) and isAlive and canEngage
 	end
 end
 

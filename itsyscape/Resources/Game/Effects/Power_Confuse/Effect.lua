@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Effects/Power_Confuse/Effect.lua
+-- Resources/Game/Effects/WaterStrike/Effect.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,28 +12,43 @@ local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
--- Lowers accuracy 10-30%, depending on Wisdom level, capping at level 50.
-local Confuse = Class(CombatEffect)
-Confuse.DURATION = 30
+local WaterStrike = Class(CombatEffect)
 
-function Confuse:new(activator)
+WaterStrike.DURATION_STRONG = 5
+WaterStrike.DEBUFF_STRONG   = 0.9
+
+WaterStrike.DURATION_WEAK   = 10
+WaterStrike.DEBUFF_WEAK     = 0.8
+
+function WaterStrike:new()
 	CombatEffect.new(self)
 
-	local level = activator:getState():count(
-		"Skill",
-		"Wisdom",
-		{ ['skill-as-level'] = true })
-
-	self.accuracyDebuff = 1 - (math.min(level / 50 * 20, 20) + 10) / 100
+	self:boost(false)
 end
 
-function Confuse:getBuffType()
+function WaterStrike:boost(strong)
+	if strong then
+		self.debuffDuration = self.DURATION_WEAK
+		self.debuffStrength = self.DEBUFF_WEAK
+	else
+		self.debuffDuration = self.DURATION_STRONG
+		self.debuffStrength = self.DEBUFF_STRONG
+	end
+
+	self:setDuration(self.debuffDuration)
+end
+
+function WaterStrike:getDescription()
+	return string.format("%d%%", (1 - self.debuffStrength) * 100)
+end
+
+function WaterStrike:getBuffType()
 	return Effect.BUFF_TYPE_NEGATIVE
 end
 
-function Confuse:applySelfToAttack(roll)
-	local attackRoll = roll:getMaxAttackRoll() * self.accuracyDebuff
-	roll:setMaxAttackRoll(attackRoll)
+function WaterStrike:applyTargetToAttack(roll)
+	local attackRoll = roll:getMaxDefenseRoll() * self.debuffStrength
+	roll:setMaxDefenseRoll(attackRoll)
 end
 
-return Confuse
+return WaterStrike

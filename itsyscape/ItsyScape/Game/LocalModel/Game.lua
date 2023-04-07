@@ -31,6 +31,7 @@ function LocalGame:new(gameDB, playerSlot)
 	self.stage = LocalStage(self)
 	self.ui = LocalUI(self)
 	self.ticks = 0
+	self.time = 0
 	self.discord = Discord()
 
 	self.players = {}
@@ -214,6 +215,10 @@ function LocalGame:getCurrentTick()
 	return self.ticks
 end
 
+function LocalGame:getCurrentTime()
+	return self.time
+end
+
 function LocalGame:tick()
 	self.lastTick = self.currentTick or (love.timer.getTime() - self:getTargetDelta())
 	self.currentTick = love.timer.getTime()
@@ -227,6 +232,8 @@ function LocalGame:tick()
 
 	--self.player:updateDiscord()
 	self.discord:tick()
+
+	self.time = self.time + self:getDelta()
 end
 
 function LocalGame:getDelta()

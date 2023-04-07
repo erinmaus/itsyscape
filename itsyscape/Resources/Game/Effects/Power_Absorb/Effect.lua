@@ -28,6 +28,10 @@ function Absorb:new(activator)
 	self.damageMultiplier = (math.min(level / 50, 1.5) + 1.5)
 end
 
+function Absorb:getDescription()
+	return string.format("%d HP", math.floor(self.damage * self.damageMultiplier + 0.5))
+end
+
 function Absorb:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end

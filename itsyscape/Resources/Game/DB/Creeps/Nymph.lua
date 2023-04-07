@@ -148,19 +148,33 @@ ItsyScape.Meta.PeepEquipmentItem {
 }
 
 ItsyScape.Meta.DropTableEntry {
-	Item = ItsyScape.Resource.Item "BlueCotton",
-	Weight = 150,
-	Count = 2,
-	Range = 1,
+	Item = ItsyScape.Resource.Item "AirRune",
+	Weight = 100,
+	Count = 20,
+	Range = 10,
 	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
 }
 
 ItsyScape.Meta.DropTableEntry {
-	Item = ItsyScape.Resource.Item "CommonLogs",
+	Item = ItsyScape.Resource.Item "EarthRune",
 	Weight = 100,
+	Count = 20,
+	Range = 10,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "CosmicRune",
+	Weight = 50,
+	Count = 5,
+	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "BlueCotton",
+	Weight = 200,
 	Count = 2,
 	Range = 1,
-	Noted = 1,
 	Resource = ItsyScape.Resource.DropTable "Nymph_Base_Primary"	
 }
 

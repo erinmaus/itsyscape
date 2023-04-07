@@ -718,6 +718,11 @@ function Utility.Combat.calcDefenseRoll(level, bonus)
 	return (level + 8) * (bonus + 128)
 end
 
+function Utility.Combat.calcBoost(level, minLevel, maxLevel, minBoost, maxBoost)
+	local delta = math.min((math.max(level, minLevel) - minLevel) / (maxLevel - minLevel), 1)
+	return minBoost + (maxBoost - minBoost) * delta
+end
+
 -- Contains utility methods to deal with text.
 Utility.Text = {}
 
@@ -2063,6 +2068,14 @@ function Utility.Peep.equipXWeapon(peep, id)
 end
 
 function Utility.Peep.getEffectType(resource, gameDB)
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Effect")
+	end
+
+	if not resource then
+		return nil
+	end
+
 	local EffectTypeName = string.format("Resources.Game.Effects.%s.Effect", resource.name)
 	local s, r = pcall(require, EffectTypeName)
 	if s then
@@ -2077,23 +2090,31 @@ end
 function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	local gameDB = peep:getDirector():getGameDB()
 
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Effect")
+	end
+
+	if not resource then
+		return false, nil
+	end
+
 	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
 
 	if not EffectType then
 		Log.warn("Effect '%s' does not exist.", Utility.getName(resource, gameDB))
-		return false
+		return false, nil
 	end
 
 	if singular and peep:getEffect(EffectType) then
 		Log.info("Effect '%s' already applied.", Utility.getName(resource, gameDB))
-		return false
+		return false, nil
 	end
 
 	local effectInstance = EffectType(...)
 	effectInstance:setResource(resource)
 	peep:addEffect(effectInstance)
 
-	return true
+	return true, effectInstance
 end
 
 function Utility.Peep.toggleEffect(peep, resource, ...)
@@ -2386,14 +2407,13 @@ end
 function Utility.Peep.attack(peep, other, distance)
 	do
 		local status = peep:getBehavior(CombatStatusBehavior)
+		if not status then
+			return false
+		end
+
 		if status and status.dead then
 			return false
 		end
-	end
-
-	local target = peep:getBehavior(CombatTargetBehavior)
-	if not target then
-		target = peep:addBehavior(CombatTargetBehavior)
 	end
 
 	local actor = other:getBehavior(ActorReferenceBehavior)
@@ -2920,7 +2940,7 @@ end
 
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat.dead then
+	if not combat or combat.dead then
 		return
 	end
 
@@ -2994,6 +3014,10 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
 
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if not combat then
+		return
+	end
+
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
 	local attack = AttackPoke({
@@ -3028,7 +3052,7 @@ end
 
 function Utility.Peep.Attackable:onHeal(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
-	if combat.currentHitpoints >= 0 then
+	if combat and combat.currentHitpoints >= 0 then
 		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
 		if not p.zealous then
 			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
@@ -3040,6 +3064,10 @@ end
 
 function Utility.Peep.Attackable:onHit(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
+	if not combat then
+		return
+	end
+
 	if combat.currentHitpoints == 0 or combat.isDead then
 		return
 	end
@@ -3333,6 +3361,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionPet_1/Script.lua")
 	peep:addResource("animation-action-pet", actionPet)
+	local actionPray = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionPray_1/Script.lua")
+	peep:addResource("animation-action-pray", actionPray)
 	local actionShake = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionShake_1/Script.lua")
@@ -3398,10 +3430,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-staff", attackAnimationStaffMagic)
-	local attackAnimationStaffMagic = CacheRef(
+	local attackAnimationStaff = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
-	peep:addResource("animation-attack-magic-wand", attackAnimationStaffMagic)
+	peep:addResource("animation-attack-staff", attackAnimationStaff)
 	local attackAnimationWandStab = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackWandStab_1/Script.lua")
@@ -3410,6 +3442,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackWandMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-wand", attackAnimationWandMagic)
+	local attackAnimationWand = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackStaffMagic_1/Script.lua")
+	peep:addResource("animation-attack-magic-wand", attackAnimationWand)
 	local attackAnimationCaneSlash = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackCaneSlash_1/Script.lua")
@@ -3418,6 +3454,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackCaneMagic_1/Script.lua")
 	peep:addResource("animation-attack-magic-cane", attackAnimationCaneMagic)
+	local attackAnimationCane = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackCaneMagic_1/Script.lua")
+	peep:addResource("animation-attack-cane", attackAnimationCane)
 	local attackAnimationPickaxeStab = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackPickaxeStab_1/Script.lua")
