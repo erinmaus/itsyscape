@@ -131,6 +131,7 @@ function ToolTipRenderer:draw(widget, state)
 	end
 
 	love.graphics.setFont(previousFont)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return ToolTipRenderer
