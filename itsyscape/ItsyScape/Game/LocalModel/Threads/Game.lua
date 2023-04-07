@@ -33,8 +33,13 @@ local channelRpcService = ChannelRPCService(inputChannel, outputChannel)
 local gameManager = LocalGameManager(channelRpcService, game)
 
 local isRunning = true
+local isOnline = false
 
-game.onQuit:register(function() isRunning = false end)
+game.onQuit:register(function()
+	if not isOnline then
+		isRunning = false
+	end
+end)
 
 local function getPeriodInMS(a, b)
 	return math.floor(((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000)
@@ -240,6 +245,8 @@ while isRunning do
 				_DEBUG = e.environment._DEBUG or false
 				_CONF = e.environment._CONF or _CONF
 			elseif e.type == 'connect' then
+				isOnline = true
+
 				Log.info("Clearing players because we are connecting to an external host...")
 
 				for _, player in game:iteratePlayers() do
@@ -269,6 +276,8 @@ while isRunning do
 					Log.info("Switching to single player; spawned new player %d.", newPlayer:getID())
 				end
 			elseif e.type == 'host' then
+				isOnline = true
+
 				Log.info("Hosting server, swapping RPC service.")
 
 				game:setPassword(e.password)
@@ -289,6 +298,8 @@ while isRunning do
 
 				adminPlayerID = nil
 			elseif e.type == 'offline' then
+				isOnline = false
+
 				for _, player in game:iteratePlayers() do
 					player:poof()
 				end
@@ -297,6 +308,8 @@ while isRunning do
 
 				game:spawnPlayer(0)
 			elseif e.type == 'disconnect' then
+				isOnline = false
+
 				if serverRPCService then
 					serverRPCService:close()
 					serverRPCService = nil
