@@ -12,7 +12,6 @@ local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
 local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
--- Increases minimum melee damage by 10% of Faith level.
 local GammonsReckoning = Class(PrayerCombatEffect)
 
 function GammonsReckoning:getBuffType()
@@ -20,14 +19,7 @@ function GammonsReckoning:getBuffType()
 end
 
 function GammonsReckoning:applySelfToDamage(roll)
-	local stat = roll:getDamageStat()
-	if stat == "Strength" then
-		local state = roll:getSelf():getState()
-		local faithLevel = state:count("Skill", "Faith", { ['skill-as-level'] = true })
-		local scale = math.floor(faithLevel * 0.1 + 0.5)
-
-		roll:setMinHit(scale)
-	end
+	roll:setMinHit(math.floor(roll:getMaxHit() * 0.1 + 0.5))
 end
 
 return GammonsReckoning

@@ -173,12 +173,22 @@ function CombatCortex:update(delta)
 
 		local target = peep:getBehavior(CombatTargetBehavior)
 		if target then
-			target = target.actor
+			target = target.actor and target.actor:getPeep()
 		end
 
-		if target and target:getPeep() then
-			target = target:getPeep()
+		do
+			for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				weaponRange = effect:applyToSelfWeaponRange(peep, weaponRange)
+			end
 
+			if target then
+				for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+					weaponRange = effect:applyToTargetWeaponRange(target, weaponRange)
+				end
+			end
+		end
+
+		if target then
 			local targetPosition = target:getBehavior(PositionBehavior)
 			if targetPosition then
 				local map = game:getDirector():getMap(position.layer or 1)

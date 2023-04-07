@@ -220,10 +220,14 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	itsyrealm.graphics.translate(widgetX, widgetY)
 
+	local pushedScissor = false
+
 	local cornerX, cornerY = itsyrealm.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
+			pushedScissor = true
+
 			local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 			itsyrealm.graphics.intersectPseudoScissor(cornerX, cornerY, w * scaleX, h * scaleY)
 		end
@@ -245,9 +249,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	self:drawChildren(widget, state, cursor)
 
-	if not widget:getOverflow() then
+	if not widget:getOverflow() and pushedScissor then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
+			pop = true
 			itsyrealm.graphics.popPseudoScissor()
 		end
 

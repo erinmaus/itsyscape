@@ -494,8 +494,8 @@ function Weapon:onAttackHit(peep, target)
 			hitPoints = -damage
 		})
 	else
-		target:poke('receiveAttack', attack)
-		peep:poke('initiateAttack', attack)
+		target:poke('receiveAttack', attack, peep)
+		peep:poke('initiateAttack', attack, target)
 	end
 
 	self:applyCooldown(peep, target)
@@ -512,8 +512,8 @@ function Weapon:onAttackMiss(peep, target)
 		delay = self:getDelay(peep, target)
 	})
 
-	target:poke('receiveAttack', attack)
-	peep:poke('initiateAttack', attack)
+	target:poke('receiveAttack', attack, peep)
+	peep:poke('initiateAttack', attack, target)
 
 	self:applyCooldown(peep, target)
 

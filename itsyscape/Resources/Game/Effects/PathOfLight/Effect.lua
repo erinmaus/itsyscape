@@ -10,29 +10,39 @@
 local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Effect = require "ItsyScape.Peep.Effect"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local PrayerCombatEffect = require "ItsyScape.Peep.Effects.PrayerCombatEffect"
 
--- Increases magic offensive bonuses by 10%.
 local PathOfLight = Class(PrayerCombatEffect)
+PathOfLight.MIN_LEVEL = 35
+PathOfLight.MAX_LEVEL = 55
+PathOfLight.MIN_BOOST = 0.1
+PathOfLight.MAX_BOOST = 0.1
 
 function PathOfLight:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
-function PathOfLight:applySelfToAttack(roll)
-	local stat = roll:getAccuracyStat()
-	if stat == "Magic" then
-		roll:setAccuracyBonus(roll:getAccuracyBonus() * 1.1)
-		roll:setAttackLevel(roll:getAttackLevel() * 1.1)
+function PathOfLight:enchant(peep)
+	PrayerCombatEffect.enchant(self, peep)
+
+	self._onInitiateAttack = function(_, attack, target)
+		local damage = attack:getDamage()
+		local prayerPointsDamage = math.floor(damage * self:getBoost() + 0.5)
+
+		local status = peep:getBehavior(CombatStatusBehavior)
+		if status then
+			status.currentPrayer = math.min(status.currentPrayer + prayerPointsDamage, math.max(status.maximumPrayer, status.currentPrayer))
+		end
 	end
+
+	peep:listen('initiateAttack', self._onInitiateAttack)
 end
 
-function PathOfLight:applySelfToDamage(roll)
-	local stat = roll:getDamageStat()
-	if stat == "Wisdom" then
-		roll:setBonus(roll:getBonus() * 1.1)
-		roll:setLevel(roll:getLevel() * 1.1)
-	end
+function PathOfLight:sizzle()
+	self:getPeep():silence('initiateAttack', self._onInitiateAttack)
+
+	PrayerCombatEffect.sizzle(self)
 end
 
 return PathOfLight
