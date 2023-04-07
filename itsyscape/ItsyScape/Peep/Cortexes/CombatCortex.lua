@@ -236,15 +236,16 @@ function CombatCortex:update(delta)
 					local combat = peep:getBehavior(CombatStatusBehavior)
 
 					local distanceToTarget = ((Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)) * Vector.PLANE_XZ):getLength()
+					local desiredDistance = math.max(weaponRange + targetRadius + selfRadius - 1, 1)
 
 					if distanceToTarget - selfRadius > ((combat and combat.maxChaseDistance) or 0) + targetRadius then
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
-					elseif distanceToTarget - selfRadius > weaponRange + targetRadius then
+					elseif distanceToTarget > desiredDistance then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.max(weaponRange + selfRadius + targetRadius, 0), { asCloseAsPossible = false })
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, desiredDistance, { asCloseAsPossible = true })
 
 							if not walk then
 								Log.info(
@@ -256,17 +257,25 @@ function CombatCortex:update(delta)
 							else
 								local hasTarget = peep:hasBehavior(TargetTileBehavior)
 
-								walk.onCanceled:register(function()
+								local function isPending()
 									local s, t = Utility.Peep.getTile(target)
-									if s ~= targetI or t ~= targetJ then
+									local isSameTile = s == targetI and t == targetJ
+
+									local peepPosition = Utility.Peep.getPosition(peep)
+									local targetPosition = Utility.Peep.getPosition(target)
+									local distance = ((peepPosition - targetPosition) * Vector.PLANE_XZ):getLength()
+									local isTooFar = distance > desiredDistance
+
+									return isSameTile and isTooFar
+								end
+
+								walk.onCanceled:register(function()
+									if not isPending() then
 										self.pendingResume[peep] = target
 									end
 								end)
 								local callback = CallbackCommand(self.resume, self, peep, target)
-								local c = CompositeCommand(function()
-									local s, t = Utility.Peep.getTile(target)
-									return s == targetI and t == targetJ
-								end, walk, callback)
+								local c = CompositeCommand(isPending, walk, callback)
 
 								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
 
