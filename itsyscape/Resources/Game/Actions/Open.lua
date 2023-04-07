@@ -25,8 +25,6 @@ function Open:canPerform(state, flags, prop)
 		if prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicDoor") then
 			return true
 		end
-
-		return true
 	end
 
 	return false
@@ -53,7 +51,7 @@ function Open:perform(state, player, prop, channel)
 			walk = Utility.Peep.getWalk(
 				player,
 				i, j, k, 3,
-				{ canUseObjects = false, asCloseAsPossible = true })
+				{ canUseObjects = true, asCloseAsPossible = true })
 		end
 
 		if (walk or distance < 3 or not channel) and k == r then
