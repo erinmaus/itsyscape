@@ -251,3 +251,84 @@ ItsyScape.Meta.Prayer {
 	Style = "All",
 	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
 }
+
+ItsyScape.Resource.Effect "GammonsGrace" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gammon's Grace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces melee damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Resource.Effect "PrisiumsProtection" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Prisium's Protection",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces magic damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Resource.Effect "BastielsBarricade" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's Barricade",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces archery damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
+}
