@@ -61,14 +61,14 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		stats = false
 	end
 
-	local style = weapon:getStyle()
+	self.style = weapon:getStyle()
 	local bonusType, level, bonuses, skill
 	do
-		if style == Weapon.STYLE_MAGIC then
+		if self.style == Weapon.STYLE_MAGIC then
 			bonusType = 'StrengthMagic'
-		elseif style == Weapon.STYLE_ARCHERY then
+		elseif self.style == Weapon.STYLE_ARCHERY then
 			bonusType = 'StrengthRanged'
-		elseif style == Weapon.STYLE_MELEE then
+		elseif self.style == Weapon.STYLE_MELEE then
 			bonusType = 'StrengthMelee'
 		end
 
@@ -179,6 +179,10 @@ end
 
 function Weapon.DamageRoll:setLevel(value)
 	self.level = value or self.level
+end
+
+function Weapon.DamageRoll:getStyle()
+	return self.style
 end
 
 function Weapon.DamageRoll:getBonus()
