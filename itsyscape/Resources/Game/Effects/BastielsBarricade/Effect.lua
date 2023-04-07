@@ -23,6 +23,18 @@ function BastielsBarricade:new(activator)
 	PrayerCombatEffect.new(self)
 end
 
+function BastielsBarricade:enchant(peep)
+	PrayerCombatEffect.enchant(self, peep)
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.GammonsGrace.Effect") do
+		peep:removeEffect(effect)
+	end
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.PrisiumsProtection.Effect") do
+		peep:removeEffect(effect)
+	end
+end
+
 function BastielsBarricade:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end

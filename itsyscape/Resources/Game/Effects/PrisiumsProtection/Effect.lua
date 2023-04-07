@@ -23,6 +23,18 @@ function PrisiumsProtection:new(activator)
 	PrayerCombatEffect.new(self)
 end
 
+function PrisiumsProtection:enchant(peep)
+	PrayerCombatEffect.enchant(self, peep)
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.GammonsGrace.Effect") do
+		peep:removeEffect(effect)
+	end
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.BastielsBarricade.Effect") do
+		peep:removeEffect(effect)
+	end
+end
+
 function PrisiumsProtection:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
