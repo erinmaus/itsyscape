@@ -23,6 +23,18 @@ function GammonsGrace:new(activator)
 	PrayerCombatEffect.new(self)
 end
 
+function GammonsGrace:enchant(peep)
+	PrayerCombatEffect.enchant(self, peep)
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.PrisiumsProtection.Effect") do
+		peep:removeEffect(effect)
+	end
+
+	for effect in peep:getEffects(require "Resources.Game.Effects.BastielsBarricade.Effect") do
+		peep:removeEffect(effect)
+	end
+end
+
 function GammonsGrace:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
