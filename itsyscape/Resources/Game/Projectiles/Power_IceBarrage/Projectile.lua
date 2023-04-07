@@ -51,7 +51,7 @@ function IceBarrage:tick()
 		self.position = self:getTargetPosition(self:getDestination())
 
 		local min, max = self:getDestination():getBounds()
-		local x = max.x - min.z
+		local x = max.x - min.x
 		local z = max.z - min.z
 
 		self.size = Vector(math.max(x, z))
@@ -63,7 +63,7 @@ end
 function IceBarrage:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	if self.position and self.size then
+	if self.position and self.size and self.decoration then
 		local root = self:getRoot()
 		local delta = self:getDelta()
 		local alpha = math.abs(math.sin(delta * math.pi)) * IceBarrage.ALPHA_MULTIPLIER

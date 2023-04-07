@@ -17,7 +17,6 @@ local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local LightBeamSceneNode = require "ItsyScape.Graphics.LightBeamSceneNode"
 
 local Lightning = Class(Projectile)
-Lightning.Node = SceneNode
 
 Lightning.DURATION = 1
 Lightning.MAX_AMBIENCE = 3

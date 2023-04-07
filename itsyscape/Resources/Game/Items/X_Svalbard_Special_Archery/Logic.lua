@@ -74,7 +74,7 @@ function SvalbardArcherySpecial:hitSurroundingPeeps(peep, target)
 		Log.info("Missed primary target.")
 	end
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 end
 
 function SvalbardArcherySpecial:getBonusForStance(peep)

@@ -94,7 +94,7 @@ function RangedWeapon:perform(peep, target)
 		}
 	})
 
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 
 	return false
 end

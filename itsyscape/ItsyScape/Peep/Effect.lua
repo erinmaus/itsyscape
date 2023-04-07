@@ -56,6 +56,10 @@ function Effect:getBuffType()
 	return Effect.BUFF_TYPE_NONE
 end
 
+function Effect:getDescription()
+	return nil
+end
+
 function Effect:update(delta)
 	self.duration = self.duration - delta
 	if self.duration <= 0 then

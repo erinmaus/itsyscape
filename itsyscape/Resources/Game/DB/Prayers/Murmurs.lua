@@ -30,63 +30,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts melee defenses by 10%-50%, based on Faith level.",
+	Value = "Boosts defense roll by 10% to 50%, based on Faith level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "MetalSkin"
-}
-
-ItsyScape.Resource.Effect "IronWill" {
-	ItsyScape.Action.Pray() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		}
-	}
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Iron Will",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "IronWill"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts magic defenses by 10%-50%, based on Faith level.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "IronWill"
-}
-
-ItsyScape.Meta.Prayer {
-	Drain = 4,
-	Style = "All",
-	Resource = ItsyScape.Resource.Effect "IronWill"
-}
-
-ItsyScape.Resource.Effect "TimeErosion" {
-	ItsyScape.Action.Pray() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		}
-	}
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Time Erosion",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "TimeErosion"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts ranged defenses by 10%-50%, based on Faith level.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "TimeErosion"
-}
-
-ItsyScape.Meta.Prayer {
-	Drain = 4,
-	Style = "All",
-	Resource = ItsyScape.Resource.Effect "TimeErosion"
 }
 
 ItsyScape.Resource.Effect "WayOfTheWarrior" {
@@ -99,8 +45,8 @@ ItsyScape.Resource.Effect "WayOfTheWarrior" {
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 6,
-	Style = "Attack",
+	Drain = 12,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
 }
 
@@ -111,63 +57,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts melee offense by 10%.",
+	Value = "Boosts offense by 10%.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "WayOfTheWarrior"
-}
-
-ItsyScape.Resource.Effect "PathOfLight" {
-	ItsyScape.Action.Pray() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(5)
-		}
-	}
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Path of Light",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "PathOfLight"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts magic offense by 10%.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "PathOfLight"
-}
-
-ItsyScape.Meta.Prayer {
-	Drain = 6,
-	Style = "Magic",
-	Resource = ItsyScape.Resource.Effect "PathOfLight"
-}
-
-ItsyScape.Resource.Effect "HawksEye" {
-	ItsyScape.Action.Pray() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(5)
-		}
-	}
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Hawk's Eye",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "HawksEye"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts ranged offense by 10%.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "HawksEye"
-}
-
-ItsyScape.Meta.Prayer {
-	Drain = 6,
-	Style = "Archery",
-	Resource = ItsyScape.Resource.Effect "HawksEye"
 }
 
 ItsyScape.Resource.Effect "GammonsReckoning" {
@@ -180,8 +72,8 @@ ItsyScape.Resource.Effect "GammonsReckoning" {
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 12,
-	Style = "Attack",
+	Drain = 14,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
 }
 
@@ -192,43 +84,97 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boost your minimum melee damage by 10% of your Faith level.",
+	Value = "Boost your minimum damage by 10% of your max hit.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "GammonsReckoning"
 }
 
-ItsyScape.Resource.Effect "PrisiumsWisdom" {
+ItsyScape.Resource.Effect "TimeErosion" {
 	ItsyScape.Action.Pray() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(15)
 		}
 	}
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Prisium's Wisdom",
+	Value = "Time Erosion",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+	Resource = ItsyScape.Resource.Effect "TimeErosion"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts your minimum magic damage by 10% of your Faith level.",
+	Value = "Slows enemy's attack speed by 10%.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+	Resource = ItsyScape.Resource.Effect "TimeErosion"
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 12,
-	Style = "Magic",
-	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+	Drain = 6,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "TimeErosion"
+}
+
+ItsyScape.Resource.Effect "IronWill" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron Will",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "IronWill"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases accuracy and damage by 20% to 30% based on Faith level, but reduces defenses by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "IronWill"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 20,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "IronWill"
+}
+
+ItsyScape.Resource.Effect "HawksEye" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Hawk's Eye",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "HawksEye"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts weapon range by one-and-a-half tiles.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "HawksEye"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 8,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "HawksEye"
 }
 
 ItsyScape.Resource.Effect "BastielsGaze" {
 	ItsyScape.Action.Pray() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(30)
 		}
 	}
 }
@@ -240,13 +186,149 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Boosts your minimum ranged damage by 10% of your faith level.",
+	Value = "Increases attack speed by 10 to 20%, based on your Faith level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 12,
-	Style = "Archery",
+	Drain = 14,
+	Style = "All",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}
+
+ItsyScape.Resource.Effect "PathOfLight" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Path of Light",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Restores prayer points by 5% to 10% of damage dealt, based on Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 15,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "PathOfLight"
+}
+
+
+ItsyScape.Resource.Effect "PrisiumsWisdom" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Prisium's Wisdom",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Drains 5% to 10% of damage dealt from opponent's prayer points, based on Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 20,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "PrisiumsWisdom"
+}
+
+ItsyScape.Resource.Effect "GammonsGrace" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gammon's Grace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces melee damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "GammonsGrace"
+}
+
+ItsyScape.Resource.Effect "PrisiumsProtection" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Prisium's Protection",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces magic damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
+}
+
+ItsyScape.Resource.Effect "BastielsBarricade" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's Barricade",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Reduces archery damage received by 25% to 50%, based on Faith level",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 50,
+	Style = "All",
+	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
 }

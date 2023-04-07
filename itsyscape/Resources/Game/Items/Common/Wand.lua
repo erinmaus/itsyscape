@@ -22,8 +22,9 @@ function Wand:getNearAttackRange(peep)
 end
 
 function Wand:getBonusForStance(peep)
+	local spell = self:getSpell(peep)
 	if self:getSpell(peep) then
-		return Weapon.BONUS_MAGIC
+		return spell:getBonusForStance(peep) or Weapon.BONUS_MAGIC
 	else
 		return Weapon.BONUS_STAB
 	end

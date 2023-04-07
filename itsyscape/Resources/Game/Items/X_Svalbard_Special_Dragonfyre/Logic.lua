@@ -61,7 +61,7 @@ function SvalbardDragonfyreSpecial:perform(peep, target)
 	end
 
 	Log.info("All secondary targets hit by Dragonfyre.")
-	self:applyCooldown(peep)
+	self:applyCooldown(peep, target)
 end
 
 function SvalbardDragonfyreSpecial:getBonusForStance(peep)

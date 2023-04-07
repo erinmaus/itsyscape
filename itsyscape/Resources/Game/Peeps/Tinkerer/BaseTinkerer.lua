@@ -21,6 +21,9 @@ local BaseTinkerer = Class(Creep)
 
 function BaseTinkerer:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Tinkerer_Base', ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(2.5, 5, 2.5)
 end
 
 function BaseTinkerer:ready(director, game)

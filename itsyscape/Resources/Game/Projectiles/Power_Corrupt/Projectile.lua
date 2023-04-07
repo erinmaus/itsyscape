@@ -28,10 +28,6 @@ function Power_Corrupt:attach()
 	self.duration = math.huge
 end
 
-function Power_Corrupt:getTextureFilename()
-	return Class.ABSTRACT()
-end
-
 function Power_Corrupt:load()
 	Projectile.load(self)
 

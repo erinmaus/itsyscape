@@ -93,6 +93,8 @@ function ExecutePathCommand:onInterrupt(peep)
 	elseif targetTile then
 		peep:removeBehavior(TargetTileBehavior)
 	end
+
+	self:cancel()
 end
 
 function ExecutePathCommand:update(delta, peep)

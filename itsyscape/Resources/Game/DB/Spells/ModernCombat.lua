@@ -8,8 +8,30 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Effect "FireStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Fire Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "FireStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases damage received.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "FireStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fire Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "FireStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with fire. Applies a 10% damage-received debuff to opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "FireStrike"
 }
@@ -47,8 +69,30 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "FireStrike", "magic_combat_spell")
 
+ItsyScape.Resource.Effect "WaterStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Water Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers defense roll.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Water Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "WaterStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with water. Applies a 10% defense debuff to the opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "WaterStrike"
 }
@@ -86,8 +130,30 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "WaterStrike", "magic_combat_spell")
 
+ItsyScape.Resource.Effect "EarthStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Earth Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Lowers accuracy roll.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Earth Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "EarthStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with earth. Applies a 10% accuracy debuff to opponent for 5 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "EarthStrike"
 }
@@ -125,8 +191,30 @@ ItsyScape.Meta.CombatSpell {
 	Resource = ItsyScape.Resource.Spell "EarthStrike"
 }
 
+ItsyScape.Resource.Effect "AirStrike" {
+	-- Nothing.
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Air Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "AirStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pushes your foe away.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "AirStrike"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Air Strike",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "AirStrike"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strike the foe with air. Also knocks the foe back a tiny bit.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "AirStrike"
 }
@@ -161,6 +249,12 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "AirStrike", "magic_combat_spell"
 
 ItsyScape.Meta.ResourceName {
 	Value = "Fire Blast",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "FireBlast"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with fire. Applies a 20% damage-received debuff to opponent for 10 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "FireBlast"
 }
@@ -204,6 +298,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Spell "WaterBlast"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with water. Applies a 20% defense debuff to the opponent for 10 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "WaterBlast"
+}
+
 ItsyScape.Resource.Spell "WaterBlast" {
 	ItsyScape.Action.Cast() {
 		Requirement {
@@ -243,6 +343,12 @@ ItsyScape.Meta.ResourceName {
 	Resource = ItsyScape.Resource.Spell "EarthBlast"
 }
 
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with earth. Applies a 20% accuracy debuff to opponent for 10 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "EarthBlast"
+}
+
 ItsyScape.Resource.Spell "EarthBlast" {
 	ItsyScape.Action.Cast() {
 		Requirement {
@@ -278,6 +384,12 @@ ItsyScape.Meta.CombatSpell {
 
 ItsyScape.Meta.ResourceName {
 	Value = "Air Blast",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "AirBlast"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Blast the foe with air. Also knocks the foe back a bit.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "AirBlast"
 }
@@ -359,3 +471,341 @@ ItsyScape.Meta.CombatSpell {
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Lightning", "magic_combat_spell")
+
+ItsyScape.Meta.ResourceName {
+	Value = "Infest",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Infest"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Infest your foe with shadow mites that pierce defense. The higher your wisdom level, the more mights infest your foe.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Infest"
+}
+
+ItsyScape.Resource.Spell "Infest" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 4
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 40
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = -16,
+	Resource = ItsyScape.Resource.Spell "Infest"
+}
+
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic_modern_spell")
+ItsyScape.Utility.tag(ItsyScape.Resource.Spell "Infest", "magic_combat_spell")
+
+ItsyScape.Resource.Peep "ShadowMite" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Arachnid.ShadowMite",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Shadow mite",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A mite molted in magic.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(1),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyCrush = ItsyScape.Utility.styleBonusForItem(200, 1.5),
+	StrengthCrush = ItsyScape.Utility.strengthBonusForWeapon(50, 1),
+	Resource = ItsyScape.Resource.Peep "ShadowMite"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Summon goo",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Surround your foe in goo, reducing their speed by up to 25% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
+}
+
+ItsyScape.Resource.Spell "SummonGoo" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 30
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 24,
+	Resource = ItsyScape.Resource.Spell "SummonGoo"
+}
+
+ItsyScape.Resource.Effect "SummonGoo" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Sticky Goo",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SummonGoo"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your movement speed from 5% to 25% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "SummonGoo"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Psychic",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pulls your opponent towards you.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Resource.Spell "Psychic" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 2
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "CosmicRune",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 35
+		}
+	}
+}
+
+ItsyScape.Resource.Peep "MiasmaSkeleton" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Skeleton.MiasmaSkeleton",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma skeleton",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A horrible agent of death.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "MiasmaSkeleton"
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 30,
+	Resource = ItsyScape.Resource.Spell "Psychic"
+}
+
+ItsyScape.Resource.Effect "Psychic" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Telepathic pull",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Psychic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Pulls your opponent closer.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Psychic"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Icicle",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Make an icicle out of thin air and crash it on your opponent, dealing physical stab damage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Resource.Spell "Icicle" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 3
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 25
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 16,
+	Resource = ItsyScape.Resource.Spell "Icicle"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Summon miasma to fly at your foe, slowing their attacks by up to 10% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Resource.Spell "Miasma" {
+	ItsyScape.Action.Cast() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(55)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AirRune",
+			Count = 5
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "EarthRune",
+			Count = 5
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WaterRune",
+			Count = 4
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FireRune",
+			Count = 2
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = 150
+		}
+	}
+}
+
+ItsyScape.Meta.CombatSpell {
+	Strength = 24,
+	Resource = ItsyScape.Resource.Spell "Miasma"
+}
+
+ItsyScape.Resource.Effect "Miasma" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Miasma",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Miasma"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your fighting speed from 2% to 10% for 60 seconds.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Miasma"
+}

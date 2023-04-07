@@ -9,32 +9,24 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
+local Staff = require "Resources.Game.Items.Common.Staff"
 
-local ErrinTheHeathensStaff = Class(MagicWeapon)
+local ErrinTheHeathensStaff = Class(Staff)
 
 function ErrinTheHeathensStaff:getFarAttackRange(peep)
-	return 10
+	return 14
 end
 
 function ErrinTheHeathensStaff:getNearAttackRange(peep)
-	return 1
-end
-
-function ErrinTheHeathensStaff:getBonusForStance(peep)
-	if self:getSpell(peep) then
-		return Weapon.BONUS_MAGIC
-	else
-		return Weapon.BONUS_CRUSH
-	end
-end
-
-function ErrinTheHeathensStaff:getWeaponType()
-	return 'staff'
+	return 2
 end
 
 function ErrinTheHeathensStaff:getStyle()
 	return Weapon.STYLE_MAGIC
+end
+
+function ErrinTheHeathensStaff:getCooldown()
+	return 1.8
 end
 
 return ErrinTheHeathensStaff
