@@ -247,7 +247,8 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Stage" then
 				local key = self.outgoingKeys[i]
 
-				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value, player)
+				local isInstanceMatch = not hasTarget and key and key.layer and key.layer.value and self.game:getStage():getInstanceByLayer(key.layer.value) and self.game:getStage():getInstanceByLayer(key.layer.value):hasLayer(key.layer.value, player)
+				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and (playerInstance:hasLayer(key.layer.value, player) or isInstanceMatch)
 				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value, player)
 				local isPropMatch = not hasTarget and key and key.prop and key.prop.value and playerInstance:hasProp(key.prop.value, player)
 				local hasSourceAndDestination = not hasTarget and key and key.source and key.source.value and key.destination and key.destination.value
