@@ -331,3 +331,84 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "StableHand"
 }
+
+ItsyScape.Resource.Effect "DoubleBladedSword" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 30,
+	Style = "Attack",
+	Resource = ItsyScape.Resource.Effect "DoubleBladedSword"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Double Bladed Sword",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "DoubleBladedSword"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts melee damage and accuracy by 20% to 30%, based on Faith level, but decreases defenses by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "DoubleBladedSword"
+}
+
+ItsyScape.Resource.Effect "CorruptedMagick" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 30,
+	Style = "Magic",
+	Resource = ItsyScape.Resource.Effect "CorruptedMagick"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Corrupted Magick",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "CorruptedMagick"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts magic damage and accuracy by 20% to 30%, based on Faith level, but decreases defenses by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "CorruptedMagick"
+}
+
+ItsyScape.Resource.Effect "ThornyBow" {
+	ItsyScape.Action.Pray() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Faith",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		}
+	}
+}
+
+ItsyScape.Meta.Prayer {
+	Drain = 30,
+	Style = "Archery",
+	Resource = ItsyScape.Resource.Effect "ThornyBow"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Thorny Bow",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "ThornyBow"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Boosts archery damage and accuracy by 20% to 30%, based on Faith level, but decreases defenses by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "ThornyBow"
+}
