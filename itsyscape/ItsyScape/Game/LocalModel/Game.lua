@@ -223,8 +223,6 @@ function LocalGame:tick()
 	self.lastTick = self.currentTick or (love.timer.getTime() - self:getTargetDelta())
 	self.currentTick = love.timer.getTime()
 
-	self:cleanup()
-
 	self.ticks = self.ticks + 1
 	self.stage:tick()
 	self.director:update(self:getDelta())

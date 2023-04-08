@@ -1429,7 +1429,7 @@ function Instance:loadActor(localGameManager, player, actor)
 	Log.engine("Restored actor '%s' (%d).", actor:getName(), actor:getID())
 end
 
-function Instance:tick()
+function Instance:cleanup()
 	for i = 1, #self.actorsPendingRemoval do
 		local actor = self.actorsPendingRemoval[i]
 
