@@ -68,6 +68,8 @@ local function tick()
 		while not gameManager:receive() do
 			love.timer.sleep(0)
 		end
+
+		game:cleanup()
 	end
 	timeEnd = love.timer.getTime()
 end

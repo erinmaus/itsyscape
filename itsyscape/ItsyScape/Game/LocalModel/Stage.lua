@@ -1339,7 +1339,6 @@ end
 function LocalStage:updateMapPositions()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
-		instance:tick()
 
 		for _, layer in instance:iterateLayers() do
 			local mapScript = instance:getMapScriptByLayer(layer)
@@ -1423,8 +1422,16 @@ function LocalStage:unloadInstancesPendingRemoval()
 end
 
 function LocalStage:tick()
-	self:unloadInstancesPendingRemoval()
 	self:updateMapPositions()
+end
+
+function LocalStage:cleanup()
+	self:unloadInstancesPendingRemoval()
+
+	for i = 1, #self.instances do
+		local instance = self.instances[i]
+		instance:cleanup()
+	end
 end
 
 function LocalStage:update(delta)
