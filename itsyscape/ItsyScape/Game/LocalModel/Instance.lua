@@ -24,6 +24,8 @@ local Instance = Class(Stage)
 Instance.GLOBAL_ID      = 0
 Instance.LOCAL_ID_START = 1
 
+Instance.UNLOAD_TICK_DELAY = 2
+
 Instance.Map = Class()
 
 function Instance.Map:new(layer, map, tileSetID, maskID)
@@ -243,7 +245,10 @@ function Instance:new(id, filename, stage)
 				self:getID(),
 				layer)
 
-			self.layersPendingRemovalByID[layer] = self.layersByID[layer]
+			self.layersPendingRemovalByID[layer] = {
+				playerID = self.layersByID[layer],
+				ticks = Instance.UNLOAD_TICK_DELAY
+			}
 
 			self.maps[layer] = nil
 			for i = 1, #self.layers do
@@ -322,7 +327,7 @@ function Instance:new(id, filename, stage)
 			Log.engine(
 				"Pending removal of actor '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			table.insert(self.actorsPendingRemoval, actor)
+			table.insert(self.actorsPendingRemoval, { actor = actor, ticks = Instance.UNLOAD_TICK_DELAY })
 		else
 			Log.engine(
 				"Did not try to remove actor '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); actor not in instance.",
@@ -363,7 +368,7 @@ function Instance:new(id, filename, stage)
 			Log.engine(
 				"Pending removal of prop '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			table.insert(self.propsPendingRemoval, prop)
+			table.insert(self.propsPendingRemoval, { prop = prop, ticks = Instance.UNLOAD_TICK_DELAY })
 		else
 			Log.engine(
 				"Did not try to remove prop '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); prop not in instance.",
@@ -656,7 +661,7 @@ function Instance:unload()
 
 	self:onUnload()
 
-	self:tick()
+	self:cleanup()
 
 	self.stage.onLoadMap:unregister(self._onLoadMap)
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
@@ -734,7 +739,7 @@ end
 
 function Instance:hasLayer(layer, player)
 	if player and player ~= true and not self:hasPlayer(player) then
-		return self.layersPendingRemovalByID[layer] == player:getID()
+		return self.layersPendingRemovalByID[layer] and self.layersPendingRemovalByID[layer].playerID == player:getID()
 	end
 
 	if player and player ~= true then
@@ -1430,37 +1435,53 @@ function Instance:loadActor(localGameManager, player, actor)
 end
 
 function Instance:cleanup()
-	for i = 1, #self.actorsPendingRemoval do
-		local actor = self.actorsPendingRemoval[i]
+	for i = #self.actorsPendingRemoval, 1, -1 do
+		local pending = self.actorsPendingRemoval[i]
+		pending.ticks = pending.ticks - 1
 
-		for i = 1, #self.actors do
-			if self.actors[i] == actor then
-				Log.engine("Finally removed actor %d from instance %s (%d).", actor:getID(), self:getFilename(), self:getID())
-				table.remove(self.actors, i)
-				self.actorsByID[actor:getID()] = nil
-				break
+		if pending.ticks <= 0 then
+			local actor = pending.actor
+
+			for i = 1, #self.actors do
+				if self.actors[i] == actor then
+					Log.engine("Finally removed actor %d from instance %s (%d).", actor:getID(), self:getFilename(), self:getID())
+					table.remove(self.actors, i)
+					self.actorsByID[actor:getID()] = nil
+					break
+				end
 			end
+
+			table.remove(self.actorsPendingRemoval, i)
 		end
 	end
-	table.clear(self.actorsPendingRemoval)
 
-	for i = 1, #self.propsPendingRemoval do
-		local prop = self.propsPendingRemoval[i]
-		for i = 1, #self.props do
-			if self.props[i] == prop then
-				Log.engine("Finally removed prop %d from instance %s (%d).", prop:getID(), self:getFilename(), self:getID())
-				table.remove(self.props, i)
-				self.propsByID[prop:getID()] = nil
-				break
+	for i = #self.propsPendingRemoval, 1, -1 do
+		local pending = self.propsPendingRemoval[i]
+		pending.ticks = pending.ticks - 1
+
+		if pending.ticks <= 0 then
+			local prop = pending.prop
+
+			for i = 1, #self.props do
+				if self.props[i] == prop then
+					Log.engine("Finally removed prop %d from instance %s (%d).", prop:getID(), self:getFilename(), self:getID())
+					table.remove(self.props, i)
+					self.propsByID[prop:getID()] = nil
+					break
+				end
 			end
+
+			table.remove(self.propsPendingRemoval, i)
 		end
 	end
-	table.clear(self.propsPendingRemoval)
 
-	for layer in pairs(self.layersPendingRemovalByID) do
-		self.stage:deleteLayer(layer)
+	for layer, info in pairs(self.layersPendingRemovalByID) do
+		info.ticks = info.ticks - 1
+		if info.ticks <= 0 then
+			self.stage:deleteLayer(layer)
+			self.layersPendingRemovalByID[layer] = nil
+		end
 	end
-	table.clear(self.layersPendingRemovalByID)
 
 	table.clear(self.orphans)
 end
