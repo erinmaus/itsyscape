@@ -48,10 +48,10 @@ function ApplyAttackCooldown:update(mashina, state, executor)
 	if not cooldown then
 		mashina:addBehavior(AttackCooldownBehavior)
 
-		cooldown = mashina:getBehavior()
-		cooldown.ticks = mashina:getDirector():getGameInstance():getCurrentTick()
+		cooldown = mashina:getBehavior(AttackCooldownBehavior)
+		cooldown.ticks = mashina:getDirector():getGameInstance():getCurrentTime()
 	elseif state[self.RESET] then
-		cooldown.ticks = target:getDirector():getGameInstance():getCurrentTick()
+		cooldown.ticks = target:getDirector():getGameInstance():getCurrentTime()
 		cooldown.cooldown = 0
 	end
 

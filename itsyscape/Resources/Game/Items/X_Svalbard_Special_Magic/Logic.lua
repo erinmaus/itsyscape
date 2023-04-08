@@ -40,7 +40,7 @@ function SvalbardMagicSpecial:perform(peep, target)
 			local additionalCooldown = attack:getDamage() / 10
 			local _, cooldown = target:addBehavior(AttackCooldownBehavior)
 			cooldown.cooldown = cooldown.cooldown + additionalCooldown
-			cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+			cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 
 			Log.info("'%s' was stunned for %.2f seconds by by bloody vomit!", hits[i]:getName(), cooldown.cooldown)
 			hits[i]:poke('receiveAttack', attack)
