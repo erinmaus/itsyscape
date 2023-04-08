@@ -48,7 +48,7 @@ function Shockwave:onAttackHit(peep, target)
 		local additionalCooldown = math.min(level / 50 + 5, 10)
 		local _, cooldown = target:addBehavior(AttackCooldownBehavior)
 		cooldown.cooldown = cooldown.cooldown + additionalCooldown
-		cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+		cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 	else
 		return ProxyXWeapon.onAttackHit(self, peep, target)
 	end

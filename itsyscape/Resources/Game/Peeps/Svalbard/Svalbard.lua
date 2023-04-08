@@ -361,7 +361,7 @@ function Svalbard:applyCooldown(duration)
 	local _, cooldown = self:addBehavior(AttackCooldownBehavior)
 
 	cooldown.cooldown = duration
-	cooldown.ticks = self:getDirector():getGameInstance():getCurrentTick()
+	cooldown.ticks = self:getDirector():getGameInstance():getCurrentTime()
 end
 
 function Svalbard:setXWeaponAnimation(xWeapon, weapons)

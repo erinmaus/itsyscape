@@ -26,7 +26,7 @@ function Bash:activate(activator, target)
 	local additionalCooldown = math.min(((level - 10) / 50), 1) * 10 + 10
 	local _, cooldown = target:addBehavior(AttackCooldownBehavior)
 	cooldown.cooldown = cooldown.cooldown + additionalCooldown
-	cooldown.ticks = activator:getDirector():getGameInstance():getCurrentTick()
+	cooldown.ticks = activator:getDirector():getGameInstance():getCurrentTime()
 end
 
 return Bash
