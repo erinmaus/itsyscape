@@ -38,6 +38,8 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalStage = Class(Stage)
 
+LocalStage.UNLOAD_TICK_DELAY = 2
+
 function LocalStage:new(game)
 	Stage.new(self)
 
@@ -931,7 +933,11 @@ function LocalStage:movePeep(peep, path, anchor)
 				Log.info(
 					"Previous instance %s (%d) is empty; marking for removal.",
 					previousInstance:getFilename(), previousInstance:getID())
-				table.insert(self.instancesPendingUnload, previousInstance)
+
+				table.insert(self.instancesPendingUnload, {
+					instance = previousInstance,
+					ticks = LocalStage.UNLOAD_TICK_DELAY
+				})
 			end
 		end
 	end
@@ -1401,7 +1407,10 @@ function LocalStage:disbandParty(party)
 					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; marking for removal.",
 					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
 
-				table.insert(self.instancesPendingUnload, instance)
+				table.insert(self.instancesPendingUnload, {
+					instance = instance,
+					ticks = LocalStage.UNLOAD_TICK_DELAY
+				})
 			end
 		end
 	end
@@ -1410,15 +1419,25 @@ function LocalStage:disbandParty(party)
 end
 
 function LocalStage:unloadInstancesPendingRemoval()
-	for i = 1, #self.instancesPendingUnload do
-		local instance = self.instancesPendingUnload[i]
-		if instance:getIsGlobal() then
-			self:unloadGlobalInstance(instance)
+	local index = 1
+	while index < #self.instancesPendingUnload do
+		local pending = self.instancesPendingUnload[index]
+		local instance = pending.instance
+
+		pending.ticks = pending.ticks - 1
+
+		if pending.ticks <= 0 then
+			if instance:getIsGlobal() then
+				self:unloadGlobalInstance(instance)
+			else
+				self:unloadLocalInstance(instance)
+			end
+
+			table.remove(self.instancesPendingUnload, index)
 		else
-			self:unloadLocalInstance(instance)
+			index = index + 1
 		end
 	end
-	table.clear(self.instancesPendingUnload)
 end
 
 function LocalStage:tick()

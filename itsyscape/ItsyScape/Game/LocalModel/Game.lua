@@ -247,6 +247,8 @@ function LocalGame:update(delta)
 end
 
 function LocalGame:cleanup()
+	self.stage:cleanup()
+
 	for i = 1, #self.playersPendingRemoval do
 		local player = self.playersPendingRemoval[i]
 		Log.info(
