@@ -38,15 +38,17 @@ end
 function BasicChest:registerWithInstance()
 	if self.currentInstance then
 		self.currentInstance.onPlayerEnter:unregister(self._onPlayerEnter)
+		self.currentInstance.onPlayerLeave:unregister(self._onPlayerEnter)
 	end
 
 	self.currentInstance = Utility.Peep.getInstance(self)
 	if self.currentInstance then
-		self._onPlayerEnter = self._onPlayerEnter or function(_, player)
-			self:reloadInventory(player:getID())
+		self._onPlayerEnter = self._onPlayerEnter or function(restore, _, player)
+			self:reloadInventory(player:getID(), restore)
 		end
 
-		self.currentInstance.onPlayerEnter:register(self._onPlayerEnter)
+		self.currentInstance.onPlayerEnter:register(self._onPlayerEnter, true)
+		self.currentInstance.onPlayerLeave:register(self._onPlayerEnter, false)
 	end
 end
 
@@ -60,7 +62,7 @@ function BasicChest:move(director, key)
 	end
 end
 
-function BasicChest:reloadInventory(incomingPlayerID)
+function BasicChest:reloadInventory(incomingPlayerID, restore)
 	local inventoryBehavior = self:getBehavior(InstancedInventoryBehavior)
 	if not inventoryBehavior then
 		return
@@ -89,19 +91,36 @@ function BasicChest:reloadInventory(incomingPlayerID)
 	else
 		local player = self:getDirector():getGameInstance():getPlayerByID(incomingPlayerID)
 		if player then
-			Log.info(
-				"Removing instanced chest inventory for player '%s' (%d).",
-				player:getActor():getName(), player:getID())
+			if restore then
+				Log.info(
+					"Restoring instanced chest inventory for player '%s' (%d).",
+					player:getActor():getName(), player:getID())
+			else
+				Log.info(
+					"Removing instanced chest inventory for player '%s' (%d).",
+					player:getActor():getName(), player:getID())
+			end
 		else
 			Log.error("Incoming player %d does not exist!", incomingPlayerID)
 		end
 
-		local inventory = inventoryBehavior.inventory[incomingPlayerID]
-		if inventory then
-			inventory:getBroker():removeProvider(inventory, true)
-			inventoryBehavior.inventory[incomingPlayerID] = nil
+		if restore then
+			local success = Utility.Peep.prepInstancedInventory(self, SimpleInventoryProvider, player:getActor():getPeep())
+			if success then
+				Log.info("Restored instanced chest inventory.")
+			else
+				Log.warn("Did not restore instanced chest inventory.")
+			end
+		else
+			local inventory = inventoryBehavior.inventory[incomingPlayerID]
+			if inventory then
+				inventory:getBroker():removeProvider(inventory, false)
+				inventoryBehavior.inventory[incomingPlayerID] = nil
 
-			Log.info("Successfully removed instanced chest inventory.")
+				Log.info("Successfully removed instanced chest inventory.")
+			else
+				Log.info("Did not remove instanced chest inventory.")
+			end
 		end
 	end
 end
