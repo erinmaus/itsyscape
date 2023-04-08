@@ -1232,9 +1232,11 @@ end
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local instance = stage:getInstanceByLayer(layer)
-	local mapScript = instance:getMapScriptByLayer(layer)
+	local mapScript = instance and instance:getMapScriptByLayer(layer)
 
-	local center = stage:getMap(layer):getTileCenter(i, j)
+	local map = stage:getMap(layer)
+	local center = (map and map:getTileCenter(i, j)) or Vector.ZERO
+
 	if not mapScript then
 		return center
 	else
