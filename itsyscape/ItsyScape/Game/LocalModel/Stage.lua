@@ -62,6 +62,8 @@ function LocalStage:new(game)
 	self.instances = {}
 	self.instancesByLayer = {}
 	self.instancesPendingUnload = {}
+
+	self.dummyInstance = Instance(0, "<dummy>", self)
 end
 
 function LocalStage:newLayer(instance)
@@ -88,6 +90,8 @@ function LocalStage:newGlobalInstance(filename)
 			return existingGlobalInstance
 		end
 	end
+
+	Log.info("Global instance for '%s' does not exist; creating.", filename)
 
 	local instance = Instance(Instance.GLOBAL_ID, filename, self)
 
@@ -137,20 +141,8 @@ function LocalStage:unloadGlobalInstance(instance)
 		return
 	end
 
-	local instancesForFilename = self.instances[instance:getFilename()]
-	if instancesForFilename then
-		local instance = instancesForFilename.global
-		if instance then
-			instance:unload()
-
-			instancesForFilename.global = nil
-
-			Log.info("Unloaded global instance %s.", instance:getFilename())
-			return
-		end
-	end
-
-	Log.error("Could not unload global instance %s; not found.", instance:getFilename())
+	instance:unload()
+	Log.info("Unloaded global instance %s.", instance:getFilename())
 end
 
 function LocalStage:unloadLocalInstance(instance)
@@ -178,7 +170,13 @@ end
 
 function LocalStage:getGlobalInstanceByFilename(filename)
 	local instances = self.instances[filename]
-	if not instances or not instances.global then
+	if not instances then
+		Log.warn("No instances for filename '%s'.", filename)
+		return nil
+	end
+
+	if not instances.global then
+		Log.warn("No global instance for filename '%s'.", filename)
 		return nil
 	end
 
@@ -215,11 +213,11 @@ end
 
 function LocalStage:getPeepInstance(peep)
 	if not peep then
-		return nil
+		return self.dummyInstance
 	end
 
 	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
-	return self:getInstanceByFilenameAndID(filename, id)
+	return self:getInstanceByFilenameAndID(filename, id) or self.dummyInstance
 end
 
 function LocalStage:spawnGround(filename, layer)
@@ -775,8 +773,12 @@ function LocalStage:movePeep(peep, path, anchor)
 			instance = self:newLocalInstance(filename, arguments)
 			Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
 		elseif self:isPathGlobal(path) then
-			instance = self:getGlobalInstanceByFilename(filename) or self:newGlobalInstance(filename)
-			Log.info("Path is global; getting global instance %s (%d).", instance:getFilename(), instance:getID())
+			instance = self:getGlobalInstanceByFilename(filename)
+			if not instance then
+				instance = self:newGlobalInstance(filename)
+			end
+
+			Log.info("Got or created global instance %s (%d).", instance:getFilename(), instance:getID())
 		end
 	elseif Class.isCompatibleType(path, Instance) then
 		instance = path
@@ -936,10 +938,7 @@ function LocalStage:movePeep(peep, path, anchor)
 					"Previous instance %s (%d) is empty; marking for removal.",
 					previousInstance:getFilename(), previousInstance:getID())
 
-				table.insert(self.instancesPendingUnload, {
-					instance = previousInstance,
-					ticks = LocalStage.UNLOAD_TICK_DELAY
-				})
+				self:unloadInstance(previousInstance)
 			end
 		end
 	end
@@ -1409,15 +1408,37 @@ function LocalStage:disbandParty(party)
 					"Instance %s (%d) was a party of party %d (raid '%s'), but party has disbanded; marking for removal.",
 					instance:getFilename(), instance:getID(), party:getID(), party:getRaid():getResource().name)
 
-				table.insert(self.instancesPendingUnload, {
-					instance = instance,
-					ticks = LocalStage.UNLOAD_TICK_DELAY
-				})
+				self:unloadInstance(instance)
 			end
 		end
 	end
 
 	Log.info("Unloaded all orphaned instances for party %d.", party:getID())
+end
+
+function LocalStage:unloadInstance(instance)
+	Log.info("Marking instance '%s' (%d) as pending unload.", instance:getFilename(), instance:getID())
+
+	if instance:getIsGlobal() then
+		Log.info("Instance is global; pre-emptively removing global reference.")
+
+		local existingGlobalInstance = self.instances[instance:getFilename()]
+		if existingGlobalInstance and existingGlobalInstance.global == instance then
+			Log.info("Successfully removed global reference.")
+			existingGlobalInstance.global = nil
+		else
+			Log.warn("Global instance not found.")
+		end
+	else
+		Log.info("Instance is not global; nothing else to do!")
+	end
+
+	instance:unload()
+
+	table.insert(self.instancesPendingUnload, {
+		instance = instance,
+		ticks = LocalStage.UNLOAD_TICK_DELAY
+	})
 end
 
 function LocalStage:unloadInstancesPendingRemoval()
