@@ -260,15 +260,25 @@ function LocalGame:cleanup()
 end
 
 function LocalGame:quit()
+	Log.info("Quitting game...")
+
 	self:leave()
 
 	for i = 1, #self.players do
-		self.players[i]:poof()
+		local player = self.players[i]
+
+		Log.info(
+			"Poofing player '%s (%d).",
+			player:getActor() and player:getActor():getName(),
+			player:getID())
+		player:poof()
 	end
 
 	self:tick()
 
 	self.onQuit(self)
+
+	Log.info("Quit game.")
 end
 
 function LocalGame:leave()
