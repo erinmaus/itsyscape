@@ -140,12 +140,14 @@ function LocalStage:unloadGlobalInstance(instance)
 	local instancesForFilename = self.instances[instance:getFilename()]
 	if instancesForFilename then
 		local instance = instancesForFilename.global
-		instance:unload()
+		if instance then
+			instance:unload()
 
-		instancesForFilename.global = nil
+			instancesForFilename.global = nil
 
-		Log.info("Unloaded global instance %s.", instance:getFilename())
-		return
+			Log.info("Unloaded global instance %s.", instance:getFilename())
+			return
+		end
 	end
 
 	Log.error("Could not unload global instance %s; not found.", instance:getFilename())
