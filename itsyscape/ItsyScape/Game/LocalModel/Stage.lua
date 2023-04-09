@@ -921,7 +921,7 @@ function LocalStage:movePeep(peep, path, anchor)
 			else
 				Log.engine(
 					"Player '%s' (player ID = %d, actor ID = %d) was not in instance.",
-					player:getActor():getName(), player:getID(), player:getActor():getID())
+					(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID(), (player:getActor() and player:getActor():getID()) or -1)
 			end
 
 			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
