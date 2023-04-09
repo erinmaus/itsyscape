@@ -19,21 +19,23 @@ local Bookshelf = Class(SimpleStaticView)
 
 function Bookshelf:new(...)
 	SimpleStaticView.new(self, ...)
-
-	self.spawned = false
 end
 
 function Bookshelf:tick()
-	if not self.spawned then
-		local root = self:getRoot()
-		local position = self:getProp():getPosition()
+	local root = self:getRoot()
+	local position = self:getProp():getPosition()
 
-		-- These numbers took a bit of tweaking to get right.
-		local value = love.math.noise(position.x / 4, position.y / 4, position.z / 4)
-		local index = math.min(math.floor(value * 5), 3)
-		
+	-- These numbers took a bit of tweaking to get right.
+	local value = love.math.noise(position.x / 4, position.y / 4, position.z / 4)
+	local index = math.min(math.floor(value * 5), 3)
+
+	if self.index ~= index then
 		local resources = self:getResources()
 		local root = self:getRoot()
+
+		if self.books then
+			self.books:setParent(nil)
+		end
 
 		self.books = DecorationSceneNode()
 
@@ -52,7 +54,7 @@ function Bookshelf:tick()
 				self.books:setParent(root)
 			end)
 
-		self.spawned = true
+		self.index = index
 	end
 
 	SimpleStaticView.tick(self)

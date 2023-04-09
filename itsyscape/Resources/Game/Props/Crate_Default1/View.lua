@@ -16,20 +16,15 @@ local Crate = Class(SimpleStaticView)
 
 function Crate:new(...)
 	SimpleStaticView.new(self, ...)
-
-	self.spawned = false
 end
 
 function Crate:tick()
-	if not self.spawned then
-		local root = self:getRoot()
-		local position = self:getProp():getPosition()
-		local value = love.math.noise(position.x / 2, position.y / 2, position.z / 2)
-		local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * value * 2)
+	local root = self:getRoot()
+	local position = self:getProp():getPosition()
+	local value = love.math.noise(position.x / 2, position.y / 2, position.z / 2)
+	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * value * 2)
 
-		self.decoration:getTransform():setLocalRotation(rotation)
-		self.spawned = true
-	end
+	self.decoration:getTransform():setLocalRotation(rotation)
 
 	SimpleStaticView.tick(self)
 end
