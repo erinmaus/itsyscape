@@ -661,8 +661,6 @@ function Instance:unload()
 
 	self:onUnload()
 
-	self:cleanup()
-
 	self.stage.onLoadMap:unregister(self._onLoadMap)
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
@@ -821,7 +819,7 @@ function Instance:getMapScriptByLayer(layer)
 		return mapScript:getPeep()
 	end
 
-	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getInstance())
+	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 	return nil
 end
 
@@ -850,7 +848,7 @@ end
 
 function Instance:addPlayer(player, e)
 	if not self:hasPlayer(player) then
-		Log.info("Adding player '%s' (%d) to instance %s (%d).", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
+		Log.info("Adding player '%s' (%d) to instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 
 		table.insert(self.players, player)
 		self.playersByID[player:getID()] = player
@@ -867,7 +865,7 @@ function Instance:removePlayer(player)
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
-			Log.info("Removing player '%s' (%d) from instance %s (%d).", (player:getActor() and player:getActor():getName()), player:getID(), self:getFilename(), self:getID())
+			Log.info("Removing player '%s' (%d) from instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 
 			table.remove(self.players, i)
 
@@ -892,10 +890,10 @@ end
 
 function Instance:setPartyLeader(player)
 	if self:hasPlayer(player) then
-		Log.info("Set party leader to player '%s' (%d) to instance %s (%d).", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
+		Log.info("Set party leader to player '%s' (%d) to instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 		self.partyLeader = player
 	else
-		Log.info("Could not set party leader to player '%s' (%d) to instance %s (%d); player not in instance.", player:getActor():getName(), player:getID(), self:getFilename(), self:getID())
+		Log.info("Could not set party leader to player '%s' (%d) to instance %s (%d); player not in instance.", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 	end
 end
 
@@ -924,6 +922,10 @@ function Instance:hasProp(prop, player)
 end
 
 function Instance:_addPlayerToInstance(player, e)
+	if not player:getActor() then
+		return
+	end
+
 	if e and e.isOrphan then
 		self.orphans[player:getActor():getID()] = true
 	end
@@ -1228,11 +1230,6 @@ function Instance:loadPlayer(localGameManager, player)
 				"onMapModified",
 				localGameManager:getArgs(map, layer))
 			localGameManager:assignTargetToLastPush(player)
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onMapModified",
-				localGameManager:getArgs(map, layer))
 
 			Log.engine("Loaded layer %d.", layer)
 		end

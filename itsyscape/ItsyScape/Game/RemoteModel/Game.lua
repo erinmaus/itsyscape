@@ -61,7 +61,7 @@ function RemoteGame:_onPlayerPoofed(_, player)
 		Log.warn("Player not yet created.")
 	else
 		self.player = nil
-		Log.info("Player poofed!")
+		Log.info("Player poofed! Quitting game.")
 
 		self:onQuit()
 	end

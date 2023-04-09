@@ -76,6 +76,18 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService:connect(self)
 end
 
+function LocalGameManager:setAdmin(playerID)
+	for _, player in self.game:iteratePlayers() do
+		if player:getID() == playerID then
+			Log.info("Setting admin player to %d (client ID = %d).", playerID, player:getClientID())
+			self.adminPlayerClientID = player:getClientID()
+			return
+		end
+	end
+
+	Log.info("Could not set admin player ID to %s; no player with ID found.")
+end
+
 function LocalGameManager:swapRPCService(rpcService)
 	self.rpcService = rpcService
 	self.rpcService:connect(self)
@@ -259,9 +271,9 @@ function LocalGameManager:sendToPlayer(player)
 					((Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Actor") and playerInstance:hasActor(key.destination.value, player)) or
 					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value, player)))
 
-				-- Log.debug(
-				--  	"Stage (callback = %s, layer = %d): isInstanceMatch = %s, isLayerMatch = %s, isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, isSourceMatch = %s, isDestinationMatch = %s",
-				--  	e.callback, (not hasTarget and key and key.layer and key.layer.value) or -1, Log.boolean(isInstanceMatch), Log.boolean(isLayerMatch), Log.boolean(isAc),Match, Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(isSourceMatch), Log.boolean(isDestinationMatch))
+				 Log.debug(
+				  	"Stage (callback = %s, layer = %d): isInstanceMatch = %s, isLayerMatch = %s, isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, isSourceMatch = %s, isDestinationMatch = %s",
+				  	e.callback, (not hasTarget and key and key.layer and key.layer.value) or -1, Log.boolean(isInstanceMatch), Log.boolean(isLayerMatch), Log.boolean(isAc),Match, Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(isSourceMatch), Log.boolean(isDestinationMatch))
 
 				if isLayerMatch or isActorMatch or isPropMatch or isTargetMatch or isSourceMatch or isDestinationMatch then
 					self:_doSend(player, e)
@@ -383,8 +395,16 @@ function LocalGameManager:processCallback(e)
 				end
 			end
 		end
+	elseif e.interface == "ItsyScape.Game.Model.Game" then
+		if e.clientID ~= self.adminPlayerClientID then
+			Log.warn(
+				"Potential security issue; client %d tried invoking RPC '%s' on '%s' (%d), but this is not allowed.",
+				e.clientID or 0, e.callback, e.interface, e.id)
+		else
+			GameManager.processCallback(self, e)
+		end
 	else
-		if e.client ~= nil then
+		if e.clientID ~= nil then
 			Log.warn(
 				"Potential security issue; client %d tried invoking RPC '%s' on '%s' (%d), but this is not allowed.",
 				e.clientID or 0, e.callback, e.interface, e.id)
