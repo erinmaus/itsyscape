@@ -113,7 +113,7 @@ function BasicChest:reloadInventory(incomingPlayerID, restore)
 			end
 		else
 			local inventory = inventoryBehavior.inventory[incomingPlayerID]
-			if inventory then
+			if inventory and inventory:getBroker() then
 				inventory:getBroker():removeProvider(inventory, false)
 				inventoryBehavior.inventory[incomingPlayerID] = nil
 
