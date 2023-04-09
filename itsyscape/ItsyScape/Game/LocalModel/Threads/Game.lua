@@ -106,7 +106,7 @@ local function saveOnErrorForMultiPlayer()
 		if player:getID() == adminPlayerID then
 			Log.info("Player is admin; saving now.")
 
-			local filename = storage and storage:getFilename()
+			local filename = storage and storage:getRoot():get("filename")
 			if filename then
 				Log.info("Saving player data to '%s'...", filename)
 
@@ -243,6 +243,7 @@ while isRunning do
 				})
 			elseif e.type == 'admin' then
 				adminPlayerID = e.admin
+				gameManager:setAdmin(adminPlayerID)
 			elseif e.type == 'conf' then
 				_DEBUG = e.environment._DEBUG or false
 				_CONF = e.environment._CONF or _CONF

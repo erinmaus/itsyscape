@@ -19,40 +19,42 @@ local KitchenShelf = Class(SimpleStaticView)
 
 function KitchenShelf:new(...)
 	SimpleStaticView.new(self, ...)
-
-	self.spawned = false
 end
 
 function KitchenShelf:tick()
-	if not self.spawned then
-		local root = self:getRoot()
-		local position = self:getProp():getPosition()
+	local root = self:getRoot()
+	local position = self:getProp():getPosition()
 
-		-- These numbers took a bit of tweaking to get right.
-		local value = love.math.noise(position.x / 4, position.y / 4, position.z / 4)
-		local index = math.min(math.floor(value * 5), 3)
-		
+	-- These numbers took a bit of tweaking to get right.
+	local value = love.math.noise(position.x / 4, position.y / 4, position.z / 4)
+	local index = math.min(math.floor(value * 5), 3)
+
+	if self.index ~= index then
 		local resources = self:getResources()
 		local root = self:getRoot()
 
-		self.books = DecorationSceneNode()
+		if self.kitchen then
+			self.kitchen:setParent(nil)
+		end
+
+		self.kitchen = DecorationSceneNode()
 
 		resources:queue(
 			TextureResource,
 			string.format("Resources/Game/Props/KitchenShelf_Default/PotsAndPans%d.png", index),
 			function(texture)
-				self.booksTexture = texture
+				self.stuffTexture = texture
 			end)
 		resources:queue(
 			StaticMeshResource,
 			self:getModelFilename(),
 			function(mesh)
-				self.books:fromGroup(mesh:getResource(), "ShelfItems")
-				self.books:getMaterial():setTextures(self.booksTexture)
-				self.books:setParent(root)
+				self.kitchen:fromGroup(mesh:getResource(), "ShelfItems")
+				self.kitchen:getMaterial():setTextures(self.stuffTexture)
+				self.kitchen:setParent(root)
 			end)
 
-		self.spawned = true
+		self.index = index
 	end
 
 	SimpleStaticView.tick(self)
