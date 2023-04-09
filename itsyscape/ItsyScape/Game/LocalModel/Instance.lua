@@ -661,8 +661,6 @@ function Instance:unload()
 
 	self:onUnload()
 
-	self:cleanup()
-
 	self.stage.onLoadMap:unregister(self._onLoadMap)
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
@@ -821,7 +819,7 @@ function Instance:getMapScriptByLayer(layer)
 		return mapScript:getPeep()
 	end
 
-	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getInstance())
+	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 	return nil
 end
 
@@ -1228,11 +1226,6 @@ function Instance:loadPlayer(localGameManager, player)
 				"onMapModified",
 				localGameManager:getArgs(map, layer))
 			localGameManager:assignTargetToLastPush(player)
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onMapModified",
-				localGameManager:getArgs(map, layer))
 
 			Log.engine("Loaded layer %d.", layer)
 		end
