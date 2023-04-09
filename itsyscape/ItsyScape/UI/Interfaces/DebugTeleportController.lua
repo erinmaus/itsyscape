@@ -37,7 +37,7 @@ function DebugTeleportController:teleport(e)
 	local peep = self:getPeep()
 	local instance = Utility.Peep.getInstance(peep)
 	local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
-	if mapScript:getFilename() == e.map then
+	if mapScript and mapScript:getFilename() == e.map then
 		local anchorPosition = Vector(Utility.Map.getAnchorPosition(
 			self:getGame(),
 			Utility.Peep.getResource(mapScript),
@@ -52,8 +52,9 @@ function DebugTeleportController:teleport(e)
 end
 
 function DebugTeleportController:pull()
+	local mapScript = Utility.Peep.getMapScript(self:getPeep())
 	local state = {
-		currentMap = Utility.Peep.getMapScript(self:getPeep()):getFilename()
+		currentMap = mapScript and mapScript:getFilename()
 	}
 
 	return state
