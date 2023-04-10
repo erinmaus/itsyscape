@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6c47cfc7..e7702326 100755
+index e01cfd42..aded4a9a 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -56,8 +56,10 @@ function(disable_warnings ARG_TARGET)
@@ -27,7 +27,7 @@ index 6c47cfc7..e7702326 100755
 +		SOURCE_DIR ${MEGA_LUAJIT_SOURCE_DIR}
 +		BUILD_IN_SOURCE 1
 +		CONFIGURE_COMMAND ""
-+		BUILD_COMMAND "mingw32-make"
++		BUILD_COMMAND "make"
 +		INSTALL_COMMAND cmake -E make_directory ${CMAKE_BINARY_DIR}/bin
 +			COMMAND cmake -E copy ${MEGA_LUAJIT_SOURCE_DIR}/src/lua51.dll ${CMAKE_BINARY_DIR}/bin
 +			COMMAND cmake -E copy ${MEGA_LUAJIT_SOURCE_DIR}/src/libluajit-5.1.dll.a ${CMAKE_BINARY_DIR}/bin)

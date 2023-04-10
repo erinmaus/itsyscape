@@ -8,8 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Phantom = require "phantom"
-local PhantomClient = require "phantom.client"
 local serpent = require "serpent"
 
 local Client = Class()
@@ -74,6 +72,13 @@ function Client:init(t)
 	end
 
 	if t.enable then
+		local s, Phantom = pcall(require, "phantom")
+		if not s then
+			Log.warn("Couldn't load Phantom: %s")
+			self.isEnabled = false
+			return
+		end
+
 		if (not t.key or t.key == "") and not _ARGS["anonymous"] then
 			Phantom.initialize()
 			local result = Phantom.createUser(self.API_KEY, "Peep")
@@ -103,6 +108,13 @@ function Client:init(t)
 	self.acked = t.acked or false
 
 	if self.isEnabled and self.userKey then
+		local s, PhantomClient = pcall(require, "phantom.client")
+		if not s then
+			Log.warn("Could not load Phantom client: %s.")
+			self.isEnabled = false
+			return
+		end
+
 		self.client = PhantomClient(self.API_KEY, self.userKey)
 	end
 end

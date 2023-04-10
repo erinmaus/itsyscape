@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'wip-cicd'
 
 jobs:
   windows:
@@ -17,15 +18,11 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
       -
-        uses: abel0b/setup-premake@v2.2
-        with:
-          version: "5.0.0-beta2"
-      -
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: mingw64
           update: true
-          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-make
+          install: git mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make unzip mingw-w64-x86_64-boost mingw-w64-x86_64-glm zip
       -
         name: Build code
         run: |
@@ -37,6 +34,4 @@ jobs:
         with:
           name: itsyrealm
           path: |
-            cicd/windows/love.
-            cicd/windows/settings.cfg
-            cicd/windows/itsyrealm.love
+            cicd/windows/itsyrealm
