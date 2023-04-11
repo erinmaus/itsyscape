@@ -19,4 +19,10 @@ mkdir -p staging
 ./get_nbunny.sh
 ./zip_itsyrealm.sh
 
+cp /mingw64/bin/libgcc_s_seh-1.dll ./staging/libgcc_s_seh-1.dll
+cp /mingw64/bin/libwinpthread-1.dll ./staging/libwinpthread-1.dll
+cp /mingw64/bin/libstdc++-6.dll ./staging/libstdc++-6.dll
+cp /mingw64/bin/libstdc++-6.dll ./staging/libstdc++-6.dll
+cp /mingw64/bin/libbz2-1.dll ./staging/libbz2-1.dll
+
 cp -r staging itsyrealm
