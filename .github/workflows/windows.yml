@@ -1,0 +1,36 @@
+name: windows
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    environment: main
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: git mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make unzip mingw-w64-x86_64-boost mingw-w64-x86_64-glm zip
+      -
+        name: Build code
+        run: |
+          cd ./cicd/windows
+          ./build.sh
+      -
+        name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: itsyrealm
+          path: |
+            cicd/windows/itsyrealm
