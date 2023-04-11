@@ -2525,15 +2525,18 @@ function Utility.Peep.getMap(peep)
 	local director = peep:getDirector()
 	local position = peep:getBehavior(PositionBehavior)
 
+	local Map = require "ItsyScape.World.Map"
+	Utility.Peep._defaultMap = Utility.Peep._defaultMap or Map(1, 1, 2)
+
 	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
-		return director:getMap(peep:getLayer())
+		return director:getMap(peep:getLayer()) or Utility.Peep._defaultMap
 	end
 
 	if position and position.layer and director then 
-		return director:getMap(position.layer)
+		return director:getMap(position.layer) or Utility.Peep._defaultMap
 	end
 
-	return nil
+	return Utility.Peep._defaultMap
 end
 
 function Utility.Peep.getMapResource(peep)
