@@ -55,6 +55,6 @@ jobs:
         name: Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: itsyrealm
+          name: itsyrealm_macos
           path: |
             cicd/macos/itsyrealm/ItsyRealm.zip
