@@ -273,6 +273,7 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 	self:killMinion("Warrior")
 
 	isabelle:removeBehavior(MashinaBehavior)
+	isabelle:removeBehavior(CombatTargetBehavior)
 	isabelle:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	isabelle:pushPoke('resurrect')
 
