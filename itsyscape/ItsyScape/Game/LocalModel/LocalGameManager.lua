@@ -272,7 +272,7 @@ function LocalGameManager:sendToPlayer(player)
 					 (Class.isCompatibleType(key.destination.value, require "ItsyScape.Game.LocalModel.Prop") and playerInstance:hasProp(key.destination.value, player)))
 
 				-- This can be super verbose so shut it off if not needed.
-				if _DEBUG
+				if _DEBUG then
 					Log.debug(
 				  		"Stage (callback = %s, layer = %d): isInstanceMatch = %s, isLayerMatch = %s, isActorMatch = %s, isPropMatch = %s, isTargetMatch = %s, isSourceMatch = %s, isDestinationMatch = %s",
 				  		e.callback, (not hasTarget and key and key.layer and key.layer.value) or -1, Log.boolean(isInstanceMatch), Log.boolean(isLayerMatch), Log.boolean(isAc),Match, Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(isSourceMatch), Log.boolean(isDestinationMatch))
