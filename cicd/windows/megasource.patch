@@ -1,0 +1,97 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e01cfd42..aded4a9a 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -56,8 +56,10 @@ function(disable_warnings ARG_TARGET)
+ 	get_target_property(OLD_FLAGS ${ARG_TARGET} COMPILE_FLAGS)
+ 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+ 		set(NEW_FLAGS -w)
+-	else ()
++	elseif (MSVC)
+ 		set(NEW_FLAGS -W0)
++	else()
++		set(NEW_FLAGS -w)
+ 	endif ()
+ 	if(OLD_FLAGS)
+ 		set(NEW_FLAGS "${OLD_FLAGS} ${NEW_FLAGS}")
+@@ -283,7 +285,23 @@ if(MSVC)
+ 	set(MEGA_LUAJIT_LIB ${CMAKE_BINARY_DIR}/bin/lua51.lib)
+ 	set(MEGA_LUAJIT_DLL ${CMAKE_BINARY_DIR}/bin/lua51.dll)
+ 	set(MEGA_LUAJIT_INCLUDE ${MEGA_LUAJIT_SOURCE_DIR}/src)
++else()
++	set(MEGA_LUAJIT_DIR "LuaJIT")
++	file(COPY libs/${MEGA_LUAJIT_DIR} DESTINATION libs)
++	set(MEGA_LUAJIT_SOURCE_DIR ${CMAKE_BINARY_DIR}/libs/${MEGA_LUAJIT_DIR})
+ 
++	ExternalProject_Add(luajit
++		SOURCE_DIR ${MEGA_LUAJIT_SOURCE_DIR}
++		BUILD_IN_SOURCE 1
++		CONFIGURE_COMMAND ""
++		BUILD_COMMAND "make"
++		INSTALL_COMMAND cmake -E make_directory ${CMAKE_BINARY_DIR}/bin
++			COMMAND cmake -E copy ${MEGA_LUAJIT_SOURCE_DIR}/src/lua51.dll ${CMAKE_BINARY_DIR}/bin
++			COMMAND cmake -E copy ${MEGA_LUAJIT_SOURCE_DIR}/src/libluajit-5.1.dll.a ${CMAKE_BINARY_DIR}/bin)
++
++	set(MEGA_LUAJIT_LIB ${CMAKE_BINARY_DIR}/bin/libluajit-5.1.dll.a)
++	set(MEGA_LUAJIT_DLL ${CMAKE_BINARY_DIR}/bin/lua51.dll)
++	set(MEGA_LUAJIT_INCLUDE ${MEGA_LUAJIT_SOURCE_DIR}/src)
+ endif()
+ 
+ set(MEGA_3P
+@@ -324,11 +342,11 @@ else()
+ 	message(STATUS "LOVE was not found")
+ endif()
+ 
+-link_directories(${SDL_LINK_DIR})
+-add_executable(megatest src/test.cpp)
+-target_link_libraries(megatest ${MEGA_3P})
++#link_directories(${SDL_LINK_DIR})
++#add_executable(megatest src/test.cpp)
++#target_link_libraries(megatest ${MEGA_3P})
+ 
+-add_move_dll(megatest ${MEGA_MPEG123})
+-add_move_dll(megatest ${MEGA_SDL2})
+-add_move_dll(megatest ${MEGA_OPENAL})
+-add_move_dll(megatest ${MEGA_LUA51})
++#add_move_dll(megatest ${MEGA_MPEG123})
++#add_move_dll(megatest ${MEGA_SDL2})
++#add_move_dll(megatest ${MEGA_OPENAL})
++#add_move_dll(megatest ${MEGA_LUA51})
+diff --git a/libs/mpg123-1.25.6/CMakeLists.txt b/libs/mpg123-1.25.6/CMakeLists.txt
+index 88cd21e2..b7dce3a9 100644
+--- a/libs/mpg123-1.25.6/CMakeLists.txt
++++ b/libs/mpg123-1.25.6/CMakeLists.txt
+@@ -44,6 +44,9 @@ if(MSVC)
+ 	set(MPG123_INCLUDE_DIRS ${MPG123_INCLUDE_DIRS} ports/MSVC++)
+ elseif(APPLE)
+ 	set(MPG123_INCLUDE_DIRS ${MPG123_INCLUDE_DIRS} ports/Xcode)
++else()
++	add_definitions(-DOPT_GENERIC)
++	set(MPG123_INCLUDE_DIRS ${MPG123_INCLUDE_DIRS} ports/MSVC++)
+ endif()
+ 
+ if (MPG123_BUILD_STATIC)
+@@ -58,5 +61,6 @@ if (MPG123_BUILD_SHARED)
+ 		target_link_libraries(mpg123 Shlwapi)
+ 		set_property(TARGET mpg123 PROPERTY COMPILE_DEFINITIONS BUILD_MPG123_DLL)
+ 	endif()
++	target_link_libraries(mpg123 Shlwapi)
+ 	install(TARGETS mpg123 RUNTIME DESTINATION . LIBRARY DESTINATION .)
+ endif()
+diff --git a/libs/openal-soft/Alc/bformatdec.h b/libs/openal-soft/Alc/bformatdec.h
+index 2d7d1d62..d2160793 100644
+--- a/libs/openal-soft/Alc/bformatdec.h
++++ b/libs/openal-soft/Alc/bformatdec.h
+@@ -24,9 +24,9 @@
+ /* NOTE: These are scale factors as applied to Ambisonics content. Decoder
+  * coefficients should be divided by these values to get proper N3D scalings.
+  */
+-const ALfloat N3D2N3DScale[MAX_AMBI_COEFFS];
+-const ALfloat SN3D2N3DScale[MAX_AMBI_COEFFS];
+-const ALfloat FuMa2N3DScale[MAX_AMBI_COEFFS];
++extern const ALfloat N3D2N3DScale[MAX_AMBI_COEFFS];
++extern const ALfloat SN3D2N3DScale[MAX_AMBI_COEFFS];
++extern const ALfloat FuMa2N3DScale[MAX_AMBI_COEFFS];
+ 
+ 
+ struct AmbDecConf;

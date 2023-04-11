@@ -1,0 +1,60 @@
+name: macos
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    environment: main
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Build code
+        run: |
+          cd ./cicd/macos
+          ./build.sh
+      -
+        name: Codesign app bundle
+        env: 
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+          MACOS_CI_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_CI_KEYCHAIN_PASSWORD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          
+          security create-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain 
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          
+          find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.framework' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
+          find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.dylib' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
+          /usr/bin/codesign --timestamp --force -s "$MACOS_CERTIFICATE_NAME" --options runtime cicd/macos/itsyrealm/ItsyRealm.app --entitlements cicd/macos/build/love2d/platform/xcode/love-macosxRelease.entitlements -v
+      - name: Notarize app bundle
+        env:
+          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
+          MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.MACOS_NOTARIZATION_TEAM_ID }}
+          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
+        run: |
+          xcrun notarytool store-credentials "notarytool-profile" --apple-id "$MACOS_NOTARIZATION_APPLE_ID" --team-id "$MACOS_NOTARIZATION_TEAM_ID" --password "$MACOS_NOTARIZATION_PASSWORD"
+          ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
+          xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait
+          xcrun stapler staple "cicd/macos/itsyrealm/ItsyRealm.app"
+      - name: Package app
+        run: |
+          cd ./cicd/macos/itsyrealm
+          ditto -c -k --keepParent "ItsyRealm.app" "ItsyRealm.zip"
+      -
+        name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: itsyrealm
+          path: |
+            cicd/macos/itsyrealm/ItsyRealm.zip
