@@ -467,6 +467,10 @@ function Application:onNetworkError(_, message)
 	self:disconnect()
 end
 
+function Application:isGameThread(thread)
+	return self.gameThread and thread and self.gameThread == thread
+end
+
 function Application:savePlayer(player, storage)
 	-- Nothing.
 end

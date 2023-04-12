@@ -1,6 +1,17 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
+local _GAME_THREAD_ERROR = false
+
+do
+	local NSentry = require "nbunny.sentry"
+	love.filesystem.createDirectory(".sentry")
+
+	NSentry.init(
+		"https://98b5ff6214224dbbb0b94a4f1643c82e@o4505002174840832.ingest.sentry.io/4505002177986560",
+		string.format("%s/%s", love.filesystem.getSaveDirectory(), ".sentry"))
+end
+
 itsyrealm = {
 	graphics = {
 		impl = {}
@@ -217,10 +228,116 @@ function love.quit()
 
 	Log.quit()
 
+	local NSentry = require "nbunny.sentry"
+	NSentry.close()
+
 	return result
 end
 
-function love.threaderror(m, e)
-	Log.warn("Error in thread: %s", e)
+function itsyrealm.errorhandler()
+	local logo
+	do
+		local s, v = pcall(love.graphics.newImage, "Resources/Game/TitleScreens/Logo.png")
+		if s then
+			logo = v
+		end
+	end
+
+	local qrCode
+	do
+		local s, v = pcall(love.graphics.newImage, "Resources/Game/TitleScreens/DiscordQRCode.png")
+		if s then
+			qrCode = v
+		end
+	end
+
+	do
+		local s, v = pcall(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf", 32)
+		if s then
+			love.graphics.setFont(v)
+		else
+			love.graphics.setNewFont(32)
+		end
+	end
+
+	love.audio.stop()
+
+	local function draw()
+		love.graphics.setCanvas()
+
+		love.graphics.clear(0, 0, 0)
+
+		love.graphics.setColor(1, 1, 1, 1)
+		if logo then
+			love.graphics.draw(
+				logo,
+				love.graphics.getWidth() / 2 - logo:getWidth() / 2,
+				love.graphics.getHeight() / 2 - logo:getHeight())
+		end
+
+		if qrCode then
+			love.graphics.draw(
+				qrCode,
+				love.graphics.getWidth() - qrCode:getWidth() - 16,
+				love.graphics.getHeight() - qrCode:getHeight() - 16)
+		end
+
+		love.graphics.printf(
+			"Whoops! ItsyRealm encountered an error!\n" ..
+			"The game will send the developer a crash report.\n" ..
+			"If you want to be extra helpful,\n" ..
+			"join the ItsyRealm Discord and report the error!\n" ..
+			"Just scan the QR code!\n\n" ..
+			"Press ESC to quit.",
+			0,
+			love.graphics.getHeight() / 2 + 32,
+			love.graphics.getWidth(),
+			'center')
+
+		love.graphics.present()
+	end
+
+	return function()
+		love.event.pump()
+
+		for e, a, b, c in love.event.poll() do
+			if e == "quit" then
+				return 1
+			elseif e == "keypressed" and a == "escape" then
+				return 1
+			end
+		end
+
+		draw()
+
+		if love.timer then
+			love.timer.sleep(0.1)
+		end
+	end
+end
+
+function love.errorhandler(message)
+	if not _GAME_THREAD_ERROR then
+		Log.sendError(message, 3)
+	end
+
+	local NSentry = require "nbunny.sentry"
+	NSentry.close()
+
+	if _DEBUG then
+		return love.errhand(message)
+	else
+		return itsyrealm.errorhandler()
+	end
+end
+
+function love.threaderror(thread, e)
+	_GAME_THREAD_ERROR = _APP:isGameThread(thread)
+	if _GAME_THREAD_ERROR then
+		Log.warn("Error in game thread: %s", e)
+	else
+		Log.warn("Error in other thread: %s", e)
+	end
+
 	error(e, 0)
 end
