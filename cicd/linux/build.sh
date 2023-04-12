@@ -21,9 +21,11 @@ git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || true
 
 rm -rf installdir/bin/love
 
+
 make LOVE_BRANCH=${LOVE_BRANCH}
 
 ./get_premake5.sh
+./build_sentry.sh
 ./build_bmashina.sh
 ./build_discworld.sh
 ./build_nbunny.sh
