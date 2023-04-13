@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export MAKEFLAGS="-j4"
+
 set -xe
 
 mkdir -p bin
