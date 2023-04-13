@@ -29,4 +29,8 @@ discworld/
 itsyscape/
 premake-*.zip
 premake5/
-
+*.zip
+sentry-native-*-build/
+sentry-native-*/
+curl-*/
+openssl-*/

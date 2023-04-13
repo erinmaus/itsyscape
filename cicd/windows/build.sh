@@ -5,13 +5,16 @@ set -xe
 git config --global core.autocrlf true
 
 export PATH=/mingw64/bin:$PATH
+export MINGW_ROOT=/mingw64
 
 mkdir -p bin
 mkdir -p build
 mkdir -p staging
 
+
 ./get_love.sh
 ./get_premake5.sh
+./get_sentry.sh
 ./get_discord.sh
 ./get_luajit.sh
 ./get_bmashina.sh

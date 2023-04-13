@@ -11,13 +11,145 @@
 local debug = require "debug"
 local Log = {}
 
+function Log.sendError(message, targetStack)
+	if _DEBUG then
+		return
+	end
+
+	if not targetStack then
+		return
+	end
+
+	targetStack = targetStack + 1
+
+	local MAX_LENGTH = 512
+
+	if debug.getinfo(targetStack) and debug.getinfo(targetStack).func == error then
+		targetStack = targetStack + 1
+	end
+
+	local variables = {}
+
+	local localIndex = 1
+	while debug.getlocal(targetStack, localIndex) do
+		local localName, localValue = debug.getlocal(targetStack, localIndex)
+
+		local r = {
+			storage = "local",
+			name = localName,
+			value = Log.stringify(localValue),
+			type = Log.type(localValue)
+		}
+
+		if #r.value > MAX_LENGTH then
+			r.value = r.value:sub(1, MAX_LENGTH) .. "..."
+		end
+
+		if not r.name:match("^%(") then
+			table.insert(variables, r)
+		end
+
+		localIndex = localIndex + 1
+	end
+
+	local upvalueIndex = 1
+	local func = debug.getinfo(targetStack) and debug.getinfo(targetStack).func
+	while func and debug.getupvalue(func, upvalueIndex) do
+		local upvalueName, upvalueValue = debug.getupvalue(func, upvalueIndex)
+
+		r = {
+			storage = "upvalue",
+			name = upvalueName,
+			value = Log.stringify(upvalueValue),
+			type = Log.type(upvalueValue)
+		}
+
+		if #r.value > MAX_LENGTH then
+			r.value = r.value:sub(1, MAX_LENGTH) .. "..."
+		end
+
+		table.insert(variables, r)
+
+		upvalueIndex = upvalueIndex + 1
+	end
+
+	local NSentry = require "nbunny.sentry"
+	NSentry.error(debug.traceback(message, targetStack), variables)
+end
+
+function Log.type(value)
+	local Class = require "ItsyScape.Common.Class"
+	if Class.isClass(value) then
+		return value:getDebugInfo().shortName
+	else
+		return type(value)
+	end
+end
+
 function Log.boolean(value)
 	return (value and "true") or "false"
 end
 
-function Log.stringify(value)
+function Log._stringifyClassSimple(value)
+	local Class = require "ItsyScape.Common.Class"
+
+	local r = {}
+
+	for k, v in pairs(value) do
+		if type(k) == 'string' then
+			if Class.isClass(v) then
+				table.insert(r, string.format("%s (%s) = { ... }", k, v:getDebugInfo().shortName))
+			else
+				table.insert(r, string.format("%s = %s", k, Log._stringifyFieldSimple(v)))
+			end
+		end
+	end
+
+	return string.format("{ %s }", table.concat(r, ", "))
+end
+
+function Log._stringifyFieldSimple(value)
 	if type(value) == 'table' then
-		return require("ItsyScape.Common.StringBuilder").stringify(value, '%t')
+		return "{ ... }"
+	elseif type(value) == 'string' then
+		return string.format("%q", value)
+	else
+		return tostring(value)
+	end
+end
+
+function Log.stringify(value)
+	local Class = require "ItsyScape.Common.Class"
+
+	if type(value) == 'table' then
+		local r = {}
+
+		local hasKeys = false
+		for k, v in pairs(value) do
+			if type(k) == 'string' then
+				hasKeys = true
+
+				if Class.isClass(v) then
+					table.insert(r, string.format("%s (%s) = { %s }", k, v:getDebugInfo().shortName, Log._stringifyClassSimple(v)))
+				else
+					table.insert(r, string.format("%s = %s", k, Log._stringifyFieldSimple(v)))
+				end
+			end
+		end
+
+		if not hasKeys then
+			for i = 1, #value do
+				local v = value[i]
+
+				if Class.isClass(v) then
+					table.insert(r, Log._stringifyClassSimple(v))
+				else
+					table.insert(r, Log._stringifyFieldSimple(v))
+				end
+			end
+		end
+		
+		return string.format("{ %s }", table.concat(r, ", "))
 	else
 		return require("ItsyScape.Common.StringBuilder").stringify(value)
 	end

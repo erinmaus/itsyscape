@@ -190,7 +190,15 @@ local function saveOnErrorForSinglePlayer(clientID)
 end
 
 while isRunning do
-	local success, result = xpcall(tick, debug.traceback)
+	local success, result = xpcall(tick, function(message)
+		local s, r = xpcall(Log.sendError, debug.traceback, message, 3)
+		if not s then
+			Log.warn("Could not send error: %s", r)
+		end
+
+		return debug.traceback(message)
+	end)
+
 	if not success then
 		local s, r 
 		if serverRPCService then
