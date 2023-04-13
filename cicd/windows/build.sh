@@ -6,6 +6,7 @@ git config --global core.autocrlf true
 
 export PATH=/mingw64/bin:$PATH
 export MINGW_ROOT=/mingw64
+export MAKEFLAGS="-j4"
 
 mkdir -p bin
 mkdir -p build
