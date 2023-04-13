@@ -203,14 +203,14 @@ int main(int argc, char *argv[]) {
     if (old_env) {
         SET_NEW_ENV(new_lua_path, appdir_s*2 + strlen(old_env), "LUA_PATH=%s;%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", old_env, appdir, appdir);
     } else {
-        SET_NEW_ENV(new_lua_path, appdir_s*2, "LUA_PATH=%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", appdir, appdir);
+        SET_NEW_ENV(new_lua_path, appdir_s+128, "LUA_PATH=%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", appdir, appdir);
     }
     
     old_env = getenv("LUA_CPATH");
     if (old_env) {
         SET_NEW_ENV(new_lua_cpath, appdir_s + strlen(old_env), "LUA_CPATH=%s;=%s/lib/lua/5.1/?.so;;", old_env, appdir);
     } else {
-        SET_NEW_ENV(new_lua_cpath, appdir_s, "LUA_CPATH=%s/lib/lua/5.1/?.so;;", appdir);
+        SET_NEW_ENV(new_lua_cpath, appdir_s+128, "LUA_CPATH=%s/lib/lua/5.1/?.so;;", appdir);
     }
 
     /* Run */
@@ -232,5 +232,7 @@ int main(int argc, char *argv[]) {
     free(new_perllib);
     free(new_gsettings_schema_dir);
     free(new_qt_plugin_path);
+    free(new_lua_path);
+    free(new_lua_cpath);
     return 0;
 }
