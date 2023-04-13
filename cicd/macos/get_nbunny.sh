@@ -3,7 +3,7 @@
 set -xe
 
 export CPPFLAGS="-I ../love2d/src -I ../love2d/src/modules -I ../include -stdlib=libc++"
-export LDFLAGS="-stdlib=libc++ -framework Lua -framework love -F $(pwd)/staging/ItsyRealm.app/Contents/Frameworks"
+export LDFLAGS="-L $(pwd)/.. -lsentry -stdlib=libc++ -framework Lua -framework love -F $(pwd)/staging/ItsyRealm.app/Contents/Frameworks"
 
 cp -r ../../utilities build/nbunny
 

@@ -10,6 +10,6 @@ sed -i 's/platforms { "x86", "x64", "ARM64" }//g' premake5.lua
 
 ../../premake5/premake5 --DEPS="../installdir" gmake
 
-CPPFLAGS="-I $(pwd)/../../installdir/include/luajit-2.1 -I $(pwd)/../../love2d-${LOVE_BRANCH}/src -I $(pwd)/../../love2d-${LOVE_BRANCH}/src/modules" LDFLAGS="-L$(pwd)/../../installdir/lib -llove -lluajit-5.1" make config=release nbunny
+CPPFLAGS="-I $(pwd)/../../installdir/include/luajit-2.1 -I $(pwd)/../../love2d-${LOVE_BRANCH}/src -I $(pwd)/../../love2d-${LOVE_BRANCH}/src/modules" LDFLAGS="-L$(pwd)/../../installdir/lib -llove -lluajit-5.1 -lsentry" make config=release nbunny
 cd ../..
 cp itsyscape/utilities/bin/libnbunny.so installdir/lib/lua/5.1/nbunny.so
