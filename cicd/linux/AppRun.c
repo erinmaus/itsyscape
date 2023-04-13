@@ -109,6 +109,7 @@ int main(int argc, char *argv[]) {
         argcount += 1;
 
     // merge args
+    char love[PATH_MAX];
     char*   outargptrs[argcount + argc + 1];
     outargptrs[0] = exe;
     int     outargindex = 1;
@@ -122,7 +123,14 @@ int main(int argc, char *argv[]) {
                 case 'f':
                 case 'u':
                     if (argc_ > 0) {
-                        outargptrs[outargindex++] = *argv_++;
+                        char cwd[PATH_MAX];
+                        if (getcwd(cwd, PATH_MAX) && (*argv_)[0] != '/') {
+                            snprintf(love, PATH_MAX, "%s/%s", cwd, *argv_++);
+
+                            outargptrs[outargindex++] = love;
+                        } else {
+                            outargptrs[outargindex++] = *argv_++;
+                        }
                         argc_--;
                     }
                     break;
@@ -154,13 +162,10 @@ int main(int argc, char *argv[]) {
 
     // change directory
     size_t appdir_s = strlen(appdir);
-    char *usr_in_appdir = malloc(appdir_s + 5);
-    /*
-    snprintf(usr_in_appdir, appdir_s + 5, "%s/usr", appdir);
-    ret = chdir(usr_in_appdir);
+    
+    ret = chdir(appdir);
     if (ret != 0)
-        die("Could not cd into %s\n", usr_in_appdir);
-    */
+        die("Could not cd into %s\n", appdir);
 
     // set environment variables
     char *old_env;
@@ -198,20 +203,9 @@ int main(int argc, char *argv[]) {
     /* Otherwise may get errors because Python cannot write __pycache__ bytecode cache */
     putenv("PYTHONDONTWRITEBYTECODE=1");
 
-    /* Lua-specific stuff by MikuAuahDark */
-    old_env = getenv("LUA_PATH");
-    if (old_env) {
-        SET_NEW_ENV(new_lua_path, appdir_s*2 + strlen(old_env), "LUA_PATH=%s;%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", old_env, appdir, appdir);
-    } else {
-        SET_NEW_ENV(new_lua_path, appdir_s*2, "LUA_PATH=%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", appdir, appdir);
-    }
-    
-    old_env = getenv("LUA_CPATH");
-    if (old_env) {
-        SET_NEW_ENV(new_lua_cpath, appdir_s + strlen(old_env), "LUA_CPATH=%s;=%s/lib/lua/5.1/?.so;;", old_env, appdir);
-    } else {
-        SET_NEW_ENV(new_lua_cpath, appdir_s, "LUA_CPATH=%s/lib/lua/5.1/?.so;;", appdir);
-    }
+    /* ItsyRealm-specific stuff */
+    SET_NEW_ENV(new_lua_path, appdir_s*2, "LUA_PATH=%s/share/luajit-2.1.0-beta3/?.lua;%s/share/lua/5.1/?.lua;;", appdir, appdir);
+    SET_NEW_ENV(new_lua_cpath, appdir_s, "LUA_CPATH=%s/lib/lua/5.1/?.so;;", appdir);
 
     /* Run */
     ret = execvp(exe, outargptrs);
@@ -223,7 +217,6 @@ int main(int argc, char *argv[]) {
 
     free(line);
     free(desktop_file);
-    free(usr_in_appdir);
     free(new_pythonhome);
     free(new_path);
     free(new_ld_library_path);
@@ -232,5 +225,7 @@ int main(int argc, char *argv[]) {
     free(new_perllib);
     free(new_gsettings_schema_dir);
     free(new_qt_plugin_path);
+    free(new_lua_path);
+    free(new_lua_cpath);
     return 0;
 }

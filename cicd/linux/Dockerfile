@@ -10,6 +10,6 @@ ADD ./cicd/linux/settings.cfg /itsyrealm/config/settings.cfg
 
 WORKDIR /itsyrealm
 
-CMD ./love.AppImage --appimage-extract-and-run --fused ./itsyrealm.love
+CMD ./love.AppImage --appimage-extract-and-run ./itsyrealm.love
 
 EXPOSE 18323/udp
