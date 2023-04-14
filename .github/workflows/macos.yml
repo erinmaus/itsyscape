@@ -38,6 +38,15 @@ jobs:
           find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.framework' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
           find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.dylib' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
           /usr/bin/codesign --timestamp --force -s "$MACOS_CERTIFICATE_NAME" --options runtime cicd/macos/itsyrealm/ItsyRealm.app --entitlements cicd/macos/build/love2d/platform/xcode/love-macosxRelease.entitlements -v
+
+          ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
+      -
+        name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: itsyrealm_macos_prenotarization
+          path: |
+            notarization.zip
       - name: Notarize app bundle
         env:
           MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
@@ -45,7 +54,6 @@ jobs:
           MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
         run: |
           xcrun notarytool store-credentials "notarytool-profile" --apple-id "$MACOS_NOTARIZATION_APPLE_ID" --team-id "$MACOS_NOTARIZATION_TEAM_ID" --password "$MACOS_NOTARIZATION_PASSWORD"
-          ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
           xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait
           xcrun stapler staple "cicd/macos/itsyrealm/ItsyRealm.app"
       - name: Package app

@@ -62,6 +62,7 @@ function LocalStage:new(game)
 	self.instances = {}
 	self.instancesByLayer = {}
 	self.instancesPendingUnload = {}
+	self.mapTransformsByLayer = {}
 
 	self.dummyInstance = Instance(0, "<dummy>", self)
 end
@@ -78,6 +79,7 @@ end
 function LocalStage:deleteLayer(layer)
 	Log.engine("Deleting layer %d.", layer)
 	self.instancesByLayer[layer] = nil
+	self.mapTransformsByLayer[layer] = nil
 end
 
 function LocalStage:newGlobalInstance(filename)
@@ -1388,7 +1390,41 @@ function LocalStage:updateMapPositions()
 					offset = Vector.ZERO
 				end
 
-				self.onMapMoved(self, layer, position + offset, rotation, scale, origin, mapScript:hasBehavior(DisabledBehavior))
+				local disabled = mapScript:hasBehavior(DisabledBehavior)
+
+				local didMove = false
+				local currentTransform = self.mapTransformsByLayer[layer]
+				if currentTransform then
+					didMove = currentTransform.position ~= position or
+					          currentTransform.rotation ~= rotation or
+					          currentTransform.scale ~= scale or
+					          currentTransform.origin ~= origin or
+					          currentTransform.offset ~= offset or
+					          currentTransform.disabled ~= disabled
+					if didMove then
+						print(currentTransform.position ~= position,
+					          currentTransform.rotation ~= rotation,
+					          currentTransform.scale ~= scale,
+					          currentTransform.origin ~= origin,
+					          currentTransform.offset ~= offset,
+					          currentTransform.disabled ~= disabled)
+					end
+				else
+					didMove = true
+				end
+
+				self.mapTransformsByLayer[layer] = {
+					position = position,
+					rotation = rotation,
+					scale = scale,
+					origin = origin,
+					offset = offset,
+					disabled = disabled
+				}
+
+				if didMove then
+					self.onMapMoved(self, layer, position + offset, rotation, scale, origin, disabled)
+				end
 			end
 		end
 	end

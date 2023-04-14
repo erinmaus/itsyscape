@@ -100,7 +100,7 @@ end
 function WeatherMap:updateMap(map, translation, rotation, scale)
 	translation = translation or Vector(0)
 	rotation = rotation or Quaternion(0)
-	scale = scale or Scale(1)
+	scale = scale or Vector(1)
 
 	local transform = self.maps[map]
 	if transform then
