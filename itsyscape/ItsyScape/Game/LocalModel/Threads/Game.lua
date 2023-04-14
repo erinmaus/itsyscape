@@ -217,7 +217,7 @@ while isRunning do
 	local duration = timeEnd - timeStart
 	if duration < game:getDelta() then
 		love.timer.sleep(game:getTargetDelta() - duration)
-	else
+	--else
 		Log.info("Tick ran over by %0.2f ms.", (duration - game:getDelta()) * 1000)
 		Log.info(
 			"Stats: iteration = %d ms, game tick = %d ms, game update = %d ms, game manager update = %d ms, game manager tick = %d ms, game manager send = %d ms, game manager receive = %d ms",

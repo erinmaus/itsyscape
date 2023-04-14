@@ -98,6 +98,10 @@ local function serializeObject(value, isStructure, isArray)
 		return "nil", true
 	elseif type(value) == 'function' then
 		return "function() end"
+	elseif type(value) == 'userdata' then
+		return "<userdata>"
+	elseif type(value) == 'thread' then
+		return "<thread>"
 	else
 		error(string.format("unhandled type %s", type(value)))
 	end
@@ -119,7 +123,13 @@ function StringBuilder.stringifyTable(t, result, depth, exceptions)
 		local isArray = isTableArray(t)
 		
 		for key, value in pairs(t) do
-			local k, explicit = serializeObject(key, isStructure, isArray)
+			local k, explicit
+			if type(key) == 'table' then
+				k, explicit = "{ ... }", true
+			else
+				k, explicit = serializeObject(key, isStructure, isArray)
+			end
+
 			if k then
 				result:pushIndent(depth + 1)
 
@@ -131,10 +141,8 @@ function StringBuilder.stringifyTable(t, result, depth, exceptions)
 
 				if type(value) == 'table' then
 					if exceptions[value] then
-						error("recursive table")
-					end
-
-					if isTableEmpty(value) then
+						result:push(" ", "{ ... }")
+					elseif isTableEmpty(value) then
 						result:push(" ", "{}")
 					else
 						result:pushLine()
@@ -159,10 +167,10 @@ function StringBuilder.stringifyTable(t, result, depth, exceptions)
 
 				if type(value) == 'table' then
 					if exceptions[value] then
-						error("recursive table")
+						result:push("{ ... }")
+					else
+						StringBuilder.stringifyTable(value, result, depth + 1, exceptions)
 					end
-
-					StringBuilder.stringifyTable(value, result, depth + 1, exceptions)
 				else
 					local v = serializeObject(value, false, false)
 					result:push(v)

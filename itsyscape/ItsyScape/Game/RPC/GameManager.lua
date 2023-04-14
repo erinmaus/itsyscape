@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Game = require "ItsyScape.Game.Model.Game"
@@ -19,6 +20,7 @@ local Event = require "ItsyScape.Game.RPC.Event"
 local State = require "ItsyScape.Game.RPC.State"
 local Property = require "ItsyScape.Game.RPC.Property"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
+local NProperty = require "nbunny.gamemanager.property"
 
 local GameManager = Class()
 
@@ -79,7 +81,7 @@ function GameManager.Instance:getProperty(propertyName)
 end
 
 function GameManager.Instance:registerProperty(propertyName, property)
-	local p = GameManager.Property(propertyName, property)
+	local p = GameManager.Property(self, propertyName, property)
 
 	table.insert(self.properties, p)
 	self.properties[propertyName] = p
@@ -99,49 +101,38 @@ function GameManager.Instance:update(reliable)
 				self.interface,
 				self.id,
 				property:getField(),
-				property:getValue(),
+				buffer.encode(property:getValue()),
 				reliable)
 		end
 	end
 end
 
 GameManager.Property = Class()
-function GameManager.Property:new(field, filter)
-	self.field = field
-	self.filter = filter
-	self.isEmpty = true
+function GameManager.Property:new(instance, field)
+	self._handle = NProperty()
+	self._handle:setField(field)
+	self._handle:setInstanceInterface(instance:getInterface())
+	self._handle:setInstanceID(instance:getID())
 end
 
 function GameManager.Property:getField()
-	return self.field
+	return self._handle:getField()
 end
 
 function GameManager.Property:hasValue()
-	return not self.isEmpty
+	return self._handle:hasValue()
 end
 
 function GameManager.Property:getValue()
-	return self.currentValue
+	return self._handle:getValue()
 end
 
 function GameManager.Property:update(instance, gameManager)
-	local getFunc = instance[self.field]
-	if not getFunc then
-		Log.error("Unknown field: %s", self.field)
-	end
-
-	local newValue = gameManager:getArgs(self.filter:filter(getFunc(instance)))
-
-	local isDirty = true
-	self.currentValue = newValue
-	self.isEmpty = false
-
-	return isDirty
+	return self._handle:update(instance)
 end
 
 function GameManager.Property:set(instance, newValue)
-	self.currentValue = newValue
-	self.isEmpty = false
+	self._handle:setValue(newValue)
 end
 
 GameManager.PropertyGroup = Class()
@@ -367,7 +358,7 @@ function GameManager:processProperty(e)
 	if not instance then
 		Log.engine("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
 	else
-		instance:setProperty(e.property, e.value)
+		instance:setProperty(e.property, buffer.decode(e.value))
 	end
 end
 
