@@ -72,6 +72,10 @@ function GameManager.Instance:iteratePropertyGroups()
 	return pairs(self.propertyGroups)
 end
 
+function GameManager.Instance:iterateProperties()
+	return ipairs(self.properties)
+end
+
 function GameManager.Instance:hasProperty(propertyName)
 	return self.properties[propertyName] ~= nil and self.properties[propertyName]:hasValue()
 end
@@ -92,11 +96,11 @@ function GameManager.Instance:setProperty(propertyName, value)
 	property:set(propertyName, value)
 end
 
-function GameManager.Instance:update(reliable)
+function GameManager.Instance:update(force)
 	for i = 1, #self.properties do
 		local property = self.properties[i]
 		local isDirty = property:update(self.instance, self.gameManager)
-		if isDirty then
+		if isDirty or force then
 			self.gameManager:pushProperty(
 				self.interface,
 				self.id,

@@ -8,6 +8,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -1282,6 +1283,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"onPropPlaced",
 				localGameManager:getArgs(prop:getPeepID(), prop))
 			localGameManager:assignTargetToLastPush(player)
+
+			self:loadProp(localGameManager, player, prop)
 		end
 
 		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())
@@ -1428,7 +1431,44 @@ function Instance:loadActor(localGameManager, player, actor)
 		end
 	end
 
+	for _, property in actorInstance:iterateProperties() do
+		localGameManager:pushProperty(
+			actorInstance:getInterface(),
+			actorInstance:getID(),
+			property:getField(),
+			buffer.encode(property:getValue()),
+			true)
+		localGameManager:assignTargetToLastPush(player)
+	end
+
 	Log.engine("Restored actor '%s' (%d).", actor:getName(), actor:getID())
+end
+
+function Instance:loadProp(localGameManager, player, prop)
+	local propInstance = localGameManager:getInstance(
+		"ItsyScape.Game.Model.Prop",
+		prop:getID())
+
+	Log.engine("Restoring prop '%s' (%d)...", prop:getName(), prop:getID())
+
+	if not propInstance then
+		Log.engine("Could not restore prop; instance not in local game manager.")
+		return
+	end
+
+	for _, property in propInstance:iterateProperties() do
+		localGameManager:pushProperty(
+			propInstance:getInterface(),
+			propInstance:getID(),
+			property:getField(),
+			buffer.encode(property:getValue()),
+			true)
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine("Restored property '%s'.", property:getField())
+	end
+
+	Log.engine("Restored prop '%s' (%d).", prop:getName(), prop:getID())
 end
 
 function Instance:cleanup()
