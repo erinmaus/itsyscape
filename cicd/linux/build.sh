@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export LOVE_BRANCH=master
-export ITSYREALM_BRANCH=master
+export ITSYREALM_BRANCH=$(git branch --show-current)
 
 set -xe
 
