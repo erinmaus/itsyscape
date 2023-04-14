@@ -102,7 +102,7 @@ function GameManager.Instance:update(reliable)
 				self.id,
 				property:getField(),
 				buffer.encode(property:getValue()),
-				reliable)
+				true)
 		end
 	end
 end
