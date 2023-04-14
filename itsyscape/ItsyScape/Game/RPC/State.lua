@@ -119,19 +119,24 @@ local function serialize(self, obj)
 	if type(obj) == 'table' then
 		metatable = getmetatable(obj)
 		if metatable then
-			assert(metatable.__persist, "table with metatable does not have persist hook")
-
-			return metatable.__persist(obj, self)
+			return metatable.__persist and metatable.__persist(obj, self)
 		else
 			local result = {}
 			for key, value in pairs(obj) do
-				assert(type(key) ~= "table", "tables as keys not supported")
-				assert(type(value) ~= "function", "function serialization not supported")
+				if type(key) == "table" or type(value) == "function" then
+					return nil
+				end
+
 				result[key] = serialize(self, value)
 			end
 
 			return result
 		end
+	end
+
+	local t = type(obj)
+	if t == "function" or t == "userdata" or t == "thread" then
+		return nil
 	end
 
 	return obj
@@ -143,12 +148,12 @@ local function deserialize(self, obj)
 			local t = self.typeNames[obj.typeName]
 			return t.provider:deserialize(obj, self)
 		else
-			-- Deserialize in place
+			local r = {}
 			for key, value in pairs(obj) do
-				obj[key] = deserialize(self, value)
+				r[key] = deserialize(self, value)
 			end
 
-			return obj
+			return r
 		end
 	end
 
@@ -156,8 +161,7 @@ local function deserialize(self, obj)
 end
 
 function State:deserialize(obj)
-	local result = buffer.decode(obj)
-	return deserialize(self, result)
+	return deserialize(self, (type(obj) == "string" and buffer.decode(obj)) or obj)
 end
 
 function State:serialize(obj)

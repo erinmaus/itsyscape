@@ -8,6 +8,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -33,6 +34,7 @@ function Instance.Map:new(layer, map, tileSetID, maskID)
 	self.map = map
 	self.tileSetID = tileSetID
 	self.maskID = maskID
+	self.transform = { n = 0 }
 end
 
 function Instance.Map:getLayer()
@@ -49,6 +51,17 @@ end
 
 function Instance.Map:getMaskID()
 	return self.maskID
+end
+
+function Instance.Map:setTransform(...)
+	self.transform = {
+		n = select('#', ...),
+		...
+	}
+end
+
+function Instance.Map:getTransform()
+	return unpack(self.transform, 1, self.transform.n)
 end
 
 Instance.MapScript = Class()
@@ -294,6 +307,28 @@ function Instance:new(id, filename, stage)
 		end
 	end
 	stage.onMapModified:register(self._onMapModified)
+
+	self._onMapMoved = function(_, layer, ...)
+		if self:hasLayer(layer, true) then
+			Log.engine(
+				"Moved map in instance %s (%d) on layer %d.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+
+			local map = self.maps[layer]
+			if map then
+				map:setTransform(...)
+			end
+		else
+			Log.engine(
+				"Did not move map in instance %s (%d) on layer %d; layer is not in instance.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+		end
+	end
+	stage.onMapMoved:register(self._onMapMoved)
 
 	self.actors = {}
 	self.actorsByID = {}
@@ -664,6 +699,7 @@ function Instance:unload()
 	self.stage.onLoadMap:unregister(self._onLoadMap)
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
+	self.stage.onMapMoved:unregister(self._onMapMoved)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
 	self.stage.onActorKilled:unregister(self._onActorKilled)
 	self.stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -1230,6 +1266,12 @@ function Instance:loadPlayer(localGameManager, player)
 				"onMapModified",
 				localGameManager:getArgs(map, layer))
 			localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onMapMoved",
+				localGameManager:getArgs(layer, self.maps[layer]:getTransform()))
+			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Loaded layer %d.", layer)
 		end
@@ -1282,6 +1324,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"onPropPlaced",
 				localGameManager:getArgs(prop:getPeepID(), prop))
 			localGameManager:assignTargetToLastPush(player)
+
+			self:loadProp(localGameManager, player, prop)
 		end
 
 		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())
@@ -1428,7 +1472,44 @@ function Instance:loadActor(localGameManager, player, actor)
 		end
 	end
 
+	for _, property in actorInstance:iterateProperties() do
+		localGameManager:pushProperty(
+			actorInstance:getInterface(),
+			actorInstance:getID(),
+			property:getField(),
+			buffer.encode(property:getValue()),
+			true)
+		localGameManager:assignTargetToLastPush(player)
+	end
+
 	Log.engine("Restored actor '%s' (%d).", actor:getName(), actor:getID())
+end
+
+function Instance:loadProp(localGameManager, player, prop)
+	local propInstance = localGameManager:getInstance(
+		"ItsyScape.Game.Model.Prop",
+		prop:getID())
+
+	Log.engine("Restoring prop '%s' (%d)...", prop:getName(), prop:getID())
+
+	if not propInstance then
+		Log.engine("Could not restore prop; instance not in local game manager.")
+		return
+	end
+
+	for _, property in propInstance:iterateProperties() do
+		localGameManager:pushProperty(
+			propInstance:getInterface(),
+			propInstance:getID(),
+			property:getField(),
+			buffer.encode(property:getValue()),
+			true)
+		localGameManager:assignTargetToLastPush(player)
+
+		Log.engine("Restored property '%s'.", property:getField())
+	end
+
+	Log.engine("Restored prop '%s' (%d).", prop:getName(), prop:getID())
 end
 
 function Instance:cleanup()

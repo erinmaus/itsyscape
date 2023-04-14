@@ -46,13 +46,13 @@ function GanymedesStunningStrike:attack(attack)
 
 	local damage = attack:getDamage()
 	if damage > 0 then
-		local currentTick = target:getDirector():getGameInstance():getCurrentTick()
+		local currentTime = target:getDirector():getGameInstance():getCurrentTime()
 		local cooldown = target:getBehavior(AttackCooldownBehavior)
 		if not cooldown then
 			target:addBehavior(AttackCooldownBehavior)
 
 			cooldown = target:getBehavior(AttackCooldownBehavior)
-			cooldown.ticks = currentTick
+			cooldown.ticks = currentTime
 		end
 
 		local baseStun = GanymedesStunningStrike.STUN
