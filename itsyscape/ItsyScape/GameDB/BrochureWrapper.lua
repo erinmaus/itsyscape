@@ -47,33 +47,40 @@ function BrochureWrapper:_pullActions()
 		for requirement in self.brochure:getRequirements(action) do
 			table.insert(requirementConstraints, requirement)
 
-			self.constraints[requirement.id.value] = {
+			local c = self.constraints[requirement.type] or {}
+			c[requirement.id.value] = {
 				constraint = requirement,
 				action = action,
 				resource = self.brochure:getConstraintResource(requirement)
 			}
+
+			self.constraints[requirement.type] = c
 		end
 
 		local inputConstraints = {}
 		for input in self.brochure:getInputs(action) do
 			table.insert(inputConstraints, input)
 
-			self.constraints[input.id.value] = {
+			local c = self.constraints[input.type] or {}
+			c[input.id.value] = {
 				constraint = input,
 				action = action,
 				resource = self.brochure:getConstraintResource(input)
 			}
+			self.constraints[input.type] = c
 		end
 
 		local outputConstraints = {}
 		for output in self.brochure:getOutputs(action) do
 			table.insert(outputConstraints, output)
 
-			self.constraints[output.id.value] = {
+			local c = self.constraints[output.type] or {}
+			c[output.id.value] = {
 				constraint = output,
 				action = action,
 				resource = self.brochure:getConstraintResource(output)
 			}
+			self.constraints[output.type] = c
 		end
 
 		self.actions[action.id.value] = {
@@ -190,7 +197,7 @@ function BrochureWrapper:getActionDefinitionFromAction(action)
 
 		return definition
 	else
-		return false
+		return nil
 	end
 end
 
@@ -263,7 +270,7 @@ function BrochureWrapper:getResourceTypeFromResource(resource)
 
 		return resourceType
 	else
-		return false
+		return nil
 	end
 end
 
@@ -418,7 +425,7 @@ end
 function BrochureWrapper:getConstraintResource(constraint)
 	local resource = Mapp.Resource()
 
-	local r = self.constraints[constraint.id.value]
+	local r = self.constraints[constraint.type][constraint.id.value]
 	if r then
 		resource.id = r.resource.id
 		resource.name = r.resource.name
@@ -431,7 +438,7 @@ end
 function BrochureWrapper:getConstraintAction(constraint)
 	local action = Mapp.Action()
 
-	local r = self.constraints[constraint.id.value]
+	local r = self.constraints[constraint.type][constraint.id.value]
 	if r then
 		action.id = r.action.id
 	end
