@@ -7,8 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local enet = require "enet"
 local buffer = require "string.buffer"
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
 
@@ -19,6 +19,8 @@ function ClientRPCService:new(listenAddress, port)
 	self:connectToServer(listenAddress, port)
 
 	self.pending = {}
+
+	self.onDisconnect = Callback()
 end
 
 function ClientRPCService:connectToServer(listenAddress, port)
@@ -51,6 +53,7 @@ end
 function ClientRPCService:_doDisconnect(clientID)
 	if self.clientID == clientID then
 		Log.info("Client disconnected.")
+		self:onDisconnect(self.clientID)
 		self.clientID = nil
 	else
 		Log.warn("Unknown client (%d) disconnected; current client is %d.", clientID, self.clientID)

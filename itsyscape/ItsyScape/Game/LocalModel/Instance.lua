@@ -470,7 +470,7 @@ function Instance:new(id, filename, stage)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to play music '%s' on track '%s' (layer = %d) to instance %s (%d).",
-				song, track, layer, self:getFilename(), self:getID())
+				Log.stringify(song), track, layer, self:getFilename(), self:getID())
 
 			for i = 1, #self.music do
 				if self.music[i]:getTrack() == track then
@@ -487,7 +487,7 @@ function Instance:new(id, filename, stage)
 		else
 			Log.engine(
 				"Did not play music '%s' on track '%s' (layer = %d) to instance %s (%d); layer not in instance.",
-				song, track, layer, self:getFilename(), self:getID())
+				Log.stringify(song), track, layer, self:getFilename(), self:getID())
 		end
 	end
 	stage.onPlayMusic:register(self._onPlayMusic)
@@ -1442,7 +1442,7 @@ function Instance:loadPlayer(localGameManager, player)
 	end
 
 	Log.engine(
-		"Successfully unloaded instance %s (%d) for player '%s'.",
+		"Successfully loaded instance %s (%d) for player '%s'.",
 		self:getFilename(),
 		self:getID(),
 		(player:getActor() and player:getActor():getName()) or tostring(player:getID()))

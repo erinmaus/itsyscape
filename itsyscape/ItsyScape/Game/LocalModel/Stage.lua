@@ -766,7 +766,7 @@ end
 function LocalStage:removePlayer(player)
 	if not player:getActor() then
 		Log.info("Player (%d) does not have an actor; cannot remove.", player:getID())
-		return
+		return false
 	end
 
 	local peep = player:getActor():getPeep()
@@ -788,12 +788,14 @@ function LocalStage:removePlayer(player)
 		end
 
 		Log.info("Player successfully removed from instance.")
-	else
-		Log.info(
-			"Player '%s' (%d) not in instance %s (%d); no need to remove.",
-			player:getActor():getName(), player:getID(),
-			instance:getFilename(), instance:getID())
+		return true
 	end
+
+	Log.info(
+		"Player '%s' (%d) not in instance %s (%d); no need to remove.",
+		player:getActor():getName(), player:getID(),
+		instance:getFilename(), instance:getID())
+	return false
 end
 
 function LocalStage:movePeep(peep, path, anchor)
