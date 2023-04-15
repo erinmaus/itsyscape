@@ -235,6 +235,12 @@ function love.quit()
 end
 
 function itsyrealm.errorhandler()
+	if not love.graphics then
+		return function()
+			return 1
+		end
+	end
+
 	local logo
 	do
 		local s, v = pcall(love.graphics.newImage, "Resources/Game/TitleScreens/Logo.png")
@@ -260,7 +266,9 @@ function itsyrealm.errorhandler()
 		end
 	end
 
-	love.audio.stop()
+	if love.audio then
+		love.audio.stop()
+	end
 
 	local function draw()
 		love.graphics.setCanvas()

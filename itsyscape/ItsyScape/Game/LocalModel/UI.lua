@@ -9,8 +9,21 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local UI = require "ItsyScape.Game.Model.UI"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 
 local LocalUI = Class(UI)
+
+local UIUpdateDebugStats = Class(DebugStats)
+
+function UIUpdateDebugStats:process(node, ...)
+	node:update(...)
+end
+
+local UIPullDebugStats = Class(DebugStats)
+
+function UIPullDebugStats:process(node, ...)
+	return node:pull(...)
+end
 
 function LocalUI:new(game)
 	UI.new(self)
@@ -19,6 +32,9 @@ function LocalUI:new(game)
 	self.interfaces = {}
 	self.controllers = {}
 	self.blockingInterface = {}
+
+	self.updateDebugStats = UIUpdateDebugStats()
+	self.pullDebugStats = UIPullDebugStats()
 end
 
 function LocalUI:poke(interfaceID, index, actionID, actionIndex, e)
@@ -210,9 +226,20 @@ end
 function LocalUI:update(delta)
 	for id, interfaces in pairs(self.interfaces) do
 		for n, interface in pairs(interfaces.v) do
-			interface:update(delta)
-			self.onPush(self, id, n, interface:pull())
+			self.updateDebugStats:measure(interface, delta)
+			self.onPush(self, id, n, self.pullDebugStats:measure(interface))
 		end
+	end
+end
+
+function LocalUI:quit()
+	for instance in pairs(self.controllers) do
+		self:closeInstance(instance)
+	end
+
+	if _DEBUG then
+		self.updateDebugStats:dumpStatsToCSV("LocalUI_Update")
+		self.pullDebugStats:dumpStatsToCSV("LocalUI_Pull")
 	end
 end
 

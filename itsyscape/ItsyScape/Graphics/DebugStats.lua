@@ -11,10 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 
 local DebugStats = Class()
 
-local GlobalDebugStats = Class(DebugStats)
+DebugStats.GlobalDebugStats = Class(DebugStats)
 
-function GlobalDebugStats:process(node, func, ...)
-	func(...)
+function DebugStats.GlobalDebugStats:process(node, func, ...)
+	return func(...)
 end
 
 function DebugStats:new()
@@ -23,8 +23,7 @@ end
 
 function DebugStats:measure(node, ...)
 	if not _DEBUG then
-		self:process(node, ...)
-		return
+		return self:process(node, ...)
 	end
 
 	local nodeName
@@ -44,12 +43,12 @@ function DebugStats:measure(node, ...)
 		samples = 0 
 	}
 
-	local duration, memory
+	local duration, memory, result
 	do
 		local beforeTime = love.timer.getTime()
 		collectgarbage("stop")
 		local beforeMemory = collectgarbage("count")
-		self:process(node, ...)
+		result = self:process(node, ...)
 		local afterTime = love.timer.getTime()
 		local afterMemory = collectgarbage("count")
 		collectgarbage("restart")
@@ -66,6 +65,8 @@ function DebugStats:measure(node, ...)
 	stat.samples = stat.samples + 1
 
 	self.debugStats[nodeName] = stat
+
+	return result
 end
 
 function DebugStats:process(node, ...)
@@ -74,7 +75,7 @@ end
 
 function DebugStats:dumpStatsToCSV(topic)
 	local suffix = os.date("%Y-%m-%d %H%M%S")
-	local filename = string.format("%s %s.csv", topic, suffix)
+	local filename = string.format("Performance/%s %s.csv", topic, suffix)
 
 	local sortedDebugStats = {}
 	do
@@ -92,7 +93,7 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
-	table.insert(stringifiedStats, "Node, Min Time (secs), Max Time (secs), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (secs), Avg Mem (kb)")
+	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (ms), Avg Mem (kb)")
 
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
@@ -100,19 +101,20 @@ function DebugStats:dumpStatsToCSV(topic)
 		local f = string.format(
 			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f",
 			nodeName,
-			stats.minTime,
-			stats.maxTime,
+			stats.minTime * 1000,
+			stats.maxTime * 1000,
 			stats.minMemory,
 			stats.maxMemory,
 			stats.currentTimeTotal,
 			stats.currentMemoryTotal,
 			stats.samples,
-			stats.currentTimeTotal / stats.samples,
+			(stats.currentTimeTotal / stats.samples) * 1000,
 			stats.currentMemoryTotal / stats.samples)
 		table.insert(stringifiedStats, f)
 	end
 
 	local result = table.concat(stringifiedStats, "\n")
+	love.filesystem.createDirectory("Performance")
 	love.filesystem.write(filename, result)
 
 	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), filename)
@@ -123,6 +125,6 @@ function DebugStats:dumpStatsToCSV(topic)
 	Log.info("Dumped stats for topic '%s' to \"%s\".", topic, url)
 end
 
-DebugStats.GLOBAL = GlobalDebugStats()
+DebugStats.GLOBAL = DebugStats.GlobalDebugStats()
 
 return DebugStats

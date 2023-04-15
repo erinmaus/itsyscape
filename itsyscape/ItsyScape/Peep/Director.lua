@@ -8,7 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Peep = require "ItsyScape.Peep.Peep"
+
+local CortexDebugStats = Class(DebugStats)
+function CortexDebugStats:process(cortex, ...)
+	cortex:update(...)
+end
 
 -- Director type.
 --
@@ -32,6 +38,8 @@ function Director:new(gameDB)
 	self.peepsByLayer = {}
 
 	self.pendingAssignment = {}
+
+	self.cortexDebugStats = CortexDebugStats()
 end
 
 -- Gets the GameDB.
@@ -249,23 +257,35 @@ function Director:update(delta)
 	end
 	self.oldPeeps = {}
 
+	local beforeCortexPreview = love.timer.getTime()
 	for _, cortex in ipairs(self.cortexes) do
 		for peep in pairs(self.pendingPeeps) do
 			cortex:previewPeep(peep)
 		end
 	end
 	self.pendingPeeps = {}
+	local afterCortexPreview = love.timer.getTime()
 
 	for peep in pairs(self.peeps) do
 		peep:preUpdate(self, self:getGameInstance())
 	end
 
+	local beforeCortexUpdate = love.timer.getTime()
 	for _, cortex in pairs(self.cortexes) do
-		cortex:update(delta)
+		self.cortexDebugStats:measure(cortex, delta)
 	end
+	local afterCortexUpdate = love.timer.getTime()
 
+	local beforePeepUpdate = love.timer.getTime()
 	for peep in pairs(self.peeps) do
 		peep:update(self, self:getGameInstance())
+	end
+	local afterPeepUpdate = love.timer.getTime()
+end
+
+function Director:quit()
+	if _DEBUG then
+		self.cortexDebugStats:dumpStatsToCSV("Cortex")
 	end
 end
 
