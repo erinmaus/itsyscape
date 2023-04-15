@@ -80,7 +80,14 @@ function LocalPlayer:spawn(storage, newGame, password)
 		return
 	end
 
+	Log.info("Spawning player (%d).", self:getID())
+
 	local previousLayerName = self.actor and self.actor:getPeep():getLayerName()
+
+	if self.instance then
+		self:onMove(previousLayerName, "::orphan")
+	end
+
 	self:unload()
 
 	self.game:getDirector():setPlayerStorage(self.id, storage)
@@ -204,11 +211,24 @@ function LocalPlayer:onPlayerActionPerformed(_, p)
 end
 
 function LocalPlayer:unload()
-	if self.instance then
-		self.instance:removePlayer(self)
-	end
-
 	if self.actor then
+		local ui = self.game:getUI()
+
+		local pendingInterfaces = {}
+		for interfaceID, interfaceIndex in ui:getInterfacesForPeep(self.actor:getPeep()) do
+			table.insert(pendingInterfaces, { interfaceID, interfaceIndex })
+		end
+
+		for i = 1, #pendingInterfaces do
+			interfaceID, interfaceIndex = unpack(pendingInterfaces[i])
+			Log.info(
+				"Closing interface '%s' (index = %d) for player '%s' (%d).",
+				interfaceID, interfaceIndex, self.actor:getName(), self:getID())
+
+			ui:close(interfaceID, interfaceIndex)
+		end
+
+		self.stage:removePlayer(self)
 		self.stage:killActor(self.actor)
 	end
 

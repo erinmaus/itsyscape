@@ -470,7 +470,7 @@ function Instance:new(id, filename, stage)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Trying to play music '%s' on track '%s' (layer = %d) to instance %s (%d).",
-				song, track, layer, self:getFilename(), self:getID())
+				Log.stringify(song), track, layer, self:getFilename(), self:getID())
 
 			for i = 1, #self.music do
 				if self.music[i]:getTrack() == track then
@@ -487,7 +487,7 @@ function Instance:new(id, filename, stage)
 		else
 			Log.engine(
 				"Did not play music '%s' on track '%s' (layer = %d) to instance %s (%d); layer not in instance.",
-				song, track, layer, self:getFilename(), self:getID())
+				Log.stringify(song), track, layer, self:getFilename(), self:getID())
 		end
 	end
 	stage.onPlayMusic:register(self._onPlayMusic)
@@ -894,7 +894,11 @@ function Instance:addPlayer(player, e)
 			Log.info("No party leader; setting player to party instance.")
 			self:setPartyLeader(player)
 		end
+
+		return true
 	end
+
+	return false
 end
 
 function Instance:removePlayer(player)
@@ -911,13 +915,14 @@ function Instance:removePlayer(player)
 
 			self:_removePlayerFromInstance(player)
 
-			return
+			return true
 		end
 	end
 
 	Log.warn(
 		"Could not remove player '%s' (%d) from instance %s (%d); not in instance.",
 		(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID(), self:getFilename(), self:getID())
+	return false
 end
 
 function Instance:getPartyLeader()
@@ -1437,7 +1442,7 @@ function Instance:loadPlayer(localGameManager, player)
 	end
 
 	Log.engine(
-		"Successfully unloaded instance %s (%d) for player '%s'.",
+		"Successfully loaded instance %s (%d) for player '%s'.",
 		self:getFilename(),
 		self:getID(),
 		(player:getActor() and player:getActor():getName()) or tostring(player:getID()))
