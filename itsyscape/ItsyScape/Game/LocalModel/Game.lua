@@ -16,6 +16,7 @@ local Game = require "ItsyScape.Game.Model.Game"
 local LocalPlayer = require "ItsyScape.Game.LocalModel.Player"
 local LocalStage = require "ItsyScape.Game.LocalModel.Stage"
 local LocalUI = require "ItsyScape.Game.LocalModel.UI"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Party = require "ItsyScape.Game.LocalModel.Party"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
@@ -42,6 +43,8 @@ function LocalGame:new(gameDB, playerSlot)
 	self.parties = {}
 	self.partiesByID = {}
 	self.currentPartyID = 1
+
+	self.debugStats = DebugStats.GlobalDebugStats()
 end
 
 function LocalGame:getGameDB()
@@ -224,9 +227,10 @@ function LocalGame:tick()
 	self.currentTick = love.timer.getTime()
 
 	self.ticks = self.ticks + 1
-	self.stage:tick()
-	self.director:update(self:getDelta())
-	self.ui:update(self:getDelta())
+
+	self.debugStats:measure(self.stage, self.stage.tick, self.stage)
+	self.debugStats:measure(self.director, self.director.update, self.director, self:getDelta())
+	self.debugStats:measure(self.ui, self.ui.update, self.ui, self:getDelta())
 
 	--self.player:updateDiscord()
 	self.discord:tick()
@@ -276,7 +280,14 @@ function LocalGame:quit()
 
 	self:tick()
 
+	self.director:quit()
+	self.ui:quit()
+
 	self.onQuit(self)
+
+	if _DEBUG then
+		self.debugStats:dumpStatsToCSV("LocalGame")
+	end
 
 	Log.info("Quit game.")
 end

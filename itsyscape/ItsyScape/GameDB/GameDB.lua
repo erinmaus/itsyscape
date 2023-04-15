@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Sandbox = require "ItsyScape.Common.Sandbox"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local BrochureWrapper = require "ItsyScape.GameDB.BrochureWrapper"
 
 local GameDB = Class()
 
@@ -117,7 +118,7 @@ function GameDB.create(inputFilename, outputFilename)
 end
 
 function GameDB:new(brochure, definitions)
-	self.brochure = brochure
+	self.brochure = BrochureWrapper(brochure)
 	self.definitions = {}
 
 	for key, value in pairs(definitions) do
@@ -146,7 +147,7 @@ function GameDB:getRecords(name, t, limit)
 		query:set(k, v)
 	end
 
-	return self.brochure:select(definition, query, limit)
+	return self.brochure:select(definition, query, limit, t)
 end
 
 function GameDB:getRecord(name, t)

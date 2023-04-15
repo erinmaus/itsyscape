@@ -245,6 +245,8 @@ while isRunning do
 					end
 				end
 
+				game:quit()
+
 				outputAdminChannel:push({
 					type = 'save',
 					storage = buffer.encode(storage and storage:serialize() or {})

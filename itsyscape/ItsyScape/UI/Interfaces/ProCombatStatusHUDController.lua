@@ -15,6 +15,7 @@ local Spell = require "ItsyScape.Game.Spell"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Controller = require "ItsyScape.UI.Controller"
 local Effect = require "ItsyScape.Peep.Effect"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
@@ -28,6 +29,12 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local ProCombatStatusHUDController = Class(Controller)
+
+local UpdateDebugStats = Class(DebugStats)
+
+function UpdateDebugStats:process(func, node, ...)
+	return node[func](node, ...)
+end
 
 ProCombatStatusHUDController.THINGIES_OFFENSIVE_POWERS = 1
 ProCombatStatusHUDController.THINGIES_DEFENSIVE_POWERS = 2
@@ -49,6 +56,8 @@ function ProCombatStatusHUDController:new(peep, director)
 	self.prayerEffects = {}
 	self.offensivePrayers = {}
 	self.usablePrayers = {}
+
+	self.updateDebugStats = UpdateDebugStats()
 
 	self:update(0)
 end
@@ -896,24 +905,33 @@ function ProCombatStatusHUDController:sendRefresh()
 	ui:sendPoke(self, "refresh", nil, {})
 end
 
+function ProCombatStatusHUDController:close()
+	if _DEBUG then
+		local player = Utility.Peep.getPlayerModel(self:getPeep())
+		if player then
+			self.updateDebugStats:dumpStatsToCSV(string.format("ProCombatStatusHUD_Player%d", player:getID()))
+		end
+	end
+end
+
 function ProCombatStatusHUDController:update(delta)
 	Controller.update(self, delta)
 
-	self:updateStyle()
-	self:updateCastableSpells()
-	self:updateUsablePrayers()
-	self:updateActiveSpell()
+	self.updateDebugStats:measure("updateStyle", self)
+	self.updateDebugStats:measure("updateCastableSpells", self)
+	self.updateDebugStats:measure("updateUsablePrayers", self)
+	self.updateDebugStats:measure("updateActiveSpell", self)
 
 	if self.isDirty then
-		self:updatePowers()
-		self:updateSpells()
-		self:updatePrayers()
+		self.updateDebugStats:measure("updatePowers", self)
+		self.updateDebugStats:measure("updateSpells", self)
+		self.updateDebugStats:measure("updatePrayers", self)
 		self.isDirty = false
 
-		self:sendRefresh()
+		self.updateDebugStats:measure("sendRefresh", self)
 	end
 
-	self:updateState()
+	self.updateDebugStats:measure("updateState", self)
 end
 
 return ProCombatStatusHUDController
