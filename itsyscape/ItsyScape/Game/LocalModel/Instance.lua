@@ -894,7 +894,11 @@ function Instance:addPlayer(player, e)
 			Log.info("No party leader; setting player to party instance.")
 			self:setPartyLeader(player)
 		end
+
+		return true
 	end
+
+	return false
 end
 
 function Instance:removePlayer(player)
@@ -911,13 +915,14 @@ function Instance:removePlayer(player)
 
 			self:_removePlayerFromInstance(player)
 
-			return
+			return true
 		end
 	end
 
 	Log.warn(
 		"Could not remove player '%s' (%d) from instance %s (%d); not in instance.",
 		(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID(), self:getFilename(), self:getID())
+	return false
 end
 
 function Instance:getPartyLeader()

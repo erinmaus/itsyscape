@@ -763,6 +763,39 @@ function LocalStage:buildLayerNameFromInstanceIDAndFilename(id, filename)
 	return string.format("%d@%s", id, filename)
 end
 
+function LocalStage:removePlayer(player)
+	if not player:getActor() then
+		Log.info("Player (%d) does not have an actor; cannot remove.", player:getID())
+		return
+	end
+
+	local peep = player:getActor():getPeep()
+	local instance = self:getPeepInstance(peep)
+	if instance:hasPlayer(player) then
+		Log.info(
+			"Player '%s' (%d) in instance '%s' (%d); removing...",
+			player:getActor():getName(), player:getID(),
+			instance:getFilename(), instance:getID())
+
+		instance:removePlayer(player)
+
+		local hasNoPlayers = not instance:hasPlayers()
+		local noRaid = not instance:hasRaid()
+
+		if hasNoPlayers and noRaid then
+			Log.info("Instance is empty; unloading...")
+			self:unloadInstance(instance)
+		end
+
+		Log.info("Player successfully removed from instance.")
+	else
+		Log.info(
+			"Player '%s' (%d) not in instance %s (%d); no need to remove.",
+			player:getActor():getName(), player:getID(),
+			instance:getFilename(), instance:getID())
+	end
+end
+
 function LocalStage:movePeep(peep, path, anchor)
 	local filename, arguments, instance
 	if type(path) == 'string' then
