@@ -81,6 +81,8 @@ function DemoApplication:new()
 
 	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 	love.mouse.setCursor(self.cursor)
+
+	self:initTitleScreen()
 end
 
 function DemoApplication:changeCamera(_, cameraType)
@@ -158,10 +160,16 @@ function DemoApplication:tryOpenTitleScreen()
 	end
 end
 
+function DemoApplication:initTitleScreen()
+	if not self.titleScreen then
+		self.titleScreen = TitleScreen(self:getGameView())
+		self.titleScreen:load()
+	end
+end
+
 function DemoApplication:openTitleScreen()
 	self:setIsPaused(true)
-	self.titleScreen = TitleScreen(self:getGameView())
-	self.titleScreen:load()
+	self:initTitleScreen()
 
 	local mapName = DemoApplication.TITLE_SCREENS[math.random(#DemoApplication.TITLE_SCREENS)]
 
