@@ -343,6 +343,17 @@ function Application:swapRPCService(RPCServiceType, ...)
 
 	self.rpcService = RPCServiceType(...)
 	self.remoteGameManager:swapRPCService(self.rpcService)
+
+	if Class.isCompatibleType(self.rpcService, ClientRPCService) then
+		self.rpcService.onDisconnect:register(function()
+			Log.info("Disconnected from server! Oh no!")
+
+			self.gameView:reset()
+			self.uiView:reset()
+
+			self:disconnect()
+		end)
+	end
 end
 
 function Application:host(port, password)
@@ -385,29 +396,29 @@ end
 function Application:disconnect()
 	Log.info("Switching to single player.")
 
-	local playMode = self:getPlayMode()
-	if playMode == Application.PLAY_MODE_MULTIPLAYER_HOST then
+	local oldPlayMode = self:getPlayMode()
+	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
+
+	if oldPlayMode == Application.PLAY_MODE_MULTIPLAYER_HOST then
 		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 
 		Log.info("Switching from multiplayer (host).")
 		self.inputAdminChannel:push({
 			type = 'disconnect'
 		})
-	elseif playMode == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
+	elseif oldPlayMode == Application.PLAY_MODE_MULTIPLAYER_CLIENT then
 		self:swapRPCService(ChannelRPCService, self.outputChannel, self.inputChannel)
 
 		Log.info("Switching from multiplayer (client).")
 		self.inputAdminChannel:push({
 			type = 'offline'
 		})
-	elseif playMode == Application.PLAY_MODE_SINGLE_PLAYER then
+	elseif oldPlayMode == Application.PLAY_MODE_SINGLE_PLAYER then
 		Log.info("Staying on single player.")
 		self.inputAdminChannel:push({
 			type = 'play'
 		})
 	end
-
-	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 end
 
 function Application:setAdmin(playerID)

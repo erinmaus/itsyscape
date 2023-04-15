@@ -150,6 +150,7 @@ function GameView:attach(game)
 	stage.onActorSpawned:register(self._onActorSpawned)
 
 	self._onActorKilled = function(_, actor)
+		Log.info("Poofing actor '%s' (%s).", actor and actor:getName(), actor and actor:getPeepID())
 		self:removeActor(actor)
 	end
 	stage.onActorKilled:register(self._onActorKilled)
@@ -161,6 +162,7 @@ function GameView:attach(game)
 	stage.onPropPlaced:register(self._onPropPlaced)
 
 	self._onPropRemoved = function(_, prop)
+		Log.info("Removing prop '%s' (%s).", prop and prop:getName(), prop and prop:getPeepID())
 		self:removeProp(prop)
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
@@ -243,52 +245,66 @@ function GameView:attach(game)
 end
 
 function GameView:reset()
+	Log.info("Resetting game view...")
+
 	for _, actor in pairs(self.actors) do
+		Log.info("Poofing actor '%s' (%s).", actor:getActor():getName(), actor:getActor():getPeepID())
 		actor:release()
 	end
 	table.clear(self.actors)
 
 	for _, prop in pairs(self.props) do
+		Log.info("Removing prop '%s' (%s).", prop:getProp():getName(), prop:getProp():getPeepID())
 		prop:remove()
 	end
 	table.clear(self.props)
 
 	for layer in pairs(self.mapMeshes) do
+		Log.info("Clearing map from layer %d.", layer)
 		self:removeMap(layer)
 	end
 
 	for _, itemNode in pairs(self.items) do
+		Log.info("Removing item.")
 		itemNode:setParent(nil)
 	end
 	table.clear(self.items)
 
 	for _, decoration in pairs(self.decorations) do
+		Log.info("Removing decoration '%s'.", decoration.name)
+
 		if decoration.sceneNode then
 			decoration.sceneNode:setParent(nil)
 		end
 	end
 	table.clear(self.decorations)
 
-	for _, water in pairs(self.water) do
+	for key, water in pairs(self.water) do
+		Log.info("Water '%s' draining.", key)
 		water:setParent(nil)
 	end
 	table.clear(self.water)
 
-	for _, weather in pairs(self.weather) do
+	for key, weather in pairs(self.weather) do
+		Log.info("Removing weather '%s'.", key)
 		weather:remove()
 	end
 	table.clear(self.weather)
 
 	for projectile in ipairs(self.projectiles) do
+		Log.info("Poofing projectile '%s'.", projectile:getDebugInfo().shortName)
 		projectile:poof()
 	end
 	table.clear(self.projectiles)
 
 	for track in ipairs(self.music) do
+		Log.info("Stopping music on track '%s'.", track)
 		self:playMusic(track, false)
 	end
 
 	self.spriteManager:clear()
+
+	Log.info("Reset game view.")
 end
 
 function GameView:release()
