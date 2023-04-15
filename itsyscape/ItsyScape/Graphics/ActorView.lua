@@ -205,6 +205,10 @@ function ActorView:new(actor, actorID)
 	self.sprites = setmetatable({}, { __mode = 'k' })
 end
 
+function ActorView:getActor()
+	return self.actor
+end
+
 function ActorView:attach(game)
 	self.game = game
 end

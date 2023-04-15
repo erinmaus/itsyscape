@@ -80,7 +80,14 @@ function LocalPlayer:spawn(storage, newGame, password)
 		return
 	end
 
+	Log.info("Spawning player (%d).", self:getID())
+
 	local previousLayerName = self.actor and self.actor:getPeep():getLayerName()
+
+	if self.instance then
+		self:onMove(previousLayerName, "::orphan")
+	end
+
 	self:unload()
 
 	self.game:getDirector():setPlayerStorage(self.id, storage)

@@ -768,6 +768,10 @@ function UIView:draw()
 	DebugStats.GLOBAL:measure("itsyrealm.graphics.stop()", itsyrealm.graphics.stop)
 end
 
+function UIView:reset()
+	self.root:clearChildren()
+end
+
 function UIView:getMode()
 	return love.graphics.getScaledMode()
 end
