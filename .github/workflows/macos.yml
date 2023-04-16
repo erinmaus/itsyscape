@@ -5,6 +5,7 @@ on:
     branches:
       - 'master'
       - '**-ci'
+  workflow_dispatch: null
 
 jobs:
   macos:
