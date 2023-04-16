@@ -153,6 +153,8 @@ function CharacterCustomization:new(id, index, ui)
 	}, ui:getResources()))
 	self:addChild(self.panel)
 
+	self.inputs = {}
+
 	local mainLayout = GridLayout()
 	do
 		local minWidth = CharacterCustomization.CUSTOMIZATION_WIDTH + CharacterCustomization.INFO_WIDTH * 2
@@ -276,14 +278,21 @@ function CharacterCustomization:new(id, index, ui)
 		local nameInput = TextInput()
 		nameInput:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
 		nameInput:setText(state.name)
-		nameInput.onValueChanged:register(function()
-			self:changeName(nameInput.text)
-		end)
 		nameInput.onFocus:register(function()
 			nameInput:setCursor(0, #nameInput:getText() + 1)
 		end)
+		nameInput.onValueChanged:register(function()
+			self:changeName(nameInput:getText())
+		end)
+		nameInput.onBlur:register(function()
+			self:changeName(nameInput:getText())
+		end)
+		nameInput.onSubmit:register(function()
+			self:changeName(nameInput:getText())
+		end)
 		nameInput:setSize(INPUT_WIDTH, INPUT_HEIGHT)
 		basic:addChild(nameInput)
+		table.insert(self.inputs, nameInput)
 
 		local genderLabel = Label()
 		genderLabel:setText("Gender:")
@@ -337,7 +346,13 @@ function CharacterCustomization:new(id, index, ui)
 		descriptionInput:setText(state.description)
 		descriptionInput:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
 		descriptionInput.onValueChanged:register(function()
-			self:changeGenderDescription(descriptionInput.text)
+			self:changeGenderDescription(descriptionInput:getText())
+		end)
+		descriptionInput.onBlur:register(function()
+			self:changeGenderDescription(descriptionInput:getText())
+		end)
+		descriptionInput.onSubmit:register(function()
+			self:changeGenderDescription(descriptionInput:getText())
 		end)
 		descriptionInput.onFocus:register(function()
 			descriptionInput:setCursor(0, #descriptionInput:getText() + 1)
@@ -347,6 +362,7 @@ function CharacterCustomization:new(id, index, ui)
 			descriptionInput:setText(newValue)
 		end)
 		basic:addChild(descriptionInput)
+		table.insert(self.inputs, descriptionInput)
 
 		panel:addChild(basic)
 		mainLayout:addChild(panel)
@@ -388,7 +404,13 @@ function CharacterCustomization:new(id, index, ui)
 			input:setStyle(TextInputStyle(CharacterCustomization.TEXT_INPUT_STYLE, ui:getResources()))
 			input:setText(state.pronouns[key])
 			input.onValueChanged:register(function()
-				self:changePronoun(key, input.text)
+				self:changePronoun(key, input:getText())
+			end)
+			input.onBlur:register(function()
+				self:changePronoun(key, input:getText())
+			end)
+			input.onSubmit:register(function()
+				self:changePronoun(key, input:getText())
 			end)
 			input.onFocus:register(function()
 				input:setCursor(0, #input:getText() + 1)
@@ -397,6 +419,7 @@ function CharacterCustomization:new(id, index, ui)
 				input:setText(newValue[key])
 			end)
 			grid:addChild(input)
+			table.insert(self.inputs, input)
 		end
 
 		addPronoun("Subject", "subject")
@@ -496,6 +519,7 @@ function CharacterCustomization:new(id, index, ui)
 			panelWidth - CharacterCustomization.CONFIRM_BUTTON_WIDTH,
 			panelHeight - CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
 		confirmButton.onClick:register(function()
+			self:submitTextInputs()
 			self:sendPoke("close", nil, {})
 		end)
 		panel:addChild(confirmButton)
@@ -509,6 +533,7 @@ function CharacterCustomization:new(id, index, ui)
 	self.closeButton:setPosition(w - CharacterCustomization.BUTTON_SIZE, 0)
 	self.closeButton:setText("X")
 	self.closeButton.onClick:register(function()
+		self:submitTextInputs()
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
@@ -523,6 +548,12 @@ function CharacterCustomization:getIsFullscreen()
 	return true
 end
 
+function CharacterCustomization:submitTextInputs()
+	for i = 1, #self.inputs do
+		self.inputs[i]:onSubmit(self.inputs[i]:getText())
+	end
+end
+
 function CharacterCustomization:update(...)
 	Interface.update(self, ...)
 
@@ -533,6 +564,7 @@ function CharacterCustomization:update(...)
 	end
 
 	self:updatePeep()
+	self:refreshDialog()
 end
 
 function CharacterCustomization:updatePeep()
@@ -583,7 +615,6 @@ function CharacterCustomization:updateGender(state)
 	self.onChangeGenderDescription(state.description)
 	self.onChangeGenderPronouns(state.pronouns)
 	self.onChangeGenderPlurality(state.pronouns.plural)
-	self:refreshDialog()
 end
 
 function CharacterCustomization:previousWardrobe(slot)
@@ -604,32 +635,37 @@ end
 
 function CharacterCustomization:changeGender(value)
 	self:sendPoke("changeGender", nil, {
-		gender = value
+		gender = value,
+		refresh = false
 	})
 end
 
 function CharacterCustomization:changeGenderDescription(value)
 	self:sendPoke("changeGenderDescription", nil, {
-		description = value
+		description = value,
+		refresh = false
 	})
 end
 
 function CharacterCustomization:changePronoun(index, value)
 	self:sendPoke("changePronoun", nil, {
 		index = index,
-		value = value
+		value = value,
+		refresh = false
 	})
 end
 
 function CharacterCustomization:changePronounPlurality(value)
 	self:sendPoke("changePronounPlurality", nil, {
-		value = value
+		value = value,
+		refresh = true
 	})
 end
 
 function CharacterCustomization:changeName(value)
 	self:sendPoke("changeName", nil, {
-		name = value
+		name = value,
+		refresh = false
 	})
 end
 
