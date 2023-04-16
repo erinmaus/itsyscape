@@ -481,6 +481,16 @@ function BrochureWrapper:select(definition, query, limit, prompt)
 		end
 	end
 
+	if result then
+		-- Shallow clone.
+		local r = {}
+		for i = 1, #result do
+			r[i] = result[i]
+		end
+
+		result = r
+	end
+
 	return result or self.brochure:select(definition, query, limit)
 end
 

@@ -142,15 +142,18 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 	-- 	end
 	-- elseif key == 'backspace' then
 	if key == 'backspace' then
-		self.cursorIndex = self.cursorIndex - 1
-		if self.cursorIndex == 0 then
+		self.cursorIndex = math.max(self.cursorIndex - 1, 0)
+		if self.cursorIndex == 0 and self.cursorLength == #self:getText() then
+			self:setText("")
+			self.cursorLength = 0
+		elseif self.cursorIndex == 0 then
 			self.cursorIndex = 0
 			self:setText("")
 		else
 			self:setText(self:_subText(1, self:_getTextLength() - 1))
 		end
 
-		self.onValueChanged(self, self.text)
+		self.onValueChanged(self, self:getText())
 
 		-- if self.cursorIndex + self.cursorLength == self:_getTextLength() and
 		--    self:_getTextLength() > 0
@@ -208,9 +211,15 @@ function TextInput:type(text, ...)
 	-- self.text = self:_subText(1, self:getLeftCursor()) ..
 	--             text ..
 	--             self:_subText(self:getRightCursor() + 1)
-	self.text = self.text .. text
+	if self.cursorIndex == 0 and self.cursorLength == #self.text then
+		self.text = text
+	else
+		self.text = self.text .. text
+	end
+
 	self.onValueChanged(self, self.text)
-	self:setCursor(self:getLeftCursor() + 1, 0)
+	self.cursorIndex = #self.text
+	self.cursorLength = 0
 
 	Widget.type(self, text, ...)
 end
