@@ -23,8 +23,6 @@ _ARGS = {}
 _ANALYTICS = false
 _ANALYTICS_KEY = false
 
-math.randomseed(os.time())
-
 function love.load(args)
 	local main
 
