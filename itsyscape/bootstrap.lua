@@ -11,6 +11,8 @@ require "love.system"
 require "love.thread"
 require "love.timer"
 
+math.randomseed(os.time())
+
 _MOBILE = false
 
 do

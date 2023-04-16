@@ -367,11 +367,13 @@ function CharacterCustomizationController:changeGenderDescription(e)
 		gender:save(peep)
 	end
 
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateGender",
-		nil,
-		{ self:pull() })
+	if e.refresh then
+		self:getDirector():getGameInstance():getUI():sendPoke(
+			self,
+			"updateGender",
+			nil,
+			{ self:pull() })
+	end
 end
 
 function CharacterCustomizationController:changePronoun(e)
@@ -389,11 +391,13 @@ function CharacterCustomizationController:changePronoun(e)
 		gender:save(peep)
 	end
 
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateGender",
-		nil,
-		{ self:pull() })
+	if e.refresh then
+		self:getDirector():getGameInstance():getUI():sendPoke(
+			self,
+			"updateGender",
+			nil,
+			{ self:pull() })
+	end
 end
 
 function CharacterCustomizationController:changePronounPlurality(e)
@@ -405,11 +409,13 @@ function CharacterCustomizationController:changePronounPlurality(e)
 		gender.pronounsPlural = e.value
 	end
 
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateGender",
-		nil,
-		{ self:pull() })
+	if e.refresh then
+		self:getDirector():getGameInstance():getUI():sendPoke(
+			self,
+			"updateGender",
+			nil,
+			{ self:pull() })
+	end
 end
 
 function CharacterCustomizationController:pull()

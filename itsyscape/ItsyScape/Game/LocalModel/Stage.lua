@@ -1436,14 +1436,6 @@ function LocalStage:updateMapPositions()
 					          currentTransform.origin ~= origin or
 					          currentTransform.offset ~= offset or
 					          currentTransform.disabled ~= disabled
-					if didMove then
-						print(currentTransform.position ~= position,
-					          currentTransform.rotation ~= rotation,
-					          currentTransform.scale ~= scale,
-					          currentTransform.origin ~= origin,
-					          currentTransform.offset ~= offset,
-					          currentTransform.disabled ~= disabled)
-					end
 				else
 					didMove = true
 				end
