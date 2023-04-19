@@ -116,7 +116,7 @@ do
 		PositionX = 37,
 		PositionY = 4,
 		PositionZ = 29,
-		Direction = 1,
+		Direction = -1,
 		Name = "GeneralStoreOwner",
 		Map = M._MAP,
 		Resource = M["GeneralStoreOwner"]
@@ -152,7 +152,7 @@ do
 		PositionX = 43,
 		PositionY = 4,
 		PositionZ = 43,
-		Direction = 1,
+		Direction = -1,
 		Name = "Bartender",
 		Map = M._MAP,
 		Resource = M["Bartender"]
