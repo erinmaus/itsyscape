@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Peeps/Goblin.lua
+-- Resources/Game/DB/Maps/Rumbridge/Rumbridge_Town.lua
 --
 -- This file is a part of ItsyScape.
 --
