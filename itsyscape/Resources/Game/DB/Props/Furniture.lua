@@ -471,6 +471,32 @@ ItsyScape.Meta.MapObjectSize {
 	MapObject = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
 }
 
+ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Stairs",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Elegant staircase for an elegant time.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 5.5,
+	SizeY = 8,
+	SizeZ = 9.5,
+	MapObject = ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
+}
+
 ItsyScape.Resource.Prop "ComfyChair_Default" {
 	-- Nothing.
 }
@@ -525,6 +551,34 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "...are there blue cows that give blue cowhide to make blue leather?",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
+}
+
+ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chair",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Just sit back and let the worries of the big city pass you by.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue"
 }
 
 ItsyScape.Resource.Prop "Chair_Default" {

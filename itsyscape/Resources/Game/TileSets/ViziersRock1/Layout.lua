@@ -52,7 +52,8 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "stone_dirty"
+		name = "stone_dirty",
+		mask = false
 	},
 
 	{
@@ -60,7 +61,8 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "wood"
+		name = "wood",
+		mask = false
 	},
 
 	{
@@ -77,5 +79,13 @@
 		width = 128,
 		height = 128,
 		name = "mud"
+	},
+
+	{
+		x = 256,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "stone_dirty_mask"
 	}
 }
