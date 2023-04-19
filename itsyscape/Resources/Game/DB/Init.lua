@@ -985,6 +985,7 @@ include "Resources/Game/DB/Shops/GeneralStore.lua"
 include "Resources/Game/DB/Shops/FishingStore.lua"
 include "Resources/Game/DB/Shops/Alchemist.lua"
 include "Resources/Game/DB/Shops/Butcher.lua"
+include "Resources/Game/DB/Shops/Crafter.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
@@ -1054,6 +1055,7 @@ include "Resources/Game/DB/Sailing/RandomEvents.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
+include "Resources/Game/DB/Maps/ViziersRock.lua"
 include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Maps/Sailing.lua"

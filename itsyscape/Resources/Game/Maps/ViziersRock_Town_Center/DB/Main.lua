@@ -128,6 +128,42 @@ do
 	}
 end
 
+M["Steve"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 4,
+		PositionZ = 31,
+		Direction = 1,
+		Name = "Steve",
+		Map = M._MAP,
+		Resource = M["Steve"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Crafter_Steve",
+		MapObject = M["Steve"]
+	}
+end
+
+M["Bartender"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 43,
+		Direction = 1,
+		Name = "Bartender",
+		Map = M._MAP,
+		Resource = M["Bartender"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Bartender_Robert",
+		MapObject = M["Bartender"]
+	}
+end
+
 M["Banker"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
