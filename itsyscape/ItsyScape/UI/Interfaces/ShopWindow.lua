@@ -107,6 +107,7 @@ function ShopWindow:new(id, index, ui)
 	self.sellGrid:setPosition(0, ShopWindow.TAB_SIZE + ShopWindow.PADDING * 2)
 
 	self.buyGrid = ScrollablePanel(GridLayout)
+	self.buyGrid:getInnerPanel():setWrapContents(true)
 	self.buyGrid:getInnerPanel():setUniformSize(
 		true,
 		ShopWindow.BUTTON_SIZE + ShopWindow.BUTTON_PADDING * 2,
@@ -243,6 +244,17 @@ function ShopWindow:update(...)
 					self.buyGrid:addChild(button)
 				end
 			end
+		end
+
+		self.buyGrid:setScrollSize(self.buyGrid:getInnerPanel():getSize())
+		do
+			local sw, sh = self.buyGrid:getScrollSize()
+			local w, h = self.buyGrid:getSize()
+			local sx, sy = self.buyGrid:getInnerPanel():getScroll()
+			self.buyGrid:getInnerPanel():setScroll(
+				math.min(sw - w, sx),
+				math.min(sh - h, sy))
+			self.buyGrid:performLayout()
 		end
 
 		self.ready = true
