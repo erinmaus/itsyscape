@@ -120,8 +120,8 @@ end
 -- Returns property if set, or 'defaultValue' if unset.
 function TileSet:getTileProperty(index, key, defaultValue)
 	local tile = self.tiles[index]
-	if tile then
-		return tile[key] or defaultValue
+	if tile and tile[key] ~= nil then
+		return tile[key]
 	else
 		return defaultValue
 	end

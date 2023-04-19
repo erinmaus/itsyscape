@@ -29,9 +29,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 200,
+		ColorRed = 55,
 		ColorGreen = 55,
-		ColorBlue = 55,
+		ColorBlue = 200,
 		Resource = M["Light_Ambient"]
 	}
 
@@ -113,7 +113,7 @@ end
 M["GeneralStoreOwner"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 39,
+		PositionX = 37,
 		PositionY = 4,
 		PositionZ = 29,
 		Direction = 1,
@@ -144,3 +144,11 @@ do
 		MapObject = M["Banker"]
 	}
 end
+
+M["BankChest1"] {
+	ItsyScape.Action.Bank()
+}
+
+M["BankChest2"] {
+	ItsyScape.Action.Bank()
+}
