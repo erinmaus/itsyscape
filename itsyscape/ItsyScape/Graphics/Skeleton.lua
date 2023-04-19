@@ -238,7 +238,9 @@ function Skeleton:loadFromTable(t)
 	end
 
 	local function buildChildren(bone)
-		for key, value in pairs(bones) do
+		for _, key in ipairs(sortedBoneNames) do
+			local value = bones[key]
+
 			if value.parent == bone.name then
 				local child = bones[key]
 				table.insert(bone.children, child)
