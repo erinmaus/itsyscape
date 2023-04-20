@@ -60,7 +60,7 @@ do
 	local CastAction = ItsyScape.Action.Cast() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(1)
+			Count = ItsyScape.Utility.xpForLevel(25)
 		},
 
 		Requirement {
