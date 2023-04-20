@@ -309,6 +309,8 @@ end
 
 function PlayerSelect:newPlayer(player)
 	local game = self.application:getGame()
+	local player = game:getPlayer()
+
 	local filename
 	do
 		local index = 1
@@ -326,7 +328,7 @@ function PlayerSelect:newPlayer(player)
 	storage:getRoot():set("filename", filename)
 
 	self.application:setPlayerFilename(filename)
-	game:getPlayer():spawn(storage, true, self.application:getPassword())
+	player:spawn(storage, true, self.application:getPassword())
 
 	self.application:closeTitleScreen()
 
