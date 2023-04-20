@@ -211,7 +211,16 @@ function Skeleton:loadFromTable(t)
 	local bones = {}
 	local root
 
+	local sortedBoneNames = {}
 	for name, value in pairs(t) do
+		table.insert(sortedBoneNames, name)
+	end
+
+	table.sort(sortedBoneNames)
+
+	for _, name in ipairs(sortedBoneNames) do
+		local value = t[name]
+
 		local bone = {}
 		bone.name = name
 		bone.parent = value.parent
@@ -229,7 +238,9 @@ function Skeleton:loadFromTable(t)
 	end
 
 	local function buildChildren(bone)
-		for key, value in pairs(bones) do
+		for _, key in ipairs(sortedBoneNames) do
+			local value = bones[key]
+
 			if value.parent == bone.name then
 				local child = bones[key]
 				table.insert(bone.children, child)
