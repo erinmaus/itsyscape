@@ -170,6 +170,7 @@ end
 function DemoApplication:openTitleScreen()
 	self:setIsPaused(true)
 	self:initTitleScreen()
+	self.titleScreen:setIsApplicationReady(true)
 
 	local mapName = DemoApplication.TITLE_SCREENS[math.random(#DemoApplication.TITLE_SCREENS)]
 
