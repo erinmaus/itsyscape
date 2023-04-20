@@ -56,3 +56,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Crafter_Steve"
 }
+
+ItsyScape.Resource.Prop "StreetLamp_ViziersRock" {
+	-- None.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Street lamp",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Is it powered by gas or magic?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 8,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
+}
