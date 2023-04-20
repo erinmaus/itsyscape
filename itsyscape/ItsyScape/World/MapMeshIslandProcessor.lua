@@ -25,7 +25,7 @@ function MapMeshIslandProcessor:new(map, tileSet, i, j)
 	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
 	self.currentIslandID = 1
 
-	self:_process(i or 1, j or 1)
+	self:_process(i or math.ceil(self.map:getWidth() / 2), j or math.ceil(self.map:getHeight() / 2))
 end
 
 function MapMeshIslandProcessor:_getTileIndex(i, j)

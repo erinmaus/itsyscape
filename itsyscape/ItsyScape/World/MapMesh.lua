@@ -84,7 +84,12 @@ function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)
 		tileSet = self.tileSet
 	end
 
-	return (tileSet and tileSet:getTileProperty(tileIndex, property, defaultValue)) or defaultValue
+	local value = tileSet and tileSet:getTileProperty(tileIndex, property, defaultValue)
+	if value == nil then
+		return defaultValue
+	end
+
+	return value
 end
 
 function MapMesh:_getTileLayer(tileSetID)
@@ -112,6 +117,12 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 
 	if currentTile.tileSetID == otherTile.tileSetID and currentTile.flat == otherTile.flat then
 		return false, "same tileset/flat"
+	end
+
+	if self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "mask") == false or
+	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "mask") == false
+	then
+		return false, "data stops masking"
 	end
 
 	if currentI ~= otherI and currentJ ~= otherJ then

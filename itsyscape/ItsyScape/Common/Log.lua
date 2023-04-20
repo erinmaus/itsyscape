@@ -22,7 +22,7 @@ function Log.sendError(message, targetStack)
 
 	targetStack = targetStack + 1
 
-	local MAX_LENGTH = 512
+	local MAX_LENGTH = 2048
 
 	if debug.getinfo(targetStack) and debug.getinfo(targetStack).func == error then
 		targetStack = targetStack + 1

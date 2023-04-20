@@ -14,9 +14,7 @@ local Class = require "ItsyScape.Common.Class"
 -- some extra functionality to smooth things over.
 local Callback, Metatable = Class()
 
-Callback.DEFAULT_ERROR_HANDLER = function(message)
-	error(message)
-end
+Callback.DEFAULT_ERROR_HANDLER = error
 
 -- Binds arguments to a function via the callback mechanism and returns it.
 function Callback.bind(func, ...)
@@ -29,7 +27,7 @@ end
 -- Creates a new, empty Callback.
 function Callback:new()
 	self.handlers = {}
-	self.errorHandler = Callback.DEFAULT_ERROR_HANDLER
+	self.errorHandler = nil
 	self.yield = false
 	self.index = 1
 end
@@ -83,7 +81,11 @@ function Callback:invoke(...)
 			end
 		end
 
-		process(xpcall(callHandler, debug.traceback))
+		if self.errorHandler then
+			process(xpcall(callHandler, debug.traceback))
+		else
+			process(true, callHandler())
+		end
 
 		if not continue then
 			break
