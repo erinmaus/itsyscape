@@ -29,6 +29,7 @@ function TitleScreen:new(gameView, id)
 	self.logoTime = 0
 	self.opaqueTime = 0
 	self.showLogo = true
+	self.isApplicationReady = false
 
 	self:load()
 end
@@ -41,10 +42,19 @@ function TitleScreen:getResources()
 	return self.resources
 end
 
+function TitleScreen:setIsApplicationReady(value)
+	self.isApplicationReady = value
+end
+
+function TitleScreen:getIsApplicationReady()
+	return self.isApplicationReady
+end
+
 function TitleScreen:isReady()
 	local isTranslucent = self.opaqueTime > TitleScreen.FADE_IN_DURATION_SECONDS
 	local isResourceQueueEmpty = not self.resources:getIsPending()
-	return isTranslucent and isResourceQueueEmpty
+	local isApplicationReady = self.isApplicationReady
+	return isApplicationReady and isTranslucent and isResourceQueueEmpty
 end
 
 function TitleScreen:load()
@@ -57,7 +67,7 @@ function TitleScreen:load()
 end
 
 function TitleScreen:update(delta)
-	if not self.resources:getIsPending() then
+	if not self.resources:getIsPending() and self.isApplicationReady then
 		self.logoTime = self.logoTime + delta
 		self.opaqueTime = self.opaqueTime + delta
 	end
