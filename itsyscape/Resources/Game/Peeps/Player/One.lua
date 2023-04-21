@@ -358,6 +358,7 @@ function One:onDie(p)
 
 	self:interruptUI()
 
+	Utility.UI.openInterface(self, "GenericNotification", false, "Oh no, you died! You'll respawn at the last place you slept.")
 	Utility.save(self, false, true, "Aaah!")
 
 	self.deadTimer = 5
