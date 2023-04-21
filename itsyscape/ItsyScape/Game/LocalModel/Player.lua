@@ -389,6 +389,11 @@ function LocalPlayer:move(x, z)
 		movement.isStopping = true
 	else
 		if peep:getCommandQueue():clear() then
+			local targetTile = peep:getBehavior(TargetTileBehavior)
+			if targetTile and targetTile.pathNode then
+				targetTile.pathNode:interrupt(peep)
+			end
+
 			movement.velocity = movement.maxSpeed * direction
 			movement.isStopping = false
 
