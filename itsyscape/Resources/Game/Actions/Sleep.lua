@@ -20,6 +20,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
 
 local Sleep = Class(Action)
 Sleep.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -49,7 +50,8 @@ function Sleep:perform(state, player, target)
 		if walk then
 			local save = CallbackCommand(self.save, self, player)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, save, poof, perform, wait)
+			local notification = OpenInterfaceCommand("GenericNotification", false, "Game saved! You will respawn here upon death.")
+			local command = CompositeCommand(true, walk, save, poof, perform, notification, wait)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
@@ -95,6 +97,31 @@ function Sleep:dream(player)
 	else
 		Log.info("No pending dreams.")
 	end
+end
+
+function Sleep:getFailureReason(state, player, ...)
+	local reason = Action.getFailureReason(self, state, player)
+
+	local actor = player:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	local director = player:getDirector()
+	local peeps = director:probe(player:getLayerName(), function(p)
+		local combatTarget = p:getBehavior(CombatTargetBehavior)
+		return combatTarget and combatTarget.actor == actor
+	end)
+
+	if #peeps >= 1 then
+		table.insert(reason.requirements, {
+			type = "KeyItem",
+			resource = "Message_CannotSleepWhileUnderAttack",
+			name = "Cannot sleep",
+			description = "Cannot sleep while under attack!",
+			count = 1
+		})
+	end
+
+	return reason
 end
 
 return Sleep

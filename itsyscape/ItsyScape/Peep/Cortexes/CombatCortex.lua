@@ -256,6 +256,7 @@ function CombatCortex:update(delta)
 								peep:poke('targetFled', { target = target, distance = distanceToTarget })
 							else
 								local hasTarget = peep:hasBehavior(TargetTileBehavior)
+								local isWalking = true
 
 								local function isPending()
 									local s, t = Utility.Peep.getTile(target)
@@ -270,12 +271,17 @@ function CombatCortex:update(delta)
 								end
 
 								walk.onCanceled:register(function()
+									isWalking = false
+									self.walking[peep] = nil
+
 									if not isPending() then
 										self.pendingResume[peep] = target
 									end
 								end)
 								local callback = CallbackCommand(self.resume, self, peep, target)
-								local c = CompositeCommand(isPending, walk, callback)
+								local c = CompositeCommand(function()
+									return isPending() and isWalking
+								end, walk, callback)
 
 								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
 
