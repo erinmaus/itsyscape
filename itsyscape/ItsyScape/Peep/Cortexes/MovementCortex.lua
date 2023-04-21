@@ -36,6 +36,10 @@ MovementCortex.OFFSETS = {
 
 MovementCortex.BUFFER = 0.01
 
+-- Until we have pathfinding that takes into account a peep's size,
+-- we need to clamp them to roughly a tile (with some wiggle room to make imperfect movement easier)
+MovementCortex.PEEP_SIZE = Vector(1.5)
+
 function MovementCortex:new()
 	Cortex.new(self)
 
@@ -104,7 +108,7 @@ function MovementCortex:addPeepToWorld(layer, peep)
 		w.peeps[peep] = true
 
 		local position = Utility.Peep.getPosition(peep)
-		local size = Utility.Peep.getSize(peep)
+		local size = MovementCortex.PEEP_SIZE
 		w.world:add(peep, position.x - size.x / 2, position.z - size.z / 2, size.x, size.z)
 	end
 end
@@ -306,7 +310,7 @@ function MovementCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
-		local size = Utility.Peep.getSize(peep)
+		local size = MovementCortex.PEEP_SIZE
 		local halfSize = size / 2
 		local layer = Utility.Peep.getLayer(peep)
 		local map = self:getDirector():getMap(layer)
