@@ -22,7 +22,7 @@ function BaseRat:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Rat_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2.5, 4, 2.5)
+	size.size = Vector(2, 2.5, 2)
 end
 
 function BaseRat:ready(director, game)
