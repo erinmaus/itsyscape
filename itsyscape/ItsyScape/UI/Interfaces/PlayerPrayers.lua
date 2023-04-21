@@ -10,6 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Widget = require "ItsyScape.UI.Widget"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -138,6 +139,23 @@ function PlayerPrayers:togglePrayer(button)
 	local prayer = prayers[index]
 	if prayer then
 		self:sendPoke("toggle", nil, { prayer = prayer.id })
+	end
+end
+
+function PlayerPrayers:update(...)
+	PlayerTab.update(self, ...)
+
+	local state = self:getState()
+	for i = 1, #state.prayers do
+		local prayer = state.prayers[i]
+		local button = self.buttons[i]
+		local icon = button:getData("icon")
+
+		if prayer.isActive then
+			icon:setColor(Color(1))
+		else
+			icon:setColor(Color(0.3))
+		end
 	end
 end
 

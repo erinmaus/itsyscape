@@ -1889,15 +1889,26 @@ function ProCombatStatusHUD:update(delta)
 	Interface.update(self, delta)
 
 	local state = self:getState()
-	for i = 1, #state.combatants do
-		local stateCombatant = state.combatants[i]
-		local targetWidget = self.targetWidgets[stateCombatant.actorID]
-		if not targetWidget then
-			self:addTarget(stateCombatant)
-			targetWidget = self.targetWidgets[stateCombatant.actorID]
-		end
+	if #state.combatants > 1 or (#state.combatants == 1 and self.isRadialMenuOpen) then
+		for i = 1, #state.combatants do
+			local stateCombatant = state.combatants[i]
+			local targetWidget = self.targetWidgets[stateCombatant.actorID]
+			if not targetWidget then
+				self:addTarget(stateCombatant)
+				targetWidget = self.targetWidgets[stateCombatant.actorID]
+			end
 
-		self:updateTarget(targetWidget, stateCombatant)
+			self:updateTarget(targetWidget, stateCombatant)
+		end
+	end
+
+	if not self.isRadialMenuOpen and #state.combatants == 1 then
+		local stateCombatant = state.combatants[1]
+		local targetWidget = self.targetWidgets[stateCombatant.actorID]
+		if targetWidget then
+			self.targetWidgets[stateCombatant.actorID] = nil
+			self:removeChild(targetWidget)
+		end
 	end
 
 	for id, targetWidget in pairs(self.targetWidgets) do
