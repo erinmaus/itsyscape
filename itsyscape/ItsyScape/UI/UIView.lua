@@ -408,6 +408,17 @@ function itsyrealm.graphics.print(text, ...)
 				return
 			end
 
+			if width >= graphicsState.atlas.maxWidth or
+			   height >= graphicsState.atlas.maxHeight
+			then
+				itsyrealm.graphics.impl.push(
+					itsyrealm.graphics.impl.print,
+					itsyrealm.graphics.impl.captureRenderState(),
+					text,
+					...)
+				return
+			end
+
 			love.graphics.push('all')
 			local canvas = love.graphics.newCanvas(width, height)
 			love.graphics.setColor(1, 1, 1, 1)
@@ -451,6 +462,21 @@ function itsyrealm.graphics.printf(text, x, y, width, align, ...)
 			local height = font:getHeight() * font:getLineHeight() * #lines
 
 			if width == 0 or height == 0 then
+				return
+			end
+
+			if width >= graphicsState.atlas.maxWidth or
+			   height >= graphicsState.atlas.maxHeight
+			then
+				itsyrealm.graphics.impl.push(
+					itsyrealm.graphics.impl.printf,
+					itsyrealm.graphics.impl.captureRenderState(),
+					text,
+					x,
+					y,
+					width,
+					align,
+					...)
 				return
 			end
 
