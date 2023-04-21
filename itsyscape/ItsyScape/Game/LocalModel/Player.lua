@@ -24,6 +24,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
@@ -73,6 +74,37 @@ function LocalPlayer:getClientID()
 	return self.clientID
 end
 
+function LocalPlayer:saveLocation()
+	if not self.instance or not self.actor or not self.actor:getPeep() then
+		return
+	end
+
+	local storage = self.game:getDirector():getPlayerStorage(self.id)
+	local root = storage:getRoot()
+
+	local locationStorage = root:getSection("Location")
+	if self.instance:getIsGlobal() then
+		Log.info("Saving player location at '%s'.", self.instance:getFilename())
+
+		local position = Utility.Peep.getPosition(self.actor:getPeep())
+		locationStorage:set({
+			name = self.instance:getFilename(),
+			x = position.x,
+			y = position.y,
+			z = position.z
+		})
+	end
+
+	local statusStorage = root:getSection("Status")
+	local status = self.actor:getPeep():getBehavior(CombatStatusBehavior)
+	statusStorage:set({
+		currentHitpoints = status.currentHitpoints,
+		maximumHitpoints = status.maximumHitpoints,
+		currentPrayer = status.currentPrayer,
+		maximumPrayer = status.maximumPrayer
+	})
+end
+
 function LocalPlayer:spawn(storage, newGame, password)
 	if not self.game:verifyPassword(password) then
 		Log.warn("Player %d (client %d) did not say the right password.", self:getID(), self:getClientID() or -1)
@@ -86,6 +118,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 
 	if self.instance then
 		self:onMove(previousLayerName, "::orphan")
+		self.instance = nil
 	end
 
 	self:unload()
@@ -132,6 +165,13 @@ function LocalPlayer:spawn(storage, newGame, password)
 								location:get("y"),
 								location:get("z")),
 							true)
+
+						local statusStorage = root:getSection("Status")
+						local status = actor:getPeep():getBehavior(CombatStatusBehavior)
+						status.currentHitpoints = statusStorage:get("currentHitpoints") or status.currentHitpoints
+						status.maximumHitpoints = statusStorage:get("maximumHitpoints") or status.maximumHitpoints
+						status.currentPrayer = statusStorage:get("currentPrayer") or status.currentPrayer
+						status.maximumPrayer = statusStorage:get("maximumPrayer") or status.maximumPrayer
 
 						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
@@ -191,6 +231,8 @@ function Player:save()
 	local playerActor = self.actor
 	local playerPeep = playerActor and playerActor:getPeep()
 	if playerPeep then
+		self:saveLocation()
+
 		local storage = self.game:getDirector():getPlayerStorage(playerPeep)
 		local root = storage:getRoot()
 

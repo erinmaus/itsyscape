@@ -28,6 +28,7 @@ end
 function QuitGameWindowController:confirm(e)
 	local playerModel = Utility.Peep.getPlayerModel(self:getPeep())
 
+	playerModel:saveLocation()
 	Utility.save(self:getPeep())
 	playerModel:onLeave()
 
