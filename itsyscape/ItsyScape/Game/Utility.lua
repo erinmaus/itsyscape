@@ -70,14 +70,21 @@ function Utility.save(player, saveLocation, talk, ...)
 					map = map.map
 
 					local location = root:getSection("Location")
+					local spawn = root:getSection("Spawn")
 					local position = player:getBehavior(PositionBehavior)
 					if position then
 						location:set({
 							name = map.name,
 							x = position.position.x,
 							y = position.position.y,
-							z = position.position.z,
-							layer = position.position.layer or 1
+							z = position.position.z
+						})
+
+						spawn:set({
+							name = map.name,
+							x = position.position.x,
+							y = position.position.y,
+							z = position.position.z
 						})
 					end
 				end

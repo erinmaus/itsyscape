@@ -215,12 +215,20 @@ function Player:_updateLastLocation(storage)
 		local root = storage:getRoot()
 		local x, y, z = Utility.Map.getAnchorPosition(self.game, map, anchor)
 		local locationSection = root:getSection("Location")
+		local spawnSection = root:getSection("Spawn")
+
 		locationSection:set({
 			name = map,
 			x = x,
 			y = y,
 			z = z,
-			layer = 1
+		})
+
+		spawnSection:set({
+			name = map,
+			x = x,
+			y = y,
+			z = z,
 		})
 	end
 
