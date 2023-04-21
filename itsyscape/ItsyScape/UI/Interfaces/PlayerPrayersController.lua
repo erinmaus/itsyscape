@@ -79,7 +79,8 @@ function PlayerPrayersController:getPrayerState()
 					id = resource.name,
 					name = Utility.getName(resource, gameDB),
 					description = Utility.getDescription(resource, gameDB),
-					level = Curve.XP_CURVE:getLevel(z)
+					level = Curve.XP_CURVE:getLevel(z),
+					isActive = self:getPeep():getEffect(Utility.Peep.getEffectType(resource, gameDB)) ~= nil
 				})
 
 				index = index + 1
