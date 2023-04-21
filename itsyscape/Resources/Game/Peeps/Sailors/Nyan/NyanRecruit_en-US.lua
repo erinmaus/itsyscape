@@ -61,7 +61,7 @@ repeat
 		message "Really? So what's your biggest feat, then?"
 
 		speaker "_SELF"
-		speaker "I have too many, but if I have to choose one..."
+		message "I have too many, but if I have to choose one..."
 
 		local FEATS = {
 			{
