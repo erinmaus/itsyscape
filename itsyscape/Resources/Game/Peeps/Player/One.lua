@@ -411,12 +411,11 @@ function One:update(...)
 		local director = self:getDirector()
 		local stage = director:getGameInstance():getStage()
 		local storage = director:getPlayerStorage(self):getRoot()
-		local location = storage:getSection("Spawn")
 		local spawn = storage:getSection("Spawn")
 		if spawn and spawn:get("name") then
 			stage:movePeep(
 				self,
-				location:get("name"),
+				spawn:get("name"),
 				Vector(location:get("x"), location:get("y"), location:get("z")),
 				true)
 		else
