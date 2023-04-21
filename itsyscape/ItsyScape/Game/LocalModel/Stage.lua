@@ -842,6 +842,7 @@ function LocalStage:movePeep(peep, path, anchor)
 
 	if peep:hasBehavior(PlayerBehavior) then
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+		player:saveLocation()
 
 		local previousInstance = self:getPeepInstance(peep)
 		if previousInstance then
