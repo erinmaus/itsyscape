@@ -37,6 +37,11 @@ function RibbonController:new(peep, director)
 		["QuitGameWindow"] = true
 	}
 
+	self.blocking = {
+		["Nominomicon"] = true,
+		["QuitGameWindow"] = false
+	}
+
 	self.currentTab = false
 end
 
@@ -72,7 +77,12 @@ function RibbonController:openTab(e)
 		self.currentInterfaceID, self.currentInterfaceIndex = ui:open(self:getPeep(), e.tab)
 		self.currentTab = e.tab
 	else
-		ui:openBlockingInterface(self:getPeep(), e.tab)
+		if self.blocking[e.tab] then
+			ui:openBlockingInterface(self:getPeep(), e.tab)
+		else
+			ui:open(self:getPeep(), e.tab)
+		end
+
 		self.currentInterfaceID, self.currentInterfaceIndex = nil, nil
 		self.currentTab = nil
 	end
