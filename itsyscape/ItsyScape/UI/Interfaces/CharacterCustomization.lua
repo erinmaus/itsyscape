@@ -511,19 +511,6 @@ function CharacterCustomization:new(id, index, ui)
 		nextButton.onClick:register(self.nextDialog, self)
 		dialogPanel:addChild(nextButton)
 
-		local confirmButton = Button()
-		confirmButton:setText("Confirm")
-		confirmButton:setStyle(ButtonStyle(CharacterCustomization.BUTTON_STYLE, ui:getResources()))
-		confirmButton:setSize(CharacterCustomization.CONFIRM_BUTTON_WIDTH, CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
-		confirmButton:setPosition(
-			panelWidth - CharacterCustomization.CONFIRM_BUTTON_WIDTH,
-			panelHeight - CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
-		confirmButton.onClick:register(function()
-			self:submitTextInputs()
-			self:sendPoke("close", nil, {})
-		end)
-		panel:addChild(confirmButton)
-
 		self:nextDialog()
 	end
 
@@ -537,6 +524,19 @@ function CharacterCustomization:new(id, index, ui)
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
+
+	local confirmButton = Button()
+	confirmButton:setText("Confirm")
+	confirmButton:setStyle(ButtonStyle(CharacterCustomization.BUTTON_STYLE, ui:getResources()))
+	confirmButton:setSize(CharacterCustomization.CONFIRM_BUTTON_WIDTH, CharacterCustomization.CONFIRM_BUTTON_HEIGHT)
+	confirmButton:setPosition(
+		w - CharacterCustomization.CONFIRM_BUTTON_WIDTH - CharacterCustomization.PADDING,
+		h - CharacterCustomization.CONFIRM_BUTTON_HEIGHT - CharacterCustomization.PADDING)
+	confirmButton.onClick:register(function()
+		self:submitTextInputs()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(confirmButton)
 
 	self.camera = ThirdPersonCamera()
 	self.camera:setDistance(2.5)
