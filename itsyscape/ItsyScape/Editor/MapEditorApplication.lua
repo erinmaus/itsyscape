@@ -50,6 +50,8 @@ function MapEditorApplication:new()
 		GameView.MAP_MESH_DIVISIONS = 1024
 	end
 
+	_DEBUG = false
+
 	EditorApplication.new(self)
 
 	self.currentDecorationTileSet = "RumbridgeCabin"
