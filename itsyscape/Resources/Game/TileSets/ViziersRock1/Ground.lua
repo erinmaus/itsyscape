@@ -73,7 +73,7 @@ function ViziersRock:new()
 	})
 
 	self:registerTile("wood", BrickBlock:Bind(self) {
-		COLOR = Color(0.3, 0.2, 0.3, 1.0),
+		COLOR = Color.fromHexString("694c39"),
 		FEATURE = "plank",
 		SCALE = Vector(1, 1, 1),
 		NUM_FEATURES = 2,

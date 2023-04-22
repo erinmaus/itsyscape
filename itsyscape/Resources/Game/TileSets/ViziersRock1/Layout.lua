@@ -87,5 +87,14 @@
 		width = 128,
 		height = 128,
 		name = "stone_dirty_mask"
+	},
+
+	{
+		x = 256,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "invisible",
+		mask = false
 	}
 }
