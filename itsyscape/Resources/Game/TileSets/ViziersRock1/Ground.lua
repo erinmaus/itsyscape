@@ -46,6 +46,14 @@ function ViziersRock:new()
 		ONLY_FLAT = false
 	})
 
+	self:registerTile("stone_dirty_mask", BrickBlock:Bind(self) {
+		COLOR = Color.fromHexString("82634c"),
+		FEATURE = "brick",
+		SCALE = Vector(2, 1, 1),
+		NUM_FEATURES = 4,
+		ONLY_FLAT = false
+	})
+
 	self:registerTile("dirt", BrickBlock:Bind(self) {
 		COLOR = Color.fromHexString("785845"),
 		FEATURE = "pebble",
