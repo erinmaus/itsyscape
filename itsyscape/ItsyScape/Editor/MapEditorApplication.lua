@@ -776,6 +776,7 @@ function MapEditorApplication:save(filename)
 				local _, tileSetID = self:getGameView():getMapTileSet(layers[i])
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
+					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID
 				}
 			end
 
@@ -893,6 +894,8 @@ function MapEditorApplication:load(filename, preferExisting)
 			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
 	end
+
+	self.meta = meta
 
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path .. "/Decorations")) do
 		local group = item:match("(.*)%.ldeco$")
