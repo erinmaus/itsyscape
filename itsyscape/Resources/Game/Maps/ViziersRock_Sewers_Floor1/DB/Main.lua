@@ -99,6 +99,42 @@ do
 	}
 end
 
+M["WoodenLadder_ToCityCenter"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 0,
+		PositionZ = 85,
+		Name = "WoodenLadder_ToCityCenter",
+		Map = M._MAP,
+		Resource = M["WoodenLadder_ToCityCenter"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["WoodenLadder_ToCityCenter"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromSewers",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["WoodenLadder_ToCityCenter"] {
+		TravelAction
+	}
+end
+
 M["Anchor_FromCityCenter"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
