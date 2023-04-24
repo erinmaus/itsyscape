@@ -298,3 +298,50 @@ do
 		TravelAction
 	}
 end
+
+M["Anchor_FromSewers"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "Anchor_FromSewers",
+		Map = M._MAP,
+		Resource = M["Anchor_FromSewers"]
+	}
+end
+
+M["TrapDoor_ToSewers"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 5,
+		Name = "TrapDoor_ToSewers",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToSewers"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToSewers"]
+	}
+
+	local TravelAction = ItsyScape.Action.PartyTravel()
+
+	ItsyScape.Meta.PartyTravelDestination {
+		Raid = ItsyScape.Resource.Raid "ViziersRockSewers",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		XProgressive = "Descending",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToSewers"] {
+		TravelAction
+	}
+end
