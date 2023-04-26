@@ -178,7 +178,7 @@ end
 
 -- Loads the stats from a save file.
 function Stats:load(storage)
-	stats = storage:getSection("Stats")
+	local stats = storage:getSection("Stats")
 	for name, skill in pairs(self.skills) do
 		local stat = stats:getSection(name)
 		if stat then
@@ -195,7 +195,7 @@ end
 
 -- Saves the stats into a save file.
 function Stats:save(storage)
-	stats = storage:getSection("Stats")
+	local stats = storage:getSection("Stats")
 	for name, skill in pairs(self.skills) do
 		local stat = stats:getSection(name)
 		stat:set({

@@ -255,8 +255,16 @@ while isRunning do
 				adminPlayerID = e.admin
 				gameManager:setAdmin(adminPlayerID)
 			elseif e.type == 'conf' then
-				_DEBUG = e.environment._DEBUG or false
-				_CONF = e.environment._CONF or _CONF
+				if e.environment ~= nil then
+					_DEBUG = e.environment._DEBUG or false
+					_CONF = e.environment._CONF or _CONF
+				end
+
+				if e.ticks ~= nil then
+					Log.info("Set game tick speed to %d ticks per second.", e.ticks)
+
+					game:setTicks(e.ticks)
+				end
 			elseif e.type == 'connect' then
 				isOnline = true
 

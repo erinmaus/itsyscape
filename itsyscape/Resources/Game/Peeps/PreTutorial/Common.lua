@@ -68,7 +68,7 @@ Common.QUEST_HINT = {
 					return interface.state.currentQuestID == "PreTutorial"
 				end
 
-				return false
+				return true
 			end
 		end
 	}

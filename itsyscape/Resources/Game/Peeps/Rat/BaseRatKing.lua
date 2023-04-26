@@ -27,6 +27,10 @@ function BaseRatKing:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 4, 2)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 100
+	status.maximumHitpoints = 500
 end
 
 function BaseRatKing:onEat(p)
@@ -44,12 +48,38 @@ function BaseRatKing:onEat(p)
 	end
 end
 
-function BaseRatKing:onBoss()
-	Utility.UI.openInterface(
-		Utility.Peep.getInstance(self),
-		"BossHUD",
-		false,
-		self)
+function BaseRatKing:onDie(poke)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if actor then
+		local crown = CacheRef(
+			"ItsyScape.Game.Skin.ModelSkin",
+			"Resources/Game/Skins/Rat/RatKingCrown.lua")
+		actor:unsetSkin(Equipment.PLAYER_SLOT_HEAD, 0, crown)
+
+		local position = Utility.Peep.getPosition(self)
+		local otherRatKing = Utility.spawnActorAtPosition(self, "RatKingUnleashed", position.x, position.y, position.z, 0)
+		if otherRatKing then
+			otherRatKing:getPeep():listen('ready', function(p)
+				local animation = p:getResource(
+					"animation-spawn",
+					"ItsyScape.Graphics.AnimationResource")
+
+				if animation then
+					otherRatKing:playAnimation('spawn', 2000, animation)
+
+					Utility.UI.openInterface(
+						Utility.Peep.getInstance(self),
+						"BossHUD",
+						false,
+						p)
+
+					Utility.Peep.attack(p, poke:getAggressor())
+				end
+			end)
+		end
+	end
 end
 
 function BaseRatKing:ready(director, game)

@@ -182,6 +182,30 @@ do
 	}
 end
 
+M["Anchor_FromBankFloor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 51,
+		Name = "Anchor_FromBankFloor2",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBankFloor2"]
+	}
+end
+
+M["Anchor_FromPubFloor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 4,
+		PositionZ = 57,
+		Name = "Anchor_FromPubFloor2",
+		Map = M._MAP,
+		Resource = M["Anchor_FromPubFloor2"]
+	}
+end
+
 M["BankChest1"] {
 	ItsyScape.Action.Bank()
 }
@@ -189,3 +213,135 @@ M["BankChest1"] {
 M["BankChest2"] {
 	ItsyScape.Action.Bank()
 }
+
+M["Ladder_Pub"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 4,
+		PositionZ = 57,
+		Name = "Ladder_Pub",
+		Map = M._MAP,
+		Resource = M["Ladder_Pub"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["Ladder_Pub"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromPub",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_Pub"] {
+		TravelAction
+	}
+end
+
+M["Portal_Bank"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 4,
+		PositionZ = 55,
+		Name = "Portal_Bank",
+		Map = M._MAP,
+		Resource = M["Portal_Bank"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 5.5,
+		SizeY = 4,
+		SizeZ = 5.5,
+		MapObject = M["Portal_Bank"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_Bank"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Floor 2",
+		Language = "en-US",
+		Resource = M["Portal_Bank"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromBank",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-up",
+		XProgressive = "Walking-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_Bank"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromSewers"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "Anchor_FromSewers",
+		Map = M._MAP,
+		Resource = M["Anchor_FromSewers"]
+	}
+end
+
+M["TrapDoor_ToSewers"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 5,
+		Name = "TrapDoor_ToSewers",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToSewers"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToSewers"]
+	}
+
+	local TravelAction = ItsyScape.Action.PartyTravel()
+
+	ItsyScape.Meta.PartyTravelDestination {
+		Raid = ItsyScape.Resource.Raid "ViziersRockSewers",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		XProgressive = "Descending",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToSewers"] {
+		TravelAction
+	}
+end

@@ -345,7 +345,7 @@ do
 			Count = 1
 		},
 
-		Output {
+		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_OpenedHighChambersYendor",
 			Count = 1
 		}

@@ -9,3 +9,4 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Maps/ViziersRock/ViziersRock.lua"
+include "Resources/Game/DB/Maps/ViziersRock/Sewers.lua"
