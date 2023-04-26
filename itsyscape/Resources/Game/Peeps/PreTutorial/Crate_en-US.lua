@@ -32,6 +32,9 @@ message "Let's see what we have here..."
 
 local state = _TARGET:getState()
 local flags = { ['item-inventory'] = true, ['item-equipment'] = true }
+
+state:give('KeyItem', "PreTutorial_SearchedCrate")
+
 for i = 1, #ITEMS do
 	local current = ITEMS[i]
 
@@ -49,6 +52,4 @@ end
 
 if not gaveItem then
 	message "There's nothing else in here."
-else
-	state:give('KeyItem', "PreTutorial_SearchedCrate")
 end
