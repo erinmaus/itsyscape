@@ -88,6 +88,9 @@ function GraphicsOptions:new(application)
 
 	self.application = application
 
+	local _, _, flags = love.window.getMode()
+	local maxWidth, maxHeight = love.window.getDesktopDimensions(flags.display)
+
 	local currentResWidth, currentResHeight = love.window.getMode()
 	_CONF.width = _CONF.width or currentResWidth
 	_CONF.height = _CONF.height or currentResHeight
@@ -162,7 +165,9 @@ function GraphicsOptions:new(application)
 
 		for i = 1, #resolutions do
 			if resolutions[i].width > GraphicsOptions.MIN_RESOLUTION_WIDTH and
-			   resolutions[i].height > GraphicsOptions.MIN_RESOLUTION_HEIGHT
+			   resolutions[i].height > GraphicsOptions.MIN_RESOLUTION_HEIGHT and
+			   resolutions[i].width <= maxWidth and
+			   resolutions[i].height <= maxHeight
 			then
 				addResolution(resolutions[i].width, resolutions[i].height)
 			end
