@@ -44,6 +44,8 @@ function LocalGame:new(gameDB, playerSlot)
 	self.partiesByID = {}
 	self.currentPartyID = 1
 
+	self.ticksPerSecond = LocalGame.TICKS_PER_SECOND
+
 	self.debugStats = DebugStats.GlobalDebugStats()
 end
 
@@ -210,8 +212,12 @@ function LocalGame:getDirector()
 	return self.director
 end
 
+function LocalGame:setTicks(value)
+	self.ticksPerSecond = value or self.ticksPerSecond
+end
+
 function LocalGame:getTicks()
-	return LocalGame.TICKS_PER_SECOND
+	return self.ticksPerSecond
 end
 
 function LocalGame:getCurrentTick()
