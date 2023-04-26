@@ -146,3 +146,20 @@ do
 		Resource = M["Anchor_FromCityCenter"]
 	}
 end
+
+M["RatKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "RatKing",
+		Map = M._MAP,
+		Resource = M["RatKing"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RatKing",
+		MapObject = M["RatKing"]
+	}
+end
