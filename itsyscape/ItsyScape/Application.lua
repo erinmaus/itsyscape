@@ -75,6 +75,9 @@ Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
 Application.MAX_TICKS = 100
 
+Application.SINGLE_PLAYER_TICKS_PER_SECOND = 30
+Application.MULTIPLAYER_PLAYER_TICKS_PER_SECOND = 10
+
 Application.PLAY_MODE_SINGLE_PLAYER      = 0
 Application.PLAY_MODE_MULTIPLAYER_HOST   = 1
 Application.PLAY_MODE_MULTIPLAYER_CLIENT = 2
@@ -370,6 +373,11 @@ function Application:host(port, password)
 		password = password
 	})
 
+	self.inputAdminChannel:push({
+		type = 'conf',
+		ticks = self.MULTIPLAYER_PLAYER_TICKS_PER_SECOND
+	})
+
 	self:setPassword(password)
 	self:swapRPCService(ClientRPCService, "localhost", tostring(port))
 
@@ -415,8 +423,14 @@ function Application:disconnect()
 		})
 	elseif oldPlayMode == Application.PLAY_MODE_SINGLE_PLAYER then
 		Log.info("Staying on single player.")
+
 		self.inputAdminChannel:push({
 			type = 'play'
+		})
+
+		self.inputAdminChannel:push({
+			type = 'conf',
+			ticks = self.SINGLE_PLAYER_TICKS_PER_SECOND
 		})
 	end
 end
