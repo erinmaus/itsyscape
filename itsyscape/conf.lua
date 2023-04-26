@@ -33,7 +33,13 @@ function love.conf(t)
 		t.window.width = s.width or 1280
 		t.window.height = s.height or 720
 		t.window.depth = 24
-		t.window.fullscreen = s.fullscreen or false
+
+		if s.fullscreen == nil then
+			t.window.fullscreen = true
+		else
+			t.window.fullscreen = s.fullscreen
+		end
+
 		t.window.vsync = s.vsync or 0
 		t.window.display = s.display or t.window.display
 	end
