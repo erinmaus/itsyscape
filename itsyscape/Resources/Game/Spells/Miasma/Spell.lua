@@ -12,7 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local SummonGooEffect = require "Resources.Game.Effects.Miasma.Effect"
+local MiasmaEffect = require "Resources.Game.Effects.Miasma.Effect"
 
 local Miasma = Class(CombatSpell)
 
