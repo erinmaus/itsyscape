@@ -32,6 +32,7 @@ function Chat:new(id, index, ui)
 	local windowWidth, windowHeight = love.graphics.getScaledMode()
 	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
+	self:setIsClickThrough(true)
 
 	self.messages = {}
 
@@ -59,6 +60,7 @@ function Chat:new(id, index, ui)
 	self.chatPanel:setSize(Chat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE, Chat.HEIGHT)
 	self.chatPanel:getInnerPanel():setPadding(Chat.PADDING, Chat.PADDING)
 	self.chatPanel:getInnerPanel():setWrapContents(true)
+	self.chatPanel:getInnerPanel():setIsClickThrough(true)
 	self.chatPanel:setIsClickThrough(true)
 	self.chatPanel:getInnerPanel():setIsClickThrough(true)
 	self:addChild(self.chatPanel)
