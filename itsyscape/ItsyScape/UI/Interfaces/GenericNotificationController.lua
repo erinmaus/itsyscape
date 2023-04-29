@@ -27,6 +27,16 @@ function GenericNotificationController:new(peep, director, message)
 	player:pushMessage(nil, self.state.message)
 end
 
+function GenericNotificationController:updateMessage(message)
+	message = message or "Lorem ipsum..."
+
+	self.state.message = self.state.message .. "\n\n" .. message
+	self.time = GenericNotificationController.TIMEOUT
+
+	local player = Utility.Peep.getPlayerModel(self:getPeep())
+	player:pushMessage(nil, message)
+end
+
 function GenericNotificationController:pull()
 	return self.state
 end
