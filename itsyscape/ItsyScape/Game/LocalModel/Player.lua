@@ -466,7 +466,7 @@ function LocalPlayer:pushMessage(player, message)
 	local m = {
 		player = player,
 		message = message,
-		lastKnownName = player:getActor():getPeep():getName()
+		lastKnownName = Class.isCompatibleType(player, Player) and player:getActor() and player:getActor():getPeep() and player:getActor():getPeep():getName()
 	}
 
 	table.insert(self.messages, m)
