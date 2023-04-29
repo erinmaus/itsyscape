@@ -57,7 +57,7 @@ function Chat:new(id, index, ui)
 	self:addChild(self.textInput)
 
 	self.chatPanel = ScrollablePanel(GridLayout)
-	self.chatPanel:setSize(Chat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE, Chat.HEIGHT)
+	self.chatPanel:setSize(Chat.WIDTH, Chat.HEIGHT)
 	self.chatPanel:getInnerPanel():setPadding(Chat.PADDING, Chat.PADDING)
 	self.chatPanel:getInnerPanel():setWrapContents(true)
 	self.chatPanel:getInnerPanel():setIsClickThrough(true)
