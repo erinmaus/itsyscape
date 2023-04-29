@@ -88,7 +88,7 @@ function IsabelleMean:ready(director, game)
 	stance.useSpell = true
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
-	spell.spell = Utility.Magic.newSpell("AirStrike", game)
+	spell.spell = Utility.Magic.newSpell("FireStrike", game)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
