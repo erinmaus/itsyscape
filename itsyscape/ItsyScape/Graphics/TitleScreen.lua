@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local FontResource = require "ItsyScape.Graphics.FontResource"
 
 local TitleScreen = Class()
 TitleScreen.FADE_IN_DURATION_SECONDS  = 0.5
@@ -30,6 +31,7 @@ function TitleScreen:new(gameView, id)
 	self.opaqueTime = 0
 	self.showLogo = true
 	self.isApplicationReady = false
+	self.showLoadingText = true
 
 	self:load()
 end
@@ -64,12 +66,20 @@ function TitleScreen:load()
 		function(texture)
 			self.logo = texture
 		end)
+
+	self.resources:queue(
+		FontResource,
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf@64",
+		function(font)
+			self.font = font
+		end)
 end
 
 function TitleScreen:update(delta)
 	if not self.resources:getIsPending() and self.isApplicationReady then
 		self.logoTime = self.logoTime + delta
 		self.opaqueTime = self.opaqueTime + delta
+		self.showLoadingText = false
 	end
 end
 
@@ -114,6 +124,23 @@ function TitleScreen:drawTitle()
 			0.5 + 0.5 * (1 - logoSlide),
 			self.logo:getWidth() / 2,
 			self.logo:getHeight() / 2)
+	end
+
+
+	if self.showLoadingText and self.font and self.showLogo then
+		love.graphics.setColor(1, 1, 1, 1)
+
+		local oldFont = love.graphics.getFont()
+		love.graphics.setFont(self.font:getResource())
+
+		local periods = math.ceil(love.timer.getTime() % 3)
+
+		love.graphics.print(
+			"Loading" .. string.rep(".", periods),
+			love.graphics.getWidth() / 2 - self.font:getResource():getWidth("Loading") / 2,
+			love.graphics.getHeight() / 2 + 32)
+
+		love.graphics.setFont(oldFont)
 	end
 end
 
