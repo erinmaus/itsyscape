@@ -16,7 +16,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local MoveToTileCortex = Class(Cortex)
-MoveToTileCortex.DISTANCE_THRESHOLD = 1 / 20
+MoveToTileCortex.DISTANCE_THRESHOLD = 0
 
 function MoveToTileCortex:new()
 	Cortex.new(self)
@@ -95,7 +95,7 @@ function MoveToTileCortex:update(delta)
 
 					local didOvershoot = false
 					local distance = (targetPosition - position.position):getLength()
-					if distance < velocitySliceLength and distance >= MoveToTileCortex.DISTANCE_THRESHOLD then
+					if distance < velocitySliceLength and distance > MoveToTileCortex.DISTANCE_THRESHOLD then
 						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
 						velocitySlice = direction * distance
 						didOvershoot = true

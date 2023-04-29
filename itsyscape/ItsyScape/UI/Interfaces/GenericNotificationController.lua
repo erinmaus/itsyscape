@@ -12,7 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 
 local GenericNotificationController = Class(Controller)
-GenericNotificationController.TIMEOUT = 4.0
+GenericNotificationController.TIMEOUT = 5.0
 
 function GenericNotificationController:new(peep, director, message)
 	Controller.new(self, peep, director)
@@ -22,6 +22,9 @@ function GenericNotificationController:new(peep, director, message)
 	}
 
 	self.time = GenericNotificationController.TIMEOUT
+
+	local player = Utility.Peep.getPlayerModel(peep)
+	player:pushMessage(nil, self.state.message)
 end
 
 function GenericNotificationController:pull()

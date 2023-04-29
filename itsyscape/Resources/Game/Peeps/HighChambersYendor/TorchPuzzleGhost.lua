@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local BaseGhost = require "Resources.Game.Peeps.Ghost.BaseGhost"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 
 local TorchPuzzleGhost = Class(BaseGhost)
 
@@ -40,10 +41,10 @@ function TorchPuzzleGhost:onStartBeingMean()
 		self,
 		self.torches[1])
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor.actor:flash('Message', 1, "No light, no light.")
-	end
+	local mashina = self:getBehavior(MashinaBehavior)
+	mashina.currentState = false
+
+	Utility.Peep.talk(self, "No light, no light.")
 
 	local callback = CallbackCommand(self.nextTorch, self)
 	self:getCommandQueue():push(callback)
@@ -64,6 +65,9 @@ function TorchPuzzleGhost:nextTorch()
 
 		local callback = CallbackCommand(self.nextTorch, self)
 		self:getCommandQueue():push(callback)
+	else
+		local mashina = self:getBehavior(MashinaBehavior)
+		mashina.currentState = "idle"
 	end
 end
 
