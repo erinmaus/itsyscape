@@ -197,7 +197,7 @@ function LocalProp:getActions(scope)
 	end
 
 	if self.resource then
-		return Utility.getActions(self.game, self.resource, scope)
+		return Utility.getActions(self.game, self.resource, scope or 'world')
 	end
 
 	return {}
