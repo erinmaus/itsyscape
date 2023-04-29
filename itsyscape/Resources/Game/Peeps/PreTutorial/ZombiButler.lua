@@ -134,9 +134,7 @@ function ZombiButler:onFollowPlayer(player)
 end
 
 function ZombiButler:giveHint(hint)
-	for i = 1, 3 do
-		Utility.Peep.talk(self, hint)
-	end
+	Utility.Peep.talk(self, hint)
 end
 
 function ZombiButler:updateLocation(currentI, currentJ)
