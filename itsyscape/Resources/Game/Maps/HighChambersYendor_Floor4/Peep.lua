@@ -54,10 +54,12 @@ function HighChambersYendor:onPlayerEnter(player)
 end
 
 function HighChambersYendor:initBoss(director, game)
+	self.isBossReady = false
+
 	self.immunities = {}
-	self:initImmunity("Wizard", "MagicImmunity", "Immunity from Magic")
-	self:initImmunity("Archer", "ArcheryImmunity", "Immunity from Archery")
-	self:initImmunity("Warrior", "MeleeImmunity", "Immunity from Melee")
+	self:initImmunity("Wizard", "MagicImmunity", "Immunity from Magic", "magic")
+	self:initImmunity("Archer", "ArcheryImmunity", "Immunity from Archery", "archery")
+	self:initImmunity("Warrior", "MeleeImmunity", "Immunity from Melee", "melee")
 
 	do
 		local hits = director:probe(
@@ -75,9 +77,11 @@ function HighChambersYendor:initBoss(director, game)
 			isabelle:listen('die', self.onKillBoss, self, director, game)
 		end
 	end
+
+	self.isBossReady = true
 end
 
-function HighChambersYendor:initImmunity(minion, effect, niceName)
+function HighChambersYendor:initImmunity(minion, effect, niceName, style)
 	self.immunities[effect] = BossStat({
 		icon = string.format('Resources/Game/Effects/%s/Icon.png', effect),
 		inColor = { 0.0, 0.0, 0.0, 1.0 },
@@ -96,8 +100,8 @@ function HighChambersYendor:initImmunity(minion, effect, niceName)
 			Probe.namedMapObject(minion))
 		if #hits >= 1 then
 			local minion = hits[1]
-			minion:listen('die', self.onMinionKilled, self, effect)
-			minion:listen('resurrect', self.onMinionRezzed, self, effect)
+			minion:listen('die', self.onMinionKilled, self, effect, style)
+			minion:listen('resurrect', self.onMinionRezzed, self, effect, style)
 
 			minion:poke('die')
 		end
@@ -119,7 +123,7 @@ function HighChambersYendor:initImmunity(minion, effect, niceName)
 	table.insert(stats.stats, self.immunities[effect])
 end
 
-function HighChambersYendor:onMinionKilled(effect)
+function HighChambersYendor:onMinionKilled(effect, style)
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 	local hits = director:probe(
@@ -134,6 +138,12 @@ function HighChambersYendor:onMinionKilled(effect)
 			isabelle:removeEffect(effect)
 			break
 		end
+
+		if self.isBossReady then
+			Utility.Peep.notify(
+				Utility.Peep.getInstance(self),
+				string.format("Isabelle is no longer protected against %s!", style))
+		end
 	end
 
 	self.immunities[effect]:set({
@@ -141,7 +151,7 @@ function HighChambersYendor:onMinionKilled(effect)
 	})
 end
 
-function HighChambersYendor:onMinionRezzed(effect)
+function HighChambersYendor:onMinionRezzed(effect, style)
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 	local hits = director:probe(
@@ -152,6 +162,10 @@ function HighChambersYendor:onMinionRezzed(effect)
 
 		local effectResource = gameDB:getResource(effect, "Effect")
 		Utility.Peep.applyEffect(isabelle, effectResource, true)
+
+		Utility.Peep.notify(
+			Utility.Peep.getInstance(self),
+			string.format("Isabelle is protected against %s!", style))
 	end
 
 	self.immunities[effect]:set({
@@ -264,6 +278,11 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 					playerPeep:getName(),
 					player:getID())
 				playerPeep:removeBehavior(CombatTargetBehavior)
+			else
+				Log.info(
+					"Player %s (%d) is not engaged with Isabelle.",
+					playerPeep:getName(),
+					player:getID())
 			end
 		end
 	end
