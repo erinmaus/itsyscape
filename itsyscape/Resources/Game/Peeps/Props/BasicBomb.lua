@@ -121,10 +121,15 @@ function BasicBomb:onBoom()
 	local stage = director:getGameInstance():getStage()
 	stage:fireProjectile(
 		"BoomBombSplosion",
-		Utility.Peep.getAbsolutePosition(self),
-		Utility.Peep.getAbsolutePosition(self))
+		self,
+		self)
 
 	Log.info("BOOM!")
+
+	self:pushPoke("destroy")
+end
+
+function BasicBomb:onDestroy()
 	Utility.Peep.poof(self)
 end
 
