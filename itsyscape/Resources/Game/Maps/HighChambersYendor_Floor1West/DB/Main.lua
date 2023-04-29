@@ -426,7 +426,7 @@ end
 M["PuzzleTorch_Ghost"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29,
+		PositionX = 27,
 		PositionY = 1,
 		PositionZ = 63,
 		Name = "PuzzleTorch_Ghost",
@@ -437,6 +437,13 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "HighChambersYendor_TorchPuzzleGhost",
 		MapObject = M["PuzzleTorch_Ghost"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/HighChambersYendor/PuzzleGhost_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PuzzleTorch_Ghost"]
 	}
 end
 
@@ -452,16 +459,12 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		Prop = ItsyScape.Resource.Prop "Torch_Unlightable",
 		MapObject = M["DoubleLockDoor_PuzzleTorch"]
 	}
 
-	M["DoubleLockDoor_PuzzleTorch"] {
-		ItsyScape.Action.None()
-	}
-
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Looks like there's no way to light this torch.",
+		Value = "Looks like there's no way to light this torch. It might be keeping the door locked...",
 		Language = "en-US",
 		Resource = M["DoubleLockDoor_PuzzleTorch"]
 	}
@@ -479,16 +482,12 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		Prop = ItsyScape.Resource.Prop "Torch_Unlightable",
 		MapObject = M["DoubleLockDoor_CreepRoomTorch"]
 	}
 
-	M["DoubleLockDoor_CreepRoomTorch"] {
-		ItsyScape.Action.None()
-	}
-
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Looks like there's no way to light this torch.",
+		Value = "Looks like there's no way to light this torch. It might be keeping the door locked...",
 		Language = "en-US",
 		Resource = M["DoubleLockDoor_CreepRoomTorch"]
 	}
@@ -961,6 +960,12 @@ do
 		MapObjectGroup = "Door_DoubleLockEast",
 		Map = M._MAP,
 		MapObject = M["Door_DoubleLockEast"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks like there's no way to open this door. Maybe those torches hold a clue?",
+		Language = "en-US",
+		Resource = M["Door_DoubleLockNorth"]
 	}
 end
 
