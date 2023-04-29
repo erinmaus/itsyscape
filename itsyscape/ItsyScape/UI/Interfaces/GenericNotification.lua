@@ -26,29 +26,33 @@ function GenericNotification:new(id, index, ui)
 	local w, h = love.graphics.getScaledMode()
 	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
 
-	local panel = Panel()
-	panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/LevelUpNotification.9.png"
+	self.panel = Panel()
+	self.panel:setStyle(PanelStyle({
+		image = "Resources/Renderers/Widget/Panel/GenericNotification.9.png"
 	}, self:getView():getResources()))
-	panel:setSize(self:getSize())
-	self:addChild(panel)
+	self.panel:setSize(self:getSize())
+	self.panel:setIsClickThrough(true)
+	self:addChild(self.panel)
 
 	local state = self:getState()
 
-	local text = Label()
-	text:setStyle(LabelStyle({
+	self.text = Label()
+	self.text:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 		fontSize = 22,
 		textShadow = true,
 		width = GenericNotification.WIDTH - GenericNotification.PADDING * 2,
 		align = 'left'
 	}, self:getView():getResources()))
-	text:setPosition(GenericNotification.PADDING, GenericNotification.PADDING)
-	text:setText(state.message)
-	self:addChild(text)
+	self.text:setPosition(GenericNotification.PADDING, GenericNotification.PADDING)
+	self.text:setText(state.message)
+	self.text:setIsClickThrough(true)
+	self:addChild(self.text)
 
-	local textStyle = text:getStyle()
-	local _, lines = textStyle.font:getWrap(text:getText(), GenericNotification.WIDTH - GenericNotification.PADDING * 2)
+	self.message = state.message
+
+	local textStyle = self.text:getStyle()
+	local _, lines = textStyle.font:getWrap(self.text:getText(), GenericNotification.WIDTH - GenericNotification.PADDING * 2)
 	local wrappedHeight = #lines * textStyle.font:getHeight() * textStyle.font:getLineHeight()
 
 	self:setSize(
@@ -56,9 +60,32 @@ function GenericNotification:new(id, index, ui)
 		wrappedHeight + GenericNotification.PADDING * 2)
 	self:setPosition(x + GenericNotification.PADDING, y - wrappedHeight - GenericNotification.PADDING)
 
-	panel:setSize(self:getSize())
+	self.panel:setSize(self:getSize())
 
-	self:setZDepth(math.huge)
+	self:setZDepth(500)
+	self:setIsClickThrough(true)
+end
+
+function GenericNotification:update(...)
+	Interface.update(self, ...)
+
+	local state = self:getState()
+	if state.message ~= self.message then
+		self.text:setText(state.message)
+
+		local textStyle = self.text:getStyle()
+		local _, lines = textStyle.font:getWrap(self.text:getText(), GenericNotification.WIDTH - GenericNotification.PADDING * 2)
+		local wrappedHeight = #lines * textStyle.font:getHeight() * textStyle.font:getLineHeight()
+
+		local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+		self:setSize(
+			GenericNotification.WIDTH,
+			wrappedHeight + GenericNotification.PADDING * 2)
+		self:setPosition(x + GenericNotification.PADDING, y - wrappedHeight - GenericNotification.PADDING)
+		self.panel:setSize(self:getSize())
+
+		self.message = state.message
+	end
 end
 
 return GenericNotification
