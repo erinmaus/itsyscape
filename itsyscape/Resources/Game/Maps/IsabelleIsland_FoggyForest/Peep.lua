@@ -192,11 +192,7 @@ end
 function FoggyForest:makeNymphTalk(player, message)
 	local nymph = self.nymphs[Utility.Peep.getPlayerModel(player)]
 	if nymph then
-		local actor = nymph.boss:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor = actor.actor
-			actor:flash('Message', 1, message, nil, 2.5)
-		end
+		Utility.Peep.talk(nymph.boss, message, nil, 2.5)
 	end
 end
 
