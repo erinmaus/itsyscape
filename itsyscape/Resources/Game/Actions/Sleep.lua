@@ -50,7 +50,7 @@ function Sleep:perform(state, player, target)
 		if walk then
 			local save = CallbackCommand(self.save, self, player)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local notification = OpenInterfaceCommand("GenericNotification", false, "Game saved! You will respawn here upon death.")
+			local notification = CallbackCommand(Utility.Peep.notify, player, "Game saved! You will respawn here upon death.")
 			local command = CompositeCommand(true, walk, save, poof, perform, notification, wait)
 
 			local queue = player:getCommandQueue()

@@ -125,7 +125,7 @@ function RewardChestController:collect(e)
 		end
 	end
 
-	Utility.UI.openInterface(self:getPeep(), "GenericNotification", false, "The items were sent to your bank. Look for a banker or bank chest to retrieve the items.")
+	Utility.Peep.notify(self:getPeep(), "The items were sent to your bank. Look for a banker or bank chest to retrieve the items.")
 
 	self:getGame():getUI():closeInstance(self)
 end

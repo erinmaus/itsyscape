@@ -1440,7 +1440,40 @@ function Utility.Peep.yell(peep, message, ...)
 end
 
 function Utility.Peep.notify(peep, message)
-	Utility.UI.openInterface(peep, "GenericNotification", false, message)
+	local Instance = require "ItsyScape.Game.LocalModel.Instance"
+
+	if Class.isCompatibleType(peep, Instance) then
+		for _, player in peep:iteratePlayers() do
+			local playerPeep = player:getActor() and player:getActor():getPeep()
+			if playerPeep then
+				local ui = playerPeep:getDirector():getGameInstance():getUI()
+
+				local didUpdate = false
+				for _, interface in ui:getInterfacesForPeep(playerPeep, "GenericNotification") do
+					interface:updateMessage(message)
+					didUpdate = true
+					break
+				end
+
+				if not didUpdate then
+					Utility.UI.openInterface(playerPeep, "GenericNotification", false, message)
+				end
+			end
+		end
+	else
+		local ui = peep:getDirector():getGameInstance():getUI()
+
+		local didUpdate = false
+		for _, interface in ui:getInterfacesForPeep(peep, "GenericNotification") do
+			interface:updateMessage(message)
+			didUpdate = true
+			break
+		end
+
+		if not didUpdate then
+			Utility.UI.openInterface(peep, "GenericNotification", false, message)
+		end
+	end
 end
 
 function Utility.Peep.message(peep, sprite, message, ...)
