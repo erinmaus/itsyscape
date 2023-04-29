@@ -14,7 +14,8 @@ local Mashina = require "ItsyScape.Mashina"
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Peep.Talk {
-			message = "Raaaaaaaa!"
+			message = "Raaaaaaaa!",
+			log = false
 		},
 
 		Mashina.Peep.TimeOut {

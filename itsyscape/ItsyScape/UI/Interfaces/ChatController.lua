@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Player = require "ItsyScape.Game.Model.Player"
 local Controller = require "ItsyScape.UI.Controller"
+local Peep = require "ItsyScape.Peep.Peep"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
@@ -42,24 +44,35 @@ function ChatController:pull()
 
 		local name
 		do
-			local peep = m.player:getActor()
-			peep = peep and peep:getPeep()
+			if Class.isCompatibleType(m.player, Player) then
+				local peep = m.player:getActor()
+				peep = peep and peep:getPeep()
 
-			if not peep then
-				name = m.lastKnownName
-			else
-				name = peep:getName()
+				if not peep then
+					name = m.lastKnownName
+				else
+					name = peep:getName()
+				end
+			elseif Class.isCompatibleType(m.player, Peep) then
+				name = m.player:getName()
 			end
 
 			m.lastKnownName = name
 		end
 
-		result[i] = {
-			{ 0, 1, 1, 1 },
-			m.lastKnownName,
-			{ 1, 1, 1, 1 },
-			": " .. m.message
-		}
+		if m.lastKnownName then
+			result[i] = {
+				{ 0, 1, 1, 1 },
+				m.lastKnownName,
+				{ 1, 1, 1, 1 },
+				": " .. m.message
+			}
+		else
+			result[i] = {
+				{ 1, 1, 0, 1 },
+				m.message
+			}
+		end
 	end
 
 	return {

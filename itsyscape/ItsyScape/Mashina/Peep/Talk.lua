@@ -18,9 +18,11 @@ Talk.PEEP = B.Reference()
 Talk.MESSAGE = B.Reference()
 Talk.COLOR = B.Reference()
 Talk.DURATION = B.Reference()
+Talk.LOG = B.Reference()
 
 function Talk:update(mashina, state, executor)
 	local peep = state[self.PEEP] or mashina
+	local log = state[self.LOG]
 
 	local message = state[self.MESSAGE]
 	if not message then
@@ -32,6 +34,16 @@ function Talk:update(mashina, state, executor)
 		return B.Status.Failure
 	else
 		actor = actor.actor
+	end
+
+	if log or log == nil then
+		local instance = Utility.Peep.getInstance(mashina)
+
+		if instance then
+			for _, player in instance:iteratePlayers() do
+				player:pushMessage(peep, message)
+			end
+		end
 	end
 
 	actor:flash('Message', 1, message, state[self.COLOR], state[self.DURATION])
