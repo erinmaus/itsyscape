@@ -61,6 +61,7 @@ function DraggableButton:mousePress(x, y, button)
 	if button == 1 or button == 2 then
 		if not self.isPressed then
 			self.button = button
+			self.isMouseOver = true
 			self.isPressed = true
 			self.mouseX = x
 			self.mouseY = y
