@@ -194,6 +194,7 @@ end
 function WidgetRenderManager:draw(widget, state, cursor)
 	do
 		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
+
 		if (w == 0 or h == 0) and not (widget:getParent() and widget:getParent():getOverflow()) then
 			return
 		end
@@ -241,7 +242,11 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer
 	if renderer then
-		self.debugStats:measure(renderer, widget, state)
+		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
+
+		if (w > 0 and h > 0) or widget:getOverflow() then
+			self.debugStats:measure(renderer, widget, state)
+		end
 	end
 
 	local scrollX, scrollY = widget:getScroll()

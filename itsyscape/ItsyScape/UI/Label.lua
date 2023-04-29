@@ -14,7 +14,12 @@ local Widget = require "ItsyScape.UI.Widget"
 local Label = Class(Widget)
 
 function Label:getOverflow()
-	return true
+	local w, h = self:getSize()
+	if w == 0 or h == 0 then
+		return true
+	else
+		return false
+	end
 end
 
 return Label
