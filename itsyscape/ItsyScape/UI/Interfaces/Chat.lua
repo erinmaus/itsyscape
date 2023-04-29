@@ -133,6 +133,10 @@ function Chat:updateChat(messages)
 		end
 	end
 
+	if push > 0 then
+		push = push + self.chatPanel:getInnerPanel():getPadding()
+	end
+
 	self.chatPanel:getInnerPanel():performLayout()
 
 	local scrollWidth, scrollHeight = self.chatPanel:getInnerPanel():getSize()
