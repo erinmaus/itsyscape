@@ -21,7 +21,8 @@ local Tree = BTreeBuilder.Node() {
 			Mashina.Peep.Wait,
 
 			Mashina.Peep.Talk {
-				message = "TIMBER!"
+				message = "TIMBER!",
+				log = false
 			},
 
 			Mashina.Peep.TimeOut {

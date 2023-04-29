@@ -32,6 +32,9 @@ function BaseSkelemental:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 3, 2)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 12
 end
 
 function BaseSkelemental:ready(director, game)
