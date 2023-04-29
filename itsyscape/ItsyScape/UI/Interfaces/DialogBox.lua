@@ -93,8 +93,6 @@ function DialogBox:new(id, index, ui)
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 		fontSize = 24
 	}, self:getView():getResources()))
-	clickToContinue:setSize(
-		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT, 24)
 	clickToContinue:setPosition(
 		0,
 		DialogBox.HEIGHT - 24 - DialogBox.PADDING * 2)
