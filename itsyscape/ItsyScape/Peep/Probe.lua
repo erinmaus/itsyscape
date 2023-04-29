@@ -90,6 +90,26 @@ function Probe.namedMapObject(name)
 	end
 end
 
+function Probe.mapObjectGroup(name)
+	return function(peep)
+		local gameDB = peep:getDirector():getGameDB()
+		local mapObject = Utility.Peep.getMapObject(peep)
+		if mapObject then
+			local record = gameDB:getRecord("MapObjectGroup", {
+				MapObject = mapObject,
+				MapObjectGroup = name,
+				Map = Utility.Peep.getMapResource(peep)
+			})
+
+			if record then
+				return true
+			end
+		end
+
+		return false
+	end
+end
+
 function Probe.attackable()
 	return function(peep)
 		return Utility.Peep.canAttack(peep)

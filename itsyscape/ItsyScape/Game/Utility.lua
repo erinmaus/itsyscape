@@ -1439,6 +1439,10 @@ function Utility.Peep.yell(peep, message, ...)
 	Utility.Peep.message(peep, "Yell", message, ...)
 end
 
+function Utility.Peep.notify(peep, message)
+	Utility.UI.openInterface(peep, "GenericNotification", false, message)
+end
+
 function Utility.Peep.message(peep, sprite, message, ...)
 	local instance = Utility.Peep.getInstance(peep)
 	if instance then

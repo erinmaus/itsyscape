@@ -86,6 +86,7 @@ function HighChambersYendor:initTorchPuzzle()
 
 	self.numTorches = #torches
 	self.torchPuzzleTorchesLit = 0
+	self.numPuzzleCreeps = 0
 end
 
 function HighChambersYendor:initDoubleLock()
@@ -113,16 +114,29 @@ function HighChambersYendor:initDoubleLock()
 	snuffTorch("DoubleLockDoor_CreepRoomTorch")
 
 	do
-		local doorMeta = gameDB:getRecord("MapObjectLocation", {
-			Name = "Door_DoubleLockWest",
+		local group = gameDB:getRecords("MapObjectGroup", {
+			MapObjectGroup = "Door_GuardianDoubleLock",
 			Map = Utility.Peep.getMapResource(self)
 		})
 
-		local door = director:probe(
+		local creeps = director:probe(
 			self:getLayerName(),
-			Probe.mapObject(doorMeta:get("Resource")))[1]
+			Probe.mapObjectGroup("Door_GuardianDoubleLock"),
+			Probe.attackable())
 
-		door:listen('open', self.activateDoubleLock, self, "DoubleLockDoor_CreepRoomTorch")
+		for i = 1, #creeps do
+			creeps[i]:listen('die', self.onKillPuzzleCreep, self)
+		end
+
+		self.numPuzzleCreeps = #creeps
+	end
+end
+
+function HighChambersYendor:onKillPuzzleCreep()
+	self.numPuzzleCreeps = self.numPuzzleCreeps - 1
+
+	if self.numPuzzleCreeps <= 0 then
+		self:activateDoubleLock("DoubleLockDoor_CreepRoomTorch")
 	end
 end
 
@@ -169,6 +183,8 @@ function HighChambersYendor:activateDoubleLock(torchName)
 		if not self.doubleLockPuzzle[torch] then
 			Log.info("Double-lock puzzle torch '%s' lit.", torchName)
 
+			Utility.Peep.notify(Utility.Peep.getInstance(self), "A torch lit up somewhere else!")
+
 			self.doubleLockPuzzle[torch] = true
 			table.insert(self.doubleLockPuzzle, torch)
 
@@ -182,6 +198,7 @@ function HighChambersYendor:activateDoubleLock(torchName)
 					self:getLayerName(),
 					Probe.mapObject(doorMeta:get("Resource")))[1]
 				if door then
+					Utility.Peep.notify(Utility.Peep.getInstance(self), "A door opened somewhere else!")
 					door:poke('open')
 				end
 			end
@@ -460,11 +477,13 @@ function HighChambersYendor:minibossContinueChanting()
 		self.minibossSoulChantStat.currentValue = 0
 		Log.info("SOUL SIPHON!!!")
 
-		for i = 1, #cthulhuians do
+		-- We only want the first one to get logged.
+		Utility.Peep.yell(cthulhuians[1], "SOUL SIPHON!")
+		for i = 2, #cthulhuians do
 			local actor = cthulhuians[i]:getBehavior(ActorReferenceBehavior)
 			if actor and actor.actor then
 				actor = actor.actor
-				actor:flash("Message", 1, "SOUL SIPHON!")
+				actor:flash("Yell", 1, "SOUL SIPHON!")
 			end
 		end
 
