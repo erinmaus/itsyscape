@@ -621,6 +621,8 @@ function HighChambersYendor:giveMinibossLoot()
 			Probe.mapObject(heart:get("Resource")))[1]
 
 		local instance = Utility.Peep.getInstance(self)
+		Utility.Peep.notify(instance, "A bloody iron key dropped to the floor.")
+
 		for _, player in instance:iteratePlayers() do
 			local playerPeep = player:getActor():getPeep()
 
