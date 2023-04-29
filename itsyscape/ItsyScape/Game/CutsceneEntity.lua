@@ -256,20 +256,14 @@ end
 function CutsceneEntity:talk(message, duration)
 	duration = duration or #message / 8
 	return function()
-		local actor = self.peep:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor.actor:flash('Message', 1, message, nil, duration)
-		end
+		Utility.Peep.talk(self.peep, message, nil, duration)
 	end
 end
 
 function CutsceneEntity:yell(message, duration)
 	duration = duration or #message / 8
 	return function()
-		local actor = self.peep:getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			actor.actor:flash('Yell', 1, message, nil, duration)
-		end
+		Utility.Peep.yell(self.peep, message, nil, duration)
 	end
 end
 

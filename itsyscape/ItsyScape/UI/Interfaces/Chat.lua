@@ -56,13 +56,20 @@ function Chat:new(id, index, ui)
 	self:addChild(self.textInput)
 
 	self.chatPanel = ScrollablePanel(GridLayout)
-	self.chatPanel:setSize(Chat.WIDTH, Chat.HEIGHT)
-	self.chatPanel:getInnerPanel():setUniformSize(true, Chat.WIDTH - Chat.PADDING * 2, Chat.LINE_HEIGHT)
+	self.chatPanel:setSize(Chat.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE, Chat.HEIGHT)
 	self.chatPanel:getInnerPanel():setPadding(Chat.PADDING, Chat.PADDING)
 	self.chatPanel:getInnerPanel():setWrapContents(true)
 	self.chatPanel:setIsClickThrough(true)
 	self.chatPanel:getInnerPanel():setIsClickThrough(true)
 	self:addChild(self.chatPanel)
+
+	self.chatLabelStyle = LabelStyle({
+		color = { 1, 1, 1, 1 },
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 20,
+		padding = 4,
+		textShadow = true
+	}, self:getView():getResources())
 
 	self.received = 0
 
@@ -94,6 +101,9 @@ end
 
 function Chat:updateChat(messages)
 	local push = 0
+	local pushStart = #self.messages
+
+	local w = self.chatPanel:getInnerPanel():getSize()
 
 	if #messages < #self.messages then
 		while #messages < #self.messages do
@@ -101,16 +111,9 @@ function Chat:updateChat(messages)
 			table.remove(self.messages, 1)
 		end
 	elseif #messages > #self.messages then
-		push = #messages - #self.messages
 		while #messages > #self.messages do
 			local label = Label()
-			label:setStyle(LabelStyle({
-				color = { 1, 1, 1, 1 },
-				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-				fontSize = 20,
-				padding = 4,
-				textShadow = true
-			}, self:getView():getResources()))
+			label:setStyle(self.chatLabelStyle)
 			label:setIsClickThrough(true)
 
 			self.chatPanel:addChild(label)
@@ -119,15 +122,31 @@ function Chat:updateChat(messages)
 	end
 
 	for i = 1, #messages do
+		local _, lines = self.chatLabelStyle.font:getWrap(messages[i], w)
+		local h = #lines * self.chatLabelStyle.font:getHeight() * self.chatLabelStyle.font:getLineHeight()
+
 		self.messages[i]:setText(messages[i])
+		self.messages[i]:setSize(w, h)
+
+		if i > pushStart then
+			push = push + h + self.chatPanel:getInnerPanel():getPadding()
+		end
 	end
 
+	if push > 0 then
+		push = push + self.chatPanel:getInnerPanel():getPadding()
+	end
+
+	self.chatPanel:getInnerPanel():performLayout()
+
 	local scrollWidth, scrollHeight = self.chatPanel:getInnerPanel():getSize()
+	local scrollX, scrollY = self.chatPanel:getInnerPanel():getScroll()
+	local panelWidth, panelHeight = self.chatPanel:getSize()
+
 	self.chatPanel:setScrollSize(scrollWidth, scrollHeight)
 
-	if scrollHeight > Chat.HEIGHT then
-		local scrollX, scrollY = self.chatPanel:getInnerPanel():getScroll()
-		self.chatPanel:getInnerPanel():setScroll(scrollX, scrollY + push * (Chat.LINE_HEIGHT + Chat.PADDING))
+	if scrollHeight > Chat.HEIGHT and scrollY + push + panelHeight >= scrollHeight - panelHeight / 2 then
+		self.chatPanel:getInnerPanel():setScroll(scrollX, math.min(scrollY + push, scrollHeight - panelHeight))
 	end
 end
 

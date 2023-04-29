@@ -62,8 +62,7 @@ end
 function GhostlyMinerForeman:onDie(e)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
-		actor = actor.actor
-		actor:flash('Message', 1, "I have failed the Empty King!")
+		Utility.Peep.talk(self, "I have failed The Empty King!")
 	end
 end
 

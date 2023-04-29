@@ -134,10 +134,8 @@ function ZombiButler:onFollowPlayer(player)
 end
 
 function ZombiButler:giveHint(hint)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-		actor:flash('Message', 1.5, hint, nil, 2.5)
+	for i = 1, 3 do
+		Utility.Peep.talk(self, hint)
 	end
 end
 

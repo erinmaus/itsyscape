@@ -57,8 +57,7 @@ local function attack(mercenaryName, pirateName)
 		local actor = pirate:getBehavior("ActorReference")
 		local status = pirate:getBehavior("CombatStatus")
 		if actor and actor.actor and status and status.currentHitpoints > 0 and not status.dead then
-			local actor = actor.actor
-			actor:flash("Message", 1, "Arrr, ye scallywag!")
+			Utility.Peep.talk(pirate, "Arrr, ye scallywag!")
 		end
 	else
 		Log.warn("Couldn't find mercenary %s or pirate %s!", mercenaryName, pirateName)

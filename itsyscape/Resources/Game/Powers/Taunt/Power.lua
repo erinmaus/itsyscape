@@ -39,7 +39,7 @@ function Taunt:activate(activator, target)
 		activatorActor = activatorActor.actor
 
 		local taunt = Taunt.TAUNTS["en-US"][math.random(#Taunt.TAUNTS["en-US"])]
-		activatorActor:flash('Message', 1, taunt)
+		Utility.Peep.yell(activator, taunt)
 
 		local _, victimTarget = target:addBehavior(CombatTargetBehavior)
 		victimTarget.actor = activatorActor

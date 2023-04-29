@@ -35,3 +35,36 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Torch_Default"
 }
+
+ItsyScape.Resource.Prop "Torch_Unlightable" {
+	ItsyScape.Action.Light_Prop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Snuff()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTorch",
+	Resource = ItsyScape.Resource.Prop "Torch_Unlightable"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Torch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Torch_Unlightable"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This torch can't be lit by normal means.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Torch_Unlightable"
+}
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "Torch_Default",
+	Resource = ItsyScape.Resource.Prop "Torch_Unlightable"
+}

@@ -1431,6 +1431,35 @@ end
 
 Utility.Peep = {}
 
+function Utility.Peep.talk(peep, message, ...)
+	Utility.Peep.message(peep, "Message", message, ...)
+end
+
+function Utility.Peep.yell(peep, message, ...)
+	Utility.Peep.message(peep, "Yell", message, ...)
+end
+
+function Utility.Peep.notify(peep, message)
+	Utility.UI.openInterface(peep, "GenericNotification", false, message)
+end
+
+function Utility.Peep.message(peep, sprite, message, ...)
+	local instance = Utility.Peep.getInstance(peep)
+	if instance then
+		for _, player in instance:iteratePlayers() do
+			player:pushMessage(peep, message)
+		end
+	end
+
+	local size = Utility.Peep.getSize(peep)
+	y = (size and size.y and (math.max(size.y - 1, 1))) or 1
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor.actor:flash(sprite, y, message, ...)
+	end
+end
+
 function Utility.Peep.getPlayerModel(peep)
 	local game = peep:getDirector():getGameInstance()
 
