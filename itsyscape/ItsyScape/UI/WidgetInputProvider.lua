@@ -73,8 +73,10 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow
 	   or (overflow and widget:getOverflow())
 	then
 		local sx, sy = widget:getScroll()
-		for i = #widget.children, 1, -1 do
-			local w = widget.children[i]
+		widget:zIterate()
+
+		for i = #widget.zSortedChildren, 1, -1 do
+			local w = widget.zSortedChildren[i]
 			self:getWidgetsUnderPoint(
 				x, y,
 				px + wx - sx,
@@ -96,9 +98,11 @@ end
 function WidgetInputProvider:isBlocking(x, y)
 	x, y = love.graphics.getScaledPoint(x, y)
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, true)
-	local isClickThrough = widget and widget:getIsClickThrough()
-	return widget ~= self.root and widget and not isClickThrough
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, function(w)
+		return not w:getIsClickThrough()
+	end, true)
+
+	return widget ~= self.root and widget
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)
@@ -107,6 +111,7 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, o
 	for i = #widgets, 1, -1 do
 		local widget = widgets[i]
 		local hasParent
+
 		for j = #widgets, i, -1 do
 			if widgets[j]:hasParent(widget) or
 			   widgets[j]:isSiblingOf(widget)
@@ -118,12 +123,8 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, o
 			end
 		end
 
-		if not hasParent then
-			return nil
-		else
-			if not filter or filter(widget) then
-				return widget
-			end
+		if hasParent and not filter or filter(widget) then
+			return widget
 		end
 	end
 
@@ -133,7 +134,7 @@ end
 function WidgetInputProvider:mousePress(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
 	local function f(w)
-		return w:getIsFocusable()
+		return w:getIsFocusable() and not w:getIsClickThrough()
 	end
 
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
@@ -159,7 +160,11 @@ end
 
 function WidgetInputProvider:mouseRelease(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, nil, true)
+	local function f(w)
+		return w:getIsFocusable() and not w:getIsClickThrough()
+	end
+
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
 	if widget then
 		widget:mouseRelease(x, y, button)
 	end
