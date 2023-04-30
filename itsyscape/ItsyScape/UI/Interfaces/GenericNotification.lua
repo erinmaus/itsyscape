@@ -61,9 +61,35 @@ function GenericNotification:new(id, index, ui)
 	self:setPosition(x + GenericNotification.PADDING, y - wrappedHeight - GenericNotification.PADDING)
 
 	self.panel:setSize(self:getSize())
+	self:push()
 
 	self:setZDepth(500)
 	self:setIsClickThrough(true)
+end
+
+function GenericNotification:push()
+	local x, y  = self:getPosition()
+	local width, height = self:getSize()
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+
+	if x < GenericNotification.PADDING then
+		x = GenericNotification.PADDING
+	end
+
+	if y < GenericNotification.PADDING then
+		y = GenericNotification.PADDING
+	end
+
+	if x + width > screenWidth then
+		x = screenWidth - width - GenericNotification.PADDING
+	end
+
+	if y + height > screenHeight then
+		y = screenHeight - height - GenericNotification.PADDING
+	end
+
+	self:setPosition(x, y)
 end
 
 function GenericNotification:update(...)
@@ -83,6 +109,8 @@ function GenericNotification:update(...)
 			wrappedHeight + GenericNotification.PADDING * 2)
 		self:setPosition(x + GenericNotification.PADDING, y - wrappedHeight - GenericNotification.PADDING)
 		self.panel:setSize(self:getSize())
+
+		self:push()
 
 		self.message = state.message
 	end
