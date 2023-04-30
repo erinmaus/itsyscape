@@ -16,7 +16,7 @@ message {
 speaker "Orlando"
 message {
 	"Sounds like a case of scurvy or somethin' to me!",
-	"Let me talk you down to %person{lady Isabelle}."
+	"Let me take you down to %person{lady Isabelle}."
 }
 
 local map = Utility.Peep.getMapScript(_TARGET)
