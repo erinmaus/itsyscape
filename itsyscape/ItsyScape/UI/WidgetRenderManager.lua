@@ -158,10 +158,13 @@ function WidgetRenderManager:start()
 end
 
 function WidgetRenderManager:stop()
+	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
 	if self.cursor.widget then
 		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
-		itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+		itsyrealm.graphics.translate(mouseX, mouseY)
 		self:draw(self.cursor.widget, self.cursor.state, true)
+		itsyrealm.graphics.translate(-self.cursor.x, -self.cursor.y)
+		itsyrealm.graphics.translate(-mouseX, -mouseY)
 	end
 
 	local toolTips = self:getToolTips()
@@ -177,8 +180,9 @@ function WidgetRenderManager:stop()
 
 	for widget, toolTip in pairs(self.hovered) do
 		if toolTip then
-			itsyrealm.graphics.translate(love.graphics.getScaledPoint(love.mouse.getPosition()))
+			itsyrealm.graphics.translate(mouseX, mouseY)
 			self:draw(toolTip.w, toolTip.s, true)
+			itsyrealm.graphics.translate(-mouseX, -mouseY)
 		end
 	end
 

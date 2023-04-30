@@ -42,7 +42,12 @@ end
 function ItemIconRenderer:draw(widget, state)
 	self:visit(widget)
 
-	love.graphics.setColor(1, 1, 1, 1)
+	local isActive = widget:get("isActive", state)
+	if isActive then
+		love.graphics.setColor(1, 1, 1, math.sin(love.timer.getTime() * math.pi))
+	else
+		love.graphics.setColor(1, 1, 1, 1)
+	end
 
 	local itemID = widget:get("itemID", state)
 	if itemID then
@@ -120,6 +125,8 @@ function ItemIconRenderer:draw(widget, state)
 		love.graphics.setFont(oldFont)
 		love.graphics.setColor(1, 1, 1, 1)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return ItemIconRenderer
