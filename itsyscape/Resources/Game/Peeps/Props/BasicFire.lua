@@ -15,6 +15,8 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local BlockingProp = require "Resources.Game.Peeps.Props.BlockingProp"
 
 local BasicFire = Class(BlockingProp)
+BasicFire.CHARCOAL_TIME = 10
+
 function BasicFire:new(resource, name, ...)
 	BlockingProp.new(self, resource, 'Fire', ...)
 
@@ -47,7 +49,7 @@ function BasicFire:onSpawnedByAction(instigator)
 				local charcoal = Utility.spawnPropAtPosition(self, "Charcoal", x, y, z, 0.5)
 				if charcoal then
 					local charcoalPeep = charcoal:getPeep()
-					charcoalPeep:poke('spawnedByFire', self, self.duration)
+					charcoalPeep:poke('spawnedByFire', self, self.duration + BasicFire.CHARCOAL_TIME)
 				end
 			end
 		end
