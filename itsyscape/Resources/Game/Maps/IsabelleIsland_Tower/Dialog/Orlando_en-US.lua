@@ -77,6 +77,8 @@ while result ~= QUIT do
 			if _TARGET:getState():give("Item", "IsabelleIsland_AbandonedMine_WroughtBronzeKey", 1, FLAGS) and
 			   _TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GaveOrlandoFish")
 			then
+				gaveFish = true
+
 				message {
 					"Here you go, a %item{wrought bronze key}.",
 					"Now you can access %location{the mines}!",
