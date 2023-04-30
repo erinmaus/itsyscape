@@ -7,7 +7,7 @@ return Sequence {
 	Camera:zoom(20, 5),
 	
 	Parallel {
-		Orlando:walkTo("Anchor_StartGame"),
+		Orlando:walkTo("Anchor_OrlandoOnTower"),
 
 		Sequence {
 			Orlando:wait(2),
