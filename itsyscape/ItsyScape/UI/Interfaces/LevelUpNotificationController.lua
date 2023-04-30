@@ -12,7 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 
 local LevelUpNotificationController = Class(Controller)
-LevelUpNotificationController.TIMEOUT = 2.0
+LevelUpNotificationController.TIMEOUT = 5
 
 function LevelUpNotificationController:new(peep, director, skill)
 	Controller.new(self, peep, director)
