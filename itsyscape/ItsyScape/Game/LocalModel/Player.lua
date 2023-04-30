@@ -33,6 +33,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 LocalPlayer.MAX_MESSAGES = 50
+LocalPlayer.MAX_MESSAGE_DURATION_SECONDS = 60 * 5 -- 5 minutes
 
 -- Constructs a new player.
 --
@@ -405,6 +406,15 @@ function LocalPlayer:move(x, z)
 	end
 end
 
+function LocalPlayer:tick()
+	for i = #self.messages, 1, -1 do
+		if love.timer.getTime() > self.messages[i].expires then
+			table.remove(self.messages, i)
+			self.messages.received = self.messages.received + 1
+		end
+	end
+end
+
 function LocalPlayer:updateDiscord()
 	local discord = self.game.discord
 	if not discord then
@@ -466,7 +476,8 @@ function LocalPlayer:pushMessage(player, message)
 	local m = {
 		player = player,
 		message = message,
-		lastKnownName = Class.isCompatibleType(player, Player) and player:getActor() and player:getActor():getPeep() and player:getActor():getPeep():getName()
+		lastKnownName = Class.isCompatibleType(player, Player) and player:getActor() and player:getActor():getPeep() and player:getActor():getPeep():getName(),
+		expires = love.timer.getTime() + LocalPlayer.MAX_MESSAGE_DURATION_SECONDS
 	}
 
 	table.insert(self.messages, m)
