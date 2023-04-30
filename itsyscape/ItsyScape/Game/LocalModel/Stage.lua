@@ -46,7 +46,9 @@ function LocalStage:new(game)
 	self.game = game
 
 	self.actors = {}
+	self.actorsByID = {}
 	self.props = {}
+	self.propsByID = {}
 	self.peeps = {}
 
 	self.currentActorID = 1
@@ -351,6 +353,7 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		local peep = actor:getPeep()
 		self.peeps[actor] = peep
 		self.peeps[peep] = actor
+		self.actorsByID[actor:getID()] = actor
 
 		local function _onAssign()
 			local p = peep:getBehavior(PositionBehavior)
@@ -382,6 +385,7 @@ function LocalStage:killActor(actor)
 		local peep = self.peeps[actor]
 		self.peeps[actor] = nil
 		self.peeps[peep] = nil
+		self.actorsByID[actor:getID()] = nil
 
 		self.actors[actor] = nil
 	end
@@ -402,6 +406,7 @@ function LocalStage:placeProp(propID, layer, layerName)
 		local peep = prop:getPeep()
 		self.peeps[prop] = peep
 		self.peeps[peep] = prop
+		self.propsByID[prop:getID()] = prop
 
 		peep:listen('ready', function()
 			local p = peep:getBehavior(PositionBehavior)
@@ -432,6 +437,7 @@ function LocalStage:removeProp(prop)
 		self.peeps[peep] = nil
 
 		self.props[prop] = nil
+		self.propsByID[prop:getID()] = nil
 	end
 end
 
@@ -1365,6 +1371,14 @@ function LocalStage:decorate(group, decoration, layer)
 	else
 		self.onDecorate(self, group, decoration, layer or 1)
 	end
+end
+
+function LocalStage:getActorByID(actorID)
+	return self.actorsByID[actorID]
+end
+
+function LocalStage:getPropByID(propID)
+	return self.propsByID[propID]
 end
 
 function LocalStage:iterateActors()
