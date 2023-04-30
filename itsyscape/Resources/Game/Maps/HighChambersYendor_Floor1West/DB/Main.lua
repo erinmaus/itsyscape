@@ -965,7 +965,7 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Looks like there's no way to open this door. Maybe those torches hold a clue?",
 		Language = "en-US",
-		Resource = M["Door_DoubleLockNorth"]
+		Resource = M["Door_DoubleLockEast"]
 	}
 end
 
