@@ -238,7 +238,10 @@ function LocalGame:tick()
 	self.debugStats:measure(self.director, self.director.update, self.director, self:getDelta())
 	self.debugStats:measure(self.ui, self.ui.update, self.ui, self:getDelta())
 
-	--self.player:updateDiscord()
+	for _, player in self:iteratePlayers() do
+		player:tick()
+	end
+
 	self.discord:tick()
 
 	self.time = self.time + self:getDelta()
