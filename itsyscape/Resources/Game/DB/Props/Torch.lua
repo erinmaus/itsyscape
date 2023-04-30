@@ -37,14 +37,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Resource.Prop "Torch_Unlightable" {
-	ItsyScape.Action.Light_Prop() {
-		Requirement {
-			Resource = ItsyScape.Resource.Item "Tinderbox",
-			Count = 1
-		}
-	},
-
-	ItsyScape.Action.Snuff()
+	-- Nothing.
 }
 
 ItsyScape.Meta.PeepID {
