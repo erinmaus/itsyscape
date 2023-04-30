@@ -3017,6 +3017,12 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	if not combat or combat.dead then
 		return
 	end
+	
+	local isAttackable = Utility.Peep.isAttackable(self)
+	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
+	if not isAttackable and isPlayerAggressor then
+		return
+	end
 
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
@@ -3089,6 +3095,13 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
+		return
+	end
+	
+	local isAttackable = Utility.Peep.isAttackable(self)
+	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
+	local isSelfPlayer = self:hasBehavior(PlayerBehavior)
+	if (not isAttackable and isPlayerAggressor) or (isPlayerAggressor and isSelfPlayer) then
 		return
 	end
 
@@ -3411,6 +3424,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
 	peep:addResource("animation-action-bury", actionBury)
+	local actionPick = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
+	peep:addResource("animation-action-pick", actionPick)
 	local actionCook = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
