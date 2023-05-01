@@ -27,11 +27,11 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local ShopWindow = Class(Interface)
-ShopWindow.WIDTH = 480
-ShopWindow.HEIGHT = 320
+ShopWindow.WIDTH = 640
+ShopWindow.HEIGHT = 480
 ShopWindow.BUTTON_SIZE = 48
-ShopWindow.BUTTON_PADDING = 4
-ShopWindow.PADDING = 4
+ShopWindow.BUTTON_PADDING = 8
+ShopWindow.PADDING = 8
 ShopWindow.TAB_SIZE = 48
 
 ShopWindow.ACTIVE_TAB_STYLE = function(icon)
@@ -100,8 +100,8 @@ function ShopWindow:new(id, index, ui)
 	self.sellGrid:getInnerPanel():setWrapContents(true)
 	self.sellGrid:getInnerPanel():setUniformSize(
 		true,
-		ShopWindow.BUTTON_SIZE + ShopWindow.BUTTON_PADDING * 2,
-		ShopWindow.BUTTON_SIZE + ShopWindow.BUTTON_PADDING * 2)
+		ShopWindow.BUTTON_SIZE,
+		ShopWindow.BUTTON_SIZE)
 	self.sellGrid:getInnerPanel():setPadding(ShopWindow.BUTTON_PADDING)
 	self.sellGrid:setSize(ShopWindow.WIDTH * (1 / 2), ShopWindow.HEIGHT - ShopWindow.TAB_SIZE - ShopWindow.PADDING * 2)
 	self.sellGrid:setPosition(0, ShopWindow.TAB_SIZE + ShopWindow.PADDING * 2)
@@ -110,8 +110,8 @@ function ShopWindow:new(id, index, ui)
 	self.buyGrid:getInnerPanel():setWrapContents(true)
 	self.buyGrid:getInnerPanel():setUniformSize(
 		true,
-		ShopWindow.BUTTON_SIZE + ShopWindow.BUTTON_PADDING * 2,
-		ShopWindow.BUTTON_SIZE + ShopWindow.BUTTON_PADDING * 2)
+		ShopWindow.BUTTON_SIZE,
+		ShopWindow.BUTTON_SIZE)
 	self.buyGrid:getInnerPanel():setPadding(ShopWindow.BUTTON_PADDING)
 	self.buyGrid:setSize(ShopWindow.WIDTH * (1 / 2), ShopWindow.HEIGHT - ShopWindow.TAB_SIZE - ShopWindow.PADDING * 2)
 	self.buyGrid:setPosition(0, ShopWindow.TAB_SIZE + ShopWindow.PADDING * 2)
@@ -150,7 +150,7 @@ function ShopWindow:new(id, index, ui)
 		for i = 1, #QUANTITIES do
 			local quantity = QUANTITIES[i]
 			local buyButton = Button()
-			buyButton:setText(tostring(quantity or "Buy"))
+			buyButton:setText((quantity and ("+" .. tostring(quantity))) or "Buy")
 			buyButton.onClick:register(self.buy, self, quantity)
 			buyButton:setSize(ShopWindow.WIDTH / 2 / 4, ShopWindow.BUTTON_SIZE)
 			self.buyActionPanel:addChild(buyButton)
@@ -178,7 +178,7 @@ function ShopWindow:new(id, index, ui)
 		for i = 1, #QUANTITIES do
 			local quantity = QUANTITIES[i]
 			local sellButton = Button()
-			sellButton:setText(tostring(quantity or "Sell"))
+			sellButton:setText((quantity and ("+" .. tostring(quantity))) or "Sell")
 			sellButton.onClick:register(self.sell, self, quantity)
 			sellButton:setSize(ShopWindow.WIDTH / 2 / 4, ShopWindow.BUTTON_SIZE)
 			self.sellActionPanel:addChild(sellButton)
@@ -233,7 +233,6 @@ function ShopWindow:update(...)
 					if quantity > 1 then
 						itemIcon:setItemCount(quantity)
 					end
-					itemIcon:setPosition(2, 2)
 
 					itemIcon:setToolTip(
 						ToolTip.Header(name),
@@ -319,8 +318,6 @@ function ShopWindow:openInventory(button)
 
 	self:removeChild(self.buyGrid)
 	self:addChild(self.sellGrid)
-
-	self:sendPoke("viewInventory", nil, {})
 end
 
 function ShopWindow:openShopWindow(button)
@@ -328,8 +325,6 @@ function ShopWindow:openShopWindow(button)
 
 	self:removeChild(self.sellGrid)
 	self:addChild(self.buyGrid)
-
-	self:sendPoke("viewShop", nil, {})
 end
 
 function ShopWindow:activateTab(button)
@@ -397,7 +392,7 @@ function ShopWindow:buy(quantity)
 			self:sendPoke("buy", nil, { id = self.activeItem.id, count = quantity })
 		end
 	else
-		self.buyQuantityInput:setText(tostring(quantity))
+		self.buyQuantityInput:setText(tostring((tonumber(self.buyQuantityInput:getText()) or 0) + quantity))
 	end
 end
 
@@ -413,7 +408,7 @@ function ShopWindow:sell(quantity)
 			self:selectItem()
 		end
 	else
-		self.sellQuantityInput:setText(tostring(quantity))
+		self.sellQuantityInput:setText(tostring((tonumber(self.sellQuantityInput:getText()) or 0) + quantity))
 	end
 end
 
