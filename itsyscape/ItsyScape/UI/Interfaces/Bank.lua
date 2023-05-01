@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local Button = require "ItsyScape.UI.Button"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
@@ -39,6 +40,10 @@ Bank.INVENTORY_COLUMNS = 4
 Bank.SECTION_TITLE_BUTTON_SIZE = 48
 Bank.SECTION_PADDING = 4
 Bank.TITLE_LABEL_HEIGHT = 48
+
+Bank.WITHDRAW_X_PADDING = 16
+Bank.WITHDRAW_X_WINDOW_WIDTH = 480
+Bank.WITHDRAW_X_WINDOW_HEIGHT = 160
 
 -- Enums
 Bank.SECTION_NONE = 0
@@ -213,26 +218,37 @@ function Bank:new(id, index, ui)
 	bankLabel:setPosition(self.bankLayout:getPosition(), Bank.ITEM_PADDING)
 	self:addChild(bankLabel)
 
-	local withdrawXTextInput = TextInput()
-	withdrawXTextInput:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
-	withdrawXTextInput:setText('1000')
-	withdrawXTextInput:setPosition(
-		self.bankLayout:getPosition() + self.bankLayout:getSize() * (2 / 3),
+	local search = TextInput()
+	search:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
+	search:setText("Search...")
+	search:setData('empty', true)
+	search:setPosition(
+		self.bankLayout:getPosition() + self.bankLayout:getSize() * (1 / 3),
 		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
-	withdrawXTextInput:setSize(self.bankLayout:getSize() / 3, Bank.SECTION_TITLE_BUTTON_SIZE)
-	withdrawXTextInput.onFocus:register(function()
-		withdrawXTextInput:setCursor(0, #withdrawXTextInput:getText() + 1)
+	search:setSize(self.bankLayout:getSize() * (2 / 3), Bank.SECTION_TITLE_BUTTON_SIZE)
+	search.onFocus:register(function()
+		if search:getData('empty', true) then
+			search:setText("")
+		else
+			search:setCursor(0, #search:getText() + 1)
+		end
 	end)
-	withdrawXTextInput.onValueChanged:register(self.changeWithdrawXAmount, self)
-	self:addChild(withdrawXTextInput)
+	search.onBlur:register(function()
+		self:search(search)
 
-	local withdrawXLabel = Label()
-	withdrawXLabel:setStyle(LabelStyle(Bank.LABEL_STYLE, ui:getResources()))
-	withdrawXLabel:setText("Withdraw-X Quantity:")
-	withdrawXLabel:setPosition(
-		withdrawXTextInput:getPosition() - 250,
-		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT + 12)
-	self:addChild(withdrawXLabel)
+		if search:getText() == "" then
+			search:setText("Search...")
+			search:setData('empty', true)
+		end
+	end)
+	search.onValueChanged:register(function()
+		self:search(search)
+
+		if search:getText() ~= "" then
+			search:setData('empty', false)
+		end
+	end)
+	self:addChild(search)
 
 	self.inventoryLayout = ScrollablePanel(GridLayout)
 	self.inventoryLayout:getInnerPanel():setWrapContents(true)
@@ -289,12 +305,52 @@ function Bank:getIsFullscreen()
 	return true
 end
 
-function Bank:changeWithdrawXAmount(textInput)
-	-- Remove all non-number values
-	value = string.gsub(textInput:getText(), "[^%d]", "")
-	textInput:setText(value)
+function Bank:withdrawX(index)
+	local promptWindow = PromptWindow(_APP)
+	promptWindow.onSubmit:register(function(_, value)
+		value = tonumber(value)
+		if value then
+			self.withdrawXCount = value
+			self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+		end
+	end)
 
-	self.withdrawXCount = tonumber(value) or 1
+	promptWindow:open(
+		"How many would you like to withdraw?",
+		"Withdraw-X",
+		tostring(self.withdrawXCount),
+		Bank.WITHDRAW_X_WINDOW_WIDTH,
+		Bank.WITHDRAW_X_WINDOW_HEIGHT)
+
+	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+	x = x - Bank.WITHDRAW_X_WINDOW_WIDTH / 2
+	y = y - Bank.WITHDRAW_X_WINDOW_HEIGHT / 2
+
+	local width, height = promptWindow:getSize()
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+
+	if x < Bank.WITHDRAW_X_PADDING then
+		x = Bank.WITHDRAW_X_PADDING
+	end
+
+	if y < Bank.WITHDRAW_X_PADDING then
+		y = Bank.WITHDRAW_X_PADDING
+	end
+
+	if x + width > screenWidth then
+		x = screenWidth - width - Bank.WITHDRAW_X_PADDING
+	end
+
+	if y + height > screenHeight then
+		y = screenHeight - height - Bank.WITHDRAW_X_PADDING
+	end
+
+	promptWindow:setPosition(x, y)
+end
+
+function Bank:search(textInput)
+	self:sendPoke("search", nil, { query = textInput:getText() })
 end
 
 function Bank:generateSection(stateSection, sectionIndex)
@@ -501,6 +557,14 @@ function Bank:probeTab(sectionIndex, tabIndex)
 			end
 		},
 		{
+			id = "Add",
+			verb = "Add",
+			object = "Search results",
+			callback = function()
+				self:addSearchResultsToTab(sectionIndex, tabIndex)
+			end
+		},
+		{
 			id = "Delete",
 			verb = "Delete", -- TODO: [LANG]
 			object = "Tab",
@@ -531,6 +595,20 @@ end
 
 function Bank:sortTab(sectionIndex, tabIndex)
 	self:sendPoke("sortTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex })
+end
+
+function Bank:addSearchResultsToTab(sectionIndex, tabIndex)
+	local items = self:getState().items
+
+	for i = 1, #items do
+		if not items[i].disabled then
+			self:sendPoke("addItemToSectionTab", nil, {
+				sectionIndex = sectionIndex,
+				tabIndex = tabIndex,
+				itemIndex = i
+			})
+		end
+	end
 end
 
 function Bank:closeTab()
@@ -737,18 +815,25 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 				end
 			end
 		else
+			local wasInSection = false
 			for i = 1, #self.sections do
 				local dropTarget = self.sections[i].itemDropTarget
 				if dropTarget and isInside(absoluteX, absoluteY, dropTarget) then
 					self:sendPoke("addSectionTab", nil, { sectionIndex = i, itemIndex = index })
+					wasInSection = true
 					break
 				else
 					local destination = self:findButton(self.sections[i].layout, absoluteX, absoluteY)
 					if destination and destination:getData('tabIndex') then
 						self:sendPoke("addItemToSectionTab", nil, { sectionIndex = i, tabIndex = destination:getData('tabIndex'), itemIndex = index })
+						wasInSection = true
 						break
 					end
 				end
+			end
+
+			if not wasInSection and self.activeSection ~= Bank.SECTION_NONE and self.activeTab ~= Bank.TAB_NONE then
+				self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = self.activeSection, tabIndex = self.activeTab, itemIndex = index })
 			end
 		end
 	end
@@ -834,11 +919,20 @@ function Bank:probe(source, button)
 			})
 
 			table.insert(actions, {
+				id = string.format("Withdraw-%d", self.withdrawXCount),
+				verb = string.format("Withdraw-%d", self.withdrawXCount), -- TODO: [LANG]
+				object = object,
+				callback = function()
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 100 })
+				end
+			})
+
+			table.insert(actions, {
 				id = "Withdraw-X",
 				verb = "Withdraw-X", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+					self:withdrawX(index)
 				end
 			})
 
@@ -850,6 +944,17 @@ function Bank:probe(source, button)
 					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = math.huge })
 				end
 			})
+
+			if self.activeSection ~= Bank.SECTION_NONE and self.activeTab ~= Bank.SECTION_NONE then
+				table.insert(actions, {
+					id = "Remove-From-Tab",
+					verb = "Remove-From-Tab",
+					object = object,
+					callback = function()
+						self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = self.activeSection, tabIndex = self.activeTab, itemIndex = index })
+					end
+				})
+			end
 		end
 
 		table.insert(actions, {
