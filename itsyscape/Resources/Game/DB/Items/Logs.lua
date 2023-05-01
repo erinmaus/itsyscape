@@ -195,6 +195,12 @@ for name, log in spairs(LOGS) do
 		Resource = Tree
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = Tree
+	}
+
 	Tree { ChopAction }
 
 	if log.variants then
@@ -227,6 +233,12 @@ for name, log in spairs(LOGS) do
 	if log.tinderbox then
 		local FireName = string.format("%sFire", name)
 		local Fire = ItsyScape.Resource.Prop(FireName)
+
+		ItsyScape.Meta.PropAnchor {
+			OffsetI = 0,
+			OffsetJ = 0,
+			Resource = Fire
+		}
 
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
 		ItsyScape.Meta.DelegatedActionTarget {

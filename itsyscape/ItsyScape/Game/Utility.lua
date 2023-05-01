@@ -2319,10 +2319,8 @@ function Utility.Peep.getTileAnchor(peep)
 	local i, j = Utility.Peep.getTile(peep)
 	local v = rotation:transformVector(Vector(offsetI, 0, offsetJ))
 
-	print("before", i, j, v.x, v.z)
 	i = i + math.floor(v.x)
 	j = j + math.floor(v.z)
-	print("after", i, j)
 
 	return i, j, Utility.Peep.getLayer(peep)
 end
