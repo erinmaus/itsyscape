@@ -309,7 +309,7 @@ function Bank:withdrawX(index)
 	local promptWindow = PromptWindow(_APP)
 	promptWindow.onSubmit:register(function(_, value)
 		value = tonumber(value)
-		if value then
+		if value and value >= 1 then
 			self.withdrawXCount = value
 			self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
 		end
@@ -936,7 +936,7 @@ function Bank:probe(source, button)
 				verb = string.format("Withdraw-%d", self.withdrawXCount), -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = 100 })
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
 				end
 			})
 
