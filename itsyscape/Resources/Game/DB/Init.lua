@@ -84,6 +84,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PropAnchor" {
+		OffsetI = Meta.TYPE_INTEGER,
+		OffsetJ = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Map"
 	ResourceType "MapObject"
 

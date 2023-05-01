@@ -27,7 +27,7 @@ function Pick:perform(state, player, target)
 	}
 
 	if target and self:canPerform(state, FLAGS) then
-		local i, j, k = Utility.Peep.getTile(target)
+		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local asCloseAsPossible
 		do
 			local map = Utility.Peep.getMap(target)

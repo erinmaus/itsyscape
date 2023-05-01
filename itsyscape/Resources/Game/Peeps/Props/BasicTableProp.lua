@@ -24,6 +24,16 @@ function BasicTableProp:new(...)
 	self:addPoke('serve')
 end
 
+function BasicTableProp:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushFlag('impassable')
+		tile:pushFlag('shoot')
+	elseif mode == 'poof' then
+		tile:popFlag('impassable')
+		tile:popFlag('shoot')
+	end
+end
+
 function BasicTableProp:onServe(...)
 	self.hasFood = true
 	self.hasPlates = true

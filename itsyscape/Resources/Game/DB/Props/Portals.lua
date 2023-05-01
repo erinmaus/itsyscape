@@ -27,6 +27,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
 }
 
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal"
+}
+
 ItsyScape.Resource.Prop "InvisiblePortal_Antilogika" {
 	ItsyScape.Action.Travel_Antilogika()
 }
@@ -53,6 +59,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
 }
 
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "InvisiblePortal_Antilogika"
+}
+
 ItsyScape.Resource.Prop "Portal_Default" {
 	ItsyScape.Action.Teleport()
 }
@@ -71,6 +83,12 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "A split in the fabric of reality.",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Default"
+}
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
 	Resource = ItsyScape.Resource.Prop "Portal_Default"
 }
 
@@ -121,6 +139,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
 }
 
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "Portal_Antilogika_Return"
+}
+
 ItsyScape.Resource.Prop "Portal_Chasm" {
 	-- Nothing.
 }
@@ -146,5 +170,11 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "The horrors that must have endured to create a split in reality so massive.",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Portal_Chasm"
+}
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
 	Resource = ItsyScape.Resource.Prop "Portal_Chasm"
 }

@@ -13,7 +13,7 @@ ItsyScape.Resource.Prop "Table_2x2_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Table_2x2_Default"
 }
 
@@ -42,6 +42,12 @@ ItsyScape.Resource.Prop "DiningTable_Default" {
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicTableProp",
+	Resource = ItsyScape.Resource.Prop "DiningTable_Default"
+}
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
 	Resource = ItsyScape.Resource.Prop "DiningTable_Default"
 }
 
@@ -101,7 +107,7 @@ ItsyScape.Resource.Prop "DiningTableChair_Fancy" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy"
 }
 
@@ -134,7 +140,7 @@ ItsyScape.Meta.ActionTypeVerb {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Default"
 }
 
@@ -197,7 +203,7 @@ ItsyScape.Resource.Prop "Crate_Default1" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Crate_Default1"
 }
 
@@ -225,7 +231,7 @@ ItsyScape.Resource.Prop "TV" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "TV"
 }
 
@@ -338,7 +344,7 @@ ItsyScape.Resource.Prop "FourPosterBed_Pink" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "FourPosterBed_Pink"
 }
 
@@ -366,7 +372,7 @@ ItsyScape.Resource.Prop "FourPosterBed_Blue" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "FourPosterBed_Blue"
 }
 
@@ -394,7 +400,7 @@ ItsyScape.Resource.Prop "Mirror_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Mirror_Default"
 }
 
@@ -422,7 +428,7 @@ ItsyScape.Resource.Prop "Lamp_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Lamp_Default"
 }
 
@@ -448,7 +454,7 @@ ItsyScape.Meta.MapObjectSize {
 ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "WoodenStairs_Yendorian"
 }
 
@@ -474,7 +480,7 @@ ItsyScape.Meta.MapObjectSize {
 ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "WoodenStairs_ViziersRock"
 }
 
@@ -502,7 +508,7 @@ ItsyScape.Resource.Prop "ComfyChair_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Default"
 }
 
@@ -530,7 +536,7 @@ ItsyScape.Resource.Prop "ComfyChair_Blue" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ComfyChair_Blue"
 }
 
@@ -558,7 +564,7 @@ ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ComfyChair_ViziersRockBlue"
 }
 
@@ -586,7 +592,7 @@ ItsyScape.Resource.Prop "Chair_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Chair_Default"
 }
 
@@ -614,7 +620,7 @@ ItsyScape.Resource.Prop "ComfyCouch_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ComfyCouch_Default"
 }
 
@@ -642,7 +648,7 @@ ItsyScape.Resource.Prop "ComfyCouch_Blue" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ComfyCouch_Blue"
 }
 
@@ -726,7 +732,7 @@ ItsyScape.Resource.Prop "KitchenSink_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "KitchenSink_Default"
 }
 
@@ -754,7 +760,7 @@ ItsyScape.Resource.Prop "Desk_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Desk_Default"
 }
 
@@ -782,7 +788,7 @@ ItsyScape.Resource.Prop "BathroomSink_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "BathroomSink_Default"
 }
 
@@ -810,7 +816,7 @@ ItsyScape.Resource.Prop "Bathtub_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Bathtub_Default"
 }
 
@@ -838,7 +844,7 @@ ItsyScape.Resource.Prop "Loo_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Loo_Default"
 }
 
@@ -866,7 +872,7 @@ ItsyScape.Resource.Prop "ArmorStand_Iron" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
 }
 
@@ -978,7 +984,7 @@ ItsyScape.Resource.Prop "Throne_Rumbridge" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Throne_Rumbridge"
 }
 
@@ -987,7 +993,7 @@ ItsyScape.Resource.Prop "Counter_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Counter_Default"
 }
 
