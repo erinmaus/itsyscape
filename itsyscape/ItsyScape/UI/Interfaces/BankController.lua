@@ -861,7 +861,6 @@ function BankController:removeItemFromSectionTab(e)
 	else
 		for i = 1, tabStorage:length() do
 			if tabStorage:get(i) == item:getID() then
-				print("removing", i)
 				tabStorage:set(i, nil)
 				tabStorage:set(item:getID(), nil)
 				break
