@@ -111,7 +111,10 @@ function PlayerStorage.Section:set(key, value)
 		if type(key) == 'number' then
 			if value == nil then
 				table.remove(self.array, key)
-				self.values[key] = nil
+
+				for i = key + 1, self:length() do
+					self.values[i - 1] = self.values[i]
+				end
 			else
 				self.values[key] = value
 				self.array[key] = value

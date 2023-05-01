@@ -59,6 +59,9 @@ function PromptWindow:new(application)
 		self.onSubmit(self, self.input:getText())
 		self:close()
 	end)
+	self.input.onFocus:register(function()
+		self.input:setCursor(0, #self.input:getText() + 1)
+	end)
 	self:addChild(self.input)
 
 	self.buttonsGridLayout = GridLayout()
@@ -114,6 +117,9 @@ function PromptWindow:open(query, title, value, width, height)
 
 	local root = parent or self.application:getUIView():getRoot()
 	root:addChild(self)
+
+	local inputManager = self.application:getUIView():getInputProvider()
+	inputManager:setFocusedWidget(self.input)
 end
 
 function PromptWindow:close()
