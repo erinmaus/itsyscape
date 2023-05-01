@@ -23,7 +23,7 @@ local UseCraftWindow = Class(Action)
 UseCraftWindow.SCOPES = { ['hidden'] = true }
 
 function UseCraftWindow:perform(state, player, prop, action, count)
-	local i, j, k = Utility.Peep.getTile(prop)
+	local i, j, k = Utility.Peep.getTileAnchor(prop)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 1.5)
 
 	if walk then

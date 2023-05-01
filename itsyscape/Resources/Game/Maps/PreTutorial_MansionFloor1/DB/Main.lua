@@ -389,6 +389,12 @@ do
 		Resource = M["SearchableCrate"]
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = -1,
+		OffsetJ = 0,
+		Resource = M["SearchableCrate"]
+	}
+
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Peeps/PreTutorial/Crate_en-US.lua",
 		Language = "en-US",

@@ -15,6 +15,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local WalkToPeep = B.Node("WalkToPeep")
 WalkToPeep.PEEP = B.Reference()
 WalkToPeep.DISTANCE = B.Reference()
+WalkToPeep.AS_CLOSE_AS_POSSIBLE = B.Reference()
 
 function WalkToPeep:update(mashina, state, executor)
 	local peep = state[self.PEEP]
@@ -23,7 +24,10 @@ function WalkToPeep:update(mashina, state, executor)
 	end
 
 	local i, j, k = Utility.Peep.getTile(peep)
-	local s = Utility.Peep.walk(mashina, i, j, k, state[self.DISTANCE])
+	local s = Utility.Peep.walk(mashina, i, j, k, state[self.DISTANCE], {
+		asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
+	})
+
 	if s then
 		return B.Status.Success
 	else

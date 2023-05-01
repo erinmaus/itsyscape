@@ -252,6 +252,8 @@ function Application:probe(x, y, performDefault, callback, tests)
 end
 
 function Application:shoot(x, y)
+	love.graphics.push('all')
+
 	local width, height = love.window.getMode()
 	y = height - y
 
@@ -261,6 +263,8 @@ function Application:shoot(x, y)
 	local a = Vector(love.graphics.unproject(x, y, 0.0))
 	local b = Vector(love.graphics.unproject(x, y, 0.1))
 	local r = Ray(a, b - a)
+
+	love.graphics.pop()
 
 	return r
 end
@@ -568,7 +572,7 @@ function Application:mouseScroll(x, y)
 	return false
 end
 
-function Application:mouseMove(x, y, button)
+function Application:mouseMove(x, y, dx, dy)
 	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
 
 	return false

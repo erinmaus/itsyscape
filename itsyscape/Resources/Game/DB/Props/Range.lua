@@ -36,7 +36,7 @@ ItsyScape.Resource.Prop "CookingRange_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicTableProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
 }
 

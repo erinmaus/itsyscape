@@ -44,7 +44,7 @@ function Sleep:perform(state, player, target)
 	end
 
 	if target and self:canPerform(state) then
-		local i, j, k = Utility.Peep.getTile(target)
+		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
 
 		if walk then

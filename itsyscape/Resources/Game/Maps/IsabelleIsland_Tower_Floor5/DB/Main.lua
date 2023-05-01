@@ -68,6 +68,18 @@ do
 	}
 end
 
+M["Anchor_OrlandoOnTower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 7,
+		PositionZ = 27,
+		Name = "Anchor_OrlandoOnTower",
+		Map = M._MAP,
+		Resource = M["Anchor_OrlandoOnTower"]
+	}
+end
+
 M["UnstablePortal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

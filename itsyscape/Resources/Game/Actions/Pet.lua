@@ -21,7 +21,7 @@ Pet.DURATION = 0.5
 
 function Pet:perform(state, player, target)
 	if target and self:canPerform(state) then
-		local i, j, k = Utility.Peep.getTile(target)
+		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = false })
 
 		if walk then

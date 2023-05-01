@@ -80,6 +80,17 @@ end
 function BasicTree:previewShake()
 	local _, g = self:addBehavior(GatheredResourceBehavior)
 	g.count = g.count + 1
+
+	local gameDB = self:getDirector():getGameDB()
+	local p = gameDB:getRecord("GatherableProp", {
+		Resource = resource
+	})
+
+	if p then
+		self.spawnCooldown = p:get("SpawnTime") or 60
+	else
+		self.spawnCooldown = 60
+	end
 end
 
 function BasicTree:getPropState()

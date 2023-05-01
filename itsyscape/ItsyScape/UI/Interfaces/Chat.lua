@@ -107,9 +107,9 @@ function Chat:updateChat(messages)
 
 	local w = self.chatPanel:getInnerPanel():getSize()
 
-	if #messages < #self.messages then
-		while #messages < #self.messages do
-			self.chatPanel:removeChild(self.messages[i])
+	if #self.messages > #messages then
+		while #self.messages > #messages do
+			self.chatPanel:removeChild(self.messages[1])
 			table.remove(self.messages, 1)
 		end
 	elseif #messages > #self.messages then
@@ -149,6 +149,12 @@ function Chat:updateChat(messages)
 
 	if scrollHeight > Chat.HEIGHT and scrollY + push + panelHeight >= scrollHeight - panelHeight / 2 then
 		self.chatPanel:getInnerPanel():setScroll(scrollX, math.min(scrollY + push, scrollHeight - panelHeight))
+	elseif pushStart > #self.messages then
+		if scrollHeight < panelHeight then
+			self.chatPanel:getInnerPanel():setScroll(scrollX, 0)
+		else
+			self.chatPanel:getInnerPanel():setScroll(scrollX, math.min(scrollY, scrollHeight - panelHeight))
+		end
 	end
 end
 

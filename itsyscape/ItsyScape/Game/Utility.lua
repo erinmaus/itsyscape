@@ -2270,6 +2270,61 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	return false, reason
 end
 
+function Utility.Peep.getTileAnchor(peep)
+	if peep:hasBehavior(ActorReferenceBehavior) then
+		return Utility.Peep.getTile(peep)
+	end
+
+	local rotation = Utility.Peep.getRotation(peep)
+	local size = Utility.Peep.getSize(peep)
+
+	local offsetI, offsetJ
+	do
+		local mapObject = Utility.Peep.getMapObject(peep)
+		local resource = Utility.Peep.getResource(peep)
+		if mapObject then
+			local gameDB = peep:getDirector():getGameDB()
+
+			local record = gameDB:getRecord("PropAnchor", {
+				Resource = mapObject
+			})
+
+			if record then
+				offsetI = record:get("OffsetI")
+				offsetJ = record:get("OffsetJ")
+			end
+		end
+
+		if not (offsetI and offsetJ) and resource then
+			local gameDB = peep:getDirector():getGameDB()
+
+			local record = gameDB:getRecord("PropAnchor", {
+				Resource = resource
+			})
+
+			if record then
+				offsetI = record:get("OffsetI")
+				offsetJ = record:get("OffsetJ")
+			end
+		end
+	end
+
+	if not (offsetI and offsetJ) then
+		local map = Utility.Peep.getMap(peep)
+
+		offsetI = 0
+		offsetJ = math.max(math.floor(size.z / map:getCellSize()), 1)
+	end
+
+	local i, j = Utility.Peep.getTile(peep)
+	local v = rotation:transformVector(Vector(offsetI, 0, offsetJ))
+
+	i = i + math.floor(v.x)
+	j = j + math.floor(v.z)
+
+	return i, j, Utility.Peep.getLayer(peep)
+end
+
 function Utility.Peep.getTile(peep)
 	if not peep:hasBehavior(PositionBehavior) then
 		return 0, 0
@@ -3017,6 +3072,12 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	if not combat or combat.dead then
 		return
 	end
+	
+	local isAttackable = Utility.Peep.isAttackable(self)
+	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
+	if not isAttackable and isPlayerAggressor then
+		return
+	end
 
 	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
 
@@ -3089,6 +3150,13 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
+		return
+	end
+	
+	local isAttackable = Utility.Peep.isAttackable(self)
+	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
+	local isSelfPlayer = self:hasBehavior(PlayerBehavior)
+	if (not isAttackable and isPlayerAggressor) or (isPlayerAggressor and isSelfPlayer) then
 		return
 	end
 
@@ -3411,6 +3479,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
 	peep:addResource("animation-action-bury", actionBury)
+	local actionPick = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBury_1/Script.lua")
+	peep:addResource("animation-action-pick", actionPick)
 	local actionCook = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
