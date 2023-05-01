@@ -105,8 +105,8 @@ function ItemIconRenderer:draw(widget, state)
 		end
 	end
 
-	local count = widget:get("itemCount", state)
-	if count > 1 then
+	local count = math.max(widget:get("itemCount", state), 0)
+	if itemID and count ~= 1 then
 		local oldFont = love.graphics.getFont()
 		love.graphics.setFont(self.font)
 
