@@ -578,7 +578,6 @@ function Bank:probeTab(sectionIndex, tabIndex)
 end
 
 function Bank:openTab(sectionIndex, tabIndex)
-	self:removeChild(self.filterEditPanel)
 	self:addChild(self.newSectionButton)
 	self:addChild(self.tabsLayout)
 
@@ -612,7 +611,6 @@ function Bank:addSearchResultsToTab(sectionIndex, tabIndex)
 end
 
 function Bank:closeTab()
-	self:removeChild(self.filterEditPanel)
 	self:addChild(self.newSectionButton)
 	self:addChild(self.tabsLayout)
 
@@ -657,6 +655,13 @@ function Bank:update(...)
 
 		self.numBankSpaces = state.items.max
 	end
+
+	local bankWidth, bankHeight = self.bankLayout:getSize()
+	local bankScrollX, bankScrollY = self.bankLayout:getInnerPanel():getScroll()
+	local maxScrollX, maxScrollY = self.bankLayout:getInnerPanel():getSize()
+	self.bankLayout:getInnerPanel():setScroll(
+		math.min(math.max(maxScrollX - bankWidth, 0), bankScrollX),
+		math.min(math.max(maxScrollY - bankHeight, 0), bankScrollY))
 end
 
 function Bank:updateItemLayout(layout, items, source)
@@ -833,7 +838,15 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 			end
 
 			if not wasInSection and self.activeSection ~= Bank.SECTION_NONE and self.activeTab ~= Bank.TAB_NONE then
-				self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = self.activeSection, tabIndex = self.activeTab, itemIndex = index })
+				local sectionIndex = self.activeSection
+				local tabIndex = self.activeTab
+
+				local state = self:getState()
+				if #state.items == 1 then
+					self:closeTab()
+				end
+
+				self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex, itemIndex = index })
 			end
 		end
 	end
@@ -951,7 +964,15 @@ function Bank:probe(source, button)
 					verb = "Remove-From-Tab",
 					object = object,
 					callback = function()
-						self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = self.activeSection, tabIndex = self.activeTab, itemIndex = index })
+						local sectionIndex = self.activeSection
+						local tabIndex = self.activeTab
+
+						local state = self:getState()
+						if #state.items == 1 then
+							self:closeTab()
+						end
+
+						self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex, itemIndex = index })
 					end
 				})
 			end
