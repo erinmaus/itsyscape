@@ -674,9 +674,10 @@ function BankController:deposit(e)
 	assert(type(e.index == "number"), "index is not a number")
 	assert(type(e.count == "number"), "count is not a number")
 
+	local item = self.items.inventory[e.index]
+
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 	if inventory and inventory.bank and inventory.inventory then
-		local item = self.items.inventory[e.index]
 		if item then
 			inventory.bank:deposit(item, e.count, true)
 		end
@@ -684,8 +685,8 @@ function BankController:deposit(e)
 
 	if self.currentSectionIndex and self.currentTabIndex then
 		local sectionsStorage = self:getBankStorage():getSection("sections")
-		local tabsStorage = sectionsStorage:getSection(e.sectionIndex)
-		local tabStorage = tabsStorage:getSection(e.tabIndex)
+		local tabsStorage = sectionsStorage:getSection(self.currentSectionIndex)
+		local tabStorage = tabsStorage:getSection(self.currentTabIndex)
 
 		if not tabStorage:get(item:getID()) then
 			tabStorage:set(tabStorage:length() + 1, item:getID())
