@@ -36,6 +36,10 @@ end
 
 function ChatController:pull()
 	local playerModel = Utility.Peep.getPlayerModel(self:getPeep())
+	if not playerModel then
+		return { received = 0 }
+	end
+
 	local messages = playerModel:getMessages()
 
 	local result = {}

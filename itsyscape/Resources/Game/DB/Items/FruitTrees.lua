@@ -69,6 +69,12 @@ for name, tree in spairs(TREES) do
 		Resource = Tree
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = Tree
+	}
+
 	Tree {
 		ItsyScape.Action.Shake()
 	}

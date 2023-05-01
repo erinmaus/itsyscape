@@ -65,13 +65,29 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 
 	local items = { count = 0 }
 
+	if flags['item-instances'] then
+		for i = 1, #flags['item-instances'] do
+			local item = flags['item-instances'][i]
+			if item:isNoted() == noted and item:getID() == name then
+				table.insert(items, item)
+
+				items.count = items.count + item:getCount()
+				if items.count > count then
+					break
+				end
+			end
+		end
+	end
+
 	local broker = self.inventory:getBroker()
-	for item in broker:iterateItems(self.inventory) do
-		if item:getID() == name and item:isNoted() == noted then
-			items.count = items.count + item:getCount()
-			table.insert(items, item)
-			if items.count > count then
-				break
+	if items.count < count then
+		for item in broker:iterateItems(self.inventory) do
+			if item:getID() == name and item:isNoted() == noted then
+				items.count = items.count + item:getCount()
+				table.insert(items, item)
+				if items.count > count then
+					break
+				end
 			end
 		end
 	end

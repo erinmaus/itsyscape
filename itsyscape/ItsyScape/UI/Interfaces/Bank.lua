@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local Button = require "ItsyScape.UI.Button"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
@@ -32,7 +33,7 @@ local Bank = Class(Interface)
 Bank.ITEM_TAB_SIZE = 48
 Bank.ITEM_SIZE = 48
 Bank.ITEM_ICON_PADDING = 2
-Bank.ITEM_PADDING = 12
+Bank.ITEM_PADDING = 16
 Bank.MIN_ITEM_TAB_COLUMNS = 4
 Bank.MAX_ITEM_TAB_COLUMNS = 6
 Bank.INVENTORY_COLUMNS = 4
@@ -40,9 +41,13 @@ Bank.SECTION_TITLE_BUTTON_SIZE = 48
 Bank.SECTION_PADDING = 4
 Bank.TITLE_LABEL_HEIGHT = 48
 
+Bank.WITHDRAW_X_PADDING = 16
+Bank.WITHDRAW_X_WINDOW_WIDTH = 480
+Bank.WITHDRAW_X_WINDOW_HEIGHT = 160
+
 -- Enums
 Bank.SECTION_NONE = 0
-Bank.QUERY_NONE   = 0
+Bank.TAB_NONE   = 0
 
 -- Styles
 Bank.ACTIVE_TAB_STYLE = {
@@ -152,29 +157,22 @@ function Bank:new(id, index, ui)
 	tabsLabel:setPosition(self.tabsLayout:getPosition(), Bank.ITEM_PADDING)
 	self:addChild(tabsLabel)
 
-	self.addSectionButton = Button()
+	self.newSectionButton = Button()
 	do
 		local x, y = self.tabsLayout:getPosition()
-		self.addSectionButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, ui:getResources()))
-		self.addSectionButton:setPosition(
+		self.newSectionButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, ui:getResources()))
+		self.newSectionButton:setPosition(
 			x,
 			Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
-		self.addSectionButton:setSize(Bank.SECTION_TITLE_BUTTON_SIZE, Bank.SECTION_TITLE_BUTTON_SIZE)
-		self.addSectionButton.onClick:register(self.addSection, self)
+		self.newSectionButton:setSize(Bank.SECTION_TITLE_BUTTON_SIZE, Bank.SECTION_TITLE_BUTTON_SIZE)
+		self.newSectionButton.onClick:register(self.addSection, self)
 
-		local addSectionButtonIcon = Icon()
-		addSectionButtonIcon:setIcon("Resources/Game/UI/Icons/Concepts/Add.png")
-		self.addSectionButton:addChild(addSectionButtonIcon)
+		local newSectionButtonIcon = Icon()
+		newSectionButtonIcon:setIcon("Resources/Game/UI/Icons/Concepts/Add.png")
+		self.newSectionButton:addChild(newSectionButtonIcon)
 
-		self:addChild(self.addSectionButton)
+		self:addChild(self.newSectionButton)
 	end
-
-	-- This is only visible when editing/creating a filter.
-	self.filterEditPanel = ScrollablePanel(GridLayout)
-	self.filterEditPanel:getInnerPanel():setWrapContents(true)
-	self.filterEditPanel:getInnerPanel():setPadding(Bank.SECTION_PADDING, Bank.SECTION_PADDING * 2)
-	self.filterEditPanel:setPosition(self.tabsLayout:getPosition())
-	self.filterEditPanel:setSize(self.tabsLayout:getSize())
 
 	self.bankLayout = ScrollablePanel(GridLayout)
 	self.bankLayout:getInnerPanel():setWrapContents(true)
@@ -220,26 +218,37 @@ function Bank:new(id, index, ui)
 	bankLabel:setPosition(self.bankLayout:getPosition(), Bank.ITEM_PADDING)
 	self:addChild(bankLabel)
 
-	local withdrawXTextInput = TextInput()
-	withdrawXTextInput:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
-	withdrawXTextInput:setText('1000')
-	withdrawXTextInput:setPosition(
-		self.bankLayout:getPosition() + self.bankLayout:getSize() * (2 / 3),
+	local search = TextInput()
+	search:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
+	search:setText("Search...")
+	search:setData('empty', true)
+	search:setPosition(
+		self.bankLayout:getPosition() + self.bankLayout:getSize() * (1 / 3),
 		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT)
-	withdrawXTextInput:setSize(self.bankLayout:getSize() / 3, Bank.SECTION_TITLE_BUTTON_SIZE)
-	withdrawXTextInput.onFocus:register(function()
-		withdrawXTextInput:setCursor(0, #withdrawXTextInput:getText() + 1)
+	search:setSize(self.bankLayout:getSize() * (2 / 3), Bank.SECTION_TITLE_BUTTON_SIZE)
+	search.onFocus:register(function()
+		if search:getData('empty', true) then
+			search:setText("")
+		else
+			search:setCursor(0, #search:getText() + 1)
+		end
 	end)
-	withdrawXTextInput.onValueChanged:register(self.changeWithdrawXAmount, self)
-	self:addChild(withdrawXTextInput)
+	search.onBlur:register(function()
+		self:search(search)
 
-	local withdrawXLabel = Label()
-	withdrawXLabel:setStyle(LabelStyle(Bank.LABEL_STYLE, ui:getResources()))
-	withdrawXLabel:setText("Withdraw-X Quantity:")
-	withdrawXLabel:setPosition(
-		withdrawXTextInput:getPosition() - 250,
-		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT + 12)
-	self:addChild(withdrawXLabel)
+		if search:getText() == "" then
+			search:setText("Search...")
+			search:setData('empty', true)
+		end
+	end)
+	search.onValueChanged:register(function()
+		self:search(search)
+
+		if search:getText() ~= "" then
+			search:setData('empty', false)
+		end
+	end)
+	self:addChild(search)
 
 	self.inventoryLayout = ScrollablePanel(GridLayout)
 	self.inventoryLayout:getInnerPanel():setWrapContents(true)
@@ -281,10 +290,10 @@ function Bank:new(id, index, ui)
 	end)
 	self:addChild(self.closeButton)
 
-	self.filterSections = {}
+	self.sections = {}
 	self.activeSection = Bank.SECTION_NONE
-	self.activeFilter = Bank.QUERY_NONE
-	self:generateFilterSections()
+	self.activeTab = Bank.TAB_NONE
+	self:generateSections()
 	self:generateTabs()
 	self.tabsLayout:performLayout()
 
@@ -296,15 +305,55 @@ function Bank:getIsFullscreen()
 	return true
 end
 
-function Bank:changeWithdrawXAmount(textInput)
-	-- Remove all non-number values
-	value = string.gsub(textInput:getText(), "[^%d]", "")
-	textInput:setText(value)
+function Bank:withdrawX(index)
+	local promptWindow = PromptWindow(_APP)
+	promptWindow.onSubmit:register(function(_, value)
+		value = tonumber(value)
+		if value and value >= 1 then
+			self.withdrawXCount = value
+			self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+		end
+	end)
 
-	self.withdrawXCount = tonumber(value) or 1
+	promptWindow:open(
+		"How many would you like to withdraw?",
+		"Withdraw-X",
+		tostring(self.withdrawXCount),
+		Bank.WITHDRAW_X_WINDOW_WIDTH,
+		Bank.WITHDRAW_X_WINDOW_HEIGHT)
+
+	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+	x = x - Bank.WITHDRAW_X_WINDOW_WIDTH / 2
+	y = y - Bank.WITHDRAW_X_WINDOW_HEIGHT / 2
+
+	local width, height = promptWindow:getSize()
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+
+	if x < Bank.WITHDRAW_X_PADDING then
+		x = Bank.WITHDRAW_X_PADDING
+	end
+
+	if y < Bank.WITHDRAW_X_PADDING then
+		y = Bank.WITHDRAW_X_PADDING
+	end
+
+	if x + width > screenWidth then
+		x = screenWidth - width - Bank.WITHDRAW_X_PADDING
+	end
+
+	if y + height > screenHeight then
+		y = screenHeight - height - Bank.WITHDRAW_X_PADDING
+	end
+
+	promptWindow:setPosition(x, y)
 end
 
-function Bank:generateFilterSection(stateSection, sectionIndex)
+function Bank:search(textInput)
+	self:sendPoke("search", nil, { query = textInput:getText() })
+end
+
+function Bank:generateSection(stateSection, sectionIndex)
 	local w = self.tabsLayout:getSize()
 
 	local gridLayout = GridLayout()
@@ -312,6 +361,7 @@ function Bank:generateFilterSection(stateSection, sectionIndex)
 	gridLayout:setPadding(Bank.SECTION_PADDING, Bank.SECTION_PADDING)
 	gridLayout:setSize(w, Bank.SECTION_TITLE_BUTTON_SIZE)
 
+	local addButton
 	if sectionIndex > 0 then
 		local sectionTextInput = TextInput()
 		sectionTextInput:setStyle(TextInputStyle(Bank.SECTION_TITLE_STYLE, self:getView():getResources()))
@@ -324,9 +374,8 @@ function Bank:generateFilterSection(stateSection, sectionIndex)
 		sectionTextInput.onSubmit:register(self.blurTextInput, self)
 		gridLayout:addChild(sectionTextInput)
 
-		local addButton = DraggableButton()
+		addButton = DraggableButton()
 		addButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
-		addButton.onLeftClick:register(self.addQuery, self, sectionIndex)
 		addButton.onRightClick:register(self.probeSection, self, sectionIndex)
 		addButton:setSize(Bank.SECTION_TITLE_BUTTON_SIZE, Bank.SECTION_TITLE_BUTTON_SIZE)
 
@@ -337,7 +386,7 @@ function Bank:generateFilterSection(stateSection, sectionIndex)
 		gridLayout:addChild(addButton)
 	end
 
-	self.filterSections[sectionIndex] = { layout = gridLayout }
+	self.sections[sectionIndex] = { layout = gridLayout, itemDropTarget = addButton }
 
 	self.tabsLayout:addChild(gridLayout)
 end
@@ -355,55 +404,64 @@ function Bank:blurTextInput()
 	self:getView():getInputProvider():setFocusedWidget(nil)
 end
 
-function Bank:generateFilterSections()
-	self:generateFilterSection({ name = "Common" }, 0, false)
+function Bank:generateSections()
+	self:generateSection({ name = "Common" }, 0, false)
 
-	local filters = self:getState().filters
-	for i = 1, #filters do
-		self:generateFilterSection(filters[i], i, true)
+	local sections = self:getState().sections
+	for i = 1, #sections do
+		self:generateSection(sections[i], i, true)
 	end
 end
 
-function Bank:addFilterButton(sectionIndex, filterIndex)
+function Bank:addSectionButton(sectionIndex, tabIndex)
 	local button = DraggableButton()
 	button:setData('sectionIndex', sectionIndex)
-	button:setData('filterIndex', filterIndex)
+	button:setData('tabIndex', tabIndex)
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = ItemIcon()
 	icon:setData('sectionIndex', sectionIndex)
-	icon:setData('filterIndex', filterIndex)
-	icon:bind('itemID', "filters[{sectionIndex}][{filterIndex}].item")
+	icon:setData('tabIndex', tabIndex)
+	icon:setData('featuredItem', 1)
+	icon:bind('itemID', "sections[{sectionIndex}][{tabIndex}][1]")
 	button:addChild(icon)
 
-	button.onLeftClick:register(self.onPerformQuery, self, sectionIndex, filterIndex)
-	button.onRightClick:register(self.probeFilter, self, sectionIndex, filterIndex)
+	button.onLeftClick:register(self.openTab, self, sectionIndex, tabIndex)
+	button.onRightClick:register(self.probeTab, self, sectionIndex, tabIndex)
 
-	self.filterSections[sectionIndex].layout:addChild(button)
+	self.sections[sectionIndex].layout:addChild(button)
 	self:tryMakeButtonActiveStyle(button)
 end
 
 function Bank:addAllButton()
 	local button = Button()
 	button:setData('sectionIndex', Bank.SECTION_NONE)
-	button:setData('filterIndex', Bank.QUERY_NONE)
+	button:setData('tabIndex', Bank.TAB_NONE)
 	button:setSize(Bank.ITEM_TAB_SIZE, Bank.ITEM_TAB_SIZE)
 
 	local icon = Icon()
 	icon:setIcon("Resources/Game/UI/Icons/Things/Chest.png")
 	button:addChild(icon)
 
-	button.onClick:register(self.onClearQuery, self)
+	button.onClick:register(self.clickAllButton, self)
 
-	self.filterSections[0].layout:addChild(button)
+	self.sections[0].layout:addChild(button)
 	self:tryMakeButtonActiveStyle(button)
+end
+
+function Bank:clickAllButton(_, index)
+	if index == 1 then
+		self:closeTab()
+	elseif index == 2 then
+		self:probeAllButton()
+	end
 end
 
 function Bank:tryMakeButtonActiveStyle(button)
 	local sectionIndex = button:getData('sectionIndex')
-	local filterIndex = button:getData('filterIndex')
+	local tabIndex = button:getData('tabIndex')
 
-	if self.activeSection == sectionIndex and self.activeFilter == filterIndex then
+	if self.activeSection == sectionIndex and self.activeTab == tabIndex then
 		button:setStyle(ButtonStyle(Bank.ACTIVE_TAB_STYLE, self:getView():getResources()))
 	else
 		button:setStyle(ButtonStyle(Bank.INACTIVE_TAB_STYLE, self:getView():getResources()))
@@ -413,21 +471,21 @@ end
 function Bank:generateTabs()
 	self:addAllButton()
 
-	local filters = self:getState().filters
-	for i = 1, #filters do
-		for j = 1, #filters[i] do
-			self:addFilterButton(i, j)
+	local sections = self:getState().sections
+	for i = 1, #sections do
+		for j = 1, #sections[i] do
+			self:addSectionButton(i, j)
 		end
 	end
 end
 
-function Bank:updateFilters()
+function Bank:updateSections()
 	-- The psuedo-section "Section 0" is for the "Common"
-	for i = 0, #self.filterSections do
-		self.tabsLayout:removeChild(self.filterSections[i].layout)
+	for i = 0, #self.sections do
+		self.tabsLayout:removeChild(self.sections[i].layout)
 	end
 
-	self:generateFilterSections()
+	self:generateSections()
 	self:generateTabs()
 	self.tabsLayout:performLayout()
 end
@@ -441,23 +499,15 @@ function Bank:deleteSection(sectionIndex)
 end
 
 function Bank:probeSection(sectionIndex)
-	local sectionName = self:getState().filters[sectionIndex].name
+	local sectionName = self:getState().sections[sectionIndex].name
 
 	local actions = {
-		{
-			id = "Add",
-			verb = "Add", -- TODO: [LANG]
-			object = sectionName,
-			callback = function()
-				self:addQuery(sectionIndex)
-			end
-		},
 		{
 			id = "Delete",
 			verb = "Delete", -- TODO: [LANG]
 			object = sectionName,
 			callback = function()
-				self:deleteSection(sectionIndex, queryIndex)
+				self:deleteSection(sectionIndex)
 			end
 		}
 	}
@@ -465,30 +515,61 @@ function Bank:probeSection(sectionIndex)
 	self:getView():probe(actions)
 end
 
-function Bank:probeFilter(sectionIndex, queryIndex)
+function Bank:probeAllButton()
+	local actions = {
+		{
+			id = "View",
+			verb = "View",
+			object = "Bank",
+			callback = function()
+				self:closeTab()
+			end
+		},
+		{
+			id = "Sort",
+			verb = "Sort",
+			object = "Bank",
+			callback = function()
+				self:sortBank()
+			end
+		}
+	}
+
+	self:getView():probe(actions)
+end
+
+function Bank:probeTab(sectionIndex, tabIndex)
 	local actions = {
 		{
 			id = "View",
 			verb = "View", -- TODO: [LANG]
-			object = "Filter",
+			object = "Tab",
 			callback = function()
-				self:switchToFilter(sectionIndex, queryIndex)
+				self:openTab(sectionIndex, tabIndex)
 			end
 		},
 		{
-			id = "Edit",
-			verb = "Edit", -- TODO: [LANG]
-			object = "Filter",
+			id = "Sort",
+			verb = "Sort", -- TODO: [LANG]
+			object = "Tab",
 			callback = function()
-				self:openFilterEdit(sectionIndex, queryIndex)
+				self:sortTab(sectionIndex, tabIndex)
+			end
+		},
+		{
+			id = "Add",
+			verb = "Add",
+			object = "Search results",
+			callback = function()
+				self:addSearchResultsToTab(sectionIndex, tabIndex)
 			end
 		},
 		{
 			id = "Delete",
 			verb = "Delete", -- TODO: [LANG]
-			object = "Filter",
+			object = "Tab",
 			callback = function()
-				self:deleteFilter(sectionIndex, queryIndex)
+				self:deleteTab(sectionIndex, tabIndex)
 			end
 		}
 	}
@@ -496,210 +577,54 @@ function Bank:probeFilter(sectionIndex, queryIndex)
 	self:getView():probe(actions)
 end
 
-function Bank:onPerformQuery(sectionIndex, queryIndex)
-	self:removeChild(self.filterEditPanel)
-	self:addChild(self.addSectionButton)
+function Bank:openTab(sectionIndex, tabIndex)
+	self:addChild(self.newSectionButton)
 	self:addChild(self.tabsLayout)
 
 	self.activeSection = sectionIndex
-	self.activeFilter = queryIndex
-	self:sendPoke("applyFilter", nil, { sectionIndex = sectionIndex, queryIndex = queryIndex })
+	self.activeTab = tabIndex
+	self:sendPoke("openTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex })
 
 	self.bankLayout:getInnerPanel():setScroll(0, 0)
 end
 
-function Bank:onClearQuery()
-	self:removeChild(self.filterEditPanel)
-	self:addChild(self.addSectionButton)
+function Bank:sortBank()
+	self:sendPoke("sortBank", nil, {})
+end
+
+function Bank:sortTab(sectionIndex, tabIndex)
+	self:sendPoke("sortTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex })
+end
+
+function Bank:addSearchResultsToTab(sectionIndex, tabIndex)
+	local items = self:getState().items
+
+	for i = 1, #items do
+		if not items[i].disabled then
+			self:sendPoke("addItemToSectionTab", nil, {
+				sectionIndex = sectionIndex,
+				tabIndex = tabIndex,
+				itemIndex = i
+			})
+		end
+	end
+end
+
+function Bank:closeTab()
+	self:addChild(self.newSectionButton)
 	self:addChild(self.tabsLayout)
 
 	self.activeSection = Bank.SECTION_NONE
-	self.activeFilter = Bank.QUERY_NONE
-	self:sendPoke("clearFilter", nil, {})
+	self.activeTab = Bank.TAB_NONE
+	self:sendPoke("closeTab", nil, {})
 end
 
-function Bank:generateFilterOperation(sectionIndex, queryIndex, operationIndex)
-	local function getOperation()
-		return self:getState().filters[sectionIndex][queryIndex][operationIndex]
+function Bank:deleteTab(sectionIndex, tabIndex)
+	if self.activeSection == sectionIndex and self.activeTab == tabIndex then
+		self:sendPoke("closeTab", nil, {})
 	end
 
-	local function applyFilter()
-		self:sendPoke("editFilter", nil, {
-			sectionIndex = sectionIndex,
-			queryIndex = queryIndex,
-			query = self:getState().filters[sectionIndex][queryIndex] })
-	end
-
-	local childLayout = GridLayout()
-	childLayout:setWrapContents(true)
-	childLayout:setPadding(Bank.SECTION_PADDING, Bank.SECTION_PADDING)
-
-	local width = self.filterEditPanel:getSize() - ScrollablePanel.DEFAULT_SCROLL_SIZE
-	childLayout:setSize(width, 0)
-
-	local function setFilterTerm(textInput)
-		local operation = getOperation()
-		operation.term = textInput:getText()
-		applyFilter()
-	end
-
-	local queryInput = TextInput()
-	queryInput:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, self:getView():getResources()))
-	queryInput:setSize(width - Bank.SECTION_PADDING * 3, Bank.SECTION_TITLE_BUTTON_SIZE)
-	queryInput.onSubmit:register(setFilterTerm)
-	queryInput.onBlur:register(setFilterTerm)
-	queryInput:setText(getOperation().term)
-	childLayout:addChild(queryInput)
-
-	local function setButtonStyle(key, invert, button)
-		local enabled
-		do
-			local operation = getOperation()
-			enabled = operation[key]
-
-			if invert then
-				enabled = not enabled
-			end
-		end
-
-		if enabled then
-			button:setStyle(ButtonStyle(Bank.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
-		else
-			button:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
-		end
-	end
-
-	local function toggleOperationValue(key, button)
-		local operation = getOperation()
-		operation[key] = not operation[key]
-
-		-- TODO: Invert toggle when moving to async model
-		setButtonStyle(key, false, button)
-		applyFilter()
-	end
-
-	local function addOperationValue(key, niceName, description)
-		local button = Button()
-		button:setText(niceName)
-		button:setToolTip(description)
-		button:setSize((width - Bank.SECTION_PADDING * 3) / 2 - Bank.SECTION_PADDING, Bank.SECTION_TITLE_BUTTON_SIZE)
-
-		button.onClick:register(setButtonStyle, key, true)
-		button.onClick:register(toggleOperationValue, key)
-
-		setButtonStyle(key, false, button)
-		childLayout:addChild(button)
-	end
-
-	addOperationValue("name", "Name", "Search for item name.")
-	addOperationValue("description", "Descr.", "Search the description (examine) of an item.")
-	addOperationValue("keyword", "Keyword", "Search for a keyword that describes the item.")
-	addOperationValue("action", "Action", "Search for an action that can be performed with the item.")
-	addOperationValue("flip", "Flip", "Exclude items matching this query.")
-
-	do
-		local deleteButton = Button()
-		deleteButton:setText("Delete")
-		deleteButton:setToolTip("Delete this query section.")
-		deleteButton:setSize(
-			(width - Bank.SECTION_PADDING * 3) / 2 - Bank.SECTION_PADDING,
-			Bank.SECTION_TITLE_BUTTON_SIZE)
-
-		deleteButton.onClick:register(function()
-			local query = self:getState().filters[sectionIndex][queryIndex]
-			table.remove(query, operationIndex)
-			applyFilter()
-		end)
-
-		deleteButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
-		childLayout:addChild(deleteButton)
-	end
-
-	self.filterEditPanel:addChild(childLayout)
-end
-
-function Bank:deleteFilter(sectionIndex, queryIndex)
-	if self.activeSection == sectionIndex and self.activeFilter == queryIndex then
-		self:sendPoke("clearFilter", nil, {})
-	end
-
-	self:sendPoke("removeFilter", nil, { sectionIndex = sectionIndex, queryIndex = queryIndex })
-end
-
-function Bank:addQueryOp(sectionIndex, queryIndex)
-	local state = self:getState()
-	local query = state.filters[sectionIndex][queryIndex]
-	table.insert(query, {
-		term = "Potato",
-		name = false,
-		keyword = false,
-		description = false,
-		action = false,
-		flip = false
-	})
-
-	self:sendPoke("editFilter", nil, {
-		sectionIndex = sectionIndex,
-		queryIndex = queryIndex,
-		query = self:getState().filters[sectionIndex][queryIndex] })
-end
-
-function Bank:openFilterEdit(sectionIndex, queryIndex)
-	local state = self:getState()
-	local query = state.filters[sectionIndex][queryIndex]
-
-	-- Clear existing filter
-	do
-		local children = {}
-		for _, operation in self.filterEditPanel:getInnerPanel():iterate() do
-			table.insert(children, operation)
-		end
-
-		for i = 1, #children do
-			self.filterEditPanel:removeChild(children[i])
-		end
-	end
-
-	for operationIndex = 1, #query do
-		self:generateFilterOperation(sectionIndex, queryIndex, operationIndex)
-	end
-
-	do
-		local addOpButton = Button()
-		addOpButton:setText("Add Query")
-		addOpButton:setToolTip("Also search for something else.")
-		addOpButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
-		addOpButton:setSize(
-			self.filterEditPanel:getInnerPanel():getSize() - Bank.SECTION_PADDING * 2,
-			Bank.SECTION_TITLE_BUTTON_SIZE)
-		addOpButton.onClick:register(self.addQueryOp, self, sectionIndex, queryIndex)
-		self.filterEditPanel:addChild(addOpButton)
-	end
-
-	do
-		local confirmButton = Button()
-		confirmButton:setText("Confirm")
-		confirmButton:setStyle(ButtonStyle(Bank.BUTTON_STYLE, self:getView():getResources()))
-		confirmButton:setSize(
-			self.filterEditPanel:getInnerPanel():getSize() - Bank.SECTION_PADDING * 2,
-			Bank.SECTION_TITLE_BUTTON_SIZE)
-		confirmButton.onClick:register(self.onPerformQuery, self, sectionIndex, queryIndex)
-		self.filterEditPanel:addChild(confirmButton)
-	end
-
-	self.filterEditPanel:setScrollSize(self.filterEditPanel:getInnerPanel():getSize())
-	self.filterEditPanel:performLayout()
-
-	local scrollSizeX, scrollSizeY = self.filterEditPanel:getScrollSize()
-	local scrollX, scrollY = self.filterEditPanel:getScroll()
-
-	self.filterEditPanel:getInnerPanel():setScroll(
-		math.min(scrollX, scrollSizeX),
-		math.min(scrollY, scrollSizeY))
-
-	self:removeChild(self.tabsLayout)
-	self:removeChild(self.addSectionButton)
-	self:addChild(self.filterEditPanel)
+	self:sendPoke("removeTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex })
 end
 
 function Bank:toggleNote(button)
@@ -730,6 +655,13 @@ function Bank:update(...)
 
 		self.numBankSpaces = state.items.max
 	end
+
+	local bankWidth, bankHeight = self.bankLayout:getSize()
+	local bankScrollX, bankScrollY = self.bankLayout:getInnerPanel():getScroll()
+	local maxScrollX, maxScrollY = self.bankLayout:getInnerPanel():getSize()
+	self.bankLayout:getInnerPanel():setScroll(
+		math.min(math.max(maxScrollX - bankWidth, 0), bankScrollX),
+		math.min(math.max(maxScrollY - bankHeight, 0), bankScrollY))
 end
 
 function Bank:updateItemLayout(layout, items, source)
@@ -740,6 +672,7 @@ function Bank:updateItemLayout(layout, items, source)
 		icon:bind("itemID", string.format("%s[{index}].id", source))
 		icon:bind("itemCount", string.format("%s[{index}].count", source))
 		icon:bind("itemIsNoted", string.format("%s[{index}].noted", source))
+		icon:bind("isDisabled", string.format("%s[{index}].disabled", source))
 		icon:setSize(
 			Bank.ICON_SIZE,
 			Bank.ICON_SIZE)
@@ -761,7 +694,7 @@ function Bank:updateItemLayout(layout, items, source)
 		button.onDrag:register(self.drag, self, source, layout)
 		button.onLeftClick:register(self.activate, self, source)
 		button.onRightClick:register(self.probe, self, source)
-		button.onMouseMove:register(self.examine, self, icon, items, i)
+		button.onMouseMove:register(self.examine, self, icon, source, i)
 
 		layout:addChild(button)
 	end
@@ -770,17 +703,20 @@ function Bank:updateItemLayout(layout, items, source)
 	layout:setData('source', source)
 end
 
-function Bank:examine(icon, inventory, index)
-	self:examineItem(icon, inventory, index)
+function Bank:examine(icon, source, index)
+	local state = self:getState()
+	self:examineItem(icon, state[source], index)
 end
 
-function Bank:getRightHandItem(layout, source, x, y)
+function Bank:getRightHandItem(layout, source)
+	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+
 	if source ~= 'items' then
 		return nil
 	end
 
 	for i, widget in layout:getInnerPanel():iterate() do
-		local widgetX, widgetY = widget:getPosition()
+		local widgetX, widgetY = widget:getAbsolutePosition()
 		local widgetWidth, widgetHeight = widget:getSize()
 
 		if x >= widgetX + widgetWidth and y >= widgetY and
@@ -800,7 +736,7 @@ end
 
 function Bank:drag(source, layout, button, x, y, absoluteX, absoluteY)
 	local icon = button:getData('icon')
-	local rightHandItem = self:getRightHandItem(layout, source, absoluteX, absoluteY)
+	local rightHandItem = self:getRightHandItem(layout, source)
 	if rightHandItem then
 		local SHRINKAGE = 0.5
 		icon:setSize(self.ITEM_SIZE * SHRINKAGE, self.ITEM_SIZE * SHRINKAGE)
@@ -828,7 +764,7 @@ local function isInside(x, y, widget)
 end
 
 function Bank:findButton(layout, x, y)
-	for _, button in layout:getInnerPanel():iterate() do
+	for _, button in layout:iterate() do
 		if isInside(x, y, button) then
 			return button
 		end
@@ -847,8 +783,8 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 
 	if index then
 		local inputProvider = self:getView():getInputProvider()
-		local destination = self:findButton(self.bankLayout, absoluteX, absoluteY) or
-		                    self:findButton(self.inventoryLayout, absoluteX, absoluteY)
+		local destination = self:findButton(self.bankLayout:getInnerPanel(), absoluteX, absoluteY) or
+		                    self:findButton(self.inventoryLayout:getInnerPanel(), absoluteX, absoluteY)
 
 		if destination then
 			local destinationInventory = destination:getData('source')
@@ -857,14 +793,14 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 				newIndex = destination:getData('icon'):getData('index')
 			end
 
-			if destinationInventory == 'items' then
+			if destinationInventory == 'items' or destinationInventory == nil then
 				if sourceInventory == 'inventory' then
 					local state = self:getState()
 					local numItems = state.inventory[index].count
 					self:sendPoke("deposit", nil, { index = index, count = numItems })
 				else
 					if newIndex == nil then
-						local rightHandItem = self:getRightHandItem(self.bankLayout, 'items', x, y)
+						local rightHandItem = self:getRightHandItem(self.bankLayout, 'items')
 						if rightHandItem then
 							if rightHandItem <= index then
 								rightHandItem = rightHandItem + 1
@@ -882,6 +818,35 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 				elseif index and newIndex then
 					self:sendPoke("swapInventory", nil, { a = index, b = newIndex })
 				end
+			end
+		else
+			local wasInSection = false
+			for i = 1, #self.sections do
+				local dropTarget = self.sections[i].itemDropTarget
+				if dropTarget and isInside(absoluteX, absoluteY, dropTarget) then
+					self:sendPoke("addSectionTab", nil, { sectionIndex = i, itemIndex = index })
+					wasInSection = true
+					break
+				else
+					local destination = self:findButton(self.sections[i].layout, absoluteX, absoluteY)
+					if destination and destination:getData('tabIndex') then
+						self:sendPoke("addItemToSectionTab", nil, { sectionIndex = i, tabIndex = destination:getData('tabIndex'), itemIndex = index })
+						wasInSection = true
+						break
+					end
+				end
+			end
+
+			if not wasInSection and self.activeSection ~= Bank.SECTION_NONE and self.activeTab ~= Bank.TAB_NONE then
+				local sectionIndex = self.activeSection
+				local tabIndex = self.activeTab
+
+				local state = self:getState()
+				if #state.items == 1 then
+					self:closeTab()
+				end
+
+				self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex, itemIndex = index })
 			end
 		end
 	end
@@ -967,11 +932,20 @@ function Bank:probe(source, button)
 			})
 
 			table.insert(actions, {
+				id = string.format("Withdraw-%d", self.withdrawXCount),
+				verb = string.format("Withdraw-%d", self.withdrawXCount), -- TODO: [LANG]
+				object = object,
+				callback = function()
+					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+				end
+			})
+
+			table.insert(actions, {
 				id = "Withdraw-X",
 				verb = "Withdraw-X", -- TODO: [LANG]
 				object = object,
 				callback = function()
-					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = self.withdrawXCount })
+					self:withdrawX(index)
 				end
 			})
 
@@ -983,17 +957,25 @@ function Bank:probe(source, button)
 					self:sendPoke("withdraw", nil, { noted = self.noted, index = index, count = math.huge })
 				end
 			})
-		end
 
-		for i = 1, #item.actions do
-			table.insert(actions, {
-				id = item.actions[i].type,
-				verb = item.actions[i].verb,
-				object = object,
-				callback = function()
-					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
-				end
-			})
+			if self.activeSection ~= Bank.SECTION_NONE and self.activeTab ~= Bank.SECTION_NONE then
+				table.insert(actions, {
+					id = "Remove-From-Tab",
+					verb = "Remove-From-Tab",
+					object = object,
+					callback = function()
+						local sectionIndex = self.activeSection
+						local tabIndex = self.activeTab
+
+						local state = self:getState()
+						if #state.items == 1 then
+							self:closeTab()
+						end
+
+						self:sendPoke("removeItemFromSectionTab", nil, { sectionIndex = sectionIndex, tabIndex = tabIndex, itemIndex = index })
+					end
+				})
+			end
 		end
 
 		table.insert(actions, {

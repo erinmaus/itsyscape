@@ -18,7 +18,7 @@ local OpenCookingWindow = Class(Action)
 OpenCookingWindow.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function OpenCookingWindow:perform(state, player, prop)
-	local i, j, k = Utility.Peep.getTile(prop)
+	local i, j, k = Utility.Peep.getTileAnchor(prop)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 2.5)
 	local face = CallbackCommand(Utility.Peep.face, player, prop)
 

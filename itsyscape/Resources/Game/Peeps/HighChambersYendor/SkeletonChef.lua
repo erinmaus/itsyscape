@@ -22,9 +22,6 @@ function SkeletonChef:new(resource, name, ...)
 	BaseSkeleton.new(self, resource, name or 'SkeletonChef', ...)
 
 	self:addBehavior(StanceBehavior)
-
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = 4
 end
 
 function SkeletonChef:ready(director, game)

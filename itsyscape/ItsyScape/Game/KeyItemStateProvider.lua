@@ -32,6 +32,12 @@ end
 function KeyItemStateProvider:updateQuestProgressNotificationController(resource)
 	local isOpen, index = Utility.UI.isOpen(self.peep, "QuestProgressNotification")
 	if not isOpen then
+		local storage = self.peep:getDirector():getPlayerStorage(self.peep)
+		local hideQuestProgress = storage:getRoot():getSection("Nominomicon"):get("hideQuestProgress")
+		if hideQuestProgress then
+			return
+		end
+
 		local _, n = Utility.UI.openInterface(self.peep, "QuestProgressNotification", false)
 		index = n
 	end

@@ -57,7 +57,7 @@ function Dig:playAnimation(peep, itemID)
 end
 
 function Dig:dig(state, peep)
-	local i, j = Utility.Peep.getTile(peep)
+	local i, j = Utility.Peep.getTileAnchor(peep)
 	local map = Utility.Peep.getMap(peep)
 	local tile = map:getTile(i, j)
 

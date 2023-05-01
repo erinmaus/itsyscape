@@ -418,8 +418,8 @@ function DemoApplication:mousePress(x, y, button)
 			end)
 		end
 	else
-		local isUIACtive = Application.mousePress(self, x, y, button)
-		local probeAction = self.cameraController:mousePress(isUIACtive, x, y, button)
+		local isUIActive = Application.mousePress(self, x, y, button)
+		local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
 		if probeAction == CameraController.PROBE_SELECT_DEFAULT then
 			self:probe(x, y, true)
 		elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
@@ -431,7 +431,7 @@ end
 function DemoApplication:mouseRelease(x, y, button)
 	local isUIActive = Application.mouseRelease(self, x, y, button)
 
-	local probeAction = self.cameraController:mouseRelease(isUIACtive, x, y, button)
+	local probeAction = self.cameraController:mouseRelease(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
 		self:probe(x, y, true)
 	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
@@ -440,13 +440,13 @@ function DemoApplication:mouseRelease(x, y, button)
 end
 
 function DemoApplication:mouseScroll(x, y)
-	local isUIACtive = Application.mouseScroll(self, x, y)
+	local isUIActive = Application.mouseScroll(self, x, y)
 
-	self.cameraController:mouseScroll(isUIACtive, x, y)
+	self.cameraController:mouseScroll(isUIActive, x, y)
 end
 
 function DemoApplication:mouseMove(x, y, dx, dy)
-	local isUIACtive = Application.mouseMove(self, x, y, dx, dy)
+	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
 
 	self.mouseX = x
 	self.mouseY = y
@@ -462,7 +462,7 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 		end
 	end
 
-	self.cameraController:mouseMove(isUIACtive, x, y, dx, dy)
+	self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
 end
 
 function DemoApplication:keyDown(key, ...)

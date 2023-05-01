@@ -20,6 +20,7 @@ function ItemIcon:new()
 	self.itemCount = 1
 	self.itemIsNoted = false
 	self.isDisabled = false
+	self.isActive = false
 
 	self:setSize(ItemIcon.DEFAULT_SIZE, ItemIcon.DEFAULT_SIZE)
 end
@@ -60,6 +61,14 @@ end
 
 function ItemIcon:setIsDisabled(value)
 	self.isDisabled = value or false
+end
+
+function ItemIcon:getIsActive()
+	return self.isActive
+end
+
+function ItemIcon:setIsActive(value)
+	self.isActive = value or false
 end
 
 return ItemIcon

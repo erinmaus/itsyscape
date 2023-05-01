@@ -59,6 +59,12 @@ do
 		}
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Sardine_Default"
+	}
+
 	ItsyScape.Meta.ResourceName {
 		Value = "Sardine",
 		Language = "en-US",
@@ -314,6 +320,12 @@ do
 		}
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
+	}
+
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicFish",
 		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
@@ -567,6 +579,12 @@ do
 				Count = ItsyScape.Utility.xpForResource(30)
 			}
 		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Coelacanth_Default"
 	}
 
 	ItsyScape.Meta.PeepID {

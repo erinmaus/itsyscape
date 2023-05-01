@@ -173,6 +173,12 @@ for name, ore in spairs(ORES) do
 		Resource = Rock
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = Rock
+	}
+
 	Rock { MineAction }
 
 	local SecondaryActions = {}

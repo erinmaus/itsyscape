@@ -28,11 +28,11 @@ function Notification:new(id, index, ui)
 	local w, h = love.graphics.getScaledMode()
 	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
 
-	local panel = Panel()
-	panel:setStyle(PanelStyle({
+	self.panel = Panel()
+	self.panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Notification.9.png"
 	}, self:getView():getResources()))
-	self:addChild(panel)
+	self:addChild(self.panel)
 
 	local state = self:getState()
 
@@ -81,13 +81,40 @@ function Notification:new(id, index, ui)
 	end
 
 	self:setSize(width, height + Notification.BOTTOM)
-	panel:setSize(self:getSize())
+	self.panel:setSize(self:getSize())
 
 	self:setPosition(
 		x + Notification.PADDING,
 		y - Notification.PADDING - height - Notification.BOTTOM)
 
+	self:push()
+
 	self:setSize(0, 0)
+end
+
+function Notification:push()
+	local x, y  = self:getPosition()
+	local width, height = self.panel:getSize()
+
+	local screenWidth, screenHeight = love.graphics.getScaledMode()
+
+	if x < Notification.PADDING then
+		x = Notification.PADDING
+	end
+
+	if y < Notification.PADDING then
+		y = Notification.PADDING
+	end
+
+	if x + width > screenWidth then
+		x = screenWidth - width - Notification.PADDING
+	end
+
+	if y + height > screenHeight then
+		y = screenHeight - height - Notification.PADDING
+	end
+
+	self:setPosition(x, y)
 end
 
 function Notification:getOverflow()
