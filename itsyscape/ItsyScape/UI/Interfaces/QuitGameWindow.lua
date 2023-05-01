@@ -16,8 +16,8 @@ local Panel = require "ItsyScape.UI.Panel"
 local Interface = require "ItsyScape.UI.Interface"
 
 local QuitGameWindow = Class(Interface)
-QuitGameWindow.DEFAULT_WIDTH = 320
-QuitGameWindow.DEFAULT_HEIGHT = 192
+QuitGameWindow.DEFAULT_WIDTH = 480
+QuitGameWindow.DEFAULT_HEIGHT = 240
 QuitGameWindow.PADDING = 8
 
 function QuitGameWindow:new(id, index, ui)

@@ -310,7 +310,7 @@ function LocalGameManager:sendToPlayer(player)
 							"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
 							interfaceID, interfaceIndex, e.callback)
 					else
-						isPlayerMatch = isPlayerMatch or interface and interface:getPlayer():getID() == player:getID()
+						isPlayerMatch = isPlayerMatch or interface and interface:getPlayer() and interface:getPlayer():getID() == player:getID()
 
 						if isPlayerMatch then
 							self:_doSend(player, e, true, LocalGameManager.UI_CHANNEL)

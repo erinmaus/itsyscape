@@ -29,26 +29,14 @@ add('PLAYER_1_FOCUS',      'tab')
 add('PLAYER_1_CAMERA',     '/')
 add('PLAYER_1_CHAT',       'return')
 
+-- Minigames
+add('MINIGAME_DASH', 'space')
+
 -- Camera
 add('CAMERA_UP',    'up')
 add('CAMERA_DOWN',  'down')
 add('CAMERA_LEFT',  'left')
 add('CAMERA_RIGHT', 'right')
-
--- Strategy bar
-add('STRATEGY_BAR_SLOT_1',  '1')
-add('STRATEGY_BAR_SLOT_2',  '2')
-add('STRATEGY_BAR_SLOT_3',  '3')
-add('STRATEGY_BAR_SLOT_4',  '4')
-add('STRATEGY_BAR_SLOT_5',  '5')
-add('STRATEGY_BAR_SLOT_6',  '6')
-add('STRATEGY_BAR_SLOT_7',  '7')
-add('STRATEGY_BAR_SLOT_8',  '8')
-add('STRATEGY_BAR_SLOT_9',  '9')
-add('STRATEGY_BAR_SLOT_10', '0')
-
--- Minigames
-add('MINIGAME_DASH', 'space')
 
 -- Debug
 if _DEBUG then
