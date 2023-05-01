@@ -39,6 +39,12 @@ ItsyScape.Meta.PeepID {
 	Resource = ItsyScape.Resource.Prop "Flax"
 }
 
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "Flax"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Flax",
 	Language = "en-US",
