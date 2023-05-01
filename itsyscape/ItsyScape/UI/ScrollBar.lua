@@ -235,15 +235,15 @@ function ScrollBar:update(...)
 			if parentScrollY ~= 0 then
 				local y = math.floor(parentScrollY / parentScrollSizeY * self.scrollArea) + self.scrollAreaStart
 				self.scrollButton:setPosition(x, math.floor(y))
-			else
-				self:removeChild(self.scrollButton)
+			elseif parentScrollY == 0 then
+				self.scrollButton:setPosition(x, math.floor(self.scrollAreaStart))
 			end
 		else
 			if parentScrollX ~= 0 then
 				local x = math.floor(parentScrollX / parentScrollSizeX * self.scrollArea) + self.scrollAreaStart
 				self.scrollButton:setPosition(math.floor(x), y)
-			else
-				self:removeChild(self.scrollButton)
+			elseif parentScrollX == 0 then
+				self.scrollButton:setPosition(math.floor(self.scrollAreaStart), x)
 			end
 		end
 	end

@@ -101,7 +101,7 @@ function Interface:examineItem(widget, inventory, index)
 	description = item.description or description
 	stats = item.stats or stats
 
-	local action = item.actions[1]
+	local action = item.actions and item.actions[1]
 	if action then
 		object = action.verb .. " " .. object
 	end
