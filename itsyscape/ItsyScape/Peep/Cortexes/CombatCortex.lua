@@ -242,10 +242,10 @@ function CombatCortex:update(delta)
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
-					elseif distanceToTarget > desiredDistance then
+					elseif distanceToTarget > desiredDistance or not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true) then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, desiredDistance, { asCloseAsPossible = true })
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 0, { asCloseAsPossible = true })
 
 							if not walk then
 								Log.info(
@@ -260,14 +260,16 @@ function CombatCortex:update(delta)
 
 								local function isPending()
 									local s, t = Utility.Peep.getTile(target)
+									local u, v = Utility.Peep.getTile(peep)
 									local isSameTile = s == targetI and t == targetJ
 
 									local peepPosition = Utility.Peep.getPosition(peep)
 									local targetPosition = Utility.Peep.getPosition(target)
 									local distance = ((peepPosition - targetPosition) * Vector.PLANE_XZ):getLength()
 									local isTooFar = distance > desiredDistance
+									local isLineOfSightBlocked = not map:lineOfSightPassable(u, v, s, t, true)
 
-									return isSameTile and isTooFar
+									return isSameTile and (isTooFar or isLineOfSightBlocked)
 								end
 
 								walk.onCanceled:register(function()

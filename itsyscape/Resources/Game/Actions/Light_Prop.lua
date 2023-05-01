@@ -41,7 +41,7 @@ function LightProp:perform(state, peep, prop)
 
 		local walk
 		do
-			local i, j, k = Utility.Peep.getTile(prop)
+			local i, j, k = Utility.Peep.getTileAnchor(prop)
 			walk = Utility.Peep.getWalk(peep, i, j + 1, k, 1, { asCloseAsPossible = true }) or
 			       Utility.Peep.getWalk(peep, i, j, k, 1, { asCloseAsPossible = true })
 		end

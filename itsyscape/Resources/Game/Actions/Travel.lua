@@ -28,7 +28,7 @@ function Travel:perform(state, player, target)
 	   self:canPerform(state, Travel.FLAGS) and
 	   self:canTransfer(state, Travel.FLAGS)
 	then
-		local i, j, k = Utility.Peep.getTile(target)
+		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
 
 		if walk then

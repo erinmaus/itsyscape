@@ -29,7 +29,7 @@ Rotate.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true }
 
 function Rotate:perform(state, player, target)
 	if target and self:canPerform(state) and self:canTransfer(state) then
-		local i, j, k = Utility.Peep.getTile(target)
+		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
 
 		if walk then

@@ -23,7 +23,7 @@ function Talk:perform(state, player, target)
 		return false
 	end
 
-	local i, j, k = Utility.Peep.getTile(target)
+	local i, j, k = Utility.Peep.getTileAnchor(target)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = false })
 	if walk then
 		local face = CallbackCommand(Utility.Peep.face, player, target)

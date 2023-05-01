@@ -416,7 +416,7 @@ function One:update(...)
 			stage:movePeep(
 				self,
 				spawn:get("name"),
-				Vector(location:get("x"), location:get("y"), location:get("z")),
+				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")),
 				true)
 		else
 			stage:movePeep(
