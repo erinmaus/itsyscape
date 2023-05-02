@@ -137,6 +137,12 @@ do
 		}
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Larry_Default"
+	}
+
 	ItsyScape.Meta.ResourceName {
 		Value = "Larry the 8th",
 		Language = "en-US",
