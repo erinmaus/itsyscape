@@ -113,14 +113,13 @@ function ItemIconRenderer:draw(widget, state)
 		local text, color = Utility.Item.getItemCountShorthand(count)
 		local icon = self.icons[itemID]
 		local width = widget:getSize()
-		local scaleX = width / icon:getWidth()
-		local textWidth = self.font:getWidth(text) * scaleX
+		local textWidth = self.font:getWidth(text)
 
 		love.graphics.setColor(0, 0, 0, 1)
-		itsyrealm.graphics.print(text, width - textWidth, 2 * scaleX, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth, 2)
 
 		love.graphics.setColor(unpack(color))
-		itsyrealm.graphics.print(text, width - textWidth - 2 * scaleX, 0, 0, scaleX, scaleX)
+		itsyrealm.graphics.print(text, width - textWidth - 2)
 
 		love.graphics.setFont(oldFont)
 		love.graphics.setColor(1, 1, 1, 1)
