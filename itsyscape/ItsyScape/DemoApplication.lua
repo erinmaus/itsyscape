@@ -535,6 +535,7 @@ function DemoApplication:snapshotPlayerPeep()
 		renderer:setCamera(camera)
 
 		for index, actor in ipairs(actors) do
+			love.graphics.push("all")
 			local view = self:getGameView():getActor(actor)
 			local zoom, position
 			do
@@ -542,7 +543,7 @@ function DemoApplication:snapshotPlayerPeep()
 				local offset = (max.y - min.y) / 2
 				zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 4
 
-				local transform = view:getSceneNode():getTransform():getGlobalTransform()
+				local transform = view:getSceneNode():getTransform():getGlobalTransform(self:getFrameDelta())
 				position = Vector(transform:transformPoint(0, offset, 0))
 			end
 
@@ -554,6 +555,7 @@ function DemoApplication:snapshotPlayerPeep()
 
 			local imageData = renderer:getOutputBuffer():getColor():newImageData()
 			imageData:encode('png', self:getScreenshotName("Peep", index))
+			love.graphics.pop()
 		end
 	end
 	love.graphics.pop()
@@ -582,6 +584,21 @@ function DemoApplication:snapshotGame()
 
 		camera:setWidth(w)
 		camera:setHeight(h)
+	end
+	love.graphics.pop()
+
+
+	love.graphics.push('all')
+	do
+		local w, h = love.window.getMode()
+		local canvas = love.graphics.newCanvas(w, h)
+
+		love.graphics.setCanvas(canvas)
+		self:getUIView():draw()
+		love.graphics.setCanvas()
+
+		local imageData = canvas:newImageData()
+		imageData:encode('png', self:getScreenshotName("UI"))
 	end
 	love.graphics.pop()
 end
