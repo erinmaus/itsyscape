@@ -23,6 +23,9 @@ local BaseYendor = Class(Creep)
 function BaseYendor:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Yendor', ...)
 
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(15, 15, 40)
+
 	self:addBehavior(RotationBehavior)
 end
 
