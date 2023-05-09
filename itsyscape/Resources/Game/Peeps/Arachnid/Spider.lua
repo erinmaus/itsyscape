@@ -56,6 +56,11 @@ function Spider:ready(director, game)
 		"Resources/Game/Animations/Spider_Walk/Script.lua")
 	self:addResource("animation-walk", walkAnimation)
 
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Spider_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
+
 	Creep.ready(self, director, game)
 end
 
