@@ -53,7 +53,7 @@ function Spider:ready(director, game)
 
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Spider_Attack_Melee/Script.lua")
+		"Resources/Game/Animations/Spider_Attack_Magic/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
 	local walkAnimation = CacheRef(
