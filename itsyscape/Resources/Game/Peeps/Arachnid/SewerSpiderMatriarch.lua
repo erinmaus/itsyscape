@@ -28,8 +28,8 @@ function SewerSpiderMatriarch:new(resource, name, ...)
 	size.size = Vector(7.5, 4, 6.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 500
-	status.maximumHitpoints = 500
+	status.currentHitpoints = 100
+	status.maximumHitpoints = 100
 end
 
 function SewerSpiderMatriarch:ready(director, game)
