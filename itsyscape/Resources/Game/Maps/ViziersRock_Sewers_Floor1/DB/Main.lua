@@ -159,7 +159,70 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "RatKing",
+		Peep = ItsyScape.Resource.Peep "SewerSpiderMatriarch",
 		MapObject = M["RatKing"]
+	}
+end
+
+M["Spider1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "Spider1",
+		Map = M._MAP,
+		Resource = M["Spider1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider1"]
+	}
+end
+
+M["Spider2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "Spider2",
+		Map = M._MAP,
+		Resource = M["Spider2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider2"]
+	}
+end
+
+M["Light_RatKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 5,
+		PositionZ = 57,
+		Name = "Light_RatKing",
+		Map = M._MAP,
+		Resource = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 8,
+		Resource = M["Light_RatKing"]
 	}
 end
