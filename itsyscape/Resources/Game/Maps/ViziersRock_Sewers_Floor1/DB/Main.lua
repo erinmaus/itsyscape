@@ -228,3 +228,54 @@ do
 		Resource = M["Light_RatKing"]
 	}
 end
+
+M["Shrimp1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 0,
+		PositionZ = 61,
+		Name = "Shrimp1",
+		Map = M._MAP,
+		Resource = M["Shrimp1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp1"]
+	}
+end
+
+M["Shrimp2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 0,
+		PositionZ = 51,
+		Name = "Shrimp2",
+		Map = M._MAP,
+		Resource = M["Shrimp2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp2"]
+	}
+end
+
+M["Shrimp3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 0,
+		PositionZ = 61,
+		Name = "Shrimp3",
+		Map = M._MAP,
+		Resource = M["Shrimp3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp3"]
+	}
+end
