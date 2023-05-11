@@ -32,6 +32,10 @@ function FishView:getTextureFilename()
 	return Class.ABSTRACT()
 end
 
+function FishView:getModelFilename()
+	return "Resources/Game/Props/Common/Fish/Model.lstatic"
+end
+
 function FishView:load()
 	PropView.load(self)
 
@@ -49,7 +53,7 @@ function FishView:load()
 		end)
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/Common/Fish/Model.lstatic",
+		self:getModelFilename(),
 		function(mesh)
 			self.decoration:fromGroup(mesh:getResource(), "Fish")
 			self.decoration:getMaterial():setTextures(self.texture)

@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/ViziersRock_Sewers_Floor1/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.ViziersRock_Sewers_Floor1.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Vizier's Rock Sewers, Floor 1",
 	Language = "en-US",
@@ -147,6 +152,60 @@ do
 	}
 end
 
+M["Valve_SquareTriangle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 0.125,
+		PositionZ = 15,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "Valve_SquareTriangle",
+		Map = M._MAP,
+		Resource = M["Valve_SquareTriangle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
+		MapObject = M["Valve_SquareTriangle"]
+	}
+end
+
+M["Door_TrialValveWest_Triangle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Door_TrialValveWest_Triangle",
+		Map = M._MAP,
+		Resource = M["Door_TrialValveWest_Triangle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_TrialValveWest_Triangle"]
+	}
+end
+
+M["Door_TrialValveSouth_Square"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Door_TrialValveSouth_Square",
+		Map = M._MAP,
+		Resource = M["Door_TrialValveSouth_Square"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_TrialValveSouth_Square"]
+	}
+end
+
 M["RatKing"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -159,7 +218,174 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "RatKing",
-		MapObject = M["RatKing"]
+		Peep = ItsyScape.Resource.Peep "SewerSpiderMatriarch",
+		MapObject = M["RatKing"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
+M["Spider1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "Spider1",
+		Map = M._MAP,
+		Resource = M["Spider1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider1"]
+	}
+end
+
+M["Spider2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "Spider2",
+		Map = M._MAP,
+		Resource = M["Spider2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider2"]
+	}
+end
+
+M["Light_RatKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 5,
+		PositionZ = 57,
+		Name = "Light_RatKing",
+		Map = M._MAP,
+		Resource = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Light_RatKing"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 8,
+		Resource = M["Light_RatKing"]
+	}
+end
+
+M["Shrimp1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 0,
+		PositionZ = 61,
+		Name = "Shrimp1",
+		Map = M._MAP,
+		Resource = M["Shrimp1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp1"]
+	}
+end
+
+M["Shrimp2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 0,
+		PositionZ = 51,
+		Name = "Shrimp2",
+		Map = M._MAP,
+		Resource = M["Shrimp2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp2"]
+	}
+end
+
+M["Shrimp3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 0,
+		PositionZ = 61,
+		Name = "Shrimp3",
+		Map = M._MAP,
+		Resource = M["Shrimp3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shrimp_Default",
+		MapObject = M["Shrimp3"]
+	}
+end
+
+M["Crawfish1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 0,
+		PositionZ = 13,
+		Name = "Crawfish1",
+		Map = M._MAP,
+		Resource = M["Crawfish1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crawfish_Default",
+		MapObject = M["Crawfish1"]
+	}
+end
+
+M["Crawfish2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Crawfish2",
+		Map = M._MAP,
+		Resource = M["Crawfish2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crawfish_Default",
+		MapObject = M["Crawfish2"]
+	}
+end
+
+M["Crawfish2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 0,
+		PositionZ = 11,
+		Name = "Crawfish2",
+		Map = M._MAP,
+		Resource = M["Crawfish2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crawfish_Default",
+		MapObject = M["Crawfish2"]
 	}
 end

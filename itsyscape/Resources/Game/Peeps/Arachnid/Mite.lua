@@ -18,6 +18,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local Mite = Class(Creep)
@@ -29,6 +30,9 @@ function Mite:new(resource, name, ...)
 
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(ScaleBehavior)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(3.5, 2.5, 3.5)
 end
 
 function Mite:ready(director, game)

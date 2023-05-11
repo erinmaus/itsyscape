@@ -2645,6 +2645,11 @@ function Utility.Peep.getInstance(peep)
 	return peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
 end
 
+function Utility.Peep.getRaid(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	return instance and instance:getRaid()
+end
+
 function Utility.Peep.getMap(peep)
 	local director = peep:getDirector()
 	local position = peep:getBehavior(PositionBehavior)

@@ -116,6 +116,7 @@ function GatherResourceCommand:hideTool(peep)
 				self.slot,
 				Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE,
 				self.skin)
+			actor:playAnimation('skill', nil, nil)
 		end
 	end
 end
