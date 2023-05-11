@@ -147,6 +147,26 @@ do
 	}
 end
 
+M["Valve_SquareTriangle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 0.125,
+		PositionZ = 15,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "Valve_SquareTriangle",
+		Map = M._MAP,
+		Resource = M["Valve_SquareTriangle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
+		MapObject = M["Valve_SquareTriangle"]
+	}
+end
+
 M["RatKing"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
