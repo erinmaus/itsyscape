@@ -37,8 +37,8 @@ end
 
 function RandomRotationEmitter:emitSingleParticle(particle)
 	local rotation = math.random() * (self.maxRotation - self.minRotation) + self.minRotation
-	local velocity = math.random() * (self.maxAcceleration - self.minAcceleration) + self.minAcceleration
-	local acceleration = math.random() * (self.maxVelocity - self.minVelocity) + self.minVelocity
+	local acceleration = math.random() * (self.maxAcceleration - self.minAcceleration) + self.minAcceleration
+	local velocity = math.random() * (self.maxVelocity - self.minVelocity) + self.minVelocity
 
 	particle.rotation = rotation
 	particle.rotationVelocity = velocity

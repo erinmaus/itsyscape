@@ -869,3 +869,525 @@ do
 		Resource = ItsyScape.Resource.Peep "Coelacanth_Default"
 	}
 end
+
+-- Shrimp
+do
+	ItsyScape.Resource.Prop "Shrimp_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(20)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Shrimp",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(21)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Shrimp_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Shrimp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Shrimp_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a shrimp swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Shrimp_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 25,
+		SpawnTime = 10,
+		Resource = ItsyScape.Resource.Prop "Shrimp_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "Shrimp_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Shrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "Shrimp" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "Shrimp"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Shrimp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Shrimp"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A bottom feeder. Needs to be cooked.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Shrimp"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(21),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Shrimp"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Shrimp",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Shrimp",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 12,
+		Resource = ItsyScape.Resource.Item "Shrimp"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Shrimp",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Shrimp",
+		Value = ItsyScape.Utility.valueForItem(21)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 12,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Shrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedShrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Shrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntShrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 20,
+		Stop = 21,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedShrimp" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked shrimp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "How does this tiny lil' guy heal so much?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(24),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedShrimp"
+	}
+
+	ItsyScape.Resource.Item "BurntShrimp" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt shrimp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntShrimp"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Crunchy...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntShrimp"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntShrimp"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntShrimp"
+	}
+end
+
+-- Crawfish
+do
+	ItsyScape.Resource.Prop "Crawfish_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(25)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Crawfish",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(26)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Crawfish_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Crawfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Crawfish_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a crawfish swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Crawfish_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 35,
+		SpawnTime = 25,
+		Resource = ItsyScape.Resource.Prop "Crawfish_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "Crawfish_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Crawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(26)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "Crawfish" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "Crawfish"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Crawfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Crawfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An angry, snappy bottom feeder. Needs to be cooked.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Crawfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(27),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Crawfish"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Crawfish",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Crawfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 14,
+		Resource = ItsyScape.Resource.Item "Crawfish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Crawfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Crawfish",
+		Value = ItsyScape.Utility.valueForItem(27)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 14,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Crawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedCrawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(26)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Crawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntCrawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 20,
+		Stop = 21,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedCrawfish" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked crawfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Hard to eat.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(29),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedCrawfish"
+	}
+
+	ItsyScape.Resource.Item "BurntCrawfish" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt crawfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Even necromancy can't bring this thing back from the dead.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntCrawfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntCrawfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntCrawfish"
+	}
+end
