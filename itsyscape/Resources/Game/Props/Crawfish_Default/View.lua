@@ -16,7 +16,7 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local CrawfishView = Class(FishView)
-CrawfishView.RADIUS = -0.125
+CrawfishView.RADIUS = 0.125
 
 function CrawfishView:getTextureFilename()
 	return "Resources/Game/Props/Crawfish_Default/Texture.png"

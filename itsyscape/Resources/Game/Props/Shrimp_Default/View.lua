@@ -16,7 +16,7 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local ShrimpView = Class(FishView)
-ShrimpView.RADIUS = -0.25
+ShrimpView.RADIUS = 0.25
 
 function ShrimpView:getTextureFilename()
 	return "Resources/Game/Props/Shrimp_Default/Texture.png"
