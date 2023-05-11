@@ -26,6 +26,198 @@ do
 	}
 end
 
+M["ViziersRock_Sewers_TriangleMark1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71.000000,
+		PositionY = 0.000000,
+		PositionZ = 15.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_TriangleMark1",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_TriangleMark1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_TriangleMark",
+		MapObject = M["ViziersRock_Sewers_TriangleMark1"]
+	}
+end
+
+M["ViziersRock_Sewers_TriangleMark4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63.000000,
+		PositionY = 0.000000,
+		PositionZ = 15.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_TriangleMark4",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_TriangleMark4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_TriangleMark",
+		MapObject = M["ViziersRock_Sewers_TriangleMark4"]
+	}
+end
+
+M["Torch_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71.000000,
+		PositionY = 0.000000,
+		PositionZ = 81.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default6",
+		Map = M._MAP,
+		Resource = M["Torch_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default6"]
+	}
+end
+
+M["ViziersRock_Sewers_SquareMark4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85.000000,
+		PositionY = 0.000000,
+		PositionZ = 33.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_SquareMark4",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_SquareMark4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_SquareMark",
+		MapObject = M["ViziersRock_Sewers_SquareMark4"]
+	}
+end
+
+M["Torch_Default7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13.000000,
+		PositionY = -0.500000,
+		PositionZ = 57.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default7",
+		Map = M._MAP,
+		Resource = M["Torch_Default7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default7"]
+	}
+end
+
+M["Torch_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81.000000,
+		PositionY = 0.000000,
+		PositionZ = 81.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default3",
+		Map = M._MAP,
+		Resource = M["Torch_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default3"]
+	}
+end
+
+M["Torch_Default9"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11.000000,
+		PositionY = 0.000000,
+		PositionZ = 71.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default9",
+		Map = M._MAP,
+		Resource = M["Torch_Default9"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default9"]
+	}
+end
+
+M["ViziersRock_Sewers_SquareMark2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83.000000,
+		PositionY = 0.000000,
+		PositionZ = 15.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_SquareMark2",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_SquareMark2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_SquareMark",
+		MapObject = M["ViziersRock_Sewers_SquareMark2"]
+	}
+end
+
 M["Torch_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -47,6 +239,102 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Torch_Default",
 		MapObject = M["Torch_Default2"]
+	}
+end
+
+M["ViziersRock_Sewers_TriangleMark3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81.000000,
+		PositionY = 0.000000,
+		PositionZ = 17.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_TriangleMark3",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_TriangleMark3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_TriangleMark",
+		MapObject = M["ViziersRock_Sewers_TriangleMark3"]
+	}
+end
+
+M["ViziersRock_Sewers_SquareMark1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79.000000,
+		PositionY = 0.000000,
+		PositionZ = 15.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_SquareMark1",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_SquareMark1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_SquareMark",
+		MapObject = M["ViziersRock_Sewers_SquareMark1"]
+	}
+end
+
+M["Torch_Default8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.000000,
+		PositionY = -0.500000,
+		PositionZ = 57.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default8",
+		Map = M._MAP,
+		Resource = M["Torch_Default8"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default8"]
+	}
+end
+
+M["Torch_Default11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21.000000,
+		PositionY = 0.000000,
+		PositionZ = 31.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Torch_Default11",
+		Map = M._MAP,
+		Resource = M["Torch_Default11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Torch_Default",
+		MapObject = M["Torch_Default11"]
 	}
 end
 
@@ -98,102 +386,6 @@ do
 	}
 end
 
-M["Torch_Default11"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 21.000000,
-		PositionY = 0.000000,
-		PositionZ = 31.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default11",
-		Map = M._MAP,
-		Resource = M["Torch_Default11"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default11"]
-	}
-end
-
-M["Torch_Default9"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 11.000000,
-		PositionY = 0.000000,
-		PositionZ = 71.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default9",
-		Map = M._MAP,
-		Resource = M["Torch_Default9"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default9"]
-	}
-end
-
-M["Torch_Default7"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13.000000,
-		PositionY = -0.500000,
-		PositionZ = 57.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default7",
-		Map = M._MAP,
-		Resource = M["Torch_Default7"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default7"]
-	}
-end
-
-M["Torch_Default8"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.000000,
-		PositionY = -0.500000,
-		PositionZ = 57.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default8",
-		Map = M._MAP,
-		Resource = M["Torch_Default8"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default8"]
-	}
-end
-
 M["Torch_Default10"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -218,12 +410,12 @@ do
 	}
 end
 
-M["Torch_Default6"] = ItsyScape.Resource.MapObject.Unique()
+M["ViziersRock_Sewers_TriangleMark2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 71.000000,
+		PositionX = 81.000000,
 		PositionY = 0.000000,
-		PositionZ = 81.000000,
+		PositionZ = 13.000000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -231,14 +423,38 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Torch_Default6",
+		Name = "ViziersRock_Sewers_TriangleMark2",
 		Map = M._MAP,
-		Resource = M["Torch_Default6"]
+		Resource = M["ViziersRock_Sewers_TriangleMark2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default6"]
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_TriangleMark",
+		MapObject = M["ViziersRock_Sewers_TriangleMark2"]
+	}
+end
+
+M["ViziersRock_Sewers_SquareMark5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85.000000,
+		PositionY = 0.000000,
+		PositionZ = 25.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ViziersRock_Sewers_SquareMark5",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_SquareMark5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_SquareMark",
+		MapObject = M["ViziersRock_Sewers_SquareMark5"]
 	}
 end
 
@@ -263,30 +479,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Torch_Default",
 		MapObject = M["Torch_Default1"]
-	}
-end
-
-M["Torch_Default3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 81.000000,
-		PositionY = 0.000000,
-		PositionZ = 81.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Torch_Default3",
-		Map = M._MAP,
-		Resource = M["Torch_Default3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Torch_Default",
-		MapObject = M["Torch_Default3"]
 	}
 end
 

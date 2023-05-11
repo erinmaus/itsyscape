@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
 
 local Party = Class()
@@ -36,6 +37,8 @@ function Party.Raid:new(party, resource)
 	Log.info("Raid '%s' created for party %d.", self.resource.name, party:getID())
 
 	self.instances = {}
+
+	self.storage = PlayerStorage()
 end
 
 function Party.Raid:getParty()
@@ -48,6 +51,10 @@ end
 
 function Party.Raid:getResource()
 	return self.resource
+end
+
+function Party.Raid:getPlayerStorage()
+	return self.storage
 end
 
 function Party.Raid:addInstance(instance)

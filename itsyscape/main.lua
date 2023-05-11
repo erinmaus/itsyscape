@@ -96,6 +96,8 @@ function love.load(args)
 		end
 	end
 
+	_APP_REQUIRE = main
+
 	local s, r = xpcall(require, debug.traceback, main)
 	if not s then
 		Log.warn("Failed to run %s: %s", main, r)
@@ -330,7 +332,8 @@ function love.errorhandler(message)
 	local NSentry = require "nbunny.sentry"
 	NSentry.close()
 
-	if _DEBUG then
+	local Class = require "ItsyScape.Common.Class"
+	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
 		return love.errhand(message)
 	else
 		return itsyrealm.errorhandler()
