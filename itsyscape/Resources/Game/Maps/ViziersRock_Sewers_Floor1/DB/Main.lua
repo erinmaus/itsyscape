@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/ViziersRock_Sewers_Floor1/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.ViziersRock_Sewers_Floor1.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Vizier's Rock Sewers, Floor 1",
 	Language = "en-US",
@@ -164,6 +169,40 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
 		MapObject = M["Valve_SquareTriangle"]
+	}
+end
+
+M["Door_TrialValveWest_Triangle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Door_TrialValveWest_Triangle",
+		Map = M._MAP,
+		Resource = M["Door_TrialValveWest_Triangle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_TrialValveWest_Triangle"]
+	}
+end
+
+M["Door_TrialValveSouth_Square"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Door_TrialValveSouth_Square",
+		Map = M._MAP,
+		Resource = M["Door_TrialValveSouth_Square"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_TrialValveSouth_Square"]
 	}
 end
 

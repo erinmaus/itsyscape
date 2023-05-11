@@ -176,3 +176,33 @@ do
 		MapObject = SquareMark
 	}
 end
+
+do
+	local Door = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Water surge",
+		Resource = Door
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Looks like there's no getting past that.",
+		Resource = Door
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = Door
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 5.5,
+		SizeY = 8,
+		SizeZ = 5.5,
+		MapObject = Door
+	}
+end

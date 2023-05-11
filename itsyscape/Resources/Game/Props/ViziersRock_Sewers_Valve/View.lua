@@ -51,6 +51,7 @@ function Valve:load()
 			self.valve:getMaterial():setTextures(self.texture)
 			self.valve:setParent(root)
 
+			local state = self:getProp():getState()
 			self.targetRotation = Quaternion(unpack(state.rotation or {})):getNormal()
 			self.currentRotation = self.targetRotation
 		end)

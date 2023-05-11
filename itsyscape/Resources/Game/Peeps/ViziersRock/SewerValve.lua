@@ -33,7 +33,7 @@ function Valve:onRotate(p)
 	-- The prop view takes the rotation from prop state and rotates the valve only.
 	self:removeBehavior(RotationBehavior)
 
-	self.currentRotation = self.currentRotation * p.rotation
+	self.currentRotation = (self.currentRotation * p.rotation):getNormal()
 end
 
 function Valve:getDirection()

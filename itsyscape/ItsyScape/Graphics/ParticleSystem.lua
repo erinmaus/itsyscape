@@ -41,6 +41,10 @@ function ParticleSystem:setEmissionStrategy(strategy)
 	self.emissionStrategy = strategy or false
 end
 
+function ParticleSystem:getEmissionStrategy()
+	return self.emissionStrategy
+end
+
 function ParticleSystem:emit(count)
 	count = math.min(count, #self.freeParticles)
 
