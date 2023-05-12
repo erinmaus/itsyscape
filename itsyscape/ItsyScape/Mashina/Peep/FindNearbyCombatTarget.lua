@@ -45,12 +45,12 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		table.sort(
 			p,
 			function(a, b)
-				local pI, pJ = Utility.Peep.getTile(mashina)
-				local aI, aJ = Utility.Peep.getTile(a)
-				local bI, bJ = Utility.Peep.getTile(b)
+				local p = Utility.Peep.getPosition(mashina)
+				local aP = Utility.Peep.getPosition(a)
+				local bP = Utility.Peep.getPosition(b)
 
-				local aDistance = math.abs(aI - pI) + math.abs(aJ - pJ)
-				local bDistance = math.abs(bI - pI) + math.abs(bJ - pJ)
+				local aDistance = (aP - p):getLength()
+				local bDistance = (bP - p):getLength()
 				return aDistance < bDistance
 			end)
 
