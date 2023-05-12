@@ -42,7 +42,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(75),
 		Resource = Rat
 	}
 
@@ -54,6 +54,13 @@ do
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 1.2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 0.9),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(30),
+		Resource = Rat
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Rat/Rat_IdleLogic.lua",
+		IsDefault = 1,
 		Resource = Rat
 	}
 end
@@ -102,7 +109,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(250),
+		Value = ItsyScape.Utility.xpForLevel(75),
 		Resource = SkeletalRat
 	}
 
@@ -114,6 +121,13 @@ do
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 1.2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 0.9),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(40),
+		Resource = SkeletalRat
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Rat/Rat_IdleLogic.lua",
+		IsDefault = 1,
 		Resource = SkeletalRat
 	}
 end

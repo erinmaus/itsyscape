@@ -104,20 +104,20 @@ do
 	}
 end
 
-M["WoodenLadder_ToCityCenter"] = ItsyScape.Resource.MapObject.Unique()
+M["MetalLadder_ToCityCenter"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 85,
 		PositionY = 0,
 		PositionZ = 85,
-		Name = "WoodenLadder_ToCityCenter",
+		Name = "MetalLadder_ToCityCenter",
 		Map = M._MAP,
-		Resource = M["WoodenLadder_ToCityCenter"]
+		Resource = M["MetalLadder_ToCityCenter"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
-		MapObject = M["WoodenLadder_ToCityCenter"]
+		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
+		MapObject = M["MetalLadder_ToCityCenter"]
 	}
 
 	local TravelAction = ItsyScape.Action.Travel()
@@ -135,7 +135,7 @@ do
 		Action = TravelAction
 	}
 
-	M["WoodenLadder_ToCityCenter"] {
+	M["MetalLadder_ToCityCenter"] {
 		TravelAction
 	}
 end
@@ -387,5 +387,141 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Crawfish_Default",
 		MapObject = M["Crawfish2"]
+	}
+end
+
+M["Rat1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 0,
+		PositionZ = 83,
+		Name = "Rat1",
+		Map = M._MAP,
+		Resource = M["Rat1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat1"]
+	}
+end
+
+M["Rat2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63,
+		PositionY = 0,
+		PositionZ = 85,
+		Name = "Rat2",
+		Map = M._MAP,
+		Resource = M["Rat2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat2"]
+	}
+end
+
+M["Rat3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 0,
+		PositionZ = 83,
+		Name = "Rat3",
+		Map = M._MAP,
+		Resource = M["Rat3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat3"]
+	}
+end
+
+M["Rat4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 0,
+		PositionZ = 87,
+		Name = "Rat4",
+		Map = M._MAP,
+		Resource = M["Rat4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat4"]
+	}
+end
+
+M["SkeletalRat1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 81,
+		Name = "SkeletalRat1",
+		Map = M._MAP,
+		Resource = M["SkeletalRat1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SkeletalRat",
+		MapObject = M["SkeletalRat1"]
+	}
+end
+
+M["Rat5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 0,
+		PositionZ = 77,
+		Name = "Rat5",
+		Map = M._MAP,
+		Resource = M["Rat5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat5"]
+	}
+end
+
+M["Rat6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 0,
+		PositionZ = 79,
+		Name = "Rat6",
+		Map = M._MAP,
+		Resource = M["Rat6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat6"]
+	}
+end
+
+M["Rat7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 89,
+		Name = "Rat7",
+		Map = M._MAP,
+		Resource = M["Rat7"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat7"]
 	}
 end
