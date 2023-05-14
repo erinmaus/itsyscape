@@ -32,18 +32,13 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "TrashHeap",
+	Value = "Trash heap",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "TrashHeap"
 }
 
-ItsyScape.Meta.ResourceTag {
-	Value = "Undead",
-	Resource = ItsyScape.Resource.Peep "TrashHeap"
-}
-
 ItsyScape.Meta.ResourceDescription {
-	Value = "A ghost so lost they can't remember who they once were or what they looked like.",
+	Value = "Looks like a tree...?",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "TrashHeap"
 }
@@ -68,7 +63,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(100),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "TrashHeap"
 }
 
