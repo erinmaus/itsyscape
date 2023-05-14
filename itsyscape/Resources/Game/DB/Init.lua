@@ -972,6 +972,7 @@ include "Resources/Game/DB/Creeps/RatKing.lua"
 include "Resources/Game/DB/Creeps/SewerSpider.lua"
 include "Resources/Game/DB/Creeps/GrubMite.lua"
 include "Resources/Game/DB/Creeps/Rat.lua"
+include "Resources/Game/DB/Creeps/TrashHeap.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
