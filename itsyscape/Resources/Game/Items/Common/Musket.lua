@@ -44,12 +44,8 @@ function Musket:perform(peep, target)
 	end
 end
 
-function Musket:shootPellet(direction, peep, target)
-	local ray = Ray(
-		Utility.Peep.getAbsolutePosition(peep) + Vector.UNIT_Y + direction,
-		direction)
-
-	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
+function Musket:probe(ray)
+	return function(p)
 		if p == peep or p == target then
 			return false
 		end
@@ -71,7 +67,15 @@ function Musket:shootPellet(direction, peep, target)
 
 		local s, p = ray:hitBounds(min, max)
 		return s and (p - ray.origin):getLength() <= self:getAttackRange(peep) * 2
-	end)
+	end
+end
+
+function Musket:shootPellet(direction, peep, target)
+	local ray = Ray(
+		Utility.Peep.getAbsolutePosition(peep) + Vector.UNIT_Y + direction,
+		direction)
+
+	local hits = peep:getDirector():probe(peep:getLayerName(), self:probe(ray))
 
 	table.sort(hits, function(a, b)
 		local aPosition = Utility.Peep.getPosition(a)
