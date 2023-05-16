@@ -20,6 +20,14 @@ function Sewers:new(resource, name, ...)
 	Map.new(self, resource, name or 'ViziersRock_Sewers_Floor1', ...)
 end
 
+function Sewers:onLoad(...)
+	Map.onLoad(self, ...)
+
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
+		Common.closeValve(self, Common.MARK_CIRCLE)
+	end
+end
+
 function Sewers:update(...)
 	Map.update(self, ...)
 

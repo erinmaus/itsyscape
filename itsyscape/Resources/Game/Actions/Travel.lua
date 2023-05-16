@@ -75,8 +75,24 @@ function Travel:travel(state, peep, target)
 		arguments = ""
 	end
 
-	local stage = self:getGame():getStage()
+	local isSameStage = false
 	do
+		local instance = Utility.Peep.getInstance(peep)
+		local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+		if mapScript:getFilename() == map.name and arguments == "" then
+			isSameStage = true
+		end
+	end
+
+	if isSameStage then
+		local anchorPosition = Vector(Utility.Map.getAnchorPosition(
+			self:getGame(),
+			map,
+			destination))
+		Utility.Peep.setPosition(peep, anchorPosition)
+	else
+		local stage = self:getGame():getStage()
+
 		local instance = Utility.Peep.getInstance(peep)
 		local raid = instance:getRaid()
 		local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
