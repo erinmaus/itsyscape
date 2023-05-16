@@ -237,3 +237,34 @@ do
 		MapObject = Pipe
 	}
 end
+
+do
+	local Pipe = ItsyScape.Resource.Prop "ViziersRock_Sewers_Pipe_NoGrate" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Pipe",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Looks like you can crawl through this pipe.",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 2.5,
+		SizeZ = 2.5,
+		OffsetY = 0.5,
+		MapObject = Pipe
+	}
+end
