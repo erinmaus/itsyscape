@@ -931,6 +931,23 @@ do
 	}
 end
 
+M["TrashHeap1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 0,
+		PositionZ = 13,
+		Name = "TrashHeap1",
+		Map = M._MAP,
+		Resource = M["TrashHeap1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap1"]
+	}
+end
+
 do
 	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_LeftToRight"
 	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_RightToLeft"
