@@ -12,6 +12,7 @@ local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
@@ -821,8 +822,12 @@ function GameView:flood(key, water, layer)
 		node:setYOffset(water.yOffset)
 	end
 
-	if water.isTranslucent then
+	if water.isTranslucent or (water.alpha and water.alpha < 1) then
 		node:getMaterial():setIsTranslucent(true)
+	end
+
+	if water.alpha then
+		node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
 	end
 
 	self.resourceManager:queue(
