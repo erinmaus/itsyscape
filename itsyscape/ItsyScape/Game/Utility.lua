@@ -3657,6 +3657,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillWoodcut_1/Script.lua")
 	peep:addResource("animation-skill-woodcutting", skillAnimationWoodcutting)
+	local jumpAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Jump_1/Script.lua")
+	peep:addResource("animation-jump", jumpAnimation)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
 end

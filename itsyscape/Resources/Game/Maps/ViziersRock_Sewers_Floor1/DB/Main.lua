@@ -280,7 +280,7 @@ M["Light_RatKing"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 45,
-		PositionY = 5,
+		PositionY = 1.5,
 		PositionZ = 57,
 		Name = "Light_RatKing",
 		Map = M._MAP,
@@ -300,7 +300,7 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 8,
+		Attenuation = 12,
 		Resource = M["Light_RatKing"]
 	}
 end
@@ -309,7 +309,7 @@ M["Light_ShrimpFishingSpot"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 69,
-		PositionY = 5,
+		PositionY = 2,
 		PositionZ = 51,
 		Name = "Light_ShrimpFishingSpot",
 		Map = M._MAP,
@@ -329,7 +329,7 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 8,
+		Attenuation = 12,
 		Resource = M["Light_ShrimpFishingSpot"]
 	}
 end
@@ -337,12 +337,48 @@ end
 M["Anchor_FromCrawfish"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17,
+		PositionX = 15,
 		PositionY = 0,
 		PositionZ = 15,
 		Name = "Anchor_FromCrawfish",
 		Map = M._MAP,
 		Resource = M["Anchor_FromCrawfish"]
+	}
+end
+
+M["Anchor_FromCrawfish_Cutscene_LeftToRight"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 2,
+		PositionZ = 15,
+		Name = "Anchor_FromCrawfish_Cutscene_LeftToRight",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCrawfish_Cutscene_LeftToRight"]
+	}
+end
+
+M["Anchor_FromCrawfish_Cutscene_RightToLeft"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 2,
+		PositionZ = 15,
+		Name = "Anchor_FromCrawfish_Cutscene_RightToLeft",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCrawfish_Cutscene_RightToLeft"]
+	}
+end
+
+M["Anchor_FromCrawfish_Cutscene_RightToLeft_Jump"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4.5,
+		PositionZ = 15,
+		Name = "Anchor_FromCrawfish_Cutscene_RightToLeft_Jump",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCrawfish_Cutscene_RightToLeft_Jump"]
 	}
 end
 
@@ -366,23 +402,23 @@ do
 		MapObject = M["Pipe_ToCrawfish"]
 	}
 
-	local TravelAction = ItsyScape.Action.Travel()
+	local TalkAction = ItsyScape.Action.Talk()
 
-	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_ToCrawfish",
-		Map = ItsyScape.Resource.Map "ViziersRock_Sewers_Floor1",
-		Action = TravelAction
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/ViziersRock_Sewers_Floor1/Dialog/Crawl_LeftToRight.lua",
+		Language = "en-US",
+		Action = TalkAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Climb-through",
-		XProgressive = "Climbing-through",
+		Value = "Crawl-through",
+		XProgressive = "Crawling-through",
 		Language = "en-US",
-		Action = TravelAction
+		Action = TalkAction
 	}
 
 	M["Pipe_ToCrawfish"] {
-		TravelAction
+		TalkAction
 	}
 end
 
@@ -395,6 +431,42 @@ do
 		Name = "Anchor_ToCrawfish",
 		Map = M._MAP,
 		Resource = M["Anchor_ToCrawfish"]
+	}
+end
+
+M["Anchor_ToCrawfish_Cutscene_LeftToRight"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Anchor_ToCrawfish_Cutscene_LeftToRight",
+		Map = M._MAP,
+		Resource = M["Anchor_ToCrawfish_Cutscene_LeftToRight"]
+	}
+end
+
+M["Anchor_ToCrawfish_Cutscene_RightToLeft"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 22,
+		PositionY = 2,
+		PositionZ = 15,
+		Name = "Anchor_ToCrawfish_Cutscene_RightToLeft",
+		Map = M._MAP,
+		Resource = M["Anchor_ToCrawfish_Cutscene_RightToLeft"]
+	}
+end
+
+M["Anchor_ToCrawfish_Cutscene_LeftToRight_Jump"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 4.5,
+		PositionZ = 15,
+		Name = "Anchor_ToCrawfish_Cutscene_LeftToRight_Jump",
+		Map = M._MAP,
+		Resource = M["Anchor_ToCrawfish_Cutscene_LeftToRight_Jump"]
 	}
 end
 
@@ -418,32 +490,32 @@ do
 		MapObject = M["Pipe_FromCrawfish"]
 	}
 
-	local TravelAction = ItsyScape.Action.Travel()
+	local TalkAction = ItsyScape.Action.Talk()
 
-	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromCrawfish",
-		Map = ItsyScape.Resource.Map "ViziersRock_Sewers_Floor1",
-		Action = TravelAction
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/ViziersRock_Sewers_Floor1/Dialog/Crawl_RightToLeft.lua",
+		Language = "en-US",
+		Action = TalkAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
-		Value = "Climb-through",
-		XProgressive = "Climbing-through",
+		Value = "Crawl-through",
+		XProgressive = "Crawling-through",
 		Language = "en-US",
-		Action = TravelAction
+		Action = TalkAction
 	}
 
 	M["Pipe_FromCrawfish"] {
-		TravelAction
+		TalkAction
 	}
 end
 
 M["Light_CrawfishFishingSpot"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 69,
-		PositionY = 5,
-		PositionZ = 51,
+		PositionX = 41,
+		PositionY = 1.5,
+		PositionZ = 13,
 		Name = "Light_CrawfishFishingSpot",
 		Map = M._MAP,
 		Resource = M["Light_CrawfishFishingSpot"]
@@ -462,7 +534,7 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 8,
+		Attenuation = 12,
 		Resource = M["Light_CrawfishFishingSpot"]
 	}
 end
@@ -491,7 +563,7 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 12,
+		Attenuation = 15,
 		Resource = M["Light_SewerValve"]
 	}
 end
@@ -500,7 +572,7 @@ M["Light_Pond"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15,
-		PositionY = 5,
+		PositionY = 1.5,
 		PositionZ = 39,
 		Name = "Light_Pond",
 		Map = M._MAP,
@@ -520,7 +592,7 @@ do
 	}
 
 	ItsyScape.Meta.PointLight {
-		Attenuation = 8,
+		Attenuation = 12,
 		Resource = M["Light_Pond"]
 	}
 end
@@ -569,6 +641,54 @@ do
 	}
 
 	M["TrapDoor_ToPuzzle_Floor2"] {
+		TravelAction
+	}
+end
+
+M["Anchor_ToOtherPuzzleTrapDoor_Floor1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Anchor_ToOtherPuzzleTrapDoor_Floor1",
+		Map = M._MAP,
+		Resource = M["Anchor_ToOtherPuzzleTrapDoor_Floor1"]
+	}
+end
+
+M["TrapDoor_ToKaradon_Floor2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "TrapDoor_ToKaradon_Floor2",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToKaradon_Floor2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToKaradon_Floor2"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_OtherFromFloor1Puzzle",
+		Map = ItsyScape.Resource.Map "ViziersRock_Sewers_Floor2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		XProgressive = "Descending",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToKaradon_Floor2"] {
 		TravelAction
 	}
 end
@@ -809,4 +929,9 @@ do
 		Peep = ItsyScape.Resource.Peep "Rat",
 		MapObject = M["Rat7"]
 	}
+end
+
+do
+	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_LeftToRight"
+	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_RightToLeft"
 end

@@ -388,25 +388,29 @@ function MovementCortex:update(delta)
 			local y = map:getInterpolatedHeight(
 				position.position.x,
 				position.position.z) + movement.float
-			if position.position.y < y then
-				if movement.bounce > 0 then
-					movement.acceleration.y = -movement.acceleration.y * movement.bounce
-					movement.velocity.y = -movement.velocity.y * movement.bounce
-					position.position.y = y
+			if not movement.noClip then
+				if position.position.y < y then
+					if movement.bounce > 0 then
+						movement.acceleration.y = -movement.acceleration.y * movement.bounce
+						movement.velocity.y = -movement.velocity.y * movement.bounce
+						position.position.y = y
 
-					if movement.velocity.y < movement.bounceThreshold then
-						movement.acceleration.y = 0
-						movement.velocity.y = 0
+						if movement.velocity.y < movement.bounceThreshold then
+							movement.acceleration.y = 0
+							movement.velocity.y = 0
+							movement.isOnGround = true
+						else
+							movement.isOnGround = false
+						end
+					elseif not movement.isOnGround then
 						movement.isOnGround = true
-					else
-						movement.isOnGround = false
 					end
-				elseif not movement.isOnGround then
-					movement.isOnGround = true
+				elseif position.position.y > y + MovementCortex.GROUND_EPSILON
+				       and movement.isOnGround
+				then
+					movement.isOnGround = false
 				end
-			elseif position.position.y > y + MovementCortex.GROUND_EPSILON
-			       and movement.isOnGround
-			then
+			else
 				movement.isOnGround = false
 			end
 
@@ -420,7 +424,9 @@ function MovementCortex:update(delta)
 					movement.velocity = movement.velocity * movement.decay * delta
 				end
 			else
-				position.position.y = math.max(position.position.y, y)
+				if not movement.noClip then
+					position.position.y = math.max(position.position.y, y)
+				end
 			end
 
 			position.position = self:accumulate(peep, self.accumulatePosition, position.position, y)
