@@ -28,8 +28,8 @@ function SewerSpiderMatriarch:new(resource, name, ...)
 	size.size = Vector(7.5, 4, 6.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 100
-	status.maximumHitpoints = 100
+	status.currentHitpoints = 500
+	status.maximumHitpoints = 500
 end
 
 function SewerSpiderMatriarch:ready(director, game)
@@ -50,6 +50,8 @@ function SewerSpiderMatriarch:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/SewerSpider/SewerSpider_MatriarchArmor.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, armor)
+
+	Utility.Peep.equipXShield(self, "Shield")
 
 	Spider.ready(self, director, game)
 end

@@ -63,4 +63,60 @@ do
 		Language = "en-US",
 		Resource = SewerSpiderMatriarch
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Arachnid/SewerSpiderMatriarch_AttackLogic.lua",
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = SewerSpiderMatriarch
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.9),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(50),
+		Prayer = 10,
+		Resource = SewerSpiderMatriarch
+	}
 end

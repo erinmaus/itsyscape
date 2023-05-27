@@ -2027,24 +2027,6 @@ function Utility.Peep.getBestTool(peep, toolType)
 	return tools[1].logic
 end
 
-function Utility.Peep.getEquippedShield(peep, includeXShield)
-	local Equipment = require "ItsyScape.Game.Equipment"
-
-	local shield = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
-	if shield then
-		local logic = peep:getDirector():getItemManager():getLogic(shield:getID())
-		if logic then
-			return logic, shield
-		end
-	end
-
-	if includeXShield then
-		Log.errorOnce("XShield not yet implemented; peep '%s' doesn't have a shield.", peep:getName())
-	end
-
-	return nil
-end
-
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
@@ -2068,7 +2050,7 @@ function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	return nil
 end
 
-function Utility.Peep.getEquippedShield(peep)
+function Utility.Peep.getEquippedShield(peep, includeXShield)
 	local Equipment = require "ItsyScape.Game.Equipment"
 	local Shield = require "ItsyScape.Game.Shield"
 
@@ -2077,6 +2059,14 @@ function Utility.Peep.getEquippedShield(peep)
 		local shieldLogic = peep:getDirector():getItemManager():getLogic(rightHandItem:getID())
 		if shieldLogic:isCompatibleType(Shield) then
 			return shieldLogic, rightHandItem
+		end
+	end
+
+	if includeXShield then
+		local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
+		local xShield = peep:getBehavior(ShieldBehavior)
+		if xShield and xShield.shield and xShield.shield:isCompatibleType(Shield) then
+			return xShield.shield
 		end
 	end
 
@@ -2134,6 +2124,20 @@ function Utility.Peep.equipXWeapon(peep, id)
 		weapon.weapon = xWeapon
 		if Class.isDerived(xWeapon:getType(), Equipment) then
 			xWeapon:onEquip(peep)
+		end
+	end
+end
+
+function Utility.Peep.equipXShield(peep, id)
+	local Equipment = require "ItsyScape.Game.Equipment"
+	local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
+
+	local xShield = Utility.Peep.getXWeapon(peep:getDirector():getGameInstance(), id)
+	local s, shield = peep:addBehavior(ShieldBehavior)
+	if s then
+		shield.shield = xShield
+		if Class.isDerived(xShield:getType(), Equipment) then
+			xShield:onEquip(peep)
 		end
 	end
 end
