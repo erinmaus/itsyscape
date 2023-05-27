@@ -359,7 +359,10 @@ function MovementCortex:update(delta)
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
-			local newPosition = position.position + velocity + gravity * delta
+			local newPosition = position.position + velocity
+			if not movement.noClip then
+				newPosition = newPosition + gravity * delta
+			end
 
 			if not movement.noClip then
 				local actualX, actualZ, collisions = w.world:move(
