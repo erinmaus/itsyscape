@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Peep/Behaviors/WeaponBehavior.lua
+-- ItsyScape/Peep/Behaviors/ShieldBehavior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,16 +11,16 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
--- Specifies equipment bonuses directly.
-local WeaponBehavior = Behavior("Weapon")
+-- Specifies a shield directly.
+local ShieldBehavior = Behavior("Shield")
 
--- Constructs a WeaponBehavior.
+-- Constructs a ShieldBehavior.
 --
--- 'weapon' is an Weapon-instance.
-function WeaponBehavior:new()
+-- 'shield' is an Shield-instance.
+function ShieldBehavior:new()
 	Behavior.Type.new(self)
 
-	self.weapon = false
+	self.shield = false
 end
 
-return WeaponBehavior
+return ShieldBehavior
