@@ -15,6 +15,7 @@ local DidAttack = B.Node("DidAttack")
 DidAttack.TOOK_DAMAGE = B.Reference()
 DidAttack.MISSED = B.Reference()
 DidAttack.ATTACK_POKE = B.Reference()
+DidAttack.DAMAGE = B.Reference()
 DidAttack.INTERNAL_ATTACK_POKE = B.Local()
 DidAttack.ATTACKED = B.Local()
 DidAttack.CALLBACK = B.Local()
@@ -23,7 +24,9 @@ function DidAttack:update(mashina, state, executor)
 	local attacked = state[self.ATTACKED]
 
 	if attacked == true then
-		state[self.ATTACK_POKE] = state[self.INTERNAL_ATTACK_POKE]
+		local attackPoke = state[self.INTERNAL_ATTACK_POKE]
+		state[self.ATTACK_POKE] = attackPoke
+		state[self.DAMAGE] = attackPoke:getDamage()
 		state[self.ATTACKED] = nil
 		state[self.INTERNAL_ATTACK_POKE] = nil
 		return B.Status.Success

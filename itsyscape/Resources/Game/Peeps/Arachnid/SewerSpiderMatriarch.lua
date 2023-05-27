@@ -20,6 +20,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local Spider = require "Resources.Game.Peeps.Arachnid.Spider"
 
 local SewerSpiderMatriarch = Class(Spider)
+SewerSpiderMatriarch.SPAWN_RADIUS = 8
 
 function SewerSpiderMatriarch:new(resource, name, ...)
 	Spider.new(self, resource, name or 'SewerSpiderMatriarch_Base', ...)
@@ -30,6 +31,7 @@ function SewerSpiderMatriarch:new(resource, name, ...)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = 500
 	status.maximumHitpoints = 500
+	status.maxChaseDistance = math.huge
 end
 
 function SewerSpiderMatriarch:ready(director, game)
@@ -73,6 +75,28 @@ function SewerSpiderMatriarch:onSwitchTarget()
 	local p = peeps[1]
 	if p then
 		Utility.Peep.attack(self, p.peep)
+	end
+end
+
+function SewerSpiderMatriarch:onSummonSpiders(count)
+	local map = Utility.Peep.getMap(self)
+	local selfI, selfJ = Utility.Peep.getTile(self)
+
+	for i = 1, count do
+		local i, j
+		repeat
+			local x = math.floor((love.math.random() - 0.5) * 2 * self.SPAWN_RADIUS)
+			local y = math.floor((love.math.random() - 0.5) * 2 * self.SPAWN_RADIUS)
+
+			local tentativeI, tentativeJ = selfI + x, selfJ + y
+			if map:lineOfSightPassable(selfI, selfJ, tentativeI, tentativeJ, true) then
+				i = tentativeI
+				j = tentativeJ
+			end
+		until i and j
+
+		local position = map:getTileCenter(i, j)
+		local a = Utility.spawnActorAtPosition(self, "SewerSpider", position:get())
 	end
 end
 

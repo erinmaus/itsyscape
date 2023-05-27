@@ -27,7 +27,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Lurks in damp sewers, waiting for a rat to wander too close.",
+		Value = "Lurks in damp sewers, waiting for an injured or sickly rat to wander too close and get caught in a web...",
 		Language = "en-US",
 		Resource = SewerSpider
 	}
@@ -36,6 +36,12 @@ do
 		State = "idle",
 		Tree = "Resources/Game/Peeps/Arachnid/SewerSpider_IdleLogic.lua",
 		IsDefault = 1,
+		Resource = SewerSpider
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = SewerSpider
 	}
 end
@@ -116,7 +122,7 @@ do
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.9),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(50),
-		Prayer = 10,
+		Prayer = 5,
 		Resource = SewerSpiderMatriarch
 	}
 end
