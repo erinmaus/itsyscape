@@ -42,7 +42,7 @@ function Step:deactivated(mashina, state)
 	state[self.INDEX] = nil
 end
 
-function Step:activated(mashian, state)
+function Step:activated(mashina, state)
 	state[self.INDEX] = 1
 end
 

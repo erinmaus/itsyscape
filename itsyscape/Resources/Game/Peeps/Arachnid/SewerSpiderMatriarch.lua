@@ -52,8 +52,28 @@ function SewerSpiderMatriarch:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, armor)
 
 	Utility.Peep.equipXShield(self, "Shield")
+	Utility.Peep.equipXWeapon(self, "SewerSpiderWebVomit")
 
 	Spider.ready(self, director, game)
+end
+
+function SewerSpiderMatriarch:onSwitchTarget()
+	local status = self:getBehavior(CombatStatusBehavior)
+
+	local peeps = {}
+	for peep, damage in pairs(status.damage) do
+		table.insert(peeps, {
+			peep = peep,
+			damage = damage
+		})
+	end
+
+	table.sort(peeps, function(a, b) return a.damage > b.damage end)
+
+	local p = peeps[1]
+	if p then
+		Utility.Peep.attack(self, p.peep)
+	end
 end
 
 return SewerSpiderMatriarch
