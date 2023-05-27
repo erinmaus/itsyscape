@@ -69,6 +69,7 @@ Animation "Spider Attack" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Spider_Attack_Magic/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Spider_Attack_Magic/Animation.lanim"
 	}
 }
