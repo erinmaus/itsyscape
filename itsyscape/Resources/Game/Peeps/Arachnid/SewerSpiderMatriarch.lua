@@ -100,4 +100,12 @@ function SewerSpiderMatriarch:onSummonSpiders(count)
 	end
 end
 
+function SewerSpiderMatriarch:onBoss()
+	Utility.UI.openInterface(
+		Utility.Peep.getInstance(self),
+		"BossHUD",
+		false,
+		self)
+end
+
 return SewerSpiderMatriarch

@@ -73,30 +73,31 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack",
 		Tree = "Resources/Game/Peeps/Arachnid/SewerSpiderMatriarch_AttackLogic.lua",
+		IsDefault = 1,
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(100),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(100),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(100),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(100),
 		Resource = SewerSpiderMatriarch
 	}
 
@@ -108,20 +109,20 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Faith",
-		Value = ItsyScape.Utility.xpForLevel(45),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.Equipment {
 		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(60, 1),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(60, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1.1),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1.1),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1.1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 0.9),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(60, 1),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(50),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
 		Prayer = 5,
 		Resource = SewerSpiderMatriarch
 	}
