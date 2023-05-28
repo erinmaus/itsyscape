@@ -19,6 +19,47 @@ local SPIDER_TARGET = B.Reference("SewerSpiderMatriarch_AttackLogic", "SPIDER_TA
 local SUMMONED_SPIDERS = B.Reference("SewerSpiderMatriarch_AttackLogic", "SUMMONED_SPIDERS")
 local SPIDER_DAMAGE = B.Reference("SewerSpiderMatriarch_AttackLogic", "SPIDER_DAMAGE")
 local TOTAL_SPIDER_DAMAGE = B.Reference("SewerSpiderMatriarch_AttackLogic", "TOTAL_SPIDER_DAMAGE")
+local ATTACKER = B.Reference("SewerSpiderMatriarch_AttackLogic", "ATTACKER")
+
+local IdleLoop = Mashina.Repeat {
+	Mashina.Check {
+		condition = function(mashina, state)
+			return state[ATTACKER] == nil
+		end
+	},
+
+	Mashina.ParallelTry {
+		Mashina.Sequence {
+			Mashina.Try {
+				Mashina.Peep.FindNearbyCombatTarget {
+					distance = 8,
+					[ATTACKER] = B.Output.result
+				},
+
+				Mashina.Peep.WasAttacked {
+					[ATTACKER] = B.Output.aggressor
+				}
+			},
+
+			Mashina.Peep.EngageCombatTarget {
+				peep = ATTACKER
+			},
+
+			Mashina.Peep.PokeSelf {
+				event = "boss"
+			}
+		},
+
+		Mashina.Step {
+			Mashina.Navigation.Wander {
+				min_radial_distance = 4,
+				radial_distance = 6
+			},
+
+			Mashina.Peep.Wait
+		}
+	}
+}
 
 local SummonSpidersMechanic = Mashina.Step {
 	Mashina.Invert {
@@ -122,6 +163,11 @@ local WeakenMechanic = Mashina.Step {
 		power = "Weaken"
 	},
 
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
+	},
+
 	Mashina.Peep.TimeOut {
 		duration = 60
 	},
@@ -149,6 +195,11 @@ local IronSkinSequence = Mashina.Sequence {
 		end
 	},
 
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
+	},
+
 	Mashina.Peep.QueuePower {
 		power = "IronSkin"
 	}
@@ -172,12 +223,17 @@ local AbsorbSequence = Mashina.Sequence {
 		end
 	},
 
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
+	},
+
 	Mashina.Peep.QueuePower {
 		power = "Absorb"
 	}
 }
 
-local GravitySequence = Mashina.Sequence {
+local GravitySequence = Mashina.Step {
 	Mashina.Check {
 		condition = function(mashina, state)
 			local status = mashina:getBehavior("CombatStatus")
@@ -194,6 +250,18 @@ local GravitySequence = Mashina.Sequence {
 			return false
 		end
 	},
+
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
+	},
+
+	Mashina.Peep.Notify {
+		instance = true,
+		message = "You feel a gravity well beginning to form!"
+	},
+
+	Mashina.Peep.DidAttack,
 
 	Mashina.Peep.QueuePower {
 		power = "Gravity"
@@ -212,6 +280,11 @@ local MeditateSequence = Mashina.Sequence {
 
 	Mashina.Peep.TimeOut {
 		duration = 5
+	},
+
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
 	},
 
 	Mashina.Peep.QueuePower {
@@ -241,6 +314,11 @@ local FreedomSequence = Mashina.Sequence {
 
 	Mashina.Peep.TimeOut {
 		duration = 5
+	},
+
+	Mashina.Peep.PlayAnimation {
+		filename = "Resources/Game/Animations/Spider_Special/Script.lua",
+		priority = 2000
 	},
 
 	Mashina.Peep.QueuePower {
@@ -289,6 +367,8 @@ local Tree = BTreeBuilder.Node() {
 
 			[CURRENT_HEALTH] = B.Output.result
 		},
+
+		IdleLoop,
 
 		Mashina.Peep.ActivatePrayer {
 			prayer = "MetalSkin"

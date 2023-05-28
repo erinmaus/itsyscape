@@ -237,7 +237,7 @@ do
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(2) / 3,
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(2) / 3,
 		Prayer = 15,
-		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FINGER,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
 		Resource = ItsyScape.Resource.Item "GoldenAmulet"
 	}
 
