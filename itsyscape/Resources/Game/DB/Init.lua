@@ -37,6 +37,24 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "Dummy" {
+		Tier = Meta.TYPE_INTEGER,
+		CombatStyle = Meta.TYPE_INTEGER,
+
+		Hitpoints = Meta.TYPE_INTEGER,
+		Size = Meta.TYPE_REAL,
+
+		Weapon = Meta.TYPE_TEXT,
+		Shield = Meta.TYPE_TEXT,
+
+		ChaseDistance = Meta.TYPE_REAL,
+		AttackDistance = Meta.TYPE_REAL,
+		AttackCooldown = Meta.TYPE_REAL,
+		AttackProjectile = Meta.TYPE_TEXT,
+
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepMashinaState" {
 		State = Meta.TYPE_TEXT,
 		Tree = Meta.TYPE_TEXT,
@@ -978,6 +996,7 @@ include "Resources/Game/DB/Creeps/SewerSpider.lua"
 include "Resources/Game/DB/Creeps/GrubMite.lua"
 include "Resources/Game/DB/Creeps/Rat.lua"
 include "Resources/Game/DB/Creeps/TrashHeap.lua"
+include "Resources/Game/DB/Creeps/AncientKaradon.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"

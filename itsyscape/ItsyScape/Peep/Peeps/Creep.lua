@@ -63,6 +63,8 @@ function Creep:new(resource, ...)
 	movement.stoppingForce = 4
 
 	Utility.Peep.setResource(self, resource)
+
+	Utility.Peep.makeDummy(self)
 end
 
 function Creep:ready(director, game)
