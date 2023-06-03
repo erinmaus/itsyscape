@@ -68,6 +68,8 @@ function Player:new(resource, ...)
 	self:addPoke('walk')
 
 	Utility.Peep.setResource(self, resource)
+
+	Utility.Peep.makeDummy(self)
 end
 
 function Player:ready(director, game)
