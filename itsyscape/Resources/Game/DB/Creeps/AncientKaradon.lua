@@ -61,13 +61,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Ancient karadon",
+		Value = "Ancient karadon zealot",
 		Language = "en-US",
 		Resource = AncientKaradonPriest
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "An angler fish long thought to be extinct; it preys on the souls of humans, damning them to eternal suffering to power its angler.",
+		Value = "A zealot worshipping the ancient karadon. They will stop at nothing to protect it.",
 		Language = "en-US",
 		Resource = AncientKaradonPriest
 	}
