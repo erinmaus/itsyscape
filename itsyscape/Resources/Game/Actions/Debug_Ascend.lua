@@ -21,8 +21,8 @@ function DebugAscend:perform(state, peep, item)
 	if stats and stats.stats then
 		stats = stats.stats
 		for skill in stats:iterate() do
-			skill:setXP(Curve.XP_CURVE(40))
-			skill:setLevelBoost(0)
+			skill:setXP(Curve.XP_CURVE(99))
+			skill:setLevelBoost(21)
 		end
 	end
 

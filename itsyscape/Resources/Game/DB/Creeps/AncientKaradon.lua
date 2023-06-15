@@ -16,7 +16,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "ItsyScape.Peep.Peeps.Creep",
+		Value = "Resources.Game.Peeps.Fish.AncientKaradon",
 		Resource = AncientKaradon
 	}
 
@@ -27,23 +27,8 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "An angler fish long thought to be extinct; it preys on the souls of humans, damning them to eternal suffering to power its angler.",
+		Value = "An angler fish long thought to be extinct; it preys on the souls of humans, damning them to eternal suffering to power its goldfish angler.",
 		Language = "en-US",
-		Resource = AncientKaradon
-	}
-
-	ItsyScape.Meta.Dummy {
-		Tier = 40,
-		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
-
-		Hitpoints = 500,
-		Size = 3,
-
-		ChaseDistance = math.huge,
-		AttackDistance = 16,
-		AttackCooldown = 3,
-		AttackProjectile = "WaterBlast",
-
 		Resource = AncientKaradon
 	}
 end
