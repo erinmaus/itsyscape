@@ -71,12 +71,24 @@ function AncientKaradon:ready(director, game)
 		"Resources/Game/Skins/Fish/AncientKaradon.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, skin)
 
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/AncientKaradon_Attack_Magic/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/AncientKaradon_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/AncientKaradon_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
+
 	self:poke('dive')
+
+	Utility.Peep.equipXWeapon(self, "AncientKaradon_Magic")
 
 	Creep.ready(self, director, game)
 end
@@ -165,12 +177,15 @@ function AncientKaradon:update(...)
 	elseif self.currentAnimationState == AncientKaradon.STATE_TARGET then
 		Utility.Peep.face3D(self)
 
-		local target = self:getBehavior(CombatTargetBehavior)
-		if target and target.actor then
-			local peep = target.actor:getPeep()
-			local otherTarget = peep:getBehavior(CombatTargetBehavior)
-			if not otherTarget or not otherTarget.actor or otherTarget.actor:getPeep() ~= self then
-				self:poke('dive')
+		local status = self:getBehavior(CombatStatusBehavior)
+		if not status.isDead then
+			local target = self:getBehavior(CombatTargetBehavior)
+			if target and target.actor then
+				local peep = target.actor:getPeep()
+				local otherTarget = peep:getBehavior(CombatTargetBehavior)
+				if not otherTarget or not otherTarget.actor or otherTarget.actor:getPeep() ~= self then
+					self:poke('dive')
+				end
 			end
 		end
 	end
