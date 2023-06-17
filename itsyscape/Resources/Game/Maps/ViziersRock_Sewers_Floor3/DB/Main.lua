@@ -238,7 +238,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 31,
 		PositionY = 0,
-		PositionZ = 19,
+		PositionZ = 21,
 		Name = "Anchor_AncientKaradon_Swim1",
 		Map = M._MAP,
 		Resource = M["Anchor_AncientKaradon_Swim1"]
@@ -254,9 +254,9 @@ end
 M["Anchor_AncientKaradon_Swim2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
+		PositionX = 40,
 		PositionY = 0,
-		PositionZ = 19,
+		PositionZ = 31,
 		Name = "Anchor_AncientKaradon_Swim2",
 		Map = M._MAP,
 		Resource = M["Anchor_AncientKaradon_Swim2"]
@@ -272,9 +272,9 @@ end
 M["Anchor_AncientKaradon_Swim3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
+		PositionX = 15,
 		PositionY = 0,
-		PositionZ = 19,
+		PositionZ = 31,
 		Name = "Anchor_AncientKaradon_Swim3",
 		Map = M._MAP,
 		Resource = M["Anchor_AncientKaradon_Swim3"]
@@ -284,5 +284,23 @@ do
 		MapObjectGroup = "AncientKaradon_Spawns",
 		Map = M._MAP,
 		MapObject = M["Anchor_AncientKaradon_Swim3"]
+	}
+end
+
+M["Anchor_AncientKaradon_Swim4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 0,
+		PositionZ = 45,
+		Name = "Anchor_AncientKaradon_Swim4",
+		Map = M._MAP,
+		Resource = M["Anchor_AncientKaradon_Swim4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "AncientKaradon_Spawns",
+		Map = M._MAP,
+		MapObject = M["Anchor_AncientKaradon_Swim4"]
 	}
 end
