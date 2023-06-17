@@ -234,6 +234,7 @@ function CombatCortex:update(delta)
 					end
 					
 					local combat = peep:getBehavior(CombatStatusBehavior)
+					local movement = peep:getBehavior(MovementBehavior)
 
 					local distanceToTarget = ((Utility.Peep.getPosition(peep) - Utility.Peep.getPosition(target)) * Vector.PLANE_XZ):getLength()
 					local desiredDistance = math.max(weaponRange + targetRadius + selfRadius - 1, 1)
@@ -242,7 +243,7 @@ function CombatCortex:update(delta)
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
-					elseif distanceToTarget > desiredDistance or not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true) then
+					elseif distanceToTarget > desiredDistance or (not movement.noClip and not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)) then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 0, { asCloseAsPossible = true })
@@ -403,7 +404,6 @@ function CombatCortex:update(delta)
 					end
 
 					do
-						local movement = peep:getBehavior(MovementBehavior)
 						if not movement.targetFacing then
 							if selfI > targetI then
 								movement.facing = MovementBehavior.FACING_LEFT

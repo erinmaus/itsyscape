@@ -34,6 +34,72 @@ do
 end
 
 do
+	local AncientKaradon_Unattackable = ItsyScape.Resource.Peep "AncientKaradon_Unattackable"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Giant lurking fish",
+		Language = "en-US",
+		Resource = AncientKaradon_Unattackable
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one big fish...",
+		Language = "en-US",
+		Resource = AncientKaradon_Unattackable
+	}
+end
+
+do
+	local AncientKaradonFishingSpotProxy = ItsyScape.Resource.Prop "AncientKaradonFishingSpotProxy" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(40)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(40)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = AncientKaradonFishingSpotProxy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious fishing spot",
+		Language = "en-US",
+		Resource = AncientKaradonFishingSpotProxy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's... a goldfish... swimming in the water...",
+		Language = "en-US",
+		Resource = AncientKaradonFishingSpotProxy
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 5,
+		SpawnTime = math.huge,
+		Resource = AncientKaradonFishingSpotProxy
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = AncientKaradonFishingSpotProxy
+	}
+end
+
+do
 	local AncientKaradonPriest = ItsyScape.Resource.Peep "AncientKaradonPriest"
 
 	ItsyScape.Resource.Peep "AncientKaradonPriest" {
