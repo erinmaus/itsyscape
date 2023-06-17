@@ -32,7 +32,7 @@ AncientKaradon.STATE_TARGET = 'target'
 AncientKaradon.SWIM_RADIUS = 1
 AncientKaradon.SWIM_SPEED  = math.pi / 2
 
-AncientKaradon.DIVE_OFFSET_Y         = 5
+AncientKaradon.DIVE_OFFSET_Y         = 7.5
 AncientKaradon.DIVE_DURATION_SECONDS = 1.5
 
 function AncientKaradon:new(resource, name, ...)
