@@ -69,7 +69,8 @@ function Sewers:moveBoss(boss)
 	local fishingSpotPosition = Vector(Utility.Map.getAnchorPosition(
 		self:getDirector():getGameInstance(),
 		Utility.Peep.getMapResource(self),
-		targetAnchor:get("Name")))
+		--targetAnchor:get("Name")))
+		"Anchor_AncientKaradon_Swim1"))
 
 	Utility.Peep.setPosition(boss, fishingSpotPosition)
 
