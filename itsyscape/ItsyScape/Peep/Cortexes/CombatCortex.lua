@@ -246,7 +246,7 @@ function CombatCortex:update(delta)
 					elseif distanceToTarget > desiredDistance or (not movement.noClip and not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)) then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
-							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, 0, { asCloseAsPossible = true })
+							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.huge, { asCloseAsPossible = true })
 
 							if not walk then
 								Log.info(
