@@ -17,6 +17,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.RaidGroup {
+	Raid = ItsyScape.Resource.Raid "ViziersRockSewers",
+	Map = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -29,10 +29,10 @@ AncientKaradon.STATE_SWIM   = 'swim'
 AncientKaradon.STATE_RISE   = 'rise'
 AncientKaradon.STATE_TARGET = 'target'
 
-AncientKaradon.SWIM_RADIUS = 4
+AncientKaradon.SWIM_RADIUS = 1
 AncientKaradon.SWIM_SPEED  = math.pi / 2
 
-AncientKaradon.DIVE_OFFSET_Y         = 20
+AncientKaradon.DIVE_OFFSET_Y         = 5
 AncientKaradon.DIVE_DURATION_SECONDS = 1.5
 
 function AncientKaradon:new(resource, name, ...)
@@ -58,6 +58,9 @@ function AncientKaradon:ready(director, game)
 	status.currentHitpoints = 400
 	status.maximumHitpoints = 400
 	status.maxChaseDistance = math.huge
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.noClip = true
 
 	self:addBehavior(RotationBehavior)
 
@@ -93,18 +96,7 @@ function AncientKaradon:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function AncientKaradon:onReceiveAttack(p)
-	if self.currentAnimationState == AncientKaradon.STATE_SWIM then
-		self:poke('rise')
-
-		self.aggressor = p:getAggressor()
-	end
-end
-
 function AncientKaradon:onDive()
-	local movement = self:getBehavior(MovementBehavior)
-	movement.noClip = true
-
 	self.currentAnimationState = AncientKaradon.STATE_DIVE
 	self.currentDiveTime = 0
 	self.startDiveY = Utility.Peep.getPosition(self).y
@@ -122,7 +114,9 @@ function AncientKaradon:onSwim()
 	self.currentAngle = angle
 end
 
-function AncientKaradon:onRise()
+function AncientKaradon:onRise(target)
+	self.target = target
+
 	self.currentAnimationState = AncientKaradon.STATE_RISE
 	self.currentDiveTime = 0
 	self.startDiveY = Utility.Peep.getPosition(self).y
@@ -130,12 +124,9 @@ function AncientKaradon:onRise()
 end
 
 function AncientKaradon:onTarget()
-	local movement = self:getBehavior(MovementBehavior)
-	movement.noClip = false
-
 	self.currentAnimationState = AncientKaradon.STATE_TARGET
 
-	Utility.Peep.attack(self, self.aggressor)
+	self.target = nil
 end
 
 function AncientKaradon:update(...)
@@ -150,7 +141,10 @@ function AncientKaradon:update(...)
 		local startPosition = Vector(currentPosition.x, self.startDiveY, currentPosition.z)
 		local endPosition = Vector(currentPosition.x, self.targetDiveY, currentPosition.z)
 
-		Utility.Peep.setPosition(self, startPosition:lerp(endPosition, Tween.sineEaseInOut(math.min(self.currentDiveTime / AncientKaradon.DIVE_DURATION_SECONDS, 1))))
+		local mu = Tween.sineEaseOut(math.min(self.currentDiveTime / AncientKaradon.DIVE_DURATION_SECONDS, 1))
+		local currentPosition = startPosition:lerp(endPosition, mu)
+
+		Utility.Peep.setPosition(self, currentPosition)
 
 		if self.currentDiveTime > AncientKaradon.DIVE_DURATION_SECONDS then
 			if self.currentAnimationState == AncientKaradon.STATE_DIVE then
@@ -161,7 +155,7 @@ function AncientKaradon:update(...)
 		end
 
 		if self.currentAnimationState == AncientKaradon.STATE_RISE then
-			Utility.Peep.lookAt(self, self.aggressor)
+			Utility.Peep.lookAt(self, self.target)
 		end
 	elseif self.currentAnimationState == AncientKaradon.STATE_SWIM then
 		self.currentAngle = self.currentAngle + AncientKaradon.SWIM_SPEED * delta
@@ -176,18 +170,6 @@ function AncientKaradon:update(...)
 		Utility.Peep.setPosition(self, nextPosition)
 	elseif self.currentAnimationState == AncientKaradon.STATE_TARGET then
 		Utility.Peep.face3D(self)
-
-		local status = self:getBehavior(CombatStatusBehavior)
-		if not status.isDead then
-			local target = self:getBehavior(CombatTargetBehavior)
-			if target and target.actor then
-				local peep = target.actor:getPeep()
-				local otherTarget = peep:getBehavior(CombatTargetBehavior)
-				if not otherTarget or not otherTarget.actor or otherTarget.actor:getPeep() ~= self then
-					self:poke('dive')
-				end
-			end
-		end
 	end
 
 	if self.currentAnimationState ~= AncientKaradon.STATE_TARGET then

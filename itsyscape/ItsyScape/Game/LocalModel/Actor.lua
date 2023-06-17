@@ -120,7 +120,7 @@ end
 
 function LocalActor:getDescription()
 	local resource = Utility.Peep.getResource(self.peep)
-	if not self.descriptionResource or resource.id.value ~= resource.id.value then
+	if not self.descriptionResource or resource.id.value ~= self.descriptionResource.id.value then
 		self.description = Utility.Peep.getDescription(self.peep)
 		self.descriptionResource = resource
 	end
