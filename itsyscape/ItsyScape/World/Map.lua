@@ -187,88 +187,60 @@ function Map:isOutOfBounds(x, z)
 	return false
 end
 
-function Map:_lineOfSightLow(i1, j1, i2, j2, f, shoot)
-	di = i2 - i1
-	dj = j2 - j1
-	yi = 1
-
-	if dj < 0 then
-		yi = -1
-		dj = -dj
-	end
-
-	D = (2 * dj) - di
-	y = j1
-
-	local px, py
-	for x = i1, i2 do
-		if px and py then
-			if not f(self, px, py, x - px, y - py, shoot) then
-				return false
-			end
-		end
-		
-		px = x
-		py = y
-
-		if D > 0 then
-			y = y + yi
-			D = D + (2 * (dj - di))
-		else
-			D = D + 2*dj
-		end
-	end
-
-	return true
-end
-
-function Map:_lineOfSightHigh(i1, j1, i2, j2, f, shoot)
-	di = i2 - i1
-	dj = j2 - j1
-	xi = 1
-	if di < 0 then
-		xi = -1
-		di = -di
-	end
-	D = (2 * di) - dj
-	x = i1
-
-	local px, py
-	for y = j1, j2 do
-		if px and py then
-			if not f(self, px, py, x - px, y - py, shoot) then
-				return false
-			end
-		end
-
-		px = x
-		py = y
-
-		if D > 0 then
-			x = x + xi
-			D = D + (2 * (di - dj))
-		else
-			D = D + 2*di
-		end
-	end
-
-	return true
-end
-
 function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
-	if math.abs(j2 - j1) < math.abs(i2 - i1) then
-		if i1 > i2 then
-			return self:_lineOfSightLow(i2, j2, i1, j1, self.canMove, shoot)
-		else
-			return self:_lineOfSightLow(i1, j1, i2, j2, self.canMove, shoot)
-		end
+	local steep = math.abs(j2 - j1) > math.abs(i2 - i1);
+
+	if steep then
+		i1, j1 = j1, i1
+		i2, j2 = j2, i2
+	end
+
+	local dx = math.abs(i2 - i1)
+	local dy = math.abs(j2 - j1)
+	local error = math.floor(dx / 2)
+	local ystep = (j1 < j2 and 1) or -1
+	local xstep = (i1 < i2 and 1) or -1
+	local y = j1
+	local x = i1
+
+	local pi, pj
+	if steep then
+		pi = y
+		pj = x
 	else
-		if j1 > j2 then
-			return self:_lineOfSightHigh(i2, j2, i1, j1, self.canMove, shoot)
-		else
-			return self:_lineOfSightHigh(i1, j1, i2, j2, self.canMove, shoot)
+		pi = x
+		pj = y
+	end
+
+	while x ~= (i2 + xstep) do
+		error = error - dy
+		if error < 0 then
+			y = y + ystep
+			error = error + dx
+		end
+
+		x = x + xstep
+
+		do
+			local i, j
+			if steep then
+				i = y
+				j = x
+			else
+				i = x
+				j = y
+			end
+
+			if not self:canMove(i, j, i - pi, j - pj, shoot) then
+				return false
+			end
+
+			pi = i
+			pj = j
 		end
 	end
+
+	return true
 end
 
 function Map:canMove(i, j, di, dj, shoot)
