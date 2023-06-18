@@ -304,7 +304,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "AncientKaradon",
+		Peep = ItsyScape.Resource.Peep "SewerSpiderMatriarch",
 		MapObject = M["SewerSpiderMatriarch"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1

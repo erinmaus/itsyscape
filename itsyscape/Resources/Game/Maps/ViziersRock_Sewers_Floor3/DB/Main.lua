@@ -102,8 +102,8 @@ do
 		ColorRed = 89,
 		ColorGreen = 89,
 		ColorBlue = 120,
-		NearDistance = 15,
-		FarDistance = 25,
+		NearDistance = 30,
+		FarDistance = 55,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
@@ -133,6 +133,10 @@ do
 		MapObjectGroup = "AncientKaradon",
 		Map = M._MAP,
 		MapObject = M["CourtyardGate"]
+	}
+
+	M["CourtyardGate"] {
+		ItsyScape.Action.Open()
 	}
 end
 
