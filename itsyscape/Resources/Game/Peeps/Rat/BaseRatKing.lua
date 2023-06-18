@@ -22,9 +22,6 @@ local BaseRatKing = Class(Creep)
 function BaseRatKing:new(resource, name, ...)
 	Creep.new(self, resource, name or 'RatKing_Base', ...)
 
-	self:silence('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
-	self:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
-
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 4, 2)
 

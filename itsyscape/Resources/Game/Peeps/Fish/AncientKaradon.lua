@@ -101,7 +101,7 @@ function AncientKaradon:onSwitchWeapons()
 	if not currentWeapon then
 		local weapons = {
 			"AncientKaradon_Archery",
-			--"AncientKaradon_Magic"
+			"AncientKaradon_Magic"
 		}
 
 		Utility.Peep.equipXWeapon(self, weapons[love.math.random(#weapons)])
@@ -167,6 +167,16 @@ function AncientKaradon:onRise(target)
 	self.currentDiveTime = 0
 	self.startDiveY = Utility.Peep.getPosition(self).y
 	self.targetDiveY = self.startDiveY + AncientKaradon.DIVE_OFFSET_Y
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if actor then
+		local animation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/SFX_AncientKaradon_Roar/Script.lua")
+		actor:playAnimation('x-karadon', 1, animation)
+	end
 end
 
 function AncientKaradon:onTarget()

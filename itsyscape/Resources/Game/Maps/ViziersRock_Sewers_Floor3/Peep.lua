@@ -100,6 +100,8 @@ function Sewers:angerBoss(boss, fishingSpot, p)
 
 		Utility.Peep.attack(boss, p.peep)
 
+		print(">>> animState", boss.currentAnimationState)
+
 		boss:silence('target', onBossTarget)
 	end
 	boss:listen('target', onBossTarget)

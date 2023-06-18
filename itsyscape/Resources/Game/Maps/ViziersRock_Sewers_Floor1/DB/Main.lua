@@ -247,40 +247,6 @@ do
 	}
 end
 
-M["Spider1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 47,
-		PositionY = 5,
-		PositionZ = 55,
-		Name = "Spider1",
-		Map = M._MAP,
-		Resource = M["Spider1"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "SewerSpider",
-		MapObject = M["Spider1"]
-	}
-end
-
-M["Spider2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 47,
-		PositionY = 5,
-		PositionZ = 55,
-		Name = "Spider2",
-		Map = M._MAP,
-		Resource = M["Spider2"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "SewerSpider",
-		MapObject = M["Spider2"]
-	}
-end
-
 M["Light_RatKing"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
