@@ -1,0 +1,158 @@
+--------------------------------------------------------------------------------
+-- ItsyScape/Resources/Game/Projectiles/AncientKaradonZap/Projectile.lua
+--
+-- This file is a part of ItsyScape.
+--
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+--------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local CacheRef = require "ItsyScape.Game.CacheRef"
+local Actor = require "ItsyScape.Game.Model.Actor"
+local Color = require "ItsyScape.Graphics.Color"
+local Projectile = require "ItsyScape.Graphics.Projectile"
+local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+
+local Zap = Class(Projectile)
+
+Zap.PARTICLE_SYSTEM = {
+	numParticles = 50,
+	texture = "Resources/Game/Projectiles/AncientKaradonZap/Particle.png",
+	columns = 4,
+
+	emitters = {
+		{
+			type = "RadialEmitter",
+			radius = { 0 },
+			speed = { 3, 4 },
+			acceleration = { 0, 0 }
+		},
+		{
+			type = "RandomColorEmitter",
+			colors = {
+				{ Color.fromHexString("ffcc00", 0.0):get() },
+				{ Color.fromHexString("ffcc00", 0.0):get() },
+				{ Color.fromHexString("ff9900", 0.0):get() },
+				{ Color.fromHexString("ff9900", 0.0):get() },
+				{ Color.fromHexString("00ccff", 0.0):get() }
+			}
+		},
+		{
+			type = "RandomLifetimeEmitter",
+			age = { 0.5, 0.7 }
+		},
+		{
+			type = "RandomScaleEmitter",
+			scale = { 0.25, 0.5 }
+		},
+		{
+			type = "RandomRotationEmitter",
+			rotation = { 0, 360 }
+		}
+	},
+
+	paths = {
+		{
+			type = "FadeInOutPath",
+			fadeInPercent = { 0.3 },
+			fadeOutPercent = { 0.7 },
+			tween = { 'sineEaseOut' }
+		},
+		{
+			type = "TextureIndexPath",
+			textures = { 1, 4 }
+		}
+	},
+
+	emissionStrategy = {
+		type = "RandomDelayEmissionStrategy",
+		count = { 6, 10 },
+		delay = { 0.125 },
+		duration = { math.huge }
+	}
+}
+
+Zap.SPEED = 10
+
+function Zap:attach()
+	Projectile.attach(self)
+
+	self.duration = math.huge
+end
+
+function Zap:load()
+	Projectile.load(self)
+
+	local resources = self:getResources()
+	local root = self:getRoot()
+
+	self.particleSystem = ParticleSceneNode()
+	self.particleSystem:setParent(root)
+	self.particleSystem:initParticleSystemFromDef(Zap.PARTICLE_SYSTEM, resources)
+
+	self.light = PointLightSceneNode()
+	self.light:setParent(root)
+	self.light:setColor(Color.fromHexString("ffcc00"))
+end
+
+function Zap:getDuration()
+	return self.duration
+end
+
+function Zap:tick()
+	if not self.spawnPosition then
+		local gameView = self:getGameView()
+		local actorView = gameView:getActor(self:getSource())
+		if actorView then
+			local actorTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(0)
+			local anglerTransform = actorView:getLocalBoneTransform("angler2")
+
+			local transform = love.math.newTransform()
+			transform:apply(actorTransform)
+			transform:apply(anglerTransform)
+
+			self.spawnPosition = Vector(transform:transformPoint(0, 0, 0))
+		else
+			self.spawnPosition = self:getTargetPosition(self:getSource())
+		end
+
+		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)
+	end
+end
+
+function Zap:update(elapsed)
+	Projectile.update(self, elapsed)
+
+	if self.spawnPosition then
+		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+		local root = self:getRoot()
+		local delta = self:getDelta()
+		local mu = Tween.sineEaseOut(delta)
+		local position = self.spawnPosition:lerp(hitPosition, mu)
+
+		local alpha = 1
+		if delta > 0.5 then
+			alpha = 1 - (delta - 0.5) / 0.5
+		end
+
+		local rotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
+
+		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
+		local lookRotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
+		local rotation = lookRotation * xRotation
+
+		root:getTransform():setLocalTranslation(position)
+		root:getTransform():setLocalRotation(rotation)
+
+		self.particleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
+		self.light:setAttenuation((1 - alpha) * 3 + 2)
+	end
+end
+
+return Zap
