@@ -31,6 +31,55 @@ do
 		Language = "en-US",
 		Resource = AncientKaradon
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Fish/AncientKaradon_AttackLogic.lua",
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(80),
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(80),
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(80),
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(80),
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = AncientKaradon
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(65, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(65, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(65, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.95),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(50),
+		Resource = AncientKaradon
+	}
 end
 
 do

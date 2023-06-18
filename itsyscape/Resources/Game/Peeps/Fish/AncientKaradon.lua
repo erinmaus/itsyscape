@@ -13,12 +13,14 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
@@ -89,14 +91,58 @@ function AncientKaradon:ready(director, game)
 		"Resources/Game/Animations/AncientKaradon_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
 
-	self:poke('dive')
-
-	Utility.Peep.equipXWeapon(self, "AncientKaradon_Magic")
-
 	Creep.ready(self, director, game)
+
+	self:poke('dive')
+end
+
+function AncientKaradon:onSwitchWeapons()
+	local currentWeapon = Utility.Peep.getEquippedWeapon(self, true)
+	if not currentWeapon then
+		local weapons = {
+			"AncientKaradon_Archery",
+			--"AncientKaradon_Magic"
+		}
+
+		Utility.Peep.equipXWeapon(self, weapons[love.math.random(#weapons)])
+	elseif currentWeapon:getStyle() == Weapon.STYLE_MAGIC then
+		Utility.Peep.equipXWeapon(self, "AncientKaradon_Archery")
+	else
+		Utility.Peep.equipXWeapon(self, "AncientKaradon_Magic")
+	end
+end
+
+function AncientKaradon:onReceiveAttack(attack)
+	local aggressor = attack:getAggressor()
+	if not aggressor then
+		return
+	end
+
+	-- If the karadon is not attackable, dis-engage combat.
+	if not Utility.Peep.isAttackable(self) then
+		aggressor:removeBehavior(CombatTargetBehavior)
+	end
+
+	local isPlayer = aggressor:hasBehavior(PlayerBehavior)
+	if not isPlayer then
+		return
+	end
+
+	local isOpen = Utility.UI.isOpen(aggressor, "BossHUD")
+	if isOpen then
+		return
+	end
+
+	Utility.UI.openInterface(
+		aggressor,
+		"BossHUD",
+		false,
+		self)
 end
 
 function AncientKaradon:onDive()
+	self:onSwitchWeapons()
+
 	self.currentAnimationState = AncientKaradon.STATE_DIVE
 	self.currentDiveTime = 0
 	self.startDiveY = Utility.Peep.getPosition(self).y
