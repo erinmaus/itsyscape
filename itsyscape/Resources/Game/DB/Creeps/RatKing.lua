@@ -133,4 +133,47 @@ do
 		Value = "Undead",
 		Resource = RatKingUnleashed
 	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(60, 0.95),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
+		Resource = RatKingUnleashed
+	}
 end

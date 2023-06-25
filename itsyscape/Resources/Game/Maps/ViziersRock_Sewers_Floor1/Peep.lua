@@ -15,6 +15,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local Common = require "Resources.Game.Peeps.ViziersRock.SewersCommon"
 
 local Sewers = Class(Map)
@@ -73,16 +74,31 @@ function Sewers:onRatKingDie(ratKing, poke)
 				"ItsyScape.Graphics.AnimationResource")
 
 			if animation then
-				otherRatKingPeep:playAnimation('spawn', 2000, animation)
-
-				Utility.UI.openInterface(
-					Utility.Peep.getInstance(self),
-					"BossHUD",
-					false,
-					p)
-
-				Utility.Peep.attack(p, poke:getAggressor())
+				otherRatKing:playAnimation('spawn', 2000, animation)
 			end
+
+			Utility.UI.openInterface(
+				Utility.Peep.getInstance(self),
+				"BossHUD",
+				false,
+				p)
+
+			Utility.Peep.attack(p, poke:getAggressor())
+		end)
+
+		otherRatKingPeep:listen('finalize', function(p)
+			local strength = math.floor(self.ratKingStrengthStat:get().current * 10)
+
+			local stats = p:getBehavior(StatsBehavior)
+			stats = stats and stats.stats
+			if not stats then
+				return
+			end
+
+			stats:getSkill("Dexterity"):setLevelBoost(strength)
+			stats:getSkill("Strength"):setLevelBoost(strength)
+
+			Log.info("Boosted dexterity and strength of the Rat King unleashed by %d level(s).", strength)
 		end)
 
 		otherRatKingPeep:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
