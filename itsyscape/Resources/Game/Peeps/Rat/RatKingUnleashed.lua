@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -27,8 +28,9 @@ function RatKingUnleashed:new(resource, name, ...)
 	size.size = Vector(4.5, 12, 4.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 1000
-	status.maximumHitpoints = 1000
+	status.currentHitpoints = 750
+	status.maximumHitpoints = 750
+	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
 end
@@ -61,7 +63,7 @@ function RatKingUnleashed:ready(director, game)
 
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/RatKing_Attack/Script.lua")
+		"Resources/Game/Animations/RatKing_Attack_Melee/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
 	local spawnAnimation = CacheRef(
@@ -74,7 +76,36 @@ function RatKingUnleashed:ready(director, game)
 		"Resources/Game/Skins/RatKing/RatKing.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
+	Utility.Peep.equipXWeapon(self, "RatKingUnleashed_Attack_Melee")
+
 	Creep.ready(self, director, game)
+end
+
+function RatKingUnleashed:onInitiateAttack(attack)
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+
+	if weapon and weapon:getStyle() == Weapon.STYLE_MELEE then
+		Utility.Peep.equipXWeapon(self, "RatKingUnleashed_Attack_Archery")
+
+		local damage = attack:getDamage()
+		if damage > 0 then
+			self:poke('heal', {
+				hitPoints = math.floor(damage * 0.2 + 0.5),
+			})
+		end
+
+		local attackAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/RatKing_Attack_Archery/Script.lua")
+		self:addResource("animation-attack", attackAnimation)
+	else
+		Utility.Peep.equipXWeapon(self, "RatKingUnleashed_Attack_Melee")
+
+		local attackAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/RatKing_Attack_Melee/Script.lua")
+		self:addResource("animation-attack", attackAnimation)
+	end
 end
 
 function RatKingUnleashed:update(...)
