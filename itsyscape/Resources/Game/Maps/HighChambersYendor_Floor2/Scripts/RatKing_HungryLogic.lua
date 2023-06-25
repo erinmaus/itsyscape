@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
-local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -17,75 +17,21 @@ local TARGET = B.Reference("RatKing_HungryLogic", "TARGET")
 local ATTACK_POKE = B.Reference("RatKing_HungryLogic", "ATTACK_POKE")
 local ATTACK_POKE_DAMAGE = B.Reference("RatKing_HungryLogic", "ATTACK_POKE_DAMAGE")
 
-local function ratRobe(p)
-	local resource = Utility.Peep.getResource(p)
-	if not resource then
-		reutrn false
-	end
-
-	local tag = self:getDirector():getGameDB():getRecord({
-		Value = "Rat",
-		Resource = resource
-	})
-
-	return tag ~= nil
-end
-
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Success {
 			Mashina.Step {
-				Mashina.Repeat {
-					Mashina.Try {
-						Mashina.Peep.FindNearbyCombatTarget {
-							filter = ratProbe,
-							include_npcs = true,
-							[TARGET] = B.Output.result
-						},
-
-						-- This one should eventually fail to fall back to
-						-- the first try sequence above.
-						Mashina.Peep.Failure {
-							Mashina.Step {
-								Mashina.PokeSelf {
-									event = "summon"
-								},
-
-								Mashina.Peep.Talk {
-									message = "You think you've outsmarted me by slaying my court...?"
-								},
-
-								Mashina.Peep.Timeout {
-									duration = 1
-								}
-							}
-						}
-					}
+				Mashina.Peep.FindNearbyCombatTarget {
+					filter = Probe.resource("Peep", "HighChambersYendor_Rat"),
+					include_npcs = true,
+					[TARGET] = B.Output.result
 				},
 
-				Mashina.Repeat {
-					Mashina.Peep.Try {
-						Mashina.Sequence {
-							Mashina.Peep.IsCombatTarget {
-								target = TARGET
-							},
-
-							Mashina.Peep.EngageCombatTarget {
-								peep = TARGET
-							}
-						},
-
-						Mashina.Sequence {
-							Mashina.Peep.IsCombatTarget {
-								target = TARGET
-							},
-
-							Mashina.Invert {
-								Mashina.Peep.IsDead
-							}
-						}
-					}
+				Mashina.Navigation.WalkToPeep {
+					peep = TARGET
 				},
+
+				Mashina.Peep.Wait,
 
 				Mashina.Peep.Talk {
 					message = "Yum!"
@@ -98,6 +44,11 @@ local Tree = BTreeBuilder.Node() {
 							target = state[TARGET]
 						}
 					end
+				},
+
+				Mashina.Peep.TimeOut {
+					min_duration = 1,
+					max_duration = 1.5
 				}
 			}
 		},
