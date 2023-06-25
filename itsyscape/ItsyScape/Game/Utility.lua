@@ -2555,9 +2555,7 @@ function Utility.Peep.attack(peep, other, distance)
 
 		local mashina = peep:getBehavior(MashinaBehavior)
 		if mashina then
-			if mashina.currentState ~= 'begin-attack' and
-			   mashina.currentState ~= 'attack'
-			then
+			if mashina.currentState == 'idle' or not mashina.currentState then
 				if mashina.states['begin-attack'] then
 					mashina.currentState = 'begin-attack'
 				elseif mashina.states['attack'] then
@@ -3076,6 +3074,29 @@ function Utility.Peep.Attackable:onTargetFled(p)
 	end
 end
 
+function Utility.Peep.Attackable:bossReceiveAttack(p)
+	local aggressor = p:getAggressor()
+	if not aggressor then
+		return
+	end
+
+	local isPlayer = aggressor:hasBehavior(PlayerBehavior)
+	if not isPlayer then
+		return
+	end
+
+	local isOpen = Utility.UI.isOpen(aggressor, "BossHUD")
+	if isOpen then
+		return
+	end
+
+	Utility.UI.openInterface(
+		aggressor,
+		"BossHUD",
+		false,
+		self)
+end
+
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat or combat.dead then
@@ -3109,15 +3130,11 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 
 				local mashina = self:getBehavior(MashinaBehavior)
 				if mashina then
-					if mashina.currentState ~= 'begin-attack' and
-					   mashina.currentState ~= 'attack'
-					then
+					if mashina.currentState == 'idle' or not mashina.currentState then
 						if mashina.states['begin-attack'] then
 							mashina.currentState = 'begin-attack'
 						elseif mashina.states['attack'] then
 							mashina.currentState = 'attack'
-						else
-							mashina.currentState = false
 						end
 
 						self:poke('firstStrike', attack)

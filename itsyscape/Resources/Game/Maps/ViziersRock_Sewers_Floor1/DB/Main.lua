@@ -245,6 +245,109 @@ do
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "RatKing",
+		Map = M._MAP,
+		MapObject = M["RatKing"]
+	}
+end
+
+M["RatKingUnleashed"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "RatKingUnleashed",
+		Map = M._MAP,
+		Resource = M["RatKingUnleashed"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RatKingUnleashed",
+		MapObject = M["RatKingUnleashed"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "RatKing",
+		Map = M._MAP,
+		MapObject = M["RatKingUnleashed"]
+	}
+end
+
+M["RatKing_CourtRat_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "RatKing_CourtRat_1",
+		Map = M._MAP,
+		Resource = M["RatKing_CourtRat_1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["RatKing_CourtRat_1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "RatKing_Court",
+		Map = M._MAP,
+		MapObject = M["RatKing_CourtRat_1"]
+	}
+end
+
+M["RatKing_CourtRat_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "RatKing_CourtRat_2",
+		Map = M._MAP,
+		Resource = M["RatKing_CourtRat_2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["RatKing_CourtRat_2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "RatKing_Court",
+		Map = M._MAP,
+		MapObject = M["RatKing_CourtRat_2"]
+	}
+end
+
+M["RatKing_CourtRat_3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 5,
+		PositionZ = 55,
+		Name = "RatKing_CourtRat_3",
+		Map = M._MAP,
+		Resource = M["RatKing_CourtRat_3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["RatKing_CourtRat_3"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "RatKing_Court",
+		Map = M._MAP,
+		MapObject = M["RatKing_CourtRat_3"]
+	}
 end
 
 M["Light_RatKing"] = ItsyScape.Resource.MapObject.Unique()

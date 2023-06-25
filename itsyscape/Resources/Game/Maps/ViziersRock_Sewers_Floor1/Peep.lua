@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local Common = require "Resources.Game.Peeps.ViziersRock.SewersCommon"
@@ -26,6 +28,68 @@ function Sewers:onLoad(...)
 	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
 		Common.closeValve(self, Common.MARK_CIRCLE)
 	end
+
+	self:initRatKingFight()
+end
+
+function Sewers:initRatKingFight()
+	local ratKing = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("RatKing"))[1]
+
+	if not ratKing then
+		Log.warn("No Rat King, can't initialize fight.")
+		return
+	end
+
+	ratKing:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
+	ratKing:listen('die', self.onRatKingDie, self)
+	ratKing:listen('eat', self.onRatKingEat, self)
+
+	self.ratKingStrengthStat = BossStat({
+		icon = 'Resources/Game/UI/Icons/Concepts/Rage.png',
+		text = "Rat King's rage",
+		label = "+0 strength levels",
+		current = 0,
+		isValue = true
+	})
+end
+
+function Sewers:onRatKingDie(ratKing, poke)
+	local position = Utility.Peep.getPosition(ratKing)
+	local otherRatKing = Utility.spawnMapObjectAtPosition(self, "RatKingUnleashed", position.x, position.y, position.z, 0)
+	if otherRatKing then
+		local otherRatKingPeep = otherRatKing:getPeep()
+
+		otherRatKingPeep:listen('ready', function(p)
+			local animation = p:getResource(
+				"animation-spawn",
+				"ItsyScape.Graphics.AnimationResource")
+
+			if animation then
+				otherRatKingPeep:playAnimation('spawn', 2000, animation)
+
+				Utility.UI.openInterface(
+					Utility.Peep.getInstance(self),
+					"BossHUD",
+					false,
+					p)
+
+				Utility.Peep.attack(p, poke:getAggressor())
+			end
+		end)
+
+		otherRatKingPeep:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
+	end
+end
+
+function Sewers:onRatKingEat(ratKing)
+	current = self.ratKingStrengthStat:get().current + 1
+
+	self.ratKingStrengthStat:set({
+		current = current,
+		label = string.format("+%d strength levels", current * 10)
+	})
 end
 
 function Sewers:update(...)
