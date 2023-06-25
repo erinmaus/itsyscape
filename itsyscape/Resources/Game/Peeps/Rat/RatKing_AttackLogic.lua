@@ -49,7 +49,7 @@ local Tree = BTreeBuilder.Node() {
 					},
 
 					Mashina.Peep.Talk {
-						message = "Hungry...! Must feast!"
+						message = "Hungry...! I must feast!"
 					},
 
 					Mashina.Peep.SetState {

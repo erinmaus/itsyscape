@@ -30,13 +30,16 @@ function BaseRatKing:new(resource, name, ...)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = 400
 	status.maximumHitpoints = 400
+	status.maxChaseDistance = math.huge
 
 	self:addPoke('eat')
+	self:addPoke('summon')
 end
 
 function BaseRatKing:onSummon()
 	Log.info("Trying to summon rats to the Rat King's court...")
 
+	local gameDB = self:getDirector():getGameDB()
 	local courtAnchors = gameDB:getRecords("MapObjectGroup", {
 		MapObjectGroup = "RatKing_Court",
 		Map = Utility.Peep.getMapResource(self)
@@ -55,7 +58,7 @@ function BaseRatKing:onSummon()
 	for i = 1, #courtAnchors do
 		local isAlive = true
 
-		local hits = self:getDirector():probe(self:getLayerName(), Probe.mapObject(courtAnchors[i]))
+		local hits = self:getDirector():probe(self:getLayerName(), Probe.mapObject(courtAnchors[i]:get("Resource")))
 		if #hits == 0 then
 			isAlive = false
 		else
@@ -72,7 +75,7 @@ function BaseRatKing:onSummon()
 		if not court[i] then
 			Utility.spawnMapObjectAtAnchor(
 				Utility.Peep.getMapScript(self),
-				courtAnchors[i],
+				courtAnchors[i]:get("Resource"),
 				courtAnchors[i]:get("Name"))
 
 			Log.info("'%s' dead; respawning.", courtAnchors[i]:get("Name"))

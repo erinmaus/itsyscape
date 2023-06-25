@@ -32,7 +32,7 @@ function RatKingBite._isRat(target)
 		return false
 	end
 
-	local tag = self:getDirector():getGameDB():getRecord({
+	local tag = target:getDirector():getGameDB():getRecord("ResourceTag", {
 		Value = "Rat",
 		Resource = resource
 	})

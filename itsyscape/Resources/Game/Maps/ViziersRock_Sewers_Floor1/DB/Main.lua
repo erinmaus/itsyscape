@@ -289,7 +289,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Rat",
 		MapObject = M["RatKing_CourtRat_1"],
-		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
@@ -314,7 +313,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Rat",
 		MapObject = M["RatKing_CourtRat_2"],
-		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
@@ -339,7 +337,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Rat",
 		MapObject = M["RatKing_CourtRat_3"],
-		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
