@@ -34,6 +34,7 @@ function BaseRatKing:new(resource, name, ...)
 
 	self:addPoke('eat')
 	self:addPoke('summon')
+	self:addPoke('boss')
 end
 
 function BaseRatKing:onSummon()
@@ -93,11 +94,21 @@ function BaseRatKing:onEat(p)
 	if target then
 		local targetStatus = target:getBehavior(CombatStatusBehavior)
 		if targetStatus then
+			local damage = targetStatus.damage[self] or 0
+
 			self:poke('heal', {
-				hitPoints = math.ceil(targetStatus.maximumHitpoints / 4)
+				hitPoints = math.ceil(damage / 4)
 			})
 		end
 	end
+end
+
+function BaseRatKing:onBoss()
+	Utility.UI.openInterface(
+		Utility.Peep.getInstance(self),
+		"BossHUD",
+		false,
+		self)
 end
 
 function BaseRatKing:onDie(poke)

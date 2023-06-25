@@ -101,7 +101,8 @@ function BossHUD.StatBar:draw(resources, state)
 	if self.isValue then
 		if not self.valueLabel then
 			self.valueLabel = Label()
-			self.valueLabel:setStyle(LabelStyle(BossHUD.BIG_STAT_LEFT_LABEL_STYLE, self.resources))
+			self.valueLabel:setStyle(LabelStyle(BossHUD.BIG_STAT_LEFT_LABEL_STYLE, resources))
+			self:addChild(self.valueLabel)
 		end
 
 		self.valueLabel:setText(self:getText())
@@ -215,8 +216,6 @@ function BossHUD:populateStats()
 					y + BossHUD.LITTLE_STAT_ICON_SIZE / 2 - BossHUD.LITTLE_STAT_HEIGHT / 2)
 				statBar:setInColor(Color(unpack(little[i].inColor)))
 				statBar:setOutColor(Color(unpack(little[i].outColor)))
-				statBar:setIsValue(little[i].isValue)
-				statBar:setText(little[i].label)
 				self:addChild(statBar)
 			end
 
@@ -268,6 +267,8 @@ function BossHUD:updateStats()
 				if stat then
 					stat:setCurrent(little[i].current)
 					stat:setMax(little[i].max)
+					stat:setIsValue(little[i].isValue)
+					stat:setText(little[i].label)
 				end
 			end
 		end
