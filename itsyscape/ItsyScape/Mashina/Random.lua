@@ -19,9 +19,9 @@ function Random:update(mashina, state, executor)
 	local max = state[self.MAX]
 
 	if min == nil and max == nil then
-		state[self.RESULT] = math.random()
+		state[self.RESULT] = love.math.random()
 	else
-		state[self.RESULT] = math.random(min, max)
+		state[self.RESULT] = love.math.random(min, max)
 	end
 
 	return B.Status.Success

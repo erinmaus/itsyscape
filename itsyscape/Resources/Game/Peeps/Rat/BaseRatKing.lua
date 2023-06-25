@@ -12,9 +12,11 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Probe = require "ItsyScape.Peep.Probe"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseRatKing = Class(Creep)
@@ -26,20 +28,70 @@ function BaseRatKing:new(resource, name, ...)
 	size.size = Vector(2, 4, 2)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 100
-	status.maximumHitpoints = 500
+	status.currentHitpoints = 400
+	status.maximumHitpoints = 400
+
+	self:addPoke('eat')
+end
+
+function BaseRatKing:onSummon()
+	Log.info("Trying to summon rats to the Rat King's court...")
+
+	local courtAnchors = gameDB:getRecords("MapObjectGroup", {
+		MapObjectGroup = "RatKing_Court",
+		Map = Utility.Peep.getMapResource(self)
+	})
+
+	for i = 1, #courtAnchors do
+		local mapObject = gameDB:getRecord("MapObjectLocation", {
+			Map = Utility.Peep.getMapResource(self),
+			Resource = courtAnchors[i]:get("MapObject")
+		})
+
+		courtAnchors[i] = mapObject
+	end
+
+	local court = {}
+	for i = 1, #courtAnchors do
+		local isAlive = true
+
+		local hits = self:getDirector():probe(self:getLayerName(), Probe.mapObject(courtAnchors[i]))
+		if #hits == 0 then
+			isAlive = false
+		else
+			local status = hits[1]:getBehavior(CombatStatusBehavior)
+			if status.dead or status.currentHitpoints == 0 then
+				isAlive = false
+			end
+		end
+
+		court[i] = isAlive
+	end
+
+	for i = 1, #court do
+		if not court[i] then
+			Utility.spawnMapObjectAtAnchor(
+				Utility.Peep.getMapScript(self),
+				courtAnchors[i],
+				courtAnchors[i]:get("Name"))
+
+			Log.info("'%s' dead; respawning.", courtAnchors[i]:get("Name"))
+		else
+			Log.info("'%s' alive; not respawning.", courtAnchors[i]:get("Name"))
+		end
+	end
+
+	Log.info("Done summoning rats to the court.")
 end
 
 function BaseRatKing:onEat(p)
 	local target = p.target
 
 	if target then
-		target:poke('die')
-
 		local targetStatus = target:getBehavior(CombatStatusBehavior)
 		if targetStatus then
 			self:poke('heal', {
-				hitPoints = targetStatus.maximumHitpoints * 2
+				hitPoints = math.ceil(targetStatus.maximumHitpoints / 4)
 			})
 		end
 	end
@@ -54,28 +106,6 @@ function BaseRatKing:onDie(poke)
 			"ItsyScape.Game.Skin.ModelSkin",
 			"Resources/Game/Skins/Rat/RatKingCrown.lua")
 		actor:unsetSkin(Equipment.PLAYER_SLOT_HEAD, 0, crown)
-
-		local position = Utility.Peep.getPosition(self)
-		local otherRatKing = Utility.spawnActorAtPosition(self, "RatKingUnleashed", position.x, position.y, position.z, 0)
-		if otherRatKing then
-			otherRatKing:getPeep():listen('ready', function(p)
-				local animation = p:getResource(
-					"animation-spawn",
-					"ItsyScape.Graphics.AnimationResource")
-
-				if animation then
-					otherRatKing:playAnimation('spawn', 2000, animation)
-
-					Utility.UI.openInterface(
-						Utility.Peep.getInstance(self),
-						"BossHUD",
-						false,
-						p)
-
-					Utility.Peep.attack(p, poke:getAggressor())
-				end
-			end)
-		end
 	end
 end
 
@@ -118,6 +148,8 @@ function BaseRatKing:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Rat/RatKingCrown.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, crown)
+
+	Utility.Peep.equipXWeapon(self, "RatKing_Bite")
 
 	Creep.ready(self, director, game)
 end

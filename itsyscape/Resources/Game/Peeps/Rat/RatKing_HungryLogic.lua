@@ -20,7 +20,7 @@ local ATTACK_POKE_DAMAGE = B.Reference("RatKing_HungryLogic", "ATTACK_POKE_DAMAG
 local function ratRobe(p)
 	local resource = Utility.Peep.getResource(p)
 	if not resource then
-		reutrn false
+		return false
 	end
 
 	local tag = self:getDirector():getGameDB():getRecord({
@@ -39,15 +39,16 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Try {
 						Mashina.Peep.FindNearbyCombatTarget {
 							filter = ratProbe,
+							distance = 10,
 							include_npcs = true,
 							[TARGET] = B.Output.result
 						},
 
 						-- This one should eventually fail to fall back to
 						-- the first try sequence above.
-						Mashina.Peep.Failure {
+						Mashina.Failure {
 							Mashina.Step {
-								Mashina.PokeSelf {
+								Mashina.Peep.PokeSelf {
 									event = "summon"
 								},
 
@@ -64,7 +65,7 @@ local Tree = BTreeBuilder.Node() {
 				},
 
 				Mashina.Repeat {
-					Mashina.Peep.Try {
+					Mashina.Try {
 						Mashina.Sequence {
 							Mashina.Peep.IsCombatTarget {
 								target = TARGET

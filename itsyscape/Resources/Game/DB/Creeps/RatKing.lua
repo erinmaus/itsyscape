@@ -31,6 +31,73 @@ do
 		Language = "en-US",
 		Resource = RatKing
 	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.95),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(55),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_AttackLogic.lua",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "hungry",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_HungryLogic.lua",
+		Resource = RatKing
+	}
 end
 
 do
@@ -54,6 +121,16 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "You are what you eat...",
 		Language = "en-US",
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
 		Resource = RatKingUnleashed
 	}
 end

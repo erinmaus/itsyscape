@@ -63,6 +63,11 @@ do
 		IsDefault = 1,
 		Resource = Rat
 	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = Rat
+	}
 end
 
 do
@@ -128,6 +133,16 @@ do
 		State = "idle",
 		Tree = "Resources/Game/Peeps/Rat/Rat_IdleLogic.lua",
 		IsDefault = 1,
+		Resource = SkeletalRat
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = SkeletalRat
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
 		Resource = SkeletalRat
 	}
 end
