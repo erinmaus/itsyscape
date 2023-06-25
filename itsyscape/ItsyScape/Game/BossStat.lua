@@ -28,7 +28,7 @@ function BossStat:set(t)
 	self.icon = t.icon or self.icon or false
 	self.currentValue = t.current or self.currentValue or 0
 	self.maxValue = t.max or self.maxValue or 1
-	self.currentValueLabel = ""
+	self.currentValueLabel = t.label or self.currentValueLabel or ""
 	self.isBoolean = t.isBoolean or self.isBoolean or false
 	self.isValue = t.isValue or self.isValue or false
 	self.peep = t.peep or false

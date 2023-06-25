@@ -13,13 +13,16 @@ local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local Common = require "Resources.Game.Peeps.ViziersRock.SewersCommon"
 
 local Sewers = Class(Map)
 
 function Sewers:new(resource, name, ...)
 	Map.new(self, resource, name or 'ViziersRock_Sewers_Floor1', ...)
+
+	self:addBehavior(BossStatsBehavior)
 end
 
 function Sewers:onLoad(...)
@@ -53,6 +56,9 @@ function Sewers:initRatKingFight()
 		current = 0,
 		isValue = true
 	})
+
+	local stats = self:getBehavior(BossStatsBehavior)
+	table.insert(stats.stats, self.ratKingStrengthStat)
 end
 
 function Sewers:onRatKingDie(ratKing, poke)
@@ -83,12 +89,21 @@ function Sewers:onRatKingDie(ratKing, poke)
 	end
 end
 
-function Sewers:onRatKingEat(ratKing)
-	current = self.ratKingStrengthStat:get().current + 1
+function Sewers:onRatKingEat(ratKing, p)
+	local target = p.target
+	if not target then
+		return
+	end
+
+	local status = target:getBehavior(CombatStatusBehavior)
+	local damage = status.damage[ratKing]
+	local relativeDamage = damage / status.maximumHitpoints
+
+	current = self.ratKingStrengthStat:get().current + relativeDamage
 
 	self.ratKingStrengthStat:set({
 		current = current,
-		label = string.format("+%d strength levels", current * 10)
+		label = string.format("+%d strength levels", math.floor(current * 10))
 	})
 end
 
