@@ -30,14 +30,14 @@ function Pipe:load()
 
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/ViziersRock_Sewers_Pipe/Texture.png",
+		"Resources/Game/Props/ViziersRock_Sewers_Pipe_NoGrate/Texture.png",
 		function(texture)
 			self.texture = texture
 		end)
 
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/ViziersRock_Sewers_Pipe/Model.lstatic",
+		"Resources/Game/Props/ViziersRock_Sewers_Pipe_NoGrate/Model.lstatic",
 		function(mesh)
 			self.pipe:fromGroup(mesh:getResource(), "Pipe")
 			self.pipe:getMaterial():setTextures(self.texture)

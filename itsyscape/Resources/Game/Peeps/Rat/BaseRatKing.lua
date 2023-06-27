@@ -28,8 +28,8 @@ function BaseRatKing:new(resource, name, ...)
 	size.size = Vector(2, 4, 2)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 400
-	status.maximumHitpoints = 400
+	status.currentHitpoints = 300
+	status.maximumHitpoints = 300
 	status.maxChaseDistance = math.huge
 
 	self:addPoke('eat')

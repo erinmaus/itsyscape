@@ -28,8 +28,8 @@ function RatKingUnleashed:new(resource, name, ...)
 	size.size = Vector(4.5, 12, 4.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 750
-	status.maximumHitpoints = 750
+	status.currentHitpoints = 450
+	status.maximumHitpoints = 450
 	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
