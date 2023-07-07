@@ -37,8 +37,10 @@ end
 
 function RatKingUnleashed:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
+	actor = actor and actor.actor
+
+	if not actor then
+		return
 	end
 
 	local body = CacheRef(
@@ -53,7 +55,7 @@ function RatKingUnleashed:ready(director, game)
 
 	-- We always want the idle animation to be playing,
 	-- since the walk animation partially depends on it.
-	actor:playAnimation('x-idle', 1, idleAnimation)
+	actor:playAnimation('x-idle', 0, idleAnimation)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -119,6 +121,9 @@ function RatKingUnleashed:onSummonJester()
 	if jesterPeep then
 		jesterPeep:listen('finalize', function(p)
 			p:poke('startMinigame', jesterPeep.MINIGAMES[love.math.random(#jesterPeep.MINIGAMES)])
+
+			local stage = p:getDirector():getGameInstance():getStage()
+			stage:fireProjectile("ConfettiSplosion", Vector.ZERO, p)
 		end)
 	end
 end
