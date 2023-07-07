@@ -255,4 +255,10 @@ do
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 		Resource = RatKingUnleashed
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Rat/RatKingUnleashed_AttackLogic.lua",
+		Resource = RatKingUnleashed
+	}
 end

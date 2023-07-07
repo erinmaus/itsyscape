@@ -242,7 +242,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "RatKing",
 		MapObject = M["RatKing"],
-		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
