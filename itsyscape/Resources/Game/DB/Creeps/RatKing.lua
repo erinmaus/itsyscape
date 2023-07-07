@@ -120,17 +120,6 @@ do
 		Resource = RatKingsJester
 	}
 
-	ItsyScape.Meta.Dummy {
-		Hitpoints = 25,
-
-		Tier = 40,
-		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
-
-		Shield = "Shield",
-
-		Resource = RatKingsJester
-	}
-
 	ItsyScape.Meta.PeepMashinaState {
 		State = "odd-one-out",
 		Tree = "Resources/Game/Peeps/Rat/JesterRat_OddOneOutLogic.lua",
@@ -156,6 +145,18 @@ do
 		Resource = RatKingJesterPresent
 	}
 
+	ItsyScape.Meta.ResourceName {
+		Value = "Present",
+		Language = "en-US",
+		Resource = RatKingJesterPresent
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a ticking sound inside...",
+		Language = "en-US",
+		Resource = RatKingJesterPresent
+	}
+
 	local OpenAction = ItsyScape.Action.Pick()
 	ItsyScape.Meta.ActionVerb {
 		Value = "Open",
@@ -166,6 +167,18 @@ do
 
 	local RatKingJesterPresentOpenable = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent_Openable" {
 		OpenAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Suspicious present",
+		Language = "en-US",
+		Resource = RatKingJesterPresentOpenable
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wonder what's inside... A trick or treat?",
+		Language = "en-US",
+		Resource = RatKingJesterPresentOpenable
 	}
 
 	ItsyScape.Meta.PropAlias {

@@ -68,7 +68,7 @@ function Sewers:onRatKingDie(ratKing, poke)
 	if otherRatKing then
 		local otherRatKingPeep = otherRatKing:getPeep()
 
-		otherRatKingPeep:listen('ready', function(p)
+		otherRatKingPeep:listen('finalize', function(p)
 			local animation = p:getResource(
 				"animation-spawn",
 				"ItsyScape.Graphics.AnimationResource")
