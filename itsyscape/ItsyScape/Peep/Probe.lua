@@ -112,7 +112,7 @@ end
 
 function Probe.attackable()
 	return function(peep)
-		return Utility.Peep.canAttack(peep)
+		return Utility.Peep.isAttackable(peep)
 	end
 end
 

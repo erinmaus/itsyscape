@@ -12,31 +12,71 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 --local BaseRat = require "Resources.Game.Peeps.Rat.BaseRat"
 local BaseRat = require "ItsyScape.Peep.Peeps.Creep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 
 local JesterRat = Class(BaseRat)
 
-JesterRat.MINIGAME_ODD_ONE_OUT = 'ODD_ONE_OUT'
+JesterRat.MINIGAME_ODD_ONE_OUT = 'odd-one-out'
 
-JesterRat.ODD_ONE_OUT_NUM_PRESENTS = 4
-JesterRat.ODD_ONE_OUT_MIN_RADIUS   = 8
-JesterRat.ODD_ONE_OUT_MAX_RADIUS   = 4
-JesterRat.ODD_ONE_OUT_ELEVATION    = 8
+JesterRat.ODD_ONE_OUT_NUM_PRESENTS    = 4
+JesterRat.ODD_ONE_OUT_MIN_RADIUS      = 8
+JesterRat.ODD_ONE_OUT_MAX_RADIUS      = 4
+JesterRat.ODD_ONE_OUT_ELEVATION       = 8
+JesterRat.ODD_ONE_OUT_SPLOSION_RADIUS = 4
 
 function JesterRat:new(resource, name, ...)
 	BaseRat.new(self, resource, name or 'JesterRat', ...)
+
+	self:addPoke('startMinigame')
+	self:addPoke('stopMinigame')
+	self:addPoke('despawn')
 end
 
-function JesterRat:onMinigame(minigame)
+function JesterRat:onStartMinigame(minigame)
 	if minigame == JesterRat.MINIGAME_ODD_ONE_OUT then
 		self:prepareOddOneOut()
 	end
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = minigame
+	end
 end
 
-function JesterRat:prepareOddOneOut(minigame)
+function JesterRat:onStopMinigame(minigame)
+	if minigame == JesterRat.MINIGAME_ODD_ONE_OUT then
+		self:finishOddOneOut()
+	end
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = 'poof'
+	end
+end
+
+function JesterRat:performAttack(peeps)
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+
+	for i = 1, #peeps do
+		weapon:perform(self, peeps[i])
+	end
+end
+
+function JesterRat:performHeal(peeps)
+	for i = 1, #peeps do
+		peeps[i]:poke('heal', {
+			zealous = true,
+			hitPoints = 20
+		})
+	end
+end
+
+function JesterRat:prepareOddOneOut()
 	local seed1 = love.math.random(0, 2 ^ 32 - 1)
 	local seed2 = love.math.random(0, 2 ^ 32 - 1)
 
@@ -75,24 +115,23 @@ function JesterRat:prepareOddOneOut(minigame)
 		end)
 
 		presents[i]:listen('pick', function(p, player)
+			local hits = Utility.Peep.getPeepsInRadius(
+				p,
+				JesterRat.ODD_ONE_OUT_SPLOSION_RADIUS,
+				Probe.attackable())
+
 			local projectile
 			if seeds[i] == seed1 then
 				projectile = "ConfettiSplosion"
 
 				if player then
-					player:poke('heal', {
-						zealous = true,
-						hitPoints = 50
-					})
+					self:performHeal(hits)
 				end
 			else
 				projectile = "BoomBombSplosion"
 
 				if player then
-					player:poke('hit', AttackPoke {
-						aggressor = self,
-						damage = 20
-					})
+					self:performAttack(hits)
 				end
 			end
 
@@ -104,14 +143,38 @@ function JesterRat:prepareOddOneOut(minigame)
 						Utility.Peep.poof(presents[j])
 					end
 				end
+
+				self:poke('stopMinigame', JesterRat.MINIGAME_ODD_ONE_OUT)
 			end
 
 			local stage = p:getDirector():getGameInstance():getStage()
-			return stage:fireProjectile(projectile, Vector.ZERO, Utility.Peep.getAbsolutePosition(p), Utility.Peep.getLayer(p))
+			stage:fireProjectile(projectile, Vector.ZERO, Utility.Peep.getAbsolutePosition(p), Utility.Peep.getLayer(p))
 		end)
 	end
 
-	Utility.Peep.talk(self, "Odd one out or you're in for a surprise!", nil, 5)
+	Utility.Peep.talk(self, "Sure hope your deduction skills are better than your combat skills, villian!", nil, 5)
+end
+
+function JesterRat:finishOddOneOut()
+	local hits = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Prop", "ViziersRock_Sewers_RatKingJesterPresent_Openable"))
+	local hit = hits[1]
+
+	if hit then
+		hit:poke('pick', nil)
+		Utility.Peep.poof(hit)
+	end
+end
+
+function JesterRat:onDespawn()
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile(
+		"ConfettiSplosion",
+		Vector.ZERO,
+		Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
+
+	Utility.Peep.poof(self)
 end
 
 return JesterRat
