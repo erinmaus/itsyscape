@@ -58,10 +58,6 @@ local SummonOrTargetSequence = Mashina.ParallelTry {
 			distance = 12,
 			include_npcs = true,
 			[TARGET] = B.Output.result
-		},
-
-		Mashina.Peep.Talk {
-			message = "ENGAGED"
 		}
 	},
 

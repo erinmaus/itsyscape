@@ -18,11 +18,6 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Success {
 			Mashina.Step {
-
-				Mashina.Peep.Talk {
-					message = "Befor elook 4 jester..."
-				},
-
 				Mashina.Invert {
 					Mashina.Peep.FindNearbyPeep {
 						filter = Probe.resource("Peep", "RatKingsJester"),
@@ -31,17 +26,9 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Peep.Talk {
-					message = "No jester..."
-				},
-
 				Mashina.Peep.TimeOut {
 					min_duration = 4,
 					max_duration = 8
-				},
-
-				Mashina.Peep.Talk {
-					message = "Time out...!"
 				},
 
 				Mashina.Peep.PokeSelf {
