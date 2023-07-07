@@ -15,8 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
---local BaseRat = require "Resources.Game.Peeps.Rat.BaseRat"
-local BaseRat = require "ItsyScape.Peep.Peeps.Creep"
+local BaseRat = require "Resources.Game.Peeps.Rat.BaseRat"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 
 local JesterRat = Class(BaseRat)
@@ -45,6 +44,25 @@ function JesterRat:new(resource, name, ...)
 	self:addPoke('stopMinigame')
 	self:addPoke('despawn')
 	self:addPoke('dropPresent')
+end
+
+function JesterRat:ready(director, game)
+	BaseRat.ready(self, director, game)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	local body = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Rat/JesterRat.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+	local hat = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Rat/RatJesterHat.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hat)
 end
 
 function JesterRat:onStartMinigame(minigame)

@@ -25,10 +25,10 @@ function RatKingUnleashed:new(resource, name, ...)
 	Creep.new(self, resource, name or 'RatKingUnleashed', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4.5, 12, 4.5)
+	size.size = Vector(4.5, 12, 2.5)
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.currentHitpoints = 450
+	status.currentHitpoints = 15
 	status.maximumHitpoints = 450
 	status.maxChaseDistance = math.huge
 
@@ -51,15 +51,19 @@ function RatKingUnleashed:ready(director, game)
 		"Resources/Game/Animations/RatKing_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
-	-- local walkAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/RatKing_Walk/Script.lua")
-	-- self:addResource("animation-walk", walkAnimation)
+	-- We always want the idle animation to be playing,
+	-- since the walk animation partially depends on it.
+	actor:playAnimation('x-idle', 1, idleAnimation)
 
-	-- local dieAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/RatKing_Die/Script.lua")
-	-- self:addResource("animation-die", dieAnimation)
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/RatKing_Walk/Script.lua")
+	self:addResource("animation-walk", walkAnimation)
+
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/RatKing_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
