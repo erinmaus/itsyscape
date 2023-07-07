@@ -3530,7 +3530,7 @@ function Utility.Peep.Dummy:onFinalize()
 		local shieldSkin = CacheRef(
 			"ItsyScape.Game.Skin.ModelSkin",
 			"Resources/Game/Skins/Wooden/Shield.lua")
-		actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, shieldSkin)
+		actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_EQUIPMENT, shieldSkin)
 	end
 
 	if Class.isCompatibleType(self, require "ItsyScape.Peep.Peeps.Player") then
@@ -3576,8 +3576,6 @@ function Utility.Peep.Dummy:onFinalize()
 
 		local skins = Utility.Peep.Dummy.TIERS[style]
 		local skin = skins and skins[tier]
-
-		print("base", skins and skins.base or "NONE", "skin", skin or "NONE")
 
 		if skins and skin then
 			local weaponSkin = CacheRef(

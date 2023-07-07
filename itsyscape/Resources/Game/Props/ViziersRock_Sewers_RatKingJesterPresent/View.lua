@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
@@ -17,7 +18,7 @@ local Present = Class(PropView)
 Present.MAX_SHAPES = 4
 
 Present.PAPER_SIZE = 128
-Present.PAPER_SHAPE_SIZE = 16
+Present.PAPER_SHAPE_SIZE = 32
 Present.OFFSETS = {
 	{  0,  0 },
 	{ -1,  0 },
@@ -50,7 +51,7 @@ function Present:load()
 				TextureResource,
 				string.format("Resources/Game/Props/ViziersRock_Sewers_RatKingJesterPresent/Shape%d.png", i),
 				function(texture)
-					self.texture = texture
+					table.insert(shapes, texture)
 				end)
 		end
 
@@ -94,12 +95,16 @@ function Present:tick()
 	if self.shapes then
 		local state = self:getProp():getState()
 
+		if self.ribbon then
+			self.ribbon:getMaterial():setColor(Color(unpack(state.ribbonColor or { 1, 0, 0 })))
+		end
+
 		love.graphics.push('all')
 		love.graphics.setCanvas(self.canvas)
-		love.graphics.clear(unpack(state.color or { 1, 0, 0 }))
+		love.graphics.clear(unpack(state.paperColor or { 1, 0, 0 }))
 
 		local shapes = state.shapes or {}
-		for i = 1, shapes do
+		for i = 1, #shapes do
 			local shapeState = shapes[i]
 
 			local shapeTexture = self.shapes[shapeState.index]
@@ -111,12 +116,12 @@ function Present:tick()
 
 					love.graphics.draw(
 						shapeTexture,
-						shapeState.x + offset[1] * self.canvas:getWidth(),
-						shapeState.y + offset[2] * self.canvas:getHeight(),
+						shapeState.x * self.canvas:getWidth() + offset[1] * self.canvas:getWidth(),
+						shapeState.y * self.canvas:getHeight() + offset[2] * self.canvas:getHeight(),
 						shapeState.rotation,
 						Present.PAPER_SHAPE_SIZE / shapeTexture:getWidth(),
 						Present.PAPER_SHAPE_SIZE / shapeTexture:getHeight(),
-						shapeTexture:getWidth() / 2
+						shapeTexture:getWidth() / 2,
 						shapeTexture:getHeight() / 2)
 				end
 			end
@@ -124,6 +129,10 @@ function Present:tick()
 
 		love.graphics.pop()
 	end
+end
+
+function Present:getIsStatic()
+	return false
 end
 
 return Present
