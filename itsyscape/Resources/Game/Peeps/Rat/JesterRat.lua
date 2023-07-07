@@ -30,7 +30,8 @@ JesterRat.ODD_ONE_OUT_MAX_RADIUS      = 4
 JesterRat.ODD_ONE_OUT_ELEVATION       = 8
 JesterRat.ODD_ONE_OUT_SPLOSION_RADIUS = 4
 
-JesterRat.AVOID_ELEVATION             = 9
+JesterRat.AVOID_ELEVATION             = 8
+JesterRat.AVOID_SPLOSION_RADIUS       = 4
 
 function JesterRat:new(resource, name, ...)
 	BaseRat.new(self, resource, name or 'JesterRat', ...)
@@ -67,6 +68,9 @@ end
 
 function JesterRat:performAttack(peeps)
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+	if not weapon then
+		return
+	end
 
 	for i = 1, #peeps do
 		weapon:perform(self, peeps[i])
@@ -209,6 +213,13 @@ function JesterRat:onDropPresent()
 			end)
 
 			propPeep:listen('land', function(p)
+				local hits = Utility.Peep.getPeepsInRadius(
+					p,
+					JesterRat.AVOID_SPLOSION_RADIUS,
+					Probe.attackable())
+
+				self:performAttack(hits)
+
 				local stage = p:getDirector():getGameInstance():getStage()
 				stage:fireProjectile("BoomBombSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(p), Utility.Peep.getLayer(p))
 

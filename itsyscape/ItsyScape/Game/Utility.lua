@@ -3510,8 +3510,6 @@ function Utility.Peep.Dummy:onFinalize()
 	local style = dummy:get("CombatStyle")
 	local tier = math.max(math.floor(dummy:get("Tier") / 10), 1)
 
-	print("tier", tier, "style", style)
-
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	actor = actor and actor.actor
 	if not actor then
