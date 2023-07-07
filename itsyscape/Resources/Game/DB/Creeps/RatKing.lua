@@ -124,7 +124,7 @@ do
 		Hitpoints = 25,
 
 		Tier = 40,
-		CombatStyle = ItsyScape.Utility.STYLE_MAGIC,
+		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
 
 		Shield = "Shield",
 
