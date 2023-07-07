@@ -77,7 +77,7 @@ function JesterRat:prepareOddOneOut(minigame)
 		presents[i]:listen('pick', function(p, player)
 			local projectile
 			if seeds[i] == seed1 then
-				projectile = "SnipeSplosion"
+				projectile = "ConfettiSplosion"
 
 				if player then
 					player:poke('heal', {
