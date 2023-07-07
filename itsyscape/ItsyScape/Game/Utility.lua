@@ -1815,6 +1815,26 @@ function Utility.Peep.getPeepsAlongRay(peep, ray, range)
 	return hits
 end
 
+function Utility.Peep.getPeepsInRadius(peep, range, ...)
+	local selfPosition = Utility.Peep.getAbsolutePosition(peep)
+
+	local peepsDistance = {}
+	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
+		local otherPosition = Utility.Peep.getAbsolutePosition(p)
+		local distance = (otherPosition - selfPosition):getLength()
+
+		peepsDistance[p] = distance
+
+		return distance <= range
+	end, ...)
+
+	table.sort(hits, function(a, b)
+		return peepsDistance[a] < peepsDistance[b]
+	end)
+
+	return hits
+end
+
 function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"
 

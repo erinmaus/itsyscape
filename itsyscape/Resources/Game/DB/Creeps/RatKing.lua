@@ -103,10 +103,6 @@ end
 do
 	local RatKingsJester = ItsyScape.Resource.Peep "RatKingsJester"
 
-	ItsyScape.Resource.Peep "RatKingsJester" {
-		ItsyScape.Action.Attack()
-	}
-
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Rat.JesterRat",
 		Resource = RatKingsJester
@@ -132,8 +128,18 @@ do
 
 		Shield = "Shield",
 
-		AttackProjectile = "Miasma",
+		Resource = RatKingsJester
+	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "odd-one-out",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_OddOneOutLogic.lua",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "poof",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_PoofLogic.lua",
 		Resource = RatKingsJester
 	}
 
