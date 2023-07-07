@@ -99,12 +99,6 @@ function Sewers:onRatKingDie(ratKing, poke)
 			stats:getSkill("Strength"):setLevelBoost(strength)
 
 			Log.info("Boosted dexterity and strength of the Rat King unleashed by %d level(s).", strength)
-
-			-- TODO REMOVE
-			local a = Utility.spawnActorAtAnchor(self, "RatKingsJester", "RatKing"):getPeep()
-			a:listen('finalize', function()
-				a:poke('startMinigame', a.MINIGAME_AVOID)
-			end)
 		end)
 
 		otherRatKingPeep:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)

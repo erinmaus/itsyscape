@@ -108,6 +108,17 @@ function RatKingUnleashed:onInitiateAttack(attack)
 	end
 end
 
+function RatKingUnleashed:onSummonJester()
+	local jesterActor = Utility.spawnActorAtAnchor(self, "RatKingsJester", "RatKing")
+	local jesterPeep = jesterActor and jesterActor:getPeep()
+
+	if jesterPeep then
+		jesterPeep:listen('finalize', function(p)
+			p:poke('startMinigame', jesterPeep.MINIGAMES[love.math.random(#jesterPeep.MINIGAMES)])
+		end)
+	end
+end
+
 function RatKingUnleashed:update(...)
 	Creep.update(self, ...)
 	Utility.Peep.face3D(self)

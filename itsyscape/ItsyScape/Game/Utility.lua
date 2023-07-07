@@ -3244,6 +3244,8 @@ function Utility.Peep.Attackable:onHeal(p)
 		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
 		if not p.zealous then
 			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
+		else
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints + p.hitPoints)
 		end
 
 		combat.currentHitpoints = newHitPoints

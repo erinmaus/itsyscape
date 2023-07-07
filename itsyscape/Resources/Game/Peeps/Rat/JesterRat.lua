@@ -24,6 +24,11 @@ local JesterRat = Class(BaseRat)
 JesterRat.MINIGAME_ODD_ONE_OUT = 'odd-one-out'
 JesterRat.MINIGAME_AVOID       = 'avoid'
 
+JesterRat.MINIGAMES = {
+	JesterRat.MINIGAME_ODD_ONE_OUT,
+	JesterRat.MINIGAME_AVOID
+}
+
 JesterRat.ODD_ONE_OUT_NUM_PRESENTS    = 4
 JesterRat.ODD_ONE_OUT_MIN_RADIUS      = 8
 JesterRat.ODD_ONE_OUT_MAX_RADIUS      = 4
@@ -43,6 +48,8 @@ function JesterRat:new(resource, name, ...)
 end
 
 function JesterRat:onStartMinigame(minigame)
+	Log.info("Jester Rat is trying to start minigame '%s'...", minigame)
+
 	if minigame == JesterRat.MINIGAME_ODD_ONE_OUT then
 		self:prepareOddOneOut()
 	elseif minigame == JesterRat.MINIGAME_AVOID then
