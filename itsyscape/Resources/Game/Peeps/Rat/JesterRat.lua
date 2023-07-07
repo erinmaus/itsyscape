@@ -22,6 +22,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local JesterRat = Class(BaseRat)
 
 JesterRat.MINIGAME_ODD_ONE_OUT = 'odd-one-out'
+JesterRat.MINIGAME_AVOID       = 'avoid'
 
 JesterRat.ODD_ONE_OUT_NUM_PRESENTS    = 4
 JesterRat.ODD_ONE_OUT_MIN_RADIUS      = 8
@@ -29,17 +30,22 @@ JesterRat.ODD_ONE_OUT_MAX_RADIUS      = 4
 JesterRat.ODD_ONE_OUT_ELEVATION       = 8
 JesterRat.ODD_ONE_OUT_SPLOSION_RADIUS = 4
 
+JesterRat.AVOID_ELEVATION             = 9
+
 function JesterRat:new(resource, name, ...)
 	BaseRat.new(self, resource, name or 'JesterRat', ...)
 
 	self:addPoke('startMinigame')
 	self:addPoke('stopMinigame')
 	self:addPoke('despawn')
+	self:addPoke('dropPresent')
 end
 
 function JesterRat:onStartMinigame(minigame)
 	if minigame == JesterRat.MINIGAME_ODD_ONE_OUT then
 		self:prepareOddOneOut()
+	elseif minigame == JesterRat.MINIGAME_AVOID then
+		self:prepareAvoid()
 	end
 
 	local mashina = self:getBehavior(MashinaBehavior)
@@ -155,6 +161,10 @@ function JesterRat:prepareOddOneOut()
 	Utility.Peep.talk(self, "Sure hope your deduction skills are better than your combat skills, villian!", nil, 5)
 end
 
+function JesterRat:prepareAvoid()
+	Utility.Peep.talk(self, "Tee-hee-hee! Here's some presents for you!", nil, 5)
+end
+
 function JesterRat:finishOddOneOut()
 	local hits = self:getDirector():probe(
 		self:getLayerName(),
@@ -175,6 +185,37 @@ function JesterRat:onDespawn()
 		Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
 
 	Utility.Peep.poof(self)
+end
+
+function JesterRat:onDropPresent()
+	local instance = Utility.Peep.getInstance(self)
+
+	for _, player in instance:iteratePlayers() do
+		local playerPeep = player:getActor():getPeep()
+		local position = Utility.Peep.getPosition(playerPeep)
+
+		position = position + Vector(0, JesterRat.AVOID_ELEVATION, 0)
+
+		local prop = Utility.spawnPropAtPosition(self, "ViziersRock_Sewers_RatKingJesterPresent", position.x, position.y, position.z, 0)
+		if prop then
+			local propPeep = prop:getPeep()
+
+			propPeep:listen('finalize', function(p)
+				local stage = self:getDirector():getGameInstance():getStage()
+				stage:fireProjectile(
+					"ConfettiSplosion",
+					Vector.ZERO,
+					p)
+			end)
+
+			propPeep:listen('land', function(p)
+				local stage = p:getDirector():getGameInstance():getStage()
+				stage:fireProjectile("BoomBombSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(p), Utility.Peep.getLayer(p))
+
+				Utility.Peep.poof(p)
+			end)
+		end
+	end
 end
 
 return JesterRat

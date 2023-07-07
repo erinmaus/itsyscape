@@ -41,6 +41,9 @@ function RatKingJesterPresent:new(...)
 
 	self:addPoke('presentify')
 	self:addPoke('pick')
+	self:addPoke('land')
+
+	self.landed = false
 end
 
 function RatKingJesterPresent:onFinalize(...)
@@ -113,6 +116,15 @@ function RatKingJesterPresent:update(...)
 		local gravity = self:getDirector():getGameInstance():getStage():getGravity()
 		local currentY = position.y + gravity.y * self:getDirector():getGameInstance():getDelta()
 		local y = math.max(currentY, minY)
+
+		if currentY > minY then
+			self.landed = false
+		elseif currentY <= minY then
+			if not self.landed then
+				self.landed = true
+				self:poke('land')
+			end
+		end
 
 		Utility.Peep.setPosition(self, Vector(position.x, y, position.z))
 	end 

@@ -138,6 +138,12 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
+		State = "avoid",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_AvoidLogic.lua",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
 		State = "poof",
 		Tree = "Resources/Game/Peeps/Rat/JesterRat_PoofLogic.lua",
 		Resource = RatKingsJester

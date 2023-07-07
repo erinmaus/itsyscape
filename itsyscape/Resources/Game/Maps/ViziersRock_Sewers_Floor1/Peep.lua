@@ -103,7 +103,7 @@ function Sewers:onRatKingDie(ratKing, poke)
 			-- TODO REMOVE
 			local a = Utility.spawnActorAtAnchor(self, "RatKingsJester", "RatKing"):getPeep()
 			a:listen('finalize', function()
-				a:poke('startMinigame', a.MINIGAME_ODD_ONE_OUT)
+				a:poke('startMinigame', a.MINIGAME_AVOID)
 			end)
 		end)
 
