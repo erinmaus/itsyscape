@@ -221,9 +221,9 @@ function GameView:attach(game)
 	end
 	stage.onStopForecast:register(self._onStopForecast)
 
-	self._onProjectile = function(_, projectileID, source, destination, time)
+	self._onProjectile = function(_, projectileID, source, destination, layer)
 		Log.info("Firing projectile '%s'.", projectileID)
-		self:fireProjectile(projectileID, source, destination, time)
+		self:fireProjectile(projectileID, source, destination, layer)
 	end
 	stage.onProjectile:register(self._onProjectile)
 
@@ -884,7 +884,7 @@ function GameView:forecast(layer, key, id, props)
 	end
 end
 
-function GameView:fireProjectile(projectileID, source, destination, time)
+function GameView:fireProjectile(projectileID, source, destination, layer)
 	local ProjectileType
 	do
 		local ProjectileTypeName = string.format("Resources.Game.Projectiles.%s.Projectile", projectileID)
@@ -898,7 +898,7 @@ function GameView:fireProjectile(projectileID, source, destination, time)
 	end
 
 	if ProjectileType then
-		local projectile = ProjectileType(projectileID, self, source, destination, time)
+		local projectile = ProjectileType(projectileID, self, source, destination, layer)
 		projectile:attach()
 		projectile:load()
 		self.projectiles[projectile] = true

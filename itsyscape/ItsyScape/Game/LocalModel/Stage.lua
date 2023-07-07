@@ -1335,7 +1335,7 @@ function LocalStage:collectItems(instance)
 	end
 end
 
-function LocalStage:fireProjectile(projectileID, source, destination)
+function LocalStage:fireProjectile(projectileID, source, destination, layer)
 	function peepToModel(peep)
 		if peep:isCompatibleType(require "ItsyScape.Peep.Peep") then
 			local prop = peep:getBehavior(PropReferenceBehavior)
@@ -1354,7 +1354,7 @@ function LocalStage:fireProjectile(projectileID, source, destination)
 		return peep
 	end
 
-	self.onProjectile(self, projectileID, peepToModel(source), peepToModel(destination), 0)
+	self.onProjectile(self, projectileID, peepToModel(source), peepToModel(destination), layer)
 end
 
 function LocalStage:forecast(layer, name, id, props)

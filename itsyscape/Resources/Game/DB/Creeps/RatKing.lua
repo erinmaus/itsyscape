@@ -101,6 +101,73 @@ do
 end
 
 do
+	local RatKingsJester = ItsyScape.Resource.Peep "RatKingsJester"
+
+	ItsyScape.Resource.Peep "RatKingsJester" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rat.JesterRat",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rat King's jester",
+		Language = "en-US",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "His jokes are really mean.",
+		Language = "en-US",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.Dummy {
+		Hitpoints = 25,
+
+		Tier = 40,
+		CombatStyle = ItsyScape.Utility.STYLE_MAGIC,
+
+		Shield = "Shield",
+
+		AttackProjectile = "Miasma",
+
+		Resource = RatKingsJester
+	}
+
+	local RatKingJesterPresent = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.RatKingJesterPresent",
+		Resource = RatKingJesterPresent
+	}
+
+	local OpenAction = ItsyScape.Action.Pick()
+	ItsyScape.Meta.ActionVerb {
+		Value = "Open",
+		XProgressive = "Opening",
+		Language = "en-US",
+		Action = OpenAction
+	}
+
+	local RatKingJesterPresentOpenable = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent_Openable" {
+		OpenAction
+	}
+
+	ItsyScape.Meta.PropAlias {
+		Alias = RatKingJesterPresent,
+		Resource = RatKingJesterPresentOpenable
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.RatKingJesterPresent",
+		Resource = RatKingJesterPresentOpenable
+	}
+end
+
+do
 	local RatKingUnleashed = ItsyScape.Resource.Peep "RatKingUnleashed"
 
 	ItsyScape.Resource.Peep "RatKingUnleashed" {

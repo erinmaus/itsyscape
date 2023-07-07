@@ -212,13 +212,13 @@ StageProxy.projectile = Event.ServerToClientRPC(
 	Event.Argument("projectileID"),
 	Event.Argument("source", true),
 	Event.Argument("destination", true),
-	Event.Argument("time"))
+	Event.Argument("layer", true))
 StageProxy.projectile:link(
 	"onProjectile",
 	Event.Argument("projectileID"),
 	Event.Argument("source"),
 	Event.Argument("destination"),
-	Event.Argument("time"))
+	Event.Argument("layer", true))
 
 StageProxy.MUSIC = "music"
 StageProxy.playMusic = Event.Set(
