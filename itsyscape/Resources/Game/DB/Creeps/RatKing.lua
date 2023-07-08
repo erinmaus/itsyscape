@@ -138,6 +138,17 @@ do
 		Resource = RatKingsJester
 	}
 
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.Equipment {
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55),
+		Resource = RatKingsJester
+	}
+
 	local RatKingJesterPresent = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent"
 
 	ItsyScape.Meta.PeepID {
