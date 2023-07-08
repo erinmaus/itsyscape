@@ -129,6 +129,7 @@ function Sewers:update(...)
 	Common.updateValve(self, "Valve_SquareTriangle", Common.MARK_TRIANGLE, Common.MARK_SQUARE)
 	Common.updateDoor(self, "Door_TrialValveWest_Triangle", Common.MARK_TRIANGLE)
 	Common.updateDoor(self, "Door_TrialValveSouth_Square", Common.MARK_SQUARE)
+	Common.updateDoor(self, "Door_Bridge_Circle", Common.MARK_CIRCLE)
 end
 
 return Sewers

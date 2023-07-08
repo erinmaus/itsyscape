@@ -112,7 +112,7 @@ end
 M["Anchor_FromFloor1Puzzle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 55,
+		PositionX = 35,
 		PositionY = 0,
 		PositionZ = 19,
 		Name = "Anchor_FromFloor1Puzzle",
@@ -124,7 +124,7 @@ end
 M["Ladder_ToPuzzle_Floor1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 57,
+		PositionX = 37,
 		PositionY = 0,
 		PositionZ = 19,
 		Name = "Ladder_ToPuzzle_Floor1",
@@ -356,5 +356,310 @@ do
 
 	M["Ladder_ToKaradon"] {
 		TravelAction
+	}
+end
+
+M["Valve_SquareTriangle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 0.125,
+		PositionZ = 19,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "Valve_SquareTriangle",
+		Map = M._MAP,
+		Resource = M["Valve_SquareTriangle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
+		MapObject = M["Valve_SquareTriangle"]
+	}
+end
+
+M["Valve_Star"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 0.125,
+		PositionZ = 39,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "Valve_Star",
+		Map = M._MAP,
+		Resource = M["Valve_Star"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
+		MapObject = M["Valve_Star"]
+	}
+end
+
+M["Valve_Circle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 1.125,
+		PositionZ = 55,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "Valve_Circle",
+		Map = M._MAP,
+		Resource = M["Valve_Circle"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Valve",
+		MapObject = M["Valve_Circle"]
+	}
+end
+
+M["Door_Circle1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Door_Circle1",
+		Map = M._MAP,
+		Resource = M["Door_Circle1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_Circle1"]
+	}
+end
+
+M["Door_Circle2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 0,
+		PositionZ = 19,
+		Name = "Door_Circle2",
+		Map = M._MAP,
+		Resource = M["Door_Circle2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_Circle2"]
+	}
+end
+
+M["Door_Star1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Door_Star1",
+		Map = M._MAP,
+		Resource = M["Door_Star1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_Star1"]
+	}
+end
+
+M["Door_Star2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Door_Star2",
+		Map = M._MAP,
+		Resource = M["Door_Star2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_Star2"]
+	}
+end
+
+M["Door_Square1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Door_Square1",
+		Map = M._MAP,
+		Resource = M["Door_Square1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor",
+		MapObject = M["Door_Square1"]
+	}
+end
+
+M["Spider1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Spider1",
+		Map = M._MAP,
+		Resource = M["Spider1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Spider1",
+		Map = M._MAP,
+		MapObject = M["Spider1"]
+	}
+end
+
+M["Spider2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 0,
+		PositionZ = 21,
+		Name = "Spider2",
+		Map = M._MAP,
+		Resource = M["Spider2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider2"],
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Spider2",
+		Map = M._MAP,
+		MapObject = M["Spider2"]
+	}
+end
+
+M["Spider3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 87,
+		PositionY = 0.5,
+		PositionZ = 55,
+		Name = "Spider3",
+		Map = M._MAP,
+		Resource = M["Spider3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Spider3",
+		Map = M._MAP,
+		MapObject = M["Spider3"]
+	}
+end
+
+M["Spider4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81,
+		PositionY = 2,
+		PositionZ = 73,
+		Name = "Spider4",
+		Map = M._MAP,
+		Resource = M["Spider4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SewerSpider",
+		MapObject = M["Spider4"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Spider4",
+		Map = M._MAP,
+		MapObject = M["Spider4"]
+	}
+end
+
+M["TrashHeap1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 0,
+		PositionZ = 19,
+		Name = "TrashHeap1",
+		Map = M._MAP,
+		Resource = M["TrashHeap1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap1"]
+	}
+end
+
+M["TrashHeap2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "TrashHeap2",
+		Map = M._MAP,
+		Resource = M["TrashHeap2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap2"]
+	}
+end
+
+M["Rat1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 0,
+		PositionZ = 35,
+		Name = "Rat1",
+		Map = M._MAP,
+		Resource = M["Rat1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat1"]
+	}
+end
+
+M["Rat2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Rat2",
+		Map = M._MAP,
+		Resource = M["Rat2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rat",
+		MapObject = M["Rat2"]
 	}
 end

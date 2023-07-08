@@ -5187,9 +5187,9 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 				["x-map-i"] = true,
 				["x-map-j"] = true,
-				["impassable"] = true,
 			},
 		},
 		{
@@ -5812,9 +5812,9 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 				["x-map-i"] = true,
 				["x-map-j"] = true,
-				["impassable"] = true,
 			},
 		},
 		{
@@ -6437,9 +6437,9 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 				["x-map-i"] = true,
 				["x-map-j"] = true,
-				["impassable"] = true,
 			},
 		},
 		{

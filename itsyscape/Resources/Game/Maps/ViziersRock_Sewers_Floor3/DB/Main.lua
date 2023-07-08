@@ -152,15 +152,15 @@ do
 	}
 end
 
-M["Anchor_FromFloor3"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromFloor2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 3,
 		PositionY = 0,
 		PositionZ = 59,
-		Name = "Anchor_FromFloor3",
+		Name = "Anchor_FromFloor2",
 		Map = M._MAP,
-		Resource = M["Anchor_FromFloor3"]
+		Resource = M["Anchor_FromFloor2"]
 	}
 end
 
@@ -339,5 +339,56 @@ do
 		MapObjectGroup = "AncientKaradon_Spawns",
 		Map = M._MAP,
 		MapObject = M["Anchor_AncientKaradon_Swim_Bottom"]
+	}
+end
+
+M["TrashHeap1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 0,
+		PositionZ = 33,
+		Name = "TrashHeap1",
+		Map = M._MAP,
+		Resource = M["TrashHeap1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap1"]
+	}
+end
+
+M["TrashHeap2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 0,
+		PositionZ = 33,
+		Name = "TrashHeap2",
+		Map = M._MAP,
+		Resource = M["TrashHeap2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap2"]
+	}
+end
+
+M["TrashHeap3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 0,
+		PositionZ = 13,
+		Name = "TrashHeap3",
+		Map = M._MAP,
+		Resource = M["TrashHeap3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TrashHeap",
+		MapObject = M["TrashHeap3"]
 	}
 end
