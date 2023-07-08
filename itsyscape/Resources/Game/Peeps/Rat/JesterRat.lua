@@ -63,6 +63,8 @@ function JesterRat:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Rat/RatJesterHat.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hat)
+
+	Utility.Peep.equipXWeapon(self, "RatKingsJester_Splosion")
 end
 
 function JesterRat:onStartMinigame(minigame)
@@ -94,8 +96,11 @@ end
 function JesterRat:performAttack(peeps)
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
 	if not weapon then
+		print(">>> no weapon")
 		return
 	end
+
+	print(">>> #", #peeps)
 
 	for i = 1, #peeps do
 		weapon:perform(self, peeps[i])
@@ -158,16 +163,10 @@ function JesterRat:prepareOddOneOut()
 			local projectile
 			if seeds[i] == seed1 then
 				projectile = "ConfettiSplosion"
-
-				if player then
-					self:performHeal(hits)
-				end
+				self:performHeal(hits)
 			else
 				projectile = "BoomBombSplosion"
-
-				if player then
-					self:performAttack(hits)
-				end
+				self:performAttack(hits)
 			end
 
 			if not sploded then
