@@ -23,17 +23,27 @@ end
 function Sewers:onLoad(...)
 	Map.onLoad(self, ...)
 
-	-- if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
-	-- 	Common.closeValve(self, Common.MARK_CIRCLE)
-	-- end
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
+		Common.closeValve(self, Common.MARK_CIRCLE)
+	end
+
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_STAR) then
+		Common.closeValve(self, Common.MARK_STAR)
+	end
 end
 
 function Sewers:update(...)
 	Map.update(self, ...)
 
-	-- Common.updateValve(self, "Valve_SquareTriangle", Common.MARK_TRIANGLE, Common.MARK_SQUARE)
-	-- Common.updateDoor(self, "Door_TrialValveWest_Triangle", Common.MARK_TRIANGLE)
-	-- Common.updateDoor(self, "Door_TrialValveSouth_Square", Common.MARK_SQUARE)
+	Common.updateValve(self, "Valve_SquareTriangle", Common.MARK_SQUARE, Common.MARK_TRIANGLE)
+	Common.updateValve(self, "Valve_Star", Common.MARK_STAR, Common.MARK_NONE)
+	Common.updateValve(self, "Valve_Circle", Common.MARK_CIRCLE, Common.MARK_NONE)
+
+	Common.updateDoor(self, "Door_Circle1", Common.MARK_CIRCLE)
+	Common.updateDoor(self, "Door_Circle2", Common.MARK_CIRCLE)
+	Common.updateDoor(self, "Door_Star1", Common.MARK_STAR)
+	Common.updateDoor(self, "Door_Star2", Common.MARK_STAR)
+	Common.updateDoor(self, "Door_Square1", Common.MARK_SQUARE)
 end
 
 return Sewers

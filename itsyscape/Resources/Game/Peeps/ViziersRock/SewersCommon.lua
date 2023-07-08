@@ -18,6 +18,8 @@ local Common = {}
 Common.MARK_TRIANGLE = "triangle"
 Common.MARK_SQUARE   = "square"
 Common.MARK_CIRCLE   = "circle"
+Common.MARK_STAR     = "star"
+Common.MARK_NONE     = "none"
 
 Common.DOOR_CLOSED_SIZE = Vector(5.5, 8, 5.5)
 Common.DOOR_OPENED_SIZE = Vector(0)
