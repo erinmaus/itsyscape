@@ -1040,7 +1040,9 @@ do
 				Resource = ItsyScape.Resource.Item "ViziersRock_Sewers_AdamantKey",
 				Count = 1
 			}
-		}
+		},
+
+		ItsyScape.Action.Close()
 	}
 end
 
