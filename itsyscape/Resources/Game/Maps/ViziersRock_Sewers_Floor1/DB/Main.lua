@@ -1018,6 +1018,32 @@ do
 	}
 end
 
+M["Door_ToRatKing"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 79,
+		Name = "Door_ToRatKing",
+		Map = M._MAP,
+		Resource = M["Door_ToRatKing"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_ToRatKing"]
+	}
+
+	M["Door_ToRatKing"] {
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.Item "ViziersRock_Sewers_AdamantKey",
+				Count = 1
+			}
+		}
+	}
+end
+
 do
 	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_LeftToRight"
 	ItsyScape.Resource.Cutscene "ViziersRock_Sewers_Floor1_Crawl_RightToLeft"
