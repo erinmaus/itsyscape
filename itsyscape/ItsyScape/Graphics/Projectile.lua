@@ -15,12 +15,13 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 
 local Projectile = Class()
 
-function Projectile:new(id, gameView, source, destination, time)
+function Projectile:new(id, gameView, source, destination, layer)
 	self.gameView = gameView
 	self.id = id
 	self.source = source
 	self.destination = destination
-	self.time = time or 0
+	self.layer = layer
+	self.time = 0
 
 	self.sceneNode = SceneNode()
 end

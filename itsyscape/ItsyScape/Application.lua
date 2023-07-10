@@ -64,6 +64,16 @@ local function inspectGameDB(gameDB)
 
 		Log.info("There are %d '%s' resources.", count, resourceType)
 	end
+
+	for resource in gameDB:getResources("Peep") do
+		local dummy = gameDB:getRecord("Dummy", {
+			Resource = resource
+		})
+
+		if dummy ~= nil then
+			Log.warn("Peep '%s' is a dummy! Fix before release.", resource.name)
+		end
+	end
 end
 
 local Application = Class()

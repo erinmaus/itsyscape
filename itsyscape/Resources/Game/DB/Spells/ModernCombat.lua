@@ -479,7 +479,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Infest your foe with shadow mites that pierce defense. The higher your wisdom level, the more mights infest your foe.",
+	Value = "Infest your foe with shadow mites that pierce defense. The higher your wisdom level, the more mites infest your foe.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "Infest"
 }

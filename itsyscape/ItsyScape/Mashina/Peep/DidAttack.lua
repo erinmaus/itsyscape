@@ -12,9 +12,10 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 
 local DidAttack = B.Node("DidAttack")
-DidAttack.TOOK_DAMAGE = B.Reference()
+DidAttack.DEALT_DAMAGE = B.Reference()
 DidAttack.MISSED = B.Reference()
 DidAttack.ATTACK_POKE = B.Reference()
+DidAttack.DAMAGE = B.Reference()
 DidAttack.INTERNAL_ATTACK_POKE = B.Local()
 DidAttack.ATTACKED = B.Local()
 DidAttack.CALLBACK = B.Local()
@@ -23,7 +24,9 @@ function DidAttack:update(mashina, state, executor)
 	local attacked = state[self.ATTACKED]
 
 	if attacked == true then
-		state[self.ATTACK_POKE] = state[self.INTERNAL_ATTACK_POKE]
+		local attackPoke = state[self.INTERNAL_ATTACK_POKE]
+		state[self.ATTACK_POKE] = attackPoke
+		state[self.DAMAGE] = attackPoke:getDamage()
 		state[self.ATTACKED] = nil
 		state[self.INTERNAL_ATTACK_POKE] = nil
 		return B.Status.Success
@@ -37,12 +40,12 @@ function DidAttack:update(mashina, state, executor)
 	end
 end
 
-function DidAttack:hit(peep, tookDamage, missed, state, _, p)
+function DidAttack:hit(peep, dealtDamage, missed, state, _, p)
 	if (missed == true or missed == nil) and p:getDamage() == 0 then
 		state[self.ATTACKED] = true
 	end
 
-	if (tookDamage == true or tookDamage == nil) and p:getDamage() > 0 then
+	if (dealtDamage == true or dealtDamage == nil) and p:getDamage() > 0 then
 		state[self.ATTACKED] = true
 	end
 
@@ -54,7 +57,7 @@ function DidAttack:hit(peep, tookDamage, missed, state, _, p)
 end
 
 function DidAttack:activated(mashina, state, executor)
-	local tookDamage = state[self.TOOK_DAMAGE]
+	local dealtDamage = state[self.DEALT_DAMAGE]
 	local missed = state[self.MISSED]
 
 	local callback = self.callback or function(self, ...)
@@ -64,7 +67,7 @@ function DidAttack:activated(mashina, state, executor)
 	self.callback = callback
 	self.mashina = mashina
 
-	mashina:listen('initiateAttack', callback, self, mashina, tookDamage, missed, state)
+	mashina:listen('initiateAttack', callback, self, mashina, dealtDamage, missed, state)
 end
 
 function DidAttack:deactivated(mashina, state, executor)

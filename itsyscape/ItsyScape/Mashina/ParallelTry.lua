@@ -35,7 +35,6 @@ function ParallelTry:update(mashina, state, executor)
 	if working then
 		return B.Status.Working
 	else
-		executor:drop()
 		return B.Status.Failure
 	end
 end

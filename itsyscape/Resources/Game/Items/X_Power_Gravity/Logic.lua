@@ -39,13 +39,13 @@ function Gravity:perform(peep, target)
 				
 				local skill = stats:getSkill("Constitution")
 				local workingLevel = skill:getWorkingLevel()
-				local debuff = (damage - damageRoll:getMinHit()) / (damageRoll:getMaxHit() - damageRoll:getMinHit())
+				local debuff = damage / damageRoll:getMaxHit()
 				debuff = debuff * (Gravity.MAX_DEBUFF - Gravity.MIN_DEBUFF) + Gravity.MIN_DEBUFF
 				
-				local difference = workingLevel - debuff
+				local difference = math.floor(workingLevel * debuff + 0.5)
 				skill:setLevelBoost(skill:getLevelBoost() - difference)
 
-				Log.info("Debuffed skill Constitution by %d levels.", skill:getName(), debuff)
+				Log.info("Debuffed skill %s by %d levels.", skill:getName(), difference)
 			end
 		end
 

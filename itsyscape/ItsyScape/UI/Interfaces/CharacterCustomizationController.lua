@@ -62,6 +62,7 @@ local SKINS = {
 		{ name = "Robot Eyes (neutral)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/RobotEyes_Black.lua" },
 		{ name = "Robot Eyes (happy)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/RobotEyes_Green.lua" },
 		{ name = "Robot Eyes (angry)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/RobotEyes_Red.lua" },
+		{ name = "Dummy eyes", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Dummy.lua" },
 		{ name = "Eyeless", t = false, filename = "PlayerKit1/Eyes/Eyeless.lua" }
 	},
 
@@ -80,6 +81,7 @@ local SKINS = {
 		{ name = "Partially digested", t = MODEL_SKIN, filename = "PlayerKit1/Head/PartiallyDigested.lua" },
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Head.lua" },
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Head.lua" },
+		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Head/Dummy.lua" },
 		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Head/Robot_MkII.lua" }
 	},
 
@@ -121,6 +123,7 @@ local SKINS = {
 		{ name = "Partially digested", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PartiallyDigested.lua" },
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Body.lua" },
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Body.lua" },
+		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Dummy.lua" },
 		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Robot_MkII.lua" },
 		{ name = "Dragon wings (black)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Haru.lua", player = "Haru" },
 	},
@@ -146,6 +149,8 @@ local SKINS = {
 		{ name = "Partially digested", t = MODEL_SKIN, filename = "PlayerKit1/Hands/PartiallyDigested.lua" },
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Hands.lua" },
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Hands.lua" },
+		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Dummy.lua" },
+		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Robot_MkII.lua" },
 		{ name = "Unreal", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Unreal.lua" }
 	},
 
@@ -163,6 +168,7 @@ local SKINS = {
 		{ name = "Partially digested feet", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Feet_PartiallyDigested.lua" },
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Feet.lua" },
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Feet.lua" },
+		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Dummy.lua" },
 		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Shoes/Robot_MkII.lua" },
 	}
 }

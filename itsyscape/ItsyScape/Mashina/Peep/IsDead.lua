@@ -16,10 +16,7 @@ local IsDead = B.Node("IsDead")
 IsDead.PEEP = B.Reference()
 
 function IsDead:update(mashina, state, executor)
-	local peep = state[self.PEEP]
-	if not peep then
-		return B.Status.Success
-	end
+	local peep = state[self.PEEP] or mashina
 
 	local status = peep:getBehavior(CombatStatusBehavior)
 	if not status then

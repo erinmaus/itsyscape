@@ -37,6 +37,24 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "Dummy" {
+		Tier = Meta.TYPE_INTEGER,
+		CombatStyle = Meta.TYPE_INTEGER,
+
+		Hitpoints = Meta.TYPE_INTEGER,
+		Size = Meta.TYPE_REAL,
+
+		Weapon = Meta.TYPE_TEXT,
+		Shield = Meta.TYPE_TEXT,
+
+		ChaseDistance = Meta.TYPE_REAL,
+		AttackDistance = Meta.TYPE_REAL,
+		AttackCooldown = Meta.TYPE_REAL,
+		AttackProjectile = Meta.TYPE_TEXT,
+
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepMashinaState" {
 		State = Meta.TYPE_TEXT,
 		Tree = Meta.TYPE_TEXT,
@@ -779,6 +797,10 @@ function ItsyScape.Utility.styleBonusForItem(tier, weight)
 	return math.floor(math.floor(A * tier ^ 2 + B * tier + C) * weight)
 end
 
+function ItsyScape.Utility.styleBonusForArmor(tier, weight)
+	return math.max(math.floor(ItsyScape.Utility.styleBonusForWeapon(tier, weight) / 6), 1)
+end
+
 -- Calculates the style bonus for a weapon of the given 'tier'.
 function ItsyScape.Utility.styleBonusForWeapon(tier, weight)
 	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3, weight)
@@ -796,6 +818,7 @@ ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 0.3
 ItsyScape.Utility.ARMOR_BODY_WEIGHT       = 0.5
 ItsyScape.Utility.ARMOR_GLOVES_WEIGHT     = 0.1
 ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 0.2
+ItsyScape.Utility.ARMOR_SHIELD_WEIGHT     = 0.35
 ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT   = 1.0
 ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
 ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
@@ -972,6 +995,8 @@ include "Resources/Game/DB/Creeps/RatKing.lua"
 include "Resources/Game/DB/Creeps/SewerSpider.lua"
 include "Resources/Game/DB/Creeps/GrubMite.lua"
 include "Resources/Game/DB/Creeps/Rat.lua"
+include "Resources/Game/DB/Creeps/TrashHeap.lua"
+include "Resources/Game/DB/Creeps/AncientKaradon.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"

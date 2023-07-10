@@ -178,6 +178,34 @@ do
 end
 
 do
+	local StarMark = ItsyScape.Resource.Prop "ViziersRock_Sewers_StarMark"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BlockingProp",
+		Resource = StarMark
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yellow star mark",
+		Language = "en-US",
+		Resource = StarMark
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A valve somewhere might match this mark.",
+		Language = "en-US",
+		Resource = StarMark
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = StarMark
+	}
+end
+
+do
 	local Door = ItsyScape.Resource.Prop "ViziersRock_Sewers_WaterDoor" {
 		-- Nothing.
 	}
@@ -235,5 +263,52 @@ do
 		SizeZ = 2.5,
 		OffsetY = 0.5,
 		MapObject = Pipe
+	}
+end
+
+do
+	local Pipe = ItsyScape.Resource.Prop "ViziersRock_Sewers_Pipe_NoGrate" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Pipe",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Looks like you can crawl through this pipe.",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Pipe
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 2.5,
+		SizeZ = 2.5,
+		OffsetY = 0.5,
+		MapObject = Pipe
+	}
+end
+
+do
+	local Key = ItsyScape.Resource.Item "ViziersRock_Sewers_AdamantKey"
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Adamant key",
+		Resource = Key
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "This key opens the gate on the first floor of the Vizier's Rock sewers, leading to the room with the Rat King.",
+		Resource = Key
 	}
 end

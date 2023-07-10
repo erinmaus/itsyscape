@@ -50,6 +50,7 @@ function BossHUD.StatBar:new()
 	self.max = 1
 	self.inColor = Color(0, 1, 0, 1)
 	self.outColor = Color(1, 0, 0, 1)
+	self.isValue = false
 end
 
 function BossHUD.StatBar:getCurrent()
@@ -84,7 +85,36 @@ function BossHUD.StatBar:setOutColor(value)
 	self.outColor = value or self.outColor
 end
 
+function BossHUD.StatBar:getIsValue()
+	return self.isValue
+end
+
+function BossHUD.StatBar:setIsValue(value)
+	self.isValue = value or false
+end
+
+function BossHUD.StatBar:getOverflow()
+	return self.isValue
+end
+
 function BossHUD.StatBar:draw(resources, state)
+	if self.isValue then
+		if not self.valueLabel then
+			self.valueLabel = Label()
+			self.valueLabel:setStyle(LabelStyle(BossHUD.BIG_STAT_LEFT_LABEL_STYLE, resources))
+			self:addChild(self.valueLabel)
+		end
+
+		self.valueLabel:setText(self:getText())
+
+		return
+	else
+		if self.valueLabel then
+			self:removeChild(self.valueLabel)
+			self.valueLabel = nil
+		end
+	end
+
 	local w, h = self:getSize()
 	local cornerRadius = math.min(w, h) / 4
 
@@ -237,6 +267,8 @@ function BossHUD:updateStats()
 				if stat then
 					stat:setCurrent(little[i].current)
 					stat:setMax(little[i].max)
+					stat:setIsValue(little[i].isValue)
+					stat:setText(little[i].label)
 				end
 			end
 		end

@@ -1327,7 +1327,7 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onPropPlaced",
-				localGameManager:getArgs(prop:getPeepID(), prop))
+				localGameManager:getArgs(self.stage:lookupPropAlias(prop:getPeepID()), prop))
 			localGameManager:assignTargetToLastPush(player)
 
 			self:loadProp(localGameManager, player, prop)

@@ -1815,6 +1815,26 @@ function Utility.Peep.getPeepsAlongRay(peep, ray, range)
 	return hits
 end
 
+function Utility.Peep.getPeepsInRadius(peep, range, ...)
+	local selfPosition = Utility.Peep.getAbsolutePosition(peep)
+
+	local peepsDistance = {}
+	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
+		local otherPosition = Utility.Peep.getAbsolutePosition(p)
+		local distance = (otherPosition - selfPosition):getLength()
+
+		peepsDistance[p] = distance
+
+		return distance <= range
+	end, ...)
+
+	table.sort(hits, function(a, b)
+		return peepsDistance[a] < peepsDistance[b]
+	end)
+
+	return hits
+end
+
 function Utility.Peep.getDescription(peep, lang)
 	lang = lang or "en-US"
 
@@ -2027,24 +2047,6 @@ function Utility.Peep.getBestTool(peep, toolType)
 	return tools[1].logic
 end
 
-function Utility.Peep.getEquippedShield(peep, includeXShield)
-	local Equipment = require "ItsyScape.Game.Equipment"
-
-	local shield = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
-	if shield then
-		local logic = peep:getDirector():getItemManager():getLogic(shield:getID())
-		if logic then
-			return logic, shield
-		end
-	end
-
-	if includeXShield then
-		Log.errorOnce("XShield not yet implemented; peep '%s' doesn't have a shield.", peep:getName())
-	end
-
-	return nil
-end
-
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
@@ -2068,7 +2070,7 @@ function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	return nil
 end
 
-function Utility.Peep.getEquippedShield(peep)
+function Utility.Peep.getEquippedShield(peep, includeXShield)
 	local Equipment = require "ItsyScape.Game.Equipment"
 	local Shield = require "ItsyScape.Game.Shield"
 
@@ -2077,6 +2079,14 @@ function Utility.Peep.getEquippedShield(peep)
 		local shieldLogic = peep:getDirector():getItemManager():getLogic(rightHandItem:getID())
 		if shieldLogic:isCompatibleType(Shield) then
 			return shieldLogic, rightHandItem
+		end
+	end
+
+	if includeXShield then
+		local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
+		local xShield = peep:getBehavior(ShieldBehavior)
+		if xShield and xShield.shield and xShield.shield:isCompatibleType(Shield) then
+			return xShield.shield
 		end
 	end
 
@@ -2134,6 +2144,20 @@ function Utility.Peep.equipXWeapon(peep, id)
 		weapon.weapon = xWeapon
 		if Class.isDerived(xWeapon:getType(), Equipment) then
 			xWeapon:onEquip(peep)
+		end
+	end
+end
+
+function Utility.Peep.equipXShield(peep, id)
+	local Equipment = require "ItsyScape.Game.Equipment"
+	local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
+
+	local xShield = Utility.Peep.getXWeapon(peep:getDirector():getGameInstance(), id)
+	local s, shield = peep:addBehavior(ShieldBehavior)
+	if s then
+		shield.shield = xShield
+		if Class.isDerived(xShield:getType(), Equipment) then
+			xShield:onEquip(peep)
 		end
 	end
 end
@@ -2551,9 +2575,7 @@ function Utility.Peep.attack(peep, other, distance)
 
 		local mashina = peep:getBehavior(MashinaBehavior)
 		if mashina then
-			if mashina.currentState ~= 'begin-attack' and
-			   mashina.currentState ~= 'attack'
-			then
+			if mashina.currentState == 'idle' or not mashina.currentState then
 				if mashina.states['begin-attack'] then
 					mashina.currentState = 'begin-attack'
 				elseif mashina.states['attack'] then
@@ -3072,6 +3094,29 @@ function Utility.Peep.Attackable:onTargetFled(p)
 	end
 end
 
+function Utility.Peep.Attackable:bossReceiveAttack(p)
+	local aggressor = p:getAggressor()
+	if not aggressor then
+		return
+	end
+
+	local isPlayer = aggressor:hasBehavior(PlayerBehavior)
+	if not isPlayer then
+		return
+	end
+
+	local isOpen = Utility.UI.isOpen(aggressor, "BossHUD")
+	if isOpen then
+		return
+	end
+
+	Utility.UI.openInterface(
+		aggressor,
+		"BossHUD",
+		false,
+		self)
+end
+
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat or combat.dead then
@@ -3105,15 +3150,11 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 
 				local mashina = self:getBehavior(MashinaBehavior)
 				if mashina then
-					if mashina.currentState ~= 'begin-attack' and
-					   mashina.currentState ~= 'attack'
-					then
+					if mashina.currentState == 'idle' or not mashina.currentState then
 						if mashina.states['begin-attack'] then
 							mashina.currentState = 'begin-attack'
 						elseif mashina.states['attack'] then
 							mashina.currentState = 'attack'
-						else
-							mashina.currentState = false
 						end
 
 						self:poke('firstStrike', attack)
@@ -3203,6 +3244,8 @@ function Utility.Peep.Attackable:onHeal(p)
 		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
 		if not p.zealous then
 			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
+		else
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints + p.hitPoints)
 		end
 
 		combat.currentHitpoints = newHitPoints
@@ -3354,6 +3397,233 @@ end
 function Utility.Peep.makeSkiller(peep)
 	peep:addPoke('resourceHit')
 	peep:addPoke('resourceObtained')
+end
+
+function Utility.Peep.makeDummy(peep)
+	peep:listen('finalize', Utility.Peep.Dummy.onFinalize)
+end
+
+Utility.Peep.Dummy = {}
+Utility.Peep.Dummy.TIERS = {
+	{
+		base = "Staff",
+		"Dinky",
+		"Feeble",
+		"Moldy",
+		"Springy",
+		"Tense",
+		"Scary"
+	},
+	{
+		base = "Longbow",
+		"Puny",
+		"Bendy",
+		"Petty",
+		"Shaky",
+		"Spindly",
+		"Terrifying"
+	},
+	{
+		base = "Zweihander",
+		"Bronze",
+		"Iron",
+		"BlackenedIron",
+		"Mithril",
+		"Adamant",
+		"Itsy"
+	}
+}
+
+Utility.Peep.Dummy.ANIMATIONS = {
+	"Human_AttackStaffMagic_1",
+	"Human_AttackBowRanged_1",
+	"Human_AttackZweihanderSlash_1"
+}
+
+Utility.Peep.Dummy.WEAPONS = {
+	"Dummy_Staff",
+	"Dummy_Bow",
+	"Dummy_Sword"
+}
+
+function Utility.Peep.Dummy.getAttackCooldown(peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(peep)
+
+	local dummy = gameDB:getRecord("Dummy", { Resource = resource })
+	local cooldown = dummy and dummy:get("AttackCooldown")
+	return ((not cooldown or cooldown == 0) and nil) or cooldown
+end
+
+function Utility.Peep.Dummy.getAttackRange(peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(peep)
+
+	local dummy = gameDB:getRecord("Dummy", { Resource = resource })
+	local distance = dummy and dummy:get("AttackDistance")
+	return ((not distance or distance == 0) and nil) or distance
+end
+
+function Utility.Peep.Dummy.getProjectile(peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(peep)
+
+	local dummy = gameDB:getRecord("Dummy", { Resource = resource })
+	local projectile = dummy and dummy:get("AttackProjectile")
+	
+	return projectile
+end
+
+function Utility.Peep.Dummy:onFinalize()
+	local gameDB = self:getDirector():getGameDB()
+	local resource = Utility.Peep.getResource(self)
+
+	if not resource then
+		return
+	end
+
+	local dummy = gameDB:getRecord("Dummy", {
+		Resource = resource
+	})
+
+	if not dummy then
+		return
+	end
+
+	local hitpoints = dummy:get("Hitpoints")
+	if hitpoints > 0 then
+		local _, c = self:addBehavior(CombatStatusBehavior)
+		c.currentHitpoints = hitpoints
+		c.maximumHitpoints = hitpoints
+	end
+
+	local chaseDistance = dummy:get("ChaseDistance")
+	if chaseDistance > 0 then
+		local _, c = self:addBehavior(CombatStatusBehavior)
+		c.maxChaseDistance = chaseDistance
+	end
+
+	local size = dummy:get("Size")
+	if size > 0 then
+		local _, s = self:addBehavior(ScaleBehavior)
+		s.scale = Vector(size)
+	end
+
+	local style = dummy:get("CombatStyle")
+	local tier = math.max(math.floor(dummy:get("Tier") / 10), 1)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	local Equipment = require "ItsyScape.Game.Equipment"
+
+	local body = CacheRef(
+		"ItsyScape.Game.Body",
+		"Resources/Game/Bodies/Human.lskel")
+	actor:setBody(body)
+
+	local head = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Head/Dummy.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
+	local body = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Shirts/Dummy.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
+	local eyes = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Dummy.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
+	local hands = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Hands/Dummy.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
+	local feet = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/PlayerKit1/Shoes/Dummy.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+
+	if dummy:get("Shield") ~= "" and not Class.isCompatibleType(self, require "ItsyScape.Peep.Peeps.Player") then
+		local shieldSkin = CacheRef(
+			"ItsyScape.Game.Skin.ModelSkin",
+			"Resources/Game/Skins/Wooden/Shield.lua")
+		actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_EQUIPMENT, shieldSkin)
+	end
+
+	if Class.isCompatibleType(self, require "ItsyScape.Peep.Peeps.Player") then
+		local broker = self:getDirector():getItemBroker()
+		local equipment = self:getBehavior(EquipmentBehavior)
+
+		local shield = dummy:get("Shield")
+		if shield ~= "" then
+			local transaction = broker:createTransaction()
+			transaction:addParty(equipment.equipment)
+			transaction:spawn(equipment.equipment, shield, 1, false)
+			transaction:commit()
+		end
+
+		local weapon = dummy:get("Weapon")
+		if weapon ~= "" then
+			local transaction = broker:createTransaction()
+			transaction:addParty(equipment.equipment)
+			transaction:spawn(equipment.equipment, weapon, 1, false)
+			transaction:commit()
+		end
+	else
+		local walkAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Human_Walk_1/Script.lua")
+		self:addResource("animation-walk", walkAnimation)
+		local idleAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Human_Idle_1/Script.lua")
+		self:addResource("animation-idle", idleAnimation)
+		local dieAnimation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Human_Die_1/Script.lua")
+		self:addResource("animation-die", dieAnimation)
+
+		local animation = Utility.Peep.Dummy.ANIMATIONS[style]
+		if animation then
+			local attackAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				string.format("Resources/Game/Animations/%s/Script.lua", animation))
+			self:addResource("animation-attack", attackAnimation)
+		end
+
+		local skins = Utility.Peep.Dummy.TIERS[style]
+		local skin = skins and skins[tier]
+
+		if skins and skin then
+			local weaponSkin = CacheRef(
+				"ItsyScape.Game.Skin.ModelSkin",
+				string.format("Resources/Game/Skins/%s/%s.lua", skin, skins.base))
+			actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_EQUIPMENT, weaponSkin)
+		end
+
+		local shield = dummy:get("Shield")
+		if shield ~= "" then
+			local shieldSkin = CacheRef(
+				"ItsyScape.Game.Skin.ModelSkin",
+				"Resources/Game/Skins/Wooden/Shield.lua")
+			actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_EQUIPMENT, shieldSkin)
+
+			Utility.Peep.equipXShield(self, shield)
+		end
+
+		local weapon = dummy:get("Weapon")
+		if weapon ~= "" then
+			Utility.Peep.equipXWeapon(self, weapon)
+		else
+			weapon = Utility.Peep.Dummy.WEAPONS[style]
+			if weapon then
+				Utility.Peep.equipXWeapon(self, weapon)
+			end
+		end
+	end
 end
 
 Utility.Peep.Human = {}
@@ -3657,6 +3927,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_SkillWoodcut_1/Script.lua")
 	peep:addResource("animation-skill-woodcutting", skillAnimationWoodcutting)
+	local jumpAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_Jump_1/Script.lua")
+	peep:addResource("animation-jump", jumpAnimation)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
 end

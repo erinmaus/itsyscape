@@ -11,6 +11,7 @@ local B = require "B"
 
 local Step = B.Node("Step")
 Step.INDEX = B.Local()
+Step.DEBUG = B.Reference()
 
 function Step:update(mashina, state, executor)
 	local index = state[self.INDEX] or 1
@@ -42,7 +43,7 @@ function Step:deactivated(mashina, state)
 	state[self.INDEX] = nil
 end
 
-function Step:activated(mashian, state)
+function Step:activated(mashina, state)
 	state[self.INDEX] = 1
 end
 
