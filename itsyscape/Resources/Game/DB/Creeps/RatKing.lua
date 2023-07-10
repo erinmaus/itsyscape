@@ -31,6 +31,176 @@ do
 		Language = "en-US",
 		Resource = RatKing
 	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.95),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(55),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50),
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_AttackLogic.lua",
+		Resource = RatKing
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "hungry",
+		Tree = "Resources/Game/Peeps/Rat/RatKing_HungryLogic.lua",
+		Resource = RatKing
+	}
+end
+
+do
+	local RatKingsJester = ItsyScape.Resource.Peep "RatKingsJester"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rat.JesterRat",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rat King's jester",
+		Language = "en-US",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "His jokes are really mean.",
+		Language = "en-US",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "odd-one-out",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_OddOneOutLogic.lua",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "avoid",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_AvoidLogic.lua",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "poof",
+		Tree = "Resources/Game/Peeps/Rat/JesterRat_PoofLogic.lua",
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingsJester
+	}
+
+	ItsyScape.Meta.Equipment {
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55),
+		Resource = RatKingsJester
+	}
+
+	local RatKingJesterPresent = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.RatKingJesterPresent",
+		Resource = RatKingJesterPresent
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Present",
+		Language = "en-US",
+		Resource = RatKingJesterPresent
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a ticking sound inside...",
+		Language = "en-US",
+		Resource = RatKingJesterPresent
+	}
+
+	local OpenAction = ItsyScape.Action.Pick()
+	ItsyScape.Meta.ActionVerb {
+		Value = "Open",
+		XProgressive = "Opening",
+		Language = "en-US",
+		Action = OpenAction
+	}
+
+	local RatKingJesterPresentOpenable = ItsyScape.Resource.Prop "ViziersRock_Sewers_RatKingJesterPresent_Openable" {
+		OpenAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Suspicious present",
+		Language = "en-US",
+		Resource = RatKingJesterPresentOpenable
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Wonder what's inside... A trick or treat?",
+		Language = "en-US",
+		Resource = RatKingJesterPresentOpenable
+	}
+
+	ItsyScape.Meta.PropAlias {
+		Alias = RatKingJesterPresent,
+		Resource = RatKingJesterPresentOpenable
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.RatKingJesterPresent",
+		Resource = RatKingJesterPresentOpenable
+	}
 end
 
 do
@@ -54,6 +224,65 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "You are what you eat...",
 		Language = "en-US",
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Rat",
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(60, 0.95),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
+		Resource = RatKingUnleashed
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Rat/RatKingUnleashed_AttackLogic.lua",
 		Resource = RatKingUnleashed
 	}
 end

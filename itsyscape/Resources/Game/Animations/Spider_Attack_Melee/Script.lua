@@ -1,5 +1,6 @@
 Animation "Spider Attack" {
 	Target {
+		PlaySound "Resources/Game/Animations/Spider_Attack_Melee/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Spider_Attack_Melee/Animation.lanim" {
 			bones = {
 				"legA1.R",

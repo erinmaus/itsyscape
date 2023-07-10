@@ -35,3 +35,36 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Door_IronGate"
 }
+
+ItsyScape.Resource.Prop "Door_IronGate_Guardian" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicGuardianDoor",
+	Resource = ItsyScape.Resource.Prop "Door_IronGate_Guardian"
+}
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "Door_IronGate",
+	Resource = ItsyScape.Resource.Prop "Door_IronGate_Guardian"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Door_IronGate_Guardian"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron gate",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_IronGate_Guardian"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Needs some grease.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_IronGate_Guardian"
+}

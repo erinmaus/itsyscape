@@ -22,7 +22,7 @@ function DebugAscend:perform(state, peep, item)
 		stats = stats.stats
 		for skill in stats:iterate() do
 			skill:setXP(Curve.XP_CURVE(99))
-			skill:setLevelBoost(20 + 1)
+			skill:setLevelBoost(21)
 		end
 	end
 

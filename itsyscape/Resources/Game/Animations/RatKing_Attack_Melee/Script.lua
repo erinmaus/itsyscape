@@ -1,6 +1,8 @@
 Animation "Rat King Attack" {
 	Target {
-		PlayAnimation "Resources/Game/Animations/RatKing_Attack/Animation.lanim" {
+		PlaySound "Resources/Game/Animations/RatKing_Attack_Melee/Sound1.wav",
+		PlaySound "Resources/Game/Animations/RatKing_Attack_Melee/Sound2.wav",
+		PlayAnimation "Resources/Game/Animations/RatKing_Attack_Melee/Animation.lanim" {
 			bones = {
 				"neck1.r",
 				"neck2.r",

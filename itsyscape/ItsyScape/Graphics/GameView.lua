@@ -12,6 +12,7 @@ local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
@@ -220,9 +221,9 @@ function GameView:attach(game)
 	end
 	stage.onStopForecast:register(self._onStopForecast)
 
-	self._onProjectile = function(_, projectileID, source, destination, time)
+	self._onProjectile = function(_, projectileID, source, destination, layer)
 		Log.info("Firing projectile '%s'.", projectileID)
-		self:fireProjectile(projectileID, source, destination, time)
+		self:fireProjectile(projectileID, source, destination, layer)
 	end
 	stage.onProjectile:register(self._onProjectile)
 
@@ -821,8 +822,12 @@ function GameView:flood(key, water, layer)
 		node:setYOffset(water.yOffset)
 	end
 
-	if water.isTranslucent then
+	if water.isTranslucent or (water.alpha and water.alpha < 1) then
 		node:getMaterial():setIsTranslucent(true)
+	end
+
+	if water.alpha then
+		node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
 	end
 
 	self.resourceManager:queue(
@@ -879,7 +884,7 @@ function GameView:forecast(layer, key, id, props)
 	end
 end
 
-function GameView:fireProjectile(projectileID, source, destination, time)
+function GameView:fireProjectile(projectileID, source, destination, layer)
 	local ProjectileType
 	do
 		local ProjectileTypeName = string.format("Resources.Game.Projectiles.%s.Projectile", projectileID)
@@ -893,7 +898,7 @@ function GameView:fireProjectile(projectileID, source, destination, time)
 	end
 
 	if ProjectileType then
-		local projectile = ProjectileType(projectileID, self, source, destination, time)
+		local projectile = ProjectileType(projectileID, self, source, destination, layer)
 		projectile:attach()
 		projectile:load()
 		self.projectiles[projectile] = true

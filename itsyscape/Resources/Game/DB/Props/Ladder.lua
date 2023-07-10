@@ -16,7 +16,7 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Ladder",
+	Value = "Wooden ladder",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "WoodenLadder_Default"
 }
@@ -25,4 +25,23 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "I wonder where this leads?",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "WoodenLadder_Default"
+}
+
+ItsyScape.Resource.Prop "MetalLadder_Default"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicLadder",
+	Resource = ItsyScape.Resource.Prop "MetalLadder_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Metal ladder",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MetalLadder_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slippery when wet!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "MetalLadder_Default"
 }

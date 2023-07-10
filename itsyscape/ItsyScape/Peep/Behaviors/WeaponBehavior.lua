@@ -12,7 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies equipment bonuses directly.
-local WeaponBehavior = Behavior("WeaponBehavior")
+local WeaponBehavior = Behavior("Weapon")
 
 -- Constructs a WeaponBehavior.
 --

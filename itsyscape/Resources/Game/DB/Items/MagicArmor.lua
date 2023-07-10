@@ -622,12 +622,12 @@ end
 -- Mystic cotton cloth
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(33, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "MysticCottonGloves"
 	}
@@ -639,30 +639,30 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(31, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "MysticCottonSlippers"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "For when you need to be threatening and also getting ready for bed.",
+		Value = "For when you need to be threatening and are also getting ready for bed.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "MysticCottonSlippers"
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(32, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(32, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(23, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.25),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(23, 0.2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "MysticCottonHat"
 	}
@@ -674,12 +674,12 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(33, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 0.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(33, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(35, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(35, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(11, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(34, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.3),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "MysticCottonRobe"
 	}
@@ -691,12 +691,12 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 0.6),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 1.0),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(30, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(12, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(30, 0.3),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "MysticCottonShield"
 	}
