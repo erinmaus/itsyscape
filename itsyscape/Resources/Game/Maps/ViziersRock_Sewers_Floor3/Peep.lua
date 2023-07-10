@@ -35,6 +35,7 @@ function Sewers:initBoss()
 
 	local bossPeep = bossActor:getPeep()
 	bossPeep:listen("swim", self.moveBoss, self)
+	bossPeep:listen("die", self.onBossDie, self)
 end
 
 function Sewers:moveBoss(boss)
@@ -107,6 +108,21 @@ function Sewers:angerBoss(boss, fishingSpot, p)
 	boss:listen('target', onBossTarget)
 
 	Utility.Peep.poof(fishingSpot)
+end
+
+function Sewers:onBossDie()
+	local instance = Utility.Peep.getInstance(self)
+	Utility.Peep.notify(instance, "The ancient karadon spit up an adamant key...")
+
+	for _, player in instance:iteratePlayers() do
+		local playerPeep = player:getActor():getPeep()
+
+		playerPeep:getState():give(
+			"Item",
+			"ViziersRock_Sewers_AdamantKey",
+			1,
+			{ ['item-inventory'] = true, ['item-drop-excess'] = true, ['force-item-drop'] = true })
+	end
 end
 
 return Sewers
