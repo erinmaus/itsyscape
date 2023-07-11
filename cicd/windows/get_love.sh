@@ -12,6 +12,7 @@ cd ..
 git clone https://github.com/erinmaus/love2d ./megasource/libs/love || true
 rm -rf ./megasource/libs/LuaJIT
 git clone https://github.com/LuaJIT/LuaJIT ./megasource/libs/LuaJIT
+cd ./megasource/libs/LuaJIT && git checkout 224129a8e64bfa219d35cd03055bf03952f167f6 && cd ../../..
 rm -rf ./megasource/libs/SDL2
 git clone -b SDL2 https://github.com/libsdl-org/SDL.git ./megasource/libs/SDL2
 
