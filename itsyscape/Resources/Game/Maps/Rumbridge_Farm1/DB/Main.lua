@@ -98,14 +98,63 @@ do
 	}
 end
 
-M["Anchor_Temp"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromTownSouth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 1,
+		PositionX = 30,
 		PositionY = 4,
-		PositionZ = 1,
-		Name = "Anchor_Temp",
+		PositionZ = 58,
+		Name = "Anchor_FromTownSouth",
 		Map = M._MAP,
-		Resource = M["Anchor_Temp"]
+		Resource = M["Anchor_FromTownSouth"]
+	}
+end
+
+M["Portal_RumbridgeTownSouth"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 4,
+		PositionZ = 62,
+		Name = "Portal_RumbridgeTownSouth",
+		Map = M._MAP,
+		Resource = M["Portal_RumbridgeTownSouth"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 2,
+		SizeZ = 4,
+		MapObject = M["Portal_RumbridgeTownSouth"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_RumbridgeTownSouth"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge Town, South",
+		Language = "en-US",
+		Resource = M["Portal_RumbridgeTownSouth"]
+	}
+
+	-- local TravelAction = ItsyScape.Action.Travel()
+
+	-- ItsyScape.Meta.TravelDestination {
+	-- 	Anchor = "Anchor_FromFarm1",
+	-- 	Map = ItsyScape.Resource.Map "Rumbridge_Town_South",
+	-- 	Action = TravelAction
+	-- }
+
+	-- ItsyScape.Meta.ActionVerb {
+	-- 	Value = "Enter",
+	-- 	XProgressive = "Entering",
+	-- 	Language = "en-US",
+	-- 	Action = TravelAction
+	-- }
+
+	M["Portal_RumbridgeTownSouth"] {
+		--TravelAction
 	}
 end
