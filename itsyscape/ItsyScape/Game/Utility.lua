@@ -2537,7 +2537,7 @@ function Utility.Peep.face3D(self)
 			local map = self:getDirector():getMap(position.layer)
 
 			if map then
-				local selfPosition = Utility.Peep.getAbsolutePosition(self)
+				local selfPosition = Utility.Peep.getPosition(self)
 				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
 				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 				local xzTilePosition = tilePosition * Vector.PLANE_XZ
