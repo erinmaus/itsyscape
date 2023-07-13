@@ -16,6 +16,7 @@ local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourc
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BasicTree = Class(Prop)
+BasicTree.DEFAULT_SPAWN_COOLDOWN = 20
 
 function BasicTree:new(...)
 	Prop.new(self, ...)
@@ -65,9 +66,9 @@ function BasicTree:onResourceHit(e)
 			})
 
 			if p then
-				self.spawnCooldown = p:get("SpawnTime") or 60
+				self.spawnCooldown = p:get("SpawnTime") or self.DEFAULT_SPAWN_COOLDOWN
 			else
-				self.spawnCooldown = 60
+				self.spawnCooldown = self.DEFAULT_SPAWN_COOLDOWN
 			end
 		end
 
@@ -87,9 +88,9 @@ function BasicTree:previewShake()
 	})
 
 	if p then
-		self.spawnCooldown = p:get("SpawnTime") or 60
+		self.spawnCooldown = p:get("SpawnTime") or self.DEFAULT_SPAWN_COOLDOWN
 	else
-		self.spawnCooldown = 60
+		self.spawnCooldown = self.DEFAULT_SPAWN_COOLDOWN
 	end
 end
 
