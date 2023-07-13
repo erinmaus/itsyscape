@@ -39,6 +39,8 @@ DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
 	"TitleScreen_EmptyRuins",
 	"TitleScreen_RuinsOfRhysilk",
+	"TitleScreen_ViziersRock",
+	"TitleScreen_IsabelleIsland",
 }
 
 function DemoApplication:new()
