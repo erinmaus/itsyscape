@@ -176,6 +176,9 @@ function LocalPlayer:spawn(storage, newGame, password)
 
 						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
+						else
+							local x, y, z = Utility.Map.getAnchorPosition(self.game, location:get("name"), "Anchor_Spawn")
+							Utility.Peep.setPosition(actor:getPeep(), Vector(x, y, z))
 						end
 					end
 				else
