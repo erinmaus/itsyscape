@@ -77,6 +77,32 @@ do
 	}
 end
 
+M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog",
+		Map = M._MAP,
+		Resource = M["Light_Fog"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog"]
+	}
+
+	ItsyScape.Meta.Fog {
+		ColorRed = 33,
+		ColorGreen = 162,
+		ColorBlue = 234,
+		NearDistance = 50,
+		FarDistance = 200,
+		Resource = M["Light_Fog"]
+	}
+end
+
 M["Anchor_FromPort"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
