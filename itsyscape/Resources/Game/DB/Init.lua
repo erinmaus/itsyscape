@@ -157,7 +157,9 @@ Game "ItsyScape"
 	Meta "PropMapObject" {
 		Prop = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE,
-		IsMultiLayer = Meta.TYPE_INTEGER
+		IsMultiLayer = Meta.TYPE_INTEGER,
+		DoesNotDespawn = Meta.TYPE_INTEGER,
+		DoesNotRespawn = Meta.TYPE_INTEGER
 	}
 
 	Meta "PeepMapObject" {

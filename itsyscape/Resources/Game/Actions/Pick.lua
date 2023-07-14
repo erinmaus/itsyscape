@@ -16,7 +16,7 @@ local Action = require "ItsyScape.Peep.Action"
 
 local Pick = Class(Action)
 Pick.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
-Pick.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true }
+Pick.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true, ['item-drop-excess'] = true }
 Pick.QUEUE = {}
 Pick.DURATION = 1.0
 
@@ -44,9 +44,9 @@ function Pick:perform(state, player, target)
 			local transfer = CallbackCommand(self.transfer, self, state, player)
 			local pokeTarget = CallbackCommand(self.pokeTarget, self, player, target)
 			local wait = WaitCommand(Pick.DURATION, false)
-			local poof = CallbackCommand(Utility.Peep.poof, target)
+			local respawn = CallbackCommand(self.queueRespawn, self, target)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, wait, transfer, pokeTarget, perform, poof)
+			local command = CompositeCommand(true, walk, wait, transfer, pokeTarget, perform, respawn, poof)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
@@ -54,6 +54,40 @@ function Pick:perform(state, player, target)
 	end
 
 	return false
+end
+
+function Pick:queueRespawn(target)
+	local gameDB = self:getGameDB()
+
+	local mapObject = Utility.Peep.getMapObject(target)
+	if not mapObject then
+		return
+	end
+
+	local propMapObject = gameDB:getRecord("PropMapObject", {
+		MapObject = mapObject
+	})
+
+	if not propMapObject then
+		return
+	end
+
+	local poof = propMapObject:get("DoesNotDespawn") == 0
+	local respawn = propMapObject:get("DoesNotRespawn") == 0
+
+	if respawn then
+		local director = target:getDirector()
+		if director then
+			director:addPeep(
+				target:getLayerName(),
+				require "Resources.Game.Peeps.Props.PickRespawner",
+				target)
+		end
+	end
+
+	if poof then
+		Utility.Peep.poof(target)
+	end
 end
 
 function Pick:pokeTarget(player, target)
