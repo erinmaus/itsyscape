@@ -45,7 +45,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A factory that turns grass in cow hide.",
+	Value = "A factory that turns grass in to cow hide.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
 }

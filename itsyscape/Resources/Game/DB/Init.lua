@@ -999,6 +999,8 @@ include "Resources/Game/DB/Creeps/GrubMite.lua"
 include "Resources/Game/DB/Creeps/Rat.lua"
 include "Resources/Game/DB/Creeps/TrashHeap.lua"
 include "Resources/Game/DB/Creeps/AncientKaradon.lua"
+include "Resources/Game/DB/Creeps/Pig.lua"
+include "Resources/Game/DB/Creeps/Cheep.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1068,6 +1070,7 @@ include "Resources/Game/DB/Props/Stairs.lua"
 include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
 include "Resources/Game/DB/Props/CSGBuilding.lua"
+include "Resources/Game/DB/Props/Farm.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
