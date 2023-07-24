@@ -1,7 +1,7 @@
 local M = include "Resources/Game/Maps/Rumbridge_Farm1/DB/Default.lua"
 
 ItsyScape.Meta.ResourceName {
-	Value = "Farm, Rumbridge",
+	Value = "South Farm, Rumbridge",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -98,63 +98,63 @@ do
 	}
 end
 
-M["Anchor_FromTownSouth"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromFarm2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 4,
 		PositionZ = 58,
-		Name = "Anchor_FromTownSouth",
+		Name = "Anchor_FromFarm2",
 		Map = M._MAP,
-		Resource = M["Anchor_FromTownSouth"]
+		Resource = M["Anchor_FromFarm2"]
 	}
 end
 
-M["Portal_RumbridgeTownSouth"] = ItsyScape.Resource.MapObject.Unique()
+M["Portal_RumbridgeFarmSouth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 4,
 		PositionZ = 62,
-		Name = "Portal_RumbridgeTownSouth",
+		Name = "Portal_RumbridgeFarmSouth",
 		Map = M._MAP,
-		Resource = M["Portal_RumbridgeTownSouth"]
+		Resource = M["Portal_RumbridgeFarmSouth"]
 	}
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 4,
 		SizeY = 2,
 		SizeZ = 4,
-		MapObject = M["Portal_RumbridgeTownSouth"]
+		MapObject = M["Portal_RumbridgeFarmSouth"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
-		MapObject = M["Portal_RumbridgeTownSouth"]
+		MapObject = M["Portal_RumbridgeFarmSouth"]
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Rumbridge Town, South",
+		Value = "Rumbridge Farm, South",
 		Language = "en-US",
-		Resource = M["Portal_RumbridgeTownSouth"]
+		Resource = M["Portal_RumbridgeFarmSouth"]
 	}
 
-	-- local TravelAction = ItsyScape.Action.Travel()
+	local TravelAction = ItsyScape.Action.Travel()
 
-	-- ItsyScape.Meta.TravelDestination {
-	-- 	Anchor = "Anchor_FromFarm1",
-	-- 	Map = ItsyScape.Resource.Map "Rumbridge_Town_South",
-	-- 	Action = TravelAction
-	-- }
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromFarm1",
+		Map = ItsyScape.Resource.Map "Rumbridge_Farm2",
+		Action = TravelAction
+	}
 
-	-- ItsyScape.Meta.ActionVerb {
-	-- 	Value = "Enter",
-	-- 	XProgressive = "Entering",
-	-- 	Language = "en-US",
-	-- 	Action = TravelAction
-	-- }
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
 
-	M["Portal_RumbridgeTownSouth"] {
-		--TravelAction
+	M["Portal_RumbridgeFarmSouth"] {
+		TravelAction
 	}
 end
