@@ -297,7 +297,7 @@ M["Cheep1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15,
-		PositionY = 4,
+		PositionY = 5.5,
 		PositionZ = 15,
 		Name = "Cheep1",
 		Map = M._MAP,
@@ -314,7 +314,7 @@ M["Cheep2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 7,
-		PositionY = 4,
+		PositionY = 5.5,
 		PositionZ = 27,
 		Name = "Cheep2",
 		Map = M._MAP,
@@ -331,7 +331,7 @@ M["Cheep3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 25,
-		PositionY = 4,
+		PositionY = 5.5,
 		PositionZ = 29,
 		Name = "Cheep3",
 		Map = M._MAP,
@@ -348,7 +348,7 @@ M["Cheep4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 17,
-		PositionY = 4,
+		PositionY = 5.5,
 		PositionZ = 57,
 		Name = "Cheep4",
 		Map = M._MAP,
