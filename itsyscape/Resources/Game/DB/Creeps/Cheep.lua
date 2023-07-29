@@ -27,8 +27,7 @@ ItsyScape.Resource.Peep "Cheep_Base" {
 }
 
 ItsyScape.Meta.PeepID {
-	--Value = "Resources.Game.Peeps.Cheep.BaseCheep",
-	Value = "ItsyScape.Peep.Peeps.Creep",
+	Value = "Resources.Game.Peeps.Cheep.Cheep",
 	Resource = ItsyScape.Resource.Peep "Cheep_Base"
 }
 
@@ -78,8 +77,9 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Cheep_Base"
 }
 
-ItsyScape.Meta.Dummy {
-	Tier = 1,
-	CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Cheep/Cheep_IdleLogic.lua",
+	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Cheep_Base"
 }
