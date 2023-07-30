@@ -50,7 +50,15 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.DropTableEntry {
-	Item = ItsyScape.Resource.Item "Bones",
+	Item = ItsyScape.Resource.Item "PlainThread",
+	Weight = 10,
+	Count = 15,
+	Range = 5,
+	Resource = ItsyScape.Resource.DropTable "Cheep_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Knife",
 	Weight = 1,
 	Count = 1,
 	Resource = ItsyScape.Resource.DropTable "Cheep_Primary"	
@@ -77,9 +85,9 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Cheep_Base"
 }
 
-ItsyScape.Meta.PeepMashinaState {
-	State = "idle",
-	Tree = "Resources/Game/Peeps/Cheep/Cheep_IdleLogic.lua",
-	IsDefault = 1,
-	Resource = ItsyScape.Resource.Peep "Cheep_Base"
-}
+-- ItsyScape.Meta.PeepMashinaState {
+-- 	State = "idle",
+-- 	Tree = "Resources/Game/Peeps/Cheep/Cheep_IdleLogic.lua",
+-- 	IsDefault = 1,
+-- 	Resource = ItsyScape.Resource.Peep "Cheep_Base"
+-- }
