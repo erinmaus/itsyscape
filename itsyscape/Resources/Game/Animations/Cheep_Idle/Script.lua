@@ -1,9 +1,7 @@
-Animation "Cheep Die" {
+Animation "Cheep Idle" {
 	Target {
-		PlaySound "Resources/Game/Animations/Cheep_Die/Sound.wav",
-		PlayAnimation "Resources/Game/Animations/Cheep_Die/Animation.lanim" {
-			repeatAnimation = true,
-			keep = true
+		PlayAnimation "Resources/Game/Animations/Cheep_Idle/Animation.lanim" {
+			repeatAnimation = true
 		}
 	}
 }

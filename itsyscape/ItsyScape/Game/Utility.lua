@@ -2548,9 +2548,6 @@ function Utility.Peep.face3D(self)
 		end
 	end
 
-	local movement = self:getBehavior(MovementBehavior)
-	movement.facing = MovementBehavior.FACING_RIGHT
-	movement.targetFacing = MovementBehavior.FACING_LEFT
 	return false
 end
 

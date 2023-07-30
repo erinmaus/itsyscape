@@ -56,26 +56,23 @@ function Cheep:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Cheep_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+	self:addResource("animation-walk", idleAnimation)
 
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Cheep_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
 
-	-- local movement = self:getBehavior(MovementBehavior)
-	-- movement.maxAcceleration = 4
-	-- movement.maxSpeed = 8
-	-- movement.float = 0.75
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxAcceleration = 4
+	movement.maxSpeed = 8
+	movement.float = 0.75
 
 	self.rotation = Quaternion.IDENTITY
+	self.faceRotation = Quaternion.IDENTITY
 	self.targetTime = 0
 
 	Creep.ready(self, director, game)
-end
-
-function Cheep:onDie()
-	local rotation = self:getBehavior(RotationBehavior)
-	rotation.rotation = Quaternion.IDENTITY
 end
 
 function Cheep:spin()
@@ -89,32 +86,33 @@ function Cheep:spin()
 	else
 		if self.isMoving then
 			self.isMoving = false
+			self.previousRotationRadians = (self.targetTime * Cheep.ROTATION_MULTIPLIER) % (math.pi % 2)
 			self.targetTime = 0
-			self.previousRotation = self.rotation:getNormal()
 		else
-			self.previousRotation = self.previousRotation or self.rotation
 			self.targetTime = self.targetTime + delta
 		end
 
-		local mu = math.min(self.targetTime / Cheep.RETURN_TO_IDENTITY_TIME_SECS, 1)
+		self.previousRotationRadians = self.previousRotationRadians or 0
 
-		self.rotation = self.previousRotation:slerp(Quaternion.fromAxisAngle(Vector.UNIT_X, 0), mu):getNormal()
-		self.rotation = Quaternion.IDENTITY
+		local mu = 1 - math.min(self.targetTime / Cheep.RETURN_TO_IDENTITY_TIME_SECS, 1)
+		local angle = mu * self.previousRotationRadians
+
+		self.rotation = Quaternion.fromAxisAngle(Vector.UNIT_X, angle)
 	end
 end
 
 function Cheep:update(...)
 	Creep.update(self, ...)
 
-	Utility.Peep.face3D(self)
+	local rotation = self:getBehavior(RotationBehavior)
+
+	if Utility.Peep.face3D(self) then
+		self.faceRotation = rotation.rotation
+	end
+
 	self:spin()
 
-	local rotation = self:getBehavior(RotationBehavior)
-	rotation.rotation = (rotation.rotation * self.rotation):getNormal()
-
-	if not self.isMoving then
-		print(">>> rotation", self.rotation:get())
-	end
+	rotation.rotation = (self.faceRotation * self.rotation):getNormal()
 end
 
 return Cheep
