@@ -3152,6 +3152,8 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 							mashina.currentState = 'begin-attack'
 						elseif mashina.states['attack'] then
 							mashina.currentState = 'attack'
+						else
+							mashina.currentState = false
 						end
 
 						self:poke('firstStrike', attack)
