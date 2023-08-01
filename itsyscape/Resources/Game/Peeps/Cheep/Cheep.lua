@@ -58,6 +58,11 @@ function Cheep:ready(director, game)
 	self:addResource("animation-idle", idleAnimation)
 	self:addResource("animation-walk", idleAnimation)
 
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Cheep_Attack/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Cheep_Die/Script.lua")

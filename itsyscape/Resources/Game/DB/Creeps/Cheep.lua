@@ -51,7 +51,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "PlainThread",
-	Weight = 10,
+	Weight = 300,
 	Count = 15,
 	Range = 5,
 	Resource = ItsyScape.Resource.DropTable "Cheep_Primary"	
@@ -59,7 +59,14 @@ ItsyScape.Meta.DropTableEntry {
 
 ItsyScape.Meta.DropTableEntry {
 	Item = ItsyScape.Resource.Item "Knife",
-	Weight = 1,
+	Weight = 100,
+	Count = 1,
+	Resource = ItsyScape.Resource.DropTable "Cheep_Primary"	
+}
+
+ItsyScape.Meta.DropTableEntry {
+	Item = ItsyScape.Resource.Item "Needle",
+	Weight = 100,
 	Count = 1,
 	Resource = ItsyScape.Resource.DropTable "Cheep_Primary"	
 }
