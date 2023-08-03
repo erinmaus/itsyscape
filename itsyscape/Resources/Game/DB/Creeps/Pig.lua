@@ -27,8 +27,7 @@ ItsyScape.Resource.Peep "Pig_Base" {
 }
 
 ItsyScape.Meta.PeepID {
-	--Value = "Resources.Game.Peeps.Pig.BasePig",
-	Value = "ItsyScape.Peep.Peeps.Creep",
+	Value = "Resources.Game.Peeps.Pig.BasePig",
 	Resource = ItsyScape.Resource.Peep "Pig_Base"
 }
 
@@ -78,8 +77,9 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Pig_Base"
 }
 
-ItsyScape.Meta.Dummy {
-	Tier = 1,
-	CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Pig/Pig_IdleLogic.lua",
+	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Pig_Base"
 }
