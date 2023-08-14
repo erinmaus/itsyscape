@@ -341,7 +341,7 @@ appimage-prepare: installdir/AppRun installdir/love.desktop installdir/love.svg 
 	-rm -rf installdir2/include
 	-rm -rf installdir2/man
 	-find installdir2/bin -type l -exec rm -rf {} +
-	-find installdir2/bin ! -name 'luajit*' ! -name 'love' -type f -exec rm -f {} +
+	-find installdir2/bin ! -name 'luajit*' ! -name 'love' ! -name 'itsyrealm.love' -type f -exec rm -f {} +
 	-strip installdir2/lib/*
 
 $(APPIMAGE_OUTPUT): installdir/AppRun installdir/love.desktop installdir/love.svg installdir/license.txt appimagetool
@@ -358,7 +358,7 @@ $(APPIMAGE_OUTPUT): installdir/AppRun installdir/love.desktop installdir/love.sv
 	-rm -rf installdir2/include
 	-rm -rf installdir2/man
 	-find installdir2/bin -type l -exec rm -rf {} +
-	-find installdir2/bin ! -name 'luajit*' ! -name 'love' -type f -exec rm -f {} +
+	-find installdir2/bin ! -name 'luajit*' ! -name 'love' ! -name 'itsyrealm.love' -type f -exec rm -f {} +
 	-strip installdir2/lib/*
 ifeq ($(QEMU),)
 	./appimagetool installdir2 $(APPIMAGE_OUTPUT)
