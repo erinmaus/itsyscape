@@ -45,7 +45,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A factory that turns grass in cow hide.",
+	Value = "A factory that turns grass in to cow hide.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
 }
@@ -112,5 +112,12 @@ ItsyScape.Meta.Equipment {
 	DefenseMagic = -50,
 	DefenseRanged = -50,
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+	Resource = ItsyScape.Resource.Peep "Cow_Base"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Cow/Cow_IdleLogic.lua",
+	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Cow_Base"
 }

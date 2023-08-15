@@ -77,6 +77,13 @@ ItsyScape.Meta.Equipment {
 	Resource = ItsyScape.Resource.Peep "Chicken_Base"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Chicken/Chicken_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Chicken_Base"
+}
+
 ItsyScape.Resource.Peep "Chicken_Island" {
 	ItsyScape.Action.Attack(),
 
