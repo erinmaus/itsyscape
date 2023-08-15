@@ -14,6 +14,7 @@ local Cortex = require "ItsyScape.Peep.Cortex"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local MoveToTileCortex = Class(Cortex)
 MoveToTileCortex.DISTANCE_THRESHOLD = 0
@@ -77,14 +78,16 @@ function MoveToTileCortex:update(delta)
 					local nextTile, nextTileI, nextTileJ = map:getTile(targetTile.pathNode.i, targetTile.pathNode.j)
 					local previousTileCenter = self.previousTileCenter[peep]
 					local currentPosition = position.position
-					local targetPosition = map:getTileCenter(nextTileI, nextTileJ)
+					local targetPosition = map:getTileCenter(nextTileI, nextTileJ) + Vector.UNIT_Y * movement.float
 					local direction = (targetPosition - currentPosition):getNormal()
 					local offset = direction * speed
 
-					if direction.x < 0 then
-						movement.facing = MovementBehavior.FACING_LEFT
-					elseif direction.x > 0 then
-						movement.facing = MovementBehavior.FACING_RIGHT
+					if not peep:hasBehavior(RotationBehavior) then
+						if direction.x < 0 then
+							movement.facing = MovementBehavior.FACING_LEFT
+						elseif direction.x > 0 then
+							movement.facing = MovementBehavior.FACING_RIGHT
+						end
 					end
 
 					local velocity = offset
@@ -94,7 +97,7 @@ function MoveToTileCortex:update(delta)
 					local velocitySliceLength = velocitySlice:getLength()
 
 					local didOvershoot = false
-					local distance = (targetPosition - position.position):getLength()
+					local distance = ((targetPosition - currentPosition) * Vector.PLANE_XZ):getLength()
 					if distance < velocitySliceLength and distance > MoveToTileCortex.DISTANCE_THRESHOLD then
 						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
 						velocitySlice = direction * distance

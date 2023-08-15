@@ -2548,9 +2548,6 @@ function Utility.Peep.face3D(self)
 		end
 	end
 
-	local movement = self:getBehavior(MovementBehavior)
-	movement.facing = MovementBehavior.FACING_RIGHT
-	movement.targetFacing = MovementBehavior.FACING_LEFT
 	return false
 end
 
@@ -3155,6 +3152,8 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 							mashina.currentState = 'begin-attack'
 						elseif mashina.states['attack'] then
 							mashina.currentState = 'attack'
+						else
+							mashina.currentState = false
 						end
 
 						self:poke('firstStrike', attack)
