@@ -33,7 +33,7 @@ function RumbridgeMainlandGround:new()
 	})
 
 	self:registerTile("brick_wide", BrickBlock:Bind(self) {
-		COLOR = Color(0.9, 0.8, 0.5, 1.0),
+		COLOR = Color.fromHexString("8cbbc3"),
 		FEATURE = "brick",
 		SCALE = Vector(2, 1, 1),
 		NUM_FEATURES = 3
