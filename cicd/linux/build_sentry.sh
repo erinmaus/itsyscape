@@ -32,5 +32,5 @@ unzip -qo 0.6.1.zip
 
 cmake -Bsentry-native-0.6.1-build -Hsentry-native-0.6.1 -DSENTRY_BACKEND=inproc -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(pwd)/installdir -DCMAKE_INSTALL_PREFIX=$(pwd)/installdir -DCMAKE_INSTALL_RPATH='$ORIGIN/../lib' -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath-link,$(pwd)/installdir/lib" -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,$(pwd)/installdir/lib"
 cmake --build sentry-native-0.6.1-build
-cmake --install sentry-native-0.6.1-build -DCMAKE_INSTALL_PREFIX=$(pwd)/installdir
 
+cd sentry-native-0.6.1-build && make install
