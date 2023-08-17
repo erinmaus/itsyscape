@@ -1,9 +1,8 @@
 #!/bin/sh
 
-export LOVE_BRANCH=master
-export ITSYREALM_BRANCH=$(git branch --show-current)
-
 set -xe
+
+cd ./cicd/linux
 
 apt-get update
 
@@ -17,10 +16,12 @@ apt-get install --assume-yes build-essential git make cmake autoconf automake \
 
 apt install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse2 zip
 
+export LOVE_BRANCH=master
+export ITSYREALM_BRANCH=$(git branch --show-current)
+
 git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || true
 
 rm -rf installdir/bin/love
-
 
 make LOVE_BRANCH=${LOVE_BRANCH}
 
