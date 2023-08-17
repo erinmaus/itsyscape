@@ -125,6 +125,18 @@ do
 	}
 end
 
+M["Anchor_FromMonastery"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 4,
+		PositionZ = 5,
+		Name = "Anchor_FromMonastery",
+		Map = M._MAP,
+		Resource = M["Anchor_FromMonastery"]
+	}
+end
+
 M["SpiralStaircase"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -282,6 +294,55 @@ do
 	}
 
 	M["Portal_ToTown"] {
+		TravelAction
+	}
+end
+
+M["Portal_ToMonastery"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 4,
+		PositionZ = 2,
+		Name = "Portal_ToMonastery",
+		Map = M._MAP,
+		Resource = M["Portal_ToMonastery"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 6,
+		MapObject = M["Portal_ToMonastery"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToMonastery"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge Monastery",
+		Language = "en-US",
+		Resource = M["Portal_ToMonastery"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromCastle",
+		Map = ItsyScape.Resource.Map "Rumbridge_Monastery",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToMonastery"] {
 		TravelAction
 	}
 end
