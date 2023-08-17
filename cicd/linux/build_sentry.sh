@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 curl -O -L https://www.openssl.org/source/openssl-3.1.0.tar.gz
 tar xzf openssl-3.1.0.tar.gz
 cd openssl-3.1.0
-./Configure --prefix=$(pwd)/../installdir
+./Configure --prefix=$(pwd)/../installdir --libdir=lib
 LDFLAGS="-Wl,-rpath,'\$ORIGIN/../lib'" make
 make install_sw install_ssldirs -j$(nproc)
 
@@ -24,13 +24,13 @@ curl -O -L https://curl.se/ca/cacert.pem
 cp ./cacert.pem ../installdir/cert.pem
 
 cp ./cacert.pem cert.pem
-../installdir/bin/curl -v -L https://itsyrealm.com
 
 cd ..
 
 curl -O -L https://github.com/getsentry/sentry-native/archive/refs/tags/0.6.1.zip
 unzip -qo 0.6.1.zip
 
-cmake -Bsentry-native-0.6.1-build -Hsentry-native-0.6.1 -DSENTRY_BACKEND=inproc -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(pwd)/installdir -DCMAKE_INSTALL_PREFIX=$(pwd)/installdir
-cmake --build sentry-native-0.6.1-build --parallel
-cmake --install sentry-native-0.6.1-build --prefix ./installdir
+cmake -Bsentry-native-0.6.1-build -Hsentry-native-0.6.1 -DSENTRY_BACKEND=inproc -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$(pwd)/installdir -DCMAKE_INSTALL_PREFIX=$(pwd)/installdir -DCMAKE_INSTALL_RPATH='$ORIGIN/../lib' -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath-link,$(pwd)/installdir/lib" -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,$(pwd)/installdir/lib"
+cmake --build sentry-native-0.6.1-build
+
+cd sentry-native-0.6.1-build && make install
