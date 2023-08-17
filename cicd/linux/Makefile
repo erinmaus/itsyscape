@@ -63,10 +63,7 @@ cmake: $(CMAKE)
 appimagetool:
 	curl -Lo appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$(ARCH).AppImage
 	chmod u+x appimagetool
-ifneq ($(QEMU),)
-# Extract the AppImageTool
-	$(QEMU) ./appimagetool --appimage-extract
-endif
+	./appimagetool --appimage-extract
 
 # SDL2
 override SDL2_PATH := SDL2-$(SDL2_BRANCH)
@@ -360,11 +357,7 @@ $(APPIMAGE_OUTPUT): installdir/AppRun installdir/love.desktop installdir/love.sv
 	-find installdir2/bin -type l -exec rm -rf {} +
 	-find installdir2/bin ! -name 'luajit*' ! -name 'love' ! -name 'itsyrealm.love' -type f -exec rm -f {} +
 	-strip installdir2/lib/*
-ifeq ($(QEMU),)
-	./appimagetool installdir2 $(APPIMAGE_OUTPUT)
-else
 	cd squashfs-root/usr/lib && ../../AppRun ../../../installdir2 ../../../$(APPIMAGE_OUTPUT)
-endif
 	rm -rf installdir2
 
 getdeps: $(CMAKE) appimagetool $(SDL2_PATH)/configure $(LIBOGG_FILE).tar.gz $(LIBVORBIS_FILE).tar.gz $(LIBTHEORA_FILE).tar.gz $(ZLIB_PATH)/configure $(LIBPNG_FILE).tar.gz $(BROTLI_PATH)/CMakeLists.txt $(BZIP2_FILE).tar.gz $(FT_FILE).tar.gz $(MPG123_FILE).tar.bz2 $(LIBMODPLUG_FILE).tar.gz $(LUAJIT_PATH)/Makefile $(LOVE_PATH)/CMakeLists.txt
