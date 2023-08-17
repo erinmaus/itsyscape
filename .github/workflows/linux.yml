@@ -30,8 +30,8 @@ jobs:
       -
         name: Build code
         run: |
-          cd ./cicd/linux
-          sudo ./build.sh
+          sudo ./cicd/linux/init.sh
+          sudo chroot $(pwd) cicd/linux/build.sh
       -
         name: Artifact
         uses: actions/upload-artifact@v3
