@@ -14,13 +14,15 @@ apt-get install --assume-yes build-essential git make cmake autoconf automake \
   libegl1-mesa-dev libibus-1.0-dev fcitx-libs-dev libsamplerate0-dev \
   libsndio-dev libwayland-dev libxkbcommon-dev libdrm-dev libgbm-dev
 
-apt-get install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse2 zip
+apt-get install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse2 zip \
+  software-properties-common
 
+./get_git.sh
 ./get_gcc.sh
-./build_sentry.sh
 
 export LOVE_BRANCH=master
 export ITSYREALM_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 
 git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || true
 
@@ -29,6 +31,7 @@ rm -rf installdir/bin/love
 make LOVE_BRANCH=${LOVE_BRANCH}
 
 ./get_premake5.sh
+./build_sentry.sh
 ./build_bmashina.sh
 ./build_discworld.sh
 ./build_nbunny.sh

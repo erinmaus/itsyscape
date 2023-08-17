@@ -3,7 +3,6 @@
 set -xe
 
 add-apt-repository ppa:ubuntu-toolchain-r/test
-apt-get update
 apt-get install --assume-yes gcc-11 g++-11
 
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
