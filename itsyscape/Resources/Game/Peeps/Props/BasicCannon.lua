@@ -165,7 +165,24 @@ function BasicCannon:onFire(peep)
 			director:broadcast(hits, 'receiveAttack', poke)
 
 			local stage = director:getGameInstance():getStage()
-			stage:fireProjectile(cannon:get("Cannonball").name, self, ray:project(range))
+			stage:fireProjectile(
+				cannon:get("Cannonball").name,
+				self,
+				ray:project(range),
+				Utility.Peep.getLayer(self))
+
+			for i = 1, #hits do
+				local hitCenter = Utility.Peep.getAbsolutePosition(hits[i])
+				local hitSize = Utility.Peep.getSize(hits[i])
+
+				local min = hitCenter - Vector(hitSize.x / 2, 0, -0.5)
+				local max = hitCenter + Vector(hitSize.x / 2, hitSize.y, 0.5)
+
+				local s, p = ray:hitBounds(min, max)
+				if s then
+					stage:fireProjectile("CannonSplosion", self, p, Utility.Peep.getLayer(hits[i]))
+				end
+			end
 		end
 	end
 end
