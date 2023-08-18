@@ -74,10 +74,13 @@ function Projectile:getDestination()
 	return self.destination
 end
 
-function Projectile:getTargetPosition(target)
+function Projectile:getTargetPosition(target, offset)
+	offset = offset or Vector.ZERO
+
 	if target then
 		if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
 			local positionable
+
 			if self.gameView:getView(target) then
 				if target:isCompatibleType(Prop) then
 					positionable = self.gameView:getView(target):getRoot()
@@ -88,7 +91,7 @@ function Projectile:getTargetPosition(target)
 
 			if positionable then
 				local transform = positionable:getTransform():getGlobalDeltaTransform(0)
-				local position = Vector(transform:transformPoint(0, 0, 0))
+				local position = Vector(transform:transformPoint(offset:get()))
 
 				local y
 				if self.CLAMP_BOTTOM then
