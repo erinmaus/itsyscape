@@ -125,7 +125,7 @@ function Downtown:spawnEnemy(i, j)
 	local enemyIndex
 	do
 		local fudgedCenter = center * Downtown.TRAILER_FUDGE + Downtown.TRAILER_ENEMY_OFFSET
-		local enemyNoise = love.math.noise(fudgedCenter:get())
+		local enemyNoise = love.math.random()
 		enemyIndex = math.ceil(enemyNoise * #Downtown.TRAILER_ENEMIES)
 	end
 
@@ -155,7 +155,7 @@ function Downtown:trySpawnHero(enemy, i, j)
 	local noise
 	do
 		local fudgedCenter = center * Downtown.TRAILER_FUDGE
-		noise = love.math.noise(fudgedCenter:get())
+		noise = love.math.random()
 	end
 
 	if noise < Downtown.HERO_SPAWN_CHANCE then
@@ -170,7 +170,7 @@ function Downtown:spawnHero(enemy, i, j)
 	local heroIndex
 	do
 		local fudgedCenter = center * Downtown.TRAILER_FUDGE + Downtown.TRAILER_HERO_OFFSET
-		local heroNoise = love.math.noise(fudgedCenter:get())
+		local heroNoise = love.math.random()
 		heroIndex = math.ceil(heroNoise * #Downtown.TRAILER_HEROES)
 	end
 
