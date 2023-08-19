@@ -127,7 +127,7 @@ function Ocean:onFirePiratesCannons()
 
 	for i = 1, #hits do
 		local cannon = hits[i]
-		cannon:poke('fire')
+		cannon:poke('fire', Utility.Peep.getPlayer(self))
 	end
 end
 

@@ -35,8 +35,7 @@ return Sequence {
 		Camera:verticalRotate(-math.pi / 2, 0.75),
 		Camera:horizontalRotate(-math.pi / 6),
 		Camera:zoom(15),
-		Player:talk("Noooooo!"),
-		Player:playAnimation("Human_Die_1", 'cutscene', math.huge),
+		Player:playAttackAnimation(Svalbard),
 		Player:wait(4)
 	}
 }

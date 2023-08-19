@@ -67,6 +67,7 @@ Animation "Yendor Attack (Magic)" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Yendor_Attack_Magic/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Yendor_Attack_Magic/Animation.lanim"
 	}
 }
