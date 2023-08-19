@@ -64,14 +64,6 @@ function GanymedesStunningStrike:attack(attack)
 			baseStun, additionalStun, totalStun, target:getName())
 
 		cooldown.cooldown = cooldown.cooldown + totalStun
-
-		local ticksSinceCooldownApplied = currentTick - cooldown.ticks
-		local secondsSinceCooldownApplied = ticksSinceCooldownApplied * target:getDirector():getGameInstance():getDelta()
-		local secondsPending = cooldown.cooldown - secondsSinceCooldownApplied
-
-		Log.info(
-			"Target is now stunned for %.3f seconds (will attack in %.3f seconds).",
-			cooldown.cooldown, secondsPending)
 	end
 end
 

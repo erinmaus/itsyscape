@@ -68,6 +68,8 @@ Animation "Saber Tooth Shrimp Attack (Lava)" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/SaberToothShrimp_Attack_Lava/Roar.wav",
+		PlaySound "Resources/Game/Animations/SaberToothShrimp_Attack_Lava/Fire.wav",
 		PlayAnimation "Resources/Game/Animations/SaberToothShrimp_Attack_Lava/Animation.lanim"
 	}
 }
