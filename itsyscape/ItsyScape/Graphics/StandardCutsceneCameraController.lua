@@ -49,7 +49,17 @@ function StandardCutsceneCameraController:new(...)
 	self.targetTranslationTime = 1
 	self.translationTween = 'expEaseOut'
 
-	self.targetActor = self:getGame():getPlayer():getActor()
+	self:trySetTargetActor()
+end
+
+function StandardCutsceneCameraController:trySetTargetActor()
+	if not self.targetActor then
+		local player = self:getGame():getPlayer()
+		player = player and player:getActor()
+
+
+		self.targetActor = player or false
+	end
 end
 
 function StandardCutsceneCameraController:getTargetPosition()
@@ -57,6 +67,8 @@ function StandardCutsceneCameraController:getTargetPosition()
 
 	local position
 	do
+		self:trySetTargetActor()
+
 		local gameView = self:getGameView()
 		local actor = gameView:getActor(self.targetActor)
 		if actor then
