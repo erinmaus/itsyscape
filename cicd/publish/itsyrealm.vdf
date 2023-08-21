@@ -1,0 +1,40 @@
+"AppBuild"
+{
+	"AppID" "1662510"
+
+	"ContentRoot" "."
+	"BuildOutput" "./output"
+
+	"Depots"
+	{
+		"1662511"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "itsyrealm_windows/*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+		}
+
+		"1662512"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "ItsyRealm.app/*"
+				"DepotPath" "ItsyRealm.app"
+				"recursive" "1"
+			}
+		}
+
+		"1662513"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "itsyrealm_linux/*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+		}
+	}
+}
