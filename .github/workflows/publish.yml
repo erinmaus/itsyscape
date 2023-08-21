@@ -1,0 +1,39 @@
+name: publish
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    tags:
+      - '*.*.*'
+  workflow_dispatch: null
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    environment: main
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Download artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./cicd/publish/download_artifacts.sh
+      -
+        name: Deploy ItsyRealm to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+        run: |
+          ./cicd/publish/upload_itchio.sh
+      -
+        name: Deploy ItsyRealm & ItsyRealm demo to Steam
+        env:
+          STEAM_CICD_USERNAME: ${{ secrets.STEAM_CICD_USERNAME }}
+          STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
+        run: |
+          ./cicd/publish/upload_steam.sh itsyrealm.vdf
+          ./cicd/publish/upload_steam.sh itsyrealm_demo.vdf
