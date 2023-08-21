@@ -1,0 +1,10 @@
+node_modules
+*.zip
+*.json
+*.App
+butler
+*.so
+*.dylib
+itsyrealm_windows
+itsyrealm_macos
+itsyrealm_linux
