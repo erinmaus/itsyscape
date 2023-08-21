@@ -59,21 +59,24 @@ end
 function Pick:queueRespawn(target)
 	local gameDB = self:getGameDB()
 
-	local mapObject = Utility.Peep.getMapObject(target)
-	if not mapObject then
-		return
+	local propMapObject
+	do
+		local mapObject = Utility.Peep.getMapObject(target)
+		if mapObject then
+			propMapObject = gameDB:getRecord("PropMapObject", {
+				MapObject = mapObject
+			})
+		end
 	end
 
-	local propMapObject = gameDB:getRecord("PropMapObject", {
-		MapObject = mapObject
-	})
-
-	if not propMapObject then
-		return
+	local poof, respawn
+	if propMapObject then
+		poof = propMapObject:get("DoesNotDespawn") == 0
+		respawn = propMapObject:get("DoesNotRespawn") == 0
+	else
+		poof = true
+		respawn = false
 	end
-
-	local poof = propMapObject:get("DoesNotDespawn") == 0
-	local respawn = propMapObject:get("DoesNotRespawn") == 0
 
 	if respawn then
 		local director = target:getDirector()
