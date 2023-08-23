@@ -13,6 +13,7 @@ require "love.timer"
 
 local version = love.filesystem.read("version.meta")
 _ITSYREALM_VERSION = version or "mainline"
+_ITSYREALM_VERSION = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
 
 math.randomseed(os.time())
 
