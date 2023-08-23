@@ -22,6 +22,8 @@ apt-get install --assume-yes libglm-dev curl unzip libboost-all-dev fuse libfuse
 
 export LOVE_BRANCH=master
 export ITSYREALM_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+export ITSYREALM_VERSION=$(../common/make_version.sh)
+echo "Building ItsyRealm ${ITSYREALM_VERSION}"
 
 
 git clone https://github.com/erinmaus/love2d love2d-${LOVE_BRANCH} || true
