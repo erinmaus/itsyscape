@@ -2,7 +2,9 @@
 
 set -xe
 
-git clone -b ${ITSYREALM_BRANCH} https://github.com/erinmaus/itsyscape || true
+mkdir -p itsyscape
+rm -rf itsyscape/utilities
+cp -r ../../utilities itsyscape/
 
 cd itsyscape/utilities
 sed -i 's/lua51/luajit-5.1/g' premake5.lua
