@@ -11,6 +11,10 @@ require "love.system"
 require "love.thread"
 require "love.timer"
 
+local version = love.filesystem.read("version.meta")
+_ITSYREALM_VERSION = version or "mainline"
+_ITSYREALM_VERSION = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
+
 math.randomseed(os.time())
 
 _MOBILE = false
@@ -98,9 +102,9 @@ end
 
 Log.setLogSuffix(_LOG_SUFFIX)
 if _LOG_SUFFIX then
-	Log.info("ItsyRealm bootstrapped (%s).\n", _LOG_SUFFIX)
+	Log.info("ItsyRealm version '%s' bootstrapped (%s).\n", _ITSYREALM_VERSION, _LOG_SUFFIX)
 else
-	Log.engine("ItsyRealm bootstrapped.")
+	Log.engine("ItsyRealm version '%s' bootstrapped.", _ITSYREALM_VERSION)
 end
 
 if love.system.getOS() == "OS X" then

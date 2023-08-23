@@ -2,6 +2,9 @@
 
 export MAKEFLAGS="-j4"
 
+export ITSYREALM_VERSION=$(../common/make_version.sh)
+echo "Building ItsyRealm ${ITSYREALM_VERSION}"
+
 set -xe
 
 mkdir -p bin

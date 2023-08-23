@@ -2,6 +2,9 @@
 
 set -xe
 
+export ITSYREALM_VERSION=$(../common/make_version.sh)
+echo "Building ItsyRealm ${ITSYREALM_VERSION}"
+
 git config --global core.autocrlf true
 
 export PATH=/mingw64/bin:$PATH
