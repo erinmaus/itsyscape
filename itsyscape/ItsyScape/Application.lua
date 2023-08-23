@@ -621,7 +621,7 @@ function Application:drawDebug()
 
 	local drawCalls = love.graphics.getStats().drawcalls
 	local width = love.window.getMode()
-	r = _ITSYREALM_VERSION and string.format("ItsyRealm v%s\n", _ITSYREALM_VERSION)
+	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
 	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
 	local sum = 0
 	for i = 1, #self.times do
