@@ -142,6 +142,27 @@ function TitleScreen:drawTitle()
 
 		love.graphics.setFont(oldFont)
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+
+	if _ITSYREALM_VERSION and self.font and self.showLogo then
+		local width = self.font:getResource():getWidth(_ITSYREALM_VERSION)
+
+		local oldFont = love.graphics.getFont()
+		love.graphics.setFont(self.font:getResource())
+
+		love.graphics.print(
+			_ITSYREALM_VERSION,
+			love.graphics.getWidth() - width / 4 - 96,
+			16,
+			0,
+			0.25,
+			0.25)
+
+		love.graphics.setFont(oldFont)
+
+		error("potat")
+	end
 end
 
 return TitleScreen

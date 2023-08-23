@@ -9,7 +9,8 @@ do
 
 	NSentry.init(
 		"https://98b5ff6214224dbbb0b94a4f1643c82e@o4505002174840832.ingest.sentry.io/4505002177986560",
-		string.format("%s/%s", love.filesystem.getSaveDirectory(), ".sentry"))
+		string.format("%s/%s", love.filesystem.getSaveDirectory(), ".sentry"),
+		_ITSYREALM_VERSION)
 end
 
 itsyrealm = {
@@ -286,21 +287,34 @@ function itsyrealm.errorhandler()
 		if qrCode then
 			love.graphics.draw(
 				qrCode,
-				love.graphics.getWidth() - qrCode:getWidth() - 16,
-				love.graphics.getHeight() - qrCode:getHeight() - 16)
+				love.graphics.getWidth() - qrCode:getWidth() / 2 - 16,
+				love.graphics.getHeight() - qrCode:getHeight() / 2 - 16,
+				0,
+				0.5,
+				0.5)
 		end
 
-		love.graphics.printf(
+		local message = 
 			"Whoops! ItsyRealm encountered an error!\n" ..
 			"The game will send the developer a crash report.\n" ..
 			"If you want to be extra helpful,\n" ..
 			"join the ItsyRealm Discord and report the error!\n" ..
 			"Just scan the QR code!\n\n" ..
-			"Press ESC to quit.",
+			"Press ESC to quit."
+
+		love.graphics.printf(
+			message,
 			0,
 			love.graphics.getHeight() / 2 + 32,
 			love.graphics.getWidth(),
 			'center')
+
+		if _ITSYREALM_VERSION then
+			love.graphics.print(
+				_ITSYREALM_VERSION,
+				love.graphics.getWidth() - love.graphics.getFont():getWidth(_ITSYREALM_VERSION) - 16,
+				16)
+		end
 
 		love.graphics.present()
 	end
