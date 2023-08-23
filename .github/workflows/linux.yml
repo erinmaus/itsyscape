@@ -41,7 +41,7 @@ jobs:
         with:
           name: itsyrealm_linux
           path: |
-            cicd/linux/love.AppImage
+            cicd/linux/itsyrealm.AppImage
             cicd/linux/settings.cfg
             cicd/linux/itsyrealm.love
       -
