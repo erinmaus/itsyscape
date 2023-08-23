@@ -160,8 +160,6 @@ function TitleScreen:drawTitle()
 			0.25)
 
 		love.graphics.setFont(oldFont)
-
-		error("potat")
 	end
 end
 
