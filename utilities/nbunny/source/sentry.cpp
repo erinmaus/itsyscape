@@ -62,13 +62,15 @@ static int nbunny_sentry_init(lua_State* L)
 {
 	auto dsn = luaL_checkstring(L, 1);
 	auto path = luaL_checkstring(L, 2);
+	auto version = luaL_checkstring(L, 3);
+	auto release = std::string("itsyrealm@") + version;
 
 	sentry_options_t* options = sentry_options_new();
 	sentry_options_set_dsn(options, dsn);
 
 	sentry_options_set_database_path(options, path);
-	sentry_options_set_release(options, "itsyrealm@0.0.0");
-	sentry_options_set_debug(options, 1);
+	sentry_options_set_release(options, release.c_str());
+	sentry_options_set_debug(options, 0);
 	sentry_init(options);
 
 	return 0;
