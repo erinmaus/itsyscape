@@ -70,7 +70,7 @@ static int nbunny_sentry_init(lua_State* L)
 
 	sentry_options_set_database_path(options, path);
 	sentry_options_set_release(options, release.c_str());
-	sentry_options_set_debug(options, 1);
+	sentry_options_set_debug(options, 0);
 	sentry_init(options);
 
 	return 0;
