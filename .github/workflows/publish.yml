@@ -18,6 +18,13 @@ jobs:
         run: |
           ./cicd/publish/download_artifacts.sh
       -
+        name: Deploy ItsyRealm to Launcher
+        env:
+          ITSYREALM_ADMIN_USERNAME: ${{ secrets.ITSYREALM_ADMIN_USERNAME }}
+          ITSYREALM_ADMIN_PASSWORD: ${{ secrets.ITSYREALM_ADMIN_PASSWORD }}
+        run: |
+          ./cicd/publish/upload_itsyrealmcom.sh
+      -
         name: Deploy ItsyRealm to itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
