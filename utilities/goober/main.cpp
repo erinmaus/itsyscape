@@ -164,6 +164,21 @@ void exportMesh(const aiScene* scene, FILE* output)
 	}
 
 	auto mesh = scene->mMeshes[0];
+	{
+		int index = 0;
+		while (!mesh->HasBones() && index < scene->mNumMeshes)
+		{
+			++index;
+			mesh = scene->mMeshes[index];
+		}
+
+		if (index >= scene->mNumMeshes || !mesh->HasBones())
+		{
+			std::fprintf(stderr, "no mesh with bones");
+			return;
+		}
+	}
+
 	std::fprintf(output, "{\n");
 	std::fprintf(output, "\tformat = {\n");
 	std::fprintf(output, "\t\t{ 'VertexPosition', 'float', 3 },\n");
