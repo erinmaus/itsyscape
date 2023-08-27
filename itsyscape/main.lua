@@ -45,7 +45,7 @@ function love.load(args)
 			_ARGS[c:lower()] = true
 		end
 
-		table.insert(_ARGS, c)
+		table.insert(_ARGS, args[i])
 	end
 
 	_ARGS["anonymous"] = true
