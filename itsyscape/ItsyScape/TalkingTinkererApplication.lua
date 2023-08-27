@@ -35,7 +35,7 @@ function TalkingTinkererApplication:new()
 
 	self.cameraController = DefaultCameraController(self)
 
-	self.tinkererRenderer = Renderer()
+	self.targetRenderer = Renderer()
 
 	self:initTinkerer()
 	self:loadTranscript()
@@ -44,8 +44,10 @@ function TalkingTinkererApplication:new()
 end
 
 function TalkingTinkererApplication:initTinkerer()
+	local resource = _ARGS[#_ARGS - 1]
+
 	local stage = self:getGame():getStage()
-	local success, actor = stage:spawnActor("resource://Tinkerer", 1, "::orphan")
+	local success, actor = stage:spawnActor("resource://" .. resource, 1, "::orphan")
 
 	if not success then
 		Log.error("Couldn't spawn Tinkerer.")
@@ -53,13 +55,14 @@ function TalkingTinkererApplication:initTinkerer()
 		love.event.quit(1)
 	end
 
-	self.tinkererActor = actor
-	self.tinkererPeep = actor:getPeep()
-	self.tinkererView = ActorView(self.tinkererActor)
-	self.tinkererView:attach(self:getGameView())
+	self.target = resource
+	self.targetActor = actor
+	self.targetPeep = actor:getPeep()
+	self.targetView = ActorView(self.targetActor)
+	self.targetView:attach(self:getGameView())
 
 	self:playAnimation({ animation = "Idle" })
-	self:playAnimation({ animation = "A" })
+	self:playAnimation({ animation = "C" })
 end
 
 function TalkingTinkererApplication:loadTranscript()
@@ -122,15 +125,20 @@ end
 function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 	local animation = nextFrame.animation or "<BAD>"
 
-	local skinFilename = string.format("Resources/Game/Skins/Tinkerer/Tinkerer_%s.lua", animation)
-	local animationFilename = string.format("Resources/Game/Animations/Tinkerer_%s/Script.lua", animation)
+	local skinFilename = string.format("Resources/Game/Skins/%s/%s_%s.lua", self.target, self.target, animation)
+	local animationFilename = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
 
 	if love.filesystem.getInfo(skinFilename) then
 		local body = CacheRef("ItsyScape.Game.Skin.ModelSkin", skinFilename)
-		self.tinkererActor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+		self.targetActor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+		Log.info("Changed skin to '%s'", skinFilename)
 	elseif love.filesystem.getInfo(animationFilename) then
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
-		self.tinkererActor:playAnimation(channel or 'main', priority or 1, animation, true, 0)
+		self.targetActor:playAnimation(channel or 'main', priority or 1, animation, true, 0)
+		Log.info("Changed animation to '%s'", animationFilename)
+	else
+		print(">>> skin", skinFilename)
+		print(">>> anim", skinFilename)
 	end
 
 	local gameView = self:getGameView()
@@ -142,19 +150,19 @@ function TalkingTinkererApplication:renderTick()
 	gameCamera:setWidth(self.WIDTH)
 	gameCamera:setHeight(self.HEIGHT)
 
-	self.tinkererRenderer:setClearColor(Color(0, 0, 0, 0))
-	self.tinkererRenderer:setCullEnabled(true)
-	self.tinkererRenderer:setCamera(gameCamera)
+	self.targetRenderer:setClearColor(Color(0, 0, 0, 0))
+	self.targetRenderer:setCullEnabled(true)
+	self.targetRenderer:setCamera(gameCamera)
 
 	love.graphics.push('all')
-	self.tinkererRenderer:draw(
-		self.tinkererView:getSceneNode(),
+	self.targetRenderer:draw(
+		self.targetView:getSceneNode(),
 		0,
 		self.WIDTH,
 		self.HEIGHT)
 	love.graphics.pop()
 
-	return self.tinkererRenderer:getOutputBuffer():getColor():newImageData()
+	return self.targetRenderer:getOutputBuffer():getColor():newImageData()
 end
 
 function TalkingTinkererApplication:drawTinkerer()
@@ -183,7 +191,7 @@ function TalkingTinkererApplication:drawTinkerer()
 		end
 
 		self:getGameView():update(deltaPerTick)
-		self.tinkererView:update(deltaPerTick)
+		self.targetView:update(deltaPerTick)
 
 		local image = self:renderTick()
 		image:encode('png', string.format("%s/%05d.png", directory, index))
@@ -229,7 +237,7 @@ end
 function TalkingTinkererApplication:update(delta)
 	Application.update(self, delta)
 	self.cameraController:update(delta)
-	self.tinkererView:update(delta)
+	self.targetView:update(delta)
 end
 
 function TalkingTinkererApplication:draw()
@@ -240,18 +248,18 @@ function TalkingTinkererApplication:draw()
 	gameCamera:setWidth(w)
 	gameCamera:setHeight(h)
 
-	self.tinkererRenderer:setClearColor(Color(0, 1, 0, 1))
-	self.tinkererRenderer:setCullEnabled(true)
-	self.tinkererRenderer:setCamera(gameCamera)
+	self.targetRenderer:setClearColor(Color(0, 1, 0, 1))
+	self.targetRenderer:setCullEnabled(true)
+	self.targetRenderer:setCamera(gameCamera)
 
 	love.graphics.push('all')
-	self.tinkererRenderer:draw(
-		self.tinkererView:getSceneNode(),
+	self.targetRenderer:draw(
+		self.targetView:getSceneNode(),
 		self:getFrameDelta(),
 		w, h)
 	love.graphics.pop()
 
-	love.graphics.draw(self.tinkererRenderer:getOutputBuffer():getColor())
+	love.graphics.draw(self.targetRenderer:getOutputBuffer():getColor())
 end
 
 return TalkingTinkererApplication
