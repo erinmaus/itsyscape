@@ -8,6 +8,27 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Peep "ChestMimic" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.ChestMimic.BaseChestMimic",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chest mimic",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Well it's very obvious, isn't it?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
 ItsyScape.Resource.Peep "ChestMimic_Weak_Base" {
 	-- Nothing.
 }
