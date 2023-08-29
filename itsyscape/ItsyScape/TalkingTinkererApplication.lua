@@ -89,8 +89,8 @@ function TalkingTinkererApplication:initTinkerer()
 	self.targetView = ActorView(self.targetActor)
 	self.targetView:attach(self:getGameView())
 
-	self:playAnimation({ animation = "Idle" })
-	self:playAnimation({ animation = "C" })
+	self:playAnimation({ animation = "Idle" }, "idle", 0)
+	self:playAnimation({ animation = "A" })
 end
 
 function TalkingTinkererApplication:loadTranscript()
