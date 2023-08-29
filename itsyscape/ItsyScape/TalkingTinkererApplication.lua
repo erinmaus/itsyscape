@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
+local LipSync = require "ItsyScape.Audio.LipSync"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
@@ -27,6 +28,15 @@ TalkingTinkererApplication.END_DELAY_SECONDS = 1
 TalkingTinkererApplication.HEIGHT = 1920
 TalkingTinkererApplication.WIDTH = 1080
 
+TalkingTinkererApplication.VOWEL_TO_SHAPE = {
+	a = "d",
+	e = "b",
+	i = "d",
+	o = "f",
+	u = "e",
+	space = "a"
+}
+
 function TalkingTinkererApplication:new()
 	Application.new(self)
 
@@ -41,6 +51,24 @@ function TalkingTinkererApplication:new()
 	self:loadTranscript()
 
 	self.cameraController.cameraOffset = Vector(0, 5, 0)
+
+	self.phonemes = setfenv(loadstring("return " .. love.filesystem.read("voice.cfg") or "{}"), {})()
+	self.lipSync = LipSync()
+	self:updatePhonemes()
+
+	self.recordingDevice = love.audio.getRecordingDevices()[1]
+	if self.recordingDevice then
+		local success = self.recordingDevice:start(1024)
+		if not success then
+			Log.error("Couldn't record from recording device '%s'.", self.recordingDevice:getName())
+			love.event.quit(1)
+		end
+	else
+		Log.error("No recording devices.")
+		love.event.quit(1)
+	end
+
+	self.lipSync.onResult:register(self.onLipSyncAnimation, self)
 end
 
 function TalkingTinkererApplication:initTinkerer()
@@ -70,40 +98,53 @@ function TalkingTinkererApplication:loadTranscript()
 
 	self.animations = {}
 	self.maxTime = 0
-	for line in io.lines(filename) do
-		local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
 
-		table.insert(self.animations, {
-			time = tonumber(time),
-			animation = animation
-		})
+	local success, error
+	do
+		success, error = pcall(function()
+			for line in io.lines(filename) do
+				local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
 
-		Log.info("At '%f' seconds, animation '%s' plays.", time or -1, animation or "<BAD>")
+				table.insert(self.animations, {
+					time = tonumber(time),
+					animation = animation
+				})
 
-		self.maxTime = math.max(self.maxTime, time)
-	end
+				Log.info("At '%f' seconds, animation '%s' plays.", time or -1, animation or "<BAD>")
 
-	local success, error = pcall(function()
-		for line in io.lines(filename .. ".anim") do
-			local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
+				self.maxTime = math.max(self.maxTime, time)
+			end
+		end)
 
-			table.insert(self.animations, {
-				time = tonumber(time),
-				animation = animation
-			})
-
-			Log.info("At '%f' seconds, animation '%s' plays.", time or -1, animation or "<BAD>")
-
-			self.maxTime = math.max(self.maxTime, time)
+		if success then
+			Log.info("Loaded animations.")
+		else
+			Log.warn("Couldn't load animations: %s", error)
 		end
+	end
+	do
+		success, error = pcall(function()
+			for line in io.lines(filename .. ".anim") do
+				local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
 
-		table.sort(self.animations, function(a, b) return a.time < b.time end)
-	end)
+				table.insert(self.animations, {
+					time = tonumber(time),
+					animation = animation
+				})
 
-	if success then
-		Log.info("Loaded animation supplement.")
-	else
-		Log.warn("Could load animation supplement: %s", error)
+				Log.info("At '%f' seconds, animation '%s' plays.", time or -1, animation or "<BAD>")
+
+				self.maxTime = math.max(self.maxTime, time)
+			end
+
+			table.sort(self.animations, function(a, b) return a.time < b.time end)
+		end)
+
+		if success then
+			Log.info("Loaded animation supplement.")
+		else
+			Log.warn("Couldn't load animation supplement: %s", error)
+		end
 	end
 end
 
@@ -136,13 +177,59 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
 		self.targetActor:playAnimation(channel or 'main', priority or 1, animation, true, 0)
 		Log.info("Changed animation to '%s'", animationFilename)
-	else
-		print(">>> skin", skinFilename)
-		print(">>> anim", skinFilename)
 	end
 
 	local gameView = self:getGameView()
 	gameView:getResourceManager():update()
+end
+
+function TalkingTinkererApplication:onLipSyncAnimation(_, event)
+	local updatedPhonemes = false
+	for vowel, shape in pairs(self.VOWEL_TO_SHAPE) do
+		if love.keyboard.isDown(vowel) then
+			local foundPhoneme = false
+			for i = 1, #self.phonemes do
+				if self.phonemes[i].vowel == vowel then
+					self.phonemes[i].mfcc = event.mfcc
+					foundPhoneme = true
+					break
+				end
+			end
+
+			if not foundPhoneme then
+				table.insert(self.phonemes, {
+					vowel = vowel,
+					mfcc = event.mfcc
+				})
+			end
+
+			updatedPhonemes = true
+		end
+	end
+
+	if updatedPhonemes then
+		self:updatePhonemes()
+	end
+
+	if event.phonemeIndex then
+		local phoneme = self.phonemes[event.phonemeIndex]
+		local vowel = phoneme.vowel
+		local shape = self.VOWEL_TO_SHAPE[vowel]
+
+		if event.phonemeIndex ~= self.lastPhonemeIndex then
+			self:playAnimation({ animation = shape:upper() })
+			self.lastPhonemeIndex = event.phonemeIndex
+		end
+	end
+end
+
+function TalkingTinkererApplication:updatePhonemes()
+	local phonemes = {}
+	for i = 1, #self.phonemes do
+		phonemes[i] = self.phonemes[i].mfcc
+	end
+
+	self.lipSync:updatePhonemes(phonemes)
 end
 
 function TalkingTinkererApplication:renderTick()
@@ -238,6 +325,8 @@ function TalkingTinkererApplication:update(delta)
 	Application.update(self, delta)
 	self.cameraController:update(delta)
 	self.targetView:update(delta)
+
+	self.lipSync:update(self.recordingDevice:getData())
 end
 
 function TalkingTinkererApplication:draw()
@@ -260,6 +349,14 @@ function TalkingTinkererApplication:draw()
 	love.graphics.pop()
 
 	love.graphics.draw(self.targetRenderer:getOutputBuffer():getColor())
+end
+
+function TalkingTinkererApplication:quit()
+	Application.quit(self)
+
+	local serpent = require "serpent"
+	local phonemes = serpent.block(self.phonemes, { comment = false })
+	love.filesystem.write("voice.cfg", phonemes)
 end
 
 return TalkingTinkererApplication
