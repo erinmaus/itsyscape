@@ -155,13 +155,29 @@ static int nbunny_audio_down_sample(lua_State* L)
 		}
 	}
 
-	result->release();
 	luax_pushtype(L, result);
+	result->release();
 	
 	return 1;
 }
 
 static int nbunny_audio_pre_emphasis(lua_State* L)
+{
+	GET_DEFAULT_BUFFER();
+	auto p = luaL_checknumber(L, 2);
+
+	std::vector<float> temp;
+	temp.assign(buffer, buffer + length);
+
+	for (std::size_t i = 1; i < length; ++i)
+	{
+		buffer[i] = temp[i] - p * temp[i - 1];
+	}
+
+	return 0;
+}
+
+static int nbunny_audio_hamming_window(lua_State* L)
 {
 	GET_DEFAULT_BUFFER();
 
@@ -173,6 +189,8 @@ static int nbunny_audio_pre_emphasis(lua_State* L)
 		auto x = i / (length - 1.0f);
 		buffer[i] *= 0.54f - 0.46f * std::cos(2.0f * LOVE_M_PI * x);
 	}
+
+	return 0;
 }
 
 static void do_fft(std::vector<float>& spectrumRe, std::vector<float>& spectrumIm, std::size_t N)
@@ -254,8 +272,8 @@ static int nbunny_audio_fft(lua_State* L)
 	}
 
 	auto result = love::data::DataModule::instance.newByteData(&spectrum[0], N * sizeof(float));
-	result->release();
 	luax_pushtype(L, result);
+	result->release();
 
 	return 1;
 }
@@ -319,13 +337,27 @@ static int nbunny_audio_mel_filter_bank(lua_State* L)
 			a /= (fEnd - fBegin) * 0.5f;
 			sum += a * buffer[j];
 		}
+
+		melSpectrum[i] = sum;
 	}
 
 	auto result = love::data::DataModule::instance.newByteData(&melSpectrum[0], melSpectrum.size() * sizeof(float));
-	result->release();
 	luax_pushtype(L, result);
+	result->release();
 
 	return 1;
+}
+
+static int nbunny_audio_power_to_db(lua_State* L)
+{
+	GET_DEFAULT_BUFFER();
+
+	for (std::size_t i = 0; i < length; ++i)
+	{
+		buffer[i] = 10.0f * std::log10(buffer[i]);
+	}
+
+	return 0;
 }
 
 static int nbunny_audio_dct(lua_State* L)
@@ -349,6 +381,12 @@ static int nbunny_audio_dct(lua_State* L)
 
 		cepstrum[i] = sum;
 	}
+
+	auto result = love::data::DataModule::instance.newByteData(&cepstrum[0], cepstrum.size() * sizeof(float));
+	luax_pushtype(L, result);
+	result->release();
+
+	return 1;
 }
 
 extern "C"
@@ -360,8 +398,10 @@ NBUNNY_EXPORT int luaopen_nbunny_audio(lua_State* L)
 	T["lowPassFilter"] = &nbunny_audio_low_pass_filter;
 	T["downSample"] = &nbunny_audio_down_sample;
 	T["preEmphasis"] = &nbunny_audio_pre_emphasis;
+	T["hammingWindow"] = &nbunny_audio_hamming_window;
 	T["fft"] = &nbunny_audio_fft;
 	T["melFilterBank"] = &nbunny_audio_mel_filter_bank;
+	T["powerToDB"] = &nbunny_audio_power_to_db;
 	T["dct"] = &nbunny_audio_dct;
 
 	sol::stack::push(L, T);

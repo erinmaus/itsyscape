@@ -34,30 +34,25 @@ while true do
 	local cutoff = targetSampleRate / 2
 	local range = 500
 
-	local volume = Algorithm.getRMSVolume(inputData, inputLength)
-	local buffer, bufferLength = Algorithm.copyRingBuffer(inputData, inputLength, startIndex)
-	Algorithm.lowPassFilter(buffer, bufferLength, outputSampleRate, cutoff, range)
-	local data, dataLength = Algorithm.downSample(buffer, bufferLength, outputSampleRate, targetSampleRate)
-	Algorithm.preEmphasis(data, dataLength, 0.97)
-	Algorithm.hammingWindow(data, dataLength)
-	Algorithm.normalize(data, dataLength)
-	local spectrum, spectrumLength = Algorithm.fft(data, dataLength)
-	local melSpectrum, melSpectrumLength = Algorithm.melFilterBank(spectrum, spectrumLength, targetSampleRate, melFilterBankChannels)
-	Algorithm.powerToDB(melSpectrum, melSpectrumLength)
-	local melCepstrum, melCepstrumLength = Algorithm.dct(melSpectrum, melSpectrumLength)
+	local buffer = Algorithm.copyRingBuffer(inputData, inputLength, startIndex)
+	local volume = Algorithm.getRMSVolume(buffer)
+	Algorithm.lowPassFilter(buffer, outputSampleRate, cutoff, range)
+	local data = Algorithm.downSample(buffer, outputSampleRate, targetSampleRate)
+	Algorithm.preEmphasis(data, 0.97)
+	Algorithm.hammingWindow(data)
+	Algorithm.normalize(data)
+	local spectrum = Algorithm.fft(data)
+	local melSpectrum = Algorithm.melFilterBank(spectrum, targetSampleRate, melFilterBankChannels)
+	Algorithm.powerToDB(melSpectrum)
+	local melCepstrum = Algorithm.dct(melSpectrum)
 
 	local mfcc = {}
 	do
+		local melCepstrumData = ffi.cast("float*", melCepstrum:getFFIPointer())
+
 		local index = 1
 		while index <= mfccLength do
-			mfcc[index] = melCepstrum[index]
-			index = index + 1
-		end
-
-		local m = {}
-		index = 0
-		while index < melCepstrumLength do
-			m[index + 1] = melCepstrum[index]
+			mfcc[index] = melCepstrumData[index]
 			index = index + 1
 		end
 	end
@@ -100,10 +95,4 @@ while true do
 		phonemeIndex = phonemeIndex,
 		volume = volume
 	})
-
-	Algorithm.free(buffer)
-	Algorithm.free(data)
-	Algorithm.free(spectrum)
-	Algorithm.free(melSpectrum)
-	Algorithm.free(melCepstrum)
 end

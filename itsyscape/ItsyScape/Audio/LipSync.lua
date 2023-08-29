@@ -96,13 +96,13 @@ function LipSync:update(soundData)
 	self:_updateJob()
 
 	-- local event
-	-- repeat
-	--	event = self.inputChannel:pop()
-		event = self.inputChannel:demand()
+	repeat
+		event = self.inputChannel:pop()
+	--	event = self.inputChannel:demand()
 		if event then
 			self:onResult(event)
 		end
-	-- until not event
+	until not event
 end
 
 function LipSync:release()
