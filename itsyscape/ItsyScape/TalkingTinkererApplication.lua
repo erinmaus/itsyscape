@@ -89,8 +89,9 @@ function TalkingTinkererApplication:initTinkerer()
 	self.targetView = ActorView(self.targetActor)
 	self.targetView:attach(self:getGameView())
 
-	self:playAnimation({ animation = "Idle" }, "idle", 0)
-	self:playAnimation({ animation = "A" })
+	self.targetPeep:listen("finalize", function()
+		self:playAnimation({ animation = "Idle" }, "idle", 0)
+	end)
 end
 
 function TalkingTinkererApplication:loadTranscript()
@@ -287,6 +288,8 @@ function TalkingTinkererApplication:drawTinkerer()
 		index = index + 1
 
 		Log.info("Rendered frame %d.", index)
+
+		break
 	end
 
 	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), directory)
