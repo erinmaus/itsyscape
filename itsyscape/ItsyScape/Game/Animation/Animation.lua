@@ -174,9 +174,9 @@ function Metatable:__call(t)
 
 			local blend = self.blends[b:getAnimation()] or {}
 			if b:getType() == Blend.TYPE_FROM then
-				blend.from = blend
+				blend.from = b
 			elseif b:getType() == Blend.TYPE_TO then
-				blend.to = blend
+				blend.to = b
 			end
 			self.blends[b:getAnimation()] = blend
 		elseif Class.isType(t[i], TargetChannel) then

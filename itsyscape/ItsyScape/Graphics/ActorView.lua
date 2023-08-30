@@ -25,7 +25,7 @@ local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
 function ActorView.Animatable:new(actor)
 	self.actor = actor
-	self.animations = {}
+	self.animations = { id = 1 }
 	self.sceneNodes = {}
 	self.sounds = {}
 	self:_newTransforms()
@@ -112,6 +112,57 @@ end
 
 function ActorView.Animatable:setTransform(index, transform)
 	self.transforms:setTransform(index, transform)
+end
+
+function ActorView.Animatable:_nextAnimationID()
+	local id = self.animations.id
+	self.animations.id = self.animations.id + 1
+
+	return id
+end
+
+function ActorView.Animatable:addPlayingAnimation(animation, time)
+	local id = self:_nextAnimationID()
+
+	table.insert(self.animations, {
+		animation = animation,
+		id = id,
+		time = time or 0
+	})
+
+	return id
+end
+
+function ActorView.Animatable:removePlayingAnimation(id)
+	for i = 1, #self.animations do
+		local a = self.animations[i]
+		if a.id == id then
+			table.remove(self.animations, i)
+			break
+		end
+	end
+end
+
+function ActorView.Animatable:updatePlayingAnimationTime(id, time)
+	for i = 1, #self.animations do
+		local a = self.animations[i]
+		if a.id == id then
+			a.time = time
+			break
+		end
+	end
+end
+
+function ActorView.Animatable:getPlayingAnimations(animationName)
+	local result = {}
+	for i = 1, #self.animations do
+		local a = self.animations[i].animation
+		if not animationName or a:getAnimationDefinition():getName() == animationName then
+			table.insert(result, a)
+		end
+	end
+
+	return unpack(result)
 end
 
 function ActorView.Animatable:update()
@@ -256,10 +307,8 @@ function ActorView:sortAnimations()
 end
 
 function ActorView:playAnimation(slot, animation, priority, time)
-	-- TODO blending
 	local a = self.animations[slot] or {}
 
-	-- TODO load queue
 	if priority and animation then
 		self.game:getResourceManager():queueCacheRef(animation, function(definition)
 			if (a.definition and a.definition:getFadesOut()) or
@@ -273,6 +322,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 					time = time
 				}
 			else
+				local oldID = a.id
 				if a.instance then
 					a.instance:stop()
 				end
@@ -282,6 +332,9 @@ function ActorView:playAnimation(slot, animation, priority, time)
 				a.instance = a.definition:play(self.animatable)
 				a.time = time or 0
 				a.priority = priority or -math.huge
+				a.id = self.animatable:addPlayingAnimation(a.instance, a.time)
+
+				self.animatable:removePlayingAnimation(oldID)
 			end
 
 			self.animations[slot] = a
@@ -598,13 +651,20 @@ function ActorView:updateAnimations(delta)
 		animation.time = animation.time + delta
 		if animation.done then
 			if animation.next then
+				local oldID = animation.id
+
 				animation.cacheRef = animation.next.cacheRef
 				animation.definition = animation.next.definition
 				animation.instance = animation.definition:play(self.animatable)
 				animation.time = animation.next.time or 0
 				animation.priority = animation.next.priority or -math.huge
 				animation.next = nil
+				animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
+
+				self.animatable:removePlayingAnimation(oldID)
 			else
+				self.animatable:removePlayingAnimation(animation.id)
+
 				self.animations[slot] = nil
 				self.actor:onAnimationPlayed(slot, false)
 			end
