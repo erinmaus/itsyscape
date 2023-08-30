@@ -37,6 +37,22 @@ function SkeletonAnimation.KeyFrame:new(time, s, r, t)
 	self._transform = love.math.newTransform()
 end
 
+function SkeletonAnimation.KeyFrame:getTime()
+	return self.time
+end
+
+function SkeletonAnimation.KeyFrame:getScale()
+	return self.scale
+end
+
+function SkeletonAnimation.KeyFrame:getRotation()
+	return self.rotation
+end
+
+function SkeletonAnimation.KeyFrame:getTranslation()
+	return self.translation
+end
+
 function SkeletonAnimation.KeyFrame:getHandle()
 	return self._handle
 end
@@ -161,6 +177,45 @@ function SkeletonAnimation:computeTransforms(time, transforms, localOnly)
 			self:applyBindPose(time, transforms, index)
 		end
 	end
+end
+
+function SkeletonAnimation:getInterpolatedBoneFrameAtTime(boneName, time)
+	local boneFrames = self.bones[boneName]
+	if not boneFrames or #boneFrames == 0 then
+		return nil
+	end
+
+	local firstIndex, nextIndex = 1, math.min(2, #boneFrames)
+	do
+		for i = 1, #boneFrames do
+			if boneFrames[i]:getTime() > time then
+				break
+			end
+
+			firstIndex = i
+		end
+
+		nextIndex = math.min(firstIndex + 1, #boneFrames)
+	end
+
+	local firstFrame = boneFrames[firstIndex]
+	local nextFrame = boneFrames[nextIndex]
+	local delta
+	do
+		local frameLength = nextFrame:getTime() - firstFrame:getTime()
+
+		if frameLength > 0 then
+			delta = math.max((time - firstFrame:getTime()) / frameLength, 0)
+		else
+			delta = 0
+		end
+	end
+
+	return SkeletonAnimation.KeyFrame(
+		0,
+		firstFrame:getScale():lerp(nextFrame:getScale(), delta),
+		firstFrame:getRotation():slerp(nextFrame:getRotation(), delta):getNormal(),
+		firstFrame:getTranslation():lerp(nextFrame:getTranslation(), delta))
 end
 
 function SkeletonAnimation:computeTransform(time, transforms, index, localOnly)

@@ -172,11 +172,11 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 
 	if love.filesystem.getInfo(skinFilename) then
 		local body = CacheRef("ItsyScape.Game.Skin.ModelSkin", skinFilename)
-		self.targetActor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+		self.targetView:changeSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 		Log.info("Changed skin to '%s'", skinFilename)
 	elseif love.filesystem.getInfo(animationFilename) then
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
-		self.targetActor:playAnimation(channel or 'main', priority or 1, animation, true, 0)
+		self.targetView:playAnimation(channel or 'main', animation, priority or 1, 0)
 		Log.info("Changed animation to '%s'", animationFilename)
 	end
 
@@ -288,8 +288,6 @@ function TalkingTinkererApplication:drawTinkerer()
 		index = index + 1
 
 		Log.info("Rendered frame %d.", index)
-
-		break
 	end
 
 	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), directory)
