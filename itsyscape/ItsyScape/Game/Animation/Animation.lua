@@ -40,12 +40,15 @@ function Animation:new(name)
 	self.skeleton = false
 	self.fadesOut = false
 	self.fadesIn = false
+	self.filename = false
 
 	Animation.CURRENT_ID = Animation.CURRENT_ID + 1
 end
 
 -- Loads an animation from a file.
 function Animation:loadFromFile(filename)
+	self.filename = filename
+
 	local file = "return " .. love.filesystem.read(filename)
 	local G = {}
 	do
@@ -174,9 +177,9 @@ function Metatable:__call(t)
 
 			local blend = self.blends[b:getAnimation()] or {}
 			if b:getType() == Blend.TYPE_FROM then
-				blend.from = blend
+				blend.from = b
 			elseif b:getType() == Blend.TYPE_TO then
-				blend.to = blend
+				blend.to = b
 			end
 			self.blends[b:getAnimation()] = blend
 		elseif Class.isType(t[i], TargetChannel) then
