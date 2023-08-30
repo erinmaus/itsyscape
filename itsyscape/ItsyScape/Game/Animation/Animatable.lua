@@ -56,6 +56,22 @@ function Animatable:getTransforms()
 	return Class.ABSTRACT()
 end
 
+function Animatable:addPlayingAnimation(animation, time)
+	return Class.ABSTRACT()
+end
+
+function Animatable:removePlayingAnimation(id)
+	Class.ABSTRACT()
+end
+
+function Animatable:updatePlayingAnimationTime(id, time)
+	Class.ABSTRACT()
+end
+
+function Animatable:getPlayingAnimations(animationName)
+	return Class.ABSTRACT()
+end
+
 -- Gets the composed transform of a bone with the given name.
 function Animatable:getComposedTransform(attach)
 	local transform = love.math.newTransform()

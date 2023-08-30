@@ -24,11 +24,15 @@ function AnimationInstance:new(animation, animatable)
 	self.stopping = {}
 end
 
+function AnimationInstance:getAnimationDefinition()
+	return self.animation
+end
+
 function AnimationInstance:addChannel(channel)
 	local c = { current = 1, previous = 0 }
 	for i = 1, channel:getNumCommands() do
 		local commandInstance = channel:getCommand(i):instantiate()
-		commandInstance:bind(self.animatable)
+		commandInstance:bind(self.animatable, self)
 		table.insert(c, commandInstance)
 	end
 
@@ -44,6 +48,45 @@ end
 -- This does not take into account animation that repeat...
 function AnimationInstance:isDone(time, windingDown)
 	return time > self.animation:getDuration(windingDown)
+end
+
+function AnimationInstance:getCurrentCommand(channelIndex)
+	channelIndex = channelIndex or 1
+
+	local channel = self.channels[channelIndex]
+	if channel then
+		local command = channel[channel.current] or channel[1]
+		return command, self.times[channel]
+	end
+
+	return nil
+end
+
+function AnimationInstance:getLastCommandOfType(Type, channelIndex)
+	channelIndex = channelIndex or 1
+
+	local channel = self.channels[channelIndex]
+	if channel then
+		local current = channel[channel.current] or channel[1]
+		if current then
+			local currentIndex = 0
+			do
+				repeat
+					currentIndex = currentIndex + 1
+				until not channel[currentIndex] or channel[currentIndex] == current
+
+				currentIndex = math.min(currentIndex, #channel)
+			end
+
+			for i = currentIndex, 1, -1 do
+				if channel[currentIndex]:isCompatibleType(Type) then
+					return channel[currentIndex]
+				end
+			end
+		end
+	end
+
+	return nil
 end
 
 function AnimationInstance:play(time, windingDown)
