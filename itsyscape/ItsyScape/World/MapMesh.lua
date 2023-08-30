@@ -125,6 +125,19 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 		return false, "data stops masking"
 	end
 
+	if self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "outside", false) == true and
+	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "building", false) == true
+	then
+		--print("is outside", "current", currentI, currentJ, "other", otherI, otherJ)
+		return false, "is outside"
+	end
+
+	if self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "building", false) == true and
+	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "outside", false) == true
+	then
+		return false, "is iniside"
+	end
+
 	if currentI ~= otherI and currentJ ~= otherJ then
 		if currentI < otherI and currentJ < otherJ then
 			if self:_subTileElevationDifferent(currentTile.bottomRight, otherTile.topLeft) then
@@ -408,7 +421,10 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
 	local color = { r = red, g = green, b = blue, a = alpha }
 	local layer = self:_getTileLayer(tile.tileSetID)
-	local maskLayer = maskType - 1
+
+	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask", "default")
+	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1
+	local maskLayer = maskType + MapMeshMask.MAX_TYPE_COMBINATIONS * (maskOffset - 1) - 1
 
 	self:_addVertex(worldPosition, normal, texture, tileBounds, color, layer, maskLayer)
 end

@@ -176,13 +176,13 @@ function MapEditorApplication:onSelectDecorationGroup(_, _, decoration)
 	self.decorationPalette:loadDecorations()
 end
 
-function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID)
+function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
 		tileSetID or "GrassyPlain")
 	self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
-	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture)
+	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, masks)
 end
 
 function MapEditorApplication:recursivePaint(map, i, j, e)
@@ -889,7 +889,7 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local stage = self:getGame():getStage()
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layerMeta.tileSetID, nil, 1)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, 1)
 			stage:updateMap(layer, map)
 			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end

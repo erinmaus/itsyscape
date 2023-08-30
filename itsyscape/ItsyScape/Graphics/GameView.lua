@@ -29,6 +29,7 @@ local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local Map = require "ItsyScape.World.Map"
 local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
 local TileSet = require "ItsyScape.World.TileSet"
+local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 
@@ -333,7 +334,7 @@ function GameView:release()
 	stage.onStopMusic:unregister(self._onStopMusic)
 end
 
-function GameView:addMap(map, layer, tileSetID, maskID)
+function GameView:addMap(map, layer, tileSetID, mask)
 	local tileSet, texture
 	if type(tileSetID) == 'table' then
 		tileSet = MultiTileSet(tileSetID)
@@ -345,25 +346,38 @@ function GameView:addMap(map, layer, tileSetID, maskID)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
-	local mapMeshMask
-	if maskID then
-		local mapMeshMaskTypeName
-		if maskID == true then
-			mapMeshMaskTypeName = "ItsyScape.World.MapMeshMask"
-		else
-			mapMeshMaskTypeName = string.format("ItsyScape.World.%sMapMeshMask", maskID)
+	local mapMeshMasks = {}
+	if mask then
+		if type(mask) ~= 'table' then
+			mask = { default = mask }
 		end
 
-		if mapMeshMaskTypeName then
-			local s, r = xpcall(require, debug.traceback, mapMeshMaskTypeName)
-			if not s then
-				Log.warn("Error loading map mesh mask '%s': %s", mapMeshMaskTypeName, r)
-				maskID = false
+		for key, maskID in pairs(mask) do
+			local mapMeshMaskTypeName
+			if maskID == true then
+				mapMeshMaskTypeName = "ItsyScape.World.MapMeshMask"
 			else
-				mapMeshMask = r()
+				mapMeshMaskTypeName = string.format("ItsyScape.World.%sMapMeshMask", maskID)
+			end
+
+			if mapMeshMaskTypeName then
+				local mapMeshMask
+				local s, r = xpcall(require, debug.traceback, mapMeshMaskTypeName)
+				if not s then
+					Log.warn("Error loading map mesh mask '%s': %s", mapMeshMaskTypeName, r)
+					r = nil
+				else
+					mapMeshMask = r()
+				end
+				
+				if mapMeshMask then
+					table.insert(mapMeshMasks, mapMeshMask)
+					mapMeshMasks[key] = #mapMeshMasks
+				end
 			end
 		end
 	end
+	mapMeshMasks = #mapMeshMasks >= 1 and mapMeshMasks
 
 	if self.mapMeshes[layer] then
 		self:removeMap(layer)
@@ -379,8 +393,9 @@ function GameView:addMap(map, layer, tileSetID, maskID)
 		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
 		maskID = maskID,
-		mapMeshMask = mapMeshMask,
-		islandProcessor = mapMeshMask and MapMeshIslandProcessor(map, tileSet)
+		mapMeshMasks = mapMeshMasks,
+		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
+		islandProcessor = mapMeshMasks and MapMeshIslandProcessor(map, tileSet)
 	}
 
 	m.weatherMap:addMap(m.map)
@@ -526,11 +541,11 @@ function GameView:updateMap(map, layer)
 						x, y,
 						GameView.MAP_MESH_DIVISIONS,
 						GameView.MAP_MESH_DIVISIONS,
-						m.mapMeshMask ~= nil,
+						m.mapMeshMasks,
 						m.islandProcessor)
 
-					if m.mapMeshMask then
-						node:getMaterial():setTextures(m.texture, m.mapMeshMask:getTexture())
+					if m.mapMeshMasks then
+						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
 					else
 						node:getMaterial():setTextures(m.texture)
 					end
