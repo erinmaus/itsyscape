@@ -40,15 +40,12 @@ function Animation:new(name)
 	self.skeleton = false
 	self.fadesOut = false
 	self.fadesIn = false
-	self.filename = false
 
 	Animation.CURRENT_ID = Animation.CURRENT_ID + 1
 end
 
 -- Loads an animation from a file.
 function Animation:loadFromFile(filename)
-	self.filename = filename
-
 	local file = "return " .. love.filesystem.read(filename)
 	local G = {}
 	do
