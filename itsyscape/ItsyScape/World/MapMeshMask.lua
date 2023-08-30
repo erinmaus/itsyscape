@@ -59,9 +59,11 @@ MapMeshMask.SEGMENT_OFFSETS = {
 	[MapMeshMask.TYPE_UNMASKED]          = {    0,    0, 0,  1,  1,   0,   0 }
 }
 
-function MapMeshMask:new()
+function MapMeshMask:new(n)
+	n = n or 1
+
 	self.canvas = love.graphics.newCanvas(
-		self.DEFAULT_SIZE, self.DEFAULT_SIZE, self.MAX_TYPE_COMBINATIONS)
+		self.DEFAULT_SIZE, self.DEFAULT_SIZE, self.MAX_TYPE_COMBINATIONS * n)
 end
 
 function MapMeshMask:getCanvas()
@@ -76,22 +78,61 @@ function MapMeshMask:initializeCanvas()
 		love.graphics.setCanvas(self.canvas, i)
 		love.graphics.clear(0, 0, 0, 0)
 		love.graphics.draw(texture, unpack(self.SEGMENT_OFFSETS[i]))
+
+			love.graphics.setCanvas()
+			self:getCanvas():newImageData(i):encode('png', string.format("single%05d.png", i))
 	end
+	love.graphics.pop()
 end
 
 function MapMeshMask:updateCanvas()
 	-- Nothing.
 end
 
+function MapMeshMask:setTexture()
+	self.texture = LayerTextureResource(self.canvas)
+end
+
 function MapMeshMask:getTexture()
 	if not self.texture then
 		self:initializeCanvas()
-		self.texture = LayerTextureResource(self.canvas)
+		self:setTexture()
 	end
 
 	self:updateCanvas()
 
 	return self.texture
+end
+
+function MapMeshMask.combine(...)
+	local masks = { ... }
+	if #masks == 0 then
+		return nil
+	end
+
+	local result = MapMeshMask(#masks)
+
+	love.graphics.push("all")
+	for offset, mask in ipairs(masks) do
+		for i = 1, MapMeshMask.MAX_TYPE_COMBINATIONS do
+			love.graphics.setCanvas(result:getCanvas(), i + MapMeshMask.MAX_TYPE_COMBINATIONS * (offset - 1))
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.clear(0, 0, 0, 0)
+			love.graphics.drawLayer(
+				mask:getTexture():getResource(), i,
+				0, 0,
+				0,
+				result:getCanvas():getWidth() / mask:getTexture():getResource():getWidth(),
+				result:getCanvas():getHeight() / mask:getTexture():getResource():getHeight())
+
+			love.graphics.setCanvas()
+			result:getCanvas():newImageData(i + MapMeshMask.MAX_TYPE_COMBINATIONS * (offset - 1)):encode('png', string.format("slice%05d.png", (i + MapMeshMask.MAX_TYPE_COMBINATIONS * (offset - 1))))
+		end
+	end
+	love.graphics.pop()
+
+	result:setTexture()
+	return result
 end
 
 return MapMeshMask

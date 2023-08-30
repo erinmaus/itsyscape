@@ -12,7 +12,8 @@
 		y = 896,
 		width = 128,
 		height = 128,
-		name = "grass"
+		name = "grass",
+		outside = true
 	},
 
 	{
@@ -29,6 +30,7 @@
 		width = 128,
 		height = 128,
 		name = "sand",
+		outside = true,
 
 		['dig-resource-id'] = "BucketOfSand",
 		['dig-resource-type'] = "Item"
@@ -303,7 +305,8 @@
 		y = 512,
 		width = 128,
 		height = 128,
-		name = "cave_ground"
+		name = "cave_ground",
+		outside = true
 	},
 
 	{
@@ -311,7 +314,8 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "brick"
+		name = "brick",
+		mask = "building"
 	},
 
 	{
@@ -319,7 +323,8 @@
 		y = 512,
 		width = 128,
 		height = 256,
-		name = "brick_wall"
+		name = "brick_wall",
+		mask = "building"
 	},
 
 	{
@@ -335,7 +340,8 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "brick_wide"
+		name = "brick_wide",
+		mask = "building"
 	},
 
 	{
@@ -343,6 +349,7 @@
 		y = 128,
 		width = 128,
 		height = 128,
-		name = "brick_wide_dark"
+		name = "brick_wide_dark",
+		mask = "building"
 	}
 }

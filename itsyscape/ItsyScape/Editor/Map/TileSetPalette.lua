@@ -55,7 +55,7 @@ function TileSetPalette:new(application)
 	self.currentTile = false
 end
 
-function TileSetPalette:refresh(tileSet, tileSetTexture)
+function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 	for i = 1, #self.buttons do
 		self.gridLayout:removeChild(self.buttons[i])
 	end

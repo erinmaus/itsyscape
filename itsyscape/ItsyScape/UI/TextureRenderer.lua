@@ -73,12 +73,24 @@ function TextureRenderer:draw(widget, state)
 		x = x / 2
 		y = y / 2
 
-		itsyrealm.graphics.uncachedDraw(
-			texture, quad.q,
-			x, y,
-			widget:getRotation(),
-			scaleX, scaleY,
-			hw, hh)
+		love.graphics.setBlendMode('alpha')
+		love.graphics.setColor(widget:getColor():get())
+
+		if widget:getLayer() then
+			itsyrealm.graphics.uncachedDrawLayer(
+				texture, widget:getLayer(), quad.q,
+				x, y,
+				widget:getRotation(),
+				scaleX, scaleY,
+				hw, hh)
+		else
+			itsyrealm.graphics.uncachedDraw(
+				texture, quad.q,
+				x, y,
+				widget:getRotation(),
+				scaleX, scaleY,
+				hw, hh)
+		end
 	end
 end
 

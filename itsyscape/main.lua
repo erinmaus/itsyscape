@@ -271,6 +271,8 @@ function itsyrealm.errorhandler()
 		love.audio.stop()
 	end
 
+	love.graphics.setCanvas()
+
 	local function draw()
 		love.graphics.setCanvas()
 

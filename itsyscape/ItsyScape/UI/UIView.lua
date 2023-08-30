@@ -175,6 +175,11 @@ function itsyrealm.graphics.impl.uncachedDraw(renderState, image, ...)
 	love.graphics.draw(image, ...)
 end
 
+function itsyrealm.graphics.impl.uncachedDrawLayer(renderState, image, ...)
+	love.graphics.setColor(renderState.color)
+	love.graphics.draw(image, ...)
+end
+
 function itsyrealm.graphics.impl.print(renderState, text, ...)
 	love.graphics.setFont(renderState.font)
 	love.graphics.setColor(renderState.color)
@@ -385,6 +390,13 @@ end
 function itsyrealm.graphics.uncachedDraw(...)
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.uncachedDraw,
+		itsyrealm.graphics.impl.captureRenderState(),
+		...)
+end
+
+function itsyrealm.graphics.uncachedDrawLayer(...)
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.uncachedDrawLayer,
 		itsyrealm.graphics.impl.captureRenderState(),
 		...)
 end
