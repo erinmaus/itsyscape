@@ -371,6 +371,7 @@ function Map.loadFromTable(t)
 
 			outputTile.edge = inputTile.edge or 2
 			outputTile.flat = inputTile.flat or 1
+			outputTile.mask = inputTile.mask or {}
 			for _, decal in ipairs(inputTile.decals or {}) do
 				table.insert(outputTile.decals, decal)
 			end
@@ -478,6 +479,23 @@ function Map:toString()
 					"edge = %d, flat = %d, decals = { %s },",
 					tile.edge, tile.flat, table.concat(tile.decals, ", "))
 
+				if next(tile.mask, nil) then
+					r:pushIndent(3)
+
+					local m = {}
+					for key, value in pairs(tile.mask) do
+						table.insert(m, { key = key, value = value })
+					end
+
+					table.sort(m, function(a, b) return a.key < b.key end)
+
+					for index, mask in ipairs(m) do
+						m[index] = string.format("[%d] = %d", mask.key, mask.value)
+					end
+
+					r:pushFormatLine("mask = { %s },", table.concat(m, ", "))
+				end
+
 				r:pushIndent(3)
 				r:pushLine("data =")
 				r:pushIndent(3)
@@ -494,7 +512,7 @@ function Map:toString()
 							v = "nil --[[ table ]]"
 						end
 						
-						r:pushFormatLine("[%q] = %s", key, v)
+						r:pushFormatLine("[%q] = %s,", key, v)
 					end
 				end
 				r:pushIndent(3)

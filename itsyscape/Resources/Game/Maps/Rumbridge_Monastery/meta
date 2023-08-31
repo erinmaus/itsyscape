@@ -1,9 +1,11 @@
 {
 	{
+		autoMask = false,
 		tileSetID = "RumbridgeMainland",
-		maskID = {
+		maskID =
+		{
 			default = true,
-			building = "Building"
-		}
+			building = "Building",
+		},
 	},
 }

@@ -214,9 +214,7 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 		end
 	end
 
-	if self.mask and self.islandProcessor then
-		self:_mask(left, right, top, bottom)
-	end
+	self:_mask(left, right, top, bottom)
 
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
@@ -312,12 +310,24 @@ function MapMesh:_maskIsland(left, right, top, bottom, island)
 end
 
 function MapMesh:_mask(left, right, top, bottom)
-	local rootIsland = self.islandProcessor:getRootIsland()
-	local rootIslandChildren = self.islandProcessor:getChildrenIslands(rootIsland)
+	if self.mask and self.islandProcessor then
+		local rootIsland = self.islandProcessor:getRootIsland()
+		local rootIslandChildren = self.islandProcessor:getChildrenIslands(rootIsland)
 
-	self.maskedTiles = {}
-	for i = 1, #rootIslandChildren do
-		self:_maskIsland(left, right, top, bottom, rootIslandChildren[i])
+		self.maskedTiles = {}
+		for i = 1, #rootIslandChildren do
+			self:_maskIsland(left, right, top, bottom, rootIslandChildren[i])
+		end
+	else
+		for j = top, bottom do
+			for i = left, right do
+				local tile = self.map:getTile(i, j)
+
+				for maskType, maskTileID in pairs(tile.mask) do
+					self:_addFlat(i, j, tile, 'flat', maskType, maskTileID)
+				end
+			end
+		end
 	end
 end
 
@@ -358,15 +368,9 @@ end
 -- * i, j are the tile indices on the x and y axis, respectively
 -- * tile is the tile at (i, j) from the Map instance
 function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, maskType, maskTile)
-	local maskKeyOverride = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", nil)
-	local maskTypeOverride = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-type", nil)
-
-	if maskKeyOverride and maskTypeOverride then
-		maskKey = "default"
-		maskType = maskTypeOverride
-	else
+	maskType = maskType or MapMeshMask.TYPE_UNMASKED
+	if type(maskTile) ~= 'number' then
 		tile = maskTile or tile
-		maskType = maskType or MapMeshMask.TYPE_UNMASKED
 	end
 
 	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.map.cellSize
@@ -403,7 +407,11 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	if type(index) == 'number' then
 		tileIndex = tile.decals[index]
 	else
-		tileIndex = tile[index]
+		if type(maskTile) == 'number' then
+			tileIndex = maskTile
+		else
+			tileIndex = tile[index]
+		end
 	end
 
 	local left = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
@@ -421,6 +429,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local color = { r = red, g = green, b = blue, a = alpha }
 	local layer = self:_getTileLayer(tile.tileSetID)
 
+	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", tile:getData("mask-key", "default"))
 	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1
 	local maskLayer = maskType + MapMeshMask.MAX_TYPE_COMBINATIONS * (maskOffset - 1) - 1
 

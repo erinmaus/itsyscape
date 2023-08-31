@@ -15,6 +15,7 @@ local GridLayout = require "ItsyScape.UI.GridLayout"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Label = require "ItsyScape.UI.Label"
 local TextInput = require "ItsyScape.UI.TextInput"
+local Texture = require "ItsyScape.UI.Texture"
 local Widget = require "ItsyScape.UI.Widget"
 
 local LandscapeToolPanel = Class(Widget)
@@ -73,6 +74,11 @@ function LandscapeToolPanel:new(application)
 	minusButton:setSize(48, 48)
 	minusButton.onClick:register(self.increaseSize, self, -1)
 	gridLayout:addChild(minusButton)
+
+	self.texture = Texture()
+	self.texture:setSize(48, 48)
+	self.texture:setKeepAspect(true)
+	gridLayout:addChild(self.texture)
 
 	local flatButton = Button()
 	flatButton:setText("Flat")
@@ -156,12 +162,20 @@ function LandscapeToolPanel:getToolSize()
 	return self.toolSize
 end
 
-function LandscapeToolPanel:open(x, y, parent)
+function LandscapeToolPanel:open(x, y, parent, tileSetPalette)
 	local currentX, currentY = self:getPosition()
 	self:setPosition(x or currentX, y or currentY)
 
 	local root = parent or self.application:getUIView():getRoot()
 	root:addChild(self)
+
+	self.tileSetPalette = tileSetPalette
+end
+
+function LandscapeToolPanel:update(...)
+	Widget.update(self, ...)
+
+	self.texture:setTexture(self.tileSetPalette:getCurrentTexture())
 end
 
 function LandscapeToolPanel:close()

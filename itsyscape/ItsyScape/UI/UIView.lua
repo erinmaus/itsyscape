@@ -179,7 +179,7 @@ end
 function itsyrealm.graphics.impl.uncachedDrawLayer(renderState, image, ...)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setBlendMode("alpha")
-	love.graphics.draw(image, ...)
+	love.graphics.drawLayer(image, ...)
 end
 
 function itsyrealm.graphics.impl.print(renderState, text, ...)
