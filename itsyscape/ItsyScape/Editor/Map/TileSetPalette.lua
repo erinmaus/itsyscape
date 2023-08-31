@@ -163,6 +163,10 @@ function TileSetPalette:setTile(value, key, type)
 		value = false
 	end
 
+	if not value then
+		self.currentTexture = nil
+	end
+
 	if not (key and type) then
 		self.currentTile = value
 	end
