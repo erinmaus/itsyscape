@@ -352,6 +352,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -365,6 +367,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -378,6 +382,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -391,6 +397,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -404,6 +412,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -417,6 +427,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -430,6 +442,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -443,6 +457,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -456,13 +472,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -475,7 +493,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -495,6 +513,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -508,6 +528,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -521,6 +543,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -534,6 +558,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -547,58 +573,70 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -664,6 +702,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -677,6 +717,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -690,6 +731,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -703,6 +745,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -716,6 +759,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -729,6 +773,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -742,6 +787,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -755,6 +801,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -768,13 +815,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -787,7 +836,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -807,6 +856,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -820,6 +871,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -833,6 +885,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -846,6 +899,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -859,58 +913,67 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -976,6 +1039,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -989,6 +1054,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1002,6 +1068,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1015,6 +1082,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1028,6 +1096,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1041,6 +1110,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1054,6 +1124,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1067,6 +1138,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1080,13 +1152,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1099,7 +1173,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1119,6 +1193,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1132,6 +1208,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1145,6 +1222,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1158,6 +1236,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1171,58 +1250,66 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1288,6 +1375,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1301,6 +1390,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1314,6 +1404,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1327,6 +1418,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1340,6 +1432,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1353,6 +1446,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1366,6 +1460,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1379,6 +1474,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1392,13 +1488,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1411,7 +1509,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1431,6 +1529,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1444,6 +1544,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1457,6 +1558,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1470,6 +1572,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1483,58 +1586,67 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1600,6 +1712,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1613,6 +1727,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1626,6 +1741,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1639,6 +1755,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1652,6 +1769,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1665,6 +1783,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1678,6 +1797,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1691,6 +1811,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1704,13 +1825,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1723,7 +1846,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -1743,6 +1866,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1756,6 +1881,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1769,6 +1896,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1782,6 +1910,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1795,58 +1925,76 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [2] = 41, [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [2] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [2] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 36, decals = {  },
+			mask = { [2] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1912,6 +2060,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1925,6 +2075,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1938,6 +2089,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1951,6 +2103,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1964,6 +2117,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1977,6 +2131,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -1990,6 +2145,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2003,6 +2159,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2016,13 +2173,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2035,7 +2194,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2055,6 +2214,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2068,6 +2229,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2081,6 +2243,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2094,6 +2257,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2107,6 +2271,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2120,6 +2285,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2133,6 +2300,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2146,6 +2315,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2159,6 +2330,9 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2224,6 +2398,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2237,6 +2413,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2250,6 +2427,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2263,6 +2441,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2276,6 +2455,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2289,6 +2469,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2302,6 +2483,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2315,6 +2497,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2328,13 +2511,15 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2347,7 +2532,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2367,6 +2552,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2380,6 +2567,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2393,6 +2581,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2406,6 +2595,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2419,6 +2609,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2432,6 +2623,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2445,6 +2637,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2458,6 +2651,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2471,6 +2665,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2536,6 +2732,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2549,6 +2746,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2562,6 +2760,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2575,6 +2774,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2588,6 +2788,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2601,6 +2802,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2614,6 +2816,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2627,6 +2830,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2640,13 +2844,14 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2659,7 +2864,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2679,6 +2884,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2692,6 +2899,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2705,6 +2913,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2718,6 +2927,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2731,6 +2941,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2744,6 +2955,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2757,6 +2969,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2770,6 +2983,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2783,6 +2997,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2848,6 +3064,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2861,6 +3078,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2874,6 +3092,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2887,6 +3106,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2900,6 +3120,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2913,6 +3134,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2926,6 +3148,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2939,6 +3162,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -2952,13 +3176,14 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2971,7 +3196,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -2991,6 +3216,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3004,6 +3231,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3017,6 +3246,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3030,6 +3261,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3043,6 +3275,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3056,6 +3289,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3069,6 +3304,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3082,6 +3319,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3095,6 +3334,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3160,6 +3401,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3173,6 +3416,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3186,6 +3431,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3199,6 +3446,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3212,6 +3460,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3225,6 +3474,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3238,6 +3488,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3251,6 +3503,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3264,13 +3518,14 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3283,7 +3538,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3297,12 +3552,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 1, [4] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3310,12 +3568,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [7] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3329,6 +3590,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3342,6 +3604,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3355,6 +3618,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3368,6 +3632,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3381,6 +3646,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3394,6 +3660,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3407,6 +3674,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3472,6 +3741,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3485,6 +3756,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3498,6 +3770,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3511,6 +3784,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3524,6 +3798,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3537,6 +3812,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3550,6 +3826,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3557,19 +3834,22 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [3] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3582,7 +3862,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3595,7 +3875,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3608,7 +3888,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3622,12 +3902,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 1, [4] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3635,12 +3918,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [7] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3654,6 +3940,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3667,6 +3954,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3680,6 +3968,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3693,6 +3982,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3706,6 +3996,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3719,6 +4010,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3784,6 +4077,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3797,6 +4092,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3810,6 +4106,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3823,6 +4120,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3836,6 +4134,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3849,6 +4148,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3862,6 +4162,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3869,58 +4170,67 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [6] = 1, [8] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [2] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [2] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [7] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3933,7 +4243,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
 			data =
 			{
 			},
@@ -3947,12 +4257,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [4] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3966,6 +4279,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3979,6 +4293,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -3992,6 +4307,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4005,6 +4321,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4018,6 +4335,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4031,6 +4349,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4096,6 +4416,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4109,6 +4431,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4122,6 +4445,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4135,6 +4459,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4148,6 +4473,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4161,6 +4487,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4174,6 +4501,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4181,19 +4509,22 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [3] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4206,7 +4537,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4219,39 +4550,45 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [2] = 37, [4] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [7] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [8] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4259,12 +4596,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [5] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4278,6 +4618,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4291,6 +4632,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4304,6 +4646,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4317,6 +4660,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4330,6 +4674,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4343,6 +4688,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4408,6 +4755,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4421,6 +4770,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4434,6 +4784,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4447,6 +4798,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4460,6 +4812,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4473,6 +4826,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4486,6 +4840,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4493,19 +4848,22 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [3] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4518,7 +4876,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4531,7 +4889,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4544,117 +4902,148 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [4] = 37, [8] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 1, decals = {  },
+			mask = { [2] = 41, [3] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41, [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [1] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4720,6 +5109,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4733,6 +5124,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4746,6 +5138,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4759,6 +5152,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4772,6 +5166,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4785,6 +5180,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4798,6 +5194,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4805,12 +5202,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [6] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4818,19 +5218,22 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 37, [3] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4843,7 +5246,7 @@
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 37, decals = {  },
 			data =
 			{
 			},
@@ -4857,12 +5260,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [4] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -4876,97 +5282,110 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5032,6 +5451,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5045,6 +5466,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5058,6 +5480,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5071,6 +5494,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5084,6 +5508,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5097,6 +5522,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5110,6 +5536,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5123,6 +5550,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5130,12 +5558,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [6] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5143,12 +5574,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5156,12 +5590,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5169,12 +5606,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [5] = 37 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5188,97 +5628,109 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5344,6 +5796,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5357,6 +5811,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5370,6 +5825,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5383,6 +5839,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5396,6 +5853,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5409,6 +5867,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5422,6 +5881,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5435,6 +5895,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5448,6 +5909,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5461,6 +5923,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5474,6 +5937,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5487,6 +5951,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5500,97 +5965,109 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 42, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5656,6 +6133,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5669,6 +6148,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5682,6 +6162,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5695,6 +6176,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5708,6 +6190,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5721,6 +6204,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5734,6 +6218,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5747,6 +6232,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5760,6 +6246,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5773,6 +6260,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5786,6 +6274,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5799,6 +6288,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5812,97 +6302,109 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5968,6 +6470,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5981,6 +6485,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -5994,6 +6500,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6007,6 +6515,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6020,6 +6530,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6033,6 +6545,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6046,6 +6560,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6059,6 +6575,8 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6066,12 +6584,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6079,12 +6600,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6092,12 +6616,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6105,12 +6632,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [2] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -6124,97 +6654,114 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
 		{
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 41, decals = {  },
+			edge = 2, flat = 42, decals = {  },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["impassable"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10415,6 +10962,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10429,6 +10977,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10443,6 +10992,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10457,6 +11007,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10471,6 +11022,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10485,6 +11037,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10499,6 +11052,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10507,12 +11061,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10520,12 +11077,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10533,12 +11093,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10546,12 +11109,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 36 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10559,6 +11125,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -10566,6 +11133,8 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10579,6 +11148,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10593,6 +11163,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10606,6 +11177,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10619,6 +11191,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10632,6 +11205,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10645,6 +11219,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10737,6 +11312,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -10751,6 +11327,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10764,6 +11341,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10777,6 +11355,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10790,6 +11369,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10803,6 +11383,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10816,6 +11397,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10829,6 +11411,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10842,6 +11425,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10855,6 +11439,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10868,6 +11453,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10875,12 +11461,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10894,6 +11483,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10907,6 +11497,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10920,6 +11511,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10933,6 +11525,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10946,6 +11539,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -10959,6 +11553,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11051,6 +11646,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11065,6 +11661,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11078,6 +11675,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11091,6 +11689,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11104,6 +11703,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11117,6 +11717,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11130,6 +11731,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11144,6 +11746,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11157,6 +11760,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11170,6 +11774,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11183,6 +11788,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11190,6 +11796,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -11197,6 +11804,8 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11210,6 +11819,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11223,6 +11833,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11236,6 +11847,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11249,6 +11861,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11262,6 +11875,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11275,6 +11889,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11367,6 +11982,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11381,6 +11997,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11394,6 +12011,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11407,6 +12025,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11420,6 +12039,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11433,6 +12053,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11447,6 +12068,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11461,6 +12083,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11475,6 +12098,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11489,6 +12113,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11503,6 +12128,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11511,6 +12137,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -11518,6 +12145,8 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11531,6 +12160,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11545,6 +12175,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11559,6 +12190,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11572,6 +12204,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11585,6 +12218,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11598,6 +12232,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11689,6 +12324,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11703,6 +12339,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11716,6 +12353,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11729,6 +12367,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11742,6 +12381,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11755,6 +12395,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11860,6 +12501,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -11874,6 +12516,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11887,6 +12530,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11900,6 +12544,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -11913,6 +12558,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12005,6 +12651,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12019,6 +12666,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12032,6 +12680,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12045,6 +12694,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12058,6 +12708,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12071,6 +12722,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12176,6 +12828,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12190,6 +12843,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12203,6 +12857,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12216,6 +12871,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12229,6 +12885,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12321,6 +12978,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12335,6 +12993,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12348,6 +13007,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12361,6 +13021,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12374,6 +13035,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12387,6 +13049,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12492,6 +13155,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12506,6 +13170,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12519,6 +13184,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12532,6 +13198,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12545,6 +13212,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12637,6 +13305,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12651,6 +13320,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12665,6 +13335,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12678,6 +13349,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12691,6 +13363,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12705,6 +13378,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12810,6 +13484,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12824,6 +13499,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12837,6 +13513,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12850,6 +13527,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12863,6 +13541,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12955,6 +13634,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -12969,6 +13649,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12982,6 +13663,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -12995,6 +13677,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13008,6 +13691,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13021,6 +13705,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13126,6 +13811,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13140,6 +13826,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13153,6 +13840,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13166,6 +13854,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13179,6 +13868,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13271,6 +13961,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13285,6 +13976,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13298,6 +13990,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13311,6 +14004,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13324,6 +14018,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13337,6 +14032,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13442,6 +14138,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13456,6 +14153,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13469,6 +14167,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13482,6 +14181,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13495,6 +14195,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13587,6 +14288,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13601,6 +14303,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13614,6 +14317,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13627,6 +14331,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13640,6 +14345,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13653,6 +14359,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13667,6 +14374,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13681,6 +14389,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13689,12 +14398,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13702,12 +14414,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 41, decals = {  },
+			mask = { [1] = 1 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13721,6 +14436,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13735,6 +14451,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13743,6 +14460,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -13750,6 +14468,7 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13763,6 +14482,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13777,6 +14497,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13790,6 +14511,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13803,6 +14525,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13816,6 +14539,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13908,6 +14632,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -13922,6 +14647,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13935,6 +14661,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13948,6 +14675,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13961,6 +14689,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13974,6 +14703,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -13987,6 +14717,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14001,6 +14732,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14014,6 +14746,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14027,6 +14760,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14040,6 +14774,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14053,6 +14788,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14060,6 +14796,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -14067,6 +14804,8 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14080,6 +14819,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14093,6 +14833,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14106,6 +14847,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14119,6 +14861,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14132,6 +14875,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14224,6 +14968,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14238,6 +14983,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14251,6 +14997,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14264,6 +15011,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14277,6 +15025,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14290,6 +15039,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14303,6 +15053,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14316,6 +15067,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14329,6 +15081,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14342,6 +15095,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14355,6 +15109,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14368,6 +15123,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14375,12 +15131,15 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14394,6 +15153,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14407,6 +15167,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14420,6 +15181,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14433,6 +15195,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14446,6 +15209,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14538,6 +15302,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14552,6 +15317,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14566,6 +15332,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14580,6 +15347,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14594,6 +15362,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14608,6 +15377,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14622,6 +15392,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14636,6 +15407,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14650,6 +15422,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14663,6 +15436,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14676,6 +15450,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14690,6 +15465,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14698,6 +15474,7 @@
 			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 36, decals = {  },
+			mask = { [4] = 41 },
 			data =
 			{
 			},
@@ -14705,6 +15482,8 @@
 			{
 				["x-map-j"] = true,
 				["impassable"] = true,
+				["building"] = true,
+				["mask-key"] = true,
 				["x-map-i"] = true,
 			},
 		},
@@ -14718,6 +15497,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14732,6 +15512,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14746,6 +15527,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14760,6 +15542,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
@@ -14774,6 +15557,7 @@
 			flags =
 			{
 				["x-map-j"] = true,
+				["building"] = true,
 				["impassable"] = true,
 				["x-map-i"] = true,
 			},
