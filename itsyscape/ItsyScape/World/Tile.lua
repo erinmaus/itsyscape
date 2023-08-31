@@ -57,10 +57,17 @@ function Tile:new(t)
 	self.tileSetID = ""
 end
 
+local WHITELIST_DATA_TYPES = {
+	["number"] = true,
+	["string"] = true,
+	["boolean"] = true
+}
+
 function Tile:_getSerializedData()
 	local result = {}
 	for k, v in pairs(self.data) do
-		if not Class.isClass(v) and not getmetatable(v) then
+		if not Class.isClass(v) and WHITELIST_DATA_TYPES[type(v)] then
+			if not k:match("^x%-") then print("--- serialized", k, v) end
 			result[k] = v
 		end
 	end
@@ -157,19 +164,19 @@ function Tile:getIsPassable(flags)
 end
 
 function Tile:setData(key, value)
-	self.flags[tostring(key)] = value
+	self.data[tostring(key)] = value
 end
 
 function Tile:unsetData(key, value)
-	self.flags[tostring(key)] = nil
+	self.data[tostring(key)] = nil
 end
 
 function Tile:hasData(key, value)
-	return self.flags[tostring(key)] ~= nil
+	return self.data[tostring(key)] ~= nil
 end
 
 function Tile:getData(key, default)
-	local v = self.flags[tostring(key)]
+	local v = self.data[tostring(key)]
 	if v == nil then
 		return default
 	end
