@@ -501,7 +501,7 @@ function Map:toString()
 				r:pushIndent(3)
 				r:pushLine("{")
 				for key, value in tile:iterateData() do
-					if not key:match("^x-") then
+					if not key:match("^x%-") then
 						local v
 						if type(value) == 'string' then
 							v = StringBuilder.stringify(value, "%q")
@@ -511,7 +511,8 @@ function Map:toString()
 							-- TODO
 							v = "nil --[[ table ]]"
 						end
-						
+
+						r:pushIndent(4)
 						r:pushFormatLine("[%q] = %s,", key, v)
 					end
 				end
@@ -523,8 +524,10 @@ function Map:toString()
 				r:pushIndent(3)
 				r:pushLine("{")
 				for flag in tile:iterateFlags() do
-					r:pushIndent(4)
-					r:pushFormatLine("[%q] = true,", flag)
+					if not flag:match("^x%-") then
+						r:pushIndent(4)
+						r:pushFormatLine("[%q] = true,", flag)
+					end
 				end
 				r:pushIndent(3)
 				r:pushLine("},")
