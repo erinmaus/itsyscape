@@ -91,6 +91,8 @@ function TextureRenderer:draw(widget, state)
 				scaleX, scaleY,
 				hw, hh)
 		end
+
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 end
 

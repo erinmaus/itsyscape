@@ -106,6 +106,10 @@ function MapMesh:_subTileElevationDifferent(a, b)
 end
 
 function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI, otherJ)
+	if (self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "mask-key") and self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "mask-type")) then
+		return true
+	end
+
 	local currentTileIsland = self.islandProcessor:getIslandForTile(currentI, currentJ)
 	local currentTileIslandParentID = currentTileIsland and currentTileIsland.parent and currentTileIsland.parent.id
 	local otherTileIsland = self.islandProcessor:getIslandForTile(otherI, otherJ)
@@ -123,19 +127,6 @@ function MapMesh:_shouldMask(currentTile, currentI, currentJ, otherTile, otherI,
 	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "mask") == false
 	then
 		return false, "data stops masking"
-	end
-
-	if self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "outside", false) == true and
-	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "building", false) == true
-	then
-		--print("is outside", "current", currentI, currentJ, "other", otherI, otherJ)
-		return false, "is outside"
-	end
-
-	if self:_getTileProperty(currentTile.tileSetID, currentTile.flat, "building", false) == true and
-	   self:_getTileProperty(otherTile.tileSetID, otherTile.flat, "outside", false) == true
-	then
-		return false, "is iniside"
 	end
 
 	if currentI ~= otherI and currentJ ~= otherJ then
@@ -367,8 +358,16 @@ end
 -- * i, j are the tile indices on the x and y axis, respectively
 -- * tile is the tile at (i, j) from the Map instance
 function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, maskType, maskTile)
-	tile = maskTile or tile
-	maskType = maskType or MapMeshMask.TYPE_UNMASKED
+	local maskKeyOverride = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", nil)
+	local maskTypeOverride = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-type", nil)
+
+	if maskKeyOverride and maskTypeOverride then
+		maskKey = "default"
+		maskType = maskTypeOverride
+	else
+		tile = maskTile or tile
+		maskType = maskType or MapMeshMask.TYPE_UNMASKED
+	end
 
 	local tileCenterPosition = Vector(i - 0.5, 0, j - 0.5) * self.map.cellSize
 	local worldPosition = localPosition * Vector(self.map.cellSize / 2, 1, self.map.cellSize / 2) + tileCenterPosition
@@ -422,7 +421,6 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local color = { r = red, g = green, b = blue, a = alpha }
 	local layer = self:_getTileLayer(tile.tileSetID)
 
-	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask", "default")
 	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1
 	local maskLayer = maskType + MapMeshMask.MAX_TYPE_COMBINATIONS * (maskOffset - 1) - 1
 
