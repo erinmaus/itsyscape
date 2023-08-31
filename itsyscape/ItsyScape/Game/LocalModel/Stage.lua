@@ -590,7 +590,7 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 	return actorInstance, propInstance
 end
 
-function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID)
+function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	self:unloadMap(layer)
 
 	local map = Map.loadFromFile(filename)
@@ -603,7 +603,7 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID)
 	end
 
 	if map then
-		self.onLoadMap(self, map, layer, tileSetID, maskID)
+		self.onLoadMap(self, map, layer, tileSetID, maskID, meta)
 		self.game:getDirector():setMap(layer, map)
 
 		self:updateMap(layer, map)
@@ -1020,7 +1020,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 			baseLayer = baseLayer or globalLayer
 			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
 
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, layerMeta.maskID)
+			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, layerMeta.maskID, layerMeta)
 		end
 	end
 

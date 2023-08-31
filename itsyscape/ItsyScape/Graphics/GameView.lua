@@ -122,9 +122,9 @@ function GameView:attach(game)
 	self.game = game or self.game
 	local stage = self.game:getStage()
 
-	self._onLoadMap = function(_, map, layer, tileSetID, mask)
+	self._onLoadMap = function(_, map, layer, tileSetID, mask, meta)
 		Log.info("Adding map to layer %d (has mask = %s).", layer, Log.boolean(mask))
-		self:addMap(map, layer, tileSetID, mask)
+		self:addMap(map, layer, tileSetID, mask, meta)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
@@ -334,7 +334,9 @@ function GameView:release()
 	stage.onStopMusic:unregister(self._onStopMusic)
 end
 
-function GameView:addMap(map, layer, tileSetID, mask)
+function GameView:addMap(map, layer, tileSetID, mask, meta)
+	meta = meta or {}
+
 	local tileSet, texture
 	if type(tileSetID) == 'table' then
 		tileSet = MultiTileSet(tileSetID)
@@ -395,7 +397,8 @@ function GameView:addMap(map, layer, tileSetID, mask)
 		maskID = maskID,
 		mapMeshMasks = mapMeshMasks,
 		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
-		islandProcessor = mapMeshMasks and MapMeshIslandProcessor(map, tileSet)
+		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
+		meta = meta
 	}
 
 	m.weatherMap:addMap(m.map)

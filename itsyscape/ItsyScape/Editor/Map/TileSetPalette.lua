@@ -15,6 +15,7 @@ local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Label = require "ItsyScape.UI.Label"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local Texture = require "ItsyScape.UI.Texture"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -42,14 +43,17 @@ function TileSetPalette:new(application)
 	panel:setSize(self:getSize())
 	self:addChild(panel)
 
-	self.gridLayout = GridLayout()
+	self.panel = ScrollablePanel(GridLayout)
+	self.panel:setSize(self:getSize())
+	self:addChild(self.panel)
+
+	self.gridLayout = self.panel:getInnerPanel()
 	self.gridLayout:setPadding(8, 8)
 	self.gridLayout:setUniformSize(
 		true,
 		TileSetPalette.TILE_WIDTH,
 		TileSetPalette.TILE_HEIGHT)
-	self.gridLayout:setSize(self:getSize())
-	self:addChild(self.gridLayout)
+	self.gridLayout:setWrapContents(true)
 
 	self.buttons = {}
 	self.currentButton = false
@@ -85,10 +89,11 @@ function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 		texture:setColor(Color(red, green, blue, 1))
 		button:addChild(texture)
 
-		button.onClick:register(self.setTile, self, index)
+		button.onClick:register(self.setTile, self, index, nil, nil)
 
 		button:setData('tile-index', index)
 		button:setData('tile-texture', texture)
+		button:setData('texture', { tileSetTexture, l, r, t, b })
 		button:setToolTip(ToolTip.Text(tileSet:getTileProperty(index, 'name', '(unnamed)')))
 		table.insert(self.buttons, button)
 	end
@@ -96,14 +101,14 @@ function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 	local m = {}
 	do
 		if type(masks) ~= 'table' then
-			masks = { masks }
+			masks = { default = masks }
 		end
 
-		for key, mask in pairs(m) do
+		for key, mask in pairs(masks) do
 			if mask == true then
 				mask = MapMeshMask()
 			else
-				mask = require(string.format("ItsyScape.World.%sMapMesh", mask))()
+				mask = require(string.format("ItsyScape.World.%sMapMeshMask", mask))()
 			end
 
 			if mask then
@@ -121,7 +126,7 @@ function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 			local green = tileSet:getTileProperty(index, 'colorGreen', 255) / 255
 			local blue = tileSet:getTileProperty(index, 'colorBlue', 255) / 255
 
-			texture:setTexture(m[i]:getTexture():getResource(), 0, 1, 0, 1, j)
+			texture:setTexture(m[i].texture, 0, 1, 0, 1, j)
 			texture:setKeepAspect(true)
 			texture:setSize(
 				TileSetPalette.TILE_WIDTH - TileSetPalette.PADDING * 2,
@@ -130,12 +135,13 @@ function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 			texture:setColor(Color(1, 0, 1, 1))
 			button:addChild(texture)
 
-			button.onClick:register(self.setTile, self, -1, m.key, j)
+			local index = 1000 + i * MapMeshMask.MAX_TYPE_COMBINATIONS + j
+			button.onClick:register(self.setTile, self, index, m[i].key, j)
 
-			button:setData('tile-index', 1000 + i * MapMeshMask.MAX_TYPE_COMBINATIONS + j)
-			button:setData('mask-key', m.key)
+			button:setData('tile-index', index)
+			button:setData('mask-key', m[i].key)
 			button:setData('mask-type', j)
-			button:setToolTip(ToolTip.Text(m.key), ToolTip.Text(MapMeshMask.TYPE_NAMES[j] or "(unknown)"))
+			button:setToolTip(ToolTip.Text(m[i].key), ToolTip.Text(MapMeshMask.TYPE_NAMES[j] or "(unknown)"))
 			table.insert(self.buttons, button)
 		end
 	end
@@ -147,6 +153,9 @@ function TileSetPalette:refresh(tileSet, tileSetTexture, masks)
 	for i = 1, #self.buttons do
 		self.gridLayout:addChild(self.buttons[i])
 	end
+
+	self.panel:setScrollSize(self.gridLayout:getSize())
+	self.panel:setScroll(0, 0)
 end
 
 function TileSetPalette:setTile(value, key, type)
@@ -154,9 +163,7 @@ function TileSetPalette:setTile(value, key, type)
 		value = false
 	end
 
-	if key and type then
-		self.currentTile = nil
-	else
+	if not (key and type) then
 		self.currentTile = value
 	end
 
@@ -165,7 +172,7 @@ function TileSetPalette:setTile(value, key, type)
 
 	for i = 1, #self.buttons do
 		local button = self.buttons[i]
-		if button:getData('tile-index') == value or (button:getData("mask-key") == key and button:getData("mask-type") == type) then
+		if button:getData('tile-index') == value or (button:getData("mask-key") == key and button:getData("mask-type") == type and key and type) then
 			button:setStyle(ButtonStyle({
 				pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 				inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
@@ -176,6 +183,8 @@ function TileSetPalette:setTile(value, key, type)
 				textShadow = true,
 				padding = 4
 			}, self.application:getUIView():getResources()))
+
+			self.currentTexture = button:getData('texture') or self.currentTexture
 		else
 			button:setStyle(nil)
 		end
@@ -188,6 +197,10 @@ function TileSetPalette:getCurrentTile()
 	else
 		return self.currentTile, self.currentMaskKey, self.currentMaskType
 	end
+end
+
+function TileSetPalette:getCurrentTexture()
+	return unpack(self.currentTexture or {})
 end
 
 function TileSetPalette:open(x, y, parent)

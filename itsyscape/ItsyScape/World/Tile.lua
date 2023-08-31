@@ -36,6 +36,9 @@ function Tile:new(t)
 	-- Decals. Corresponds to textures.
 	self.decals = t.decals or {}
 
+	-- Mask. For manual masking.
+	self.mask = {}
+
 	-- The heights at the four corners of the tile.
 	self.topLeft = t.topLeft or 0
 	self.topRight = t.topRight or 0
@@ -70,6 +73,7 @@ function Tile:serialize()
 		edge = self.edge,
 		flat = self.flat,
 		decals = self.decals,
+		mask = self.mask,
 		topLeft = self.topLeft,
 		topRight = self.topRight,
 		bottomLeft = self.bottomLeft,
@@ -164,8 +168,13 @@ function Tile:hasData(key, value)
 	return self.flags[tostring(key)] ~= nil
 end
 
-function Tile:getData(key)
-	return self.flags[tostring(key)]
+function Tile:getData(key, default)
+	local v = self.flags[tostring(key)]
+	if v == nil then
+		return default
+	end
+
+	return v
 end
 
 function Tile:iterateData()
