@@ -59,6 +59,19 @@ MapMeshMask.SEGMENT_OFFSETS = {
 	[MapMeshMask.TYPE_UNMASKED]          = {    0,    0, 0,  1,  1,   0,   0 }
 }
 
+MapMeshMask.TYPE_NAMES = {
+	[MapMeshMask.TYPE_NONE]              = "TYPE_NONE",
+	[MapMeshMask.TYPE_HORIZONTAL_TOP]    = "TYPE_HORIZONTAL_TOP",
+	[MapMeshMask.TYPE_HORIZONTAL_BOTTOM] = "TYPE_HORIZONTAL_BOTTOM",
+	[MapMeshMask.TYPE_VERTICAL_RIGHT]    = "TYPE_VERTICAL_RIGHT",
+	[MapMeshMask.TYPE_VERTICAL_LEFT]     = "TYPE_VERTICAL_LEFT",
+	[MapMeshMask.TYPE_CORNER_TL]         = "TYPE_CORNER_TL",
+	[MapMeshMask.TYPE_CORNER_TR]         = "TYPE_CORNER_TR",
+	[MapMeshMask.TYPE_CORNER_BL]         = "TYPE_CORNER_BL",
+	[MapMeshMask.TYPE_CORNER_BR]         = "TYPE_CORNER_BR",
+	[MapMeshMask.TYPE_UNMASKED]          = "TYPE_UNMASKED",
+}
+
 function MapMeshMask:new(n)
 	n = n or 1
 

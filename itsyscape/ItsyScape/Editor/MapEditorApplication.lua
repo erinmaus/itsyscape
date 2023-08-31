@@ -260,7 +260,13 @@ function MapEditorApplication:paint()
 					then
 						local tile = map:getTile(u, v)
 						if mode == LandscapeToolPanel.MODE_FLAT then
-							tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
+							local flat, maskID, maskType = self.tileSetPalette:getCurrentTile()
+							if maskID and maskType then
+								tile:setData("mask-key", maskID)
+								tile:setData("mask-type", maskType)
+							else
+								tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
+							end
 						elseif mode == LandscapeToolPanel.MODE_EDGE then
 							tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
 						elseif mode == LandscapeToolPanel.MODE_DECAL then
