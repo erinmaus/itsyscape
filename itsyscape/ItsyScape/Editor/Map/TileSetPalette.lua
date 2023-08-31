@@ -184,7 +184,7 @@ function TileSetPalette:setTile(value, key, type)
 				padding = 4
 			}, self.application:getUIView():getResources()))
 
-			self.currentTexture = button:getData('texture') or self.currentTexture
+			self.currentTexture = button:getData('texture') or (self.currentTile and self.currentTexture)
 		else
 			button:setStyle(nil)
 		end
@@ -192,11 +192,7 @@ function TileSetPalette:setTile(value, key, type)
 end
 
 function TileSetPalette:getCurrentTile()
-	if not self.currentTile then
-		return nil
-	else
-		return self.currentTile, self.currentMaskKey, self.currentMaskType
-	end
+	return self.currentTile, self.currentMaskKey, self.currentMaskType
 end
 
 function TileSetPalette:getCurrentTexture()

@@ -263,15 +263,21 @@ function MapEditorApplication:paint()
 						if mode == LandscapeToolPanel.MODE_FLAT then
 							local flat, maskID, maskType = self.tileSetPalette:getCurrentTile()
 							if maskID and maskType then
-								if maskType == MapMeshMask.TYPE_UNMASKED then
-									tile.mask = {}
-								elseif tile.mask[maskType] == flat then
-									tile.mask[maskType] = nil
-								else
-									tile.mask[maskType] = flat
+								if flat then
+									if maskType == MapMeshMask.TYPE_UNMASKED then
+										tile.mask = {}
+									elseif tile.mask[maskType] == flat then
+										tile.mask[maskType] = nil
+									else
+										tile.mask[maskType] = flat
+									end
 								end
 
-								tile:setData("mask-key", maskID)
+								if next(tile.mask, nil) then
+									tile:setData("mask-key", maskID)
+								else
+									tile:unsetData("mask-key")
+								end
 							else
 								tile.flat = flat or tile.flat
 							end
