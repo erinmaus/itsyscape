@@ -33,6 +33,7 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
 local HillMapMotion = require "ItsyScape.World.HillMapMotion"
 local Map = require "ItsyScape.World.Map"
+local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MapMotion = require "ItsyScape.World.MapMotion"
 local TileSet = require "ItsyScape.World.TileSet"
 
@@ -131,7 +132,7 @@ function MapEditorApplication:setTool(tool)
 	elseif tool == MapEditorApplication.TOOL_PAINT then
 		self.currentTool = MapEditorApplication.TOOL_PAINT
 		self.tileSetPalette:open()
-		self.landscapeToolPanel:open()
+		self.landscapeToolPanel:open(nil, nil, nil, self.tileSetPalette)
 		self.landscapeToolPanel:setToolSize(0)
 	elseif tool == MapEditorApplication.TOOL_DECORATE then
 		self.lastDecorationFeature = false
@@ -176,13 +177,13 @@ function MapEditorApplication:onSelectDecorationGroup(_, _, decoration)
 	self.decorationPalette:loadDecorations()
 end
 
-function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID)
+function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
 	local tileSetFilename = string.format(
 		"Resources/Game/TileSets/%s/Layout.lua",
 		tileSetID or "GrassyPlain")
 	self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
-	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture)
+	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, masks)
 end
 
 function MapEditorApplication:recursivePaint(map, i, j, e)
@@ -260,7 +261,20 @@ function MapEditorApplication:paint()
 					then
 						local tile = map:getTile(u, v)
 						if mode == LandscapeToolPanel.MODE_FLAT then
-							tile.flat = self.tileSetPalette:getCurrentTile() or tile.flat
+							local flat, maskID, maskType = self.tileSetPalette:getCurrentTile()
+							if maskID and maskType then
+								if maskType == MapMeshMask.TYPE_UNMASKED then
+									tile.mask = {}
+								elseif tile.mask[maskType] == flat then
+									tile.mask[maskType] = nil
+								else
+									tile.mask[maskType] = flat
+								end
+
+								tile:setData("mask-key", maskID)
+							else
+								tile.flat = flat or tile.flat
+							end
 						elseif mode == LandscapeToolPanel.MODE_EDGE then
 							tile.edge = self.tileSetPalette:getCurrentTile() or tile.edge
 						elseif mode == LandscapeToolPanel.MODE_DECAL then
@@ -776,7 +790,8 @@ function MapEditorApplication:save(filename)
 				local _, tileSetID = self:getGameView():getMapTileSet(layers[i])
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
-					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID
+					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID,
+					autoMask = self.meta and self.meta[layers[i]] and self.meta.autoMask == true
 				}
 			end
 
@@ -889,7 +904,7 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local stage = self:getGame():getStage()
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layerMeta.tileSetID, nil, 1)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, 1)
 			stage:updateMap(layer, map)
 			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end

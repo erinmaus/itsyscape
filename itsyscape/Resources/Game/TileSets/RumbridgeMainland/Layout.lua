@@ -12,7 +12,7 @@
 		y = 896,
 		width = 128,
 		height = 128,
-		name = "grass"
+		name = "grass",
 	},
 
 	{
@@ -303,7 +303,7 @@
 		y = 512,
 		width = 128,
 		height = 128,
-		name = "cave_ground"
+		name = "cave_ground",
 	},
 
 	{
@@ -311,7 +311,7 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "brick"
+		name = "brick",
 	},
 
 	{
@@ -319,7 +319,7 @@
 		y = 512,
 		width = 128,
 		height = 256,
-		name = "brick_wall"
+		name = "brick_wall",
 	},
 
 	{
@@ -335,7 +335,7 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "brick_wide"
+		name = "brick_wide",
 	},
 
 	{
@@ -343,6 +343,6 @@
 		y = 128,
 		width = 128,
 		height = 128,
-		name = "brick_wide_dark"
+		name = "brick_wide_dark",
 	}
 }
