@@ -1001,6 +1001,7 @@ include "Resources/Game/DB/Creeps/TrashHeap.lua"
 include "Resources/Game/DB/Creeps/AncientKaradon.lua"
 include "Resources/Game/DB/Creeps/Pig.lua"
 include "Resources/Game/DB/Creeps/Cheep.lua"
+include "Resources/Game/DB/Creeps/Cthulhu.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
