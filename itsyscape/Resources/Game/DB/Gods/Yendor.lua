@@ -8,33 +8,33 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Peep "Yendor_Base" {
+ItsyScape.Resource.Peep "Yendor" {
 	-- Nothing.
 }
 
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
-	Resource = ItsyScape.Resource.Peep "Yendor_Base"
+	Resource = ItsyScape.Resource.Peep "Yendor"
 }
 
 ItsyScape.Meta.ResourceTag {
 	Value = "OldOne",
-	Resource = ItsyScape.Resource.Peep "Yendor_Base"
+	Resource = ItsyScape.Resource.Peep "Yendor"
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Yendor.BaseYendor",
-	Resource = ItsyScape.Resource.Peep "Yendor_Base"
+	Resource = ItsyScape.Resource.Peep "Yendor"
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Yendor",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Yendor_Base"
+	Resource = ItsyScape.Resource.Peep "Yendor"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Tremble, mortals! Madness will consume you! Give up, give in. Yendor's will is unbreakable.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Yendor_Base"
+	Resource = ItsyScape.Resource.Peep "Yendor"
 }
