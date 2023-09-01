@@ -8,33 +8,33 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Peep "Gammon_Base" {
+ItsyScape.Resource.Peep "Gammon" {
 	ItsyScape.Action.Attack()
 }
 
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
-	Resource = ItsyScape.Resource.Peep "Gammon_Base"
+	Resource = ItsyScape.Resource.Peep "Gammon"
 }
 
 ItsyScape.Meta.ResourceTag {
 	Value = "OldOne",
-	Resource = ItsyScape.Resource.Peep "Gammon_Base"
+	Resource = ItsyScape.Resource.Peep "Gammon"
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Gammon.BaseGammon",
-	Resource = ItsyScape.Resource.Peep "Gammon_Base"
+	Resource = ItsyScape.Resource.Peep "Gammon"
 }
 
 ItsyScape.Meta.ResourceName {
 	Value = "Gammon, the Realm Breaker",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Gammon_Base"
+	Resource = ItsyScape.Resource.Peep "Gammon"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "Fear Gammon! For Its strength can shatter the cosmos itself, tearing holes into the Daemon Realm! Fear It! Fear!",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Peep "Gammon_Base"
+	Resource = ItsyScape.Resource.Peep "Gammon"
 }
