@@ -204,7 +204,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendor_Base",
+		Peep = ItsyScape.Resource.Peep "Yendor",
 		MapObject = M["Yendor"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
