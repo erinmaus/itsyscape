@@ -52,9 +52,10 @@ function TalkingTinkererApplication:new()
 
 	self.cameraController.cameraOffset = Vector(0, 5, 0)
 
-	self.phonemes = setfenv(loadstring("return " .. love.filesystem.read("voice.cfg") or "{}"), {})()
+	self.config = setfenv(loadstring("return " .. love.filesystem.read("voice.cfg") or "{}"), {})()
 	self.lipSync = LipSync()
 	self:updatePhonemes()
+	self:loadCamera()
 
 	self.recordingDevice = love.audio.getRecordingDevices()[1]
 	if self.recordingDevice then
@@ -126,7 +127,7 @@ function TalkingTinkererApplication:loadTranscript()
 	do
 		success, error = pcall(function()
 			for line in io.lines(filename .. ".anim") do
-				local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
+				local time, animation = line:match("(%d*%.%d*)%s*([%w%d_]*)")
 
 				table.insert(self.animations, {
 					time = tonumber(time),
@@ -176,8 +177,15 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 		Log.info("Changed skin to '%s'", skinFilename)
 	elseif love.filesystem.getInfo(animationFilename) then
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
-		self.targetView:playAnimation(channel or 'main', animation, priority or 1, 0)
-		Log.info("Changed animation to '%s'", animationFilename)
+
+		if animationFilename:match(".*Idle.*") then
+			Log.info("Changed idle animation to '%s'", animationFilename)
+			self.targetView:playAnimation(channel or 'idle', animation, priority or 0, 0)
+		else
+			Log.info("Changed animation to '%s'", animationFilename)
+			self.targetView:playAnimation(channel or 'main', animation, priority or 1, 0)
+		end
+
 	end
 
 	local gameView = self:getGameView()
@@ -189,16 +197,16 @@ function TalkingTinkererApplication:onLipSyncAnimation(_, event)
 	for vowel, shape in pairs(self.VOWEL_TO_SHAPE) do
 		if love.keyboard.isDown(vowel) then
 			local foundPhoneme = false
-			for i = 1, #self.phonemes do
-				if self.phonemes[i].vowel == vowel then
-					self.phonemes[i].mfcc = event.mfcc
+			for i = 1, #self.config do
+				if self.config[i].vowel == vowel then
+					self.config[i].mfcc = event.mfcc
 					foundPhoneme = true
 					break
 				end
 			end
 
 			if not foundPhoneme then
-				table.insert(self.phonemes, {
+				table.insert(self.config, {
 					vowel = vowel,
 					mfcc = event.mfcc
 				})
@@ -213,7 +221,7 @@ function TalkingTinkererApplication:onLipSyncAnimation(_, event)
 	end
 
 	if event.phonemeIndex then
-		local phoneme = self.phonemes[event.phonemeIndex]
+		local phoneme = self.config[event.phonemeIndex]
 		local vowel = phoneme.vowel
 		local shape = self.VOWEL_TO_SHAPE[vowel]
 
@@ -226,11 +234,23 @@ end
 
 function TalkingTinkererApplication:updatePhonemes()
 	local phonemes = {}
-	for i = 1, #self.phonemes do
-		phonemes[i] = self.phonemes[i].mfcc
+	for i = 1, #self.config do
+		phonemes[i] = self.config[i].mfcc
 	end
 
 	self.lipSync:updatePhonemes(phonemes)
+end
+
+function TalkingTinkererApplication:loadCamera()
+	local cameraConfig = self.config.camera or {}
+
+	self.cameraController.cameraOffset = Vector(unpack(cameraConfig.position or { 0, 0, 0 }))
+	self.cameraController.targetDistance = cameraConfig.distance or self.cameraController.targetDistance
+
+	local gameCamera = self:getCamera()
+	gameCamera:setHorizontalRotation(cameraConfig.horizontalRotation or gameCamera:getHorizontalRotation())
+	gameCamera:setVerticalRotation(cameraConfig.verticalRotation or gameCamera:getVerticalRotation())
+	gameCamera:setDistance(cameraConfig.distance or gameCamera:getDistance())
 end
 
 function TalkingTinkererApplication:renderTick()
@@ -254,6 +274,8 @@ function TalkingTinkererApplication:renderTick()
 end
 
 function TalkingTinkererApplication:drawTinkerer()
+	self.recordingDevice:stop(1024)
+
 	local suffix = os.date("%Y-%m-%d %H%M%S")
 	directory = string.format("Tinkerer %s", suffix)
 
@@ -286,12 +308,12 @@ function TalkingTinkererApplication:drawTinkerer()
 
 		currentTime = currentTime + deltaPerTick
 		index = index + 1
-
-		Log.info("Rendered frame %d.", index)
 	end
 
 	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), directory)
 	Log.info("Saved Tinkerer animation to directory '%s'", url)
+
+	love.filesystem.write("tinkerer.txt", url)
 end
 
 function TalkingTinkererApplication:keyDown(key, ...)
@@ -355,8 +377,16 @@ end
 function TalkingTinkererApplication:quit()
 	Application.quit(self)
 
+	local gameCamera = self:getCamera()
+	self.config.camera = {
+		position = { self.cameraController.cameraOffset:get() },
+		horizontalRotation = gameCamera:getHorizontalRotation(),
+		verticalRotation= gameCamera:getVerticalRotation(),
+		distance = gameCamera:getDistance()
+	}
+
 	local serpent = require "serpent"
-	local phonemes = serpent.block(self.phonemes, { comment = false })
+	local phonemes = serpent.block(self.config, { comment = false })
 	love.filesystem.write("voice.cfg", phonemes)
 end
 
