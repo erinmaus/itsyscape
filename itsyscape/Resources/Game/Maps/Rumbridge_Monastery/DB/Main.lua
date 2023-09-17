@@ -115,6 +115,18 @@ do
 	}
 end
 
+M["Anchor_FromViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 4,
+		PositionZ = 6,
+		Name = "Anchor_FromViziersRock",
+		Map = M._MAP,
+		Resource = M["Anchor_FromViziersRock"]
+	}
+end
+
 M["Portal_ToCastle"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -160,6 +172,55 @@ do
 	}
 
 	M["Portal_ToCastle"] {
+		TravelAction
+	}
+end
+
+M["Portal_ToViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 4,
+		PositionZ = 2,
+		Name = "Portal_ToViziersRock",
+		Map = M._MAP,
+		Resource = M["Portal_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 2,
+		SizeZ = 4,
+		MapObject = M["Portal_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier's Rock",
+		Language = "en-US",
+		Resource = M["Portal_ToViziersRock"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromRumbridge",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToViziersRock"] {
 		TravelAction
 	}
 end

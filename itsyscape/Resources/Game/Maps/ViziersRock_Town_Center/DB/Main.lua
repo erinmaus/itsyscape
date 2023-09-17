@@ -311,6 +311,67 @@ do
 	}
 end
 
+M["Anchor_FromRumbridge"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 61,
+		Name = "Anchor_FromRumbridge",
+		Map = M._MAP,
+		Resource = M["Anchor_FromRumbridge"]
+	}
+end
+
+M["Portal_ToRumbridge"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 61,
+		Name = "Portal_ToRumbridge",
+		Map = M._MAP,
+		Resource = M["Portal_ToRumbridge"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 3.5,
+		MapObject = M["Portal_ToRumbridge"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToRumbridge"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Floor 2",
+		Language = "en-US",
+		Resource = M["Portal_ToRumbridge"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromViziersRock",
+		Map = ItsyScape.Resource.Map "Rumbridge_Monastery",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-up",
+		XProgressive = "Walking-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToRumbridge"] {
+		TravelAction
+	}
+end
+
 M["TrapDoor_ToSewers"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

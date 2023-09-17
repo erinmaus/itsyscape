@@ -504,8 +504,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -795,8 +795,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1372,8 +1372,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1664,8 +1664,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1679,8 +1679,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1694,8 +1694,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1709,8 +1709,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -1999,8 +1999,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4237,8 +4237,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4252,8 +4252,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4267,8 +4267,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4297,8 +4297,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4312,8 +4312,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4327,8 +4327,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4548,8 +4548,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -4845,8 +4845,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -5134,8 +5134,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -5423,8 +5423,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -5727,8 +5727,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -9521,8 +9521,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -10098,8 +10098,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -10392,8 +10392,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -12667,8 +12667,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
@@ -13251,8 +13251,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 				["mask-key"] = true,
 			},
 		},
