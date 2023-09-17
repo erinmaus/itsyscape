@@ -29,11 +29,12 @@ Instance.UNLOAD_TICK_DELAY = 2
 
 Instance.Map = Class()
 
-function Instance.Map:new(layer, map, tileSetID, maskID)
+function Instance.Map:new(layer, map, tileSetID, maskID, meta)
 	self.layer = layer
 	self.map = map
 	self.tileSetID = tileSetID
 	self.maskID = maskID
+	self.meta = meta
 	self.transform = { n = 0 }
 end
 
@@ -51,6 +52,10 @@ end
 
 function Instance.Map:getMaskID()
 	return self.maskID
+end
+
+function Instance.Map:getMeta()
+	return self.meta
 end
 
 function Instance.Map:setTransform(...)
@@ -232,14 +237,14 @@ function Instance:new(id, filename, stage)
 	self.onPlayerLeave = Callback()
 	self.onUnload = Callback()
 
-	self._onLoadMap = function(_, map, layer, tileSetID, maskID)
+	self._onLoadMap = function(_, map, layer, tileSetID, maskID, meta)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Adding map to instance %s (%d) on layer %d.",
 				self:getFilename(),
 				self:getID(),
 				layer)
-			self.maps[layer] = Instance.Map(layer, map, tileSetID, maskID)
+			self.maps[layer] = Instance.Map(layer, map, tileSetID, maskID, meta)
 		else
 			Log.engine(
 				"Did not add map to instance %s (%d) on layer %d; layer is not in instance.",
@@ -296,7 +301,7 @@ function Instance:new(id, filename, stage)
 
 			local previousMap = self.maps[layer]
 			if previousMap then
-				self.maps[layer] = Instance.Map(layer, map, previousMap:getTileSetID(), previousMap:getMaskID())
+				self.maps[layer] = Instance.Map(layer, map, previousMap:getTileSetID(), previousMap:getMaskID(), previousMap:getMeta())
 			end
 		else
 			Log.engine(
@@ -1263,7 +1268,7 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onLoadMap",
-				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID()))
+				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta()))
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
