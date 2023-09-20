@@ -26,3 +26,22 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Book_Powernomicon"
 }
+
+ItsyScape.Resource.Prop "Book_Feathers"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicBook",
+	Resource = ItsyScape.Resource.Prop "Book_Feathers"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Book of feathers",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Book_Feathers"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The canon religious text for Bastiel, the Divine Arbiter, and His followers.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Book_Feathers"
+}
