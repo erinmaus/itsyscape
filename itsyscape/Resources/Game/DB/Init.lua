@@ -1072,6 +1072,7 @@ include "Resources/Game/DB/Props/Shops.lua"
 include "Resources/Game/DB/Props/ChemistTable.lua"
 include "Resources/Game/DB/Props/CSGBuilding.lua"
 include "Resources/Game/DB/Props/Farm.lua"
+include "Resources/Game/DB/Props/Altars.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
