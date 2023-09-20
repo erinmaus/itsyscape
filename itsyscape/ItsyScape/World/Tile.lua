@@ -67,7 +67,6 @@ function Tile:_getSerializedData()
 	local result = {}
 	for k, v in pairs(self.data) do
 		if not Class.isClass(v) and WHITELIST_DATA_TYPES[type(v)] then
-			if not k:match("^x%-") then print("--- serialized", k, v) end
 			result[k] = v
 		end
 	end
