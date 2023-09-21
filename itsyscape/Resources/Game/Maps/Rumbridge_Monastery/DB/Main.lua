@@ -224,3 +224,54 @@ do
 		TravelAction
 	}
 end
+
+M["Monk1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 4,
+		PositionZ = 9,
+		Name = "Monk1",
+		Map = M._MAP,
+		Resource = M["Monk1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "BastielZealotMonk",
+		MapObject = M["Monk1"]
+	}
+end
+
+M["Monk2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 4,
+		PositionZ = 9,
+		Name = "Monk2",
+		Map = M._MAP,
+		Resource = M["Monk2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "BastielZealotMonk",
+		MapObject = M["Monk2"]
+	}
+end
+
+M["Monk3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 17,
+		Name = "Monk3",
+		Map = M._MAP,
+		Resource = M["Monk3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "BastielZealotMonk",
+		MapObject = M["Monk3"]
+	}
+end
