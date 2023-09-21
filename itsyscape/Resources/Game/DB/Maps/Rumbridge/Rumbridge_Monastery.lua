@@ -28,3 +28,24 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Rumbridge_Monastery_StainedGlassWindow"
 }
+
+ItsyScape.Resource.Prop "Pew_RumbridgeMonastery" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "Pew_RumbridgeMonastery"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Pew",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Pew_RumbridgeMonastery"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That's sure a comfy pew!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Pew_RumbridgeMonastery"
+}

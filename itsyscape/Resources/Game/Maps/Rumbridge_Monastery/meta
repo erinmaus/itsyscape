@@ -4,8 +4,8 @@
 		tileSetID = "RumbridgeMainland",
 		maskID =
 		{
-			building = "Building",
 			default = true,
+			building = "Building",
 		},
 	},
 }
