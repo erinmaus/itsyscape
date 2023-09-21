@@ -49,3 +49,38 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Pew_RumbridgeMonastery"
 }
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 4.5,
+	SizeY = 3,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Pew_RumbridgeMonastery"
+}
+
+do
+	local Monk = ItsyScape.Resource.Peep "BastielZealotMonk"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.BastielMonk.BastielZealotMonk",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bastiellian monk",
+		Language = "en-US",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "This monk is so devoted to Bastiel that their left eye overtook their head.",
+		Language = "en-US",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/BastielMonk/BastielMonk_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Monk
+	}
+end
