@@ -256,7 +256,7 @@ function One:ready(director, game)
 	end
 
 	local function roll(t)
-		local index = math.random(1, #t)
+		local index = love.math.random(1, #t)
 		return t[index]
 	end
 

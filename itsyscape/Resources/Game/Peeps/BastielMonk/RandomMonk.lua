@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Pirate/BasePirate.lua
+-- Resources/Peeps/BastielMonk/RandomMonk.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,15 +8,15 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
-local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
-local BasePirate = Class(Player)
+local RandomMonk = Class(Player)
 
 local SKIN = {
 	"Light",
@@ -26,31 +26,32 @@ local SKIN = {
 	"Zombi"
 }
 
-function BasePirate:new(resource, name, ...)
-	Player.new(self, resource, name or 'Pirate', ...)
+function RandomMonk:new(resource, name, ...)
+	Player.new(self, resource, name or 'RandomMonk', ...)
 end
 
-function BasePirate:ready(director, game)
+function RandomMonk:ready(director, game)
+	Player.ready(self, director, game)
+
 	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
+	actor = actor and actor.actor
+
+	if not actor then
+		return
 	end
 
 	local skin = SKIN[love.math.random(#SKIN)]
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		string.format("Resources/Game/Skins/PlayerKit1/Head/%s.lua", skin))
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
+
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/PirateVest.lua")
+		"Resources/Game/Skins/PlayerKit1/Shirts/MonkRobe.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
+
 	local eyes
 	if skin == "Zombi" then
 		eyes = CacheRef(
@@ -62,16 +63,11 @@ function BasePirate:ready(director, game)
 			"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua")
 	end
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
+
 	local hands = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		string.format("Resources/Game/Skins/PlayerKit1/Hands/%s.lua", skin))
 	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
-
-	Player.ready(self, director, game)
 end
 
-return BasePirate
+return RandomMonk
