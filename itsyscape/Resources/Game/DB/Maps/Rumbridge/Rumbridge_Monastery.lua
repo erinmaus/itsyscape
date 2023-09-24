@@ -71,7 +71,7 @@ do
 		Resource = Monk
 	}
 
-	ItsyScape.Meta.ResourceName {
+	ItsyScape.Meta.ResourceDescription {
 		Value = "This monk is so devoted to Bastiel that their left eye overtook their head.",
 		Language = "en-US",
 		Resource = Monk
@@ -80,6 +80,34 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "idle",
 		Tree = "Resources/Game/Peeps/BastielMonk/BastielMonk_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Monk
+	}
+end
+
+do
+	local Monk = ItsyScape.Resource.Peep "RandomMonk"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.BastielMonk.RandomMonk",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Monk",
+		Language = "en-US",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A devout follower of Bastiel, yearning to become closer with Him.",
+		Language = "en-US",
+		Resource = Monk
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/BastielMonk/RandomMonk_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = Monk
 	}

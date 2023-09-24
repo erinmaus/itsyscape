@@ -275,3 +275,117 @@ do
 		MapObject = M["Monk3"]
 	}
 end
+
+M["ChefMonk"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "ChefMonk",
+		Map = M._MAP,
+		Resource = M["ChefMonk"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["ChefMonk"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "WhiteApron",
+		Count = 1,
+		Resource = M["ChefMonk"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ChefsHat",
+		Count = 1,
+		Resource = M["ChefMonk"]
+	}
+end
+
+M["Monk4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Monk4",
+		Map = M._MAP,
+		Resource = M["Monk4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["Monk4"]
+	}
+end
+
+M["Monk5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 73,
+		Name = "Monk5",
+		Map = M._MAP,
+		Resource = M["Monk5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["Monk5"]
+	}
+end
+
+M["Monk6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 4,
+		PositionZ = 71,
+		Name = "Monk6",
+		Map = M._MAP,
+		Resource = M["Monk6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["Monk6"]
+	}
+end
+
+M["Monk7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 4,
+		PositionZ = 87,
+		Name = "Monk7",
+		Map = M._MAP,
+		Resource = M["Monk7"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["Monk7"]
+	}
+end
+
+M["Monk8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 85,
+		Name = "Monk8",
+		Map = M._MAP,
+		Resource = M["Monk8"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomMonk",
+		MapObject = M["Monk8"]
+	}
+end
