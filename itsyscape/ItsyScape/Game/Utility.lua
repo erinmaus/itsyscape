@@ -850,12 +850,14 @@ function Utility.UI.openGroup(peep, group)
 	end
 end
 
-function Utility.UI.closeAll(peep)
+function Utility.UI.closeAll(peep, id)
 	local ui = peep:getDirector():getGameInstance():getUI()
 
 	local interfaces = {}
 	for interfaceID, interfaceIndex in ui:getInterfacesForPeep(peep) do
-		table.insert(interfaces, { id = interfaceID, index = interfaceIndex })
+		if not id or id == interfaceID then
+			table.insert(interfaces, { id = interfaceID, index = interfaceIndex })
+		end
 	end
 
 	for i = 1, #interfaces do
