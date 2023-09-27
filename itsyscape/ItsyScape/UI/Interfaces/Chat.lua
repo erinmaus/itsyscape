@@ -23,6 +23,7 @@ Chat.WIDTH   = 480
 Chat.HEIGHT  = 240
 Chat.INPUT   = 48
 Chat.PADDING = 8
+Chat.Z_DEPTH = -1000
 
 Chat.LINE_HEIGHT = 24
 
@@ -79,6 +80,8 @@ function Chat:new(id, index, ui)
 
 	self.keybind = Keybinds['PLAYER_1_CHAT']
 	self.isKeybindDown = self.keybind:isDown()
+
+	self:setZDepth(Chat.Z_DEPTH)
 end
 
 function Chat:onTextInputFocus()
