@@ -347,7 +347,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Floor 2",
+		Value = "Rumbridge Monastery",
 		Language = "en-US",
 		Resource = M["Portal_ToRumbridge"]
 	}
@@ -357,13 +357,6 @@ do
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromViziersRock",
 		Map = ItsyScape.Resource.Map "Rumbridge_Monastery",
-		Action = TravelAction
-	}
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Walk-up",
-		XProgressive = "Walking-up",
-		Language = "en-US",
 		Action = TravelAction
 	}
 
