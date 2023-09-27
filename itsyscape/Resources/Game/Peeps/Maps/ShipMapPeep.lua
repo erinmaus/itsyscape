@@ -48,6 +48,24 @@ function ShipMapPeep:new(resource, name, ...)
 	self.isSunk = false
 	self.sinkTime = 0
 	self.beached = false
+
+	self:silence('playerEnter', Map.showPlayerMapInfo)
+	self:listen('playerEnter', ShipMapPeep.showPlayerMapInfo)
+end
+
+function ShipMapPeep:showPlayerMapInfo(player)
+	local args = self:getArguments() or {}
+	local mapResourceName = args['map']
+	if not mapResourceName then
+		return
+	end
+
+	local mapResource = self:getDirector():getGameDB():getResource(mapResourceName, "Map")
+	if not mapResource then
+		return
+	end
+
+	Map.showPlayerMapInfo(self, player, mapResource)
 end
 
 function ShipMapPeep:getPrefix()
