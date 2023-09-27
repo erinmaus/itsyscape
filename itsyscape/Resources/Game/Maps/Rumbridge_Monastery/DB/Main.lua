@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A place where monks make rum and the main bridge across the Rum River.",
+	Value = "A place where monks make rum and the main bridge across the River Rum.",
 	Language = "en-US",
 	Resource = M._MAP
 }

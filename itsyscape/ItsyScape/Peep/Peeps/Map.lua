@@ -22,8 +22,38 @@ function Map:new(resource, name, ...)
 	self:addPoke('playerEnter')
 	self:addPoke('playerLeave')
 
+	self:listen('playerEnter', Map.showPlayerMapInfo)
+
 	self.filename = ""
 	self.arguments = {}
+end
+
+function Map:showPlayerMapInfo(player, resource)
+	local playerPeep = player:getActor():getPeep()
+
+	local storage = self:getDirector():getPlayerStorage(playerPeep)
+	if storage:getRoot():getSection("Location"):get("isTitleScreen") then
+		return
+	end
+
+	local layer = Utility.Peep.getLayer(playerPeep)
+	if layer ~= self:getLayer() then
+		return
+	end
+
+	local resource = resource or Utility.Peep.getResource(self)
+	local name = Utility.getName(resource, self:getDirector():getGameDB())
+	local description = Utility.getDescription(resource, self:getDirector():getGameDB())
+
+	if resource and name and description then
+		Utility.UI.closeAll(playerPeep, "MapInfo")
+
+		Utility.UI.openInterface(
+			playerPeep,
+			"MapInfo",
+			false,
+			resource)
+	end
 end
 
 function Map:getFilename()
