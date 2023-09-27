@@ -17,7 +17,7 @@ local Drawable = require "ItsyScape.UI.Drawable"
 
 local MapInfo = Class(Interface)
 MapInfo.PADDING = 96
-MapInfo.Z_DEPTH = -1000
+MapInfo.Z_DEPTH = -100
 MapInfo.WIDTH = 640
 MapInfo.HEIGHT = 16
 
