@@ -295,7 +295,8 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "wood"
+		name = "wood",
+		mask = false
 	},
 
 	{
@@ -312,6 +313,7 @@
 		width = 128,
 		height = 128,
 		name = "brick",
+		mask = false
 	},
 
 	{
@@ -320,6 +322,7 @@
 		width = 128,
 		height = 256,
 		name = "brick_wall",
+		mask = false
 	},
 
 	{
@@ -327,7 +330,8 @@
 		y = 0,
 		width = 128,
 		height = 128,
-		name = "invisible"
+		name = "invisible",
+		mask = false
 	},
 
 	{
@@ -335,7 +339,7 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "brick_wide",
+		name = "brick_wide"
 	},
 
 	{
@@ -344,5 +348,6 @@
 		width = 128,
 		height = 128,
 		name = "brick_wide_dark",
+		mask = false
 	}
 }
