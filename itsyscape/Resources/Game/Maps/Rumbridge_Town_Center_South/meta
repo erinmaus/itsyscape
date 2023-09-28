@@ -1,0 +1,7 @@
+{
+	{
+		autoMask = true,
+		maskID = true,
+		tileSetID = "RumbridgeMainland",
+	},
+}
