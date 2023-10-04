@@ -111,9 +111,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 4,
+	SizeX = 3.5,
 	SizeY = 4,
-	SizeZ = 1.5,
+	SizeZ = 0.5,
 	MapObject = ItsyScape.Resource.Prop "Door_RumbridgeCastle"
 }
 
