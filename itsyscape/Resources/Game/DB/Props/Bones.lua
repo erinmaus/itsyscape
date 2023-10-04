@@ -11,7 +11,7 @@
 ItsyScape.Resource.Prop "Bones_Skull"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "Bones_Skull"
 }
 
@@ -49,7 +49,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Prop "Bones_JustBones"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "Bones_JustBones"
 }
 
