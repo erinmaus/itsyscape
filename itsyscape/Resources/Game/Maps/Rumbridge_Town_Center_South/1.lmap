@@ -8014,6 +8014,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
