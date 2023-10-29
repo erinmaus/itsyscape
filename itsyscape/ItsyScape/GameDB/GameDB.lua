@@ -69,6 +69,8 @@ function GameDB.create(inputFilename, outputFilename)
 	S.Requirement = S.require "ItsyScape.GameDB.Commands.Requirement"
 	S.Resource = S.require "ItsyScape.GameDB.Commands.Resource"
 	S.ResourceType = S.require "ItsyScape.GameDB.Commands.ResourceType"
+	S.Log = require "ItsyScape.Common.Log"
+	S.debug = require "debug"
 
 	local p = pairs
 	S.spairs = function(t)
