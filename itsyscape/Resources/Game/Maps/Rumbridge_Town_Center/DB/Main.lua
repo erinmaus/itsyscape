@@ -159,52 +159,52 @@ do
 	}
 end
 
-M["Anchor_FromCastle"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromSouth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 4,
 		PositionZ = 63,
-		Name = "Anchor_FromCastle",
+		Name = "Anchor_FromSouth",
 		Map = M._MAP,
-		Resource = M["Anchor_FromCastle"]
+		Resource = M["Anchor_FromSouth"]
 	}
 end
 
-M["Portal_ToCastle"] = ItsyScape.Resource.MapObject.Unique()
+M["Portal_ToSouth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 30,
 		PositionY = 4,
 		PositionZ = 62,
-		Name = "Portal_ToCastle",
+		Name = "Portal_ToSouth",
 		Map = M._MAP,
-		Resource = M["Portal_ToCastle"]
+		Resource = M["Portal_ToSouth"]
 	}
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 4,
 		SizeY = 2,
 		SizeZ = 4,
-		MapObject = M["Portal_ToCastle"]
+		MapObject = M["Portal_ToSouth"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
-		MapObject = M["Portal_ToCastle"]
+		MapObject = M["Portal_ToSouth"]
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Rumbridge Castle",
+		Value = "Rumbridge City Center, Shade District",
 		Language = "en-US",
-		Resource = M["Portal_ToCastle"]
+		Resource = M["Portal_ToSouth"]
 	}
 
 	local TravelAction = ItsyScape.Action.Travel()
 
 	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromTown",
-		Map = ItsyScape.Resource.Map "Rumbridge_Castle",
+		Anchor = "Anchor_FromNorth",
+		Map = ItsyScape.Resource.Map "Rumbridge_Town_Center_South",
 		Action = TravelAction
 	}
 
@@ -215,7 +215,7 @@ do
 		Action = TravelAction
 	}
 
-	M["Portal_ToCastle"] {
+	M["Portal_ToSouth"] {
 		TravelAction
 	}
 end

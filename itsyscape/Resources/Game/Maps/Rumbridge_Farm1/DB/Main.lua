@@ -1,7 +1,7 @@
 local M = include "Resources/Game/Maps/Rumbridge_Farm1/DB/Default.lua"
 
 ItsyScape.Meta.ResourceName {
-	Value = "South Farm, Rumbridge",
+	Value = "North Farm, Rumbridge",
 	Language = "en-US",
 	Resource = M._MAP
 }
