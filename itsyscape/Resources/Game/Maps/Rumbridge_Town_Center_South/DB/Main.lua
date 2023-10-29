@@ -7,7 +7,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The weirder part of Rumbridge, home to a crazy witch.",
+	Value = "The weirder part of Rumbridge.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -155,6 +155,67 @@ do
 	}
 
 	M["Portal_ToNorth"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromEast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 29,
+		Name = "Anchor_FromEast",
+		Map = M._MAP,
+		Resource = M["Anchor_FromEast"]
+	}
+end
+
+M["Portal_ToEast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 4,
+		PositionZ = 29,
+		Name = "Portal_ToEast",
+		Map = M._MAP,
+		Resource = M["Portal_ToEast"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_ToEast"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToEast"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge City Center, East",
+		Language = "en-US",
+		Resource = M["Portal_ToEast"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromShade",
+		Map = ItsyScape.Resource.Map "Rumbridge_Town_Homes",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToEast"] {
 		TravelAction
 	}
 end
