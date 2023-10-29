@@ -15,9 +15,13 @@ local Resource = require "ItsyScape.GameDB.Commands.Resource"
 local MetaInstance = Class(Pokeable)
 
 function MetaInstance:new(meta, t)
+	self.meta = meta
 	self.definition = meta:getDefinition()
 	self.instance = false
 	self.values = {}
+
+	local info = debug.getinfo(4, "Sl")
+	self.debugInfo = info
 
 	if t ~= nil then
 		self:poke(t)
@@ -40,7 +44,11 @@ function MetaInstance:instantiate(brochure)
 			self.instance:set(key, v)
 		end
 
-		brochure:insert(self.definition, self.instance)
+		local s, e = pcall(function() brochure:insert(self.definition, self.instance) end)
+		if not s then
+			local message = string.format("%s:%d: Could not insert Meta ('%s') from: %s", self.debugInfo.source, self.debugInfo.currentline, self.meta:getName(), Log.stringify(self.values))
+			error(message, 0)
+		end
 	end
 
 	return self.instance
