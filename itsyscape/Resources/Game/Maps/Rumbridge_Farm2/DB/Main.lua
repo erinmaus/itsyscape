@@ -1,7 +1,7 @@
 local M = include "Resources/Game/Maps/Rumbridge_Farm2/DB/Default.lua"
 
 ItsyScape.Meta.ResourceName {
-	Value = "North Farm, Rumbridge",
+	Value = "South Farm, Rumbridge",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -101,9 +101,9 @@ end
 M["Anchor_FromFarm1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30,
+		PositionX = 28,
 		PositionY = 4,
-		PositionZ = 58,
+		PositionZ = 3,
 		Name = "Anchor_FromFarm1",
 		Map = M._MAP,
 		Resource = M["Anchor_FromFarm1"]
@@ -155,6 +155,67 @@ do
 	}
 
 	M["Portal_RumbridgeFarmNorth"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromLeafyLake"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 4,
+		PositionZ = 58,
+		Name = "Anchor_FromLeafyLake",
+		Map = M._MAP,
+		Resource = M["Anchor_FromLeafyLake"]
+	}
+end
+
+M["Portal_LeafyLake"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 4,
+		PositionZ = 61,
+		Name = "Portal_LeafyLake",
+		Map = M._MAP,
+		Resource = M["Portal_LeafyLake"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 2,
+		SizeZ = 4,
+		MapObject = M["Portal_LeafyLake"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_LeafyLake"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge Farm, North",
+		Language = "en-US",
+		Resource = M["Portal_LeafyLake"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromFarm",
+		Map = ItsyScape.Resource.Map "Rumbridge_LeafyLake",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_LeafyLake"] {
 		TravelAction
 	}
 end

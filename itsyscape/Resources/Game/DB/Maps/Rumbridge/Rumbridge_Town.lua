@@ -63,3 +63,45 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "Butcher_Urgo"
 }
+
+ItsyScape.Resource.Peep "Lyra" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Lyra.Lyra",
+	Resource = ItsyScape.Resource.Peep "Lyra"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Lyra",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Lyra"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A member of witch society, she yearns to learn more about the nature of magic.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Lyra"
+}
+
+ItsyScape.Resource.Peep "Oliver" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Oliver.Oliver",
+	Resource = ItsyScape.Resource.Peep "Oliver"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Oliver",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Oliver"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "What kind of dog is that?",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Oliver"
+}

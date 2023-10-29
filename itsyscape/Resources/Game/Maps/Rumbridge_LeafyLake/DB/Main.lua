@@ -98,6 +98,145 @@ do
 	}
 end
 
+M["Anchor_FromCity"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 4,
+		PositionZ = 47,
+		Name = "Anchor_FromCity",
+		Map = M._MAP,
+		Resource = M["Anchor_FromCity"]
+	}
+end
+
+M["Portal_ToCity"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 4,
+		PositionZ = 49,
+		Name = "Portal_ToCity",
+		Map = M._MAP,
+		Resource = M["Portal_ToCity"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 6,
+		MapObject = M["Portal_ToCity"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToCity"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge City, East",
+		Language = "en-US",
+		Resource = M["Portal_ToCity"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromLeafyLake",
+		Map = ItsyScape.Resource.Map "Rumbridge_Town_Homes",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToCity"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromFarm"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 26,
+		PositionY = 5,
+		PositionZ = 5,
+		Name = "Anchor_FromFarm",
+		Map = M._MAP,
+		Resource = M["Anchor_FromFarm"]
+	}
+end
+
+M["Portal_ToFarm"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 26,
+		PositionY = 5,
+		PositionZ = 3,
+		Name = "Portal_ToFarm",
+		Map = M._MAP,
+		Resource = M["Portal_ToFarm"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 2,
+		SizeZ = 6,
+		MapObject = M["Portal_ToFarm"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToFarm"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge Farm, East",
+		Language = "en-US",
+		Resource = M["Portal_ToFarm"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromLeafyLake",
+		Map = ItsyScape.Resource.Map "Rumbridge_Farm2",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToFarm"] {
+		TravelAction
+	}
+end
+
+M["Cheep"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 26,
+		PositionY = 5.5,
+		PositionZ = 7,
+		Name = "Cheep",
+		Map = M._MAP,
+		Resource = M["Cheep"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Cheep_Base",
+		MapObject = M["Cheep"]
+	}
+end
+
 M["Anchor_IslandFromCavern"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
