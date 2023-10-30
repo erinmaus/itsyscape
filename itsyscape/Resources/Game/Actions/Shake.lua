@@ -54,7 +54,7 @@ end
 
 function Shake:drop(state, player, target)
 	if not target:hasBehavior(GatheredResourceBehavior) then
-		local gatherActionTable, totalWeight = ForagingSkill.materializeGatherActionTable(player, target)
+		local gatherActionTable, totalWeight = ForagingSkill.materializeGatherActionTable(player, target, self.FLAGS)
 		Log.info(
 			"Number of gather actions & loot: %d (total weight: %d).",
 			#gatherActionTable, totalWeight)
