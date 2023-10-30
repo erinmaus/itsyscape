@@ -109,7 +109,22 @@ function ShopWindowController:buy(e)
 	local player = self:getPeep()
 	local count = math.min(action:count(player:getState(), player), e.count)
 
-	action:perform(player:getState(), player, e.count)
+	local success, result = action:perform(player:getState(), player, e.count)
+	if not success then
+		if result == action.ERROR_QUANTITY then
+			Utility.UI.notifyFailure(
+				player,
+				"Don't have enough currency to buy even a single item!")
+		elseif result == action.ERROR_INVENTROY_SPACE then
+			Utility.UI.notifyFailure(
+				player,
+				"No inventory space for item(s)!")
+		else
+			Utility.UI.notifyFailure(
+				player,
+				"The shop keeper declines your offer.")
+		end
+	end
 end
 
 function ShopWindowController:selectShop(e)
