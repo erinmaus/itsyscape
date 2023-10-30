@@ -27,13 +27,14 @@ function Foraging.calculateWeight(foragingLevel, resourceTier, resourceFactor)
 	return math.floor(clampedPowerDelta)
 end
 
-function Foraging.materializeGatherActionTable(player, target)
+function Foraging.materializeGatherActionTable(player, target, flags)
 	local director = target:getDirector()
 	local gameDB = director:getGameDB()
 	local game = director:getGameInstance()
 
 	local targetResource = Utility.Peep.getResource(target)
 	local targetActions = Utility.getActions(game, targetResource, 'x-shake')
+	local resultActions = {}
 
 	local foragingLevel = player:getState():count(
 		"Skill", "Foraging", { ['skill-as-level'] = true })
@@ -47,20 +48,31 @@ function Foraging.materializeGatherActionTable(player, target)
 			Action = actionInstance
 		})
 
-		if not foragingAction then
-			Log.warn("No ForagingAction record for a Gather action on resource '%s'.", target:getName())
-			targetAction.foraging = false
-			targetAction.weight = 1
-		else
-			targetAction.foraging = foragingAction
-			targetAction.weight = Foraging.calculateWeight(
-				foragingLevel, foragingAction:get("Tier"), foragingAction:get("Factor"))
-		end
+		if targetAction.instance:canPerform(player:getState(), flags) then
+			if not foragingAction then
+				Log.warn("No ForagingAction record for a Gather action on resource '%s'.", target:getName())
+				targetAction.foraging = false
+				targetAction.weight = 1
+			else
+				Log.info("Can perform action for tier %d on resource '%s'.", foragingAction:get("Tier"), target:getName())
 
-		totalWeight = totalWeight + targetAction.weight
+				targetAction.foraging = foragingAction
+				targetAction.weight = Foraging.calculateWeight(
+					foragingLevel, foragingAction:get("Tier"), foragingAction:get("Factor"))
+			end
+
+			table.insert(resultActions, targetActions[i])
+			totalWeight = totalWeight + targetAction.weight
+		else
+			if not foragingAction then
+				Log.info("Cannot perform unknown foraging action on resource '%s'.", target:getName())
+			else
+				Log.info("Cannot perform action for tier %d on resource '%s' (player '%s' has foraging level %d).", foragingAction:get("Tier"), target:getName(), player:getName(), foragingLevel)
+			end
+		end
 	end
 
-	return targetActions, totalWeight or 0
+	return resultActions, totalWeight or 0
 end
 
 return Foraging

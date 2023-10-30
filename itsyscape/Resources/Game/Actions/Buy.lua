@@ -15,6 +15,9 @@ local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local Buy = Class(Action)
 Buy.SCOPES = { ['buy'] = true }
 Buy.FLAGS = { ['item-inventory'] = true }
+Buy.ERROR_NO_INVENTORY    = "no inventory"
+Buy.ERROR_QUANTITY        = "can't buy anything"
+Buy.ERROR_INVENTROY_SPACE = "not enough inventory space"
 
 function Buy:canPerform(state)
 	return Action.canPerform(self, state, { ["item-inventory"] = true })
@@ -50,7 +53,7 @@ function Buy:perform(state, peep, quantity)
 	if inventory and inventory.inventory then
 		inventory = inventory.inventory
 	else
-		return false, "no inventory"
+		return false, self.ERROR_NO_INVENTORY
 	end
 
 
@@ -59,7 +62,7 @@ function Buy:perform(state, peep, quantity)
 
 	quantity = math.min(quantity, self:count(state, Buy.FLAGS))
 	if quantity < 1 then
-		return false, "can't buy anything"
+		return false, self.ERROR_QUANTITY
 	end
 
 	for input in brochure:getInputs(self:getAction()) do
@@ -87,7 +90,7 @@ function Buy:perform(state, peep, quantity)
 				state:give(resourceType.name, resource.name, input.count * quantity, Buy.FLAGS)
 			end
 
-			return false, "not enough inventory space"
+			return false, self.ERROR_INVENTROY_SPACE
 		end
 	end
 
