@@ -23,10 +23,10 @@ local TREES = {
 		ingredients = { "Fruit", "Apple" },
 		fruit = {
 			{ name = "RedApple", tier = 1, factor = 1.5, health = 1 },
-			{ name = "GreenApple", tier = 15, factor = 1.5, health = 1 },
-			{ name = "SiliconApple", tier = 45, factor = 1.5, health = 2 },
+			{ name = "GreenApple", tier = 10, factor = 1.5, health = 1 },
+			{ name = "SiliconApple", tier = 35, factor = 1.5, health = 2 },
 			{ name = "GoldenApple", tier = 65, factor = 5, health = 2 },
-			{ name = "WormyApple", tier = 130, factor = 15, health = -1 },
+			{ name = "WormyApple", tier = 99, factor = 15, health = -1 },
 		}
 	},
 	["Pear"] = {
@@ -103,7 +103,7 @@ for name, tree in spairs(TREES) do
 			},
 
 			Output {
-				Count = ItsyScape.Utility.xpForResource(math.min(fruit.tier + 1, 99)) / #tree.fruit,
+				Count = ItsyScape.Utility.xpForResource(math.min(fruit.tier + 1, 99)),
 				Resource = ItsyScape.Resource.Skill "Foraging"
 			}
 		}
