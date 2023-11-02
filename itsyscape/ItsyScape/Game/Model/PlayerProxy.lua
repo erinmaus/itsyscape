@@ -51,5 +51,6 @@ PlayerProxy.changeCamera = Event.Set(Event.KeyArgument("cameraType"))
 PlayerProxy.changeCamera:link("onChangeCamera", Event.Argument("cameraType"))
 
 PlayerProxy.talk = Event.ClientToServerRPC(Event.Argument("yell"))
+PlayerProxy.addExclusiveChatMessage = Event.ClientToServerRPC(Event.Argument("message"), Event.Argument("color"))
 
 return Proxy(PlayerProxy)

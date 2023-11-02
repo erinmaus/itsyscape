@@ -182,6 +182,8 @@ function Nominomicon:update(...)
 			self.grid:addChild(button)
 		end
 
+		self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
+
 		self.ready = true
 	end
 

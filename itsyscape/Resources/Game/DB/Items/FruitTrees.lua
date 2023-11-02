@@ -14,7 +14,7 @@ local TREES = {
 		ingredients = { "Fruit", "Pecan" },
 		fruit = {
 			{ name = "Pecan", tier = 1, factor = 1.5, health = -1 },
-			{ name = "RegalPecan", tier = 30, factor = 1.5, health = -1 },
+			{ name = "RegalPecan", tier = 10, factor = 1.5, health = -1 },
 			{ name = "GoldenPecan", tier = 60, factor = 3, health = -1 },
 		}
 	},

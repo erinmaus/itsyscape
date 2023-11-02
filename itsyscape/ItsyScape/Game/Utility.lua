@@ -4014,28 +4014,49 @@ function Utility.Quest.isNextStep(quest, step, peep)
 	return false
 end
 
-function Utility.Quest.getNextStep(quest, peep)
-	local steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
-
-	local index = #steps
-	while index > 0 do
+function Utility.Quest._getNextStep(steps, peep, isBranch)
+	for index = 1, #steps do
 		local step = steps[index]
 
 		local numStepsCompleted = 0
 		for i = 1, #step do
-			if peep:getState():has("KeyItem", step[i].name) then
-				numStepsCompleted = numStepsCompleted + 1
+			if type(step[i]) == 'table' then
+				local branchSteps = { Utility.Quest._getNextStep(step[i], peep, true) }
+				if #branchSteps > 0 then
+					local result = {}
+
+					for j = 1, index - 1 do
+						table.insert(result, steps[j])
+					end
+
+					for j = 1, #branchSteps do
+						table.insert(result, branchSteps[j])
+					end
+
+					return unpack(result)
+				end
+			else
+				if peep:getState():has("KeyItem", step[i].name) then
+					numStepsCompleted = numStepsCompleted + 1
+				end
 			end
 		end
 
-		if numStepsCompleted == #step then
-			return steps[index + 1]
-		end
+		if numStepsCompleted < #step then
+			if index == 1 and isBranch then
+				return nil
+			end
 
-		index = index - 1
+			return unpack(steps, 1, index)
+		end
 	end
 
-	return nil
+	return unpack(steps)
+end
+
+function Utility.Quest.getNextStep(quest, peep)
+	local steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
+	return Utility.Quest._getNextStep(steps, peep)
 end
 
 function Utility.Quest.build(quest, gameDB)
@@ -4051,117 +4072,219 @@ function Utility.Quest.build(quest, gameDB)
 
 	local brochure = gameDB:getBrochure()
 
-	local finalStep
+	local firstStep
 	for action in brochure:findActionsByResource(quest) do
 		local definition = brochure:getActionDefinitionFromAction(action)
-		if definition.name:lower() == 'questcomplete' then
-			for requirement in brochure:getRequirements(action) do
-				local resource = brochure:getConstraintResource(requirement)
+		if definition.name:lower() == 'queststart' then
+			for output in brochure:getOutputs(action) do
+				local resource = brochure:getConstraintResource(output)
 				local resourceType = brochure:getResourceTypeFromResource(resource)
 				if resourceType.name:lower() == 'keyitem' then
-					finalStep = resource
+					firstStep = resource
 					break
 				end
 			end
 		end
+
+		if firstStep then
+			break
+		end
 	end
 
-	local e = {}
-	local result = {}
-	if finalStep then
-		table.insert(result, 1, { finalStep })
+	if not firstStep then
+		return { quest = quest, keyItems = {} }
+	end
 
-		local currentSteps = { finalStep }
-		local nextSteps
-		repeat
-			nextSteps = {}
-			for i = 1, #currentSteps do
-				for action in brochure:findActionsByResource(currentSteps[i]) do
-					local definition = brochure:getActionDefinitionFromAction(action)
-					if definition.name:lower() == 'queststep' then
-						for requirement in brochure:getRequirements(action) do
-							local resource = brochure:getConstraintResource(requirement)
-							local resourceType = brochure:getResourceTypeFromResource(resource)
-							if resourceType.name:lower() == 'keyitem' and not e[resource.id.value] then
-								e[resource.id.value] = true
-								table.insert(nextSteps, resource)
-							end
-						end
-					end
+	local nodes = {}
+	local keyItems = {}
+	do
+		local keyItemsEncountered = {}
+		local nodesList = gameDB:getRecords("QuestStep", {
+			Quest = quest
+		})
+
+		for i = 1, #nodesList do
+			local node = nodesList[i]
+			local id = node:get("StepID")
+			local keyItem = node:get("KeyItem")
+
+			local n = nodes[id] or {}
+			table.insert(n, {
+				id = id,
+				quest = quest,
+				keyItem = keyItem,
+				parentID = node:get("ParentID"),
+				nextID = node:get("NextID"),
+				previousID = node:get("PreviousID"),
+				children = {},
+				keyItems = {}
+			})
+
+			if not keyItemsEncountered[keyItem.name] then
+				table.insert(keyItems, keyItem)
+				keyItemsEncountered[keyItem.name] = true
+			end
+
+			nodes[id] = n
+		end
+	end
+
+	local function resolve(currentNodeID)
+		local currentNodes = nodes[currentNodeID]
+
+		local parentNodes = {}
+		for i = 1, #currentNodes do
+			local currentNode = currentNodes[i]
+			local parentNodes = nodes[currentNode.parentID]
+			local nextNodes = nodes[currentNode.nextID]
+			local previousNodes = nodes[currentNode.previousID]
+
+			if parentNodes then
+				for j = 1, #parentNodes do
+					table.insert(parentNodes[j].children, currentNode)
 				end
+
+				currentNode.parent = parentNodes[1]
 			end
 
-			if #nextSteps > 0 then
-				table.insert(result, 1, nextSteps)
-			end
+			currentNode.next = nextNodes and nextNodes[1]
+			currentNode.previous = previousNodes and previousNodes[1]
 
-			currentSteps = nextSteps
-		until #nextSteps == 0
+			table.insert(currentNodes[1].keyItems, currentNode.keyItem)
+		end
 	end
+
+	for i = 1, #nodes do
+		resolve(i)
+	end
+
+	local id = 1
+	local function materialize(node)
+		local result = {}
+
+		local current = node
+		while current do
+			do
+				local currentSteps = { id = id }
+				id = id + 1
+
+				for i = 1, #current.keyItems do
+					currentSteps[i] = current.keyItems[i]
+				end
+				table.insert(result, currentSteps)
+			end
+
+			if #current.children > 0 then
+				local nextSteps = { id = id }
+				id = id + 1
+
+				for i = 1, #current.children do
+					nextSteps[i] = materialize(current.children[i])
+				end
+				table.insert(result, nextSteps)
+			end
+
+			current = current.next
+		end
+
+		return result
+	end
+
+	local result = materialize(nodes[1] and nodes[1][1])
+	result.quest = quest
+	result.keyItems = keyItems
 
 	return result
 end
 
-function Utility.Quest.buildWorkingQuestLog(steps, gameDB)
-	local questInfo = {}
+function Utility.Quest.buildWorkingQuestLog(steps, gameDB, questInfo)
+	questInfo = questInfo or { quest = steps.quest }
+
 	for i = 1, #steps do
 		local step = steps[i]
 		if #step > 1 then
-			local block = {
-				t = 'list'
-			}
+			local block = { t = 'list' }
 
-			for i = 1, #step do
-				local description1 = Utility.getDescription(step[i], gameDB, nil, 1)
-				local description2 = Utility.getDescription(step[i], gameDB, nil, 2)
-				table.insert(block, { description1, description2 })
+			for j = 1, #step do
+				if type(step[j]) == 'table' then
+					Utility.Quest.buildWorkingQuestLog(step[j], gameDB, questInfo)
+				else
+					local description1 = Utility.getDescription(step[j], gameDB, nil, 1)
+					local description2 = Utility.getDescription(step[j], gameDB, nil, 2)
+					table.insert(block, { description1, description2 })
+				end
 			end
 
-			table.insert(questInfo, { block = block, resources = step })
+			questInfo[step.id] = { block = block, resources = step }
 		else
-			table.insert(questInfo, {
+			questInfo[step.id] = {
 				block = {
 					{ Utility.getDescription(step[1], gameDB, nil, 1),
 					  Utility.getDescription(step[1], gameDB, nil, 2) }
 				},
 				resources = step
-			})
+			}
 		end
 	end
 
 	return questInfo
 end
 
-function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, _debug)
+function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep)
 	local result = {}
 
-	local max
-	for i = 2, #questLog do
-		local block = {}
-		local hasAny = false
-		for j = 1, #questLog[i].resources do
-			if peep:getState():has("KeyItem", questLog[i].resources[j].name) then
-				table.insert(block, questLog[i].block[j][2])
-				hasAny = true
+	local steps = { Utility.Quest.getNextStep(questLog.quest, peep) }
+	if #steps == 0 then
+		steps = {}
+	end
+
+	for i = 1, #steps do
+		local step = steps[i]
+		local questLogForStep = questLog[step.id]
+		local isChoice = type(step[1]) == 'table'
+
+		if isChoice then
+			if i == #steps then
+				table.insert(result, { t = 'text', "And so you see multiple possible paths..."})
+
+				local choices = { t = 'list' }
+				for j = 1, #step do
+					local subStep = step[j][1]
+					table.insert(choices, questLog[subStep.id].block[1][1])
+				end
+
+				table.insert(result, choices)
 			else
-				table.insert(block, questLog[i].block[j][1])
-			end
-		end
+				table.insert(result, { t = 'text', "And so you made a choice..."})
 
-		if #block == 1 then
-			block.t = 'text'
+				for j = 1, #step do
+					local subStep = step[j][1]
+					local subStepKeyItem = subStep[1]
+
+					if peep:getState():has("KeyItem", subStepKeyItem.name) then
+						table.insert(result, { t = 'text', questLog[subStep.id].block[1][2] })
+						break
+					end
+				end
+			end
 		else
-			block.t = 'list'
-		end
+			local block = {}
 
-		table.insert(result, block)
-
-		if not hasAny then
-			max = i
-
-			if not _debug then
-				break
+			for j = 1, #step do
+				if peep:getState():has("KeyItem", step[j].name) then
+					table.insert(block, questLogForStep.block[j][2])
+				else
+					table.insert(block, questLogForStep.block[j][1])
+				end
 			end
+
+			if #block == 1 then
+				block.t = 'text'
+			else
+				block.t = 'list'
+			end
+
+			table.insert(result, block)
 		end
 	end
 

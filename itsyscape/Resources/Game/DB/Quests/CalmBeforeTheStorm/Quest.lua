@@ -8,22 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Quest "CalmBeforeTheStorm" {
-	ItsyScape.Action.QuestStart() {
-		Output {
-			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_Start",
-			Count = 1
-		}
-	},
-
-	ItsyScape.Action.QuestComplete() {
-		Requirement {
-			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
-			Count = 1
-		}
-	}
-}
-
 ItsyScape.Meta.ResourceName {
 	Value = "Calm Before the Storm",
 	Language = "en-US",
@@ -43,139 +27,102 @@ ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GaveOrlandoFish"
 
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph"
 
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_Start",
-	"CalmBeforeTheStorm_TalkedToIsabelle1"
-)
+local Quest = ItsyScape.Utility.Quest
+local Step = ItsyScape.Utility.QuestStep
 
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToIsabelle1",
-	"CalmBeforeTheStorm_TalkedToGrimm1"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotCrawlingCopper")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotTenseTin")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotAncientDriftwood")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotSquidSkull")
-
-ItsyScape.Utility.questStep(
-	{
+Quest "CalmBeforeTheStorm" {
+	Step "CalmBeforeTheStorm_Start",
+	Step "CalmBeforeTheStorm_TalkedToIsabelle1",
+	Step "CalmBeforeTheStorm_TalkedToGrimm1",
+	Step {
 		"CalmBeforeTheStorm_GotCrawlingCopper",
 		"CalmBeforeTheStorm_GotTenseTin",
 		"CalmBeforeTheStorm_GotAncientDriftwood",
-		"CalmBeforeTheStorm_GotSquidSkull"
+		"CalmBeforeTheStorm_GotSquidSkull",
 	},
-
-	"CalmBeforeTheStorm_GotAllItems"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_GotAllItems",
-	"CalmBeforeTheStorm_TalkedToIsabelle2"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToIsabelle2",
-	"CalmBeforeTheStorm_TalkedToJenkins")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToJenkins",
-	"CalmBeforeTheStorm_OpenedHighChambersYendor")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_OpenedHighChambersYendor",
-	"CalmBeforeTheStorm_MysteryBoss")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_MysteryBoss",
-	"CalmBeforeTheStorm_IsabelleDefeated")
+	Step "CalmBeforeTheStorm_GotAllItems",
+	Step "CalmBeforeTheStorm_TalkedToIsabelle2",
+	Step "CalmBeforeTheStorm_TalkedToJenkins",
+	Step "CalmBeforeTheStorm_OpenedHighChambersYendor",
+	Step "CalmBeforeTheStorm_MysteryBoss",
+	Step "CalmBeforeTheStorm_IsabelleDefeated",
+}
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to start Calm Before the Storm.",
+	Value = "Start Calm Before the Storm by speaking to Isabelle on the bottom floor of Isabelle Tower.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_Start"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Isabelle before you leave.",
+	Value = "Isabelle won't unlock the doors until you talk to her.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Advisor Grimm before you continue.",
+	Value = "Advisor Grimm has more information on the resources you need to obtain.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToGrimm1",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain crawling copper ore.",
+	Value = "Crawling copper ore can be obtained from a ghostly miner foreman in the abandoned mines.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotCrawlingCopper",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain tense tin ore.",
+	Value = "Tense tin ore can be obtained from a ghostly miner foreman in the abandoned mines.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotTenseTin",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain ancient driftwood logs.",
+	Value = "Four ancient driftwood splinters can be chopped from the ancient driftwood in the Foggy Forest.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAncientDriftwood",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain the rotten squid's skull.",
+	Value = "Jenkins can help you sail to slay Mn'thrw the undead squid and obtain his ... skull?",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotSquidSkull",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain all items requested by Isabelle.",
+	Value = "Obtain all items requested by Isabelle to continue.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAllItems",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Isabelle after obtaining all items she requested.",
+	Value = "Talk to Isabelle after obtaining all the items.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle2",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to talk to Jenkins to leave the island.",
+	Value = "Jenkins can take sail you to Rumbridge.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToJenkins",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to open the High Chambers of Yendor.",
+	Value = "Something in the Abandoned Mines must've caused an earthquake. Maybe talking to someone down there can help?",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_OpenedHighChambersYendor",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to find what lay at the bottom of the High Chambers of Yendor.",
+	Value = "Something horrible resides at the bottom of the High Chambers of Yendor...",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_MysteryBoss"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to defeat Isabelle.",
+	Value = "Isabelle must be defeated!",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated"
 }
 
@@ -187,49 +134,49 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You talked to Isabelle.",
+	Value = "After talking to Isabelle, you agreed to get her the stuff to rid the island of a curse.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle1",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You talked to Advisor Grimm to learn what items you need.",
+	Value = "Advisor Grimm told you the list of items you need.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToGrimm1",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You obtained the crawling copper ore.",
+	Value = "The crawling copper ore from the ghostly miner foreman was handed over to Grimm.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotCrawlingCopper",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You obtained the tense tin ore.",
+	Value = "The tense tin ore from the ghostly miner foreman was handed over to Grimm.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotTenseTin",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You obtained the ancient driftwood logs.",
+	Value = "Four ancient driftwood splinters were handed over to Grimm.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAncientDriftwood",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You obtained the the rotten squid's skull.",
+	Value = "The skull of the undead squid was handed over to Grimm",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotSquidSkull",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You obtained all items requested by Isabelle.",
+	Value = "All four items requested from Isabelle were turned in to Grimm.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAllItems",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You talked to Isabelle and got your reward.",
+	Value = "Isabelle gave you a modest reward for obtaining all the items and bid you well on your journey to Rumbridge.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_TalkedToIsabelle2",
 }
 
@@ -242,19 +189,19 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You opened the High Chambers of Yendor.",
+	Value = "The High Chambers of Yendor were opened...",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_OpenedHighChambersYendor",
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You discovered Isabelle at the bottom of the High Chambers of Yendor.",
+	Value = "Isabelle was at the bottom of the High Chambers of Yendor! She's out for blood.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_MysteryBoss"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You defeated Isabelle.",
+	Value = "Isabelle was defeated. Now it's safe to go to Rumbridge!",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated"
 }
 

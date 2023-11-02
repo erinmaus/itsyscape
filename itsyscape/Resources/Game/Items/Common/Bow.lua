@@ -24,7 +24,7 @@ function Bow:getWeaponType()
 end
 
 function Bow:getCooldown(peep)
-	return 1.8
+	return 1.2
 end
 
 return Bow
