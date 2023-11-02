@@ -4047,7 +4047,7 @@ function Utility.Quest._getNextStep(steps, peep, isBranch)
 				return nil
 			end
 
-			return unpack(steps, 1, math.max(index - 1, 1))
+			return unpack(steps, 1, index)
 		end
 	end
 
