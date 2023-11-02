@@ -21,4 +21,14 @@ function BasicAnvil:new(...)
 	size.size = Vector(1, 1, 1)
 end
 
+function BasicAnvil:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushFlag('impassable')
+		tile:pushFlag('shoot')
+	elseif mode == 'poof' then
+		tile:popFlag('impassable')
+		tile:popFlag('shoot')
+	end
+end
+
 return BasicAnvil
