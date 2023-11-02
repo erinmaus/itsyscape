@@ -710,8 +710,13 @@ function UIView:examine(a, b)
 		end
 	end
 
+	local player = self:getGame():getPlayer()
+	if player then
+		player:addExclusiveChatMessage(description)
+	end
+
 	local toolTip = self.renderManager:setToolTip(
-		math.max(#description / 8, 1.5), 
+		4, 
 		ToolTip.Header(object),
 		ToolTip.Text(description))
 	toolTip:setStyle(PanelStyle({

@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
+local Color = require "ItsyScape.Graphics.Color"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
@@ -532,6 +533,23 @@ function LocalPlayer:talk(message)
 		end
 
 		self:getActor():flash("Message", 1, message, nil, 2)
+	end
+end
+
+function LocalPlayer:addExclusiveChatMessage(message, color)
+	if Class.isCompatibleType(color, Color) then
+		color = { color:get() }
+	else
+		color = { 1, 1, 1, 1 }
+	end
+
+	if type(message) == 'string' then
+		self:pushMessage(nil, { color, message })
+	else
+		Log.warn(
+			"Couldn't add exclusive chat message to player '%s' (id = %d) because message was not string.",
+			(self:getActor() and self:getActor():getName()) or "<invalid>",
+			self.id)
 	end
 end
 
