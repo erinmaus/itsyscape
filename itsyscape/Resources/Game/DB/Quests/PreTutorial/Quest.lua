@@ -8,22 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Quest "PreTutorial" {
-	ItsyScape.Action.QuestStart() {
-		Output {
-			Resource = ItsyScape.Resource.KeyItem "PreTutorial",
-			Count = 1
-		}
-	},
-
-	ItsyScape.Action.QuestComplete() {
-		Requirement {
-			Resource = ItsyScape.Resource.KeyItem "PreTutorial_WokeUp",
-			Count = 1
-		}
-	}
-}
-
 ItsyScape.Meta.ResourceName {
 	Value = "Restless Ghosts (Tutorial)",
 	Language = "en-US",
@@ -39,92 +23,35 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
 ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
 
-ItsyScape.Utility.questStep(
-	"PreTutorial_Start",
-	"PreTutorial_TalkedToButler1"
-)
+local Quest = ItsyScape.Utility.Quest
+local Step = ItsyScape.Utility.QuestStep
 
-ItsyScape.Utility.questStep(
-	"PreTutorial_TalkedToButler1",
-	"PreTutorial_ReadPowernomicon"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_TalkedToButler1",
-	"PreTutorial_SearchedCrate"
-)
-
-ItsyScape.Utility.questStep(
-	{
+Quest "PreTutorial" {
+	Step "PreTutorial_Start",
+	Step "PreTutorial_TalkedToButler1",
+	Step {
 		"PreTutorial_ReadPowernomicon",
 		"PreTutorial_SearchedCrate"
 	},
-	"PreTutorial_LearnedToMakeGhostspeakAmulet"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_LearnedToMakeGhostspeakAmulet",
-	"PreTutorial_MineCopper"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_LearnedToMakeGhostspeakAmulet",
-	"PreTutorial_SmeltCopperBar"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_LearnedToMakeGhostspeakAmulet",
-	"PreTutorial_SmithCopperAmulet"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_LearnedToMakeGhostspeakAmulet",
-	"PreTutorial_EnchantedCopperAmulet"
-)
-
-ItsyScape.Utility.questStep(
-	{
+	Step "PreTutorial_LearnedToMakeGhostspeakAmulet",
+	Step {
 		"PreTutorial_MineCopper",
 		"PreTutorial_SmeltCopperBar",
 		"PreTutorial_SmithCopperAmulet",
 		"PreTutorial_EnchantedCopperAmulet"
 	},
-	"PreTutorial_MadeGhostspeakAmulet"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_MadeGhostspeakAmulet",
-	"PreTutorial_TalkedToGhostGirl"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_MadeGhostspeakAmulet",
-	"PreTutorial_TalkedToGhostBoy"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_TalkedToGhostGirl",
-	"PreTutorial_SavedGhostGirl"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_TalkedToGhostBoy",
-	"PreTutorial_SavedGhostBoy"
-)
-
-ItsyScape.Utility.questStep(
-	{
-		"PreTutorial_SavedGhostGirl",
-		"PreTutorial_SavedGhostBoy",		
+	Step "PreTutorial_MadeGhostspeakAmulet",
+	Step {
+		"PreTutorial_TalkedToGhostBoy",
+		"PreTutorial_TalkedToGhostGirl",
 	},
-
-	"PreTutorial_TalkedToButler2"
-)
-
-ItsyScape.Utility.questStep(
-	"PreTutorial_TalkedToButler2",
-	"PreTutorial_WokeUp"
-)
+	Step {
+		"PreTutorial_SavedGhostBoy",
+		"PreTutorial_SavedGhostGirl",
+	},
+	Step "PreTutorial_TalkedToButler2",
+	Step "PreTutorial_WokeUp",
+}
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",

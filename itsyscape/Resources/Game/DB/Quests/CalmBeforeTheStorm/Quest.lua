@@ -8,22 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Quest "CalmBeforeTheStorm" {
-	ItsyScape.Action.QuestStart() {
-		Output {
-			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_Start",
-			Count = 1
-		}
-	},
-
-	ItsyScape.Action.QuestComplete() {
-		Requirement {
-			Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
-			Count = 1
-		}
-	}
-}
-
 ItsyScape.Meta.ResourceName {
 	Value = "Calm Before the Storm",
 	Language = "en-US",
@@ -43,63 +27,26 @@ ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GaveOrlandoFish"
 
 ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph"
 
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_Start",
-	"CalmBeforeTheStorm_TalkedToIsabelle1"
-)
+local Quest = ItsyScape.Utility.Quest
+local Step = ItsyScape.Utility.QuestStep
 
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToIsabelle1",
-	"CalmBeforeTheStorm_TalkedToGrimm1"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotCrawlingCopper")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotTenseTin")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotAncientDriftwood")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToGrimm1",
-	"CalmBeforeTheStorm_GotSquidSkull")
-
-ItsyScape.Utility.questStep(
-	{
+Quest "CalmBeforeTheStorm" {
+	Step "CalmBeforeTheStorm_Start",
+	Step "CalmBeforeTheStorm_TalkedToIsabelle1",
+	Step "CalmBeforeTheStorm_TalkedToGrimm1",
+	Step {
 		"CalmBeforeTheStorm_GotCrawlingCopper",
 		"CalmBeforeTheStorm_GotTenseTin",
 		"CalmBeforeTheStorm_GotAncientDriftwood",
-		"CalmBeforeTheStorm_GotSquidSkull"
+		"CalmBeforeTheStorm_GotSquidSkull",
 	},
-
-	"CalmBeforeTheStorm_GotAllItems"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_GotAllItems",
-	"CalmBeforeTheStorm_TalkedToIsabelle2"
-)
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToIsabelle2",
-	"CalmBeforeTheStorm_TalkedToJenkins")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_TalkedToJenkins",
-	"CalmBeforeTheStorm_OpenedHighChambersYendor")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_OpenedHighChambersYendor",
-	"CalmBeforeTheStorm_MysteryBoss")
-
-ItsyScape.Utility.questStep(
-	"CalmBeforeTheStorm_MysteryBoss",
-	"CalmBeforeTheStorm_IsabelleDefeated")
+	Step "CalmBeforeTheStorm_GotAllItems",
+	Step "CalmBeforeTheStorm_TalkedToIsabelle2",
+	Step "CalmBeforeTheStorm_TalkedToJenkins",
+	Step "CalmBeforeTheStorm_OpenedHighChambersYendor",
+	Step "CalmBeforeTheStorm_MysteryBoss",
+	Step "CalmBeforeTheStorm_IsabelleDefeated",
+}
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
@@ -133,7 +80,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You need to obtain ancient driftwood logs.",
+	Value = "You need to obtain ancient driftwood splinters.",
 	Resource = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_GotAncientDriftwood",
 }
 
