@@ -423,6 +423,12 @@ do
 		Resource = M["Bessie"]
 	}
 
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Ol' Bessie is the sweetest cow on Isabelle Island, maybe in the world!",
+		Language = "en-US",
+		Resource = M["Bessie"]
+	}
+
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Cow_Base",
 		MapObject = M["Bessie"]
