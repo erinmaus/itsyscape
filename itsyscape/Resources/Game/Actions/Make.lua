@@ -12,6 +12,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local GatherResourceCommand = require "ItsyScape.Game.GatherResourceCommand"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
@@ -191,6 +192,25 @@ function Make:gather(state, player, prop, toolType, skill)
 	end
 
 	return false
+end
+
+function Make:requiresSpecificTool(toolType)
+	local itemManager = self:getGame():getDirector():getItemManager()
+	local brochure = self:getGameDB():getBrochure()
+
+	for requirement in brochure:getRequirements(self:getAction()) do
+		local resource = brochure:getConstraintResource(requirement)
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+
+		if resourceType.name:lower() == 'item' then
+			local itemLogic = itemManager:getLogic(resource.name)
+			if itemLogic and itemLogic:isCompatibleType(Weapon) then
+				if itemLogic:getWeaponType():lower() == toolType:lower() then
+					return true
+				end
+			end
+		end
+	end
 end
 
 function Make:getDynamicCount(state, player, flags)
