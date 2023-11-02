@@ -71,11 +71,13 @@ function ChatController:pull()
 				{ 1, 1, 1, 1 },
 				": " .. m.message
 			}
-		else
+		elseif m.message == 'string' then
 			result[i] = {
 				{ 1, 1, 0, 1 },
 				m.message
 			}
+		else
+			result[i] = m.message
 		end
 	end
 
