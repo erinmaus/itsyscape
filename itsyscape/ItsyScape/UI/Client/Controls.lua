@@ -61,6 +61,7 @@ Controls.NAMES = {
 	['PLAYER_1_MOVE_LEFT'] = 'Move Left',
 	['PLAYER_1_MOVE_RIGHT'] = 'Move Right',
 	['PLAYER_1_CHAT'] = 'Chat',
+	['PLAYER_1_CONTINUE'] = 'Continue Dialogue',
 	['CAMERA_UP'] = 'Camera Up',
 	['CAMERA_DOWN'] = 'Camera Down',
 	['CAMERA_LEFT'] = 'Camera Left',
