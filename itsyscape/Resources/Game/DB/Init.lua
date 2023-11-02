@@ -1,4 +1,4 @@
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Resources/Game/DB/Init.lua
 --
 -- This file is a part of ItsyScape.
@@ -434,9 +434,18 @@ Game "ItsyScape"
 	}
 
 	ResourceType "Quest"
-		ActionType "QuestStep"
 		ActionType "QuestStart"
+		ActionType "QuestStep"
 		ActionType "QuestComplete"
+
+	Meta "QuestStep" {
+		StepID = Meta.TYPE_INTEGER,
+		Quest = Meta.TYPE_RESOURCE,
+		KeyItem = Meta.TYPE_RESOURCE,
+		ParentID = Meta.TYPE_INTEGER,
+		NextID = Meta.TYPE_INTEGER,
+		PreviousID = Meta.TYPE_INTEGER
+	}
 
 	ResourceType "KeyItem"
 
@@ -850,18 +859,12 @@ function ItsyScape.Utility.categorize(resource, key, value)
 	}
 end
 
-function ItsyScape.Utility.questStep(from, to)
+function ItsyScape.Utility.questStep(from, to, ActionType)
 	if type(from) ~= 'table' then
 		from = { from }
 	end
 
-	for i = 1, #from do
-		ItsyScape.Resource.KeyItem(from[i]) {
-			isSingleton = true
-		}
-	end
-
-	local Step = ItsyScape.Action.QuestStep() {
+	local Step = (ActionType or ItsyScape.Action.QuestStep)() {
 		Output {
 			Resource = ItsyScape.Resource.KeyItem(to),
 			Count = 1
@@ -869,19 +872,175 @@ function ItsyScape.Utility.questStep(from, to)
 	}
 
 	for i = 1, #from do
-		Step {
-			Requirement {
-				Resource = ItsyScape.Resource.KeyItem(from[i]),
-				Count = 1
-			}
+		local resource = ItsyScape.Resource.KeyItem(from[i])
+		local resourceRequirement = Requirement {
+			Resource = resource,
+			Count = 1
+		}
+
+		Step { resourceRequirement }
+
+		resource {
+			Step
 		}
 	end
 
-	ItsyScape.Resource.KeyItem(to) {
-		isSingleton = true,
+	return Step
+end
 
-		Step
+function ItsyScape.Utility.Quest(questName)
+	local Quest = ItsyScape.Resource.Quest(questName)
+
+	local id = 1
+	local function resolve(steps, parent)
+		for i = 1, #steps do
+			local s = steps[i]
+
+			if s.type == 'step' then
+				if not (parent.id == 0 and i == #steps and steps[i - 1] and steps[i - 1].type == 'branch') then
+					if i == 1 then
+						s.parent = parent.id
+					end
+
+					s.id = id
+					id = id + 1
+
+					s.nodes = {}
+
+					for j = 1, #s.inputs do
+						s.nodes[j] = {
+							keyItem = ItsyScape.Resource.KeyItem(s.inputs[j])
+						}
+					end
+
+					if i > 1 then
+						for j = 1, #steps[i - 1].nodes do
+							steps[i - 1].nodes[j].next = s.id
+						end
+
+						for j = 1, #s.nodes do
+							s.nodes[j].previous = steps[i - 1].id
+						end
+					end
+				end
+			elseif s.type == 'branch' then
+				for j = 1, #s.branches do
+					local branch = s.branches[j]
+					resolve(branch, steps[i - 1])
+				end
+			else
+				error("expected step or branch in quest")
+			end
+		end
+	end
+
+
+	local function materialize(steps)
+		for i = 1, #steps do
+			local step = steps[i]
+
+			if step.type == 'step' then
+				for j = 1, #step.nodes do
+					ItsyScape.Meta.QuestStep {
+						StepID = step.id,
+						Quest = Quest,
+						KeyItem = step.nodes[j].keyItem,
+						ParentID = step.parent,
+						NextID = step.nodes[j].next,
+						PreviousID = step.nodes[j].previous
+					}
+				end
+			elseif step.type == 'branch' then
+				for j = 1, #step.branches do
+					materialize(step.branches[j])
+				end
+			end
+		end
+	end
+
+	return function(steps)
+		if type(steps) ~= 'table' then
+			error("expected table")
+		end
+
+		local Start = ItsyScape.Action.QuestStart() {
+			Output {
+				Resource = ItsyScape.Resource.KeyItem(steps[1].inputs[1]),
+				Count = 1
+			}
+		}
+
+		if steps.constraints then
+			Start(steps.constraints)
+		end
+
+		local Complete = ItsyScape.Action.QuestComplete() {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem(steps[#steps].inputs[1]),
+				Count = 1
+			}
+		}
+
+		Quest {
+			Start,
+			Complete
+		}
+
+		resolve(steps, { id = 0 })
+		materialize(steps)
+	end
+end
+
+function ItsyScape.Utility.QuestStep(inputs)
+	if type(inputs) == 'string' then
+		inputs = { inputs }
+	end
+
+	local result = {
+		type = 'step',
+		inputs = inputs,
+		constraints = {},
+		nodes = {}
 	}
+
+	local function __call(_, t)
+		for i = 1, #t do
+			table.insert(result.constraints, t[i])
+		end
+
+		return result
+	end
+
+	return setmetatable(result, { __call = __call })
+end
+
+function ItsyScape.Utility.QuestBranch(branches)
+	return {
+		type = 'branch',
+		branches = branches,
+		nodes = {}
+	}
+end
+
+function ItsyScape.Utility.QuestStepDescription(keyItem)
+	local KeyItem = ItsyScape.Resource.KeyItem(keyItem)
+	return function(t)
+		assert(type(t) == 'table', "missing description")
+		assert(type(t.before) == 'string', "missing before description")
+		assert(type(t.after) == 'string', "missing after description")
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = t.before,
+			Language = t.language or "en-US",
+			Resource = KeyItem
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = t.after,
+			Language = t.language or "en-US",
+			Resource = KeyItem
+		}
+	end
 end
 
 do
@@ -1107,6 +1266,7 @@ include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
 include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
+include "Resources/Game/DB/Quests/SuperSupperSaboteur/Quest.lua"
 
 -- Minigames
 include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
