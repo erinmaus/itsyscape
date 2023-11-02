@@ -32,12 +32,14 @@ end
 function Chop:getFailureReason(state, player)
 	local reason = Make.getFailureReason(self, state, player)
 
-	table.insert(reason.requirements, {
-		type = "Item",
-		resource = "BronzeHatchet",
-		name = "Hatchet (any kind you can equip)",
-		count = 1
-	})
+	if not self:requiresSpecificTool("hatchet") then
+		table.insert(reason.requirements, {
+			type = "Item",
+			resource = "BronzeHatchet",
+			name = "Hatchet (any kind you can equip)",
+			count = 1
+		})
+	end
 
 	return reason
 end
