@@ -20,7 +20,7 @@ while result ~= QUIT do
 
 	if result == INFO then
 		message {
-			"I bought this island from %person{Vizier-King Yohn}.",
+			"I bought this island from %hint{Earl of Rumbridge}.",
 			"I wanted some peace and quiet from the city.",
 			"Also, perhaps,this would be a good entrepreneurial endeavor.",
 		}
