@@ -392,7 +392,7 @@ function LocalPlayer:move(x, z)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		movement.isStopping = true
 	else
-		if peep:getCommandQueue():clear() then
+		if peep:hasBehavior(CombatTargetBehavior) or peep:getCommandQueue():clear() then
 			local targetTile = peep:getBehavior(TargetTileBehavior)
 			if targetTile and targetTile.pathNode then
 				targetTile.pathNode:interrupt(peep)
