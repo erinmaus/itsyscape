@@ -24,7 +24,7 @@ function Longbow:getWeaponType()
 end
 
 function Longbow:getCooldown(peep)
-	return 3.0
+	return 1.8
 end
 
 return Longbow

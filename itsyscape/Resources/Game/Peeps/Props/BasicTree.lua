@@ -31,6 +31,16 @@ function BasicTree:new(...)
 	self:addPoke('resourceObtained')
 end
 
+function BasicTree:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushFlag('impassable')
+		tile:pushFlag('shoot')
+	elseif mode == 'poof' then
+		tile:popFlag('impassable')
+		tile:popFlag('shoot')
+	end
+end
+
 function BasicTree:ready(director, game)
 	Prop.ready(self, director, game)
 

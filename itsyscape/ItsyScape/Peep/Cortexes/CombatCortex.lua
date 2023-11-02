@@ -33,6 +33,10 @@ local TilePathNode = require "ItsyScape.World.TilePathNode"
 
 local CombatCortex = Class(Cortex)
 CombatCortex.QUEUE = {}
+CombatCortex.PLAYER_DISENGAGE_DURATION = 2
+CombatCortex.PLAYER_RETRY_MIN_DURATION = 0.25
+CombatCortex.PLAYER_RETRY_MAX_DURATION = 1.00
+CombatCortex.PLAYER_MOVING_COOLDOWN = 0.25
 
 function CombatCortex:new()
 	Cortex.new(self)
@@ -46,6 +50,7 @@ function CombatCortex:new()
 	self.walking = {}
 	self.strafing = {}
 	self.pendingResume = {}
+	self.pendingPlayers = {}
 	self.defaultWeapon = Weapon()
 end
 
@@ -55,6 +60,7 @@ function CombatCortex:removePeep(peep)
 	self.walking[peep] = nil
 	self.strafing[peep] = nil
 	self.pendingResume[peep] = nil
+	self.pendingPlayers[peep] = nil
 end
 
 function CombatCortex:resetPeep(peep)
@@ -136,6 +142,8 @@ function CombatCortex:usePower(peep, target, logic)
 end
 
 function CombatCortex:update(delta)
+	local currentGlobalTime = love.timer.getTime()
+
 	local game = self:getDirector():getGameInstance()
 	local itemManager = self:getDirector():getItemManager()
 
@@ -145,6 +153,7 @@ function CombatCortex:update(delta)
 	end
 
 	for peep in self:iterate() do
+		local isMoving = peep:hasBehavior(MovementBehavior) and peep:getBehavior(MovementBehavior).velocity:getLength() > 0.1
 		local position = peep:getBehavior(PositionBehavior)
 
 		local weaponRange
@@ -286,14 +295,49 @@ function CombatCortex:update(delta)
 									return isPending() and isWalking
 								end, walk, callback)
 
-								peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
+								local executeWalk = false
+
+								local isPlayer = peep:hasBehavior(PlayerBehavior)
+								if isPlayer then
+									local currentPlayerTime = self.pendingPlayers[peep]
+									if not currentPlayerTime then
+										self.pendingPlayers[peep] = { idleTime = currentGlobalTime, movingTime = 0 }
+									elseif (currentGlobalTime - currentPlayerTime.idleTime) > CombatCortex.PLAYER_RETRY_MIN_DURATION and
+										   (currentGlobalTime - currentPlayerTime.idleTime) < CombatCortex.PLAYER_RETRY_MAX_DURATION and
+									       not isMoving
+									then
+										Log.info(
+											"Player '%s' stopped moving; trying to re-engage with foe '%s'.",
+											peep:getName(),
+											target:getName())
+										self.pendingPlayers[peep] = nil
+
+										executeWalk = true
+									end
+								else
+									executeWalk = true
+								end
+
+								if executeWalk then
+									peep:getCommandQueue(CombatCortex.QUEUE):interrupt(c)
+
+									if isPlayer then
+										local _, playerTarget = peep:addBehavior(CombatTargetBehavior)
+										local targetActor = target:hasBehavior(ActorReferenceBehavior) and target:getBehavior(ActorReferenceBehavior).actor
+
+										if playerTarget and targetActor then
+											playerTarget.actor = targetActor
+										end
+									end
+
+									self.walking[peep] = { i = targetI, j = targetJ }
+								end
 
 								if hasTarget then
 									peep:addBehavior(TargetTileBehavior)
 								end
 							end
 
-							self.walking[peep] = { i = targetI, j = targetJ }
 						end
 					else
 						if self.walking[peep] then
@@ -369,6 +413,9 @@ function CombatCortex:update(delta)
 						do
 							local targetCombat = target:getBehavior(CombatStatusBehavior)
 							if targetCombat and targetCombat.currentHitpoints == 0 then
+								if peep:hasBehavior(PlayerBehavior) then
+									print(">>> target ded")
+								end
 								peep:removeBehavior(CombatTargetBehavior)
 								target:getCommandQueue(CombatCortex.QUEUE):clear()
 								canAttack = false
@@ -434,6 +481,27 @@ function CombatCortex:update(delta)
 					self:resetPeep(peep)
 				end
 			end
+		end
+	end
+
+	for player, currentPlayerTime in pairs(self.pendingPlayers) do
+		local isMoving = player:hasBehavior(MovementBehavior) and player:getBehavior(MovementBehavior).velocity:getLength() > 0.1
+		if isMoving then
+			currentPlayerTime.movingTime = 0
+		else
+			currentPlayerTime.movingTime = currentPlayerTime.movingTime + delta
+		end
+
+		local isExpired = currentGlobalTime - currentPlayerTime.idleTime > CombatCortex.PLAYER_DISENGAGE_DURATION
+		local isStill = currentPlayerTime.movingTime > CombatCortex.PLAYER_MOVING_COOLDOWN
+		if isExpired and not isMoving and isStill then
+			Log.info(
+				"Player hasn't been attacking for over %0.2f seconds and stopped moving for %0.2f seconds; dis-engaging.",
+				currentGlobalTime - currentPlayerTime.idleTime,
+				currentPlayerTime.movingTime)
+
+			self:resetPeep(player)
+			self.pendingPlayers[player] = nil
 		end
 	end
 end -- oh my god

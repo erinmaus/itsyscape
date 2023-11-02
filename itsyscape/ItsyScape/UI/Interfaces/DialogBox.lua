@@ -15,6 +15,7 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local Keybinds = require "ItsyScape.UI.Keybinds"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
@@ -137,6 +138,9 @@ function DialogBox:new(id, index, ui)
 	self.camera:setDistance(2.5)
 	self.camera:setUp(Vector(0, -1, 0))
 	self.speakerIcon:setCamera(self.camera)
+
+	self.keybind = Keybinds['PLAYER_1_CONTINUE']
+	self.isKeybindDown = self.keybind:isDown()
 
 	self:next()
 end
@@ -296,6 +300,14 @@ function DialogBox:update(...)
 	self.camera:setHeight(h)
 	self.camera:setPosition(Vector(x, y, z))
 	self.camera:setDistance(zoom)
+
+	local isKeybindDown = self.keybind:isDown()
+	if not self.isKeybindDown and isKeybindDown then
+		if self:getState().content and not self:getView():getInputProvider():getFocusedWidget() then
+			self:pump()
+		end
+	end
+	self.isKeybindDown = isKeybindDown
 end
 
 return DialogBox

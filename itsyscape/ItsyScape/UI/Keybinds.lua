@@ -28,6 +28,7 @@ add('PLAYER_1_FLEE',       'escape')
 add('PLAYER_1_FOCUS',      'tab')
 add('PLAYER_1_CAMERA',     '/')
 add('PLAYER_1_CHAT',       'return')
+add('PLAYER_1_CONTINUE',   'space')
 
 -- Minigames
 add('MINIGAME_DASH', 'space')
