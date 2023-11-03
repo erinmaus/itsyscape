@@ -31,7 +31,7 @@ end
 function Mine:getFailureReason(state, player)
 	local reason = Make.getFailureReason(self, state, player)
 
-	if if not self:requiresSpecificTool("pickaxe") then
+	if not self:requiresSpecificTool("pickaxe") then
 		table.insert(reason.requirements, {
 			type = "Item",
 			resource = "BronzePickaxe",
