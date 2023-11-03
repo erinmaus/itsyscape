@@ -343,6 +343,13 @@ end
 function love.errorhandler(message)
 	if not _GAME_THREAD_ERROR then
 		Log.sendError(message, 3)
+
+		local s = pcall(_APP.quit, _APP)
+		if not s then
+			Log.warn("Couldn't safely quit game as a last resort on error.")
+		else
+			Log.info("Safetly quit game as a last resort on error.")
+		end
 	end
 
 	local NSentry = require "nbunny.sentry"
