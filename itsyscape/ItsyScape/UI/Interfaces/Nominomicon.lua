@@ -22,8 +22,8 @@ local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local Nominomicon = Class(Interface)
-Nominomicon.WIDTH = 480
-Nominomicon.HEIGHT = 320
+Nominomicon.WIDTH = 640
+Nominomicon.HEIGHT = 480
 Nominomicon.BUTTON_SIZE = 48
 Nominomicon.BUTTON_PADDING = 4
 Nominomicon.PADDING = 4
@@ -98,7 +98,7 @@ function Nominomicon:new(id, index, ui)
 	self:addChild(self.infoPanel)
 
 	self.guideLabel = RichTextLabel()
-	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE, 0)
+	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel:setWrapParentContents(true)
 	self.infoPanel:addChild(self.guideLabel)

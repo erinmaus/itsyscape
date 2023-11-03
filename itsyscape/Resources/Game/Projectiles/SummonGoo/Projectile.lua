@@ -164,7 +164,7 @@ function SummonGoo:tick()
 
 		self.mapMesh = MapMeshSceneNode()
 		self.mapMesh:setParent(self:getRoot())
-		self.mapMesh:fromMap(gooMap, self.tileSet, 1, 1, gooMap:getWidth(), gooMap:getHeight(), true, islandProcessor)
+		self.mapMesh:fromMap(gooMap, self.tileSet, 1, 1, gooMap:getWidth(), gooMap:getHeight(), self.mask, islandProcessor)
 
 		local center = map:getTileCenter(destinationI, destinationJ)
 

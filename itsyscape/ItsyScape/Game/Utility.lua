@@ -2296,7 +2296,7 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	return false, reason
 end
 
-function Utility.Peep.getTileAnchor(peep)
+function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
 	if peep:hasBehavior(ActorReferenceBehavior) then
 		return Utility.Peep.getTile(peep)
 	end
@@ -2304,8 +2304,7 @@ function Utility.Peep.getTileAnchor(peep)
 	local rotation = Utility.Peep.getRotation(peep)
 	local size = Utility.Peep.getSize(peep)
 
-	local offsetI, offsetJ
-	do
+	if not (offsetI and offsetJ) then
 		local mapObject = Utility.Peep.getMapObject(peep)
 		local resource = Utility.Peep.getResource(peep)
 		if mapObject then

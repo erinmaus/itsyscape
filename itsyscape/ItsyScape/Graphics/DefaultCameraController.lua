@@ -305,6 +305,38 @@ function DefaultCameraController:update(delta)
 	end
 
 	self:updateScrollPosition(delta)
+
+	if self.isShaking then
+		self.currentShakingInterval = self.currentShakingInterval - delta
+		if self.currentShakingInterval <= 0 then
+			self.currentShakingInterval = self.shakingInterval
+
+			local x = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+			local y = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+			local z = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+
+			self.previousShakingOffset = self.currentShakingOffset
+			self.currentShakingOffset = Vector(x, y, z)
+		end
+
+		self.currentShakingDuration = self.currentShakingDuration - delta
+		if self.currentShakingDuration <= 0 then
+			self.isShaking = false
+			self.currentShakingOffset = Vector(0)
+		end
+	end
+end
+
+function DefaultCameraController:onShake(duration, interval, min, max)
+	self.isShaking = true
+	self.shakingDuration = duration or 1.5
+	self.shakingInterval = interval or 1 / 15
+	self.currentShakingInterval = 0
+	self.currentShakingDuration = self.shakingDuration
+	self.minShakingOffset = min or 0
+	self.maxShakingOffset = max or 1
+	self.previousShakingOffset = Vector(0)
+	self.currentShakingOffset = Vector(0)
 end
 
 function DefaultCameraController:draw()
@@ -321,7 +353,14 @@ function DefaultCameraController:draw()
 		center = self:getPlayerPosition()
 	end
 
-	self:getCamera():setPosition(center + self.cameraOffset)
+	local shake
+	if self.currentShakingOffset and self.previousShakingOffset then
+		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
+	else
+		shake = Vector.ZERO
+	end
+
+	self:getCamera():setPosition(center + self.cameraOffset + shake)
 end
 
 return DefaultCameraController

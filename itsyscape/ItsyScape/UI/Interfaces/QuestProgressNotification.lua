@@ -208,7 +208,7 @@ function QuestProgressNotification:new(id, index, ui)
 
 	self.guideLabel = RichTextLabel()
 	self.guideLabel:setSize(
-		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 3 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
 		0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel:setWrapParentContents(true)

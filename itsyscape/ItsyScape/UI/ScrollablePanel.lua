@@ -73,6 +73,13 @@ function ScrollablePanel:getScrollBarVisible()
 	return self.alwaysShowVerticalScrollBar, self.alwaysShowHorizontalScrollBar
 end
 
+function ScrollablePanel:getScrollBarActive()
+	local width, height = self:getSize()
+	local scrollSizeX, scrollSizeY = self:getSize()
+
+	return scrollSizeX > width, scrollSizeY > height
+end
+
 function ScrollablePanel:performLayout()
 	Widget.performLayout(self)
 
