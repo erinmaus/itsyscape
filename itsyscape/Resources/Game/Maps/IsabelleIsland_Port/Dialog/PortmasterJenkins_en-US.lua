@@ -141,6 +141,11 @@ repeat
 			return
 		end
 
+		local player = Utility.Peep.getPlayerModel(_TARGET)
+		if player then
+			player:pokeCamera('shake')
+		end
+
 		message {
 			"AAAAAH! Earthquake!" 
 		}
