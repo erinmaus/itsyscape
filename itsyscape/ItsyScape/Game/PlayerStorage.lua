@@ -91,14 +91,27 @@ function PlayerStorage.Section:set(key, value)
 			end
 		end
 
-		for k, v in pairs(key) do
+		for k, v in ipairs(key) do
 			self:set(k, v)
+		end
+
+		for k, v in pairs(key) do
+			if type(k) ~= 'number' then
+				self:set(k, v)
+			end
 		end
 	elseif type(value) == 'table' then
 		assert(type(key) == 'string' or type(key) == 'number', "key must be string or number")
 		local section = self:getSection(key)
-		for k, v in pairs(value) do
+
+		for k, v in ipairs(value) do
 			section:set(k, v)
+		end
+
+		for k, v in pairs(value) do
+			if type(k) ~= 'number' then
+				section:set(k, v)
+			end
 		end
 	elseif type(value) == 'string' or
 		type(value) == 'number' or
