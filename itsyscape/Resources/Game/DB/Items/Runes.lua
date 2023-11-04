@@ -251,7 +251,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Azathothian spacial rune",
+	Value = "Azathothian spatial rune",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "AzathothianSpacialRune"
 }
