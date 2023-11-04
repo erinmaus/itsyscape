@@ -12,15 +12,15 @@ local Utility = require "ItsyScape.Game.Utility"
 local Effect = require "ItsyScape.Peep.Effect"
 local MovementEffect = require "ItsyScape.Peep.Effects.MovementEffect"
 
--- Pushes the opponent away by 0.25 units over 0.25 seconds or
--- 0.5 units over 0.5 seconds.
+-- Pushes the opponent away by 0.125 units over 0.125 seconds or
+-- 0.25 units over 0.25 seconds.
 local AirStrike = Class(MovementEffect)
 
-AirStrike.DURATION_WEAK   = 0.25
-AirStrike.DURATION_STRONG = 0.5
+AirStrike.DURATION_WEAK   = 0.125
+AirStrike.DURATION_STRONG = 0.25
 
-AirStrike.PULL_WEAK   = 0.25
-AirStrike.PULL_STRONG = 0.5
+AirStrike.PULL_WEAK   = 0.125
+AirStrike.PULL_STRONG = 0.25
 
 function AirStrike:new(activator)
 	MovementEffect.new(self)
