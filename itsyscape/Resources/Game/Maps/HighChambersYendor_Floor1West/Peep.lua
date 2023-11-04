@@ -30,12 +30,14 @@ HighChambersYendor.MIMIC_ANCHOR = "Anchor_Mimic"
 HighChambersYendor.MIMICS = {
 	{ peep = "Mimic_Angry", chance = 3 / 4 }
 }
-HighChambersYendor.MIMIC_CHANCE = 0.5
+HighChambersYendor.MIMIC_CHANCE = 1
 
 HighChambersYendor.MINIBOSS_CHANT_PERIOD = 10
 HighChambersYendor.MINIBOSS_SOUL_SIPHON_STEP_DURATION = 2
 
-HighChambersYendor.MINIBOSS_HEAL_PERIOD = 2
+HighChambersYendor.MINIBOSS_HEAL_PERIOD = 4
+
+HighChambersYendor.MINIBOSS_QUEUE = {}
 
 function HighChambersYendor:new(resource, name, ...)
 	Map.new(self, resource, name or 'HighChambersYendor_Floor1West', ...)
@@ -357,12 +359,14 @@ function HighChambersYendor:startMiniboss(cthulhuian)
 		cthulhuians[i]:silence('initiateAttack', self.startMiniboss)
 	end
 
+	self:minibossMoveToSpot(false)
+
 	self.minibossEngaged = true
 	self.minibossChantTimer = HighChambersYendor.MINIBOSS_CHANT_PERIOD
 end
 
-function HighChambersYendor:minibossBeginChanting()
-	Log.info("Starting chant...")
+function HighChambersYendor:minibossMoveToSpot(disengage)
+	Log.info("Moving to spots...")
 
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -394,20 +398,15 @@ function HighChambersYendor:minibossBeginChanting()
 
 		if i and j and k then
 			local cthulhuians = self:getMiniboss()
-			for i = 1, #cthulhuians do
-				local status = cthulhuians[i]:getBehavior(CombatStatusBehavior)
-				if status.currentHitpoints <= 0 then
-					self.minibossChantTimer = HighChambersYendor.MINIBOSS_CHANT_PERIOD
-					return
-				end
-			end
 
 			for index = 1, #cthulhuians do
 				local angle = (index / #cthulhuians) * math.pi * 2
 				local s = math.cos(angle) * 3
 				local t = math.sin(angle) * 3
 
-				cthulhuians[index]:removeBehavior(CombatTargetBehavior)
+				if disengage then
+					cthulhuians[index]:removeBehavior(CombatTargetBehavior)
+				end
 
 				local doneWalking = function()
 					if self.currentWalking then
@@ -425,18 +424,34 @@ function HighChambersYendor:minibossBeginChanting()
 						node.onInterrupt:register(doneWalking)
 					end
 
-					cthulhuians[index]:getCommandQueue():push(walk)
+					cthulhuians[index]:getCommandQueue(HighChambersYendor.MINIBOSS_QUEUE):push(walk)
 				end
 
-				cthulhuians[index]:listen('initiateAttack', self.minibossStopChanting, self, false)
-
-				cthulhuians[index]:getCommandQueue():push(CallbackCommand(doneWalking))
+				cthulhuians[index]:getCommandQueue(HighChambersYendor.MINIBOSS_QUEUE):push(CallbackCommand(doneWalking))
 
 				Log.info("Moving Cthulhuian %d to %d, %d.", index, i + s, t + j)
 			end
 
 			self.currentWalking = #cthulhuians
 		end
+	end
+end
+
+function HighChambersYendor:minibossBeginChanting()
+	Log.info("Beginning to chant...")
+
+	local cthulhuians = self:getMiniboss()
+
+	for i = 1, #cthulhuians do
+		local status = cthulhuians[i]:getBehavior(CombatStatusBehavior)
+		if status.currentHitpoints <= 0 then
+			self.minibossChantTimer = HighChambersYendor.MINIBOSS_CHANT_PERIOD
+			return
+		end
+	end
+
+	for i = 1, #cthulhuians do
+		cthulhuians[i]:listen('initiateAttack', self.minibossStopChanting, self, false)
 	end
 
 	self.currentPulledAway = 0
@@ -574,7 +589,7 @@ function HighChambersYendor:performMinibossRezz()
 
 		self:giveMinibossLoot()
 	else
-		local hitPoints = (#cthulhuians - dead.n) * 2
+		local hitPoints = (#cthulhuians - dead.n)
 		for i = 1, #cthulhuians do
 			if dead[cthulhuians[i]] then
 				cthulhuians[i]:poke('heal', {
@@ -668,6 +683,7 @@ function HighChambersYendor:update(director, game)
 	if self.minibossEngaged then
 		self.minibossChantTimer = self.minibossChantTimer - game:getDelta()
 		if self.minibossChantTimer <= 0 then
+			self:minibossMoveToSpot(true)
 			self:minibossBeginChanting()
 		end
 
