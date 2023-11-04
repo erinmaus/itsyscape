@@ -61,11 +61,6 @@ function BankController:refresh()
 end
 
 function BankController:initDefaultSection()
-	self:initDefaultSection()
-	self:updateSections(self.state.sections)
-end
-
-function BankController:initDefaultSection()
 	local defaultSection
 	do
 		local firstSection = self.state.sections[1]
@@ -89,6 +84,8 @@ function BankController:initDefaultSection()
 	self:initArtisanTab(newSection, defaultSection)
 
 	self.state.sections[1] = newSection
+
+	self:updateSections(self.state.sections)
 end
 
 function BankController:initEquipment(skill1, skill2, newSection, oldSection)
@@ -135,23 +132,19 @@ function BankController:initEquipment(skill1, skill2, newSection, oldSection)
 end
 
 function BankController:initMagicTab(newSection, oldSection)
-	local runes = self:pullItemsWithAction("Runecraft", "magic")
-	self:_sortItems(runes)
+	local runes = {
+		"UnfocusedRune",
+		"AirRune",
+		"EarthRune",
+		"WaterRune",
+		"FireRune",
+		"CosmicRune",
+		"PrimordialTimeRune",
+		"AzathothianSpacialRune"
+	}
 
 	local items = self:initEquipment("magic", "wisdom", newSection, oldSection)
-	do
-		for _, rune in ipairs(runes) do
-			if not items[rune] then
-				table.insert(items, rune)
-				items[rune] = true
-			end
-		end
-
-		if not items["UnfocusedRune"] then
-			table.insert(items, "UnfocusedRune")
-			items["UnfocusedRune"] = true
-		end
-	end
+	items = self:initItems(newSection, oldSection, items, runes)
 
 	items.icon = "DinkyStaff"
 	table.insert(newSection, items)
@@ -203,6 +196,7 @@ function BankController:initFoodTab(newSection, oldSection)
 	local food2 = self:pullItemsWithAction("Cook")
 	local food3 = self:pullItemsWithAction("CookIngredient")
 	local tools = self:pullEquipment("fishing")
+	print(">>> tools", #tools, tools[1])
 
 	local items = self:initItems(newSection, oldSection, food1, food2, food3, tools)
 	table.insert(newSection, items)
@@ -229,7 +223,7 @@ function BankController:initArtisanTab(newSection, oldSection)
 	local otherItems = {
 		"Knife",
 		"Needle",
-		"Thread",
+		"PlainThread",
 		"Tinderbox"
 	}
 
