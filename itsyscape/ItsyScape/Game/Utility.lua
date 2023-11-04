@@ -1441,7 +1441,7 @@ function Utility.Peep.yell(peep, message, ...)
 	Utility.Peep.message(peep, "Yell", message, ...)
 end
 
-function Utility.Peep.notify(peep, message)
+function Utility.Peep.notify(peep, message, suppressGenericNotification)
 	local Instance = require "ItsyScape.Game.LocalModel.Instance"
 
 	if Class.isCompatibleType(peep, Instance) then
@@ -1450,15 +1450,19 @@ function Utility.Peep.notify(peep, message)
 			if playerPeep then
 				local ui = playerPeep:getDirector():getGameInstance():getUI()
 
-				local didUpdate = false
-				for _, interface in ui:getInterfacesForPeep(playerPeep, "GenericNotification") do
-					interface:updateMessage(message)
-					didUpdate = true
-					break
-				end
+				if not suppressGenericNotification then
+					local didUpdate = false
+					for _, interface in ui:getInterfacesForPeep(playerPeep, "GenericNotification") do
+						interface:updateMessage(message)
+						didUpdate = true
+						break
+					end
 
-				if not didUpdate then
-					Utility.UI.openInterface(playerPeep, "GenericNotification", false, message)
+					if not didUpdate then
+						Utility.UI.openInterface(playerPeep, "GenericNotification", false, message)
+					end
+				else
+					player:addExclusiveChatMessage(message)
 				end
 			end
 		end
