@@ -73,6 +73,10 @@ local Tree = BTreeBuilder.Node() {
 
 					Mashina.Peep.PokeSelf {
 						event = "rezzMinions"
+					},
+
+					Mashina.Peep.PokeSelf {
+						event = "boss"
 					}
 				}
 			},
