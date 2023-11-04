@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
@@ -15,15 +17,27 @@ local Isabelle = require "Resources.Game.Peeps.Isabelle.IsabelleMean"
 
 local HITS = B.Reference("Isabelle_AttackLogic", "HITS")
 local STYLE = B.Reference("Isabelle_AttackLogic", "STYLE")
+local TARGET = B.Reference("Isabelle_AttackLogic", "TARGET")
 
 local THRESHOLD_SPECIAL_1 = 4
-local THRESHOLD_SPECIAL_2 = 5
-local THRESHOLD_SWITCH    = 7
+local THRESHOLD_SPECIAL_2 = 6
+local THRESHOLD_SWITCH    = 9
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
-		Mashina.Set {
-			value = Isabelle.STYLE_MELEE,
+		Mashina.Get {
+			value = function(mashina)
+				local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
+				local weaponStyle = weapon and weapon:getStyle()
+
+				if weaponStyle == Weapon.STYLE_MAGIC then
+					return Isabelle.STYLE_MAGIC
+				elseif weaponStyle == Weapon.STYLE_ARCHERY then
+					return Isabelle.STYLE_ARCHERY
+				else
+					return Isabelle.STYLE_MELEE
+				end
+			end,
 			[STYLE] = B.Output.result
 		},
 
@@ -41,6 +55,28 @@ local Tree = BTreeBuilder.Node() {
 		},
 
 		Mashina.Repeat {
+
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Invert {
+						Mashina.Peep.HasCombatTarget
+					},
+
+					Mashina.Peep.FindNearbyCombatTarget {
+						distance = math.huge,
+						[TARGET] = B.Output.RESULT
+					},
+
+					Mashina.Peep.EngageCombatTarget {
+						peep = TARGET,
+					},
+
+					Mashina.Peep.PokeSelf {
+						event = "rezzMinions"
+					}
+				}
+			},
+
 			Mashina.Step {
 				Mashina.Set {
 					value = 0,
