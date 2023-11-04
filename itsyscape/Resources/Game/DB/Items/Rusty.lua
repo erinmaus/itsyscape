@@ -1,5 +1,15 @@
 ItsyScape.Resource.Item "RustyHelmet" {
-	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	},
 	ItsyScape.Action.Dequip()
 }
 
@@ -28,7 +38,17 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "RustyPlatebody" {
-	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	},
 	ItsyScape.Action.Dequip()
 }
 
@@ -57,7 +77,17 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "RustyGloves" {
-	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	},
 	ItsyScape.Action.Dequip()
 }
 
@@ -86,7 +116,17 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "RustyBoots" {
-	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	},
 	ItsyScape.Action.Dequip()
 }
 
@@ -115,7 +155,17 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "RustyDagger" {
-	ItsyScape.Action.Equip(),
+	ItsyScape.Action.Equip() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	},
 	ItsyScape.Action.Dequip()
 }
 
