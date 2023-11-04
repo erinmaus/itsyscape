@@ -81,11 +81,17 @@ function PlayerStorage.Section:set(key, value)
 	end
 
 	if type(key) == 'table' then
+		for i = #key, 1, -1 do
+			self:removeSection(key)
+		end
+
 		for k, v in pairs(key) do
-			if type(v) == 'table' then
+			if type(k) ~= 'number' and type(v) == 'table' then
 				self:removeSection(k)
 			end
+		end
 
+		for k, v in pairs(key) do
 			self:set(k, v)
 		end
 	elseif type(value) == 'table' then
