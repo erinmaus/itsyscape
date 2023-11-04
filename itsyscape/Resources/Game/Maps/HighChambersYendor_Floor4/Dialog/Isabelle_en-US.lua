@@ -4,7 +4,7 @@ PLAYER_NAME = _TARGET:getName()
 
 message {
 	"You've discovered me! How interesting.",
-	"I'm willing to let you live, for now, should you return to whence you came..."
+	"I can't let you live now that you know my secret."
 }
 
 local stage = _DIRECTOR:getGameInstance():getStage()

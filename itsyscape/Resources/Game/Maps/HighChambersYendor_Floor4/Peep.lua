@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
@@ -46,20 +47,32 @@ function HighChambersYendor:new(resource, name, ...)
 end
 
 function HighChambersYendor:onFinalize(director, game)
-	self:initBoss(director, game)
+	self:pushPoke('initBoss', director, game)
 end
 
 function HighChambersYendor:onPlayerEnter(player)
 	self:initWater(director, game)
 end
 
-function HighChambersYendor:initBoss(director, game)
+function HighChambersYendor:onInitBoss(director, game)
 	self.isBossReady = false
 
 	self.immunities = {}
 	self:initImmunity("Wizard", "MagicImmunity", "Immunity from Magic", "magic")
 	self:initImmunity("Archer", "ArcheryImmunity", "Immunity from Archery", "archery")
 	self:initImmunity("Warrior", "MeleeImmunity", "Immunity from Melee", "melee")
+
+	local hits = director:probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Wizard"))
+	do
+		if #hits >= 1 then
+			local wizard = hits[1]
+
+			local spell = wizard:getBehavior(ActiveSpellBehavior)
+			spell.spell = Utility.Magic.newSpell("FireStrike", game)
+		end
+	end
 
 	do
 		local hits = director:probe(
@@ -142,7 +155,8 @@ function HighChambersYendor:onMinionKilled(effect, style)
 		if self.isBossReady then
 			Utility.Peep.notify(
 				Utility.Peep.getInstance(self),
-				string.format("Isabelle is no longer protected against %s!", style))
+				string.format("Isabelle is no longer protected against %s!", style),
+				true)
 		end
 	end
 
@@ -165,7 +179,8 @@ function HighChambersYendor:onMinionRezzed(effect, style)
 
 		Utility.Peep.notify(
 			Utility.Peep.getInstance(self),
-			string.format("Isabelle is protected against %s!", style))
+			string.format("Isabelle is protected against %s!", style),
+			true)
 	end
 
 	self.immunities[effect]:set({
@@ -203,6 +218,8 @@ function HighChambersYendor:flood(pushOrPop)
 			end
 		end
 	end
+
+	stage:updateMap(self:getLayer())
 end
 
 function HighChambersYendor:initWater(director)
