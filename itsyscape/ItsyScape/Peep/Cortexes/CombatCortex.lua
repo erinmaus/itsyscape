@@ -198,6 +198,26 @@ function CombatCortex:update(delta)
 		end
 
 		if target then
+			local targetInstance = Utility.Peep.getInstance(target)
+			local peepInstance = Utility.Peep.getInstance(peep)
+
+			if targetInstance ~= peepInstance then
+				Log.info(
+					"Target '%s' is in instance '%s' (%d), while peep '%s' is in instance %s (%s); dis-engaging.",
+					target:getName(), (targetInstance and targetInstance:getFilename()) or "<invalid", (targetInstance and targetInstance:getID()) or -1,
+					peep:getName(), (peepInstance and peepInstance:getFilename()) or "<invalid", (peepInstance and peepInstance:getID()) or -1)
+
+				self.pendingPlayers[peep] = nil
+				self.walking[peep] = nil
+				self.strafing[peep] = nil
+
+				self:resetPeep(peep)
+
+				target = nil
+			end
+		end
+
+		if target then
 			local targetPosition = target:getBehavior(PositionBehavior)
 			if targetPosition then
 				local map = game:getDirector():getMap(position.layer or 1)
@@ -264,7 +284,7 @@ function CombatCortex:update(delta)
 									target:getName(), target:getTally())
 								peep:removeBehavior(CombatTargetBehavior)
 								peep:poke('targetFled', { target = target, distance = distanceToTarget })
-							else
+							elseif (not peep:hasBehavior(TargetTileBehavior) or self.walking[peep]) then
 								local hasTarget = peep:hasBehavior(TargetTileBehavior)
 								local isWalking = true
 
