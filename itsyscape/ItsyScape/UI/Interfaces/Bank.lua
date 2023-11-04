@@ -423,7 +423,13 @@ function Bank:addSectionButton(sectionIndex, tabIndex)
 	icon:setData('sectionIndex', sectionIndex)
 	icon:setData('tabIndex', tabIndex)
 	icon:setData('featuredItem', 1)
-	icon:bind('itemID', "sections[{sectionIndex}][{tabIndex}][1]")
+
+	local state = self:getState()
+	if state.sections[sectionIndex][tabIndex].icon then
+		icon:bind('itemID', "sections[{sectionIndex}][{tabIndex}].icon")
+	else
+		icon:bind('itemID', "sections[{sectionIndex}][{tabIndex}][1]")
+	end
 	button:addChild(icon)
 
 	button.onLeftClick:register(self.openTab, self, sectionIndex, tabIndex)
@@ -501,16 +507,17 @@ end
 function Bank:probeSection(sectionIndex)
 	local sectionName = self:getState().sections[sectionIndex].name
 
-	local actions = {
-		{
+	local actions = {}
+	if sectionIndex > 1 then
+		table.insert(actions, {
 			id = "Delete",
 			verb = "Delete", -- TODO: [LANG]
 			object = sectionName,
 			callback = function()
 				self:deleteSection(sectionIndex)
 			end
-		}
-	}
+		})
+	end
 
 	self:getView():probe(actions)
 end
@@ -563,16 +570,19 @@ function Bank:probeTab(sectionIndex, tabIndex)
 			callback = function()
 				self:addSearchResultsToTab(sectionIndex, tabIndex)
 			end
-		},
-		{
+		}
+	}
+
+	if sectionIndex > 1 then
+		table.insert(actions, {
 			id = "Delete",
 			verb = "Delete", -- TODO: [LANG]
 			object = "Tab",
 			callback = function()
 				self:deleteTab(sectionIndex, tabIndex)
 			end
-		}
-	}
+		})
+	end
 
 	self:getView():probe(actions)
 end

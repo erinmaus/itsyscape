@@ -1,7 +1,85 @@
-speaker "AdvisorGrimm"
-message "What would you like to know?"
+local SEARCH_FLAGS = {
+	['item-equipment'] = true,
+	['item-inventory'] = true,
+	['item-bank'] = true
+}
+
+local TAKE_FLAGS = {
+	['item-inventory'] = true
+}
 
 PLAYER_NAME = _TARGET:getName()
+
+speaker "AdvisorGrimm"
+
+if (_TARGET:getState():has("Item", "IsabelleIsland_CrawlingCopperOre", 1, TAKE_FLAGS) and not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper")) or
+   (_TARGET:getState():has("Item", "IsabelleIsland_TenseTinOre", 1, TAKE_FLAGS) and not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin"))
+then
+	message {
+		"I see you have some %item{kursed ore}.",
+		"I'll take it off your hands."
+	}
+
+	if _TARGET:getState():take("Item", "IsabelleIsland_CrawlingCopperOre", 1, TAKE_FLAGS) then
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper")
+	end
+
+	if _TARGET:getState():take("Item", "IsabelleIsland_TenseTinOre", 1, TAKE_FLAGS) then
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotTenseTin")
+	end
+
+	speaker "_TARGET"
+	message "Here you go!"
+
+	speaker "AdvisorGrimm"
+	message "Thank you."
+end
+
+if _TARGET:getState():has("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) and
+   not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood")
+then
+	message {
+		"I see you're in possession of %item{four ancient splinters}.",
+		"%person{Isabelle} sends her thanks, %person{${PLAYER_NAME}}. That must have been difficult to obtain."
+	}
+
+	if _TARGET:getState():take("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood")
+	end
+end
+
+if _TARGET:getState():has("Item", "SquidSkull", 1, TAKE_FLAGS) and
+   not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
+then
+	message {
+		"You've slain Mn'thrw? Impressive!",
+		"Guessing you don't believe in superstitions, eh?"
+	}
+
+	message "I'll take that off your hands."
+
+	if _TARGET:getState():take("Item", "SquidSkull", 1, TAKE_FLAGS) then
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
+	end
+end
+
+if  _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper") and
+    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin") and
+    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood") and
+    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull") and
+    not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAllItems")
+then
+	message {
+		"Well done! You've obtained all the artefacts requested.",
+		"Please see Isabelle to claim your reward."
+	}
+
+	if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAllItems") then
+		_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAllItems")
+	end
+end
+
+message "What would you like to know?"
 
 local CURSED_ORE = option "Kursed Ore"
 local ANCIENT_DRIFTWOOD = option "Ancient Driftwood"
@@ -17,16 +95,6 @@ local option = select {
 }
 
 while option ~= NEVERMIND and option ~= THANK_YOU do
-	local SEARCH_FLAGS = {
-		['item-equipment'] = true,
-		['item-inventory'] = true,
-		['item-bank'] = true
-	}
-
-	local TAKE_FLAGS = {
-		['item-inventory'] = true
-	}
-
 	if option == CURSED_ORE then
 		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper") or
 		   not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin") then
@@ -61,29 +129,6 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				else
 					message "If you had more inventory space, I could give you a %item{hammer}."
 				end
-			end
-
-			if _TARGET:getState():has("Item", "IsabelleIsland_CrawlingCopperOre", 1, TAKE_FLAGS) or
-			   _TARGET:getState():has("Item", "IsabelleIsland_TenseTinOre", 1, TAKE_FLAGS)
-			then
-				message {
-					"I see you have some %item{kursed ore}.",
-					"I'll take it off your hands."
-				}
-
-				if _TARGET:getState():take("Item", "IsabelleIsland_CrawlingCopperOre", 1, TAKE_FLAGS) then
-					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper")
-				end
-
-				if _TARGET:getState():take("Item", "IsabelleIsland_TenseTinOre", 1, TAKE_FLAGS) then
-					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotTenseTin")
-				end
-
-				speaker "_TARGET"
-				message "Here you go!"
-
-				speaker "AdvisorGrimm"
-				message "Thank you."
 			end
 		else
 			message {
@@ -160,17 +205,6 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 					"You'll find it in your bank."
 				}
 			end
-
-			if _TARGET:getState():has("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
-				message {
-					"I see you're in possession of %item{four ancient splinters}.",
-					"%person{Isabelle} sends her thanks, %person{${PLAYER_NAME}}. That must have been difficult to obtain."
-				}
-
-				if _TARGET:getState():take("Item", "IsabelleIsland_FoggyForest_AncientSplinters", 4, TAKE_FLAGS) then
-					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood")
-				end
-			end
 		else
 			message {
 				"You've already obtained the ancient splinters.",
@@ -190,40 +224,12 @@ while option ~= NEVERMIND and option ~= THANK_YOU do
 				"he knows more of the specifics.",
 				"Remember, the port is to the north."
 			}
-
-			if _TARGET:getState():has("Item", "SquidSkull", 1, TAKE_FLAGS) then
-				message {
-					"You've slain Mn'thrw? Impressive!",
-					"Guessing you don't believe in superstitions, eh?"
-				}
-
-				message "I'll take that off your hands."
-
-				if _TARGET:getState():take("Item", "SquidSkull", 1, TAKE_FLAGS) then
-					_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
-				end
-			end
 		else
 			message {
 				"The squid skull remains in Isabelle's possession.",
 				"But the undead don't often stay dead, so if you happen to come across Mn'thrw again...",
 				"...feel free to slay the beast and take his skull for your own purposes."
 			}
-		end
-	end
-
-	if  _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotCrawlingCopper") and
-	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotTenseTin") and
-	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAncientDriftwood") and
-	    _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotSquidSkull")
-	then
-		message {
-			"Well done! You've obtained all the artefacts requested.",
-			"Please see Isabelle to claim your reward."
-		}
-
-		if not _TARGET:getState():has("KeyItem", "CalmBeforeTheStorm_GotAllItems") then
-			_TARGET:getState():give("KeyItem", "CalmBeforeTheStorm_GotAllItems")
 		end
 	end
 

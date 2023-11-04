@@ -23,6 +23,8 @@ function BankController:new(peep, director)
 	self.query = ""
 	self:refresh()
 
+	self:initDefaultSection()
+
 	Utility.UI.broadcast(
 		self:getDirector():getGameInstance():getUI(),
 		self:getPeep(),
@@ -42,7 +44,9 @@ function BankController:refresh()
 	self.state = {
 		items = {},
 		inventory = {},
-		filters = {}
+		filters = {},
+		currentSectionIndex = self.currentSectionIndex,
+		currentTabIndex = self.currentTabIndex,
 	}
 
 	self.items = {
@@ -54,6 +58,270 @@ function BankController:refresh()
 	self:refreshInventories()
 	self:refreshSections()
 	self:populateStateWithItems()
+end
+
+function BankController:initDefaultSection()
+	local defaultSection
+	do
+		local firstSection = self.state.sections[1]
+		if firstSection and firstSection.isDefault then
+			defaultSection = firstSection
+		else
+			defaultSection = {}
+			table.insert(self.state.sections, 1, defaultSection)
+		end
+	end
+
+	local newSection = {}
+	newSection.name = defaultSection.name or "Default"
+	newSection.isDefault = true
+
+	self:initMagicTab(newSection, defaultSection)
+	self:initMeleeTab(newSection, defaultSection)
+	self:initArcheryTab(newSection, defaultSection)
+	self:initFoodTab(newSection, defaultSection)
+	self:initMetalTab(newSection, defaultSection)
+	self:initArtisanTab(newSection, defaultSection)
+
+	self.state.sections[1] = newSection
+
+	self:updateSections(self.state.sections)
+end
+
+function BankController:initEquipment(skill1, skill2, newSection, oldSection)
+	local oldIndex = #newSection + 1
+	local oldTab = oldSection[oldIndex] or {}
+
+	local equipment = {}
+	do
+		local e = oldTab
+		local equipment1 = self:pullEquipment(skill1)
+		local equipment2 = self:pullEquipment(skill2)
+
+		for _, item in ipairs(equipment1) do
+			if not e[item] then
+				table.insert(equipment, item)
+				e[item] = true
+			end
+		end
+
+		for _, item in ipairs(equipment2) do
+			if not e[item] then
+				table.insert(equipment, item)
+			end
+		end
+	end
+	self:_sortItems(equipment)
+
+	local items = {}
+	do
+		for _, item in ipairs(oldTab) do
+			items[item] = true
+			table.insert(items, item)
+		end
+
+		for _, item in ipairs(equipment) do
+			if not items[item] then
+				table.insert(items, item)
+				items[item] = true
+			end
+		end
+	end
+
+	return items
+end
+
+function BankController:initMagicTab(newSection, oldSection)
+	local runes = {
+		"UnfocusedRune",
+		"AirRune",
+		"EarthRune",
+		"WaterRune",
+		"FireRune",
+		"CosmicRune",
+		"PrimordialTimeRune",
+		"AzathothianSpacialRune"
+	}
+
+	local items = self:initEquipment("magic", "wisdom", newSection, oldSection)
+	items = self:initItems(newSection, oldSection, items, runes)
+
+	items.icon = "DinkyStaff"
+	table.insert(newSection, items)
+end
+
+function BankController:initMeleeTab(newSection, oldSection)
+	local items = self:initEquipment("attack", "strength", newSection, oldSection)
+
+	items.icon = "BronzeLongsword"
+	table.insert(newSection, items)
+end
+
+function BankController:initArcheryTab(newSection, oldSection)
+	local items = self:initEquipment("archery", "dexterity", newSection, oldSection)
+
+	items.icon = "PunyLongbow"
+	table.insert(newSection, items)
+end
+
+function BankController:initItems(newSection, oldSection, ...)
+	local oldIndex = #newSection + 1
+	local oldTab = oldSection[oldIndex] or {}
+
+	local items = {} 
+	do
+		for _, item in ipairs(oldTab) do
+			items[item] = true
+			table.insert(items, item)
+		end
+
+		for i = 1, select('#', ...) do
+			local newItems = select(i, ...)
+			self:_sortItems(newItems)
+
+			for _, item in ipairs(newItems) do
+				if not items[item] then
+					items[item] = true
+					table.insert(items, item)
+				end
+			end
+		end
+	end
+
+	return items
+end
+
+function BankController:initFoodTab(newSection, oldSection)
+	local food1 = self:pullItemsWithAction("Eat")
+	local food2 = self:pullItemsWithAction("Cook")
+	local food3 = self:pullItemsWithAction("CookIngredient")
+	local tools = self:pullEquipment("fishing")
+	print(">>> tools", #tools, tools[1])
+
+	local items = self:initItems(newSection, oldSection, food1, food2, food3, tools)
+	table.insert(newSection, items)
+end
+
+function BankController:initMetalTab(newSection, oldSection)
+	local smelt = self:pullItemsWithAction("Smelt")
+	local mine1 = self:pullItemsWithAction("Mine")
+	local mine2 = self:pullItemsWithAction("ObtainSecondary", "mining")
+	local pickaxes = self:pullEquipment("mining")
+	local otherItems = {
+		"Hammer"
+	}
+
+	local items = self:initItems(newSection, oldSection, otherItems, pickaxes, smelt, mine1, mine2)
+
+	items.icon = "Hammer"
+	table.insert(newSection, items)
+end
+
+function BankController:initArtisanTab(newSection, oldSection)
+	local artisan = self:pullItemsWithAction("OpenInventoryCraftWindow")
+	local hatchets = self:pullEquipment("woodcutting")
+	local otherItems = {
+		"Knife",
+		"Needle",
+		"PlainThread",
+		"Tinderbox"
+	}
+
+	local items = self:initItems(newSection, oldSection, otherItems, hatchets, artisan)
+
+	items.icon = "Knife"
+	table.insert(newSection, items)
+end
+
+function BankController:pullItemsWithAction(actionName, skill)
+	local gameDB = self:getDirector():getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	local items = {}
+	local actionDefinition = Mapp.ActionDefinition()
+	if brochure:tryGetActionDefinition(actionName, actionDefinition) then
+		for action in brochure:findActionsByDefinition(actionDefinition) do
+			for resource in brochure:findResourcesByAction(action) do
+				local resourceType = brochure:getResourceTypeFromResource(resource)
+				if resourceType.name:lower() == "item" or resourceType.name:lower() == "prop" then
+					local constraints = Utility.getActionConstraints(self:getGame(), action)
+
+					local name
+					do
+						if resourceType.name:lower() == "item" then
+							name = resource.name
+						elseif resourceType.name:lower() == "prop" then
+							for j = 1, #constraints.outputs do
+								if constraints.outputs[j].type:lower() == "item" then
+									name = constraints.outputs[j].resource
+									break
+								end
+							end
+						end
+					end
+
+					local isMatch
+					do
+						if skill then
+							isMatch = false
+							for j = 1, #constraints.requirements do
+								if constraints.requirements[j].type:lower() == "skill" and constraints.requirements[j].resource:lower() == skill then
+									isMatch = true
+									break
+								end
+							end
+						else
+							isMatch = true
+						end
+					end
+
+					if name and isMatch then
+						table.insert(items, name)
+					end
+				end
+			end
+		end
+	end
+
+	return items
+end
+
+function BankController:pullEquipment(skill)
+	local gameDB = self:getDirector():getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	local equipment = {}
+	local actionDefinition = Mapp.ActionDefinition()
+	if brochure:tryGetActionDefinition("Equip", actionDefinition) then
+		for action in brochure:findActionsByDefinition(actionDefinition) do
+			for resource in brochure:findResourcesByAction(action) do
+				local resourceType = brochure:getResourceTypeFromResource(resource)
+				if resourceType.name:lower() == "item" then
+					local constraints = Utility.getActionConstraints(self:getGame(), action)
+
+					local isMatch = false
+					for j = 1, #constraints.requirements do
+						if constraints.requirements[j].type:lower() == "skill" and constraints.requirements[j].resource:lower() == skill then
+							isMatch = true
+							break
+						end
+					end
+
+					if isMatch then
+						local record = gameDB:getRecord("Equipment", {
+							Resource = resource
+						})
+
+						if record then
+							table.insert(equipment, resource.name)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return equipment
 end
 
 function BankController:refreshInventories()
@@ -89,6 +357,11 @@ function BankController:refreshSections()
 	self.state.sections = self:getBankStorage():getSection("sections"):get()
 end
 
+function BankController:updateSections(sections)
+	self:getBankStorage():removeSection("sections")
+	self:getBankStorage():getSection("sections"):set(sections)
+end
+
 function BankController:populateStateWithItems()
 	local broker = self:getDirector():getItemBroker() 
 	self.state.items = {}
@@ -101,6 +374,7 @@ function BankController:populateStateWithItems()
 			local serializedItem = items[i].meta
 			serializedItem.physicalIndex = items[i].physicalIndex
 			serializedItem.disabled = not items[i].available
+			serializedItem.tabIndex = items[i].tabIndex
 
 			table.insert(self.state.items, serializedItem)
 		end
@@ -338,15 +612,14 @@ end
 
 function BankController:filterItems(items)
 	local query = self.query
-	if not query or query == "" then
-		return items
-	end
-
 	query = self:buildQuery(query)
 
 	local result = {}
 	for i = 1, #items do
-		if self:performQueryOnItem(query, items[i].id) then
+		local matchQuery = not (query and query ~= "" and not self:performQueryOnItem(query, items[i].id))
+		local matchQuantity = not (self.currentSectionIndex == 1 and items[i].count == 0)
+
+		if matchQuery and matchQuantity then
 			table.insert(result, items[i])
 		end
 	end
@@ -546,12 +819,17 @@ function BankController:swapBank(e)
 
 		local tab = tabsStorage:get(self.currentTabIndex):get()
 
-		assert(e.a >= 1, e.a <= #tab, "a is out of range")
-		assert(e.b >= 1, e.b <= #tab, "b is out of range")
+		local items = self.state.items
+		assert(e.a >= 1, e.a <= #items, "a is out of range")
+		assert(e.b >= 1, e.b <= #items, "b is out of range")
 
-		tab[e.a], tab[e.b] = tab[e.b], tab[e.a]
+		local indexA = items[e.a].tabIndex
+		local indexB = items[e.b].tabIndex
 
-		tabsStorage:set(self.currentTabIndex, tab)
+		if indexA and indexB then
+			tab[indexA], tab[indexB] = tab[indexB], tab[indexA]
+			tabsStorage:set(self.currentTabIndex, tab)
+		end
 
 		return
 	end
@@ -600,11 +878,17 @@ function BankController:insert(e)
 
 		local tab = tabsStorage:get(self.currentTabIndex):get()
 
-		assert(e.a >= 1, e.a <= #tab, "a is out of range")
-		assert(e.b >= 1, e.b <= #tab, "b is out of range")
+		local items = self.state.items
+		assert(e.a >= 1, e.a <= #items, "a is out of range")
+		assert(e.b >= 1, e.b <= #items, "b is out of range")
 
-		local itemID = table.remove(tab, e.a)
-		table.insert(tab, e.b, itemID)
+		local indexA = items[e.a].tabIndex
+		local indexB = items[e.b].tabIndex
+
+		if indexA and indexB then
+			local itemID = table.remove(tab, indexA)
+			table.insert(tab, indexB, itemID)
+		end
 
 		tabsStorage:set(self.currentTabIndex, tab)
 
@@ -886,11 +1170,16 @@ end
 
 function BankController:deleteSection(e)
 	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
-	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(e.sectionIndex >= 2, "sectionIndex is less than or equal to one")
 
 	local sectionsStorage = self:getBankStorage():getSection("sections")
 	sectionsStorage:removeSection(e.sectionIndex)
 	self:refreshSections()
+
+	if self.currentSectionIndex == e.sectionIndex then
+		self.currentSectionIndex = nil
+		self.currentTabIndex = nil
+	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,
@@ -929,6 +1218,10 @@ function BankController:_getItemRequirements(itemID)
 	local brochure = gameDB:getBrochure()
 
 	local resource = gameDB:getResource(itemID, "Item")
+	if not resource then
+		Log.warn("Item '%s' doesn't exist in GameDB.", itemID)
+		return itemRequirement
+	end
 
 	for action in brochure:findActionsByResource(resource) do
 		local inventoryAction = Utility.getAction(game, action, 'inventory')
@@ -974,8 +1267,12 @@ function BankController._compareItemSort(itemRequirements, a, b)
 	local reqA = itemRequirements[a]
 	local reqB = itemRequirements[b]
 
-	if reqA.maxEquipSkillName < reqB.maxEquipSkillName then
+	if reqA.maxEquipSkillName ~= "" and reqB.maxEquipSkillName ~= "" and reqA.maxEquipSkillName < reqB.maxEquipSkillName then
 		return true
+	elseif reqA.maxEquipSkillName ~= "" and reqB.maxEquipSkillName == "" then
+		return true
+	elseif reqA.maxEquipSkillName == "" and reqB.maxEquipSkillName ~= "" then
+		return false
 	elseif reqA.maxEquipSkillName == reqB.maxEquipSkillName then
 		if reqA.maxEquipXP > reqB.maxEquipXP then
 			return true
@@ -1020,6 +1317,20 @@ function BankController:sortBank(e)
 	end
 end
 
+function BankController:_sortItems(items)
+	local itemRequirements = {}
+
+	for i = 1, #items do
+		local itemID = items[i]
+		itemRequirements[itemID] = self:_getItemRequirements(itemID)
+	end
+
+	sort.stable_sort(items, function(a, b)
+		local r = BankController._compareItemSort(itemRequirements, a, b)
+		return r
+	end)
+end
+
 function BankController:sortTab(e)
 	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
 	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
@@ -1034,18 +1345,7 @@ function BankController:sortTab(e)
 	local tabsStorage = sectionsStorage:getSection(e.sectionIndex)
 
 	local tab = tabsStorage:get(e.tabIndex):get()
-
-	local itemRequirements = {}
-
-	for i = 1, #tab do
-		local itemID = tab[i]
-		itemRequirements[itemID] = self:_getItemRequirements(itemID)
-	end
-
-	sort.stable_sort(tab, function(a, b)
-		local r = BankController._compareItemSort(itemRequirements, a, b)
-		return r
-	end)
+	self:_sortItems(tab)
 
 	tabsStorage:set(e.tabIndex, tab)
 end
@@ -1063,7 +1363,7 @@ end
 
 function BankController:removeTab(e)
 	assert(type(e.sectionIndex) == "number", "sectionIndex is not a number")
-	assert(e.sectionIndex >= 1, "sectionIndex is less than or equal to zero")
+	assert(e.sectionIndex >= 2, "sectionIndex is less than or equal to one")
 	assert(type(e.tabIndex) == "number", "tabIndex is not a number")
 	assert(e.tabIndex >= 1, "tabIndex is less than or equal to zero")
 
@@ -1071,6 +1371,16 @@ function BankController:removeTab(e)
 	local sectionStorage = sectionsStorage:getSection(e.sectionIndex)
 	sectionStorage:removeSection(e.tabIndex)
 	self:refreshSections()
+
+	if self.currentSectionIndex == e.sectionIndex and self.currentTabIndex == e.tabIndex then
+		local index = math.min(sectionsStorage:legth(), e.currentTabIndex)
+		if index == 0 then
+			self.currentSectionIndex = nil
+			self.currentTabIndex = nil
+		else
+			self.currentTabIndex = index
+		end
+	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,
