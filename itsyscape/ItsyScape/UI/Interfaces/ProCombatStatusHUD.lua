@@ -1420,7 +1420,7 @@ function ProCombatStatusHUD:getActorPosition(actorID)
 	local actorView = gameView:getActor(gameView:getActorByID(actorID))
 
 	if not actorView then
-		return Vector.ZERO
+		return Vector(0)
 	end
 
 	local actorPosition
