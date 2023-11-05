@@ -78,7 +78,7 @@ function Equip:perform(state, peep, item, target)
 					end
 
 					local equippedItem = equipment:getEquipped(slot)
-					if equippedItem then
+					if equippedItem and not (equippedItem:isStackable() and equippedItem:getID() == item:getID()) then
 						transaction:transfer(inventory, equippedItem)
 					end
 				end
