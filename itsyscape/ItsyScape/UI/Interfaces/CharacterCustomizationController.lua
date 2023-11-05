@@ -123,6 +123,7 @@ local SKINS = {
 		{ name = "Lab coat", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/LabCoat.lua" },
 		{ name = "Alchemist's coat", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Alchemist.lua" },
 		{ name = "Witch's hunter garb", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Hunter.lua" },
+		{ name = "Chef", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/ChefOutfit.lua" },
 		{ name = "Mummy", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Mummy.lua" },
 		{ name = "Partially digested", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/PartiallyDigested.lua" },
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Body.lua" },

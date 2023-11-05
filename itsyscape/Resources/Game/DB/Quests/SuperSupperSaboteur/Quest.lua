@@ -28,6 +28,28 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Quest "SuperSupperSaboteur"
 
 Quest "SuperSupperSaboteur" {
+	constraints = {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(5)
+		}
+	},
+
 	Step "SuperSupperSaboteur_Started",
 	Step "SuperSupperSaboteur_GotRecipe",
 	Step "SuperSupperSaboteur_GotYelledAtForGoldenCarrot",
