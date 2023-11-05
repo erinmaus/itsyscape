@@ -1,9 +1,9 @@
 local M = include "Resources/Game/Maps/Rumbridge_Castle/DB/Default.lua"
 
--- ItsyScape.Meta.PeepID {
--- 	Value = "Resources.Game.Maps.Rumbridge_Castle.Peep",
--- 	Resource = M._MAP
--- }
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Rumbridge_Castle.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
 	Value = "Rumbridge, Castle",
@@ -405,5 +405,62 @@ do
 
 	M["Portal_ToMonastery"] {
 		TravelAction
+	}
+end
+
+M["ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "ChefAllon",
+		Map = M._MAP,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ChefAllon",
+		MapObject = M["ChefAllon"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ChefAllon"],
+		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/ChefAllon_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["ChefAllon"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ChefAllon"],
+		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurInProgress_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "StartSuperSupperSaboteur",
+		Action = TalkAction,
+		Map = M._MAP
 	}
 end

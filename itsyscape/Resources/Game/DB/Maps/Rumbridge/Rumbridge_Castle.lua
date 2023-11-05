@@ -107,3 +107,24 @@ do
 		Resource = Guard
 	}
 end
+
+do
+	local Chef = ItsyScape.Resource.Peep "ChefAllon"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rumbridge.ChefAllon",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chef Allon",
+		Language = "en-US",
+		Resource = Chef
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A three-star chef employed by Earl Reddick.",
+		Language = "en-US",
+		Resource = Chef
+	}
+end
