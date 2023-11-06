@@ -203,6 +203,38 @@ do
 end
 
 do
+	local Milk = ItsyScape.Resource.Ingredient "Milk"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Milk",
+		Language = "en-US",
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain milk from cows and some plant-based sources, like oats.",
+		Language = "en-US",
+		Resource = Milk
+	}
+end
+
+do
+	local Eggs = ItsyScape.Resource.Ingredient "Eggs"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Eggs",
+		Language = "en-US",
+		Resource = Eggs
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You can obtain eggs from birds and reptiles... and the legendary platypus!",
+		Language = "en-US",
+		Resource = Eggs
+	}
+end
+
+do
 	local Oil = ItsyScape.Resource.Ingredient "Oil"
 
 	ItsyScape.Meta.ResourceName {

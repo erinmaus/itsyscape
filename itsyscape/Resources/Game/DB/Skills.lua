@@ -214,6 +214,20 @@ ItsyScape.Resource.Skill "Cooking"
 		Skill = ItsyScape.Resource.Skill "Cooking"
 	}
 
+	ActionType "ReadRecipe"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ReadRecipe",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Read-recipe",
+		XProgressive = "Reading-recipe",
+		Language = "en-US",
+		Type = "ReadRecipe"
+	}
+
 ItsyScape.Resource.Skill "Fishing"
 	ActionType "Fish"
 
