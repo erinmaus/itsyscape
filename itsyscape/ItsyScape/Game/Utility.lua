@@ -3630,6 +3630,44 @@ function Utility.Peep.Dummy:onFinalize()
 	end
 end
 
+Utility.Peep.Creep = {}
+function Utility.Peep.Creep:applySkins()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+
+		local function applySkins(resource)
+			local skins = gameDB:getRecords("PeepSkin", {
+				Resource = resource
+			})
+
+			for i = 1, #skins do
+				local skin = skins[i]
+				if skin:get("Type") and skin:get("Filename") then
+					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+				end
+			end
+		end
+
+		local resource = Utility.Peep.getResource(self)
+		if resource then
+			local resourceType = gameDB:getBrochure():getResourceTypeFromResource(resource)
+			if resourceType.name:lower() == "peep" then
+				applySkins(resource)
+			end
+		end
+
+		local mapObject = Utility.Peep.getMapObject(self)
+		if mapObject then
+			applySkins(mapObject)
+		end
+	end
+end
+
 Utility.Peep.Human = {}
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
@@ -3766,6 +3804,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
 	peep:addResource("animation-action-cook", actionCook)
+	local actionMilk = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-milk", actionMilk)
 	local actionCraft = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")

@@ -71,6 +71,7 @@ function Creep:ready(director, game)
 	Peep.ready(self, director, game)
 
 	Utility.Peep.setNameMagically(self)
+	Utility.Peep.Creep.applySkins(self)
 end
 
 return Creep
