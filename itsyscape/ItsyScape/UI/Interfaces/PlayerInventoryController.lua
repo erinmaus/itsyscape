@@ -328,13 +328,27 @@ function PlayerInventoryController:useItemOnProp(e)
 	local success, index = self:_tryUseItem(item, actions)
 	if success then
 		local actionID = actions[index].instance:getID()
-		Utility.performAction(
-			self:getGame(),
-			Utility.Peep.getResource(prop:getPeep()),
-			actionID,
-			'world',
-			self:getPeep():getState(), self:getPeep(), prop:getPeep())
-		return
+		success = (
+			Utility.performAction(
+				self:getGame(),
+				Utility.Peep.getResource(prop:getPeep()),
+				actionID,
+				'world',
+				self:getPeep():getState(), self:getPeep(), prop:getPeep())
+			or (
+				Utility.Peep.getMapObject(prop:getPeep()) and
+				Utility.performAction(
+					self:getGame(),
+					Utility.Peep.getMapObject(prop:getPeep()),
+					actionID,
+					'world',
+					self:getPeep():getState(), self:getPeep(), prop:getPeep())
+				)
+		)
+
+		if success then
+			return
+		end
 	end
 
 	Utility.Peep.notify(self:getPeep(), "That doesn't do anything...")
@@ -379,13 +393,27 @@ function PlayerInventoryController:useItemOnActor(e)
 	local success, index = self:_tryUseItem(item, actions)
 	if success then
 		local actionID = actions[index].instance:getID()
-		Utility.performAction(
-			self:getGame(),
-			Utility.Peep.getResource(actor:getPeep()),
-			actionID,
-			'world',
-			self:getPeep():getState(), self:getPeep(), actor:getPeep())
-		return
+		success = (
+			Utility.performAction(
+				self:getGame(),
+				Utility.Peep.getResource(actor:getPeep()),
+				actionID,
+				'world',
+				self:getPeep():getState(), self:getPeep(), actor:getPeep())
+			or (
+				Utility.Peep.getMapObject(actor:getPeep()) and
+				Utility.performAction(
+					self:getGame(),
+					Utility.Peep.getMapObject(actor:getPeep()),
+					actionID,
+					'world',
+					self:getPeep():getState(), self:getPeep(), actor:getPeep())
+				)
+		)
+
+		if success then
+			return
+		end
 	end
 
 	Utility.Peep.notify(self:getPeep(), "That doesn't do anything...")
