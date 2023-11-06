@@ -31,6 +31,29 @@ ItsyScape.Meta.Item {
 	Resource = ItsyScape.Resource.Item "Feather"
 }
 
+ItsyScape.Resource.Item "GoldenFeather" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Golden feather",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GoldenFeather"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Kinda heavy for a feather!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "GoldenFeather"
+}
+
+ItsyScape.Meta.Item {
+	Value = math.floor(ItsyScape.Utility.valueForItem(20) / 5 + 0.5),
+	Weight = 10,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "GoldenFeather"
+}
+
 ItsyScape.Resource.Item "IslandFeather" {
 	-- Nothing.
 }

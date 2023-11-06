@@ -343,6 +343,122 @@ do
 	}
 end
 
+do
+	local Chicken = ItsyScape.Resource.Peep "SuperSupperSaboteur_GoldenChicken" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Chicken_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "GoldenChicken_Secondary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "GoldenChicken_Tertiary",
+				Count = 1
+			}
+		}
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = Chicken,
+		Name = "Chicken",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Peeps/Chicken/GoldenChicken_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	Chicken {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Chicken.GoldenChicken",
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chicken",
+		Language = "en-US",
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What a golden chicken! Looks kind of tough too!",
+		Language = "en-US",
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "GoldenFeather",
+		Weight = 1,
+		Count = 10,
+		Range = 5,
+		Resource = ItsyScape.Resource.DropTable "GoldenChicken_Secondary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Egg",
+		Weight = 10,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "GoldenChicken_Tertiary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenEgg",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "GoldenChicken_Tertiary"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(50, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(45),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Chicken
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Chicken/Chicken_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Chicken
+	}
+end
+
 local Quest = ItsyScape.Utility.Quest
 local Step = ItsyScape.Utility.QuestStep
 local Branch = ItsyScape.Utility.QuestBranch

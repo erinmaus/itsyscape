@@ -590,6 +590,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
+		Stackable = 1,
 		Value = ItsyScape.Utility.valueForItem(2),
 		Resource = Item
 	}
