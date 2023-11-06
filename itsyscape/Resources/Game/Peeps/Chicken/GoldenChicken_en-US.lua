@@ -43,6 +43,11 @@ elseif result == TALK then
 elseif result == SCARE then
 	message "BOO!"
 
+	local player = Utility.Peep.getPlayerModel(_TARGET)
+	if player then
+		player:pokeCamera('shake')
+	end
+
 	speaker "Chicken"
 	message "Cluck!!!"
 
