@@ -162,9 +162,9 @@ end
 M["GoldenChicken"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30,
+		PositionX = 29,
 		PositionY = 4,
-		PositionZ = 40,
+		PositionZ = 41,
 		Name = "GoldenChicken",
 		Map = M._MAP,
 		Resource = M["GoldenChicken"]
@@ -173,5 +173,40 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "SuperSupperSaboteur_GoldenChicken",
 		MapObject = M["GoldenChicken"]
+	}
+end
+
+M["GrumpyFarmer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 23,
+		Name = "GrumpyFarmer",
+		Map = M._MAP,
+		Resource = M["GrumpyFarmer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rumbridge_Farmer",
+		MapObject = M["GrumpyFarmer"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["GrumpyFarmer"],
+		Name = "Farmer",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Farm1/Dialog/GrumpyFarmer_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["GrumpyFarmer"] {
+		TalkAction
 	}
 end
