@@ -106,9 +106,9 @@ function ConstraintsPanel:performLayout(doLogic)
 	self.layout:setSize(width, 0)
 	self.panel:addChild(self.layout)
 
-	local leftWidth = 32
+	local rowHeight = (self.config.constraintFontSize or 16) * 2
+	local leftWidth = rowHeight
 	local rightWidth = width - leftWidth - self.padding * 7
-	local rowHeight = self.config.constraintFontSize * 2
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]
 		local isBlacklisted = ConstraintsPanel.BLACKLIST[c.type:lower()]
@@ -130,13 +130,12 @@ function ConstraintsPanel:performLayout(doLogic)
 			else
 				left = Widget()
 			end
-			self.layout:addChild(left)
 
 			local right = Label()
 			right:setStyle(LabelStyle({
-				fontSize = self.config.constraintFontSize,
+				fontSize = self.config.constraintFontSize or 16,
 				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-				color = self.config.constraintColor,
+				color = self.config.constraintColor or { 1, 1, 1, 1 },
 				textShadow = self.config.constraintShadow == nil or false,
 				width = rightWidth
 			}, self.view:getResources()))
@@ -172,15 +171,17 @@ function ConstraintsPanel:performLayout(doLogic)
 			do
 				local _, lines = right:getStyle().font:getWrap(right:getText(), rightWidth)
 				right:setSize(rightWidth, #lines * right:getStyle().font:getHeight())
+				left:setSize(leftWidth, rowHeight)
 			end
 
+			self.layout:addChild(left)
 			self.layout:addChild(right)
 		end
 	end
 
 	do
 		local layoutWidth, layoutHeight = self.layout:getSize()
-		self:setSize(layoutWidth, layoutHeight + self.titleHeight)
+		self:setSize(layoutWidth, layoutHeight + self.titleHeight + self.DEFAULT_PADDING)
 		self.panel:setSize(self:getSize())
 	end
 end
