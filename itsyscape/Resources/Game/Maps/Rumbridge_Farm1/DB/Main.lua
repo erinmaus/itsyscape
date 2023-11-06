@@ -158,3 +158,20 @@ do
 		TravelAction
 	}
 end
+
+M["GoldenChicken"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 4,
+		PositionZ = 40,
+		Name = "GoldenChicken",
+		Map = M._MAP,
+		Resource = M["GoldenChicken"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SuperSupperSaboteur_GoldenChicken",
+		MapObject = M["GoldenChicken"]
+	}
+end
