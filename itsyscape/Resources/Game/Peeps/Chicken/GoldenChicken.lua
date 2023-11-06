@@ -12,6 +12,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local BaseChicken = require "Resources.Game.Peeps.Chicken.BaseChicken"
 
 local GoldenChicken = Class(BaseChicken)
@@ -22,6 +23,8 @@ function GoldenChicken:new(...)
 	Utility.Peep.addInventory(self)
 
 	self:addPoke("dropEgg")
+	self:addPoke("talkingStart")
+	self:addPoke("talkingStop")
 end
 
 function GoldenChicken:ready(director, game)
@@ -38,6 +41,26 @@ function GoldenChicken:ready(director, game)
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 
 	Utility.Peep.equipXWeapon(self, "ViciousChickenAttack")
+end
+
+function GoldenChicken:onTalkingStart()
+	self.currentTalkStack = (self.currentTalkStack or 0) + 1
+
+	if self.currentTalkStack == 1 then
+		Utility.Peep.setMashinaState(self, false)
+	end
+end
+
+function GoldenChicken:onTalkingStop()
+	self.currentTalkStack = (self.currentTalkStack or 1) - 1
+
+	if self.currentTalkStack <= 0 then
+		self.currentTalkStack = nil
+
+		if not self:getBehavior(CombatTargetBehavior) then
+			Utility.Peep.setMashinaState(self, "idle")
+		end
+	end
 end
 
 function GoldenChicken:onDropEgg(egg)
