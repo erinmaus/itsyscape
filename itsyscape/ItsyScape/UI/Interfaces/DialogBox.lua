@@ -233,6 +233,7 @@ function DialogBox:next(state)
 				if actorView then
 					self.speakerIcon:setRoot(actorView:getSceneNode())
 					self.actor = actor
+					self.prop = nil
 				end
 			end
 		end
@@ -248,6 +249,7 @@ function DialogBox:next(state)
 				if propView then
 					self.speakerIcon:setRoot(propView:getRoot())
 					self.prop = prop
+					self.actor = nil
 				end
 			end
 		end
