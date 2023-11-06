@@ -34,7 +34,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 LocalPlayer.MAX_MESSAGES = 50
-LocalPlayer.MAX_MESSAGE_DURATION_SECONDS = 60 * 5 -- 5 minutes
+LocalPlayer.MAX_MESSAGE_DURATION_SECONDS = 60 * 2 -- 2 minutes
 
 -- Constructs a new player.
 --
