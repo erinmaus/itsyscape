@@ -2640,7 +2640,7 @@ function Utility.Peep.attack(peep, other, distance)
 					mashina.currentState = 'begin-attack'
 				elseif mashina.states['attack'] then
 					mashina.currentState = 'attack'
-				elseif mashina.currentState == "idle" then
+				elseif mashina.currentState == 'idle' then
 					mashina.currentState = false
 				end
 			end
@@ -2967,6 +2967,13 @@ function Utility.Peep.makeMashina(peep)
 	peep:addBehavior(MashinaBehavior)
 
 	peep:listen('ready', Utility.Peep.Mashina.onReady)
+end
+
+function Utility.Peep.setMashinaState(peep, state)
+	local mashina = peep:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = state or false
+	end
 end
 
 Utility.Peep.Inventory = {}

@@ -42,10 +42,14 @@ function MashinaCortex:update(delta)
 		if p then
 			if mashina.currentState ~= p.currentState then
 				if mashina.currentState and mashina.states[mashina.currentState] then
+					Log.info("%s: starting mashina '%s' due to state change.", peep:getName(), mashina.currentState)
+
 					local s = mashina.states[mashina.currentState]
 					p.executor = B.Executor(peep)
 					p.tree = BTreeBuilder.materialize(peep, s)
 				else
+					Log.info("%s: stopping mashina due to state change.", peep:getName())
+
 					if p.executor then
 						p.executor:drop()
 					end
