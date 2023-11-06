@@ -220,20 +220,74 @@ do
 	}
 end
 
-M["Cow1"] = ItsyScape.Resource.MapObject.Unique()
+M["OldGirl"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 53,
 		PositionY = 4,
 		PositionZ = 33,
-		Name = "Cow1",
+		Name = "OldGirl",
 		Map = M._MAP,
-		Resource = M["Cow1"]
+		Resource = M["OldGirl"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Cow_Base",
-		MapObject = M["Cow1"]
+		MapObject = M["OldGirl"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Old Girl",
+		Language = "en-US",
+		Resource = M["OldGirl"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Old Girl is the sweetest cow in the Realm! Bessie has got nothing on her!",
+		Language = "en-US",
+		Resource = M["OldGirl"]
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/Cow/CowBow.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_EQUIPMENT,
+		Resource = M["OldGirl"]
+	}
+
+	M["OldGirl"] {
+		ItsyScape.Action.Milk() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bucket",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
 	}
 end
 
@@ -249,7 +303,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		Peep = ItsyScape.Resource.Peep "Cow_Milkable",
 		MapObject = M["Cow2"]
 	}
 end
@@ -266,7 +320,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		Peep = ItsyScape.Resource.Peep "Cow_Milkable",
 		MapObject = M["Cow3"]
 	}
 end
@@ -283,7 +337,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		Peep = ItsyScape.Resource.Peep "Cow_Milkable",
 		MapObject = M["Cow4"]
 	}
 end

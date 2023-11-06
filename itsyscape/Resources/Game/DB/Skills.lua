@@ -228,6 +228,20 @@ ItsyScape.Resource.Skill "Cooking"
 		Type = "ReadRecipe"
 	}
 
+	ActionType "Milk"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Milk",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Milk",
+		XProgressive = "Milking",
+		Language = "en-US",
+		Type = "Milk"
+	}
+
 ItsyScape.Resource.Skill "Fishing"
 	ActionType "Fish"
 
@@ -281,6 +295,11 @@ ItsyScape.Resource.Skill "Foraging"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Gather",
+		Skill = ItsyScape.Resource.Skill "Foraging"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Milk",
 		Skill = ItsyScape.Resource.Skill "Foraging"
 	}
 

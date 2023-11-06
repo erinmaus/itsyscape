@@ -314,3 +314,56 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "You want a spoiler? Page 606.",
 	Resource = ItsyScape.Resource.Peep "IsabelleIsland_Drakkenson"
 }
+
+do
+	local Milk = ItsyScape.Resource.Item "IsabelleIsland_BessiesMilk" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "IsabelleIsland_BessiesMilk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bessie's milk",
+		Language = "en-US",
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Milk from the sweetest cow on Isabelle Island!",
+		Language = "en-US",
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Milk,
+		Ingredient = ItsyScape.Resource.Ingredient "Milk"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(6),
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Milk,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Milk,
+		Value = ItsyScape.Utility.valueForItem(6)
+	}
+end
