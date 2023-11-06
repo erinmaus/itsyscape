@@ -74,3 +74,161 @@ do
 		Resource = Farmer
 	}
 end
+
+do
+	local Dandy = ItsyScape.Resource.Peep "Dandy" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Dandy_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Flowers.Dandy",
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dandy",
+		Language = "en-US",
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A weed with attitude.",
+		Language = "en-US",
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(25),
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.9),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.5),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20),
+		Resource = Dandy
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Flowers/Dandy_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Dandy
+	}
+end
+
+do
+	local DeadDandy = ItsyScape.Resource.Peep "DeadDandy" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Dandy_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Flowers.DeadDandy",
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dead dandy",
+		Language = "en-US",
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "If your spring allergies are bad, fighting a dead dandy is not a good idea.",
+		Language = "en-US",
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(25),
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(25),
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(15, 0.9),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(15, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(28),
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = DeadDandy
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Flowers/Dandy_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = DeadDandy
+	}
+end
+
+do
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SuperSupperSaboteur_DandelionFlour",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "Dandy_Primary"
+	}
+end
