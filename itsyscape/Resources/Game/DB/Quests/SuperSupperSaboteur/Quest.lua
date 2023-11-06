@@ -254,6 +254,23 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(11)
 			}
+		},
+
+		ItsyScape.Action.Pick() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForResource(11)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenCarrot",
+				Count = 1
+			}
 		}
 	}
 
@@ -275,6 +292,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
+		Stackable = 1,
 		Value = ItsyScape.Utility.valueForItem(15),
 		Resource = GoldenCarrot
 	}
@@ -359,7 +377,7 @@ do
 			Output {
 				Resource = ItsyScape.Resource.DropTable "GoldenChicken_Secondary",
 				Count = 1
-			}
+			},
 		},
 
 		ItsyScape.Action.Loot() {
@@ -457,6 +475,133 @@ do
 		Tree = "Resources/Game/Peeps/Chicken/Chicken_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = Chicken
+	}
+end
+
+do
+	local GoldenCarrotProp = ItsyScape.Resource.Prop "SuperSupperSaboteur_GoldenCarrot"
+
+	local FakePickAction = ItsyScape.Action.Talk() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = ItsyScape.Utility.xpForLevel(10),
+		}
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Pick",
+		XProgressive = "Picking",
+		Language = "en-US",
+		Action = FakePickAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = GoldenCarrotProp,
+		Name = "GoldenCarrot",
+		Action = FakePickAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Farm1/Dialog/GoldenCarrot_en-US.lua",
+		Language = "en-US",
+		Action = FakePickAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Rumbridge_Farmer",
+		Name = "Farmer",
+		Action = FakePickAction
+	}
+
+	GoldenCarrotProp {
+		FakePickAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Golden carrot",
+		Language = "en-US",
+		Resource = GoldenCarrotProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one shiny carrot!",
+		Language = "en-US",
+		Resource = GoldenCarrotProp
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Veggies.BaseVeggieProp",
+		Resource = GoldenCarrotProp
+	}
+
+	local GoldenCarrotPeep = ItsyScape.Resource.Peep "SuperSupperSaboteur_GoldenCarrot" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SuperSupperSaboteur_GoldenCarrot_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenCarrot",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "SuperSupperSaboteur_GoldenCarrot_Primary"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Veggies.GoldenCarrot",
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Angry golden carrot",
+		Language = "en-US",
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That is one *angry* carrot!",
+		Language = "en-US",
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(75),
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(15),
+		Resource = GoldenCarrotPeep
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(15),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.9),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 1.3),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(30),
+		Resource = GoldenCarrotPeep
 	}
 end
 

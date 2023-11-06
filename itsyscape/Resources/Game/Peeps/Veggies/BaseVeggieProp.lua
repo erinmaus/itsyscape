@@ -10,8 +10,16 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local BlockingProp = require "Resources.Game.Peeps.Props.BlockingProp"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BasicVeggie = Class(BlockingProp)
+
+function BasicVeggie:new(...)
+	BlockingProp.new(self, ...)
+
+	local size = self:getBehavior(SizeBehavior)
+	size.zoom = 4
+end
 
 function BasicVeggie:onPick(player)
 	local resource = Utility.Peep.getResource(self)
