@@ -554,9 +554,17 @@ end
 
 -- These are taken from the GameDB init script.
 -- See Resources/Game/DB/Init.lua
-local RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+local RESOURCE_CURVE = Curve()
 function Utility.xpForResource(a)
-	return RESOURCE_CURVE(a + 1)
+	local point1 = RESOURCE_CURVE(a)
+	local point2 = RESOURCE_CURVE(a + 1)
+	local xp = point2 - point1
+
+	local A = 1 / 1000
+	local B = 5 / 100
+	local C = 4
+
+	return math.floor(xp / (A * a ^ 2 + B * a + C))
 end
 
 function Utility.styleBonusForItem(tier, weight)
@@ -660,14 +668,64 @@ end
 
 function Utility.Combat.getCombatXP(peep)
 	local stats = peep:getBehavior(StatsBehavior)
-	if stats and stats.stats then
-		stats = stats.stats
-		local combatLevel = math.min(Utility.Combat.getCombatLevel(peep), 512)
-		local cFactor = math.max(math.floor((stats:getSkill("Constitution"):getBaseLevel() / 10 + 0.5)), 1)
-		return math.floor(math.sqrt(combatLevel ^ 3 * cFactor) * 4 + 0.5)
+	do
+		stats = stats and stats.stats
+		if not stats then
+			return 0
+		end
 	end
 
-	return 0
+	local hitpoints
+	do
+		local status = peep:getBehavior(CombatStatusBehavior)
+		hitpoints = status and status.maximumHitpoints
+		if not hitpoints then
+			return 0
+		end
+
+		hitpoints = math.min(hitpoints, 100000)
+	end
+
+	local tier
+	do
+		local melee = (stats:getSkill("Attack"):getWorkingLevel() + stats:getSkill("Strength"):getWorkingLevel()) / 2
+		local magic = (stats:getSkill("Magic"):getWorkingLevel() + stats:getSkill("Wisdom"):getWorkingLevel()) / 2
+		local ranged = (stats:getSkill("Archery"):getWorkingLevel() + stats:getSkill("Dexterity"):getWorkingLevel()) / 2
+
+		tier = math.max(melee, magic, ranged)
+		tier = math.min(tier, 100)
+	end
+
+	local xpForTier
+	do
+		local point1 = RESOURCE_CURVE(tier)
+		local point2 = RESOURCE_CURVE(tier + 1)
+		xpForTier = point2 - point1
+	end
+
+	local xpFromTier
+	do
+		local A = 4 / 1000
+		local B = 5 / 100
+		local C = 8
+
+		local tierDivisor = math.floor(A * tier ^ 2 + B * tier + C)
+		tierDivisor = math.max(tierDivisor, C)
+
+		xpFromTier = math.floor(xpForTier / tierDivisor)
+	end
+
+	local xpFromHitpoints
+	do
+		local A = 0.000025
+		local B = 0.5
+		local C = 2
+
+		xpFromHitpoints = math.floor(A * hitpoints ^ 2 + B * hitpoints + C)
+	end
+
+	local totalXP = xpFromTier + xpFromHitpoints
+	return totalXP, xpFromTier, xpFromHitpoints
 end
 
 function Utility.Combat.giveCombatXP(peep, xp)
@@ -2845,7 +2903,7 @@ function Utility.Peep.Stats:onReady(director)
 		end
 	end
 
-	Log.info("%s combat level: %d (%d XP)", self:getName(), Utility.Combat.getCombatLevel(self), Utility.Combat.getCombatXP(self))
+	Log.info("%s combat level: %d (%d [from tier = %d, from hitpoints = %d] XP)", self:getName(), Utility.Combat.getCombatLevel(self), Utility.Combat.getCombatXP(self))
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 end

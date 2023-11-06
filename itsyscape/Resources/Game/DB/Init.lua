@@ -789,7 +789,13 @@ local RESOURCE_CURVE = Curve(nil, nil, nil, nil)
 ItsyScape.Utility.xpForResource = function(a)
 	local point1 = RESOURCE_CURVE(a)
 	local point2 = RESOURCE_CURVE(a + 1)
-	return math.floor((point2 - point1) / 4)
+	local xp = point2 - point1
+
+	local A = 1 / 1000
+	local B = 5 / 100
+	local C = 4
+
+	return math.floor(xp / (A * a ^ 2 + B * a + C))
 end
 
 -- Calculates the sum style bonus for an item of the specified tier.
