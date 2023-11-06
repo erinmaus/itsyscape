@@ -32,25 +32,32 @@ local function formatQuantity(number)
   return minus .. int:reverse():gsub("^,", "") .. fraction
 end
 
-function ConstraintsPanel:new(view)
+function ConstraintsPanel:new(view, config)
 	Widget.new(self)
 
 	self.view = view
+	self.config = config or {}
 
 	self.padding = ConstraintsPanel.DEFAULT_PADDING
 	self.constraints = {}
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({ image = false }, view:getResources()))
-	self.panel:setSize(ConstraintsPanel.DEFAULT_WIDTH, ConstraintsPanel.TITLE_SIZE + ConstraintsPanel.DEFAULT_PADDING)
+	self.panel:setSize(
+		ConstraintsPanel.DEFAULT_WIDTH,
+		(self.config.headerFontSize or ConstraintsPanel.TITLE_SIZE) + ConstraintsPanel.DEFAULT_PADDING)
 
 	self.titleLabel = Label()
 	self.titleLabel:setStyle(LabelStyle({
-		fontSize = 16,
+		fontSize = self.config.headerFontSize or ConstraintsPanel.TITLE_SIZE,
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-		textShadow = true
+		color = self.config.headerColor or { 1, 1, 1, 1 },
+		textShadow = self.config.headerShadow == nil or self.config.headerShadow
 	}, view:getResources()))
 	self.panel:addChild(self.titleLabel)
+
+	local _, lines = self.titleLabel:getStyle().font:getWrap(self.titleLabel:getText(), self:getSize())
+	self.titleHeight = self.titleLabel:getStyle().font:getHeight() * #lines
 
 	self:addChild(self.panel)
 end
@@ -89,16 +96,19 @@ function ConstraintsPanel:performLayout(doLogic)
 
 	local width, height = self:getSize()
 
+	local _, titleLines = self.titleLabel:getStyle().font:getWrap(self.titleLabel:getText(), self:getSize())
+	self.titleHeight = self.titleLabel:getStyle().font:getHeight() * #titleLines
+
 	self.layout = GridLayout()
 	self.layout:setWrapContents(true)
 	self.layout:setPadding(self.padding)
-	self.layout:setPosition(self.padding, self.padding + self.TITLE_SIZE)
+	self.layout:setPosition(self.padding, self.padding + self.titleHeight)
 	self.layout:setSize(width, 0)
 	self.panel:addChild(self.layout)
 
 	local leftWidth = 32
 	local rightWidth = width - leftWidth - self.padding * 7
-	local rowHeight = 32
+	local rowHeight = self.config.constraintFontSize * 2
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]
 		local isBlacklisted = ConstraintsPanel.BLACKLIST[c.type:lower()]
@@ -107,30 +117,27 @@ function ConstraintsPanel:performLayout(doLogic)
 			local left
 			if c.type:lower() == 'skill' then
 				left = Icon()
-				left:setSize(leftWidth, rowHeight)
 				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", c.resource))
 			elseif c.type:lower() == 'item' or c.type:lower() == 'ingredient' then
 				left = ItemIcon()
-				left:setSize(leftWidth, rowHeight)
 				left:setItemID(c.resource)
 			elseif c.type:lower() == 'quest' then
 				left = Icon()
-				left:setSize(leftWidth, rowHeight)
 				left:setIcon("Resources/Game/UI/Icons/Things/Compass.png")
 			elseif c.type:lower() == 'sailingitem' then
 				left = Icon()
-				left:setSize(leftWidth, rowHeight)
 				left:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", c.resource))
 			else
 				left = Widget()
-				left:setSize(leftWidth, rowHeight)
 			end
 			self.layout:addChild(left)
 
 			local right = Label()
 			right:setStyle(LabelStyle({
-				fontSize = 16,
+				fontSize = self.config.constraintFontSize,
 				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				color = self.config.constraintColor,
+				textShadow = self.config.constraintShadow == nil or false,
 				width = rightWidth
 			}, self.view:getResources()))
 			if c.type:lower() == 'skill' then
@@ -161,6 +168,7 @@ function ConstraintsPanel:performLayout(doLogic)
 				end
 				right:setText(text)
 			end
+
 			do
 				local _, lines = right:getStyle().font:getWrap(right:getText(), rightWidth)
 				right:setSize(rightWidth, #lines * right:getStyle().font:getHeight())
@@ -172,7 +180,7 @@ function ConstraintsPanel:performLayout(doLogic)
 
 	do
 		local layoutWidth, layoutHeight = self.layout:getSize()
-		self:setSize(layoutWidth, layoutHeight + ConstraintsPanel.TITLE_SIZE * 2)
+		self:setSize(layoutWidth, layoutHeight + self.titleHeight)
 		self.panel:setSize(self:getSize())
 	end
 end

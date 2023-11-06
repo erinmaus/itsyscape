@@ -8,6 +8,341 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+do
+	local RecipeCard = ItsyScape.Resource.Item "SuperSupperSaboteur_SecretCarrotCakeRecipeCard" {
+		ItsyScape.Action.ReadRecipe() {
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsButter",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_DandelionFlour",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenEgg",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "VegetableOil",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "DarkBrownSugar",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenCarrot",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "RegalPecan",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Chef Allon's secret carrot cake recipe",
+		Language = "en-US",
+		Resource = RecipeCard
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This is the secret carrot cake recipe Chef Allon prepared for Earl Reddick's birthday.",
+		Language = "en-US",
+		Resource = RecipeCard
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Resource = RecipeCard
+	}
+end
+
+do
+	local Milk = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Old Girl's milk",
+		Language = "en-US",
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Milk from the sweetest cow in the Realm!",
+		Language = "en-US",
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Milk,
+		Ingredient = ItsyScape.Resource.Ingredient "Milk"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(11),
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Milk,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Milk,
+		Value = ItsyScape.Utility.valueForItem(11)
+	}
+end
+
+do
+	local Butter = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsButter" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsButter",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Old Girl's butter",
+		Language = "en-US",
+		Resource = Butter
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The sweetest butter from the sweetest cow in the Realm!",
+		Language = "en-US",
+		Resource = Butter
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Butter,
+		Ingredient = ItsyScape.Resource.Ingredient "Butter"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Butter,
+		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(11),
+		Resource = Butter
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Butter,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Butter,
+		Value = ItsyScape.Utility.valueForItem(11)
+	}
+end
+
+do
+	local GoldenEgg = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenEgg" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenEgg",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Golden egg",
+		Language = "en-US",
+		Resource = GoldenEgg
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That egg won't crack if you drop it!",
+		Language = "en-US",
+		Resource = GoldenEgg
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = GoldenEgg,
+		Ingredient = ItsyScape.Resource.Ingredient "GoldenEgg"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(10),
+		Resource = GoldenEgg
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenEgg,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = GoldenEgg,
+		Value = ItsyScape.Utility.valueForItem(10)
+	}
+end
+
+do
+	local GoldenCarrot = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenCarrot" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_GoldenCarrot",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Golden carrot",
+		Language = "en-US",
+		Resource = GoldenCarrot
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "One fine carrot, yum!",
+		Language = "en-US",
+		Resource = GoldenCarrot
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = GoldenCarrot,
+		Ingredient = ItsyScape.Resource.Ingredient "Carrot"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(15),
+		Resource = GoldenCarrot
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenCarrot,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = GoldenCarrot,
+		Value = ItsyScape.Utility.valueForItem(15)
+	}
+end
+
+do
+	local Flour = ItsyScape.Resource.Item "SuperSupperSaboteur_DandelionFlour" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_DandelionFlour",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dandelion flour",
+		Language = "en-US",
+		Resource = Flour
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Flour from the roots of a crazy dandelion.",
+		Language = "en-US",
+		Resource = Flour
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Flour,
+		Ingredient = ItsyScape.Resource.Ingredient "Flour"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(10),
+		Resource = Flour
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Flour,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Flour,
+		Value = ItsyScape.Utility.valueForItem(10)
+	}
+end
+
 local Quest = ItsyScape.Utility.Quest
 local Step = ItsyScape.Utility.QuestStep
 local Branch = ItsyScape.Utility.QuestBranch
@@ -100,10 +435,6 @@ Quest "SuperSupperSaboteur" {
 	Step "SuperSupperSaboteur_Complete"
 }
 
--- Complete
--- LitBirthdayCandle
--- TurnedInLyra
-
 Description "SuperSupperSaboteur_Started" {
 	before = "You need to start Super supper Saboteur by speaking to Chef Allon at the Rumbridge Castle kitchen.",
 	after = "Chef Allon wants to cook a spectacular dinner for the Earl, Reddick. He enlisted your help after receiving a glowing recommendation from Advisor Grimm."
@@ -111,11 +442,11 @@ Description "SuperSupperSaboteur_Started" {
 
 Description "SuperSupperSaboteur_GotRecipe" {
 	before = "What are the ingredients to the recipe?",
-	after = "Chef Allon gave you a recipe card."
+	after = "Chef Allon gave you a super secret recipe card with the ingredients. If you lost it, go back to see him for another."
 }
 
 Description "SuperSupperSaboteur_GotYelledAtForGoldenCarrot" {
-	before = "The golden carrot is probably grown by a farmer from Rumbridge farms.",
+	before = "The golden carrot is probably grown by a farmer from Rumbridge farms. The farms are east of the castle, north of Leafy Lake.",
 	after = "The grumpy farmer won't let you pick his prized golden carrot. Maybe speak to him?",
 }
 
