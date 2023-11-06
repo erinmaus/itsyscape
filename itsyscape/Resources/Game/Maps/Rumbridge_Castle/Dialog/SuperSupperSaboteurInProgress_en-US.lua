@@ -140,6 +140,8 @@ elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotRecipe", _TARGET)
 			"%hint{Use the ladder in the south closet to get down there!}"
 		}
 	end
+
+	message "If you need any help, feel free to ask me!"
 elseif _TARGET:getState():has("SuperSupperSaboteur_GotYelledAtForGoldenCarrot") then
 	speaker "_TARGET"
 	message {
@@ -168,8 +170,71 @@ else
 
 	speaker "ChefAllon"
 	message {
-		"Sorry, I'm too busy making supper!",
-		"How about you check your %hint{Nominomicon}",
-		"if you need help? It's a handy book!"
+		"I'm busy making supper!",
+		"Being short-staffed bites!"
 	}
+end
+
+if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInCake", _TARGET) or
+   Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotYelledAtForGoldenCarrot", _TARGET) or
+   Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotPermissionForGoldenCarrot", _TARGET)
+then
+	local RECIPE = option "Where do I find the ingredients for the recipe?"
+	local ALONE  = option "I'll leave you alone!"
+	local result = select {
+		RECIPE,
+		ALONE
+	}
+
+	if result == RECIPE then
+		speaker "_TARGET"
+		message {
+			"I'm lost!",
+			"There's so many ingredients,",
+			"where do I even start?"
+		}
+
+		speaker "ChefAllon"
+		message "Well, let's see..."
+
+		message {
+			"%person{Old Girl} is the prized Rumbridge cow.",
+			"She can be found in the %location{Rumbridge farms},",
+			"east of %location{the castle} and north of %location{Leafy Lake}."
+		}
+
+		message {
+			"You'll find dandies around the lake.",
+			"Fresh %item{dandelion flour} is a must!"
+		}
+
+		message {
+			"The %person{golden chicken} at the farm lays",
+			"%item{golden eggs}, but she may be a troublesome one.",
+			"There's a reason it's a prized kind of egg!"
+		}
+
+		message {
+			"The %item{golden carrot} is the farmer's magnus opus.",
+			"But convincing him should be easy!",
+			"Everyone loves %person{the Earl}."
+		}
+
+		message {
+			"Lastly, %item{vegetable oil} can be obtained from mining.",
+			"%item{Brown sugars} are dropped by chocoroaches.",
+			"And %item{royal pecans} can be %hint{foraged from pecan trees}."
+		}
+
+		speaker "_TARGET"
+		message {
+			"That's a lot!",
+			"This better be worth it!"
+		}
+
+		speaker "ChefAllon"
+		message "Trust me, the Earl will reward you handsomely!"
+	elseif result == ALONE then
+		return
+	end
 end

@@ -718,8 +718,8 @@ Description "SuperSupperSaboteur_GotPermissionForGoldenCarrot" {
 }
 
 Description "SuperSupperSaboteur_TurnedInCake" {
-	before = "Chef Allon needs to inspect your cake to make sure you followed the recipe.",
-	after = "Chef Allon is pleased with your work and took in the cake."
+	before = "Gather the ingredients and bake the cake! Chef Allon will know if you don't follow the recipe...",
+	after = "Chef Allon is pleased with your baking work and took in the cake."
 }
 
 Description "SuperSupperSaboteur_ButlerDied" {

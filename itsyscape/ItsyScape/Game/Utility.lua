@@ -4064,9 +4064,7 @@ function Utility.Quest.isNextStep(quest, step, peep)
 	end
 
 	if isBranch then
-		print(">>> is branch")
 		for _, branch in ipairs(nextStep) do
-			print(">>> branch", _)
 			for _, keyItem in ipairs(branch) do
 				if keyItem.name == step then
 					return true
@@ -4079,8 +4077,6 @@ function Utility.Quest.isNextStep(quest, step, peep)
 		for _, keyItem in ipairs(nextStep) do
 			if keyItem.name == step then
 				return true
-			else
-				print(">>> keyItem", keyItem.name, step)
 			end
 		end
 	end
