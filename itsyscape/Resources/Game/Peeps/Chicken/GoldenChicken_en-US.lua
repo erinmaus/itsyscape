@@ -14,11 +14,6 @@ local result = select {
 }
 
 if result == KISS then
-	message {
-		"This is gonna be a bad idea...",
-		"*kiss*"
-	}
-
 	local playerPeep = _SPEAKERS["_TARGET"]
 	local playerActor = playerPeep:getBehavior("ActorReference")
 	playerActor = playerActor and playerActor.actor
@@ -30,6 +25,11 @@ if result == KISS then
 
 		playerActor:playAnimation('x-cutscene', 10, animation)
 	end
+
+	message {
+		"This is gonna be a bad idea...",
+		"*kiss*"
+	}
 
 	speaker "Chicken"
 	message {
@@ -43,11 +43,6 @@ if result == KISS then
 
 	Utility.Peep.attack(_SPEAKERS["Chicken"], _TARGET, math.huge)
 elseif result == PET then
-	message {
-		"I don't know about this...",
-		"*pet*"
-	}
-
 	local playerPeep = _SPEAKERS["_TARGET"]
 	local playerActor = playerPeep:getBehavior("ActorReference")
 	playerActor = playerActor and playerActor.actor
@@ -59,6 +54,11 @@ elseif result == PET then
 
 		playerActor:playAnimation('x-cutscene', 10, animation)
 	end
+
+	message {
+		"I don't know about this...",
+		"*pet*"
+	}
 
 	speaker "Chicken"
 	message { "CLUCK!", "CLUCK!", "CLUCK!!" }
