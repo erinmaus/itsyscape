@@ -222,6 +222,7 @@ do
 
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(10),
+		Stackable = 1,
 		Resource = GoldenEgg
 	}
 
