@@ -1526,9 +1526,6 @@ function LocalStage:unloadInstance(instance)
 		Log.info("Instance is not global; nothing else to do!")
 	end
 
-	instance:cleanup()
-	instance:unload()
-
 	table.insert(self.instancesPendingUnload, {
 		instance = instance,
 		ticks = LocalStage.UNLOAD_TICK_DELAY
