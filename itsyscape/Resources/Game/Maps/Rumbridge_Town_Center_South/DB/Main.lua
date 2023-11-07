@@ -237,49 +237,6 @@ do
 	}
 end
 
-M["Lyra"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 35,
-		PositionY = 4,
-		PositionZ = 47,
-		Direction = 1,
-		Name = "Lyra",
-		Map = M._MAP,
-		Resource = M["Lyra"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Lyra",
-		MapObject = M["Lyra"]
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Maps/Rumbridge_Town_Center_South/Scripts/Lyra_IdleLogic.lua",
-		IsDefault = 1,
-		Resource = M["Lyra"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Lyra"],
-		Name = "Lyra",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/Lyra_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
-	}
-
-	M["Lyra"] {
-		TalkAction
-	}
-end
-
 M["Oliver"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -306,5 +263,47 @@ do
 
 	M["Oliver"] {
 		ItsyScape.Action.Pet()
+	}
+end
+
+M["Lyra"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 4,
+		PositionZ = 47,
+		Direction = 1,
+		Name = "Lyra",
+		Map = M._MAP,
+		Resource = M["Lyra"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Lyra",
+		MapObject = M["Lyra"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Lyra"],
+		Name = "Lyra",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Oliver"],
+		Name = "Oliver",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/Lyra_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Lyra"] {
+		TalkAction
 	}
 end

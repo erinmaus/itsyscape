@@ -10,6 +10,7 @@ PLAYER_NAME = _TARGET:getName()
 do
 	local WHO = option "Who are you?"
 	local DO   = option "What do you do?"
+	local FOLLOW_ME = option "Follow me!"
 	local QUIT = option "Nevermind."
 
 	local result
@@ -17,7 +18,8 @@ do
 		result = select {
 			WHO,
 			DO,
-			QUIT
+			QUIT,
+			FOLLOW_ME
 		}
 
 		if result == WHO then
@@ -111,6 +113,20 @@ do
 					"Maybe when I know more I'll need help."
 				}
 			end
+		elseif result == FOLLOW_ME then
+			local _, lyraFollower = _SPEAKERS["Lyra"]:addBehavior(require "ItsyScape.Peep.Behaviors.FollowerBehavior")
+			local _, oliverFollower = _SPEAKERS["Oliver"]:addBehavior(require "ItsyScape.Peep.Behaviors.FollowerBehavior")
+
+			local player = Utility.Peep.getPlayerModel(_TARGET)
+			lyraFollower.playerID = player:getID()
+			lyraFollower.followAcrossMaps = true
+			oliverFollower.playerID = player:getID()
+			oliverFollower.followAcrossMaps = true
+
+			Utility.Peep.setMashinaState(_SPEAKERS["Lyra"], "follow")
+			Utility.Peep.setMashinaState(_SPEAKERS["Oliver"], "follow")
+
+			return
 		else
 			message "Enjoy your time in Rumbridge."
 		end
