@@ -831,7 +831,7 @@ function LocalStage:movePeep(peep, path, anchor)
 		local mapScript = instance:getMapScriptByLayer(instance:getBaseLayer())
 		args = (mapScript and mapScript:getArguments()) or {}
 
-		Log.info("Moving peep '%s' to existing instance %s (%d).", instance:getFilename(), instance:getID())
+		Log.info("Moving peep '%s' to existing instance %s (%d).", peep:getName(), instance:getFilename(), instance:getID())
 	end
 
 	if not instance then
@@ -972,6 +972,7 @@ function LocalStage:movePeep(peep, path, anchor)
 
 			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
 			player:setInstance(oldLayerName, newLayerName, instance)
+			peep:poke('moveInstance', previousInstance, instance)
 
 			local hasInstance = previousInstance ~= nil
 			local hasNoPlayers = hasInstance and not previousInstance:hasPlayers()
@@ -984,6 +985,20 @@ function LocalStage:movePeep(peep, path, anchor)
 
 				self:unloadInstance(previousInstance)
 			end
+		end
+	else
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		prop = prop and prop.prop
+
+		if actor then
+			self:onActorMoved(actor, previousLayerName, newLayerName)
+		end
+
+		if prop then
+			self:onPropMoved(prop, previousLayerName, newLayerName)
 		end
 	end
 
@@ -1511,6 +1526,7 @@ function LocalStage:unloadInstance(instance)
 		Log.info("Instance is not global; nothing else to do!")
 	end
 
+	instance:cleanup()
 	instance:unload()
 
 	table.insert(self.instancesPendingUnload, {
@@ -1546,12 +1562,12 @@ function LocalStage:tick()
 end
 
 function LocalStage:cleanup()
-	self:unloadInstancesPendingRemoval()
-
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
 		instance:cleanup()
 	end
+
+	self:unloadInstancesPendingRemoval()
 end
 
 function LocalStage:update(delta)

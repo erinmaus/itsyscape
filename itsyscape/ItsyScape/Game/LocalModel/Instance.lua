@@ -19,6 +19,7 @@ local ActorProxy = require "ItsyScape.Game.Model.ActorProxy"
 local Event = require "ItsyScape.Game.RPC.Event"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 
 local Instance = Class(Stage)
 
@@ -362,12 +363,12 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onActorSpawned:register(self._onActorSpawned)
 
-	self._onActorKilled = function(_, actor)
+	self._onActorKilled = function(_, actor, isMoving)
 		if self:hasActor(actor) then
 			Log.engine(
 				"Pending removal of actor '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			table.insert(self.actorsPendingRemoval, { actor = actor, ticks = Instance.UNLOAD_TICK_DELAY })
+			table.insert(self.actorsPendingRemoval, { actor = actor, ticks = isMoving and 0 or Instance.UNLOAD_TICK_DELAY })
 		else
 			Log.engine(
 				"Did not try to remove actor '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); actor not in instance.",
@@ -403,12 +404,12 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
-	self._onPropRemoved = function(_, prop)
+	self._onPropRemoved = function(_, prop, isMoving)
 		if self:hasProp(prop) then
 			Log.engine(
 				"Pending removal of prop '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			table.insert(self.propsPendingRemoval, { prop = prop, ticks = Instance.UNLOAD_TICK_DELAY })
+			table.insert(self.propsPendingRemoval, { prop = prop, ticks = isMoving and 0 or Instance.UNLOAD_TICK_DELAY })
 		else
 			Log.engine(
 				"Did not try to remove prop '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); prop not in instance.",
@@ -943,6 +944,10 @@ function Instance:setPartyLeader(player)
 	end
 end
 
+function Instance:iterateActors()
+	return ipairs(self.actors)
+end
+
 function Instance:hasActor(actor, player)
 	local hasActor = self.actorsByID[actor:getID()] ~= nil
 	if hasActor and player and actor:getPeep() then
@@ -953,6 +958,10 @@ function Instance:hasActor(actor, player)
 	end
 
 	return hasActor
+end
+
+function Instance:iterateProps()
+	return ipairs(self.props)
 end
 
 function Instance:hasProp(prop, player)
@@ -1001,14 +1010,23 @@ end
 function Instance:_clearInstancedActors(player)
 	for i = 1, #self.actors do
 		local actor = self.actors[i]
+		local actorPeep = actor:getPeep()
 
-		if actor:getPeep() then
-			if Utility.Peep.isInstancedToPlayer(actor:getPeep(), player) then
-				Log.engine(
-					"Clearing instanced actor '%s' (%d) for player %s (%d).",
-					actor:getName(), actor:getID(),
-					(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
-				Utility.Peep.poof(actor:getPeep())
+		if actorPeep then
+			if Utility.Peep.isInstancedToPlayer(actorPeep, player) then
+				local follower = actorPeep:getBehavior(FollowerBehavior)
+				if follower and not follower.followAcrossMaps and follower.playerID == player:getID() then
+					Log.engine(
+						"Clearing instanced actor '%s' (%d) for player %s (%d).",
+						actor:getName(), actor:getID(),
+						(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+					Utility.Peep.poof(actor:getPeep())
+				else
+					Log.info(
+						"Instanced actor '%s' (%d) is following player %s (%d).",
+						actor:getName(), actor:getID(),
+						(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+				end
 			end
 		end
 	end
@@ -1322,7 +1340,6 @@ function Instance:loadPlayer(localGameManager, player)
 				"Prop '%s' (%d) is not visible to player, no need to re-create.",
 				prop:getName(), prop:getID())
 		else
-
 			localGameManager:pushCreate(
 				"ItsyScape.Game.Model.Prop",
 				prop:getID())
@@ -1530,10 +1547,10 @@ function Instance:cleanup()
 		if pending.ticks <= 0 then
 			local actor = pending.actor
 
-			for i = 1, #self.actors do
-				if self.actors[i] == actor then
+			for j = 1, #self.actors do
+				if self.actors[j] == actor then
 					Log.engine("Finally removed actor %d from instance %s (%d).", actor:getID(), self:getFilename(), self:getID())
-					table.remove(self.actors, i)
+					table.remove(self.actors, j)
 					self.actorsByID[actor:getID()] = nil
 					break
 				end
@@ -1550,10 +1567,10 @@ function Instance:cleanup()
 		if pending.ticks <= 0 then
 			local prop = pending.prop
 
-			for i = 1, #self.props do
-				if self.props[i] == prop then
+			for j = 1, #self.props do
+				if self.props[j] == prop then
 					Log.engine("Finally removed prop %d from instance %s (%d).", prop:getID(), self:getFilename(), self:getID())
-					table.remove(self.props, i)
+					table.remove(self.props, j)
 					self.propsByID[prop:getID()] = nil
 					break
 				end

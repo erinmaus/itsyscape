@@ -36,6 +36,7 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local HumanPlayerBehavior = require "ItsyScape.Peep.Behaviors.HumanPlayerBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -95,6 +96,7 @@ function One:new(...)
 	self:addPoke('travel')
 	self:addPoke('walk')
 	self:addPoke('bootstrapComplete')
+	self:addPoke('moveInstance')
 end
 
 function One:onChangeWardrobe(e)
@@ -474,6 +476,40 @@ end
 
 function One:onBootstrapComplete()
 	Utility.UI.openGroup(self, Utility.UI.Groups.WORLD)
+end
+
+function One:onMoveInstance(previousInstance, currentInstance)
+	local player = Utility.Peep.getPlayerModel(self)
+	if not player then
+		Log.error("Player '%s' does not have a player behavior.", self:getName())
+		return
+	end
+
+	if not previousInstance or not currentInstance then
+		return
+	end
+
+	local stage = self:getDirector()
+	stage = stage and stage:getGameInstance():getStage()
+	if not stage then
+		Log.error("Player '%s' (%d) could not get stage.", self:getName(), player:getID())
+		return
+	end
+
+	for _, actor in previousInstance:iterateActors() do
+		local peep = actor:getPeep()
+		local follower = peep:getBehavior(FollowerBehavior)
+		if follower and follower.followAcrossMaps and follower.playerID == player:getID() then
+			stage:movePeep(peep, currentInstance, Utility.Peep.getPosition(self))
+
+			Log.info(
+				"Moved player '%s' (%d) follower actor '%s' (id = %d) from instance %s (%d) to instance %s (%d).",
+				self:getName(), player:getID(),
+				actor:getName(), actor:getID(),
+				previousInstance:getFilename(), previousInstance:getID(),
+				currentInstance:getFilename(), currentInstance:getID())
+		end
+	end
 end
 
 return One
