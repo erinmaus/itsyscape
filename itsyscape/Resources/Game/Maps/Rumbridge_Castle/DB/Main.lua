@@ -408,6 +408,32 @@ do
 	}
 end
 
+M["Anchor_ButlerLear"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Anchor_ButlerLear",
+		Map = M._MAP,
+		Resource = M["Anchor_ButlerLear"]
+	}
+end
+
+M["ButlerLear"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "ButlerLear",
+		Map = M._MAP,
+		Resource = M["ButlerLear"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "FancyBanker",
+		MapObject = M["ButlerLear"]
+	}
+end
+
 M["ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -460,6 +486,34 @@ do
 
 	ItsyScape.Meta.NamedMapAction {
 		Name = "StartSuperSupperSaboteur",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ChefAllon"],
+		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ButlerLear"],
+		Name = "ButlerLear",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurInProgress_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "StartSuperSupperSaboteurCutscene",
 		Action = TalkAction,
 		Map = M._MAP
 	}

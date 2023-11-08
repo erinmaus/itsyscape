@@ -59,6 +59,9 @@ local INGREDIENT_MISSING_MESSAGES = {
 	}
 }
 
+local map = Utility.Peep.getMapScript(_TARGET)
+local isQuestCutscene = map:getArguments() and map:getArguments()["super_supper_saboteur"]
+
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
 local QUEST = Utility.Quest.build("SuperSupperSaboteur", _DIRECTOR:getGameDB())
 
@@ -206,7 +209,7 @@ elseif _TARGET:getState():has("SuperSupperSaboteur_GotYelledAtForGoldenCarrot") 
 		"Everyone in Rumbridge loves the Earl,",
 		"so he'll be happy to oblige!"
 	}
-else
+elseif not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInCake") then
 	local allonPeep = _SPEAKERS["ChefAllon"]
 	local allonActor = allonPeep:getBehavior("ActorReference")
 	allonActor = allonActor and allonActor.actor
@@ -354,6 +357,17 @@ then
 end
 
 if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerDied", _TARGET) then
-	local stage = _TARGET:getDirector():getGameInstance():getStage()
-	stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
+	if isQuestCutscene then
+		Utility.UI.closeAll(_TARGET)
+
+		local cutscene = Utility.Map.playCutscene(map, "Rumbridge_Castle_ButlerDies", "StandardCutscene", _TARGET)
+		cutscene:listen('done', function()
+			Utility.UI.openGroup(
+				_TARGET,
+				Utility.UI.Groups.WORLD)
+		end)
+	else
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
+	end
 end
