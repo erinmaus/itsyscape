@@ -11,3 +11,4 @@
 include "Resources/Game/DB/Cooking/Pies.lua"
 include "Resources/Game/DB/Cooking/Roux.lua"
 include "Resources/Game/DB/Cooking/Gumbo.lua"
+include "Resources/Game/DB/Cooking/Cake.lua"

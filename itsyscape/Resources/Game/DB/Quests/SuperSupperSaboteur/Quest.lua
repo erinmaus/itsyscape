@@ -11,6 +11,11 @@
 do
 	local RecipeCard = ItsyScape.Resource.Item "SuperSupperSaboteur_SecretCarrotCakeRecipeCard" {
 		ItsyScape.Action.ReadRecipe() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
 			Input {
 				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk",
 				Count = 1
