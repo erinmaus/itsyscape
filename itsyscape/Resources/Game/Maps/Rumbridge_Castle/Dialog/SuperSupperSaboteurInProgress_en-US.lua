@@ -59,7 +59,7 @@ local INGREDIENT_MISSING_MESSAGES = {
 	}
 }
 
-local PLAYER_NAME = _TARGET:getName()
+PLAYER_NAME = _TARGET:getName()
 
 local map = Utility.Peep.getMapScript(_TARGET)
 local isQuestCutscene = map:getArguments() and map:getArguments()["super_supper_saboteur"] ~= nil
@@ -277,7 +277,7 @@ elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToGuardCaptain
 		speaker "_TARGET"
 		message {
 			"Can I go and check this out?",
-			"%person{Chef Allon} gave me on a quest",
+			"%person{Chef Allon} gave me a quest",
 			"and I want to complete it!"
 		}
 

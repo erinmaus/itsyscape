@@ -12,7 +12,7 @@ return Sequence {
 	Player:dialog("StartSuperSupperSaboteurCutscene"),
 
 	Sequence {
-		Camera:verticalRotate(-math.pi / 2 + math.pi / 4),
+		Camera:verticalRotate(-math.pi / 2, 0.5),
 		Camera:zoom(25, 1.0),
 
 		ButlerLear:playAnimation("Human_Die_1"),
@@ -25,6 +25,8 @@ return Sequence {
 
 		Player:face(-1),
 		ChefAllon:face(1),
+
+		Camera:verticalRotate(-math.pi / 2 + math.pi / 8, 0.5),
 
 		Parallel {
 			Oliver:walkTo("Anchor_Oliver_RunAway"),
