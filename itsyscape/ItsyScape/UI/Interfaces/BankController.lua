@@ -196,7 +196,6 @@ function BankController:initFoodTab(newSection, oldSection)
 	local food2 = self:pullItemsWithAction("Cook")
 	local food3 = self:pullItemsWithAction("CookIngredient")
 	local tools = self:pullEquipment("fishing")
-	print(">>> tools", #tools, tools[1])
 
 	local items = self:initItems(newSection, oldSection, food1, food2, food3, tools)
 	table.insert(newSection, items)
