@@ -116,7 +116,7 @@ function GameDB.create(inputFilename, outputFilename)
 	brochure:create()
 	game:instantiate(brochure)
 
-	return GameDB(brochure, game:getRecordDefinitions())
+	return GameDB(brochure, game:getRecordDefinitions()), game:getErrors()
 end
 
 function GameDB:new(brochure, definitions)
