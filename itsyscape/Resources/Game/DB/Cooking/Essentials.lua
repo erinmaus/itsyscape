@@ -457,6 +457,28 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(2)
 			}
+		},
+
+		ItsyScape.Action.Churn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Milk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(2)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Butter",
+				Count = 1
+			}
 		}
 	}
 
@@ -469,6 +491,12 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Good for baking!",
 		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Churn",
+		Value = "Butter",
 		Resource = Item
 	}
 
@@ -624,6 +652,28 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(6)
 			}
+		},
+
+		ItsyScape.Action.Churn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Milk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "ExtraCreamyButter",
+				Count = 1
+			}
 		}
 	}
 
@@ -636,6 +686,12 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Good for baking!",
 		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Churn",
+		Value = "Butter",
 		Resource = Item
 	}
 

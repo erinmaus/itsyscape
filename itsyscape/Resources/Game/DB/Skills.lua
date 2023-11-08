@@ -198,9 +198,15 @@ ItsyScape.Resource.Skill "Engineering"
 
 ItsyScape.Resource.Skill "Cooking"
 	ActionType "Cook"
+	ActionType "Churn"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Cook",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Churn",
 		Skill = ItsyScape.Resource.Skill "Cooking"
 	}
 

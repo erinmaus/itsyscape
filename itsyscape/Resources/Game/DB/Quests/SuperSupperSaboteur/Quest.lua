@@ -148,7 +148,35 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(11)
 			}
+		},
+
+		ItsyScape.Action.Churn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsMilk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(11)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "SuperSupperSaboteur_OldGirlsButter",
+				Count = 1
+			}
 		}
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Churn",
+		Value = "Butter",
+		Resource = Butter
 	}
 
 	ItsyScape.Meta.ResourceName {
