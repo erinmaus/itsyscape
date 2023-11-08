@@ -326,9 +326,6 @@ then
 			else
 				_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TurnedInCake")
 			end
-
-			local stage = _TARGET:getDirector():getGameInstance():getStage()
-			stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
 		else
 			if #carrotCakes > 1 then
 				message {
@@ -354,4 +351,9 @@ then
 	elseif result == ALONE then
 		return
 	end
+end
+
+if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerDied", _TARGET) then
+	local stage = _TARGET:getDirector():getGameInstance():getStage()
+	stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
 end
