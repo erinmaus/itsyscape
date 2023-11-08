@@ -8,39 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-do
-	local Pie = ItsyScape.Resource.Ingredient "Pie"
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Pie",
-		Language = "en-US",
-		Resource = Pie
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Value = "You can make all kinds of pies using the cooking skill.",
-		Language = "en-US",
-		Resource = Pie
-	}
-end
-
-do
-	local PieCrust = ItsyScape.Resource.Ingredient "PieCrust"
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Pie crust",
-		Language = "en-US",
-		Resource = PieCrust
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Value = "You can make all kinds of pie crusts using the cooking skill.",
-		Language = "en-US",
-		Resource = PieCrust
-	}
-end
-
 ItsyScape.Resource.Recipe "CarrotCake" {
+	ItsyScape.Action.Eat(),
+
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
