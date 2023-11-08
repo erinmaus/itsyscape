@@ -215,10 +215,6 @@ function DialogBoxController:pump(e, ...)
 	   self.currentPacket:isType(MessagePacket)
 	then
 		self.needsPump = true
-
-		if not self.currentPacket then
-			self:getDirector():getGameInstance():getUI():closeInstance(self)
-		end
 	end
 end
 
@@ -242,6 +238,10 @@ end
 
 function DialogBoxController:update(...)
 	Controller.update(self, ...)
+
+	if not self.currentPacket then
+		self:getDirector():getGameInstance():getUI():closeInstance(self)
+	end
 
 	if self.needsPump then
 		self:getDirector():getGameInstance():getUI():sendPoke(
