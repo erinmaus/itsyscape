@@ -180,8 +180,10 @@ function DialogBoxController:pump(e, ...)
 				local speaker = self.dialog:getSpeaker(self.currentPacket:getSpeaker())
 				if speaker then
 					self.state.speaker = speaker:getName()
-				else
+				elseif speakerRecord then
 					self.state.speaker = "*" .. speakerRecord:get("Name")
+				else
+					self.state.speaker = "*" .. self.currentPacket:getSpeaker()
 				end
 			end
 

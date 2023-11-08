@@ -2477,13 +2477,13 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	do
 		local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
-		if status.dead then
+		if status.dead and not t.isCutscene then
 			Log.info("Peep %s is dead; can't walk!", peep:getName())
 			return false, "dead"
 		end
 
 		local isDisabled = peep:hasBehavior(require "ItsyScape.Peep.Behaviors.DisabledBehavior")
-		if isDisabled then
+		if isDisabled and not t.isCutscene then
 			Log.info("Peep %s is disabled; can't walk!", peep:getName())
 			return false, "disabled"
 		end

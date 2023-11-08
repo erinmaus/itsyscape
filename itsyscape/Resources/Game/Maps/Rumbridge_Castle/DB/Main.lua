@@ -408,10 +408,54 @@ do
 	}
 end
 
+M["Anchor_Oliver"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Anchor_Oliver",
+		Map = M._MAP,
+		Resource = M["Anchor_Oliver"]
+	}
+end
+
+M["Anchor_Oliver_RunAway"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 4,
+		PositionZ = 31,
+		Name = "Anchor_Oliver_RunAway",
+		Map = M._MAP,
+		Resource = M["Anchor_Oliver_RunAway"]
+	}
+end
+
+M["Oliver"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Oliver",
+		Map = M._MAP,
+		Resource = M["Oliver"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Oliver",
+		MapObject = M["Oliver"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious dog",
+		Language = "en-US",
+		Resource = M["Oliver"]
+	}
+end
+
 M["Anchor_ButlerLear"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 19,
+		PositionX = 35,
 		PositionY = 4,
 		PositionZ = 15,
 		Name = "Anchor_ButlerLear",
@@ -420,9 +464,36 @@ do
 	}
 end
 
+M["Anchor_ButlerLear_PlayerWalkTo"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Anchor_ButlerLear_PlayerWalkTo",
+		Map = M._MAP,
+		Resource = M["Anchor_ButlerLear_PlayerWalkTo"]
+	}
+end
+
+M["Anchor_ButlerLear_ChefAllonWalkTo"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 4,
+		PositionZ = 15,
+		Name = "Anchor_ButlerLear_ChefAllonWalkTo",
+		Map = M._MAP,
+		Resource = M["Anchor_ButlerLear_ChefAllonWalkTo"]
+	}
+end
+
 M["ButlerLear"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
+		PositionX = 33,
+		PositionY = 4,
+		PositionZ = 15,
 		Name = "ButlerLear",
 		Map = M._MAP,
 		Resource = M["ButlerLear"]
@@ -431,6 +502,44 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "FancyBanker",
 		MapObject = M["ButlerLear"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Butler Lear",
+		Language = "en-US",
+		Resource = M["ButlerLear"]
+	}
+end
+
+M["Anchor_GuardCaptain"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 4,
+		PositionZ = 17,
+		Name = "Anchor_GuardCaptain",
+		Map = M._MAP,
+		Resource = M["Anchor_GuardCaptain"]
+	}
+end
+
+M["GuardCaptain"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "GuardCaptain",
+		Map = M._MAP,
+		Resource = M["GuardCaptain"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon_Cutscene",
+		MapObject = M["GuardCaptain"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge guard captain",
+		Language = "en-US",
+		Resource = M["GuardCaptain"]
 	}
 end
 
@@ -458,6 +567,12 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["GuardCaptain"],
+		Name = "GuardCaptain",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/ChefAllon_en-US.lua",
 		Language = "en-US",
@@ -475,6 +590,12 @@ do
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = M["ChefAllon"],
 		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["GuardCaptain"],
+		Name = "GuardCaptain",
 		Action = TalkAction
 	}
 
@@ -506,6 +627,12 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Oliver"],
+		Name = "Oliver",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurInProgress_en-US.lua",
 		Language = "en-US",
@@ -516,5 +643,27 @@ do
 		Name = "StartSuperSupperSaboteurCutscene",
 		Action = TalkAction,
 		Map = M._MAP
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_ButlerDies"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ChefAllon",
+		Cutscene = Cutscene,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ButlerLear",
+		Cutscene = Cutscene,
+		Resource = M["ButlerLear"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Oliver",
+		Cutscene = Cutscene,
+		Resource = M["Oliver"]
 	}
 end

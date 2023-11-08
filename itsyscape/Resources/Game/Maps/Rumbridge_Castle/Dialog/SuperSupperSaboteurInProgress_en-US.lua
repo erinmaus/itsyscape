@@ -59,8 +59,10 @@ local INGREDIENT_MISSING_MESSAGES = {
 	}
 }
 
+local PLAYER_NAME = _TARGET:getName()
+
 local map = Utility.Peep.getMapScript(_TARGET)
-local isQuestCutscene = map:getArguments() and map:getArguments()["super_supper_saboteur"]
+local isQuestCutscene = map:getArguments() and map:getArguments()["super_supper_saboteur"] ~= nil
 
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
 local QUEST = Utility.Quest.build("SuperSupperSaboteur", _DIRECTOR:getGameDB())
@@ -227,6 +229,120 @@ elseif not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInCake")
 		"I'm busy making supper!",
 		"Being short-staffed bites!"
 	}
+elseif isQuestCutscene and _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_ButlerInspected") then
+	speaker "_TARGET"
+	message "The butler - he's dead!"
+
+	speaker "ChefAllon"
+	message {
+		"Not %person{Lear}!",
+		"Aaah! That dog must be the killer!",
+	}
+
+	message "And like that, it's gone!"
+
+	message {
+		"Let's regroup in the kitchen after",
+		"I alert the guards!"
+	}
+elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToGuardCaptain", _TARGET) then
+	speaker "GuardCaptain"
+	message {
+		"We didn't find any clues...",
+		"%person{Lear} didn't even sustain any injuries!",
+		"Are you sure you saw a dog?"
+	}
+
+	speaker "ChefAllon"
+	message {
+		"Yes! There was a dog!",
+		"I couldn't make out much details,",
+		"just that it was bigger, almost like a wolf."
+	}
+
+	speaker "GuardCaptain"
+	message {
+		"That sounds like the witch %person{Lyra's} dog, %person{Oliver}.",
+		"I'll pay her a visit."
+	}
+
+	local CAN_I_GO = option "Can I go instead?"
+	local GODSPEED = option "Godspeed!"
+	local result = select {
+		CAN_I_GO,
+		GODSPEED
+	}
+
+	if result == CAN_I_GO then
+		speaker "_TARGET"
+		message {
+			"Can I go and check this out?",
+			"%person{Chef Allon} gave me on a quest",
+			"and I want to complete it!"
+		}
+
+		speaker "ChefAllon"
+		message {
+			"I say give " .. Utility.Text.getPronoun(_TARGET, Utility.Text.PRONOUN_OBJECT) .. " a chance.",
+			Utility.Text.getPronoun(_TARGET, Utility.Text.PRONOUN_SUBJECT, "en-US", true) .. " " .. Utility.Text.getEnglishBe(_TARGET).present .. " an up-and-coming adventure.",
+		}
+	elseif result == GODSPEED then
+		speaker "_TARGET"
+		message {
+			"Godspeed! Hope you find the killer...!"
+		}
+
+		speaker "ChefAllon"
+		message {
+			"I say give %person{${PLAYER_NAME}} a chance.",
+			Utility.Text.getPronoun(_TARGET, Utility.Text.PRONOUN_SUBJECT, "en-US", true) .. " " .. Utility.Text.getEnglishBe(_TARGET).present .. " an up-and-coming adventure.",
+		}
+	end
+
+	_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TalkedToGuardCaptain")
+
+	speaker "GuardCaptain"
+	message {
+		"Very well.",
+		"Report back any information you acquire, %person{${PLAYER_NAME}}.",
+		"I'll have guards posted in the %location{Shade district}."
+	}
+
+	if result == CAN_I_GO then
+		speaker "_TARGET"
+		message "Thank you!"
+	else
+		speaker "_TARGET"
+		message "Well, if you insist..."
+	end
+elseif isQuestCutscene and _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_ButlerDied") then
+	speaker "_TARGET"
+	message "Phew, I never knew it would be so hard to go and bake a cake!"
+
+	speaker "ChefAllon"
+	message {
+		"Music to my ears!",
+		"The Earl will be happy!"
+	}
+
+	local player = Utility.Peep.getPlayerModel(_TARGET)
+	if player then
+		player:pokeCamera('shake', 0.25)
+	end
+
+	speaker "ButlerLear"
+	message "AAAH! WHAT IS THAT?!"
+
+	speaker "Oliver"
+	message "WOOF! *bark*"
+
+	speaker "ChefAllon"
+	message "%person{Lear}, are you alright?!"
+
+	speaker "_TARGET"
+	message "Let's check on him!"
+
+	_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_ButlerInspected")
 end
 
 if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInCake", _TARGET) or
@@ -236,7 +352,6 @@ then
 	local RECIPE = option "Where do I find the ingredients for the recipe?"
 	local ALONE  = option "I'll leave you alone!"
 	local CAKE   = option "(Hand in the carrot cake.)"
-	print(_TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS))
 	local result = select {
 		RECIPE,
 		ALONE,
@@ -356,8 +471,12 @@ then
 	end
 end
 
-if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerDied", _TARGET) then
+if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerDied", _TARGET) or
+   Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerInspected", _TARGET)
+then
 	if isQuestCutscene then
+		_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_ButlerDied")
+
 		Utility.UI.closeAll(_TARGET)
 
 		local cutscene = Utility.Map.playCutscene(map, "Rumbridge_Castle_ButlerDies", "StandardCutscene", _TARGET)
@@ -365,8 +484,33 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_ButlerDied", _TARGET) th
 			Utility.UI.openGroup(
 				_TARGET,
 				Utility.UI.Groups.WORLD)
+
+			local _travel = function(player)
+				local mapScript = Utility.Peep.getMapScript(player)
+
+				local _finalize = function()
+					local Probe = require "ItsyScape.Peep.Probe"
+
+					local chef = _DIRECTOR:probe(
+						player:getLayerName(),
+						Probe.namedMapObject("ChefAllon"))[1]
+
+					mapScript:pushPoke('continueSuperSupperSaboteur', chef, player)
+					mapScript:silence('finalize', _finalize)
+				end
+				mapScript:listen('finalize', _finalize)
+
+				_TARGET:silence('moveInstance', _travel)
+			end
+			_TARGET:listen('moveInstance', _travel)
+
+			local stage = _TARGET:getDirector():getGameInstance():getStage()
+			stage:movePeep(_TARGET, "Rumbridge_Castle", Utility.Peep.getPosition(_TARGET))
 		end)
 	else
+		_TARGET:getState():take("KeyItem", "SuperSupperSaboteur_ButlerDied")
+		_TARGET:getState():take("KeyItem", "SuperSupperSaboteur_ButlerInspected")
+
 		local stage = _TARGET:getDirector():getGameInstance():getStage()
 		stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
 	end
