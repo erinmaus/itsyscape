@@ -90,6 +90,14 @@ function Director:removeCortex(cortex)
 	return false
 end
 
+function Director:getCortex(cortexType)
+	for _, cortex in ipairs(self.cortexes) do
+		if cortex:isCompatibleType(cortexType) then
+			return cortex
+		end
+	end
+end
+
 -- Moves a Peep.
 function Director:movePeep(peep, key)
 	local p = self.peeps[peep]
