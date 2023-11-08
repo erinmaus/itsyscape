@@ -261,7 +261,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "PecanTree_Default_WasAppleTree",
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
 		MapObject = M["PecanTree_Default1_WasAppleTree"]
 	}
 end
@@ -309,7 +309,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "PecanTree_Default_WasAppleTree",
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
 		MapObject = M["PecanTree_Default2_WasAppleTree"]
 	}
 end

@@ -131,7 +131,7 @@ function CutsceneEntity:walkTo(anchor)
 		local map = Utility.Peep.getMap(self.peep)
 		local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 
-		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep))
+		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), 0, { isCutscene = true })
 		if success then
 			local peepI, peepJ
 			repeat
@@ -314,6 +314,22 @@ function CutsceneEntity:poke(...)
 
 	return function()
 		self.peep:poke(unpack(args, 1, args.n))
+	end
+end
+
+function CutsceneEntity:dialog(name)
+	return function()
+		local gameDB = self.peep:getDirector():getGameDB()
+		local action = gameDB:getRecord("NamedMapAction", {
+			Name = name,
+			Map = Utility.Peep.getMapResource(self.peep)
+		})
+
+		Utility.UI.openInterface(self.peep, "DialogBox", true, action:get("Action"), self.peep)
+
+		while Utility.UI.isOpen(self.peep, "DialogBox") do
+			coroutine.yield()
+		end
 	end
 end
 

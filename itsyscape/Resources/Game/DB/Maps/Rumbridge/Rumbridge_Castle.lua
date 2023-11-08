@@ -109,6 +109,57 @@ do
 end
 
 do
+	local Guard = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon_Cutscene"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Rumbridge.DungeonGuard",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rumbridge guard",
+		Language = "en-US",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps the peace.",
+		Language = "en-US",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronPlatebody",
+		Count = 1,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronBoots",
+		Count = 1,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronGloves",
+		Count = 1,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronLongsword",
+		Count = 1,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronShield",
+		Count = 1,
+		Resource = Guard
+	}
+end
+
+do
 	local Chef = ItsyScape.Resource.Peep "ChefAllon"
 
 	ItsyScape.Meta.PeepID {

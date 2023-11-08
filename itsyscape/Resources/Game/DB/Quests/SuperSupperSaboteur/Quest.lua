@@ -689,6 +689,7 @@ Quest "SuperSupperSaboteur" {
 	Step "SuperSupperSaboteur_TurnedInCake",
 	Step "SuperSupperSaboteur_ButlerDied",
 	Step "SuperSupperSaboteur_ButlerInspected",
+	Step "SuperSupperSaboteur_TalkedToGuardCaptain",
 	Step "SuperSupperSaboteur_TalkedToLyra",
 	Step "SuperSupperSaboteur_GotConfessionFromLyra",
 	Branch {
@@ -763,8 +764,13 @@ Description "SuperSupperSaboteur_ButlerDied" {
 }
 
 Description "SuperSupperSaboteur_ButlerInspected" {
-	before = "Maybe the butler's body has clues.",
-	after = "After inspecting the butler's body, you found large canine bite marks."
+	before = "Maybe the scene of the crime has clues.",
+	after = "After running to the butler's aid, a large canine ran away."
+}
+
+Description "SuperSupperSaboteur_TalkedToGuardCaptain" {
+	before = "Chef Allon grabbed the Rumbridge guard captain to talk to them.",
+	after = "Chef Allon insisted you investigate Lyra."
 }
 
 Description "SuperSupperSaboteur_TalkedToLyra" {

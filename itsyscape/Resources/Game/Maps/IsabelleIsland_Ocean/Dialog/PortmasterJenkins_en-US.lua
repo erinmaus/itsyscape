@@ -26,6 +26,11 @@ if squidAlive then
 		"No time for talkin', slay the squid, mate!"
 	}
 
+	local player = Utility.Peep.getPlayerModel(_TARGET)
+	if player then
+		player:pokeCamera('shake', 0.1)
+	end
+
 	speaker "Squid"
 	message "EEEEEEEEEEEEEEE'RGH! EEEEEEE!"
 else

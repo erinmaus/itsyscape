@@ -17,6 +17,8 @@ local Castle = Class(Map)
 
 function Castle:new(resource, name, ...)
 	Map.new(self, resource, name or 'RumbridgeCastle', ...)
+
+	self:addPoke('continueSuperSupperSaboteur')
 end
 
 function Castle:onFinalize(director, game)
@@ -29,33 +31,51 @@ function Castle:initSuperSupperSaboteurInstance(player)
 	local playerPeep = player:getActor():getPeep()
 	if playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_ButlerDied") then
 		Log.info("Butler Lear has died for player '%s'; not spawning.", playerPeep:getName())
-		return
+	else
+		local butlerActor = Utility.spawnMapObjectAtAnchor(self, "ButlerLear", "Anchor_ButlerLear", 0)
+		local butlerPeep = butlerActor and butlerActor:getPeep()
+		if not butlerPeep then
+			Log.warn("Couldn't spawn Butler Lear for player '%s'.", playerPeep:getName())
+		else
+			Log.info("Spawned Butler Lear for player '%s'.", playerPeep:getName())
+			local _, instance = butlerPeep:addBehavior(InstancedBehavior)
+			instance.playerID = player:getID()
+		end
 	end
-
-	local butlerActor = Utility.spawnMapObjectAtAnchor(self, "ButlerLear", "Anchor_ButlerLear", 0)
-	local butlerPeep = butlerActor and butlerActor:getPeep()
-	if not butlerPeep then
-		Log.warn("Couldn't spawn Butler Lear for player '%s'; not spawning.", playerPeep:getName())
-		return
-	end
-
-	local _, instance = butlerPeep:addBehavior(InstancedBehavior)
-	instance.playerID = player:getID()
 
 	local quest = Utility.Quest.build("SuperSupperSaboteur", self:getDirector():getGameDB())
-	if isQuestCutscene and Utility.Quest.isNextStep(quest, "SuperSupperSaboteur_ButlerDied", playerPeep) then
+	if isQuestCutscene and
+	   (Utility.Quest.isNextStep(quest, "SuperSupperSaboteur_ButlerDied", playerPeep) or
+	   Utility.Quest.isNextStep(quest, "SuperSupperSaboteur_ButlerInspected", playerPeep))
+	then
 		Log.info("Buter Lear is dead for player '%s'!", playerPeep:getName())
 
-		butlerPeep:listen('finalize', function()
-			butlerPeep:poke('die')
+		local oliverActor = Utility.spawnMapObjectAtAnchor(self, "Oliver", "Anchor_Oliver", 0)
+		local oliverPeep = oliverPeep and oliverPeep:getPeep()
+		if not oliverPeep then
+			Log.warn("Couldn't spawn mysterious dog AKA Oliver for player '%s'.", playerPeep:getName())
+		else
+			Log.info("Spawned mysterious dog AKA Oliver for player '%s'.", playerPeep:getName())
 
-			local animation = butlerPeep:getResource(
-				"animation-die",
-				"ItsyScape.Graphics.AnimationResource")
-			if animation then
-				butlerActor:playAnimation('combat', 1000, animation, true, 1000)
-			end
-		end)
+			local _, instance = oliverPeep:addBehavior(InstancedBehavior)
+			instance.playerID = player:getID()
+		end
+	end
+
+	if not isQuestCutscene and
+	   Utility.Quest.isNextStep(quest, "SuperSupperSaboteur_TalkedToGuardCaptain", playerPeep)
+	then
+		local guardCaptainActor = Utility.spawnMapObjectAtAnchor(self, "GuardCaptain", "Anchor_GuardCaptain", 0)
+		local guardCaptainPeep = guardCaptainPeep and guardCaptainPeep:getPeep()
+
+		if not guardCaptainPeep then
+			Log.warn("Couldn't spawn guard captain for player '%s'.", playerPeep:getName())
+		else
+			Log.info("Spawned guard captain for player '%s'.", playerPeep:getName())
+
+			local _, instance = guardCaptainPeep:addBehavior(InstancedBehavior)
+			instance.playerID = player:getID()
+		end
 	end
 
 	if isQuestCutscene then
@@ -88,13 +108,13 @@ function Castle:initSuperSupperSaboteur()
 		self:getLayerName(),
 		Probe.namedMapObject("ChefAllon"))[1]
 	if chef then
-		chef:listen('acceptQuest', self.onAcceptSuperSupperSaboteur, self, chef)
+		chef:listen('acceptQuest', self.onContinueSuperSupperSaboteur, self)
 	else
 		Log.warn("Chef Allon not found; cannot init quest Super Supper Saboteur.")
 	end
 end
 
-function Castle:onAcceptSuperSupperSaboteur(chef)
+function Castle:onContinueSuperSupperSaboteur(chef, player)
 	local director = self:getDirector()
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
@@ -108,7 +128,7 @@ function Castle:onAcceptSuperSupperSaboteur(chef)
 	if not namedMapAction then
 		Log.warn("Couldn't talk to Chef Allon after starting quest: named map action not found.")
 	else
-		local player = Utility.Peep.getPlayer(self)
+		print(">>> continue", chef:getName(), player:getName())
 		local action = Utility.getAction(game, namedMapAction:get("Action"))
 		action.instance:perform(player:getState(), player, chef)
 	end
