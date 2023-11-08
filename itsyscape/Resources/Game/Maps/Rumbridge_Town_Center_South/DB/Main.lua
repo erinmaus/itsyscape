@@ -12,6 +12,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Rumbridge_Town_Center_South.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -237,13 +242,22 @@ do
 	}
 end
 
-M["Oliver"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Oliver"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37,
 		PositionY = 4,
 		PositionZ = 49,
-		Direction = -1,
+		Direction = 1,
+		Name = "Anchor_Oliver",
+		Map = M._MAP,
+		Resource = M["Anchor_Oliver"]
+	}
+end
+
+M["Oliver"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Oliver",
 		Map = M._MAP,
 		Resource = M["Oliver"]
@@ -266,13 +280,22 @@ do
 	}
 end
 
-M["Lyra"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Lyra"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 35,
 		PositionY = 4,
 		PositionZ = 47,
 		Direction = 1,
+		Name = "Anchor_Lyra",
+		Map = M._MAP,
+		Resource = M["Anchor_Lyra"]
+	}
+end
+
+M["Lyra"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Lyra",
 		Map = M._MAP,
 		Resource = M["Lyra"]
