@@ -402,6 +402,10 @@ function CookingWindowController:cook()
 	if action.instance:perform(self:getPeep():getState(), self:getPeep(), recipe) then
 		self:populateInventory()
 		self:populateRecipe({ index = self.currentRecipeIndex }, true)
+
+		local itemName = self.state.recipes[self.currentRecipeIndex].output.name:lower()
+		local isVowel = itemName:match("^[aeiou].*")
+		Utility.Peep.notify(self:getPeep(), string.format("You successfully cooked %s %s!", isVowel and "an" or "a", itemName))
 	end
 end
 

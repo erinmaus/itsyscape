@@ -25,7 +25,7 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 
 local CookingWindow = Class(Interface)
 
-CookingWindow.WIDTH  = 800
+CookingWindow.WIDTH  = 960
 CookingWindow.HEIGHT = 640
 
 CookingWindow.BUTTON_SIZE    = 48
