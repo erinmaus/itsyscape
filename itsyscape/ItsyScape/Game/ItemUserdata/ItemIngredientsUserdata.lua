@@ -44,9 +44,9 @@ function ItemIngredientsUserdata:addIngredient(resource, ingredient, count)
 	end)
 end
 
-function ItemIngredientsUserdata:hasIngredient(ingredient)
+function ItemIngredientsUserdata:hasIngredient(resource)
 	for i = 1, #self.ingredients do
-		if self.ingredients[i] == ingredient then
+		if self.ingredients[i].resource == resource then
 			return true
 		end
 	end

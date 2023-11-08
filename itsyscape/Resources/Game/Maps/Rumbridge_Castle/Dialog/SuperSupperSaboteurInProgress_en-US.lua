@@ -4,8 +4,59 @@ local SEARCH_FLAGS = {
 	['item-bank'] = true
 }
 
+local TAKE_FLAGS = {
+	['item-inventory'] = true
+}
+
 local GIVE_FLAGS = {
 	['item-inventory'] = true
+}
+
+local INGREDIENTS = {
+	"SuperSupperSaboteur_OldGirlsMilk",
+	"SuperSupperSaboteur_OldGirlsButter",
+	"SuperSupperSaboteur_DandelionFlour",
+	"SuperSupperSaboteur_GoldenEgg",
+	"VegetableOil",
+	"DarkBrownSugar",
+	"SuperSupperSaboteur_GoldenCarrot",
+	"RegalPecan"
+}
+
+local INGREDIENT_MISSING_MESSAGES = {
+	{
+		"The milk is wrong!",
+		"The secret ingredient is %item{Old Girl's milk}."
+	},
+	{
+		"This is the wrong butter!",
+		"You needed to use butter churned from",
+		"%item{Old Girl's milk}."
+	},
+	{
+		"This isn't %item{dandelion flour}!"
+	},
+	{
+		"That's not the right egg!",
+		"The only egg worthy of the Earl is the %item{golden egg}!"
+	},
+	{
+		"Only %item{vegetable oil} gives the cake the right moistness!"
+	},
+	{
+		"%item{Dark brown sugar} is a must!",
+		"Whatever sugar you used is wrong!"
+	},
+	{
+		"Chef Allon's golden carrot cake",
+		"cannot live up to its name",
+		"without the %item{golden carrot}!"
+	},
+	{
+		"Although other pecans might be easier to get,",
+		"or maybe you tried some creative direction,",
+		"only %item{regal pecans} complement the flavor profile!"
+	}
 }
 
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
@@ -181,9 +232,12 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInCake", _TARGET) 
 then
 	local RECIPE = option "Where do I find the ingredients for the recipe?"
 	local ALONE  = option "I'll leave you alone!"
+	local CAKE   = option "(Hand in the carrot cake.)"
+	print(_TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS))
 	local result = select {
 		RECIPE,
-		ALONE
+		ALONE,
+		(_TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS) and CAKE) or nil
 	}
 
 	if result == RECIPE then
@@ -234,6 +288,69 @@ then
 
 		speaker "ChefAllon"
 		message "Trust me, the Earl will reward you handsomely!"
+	elseif result == CAKE then
+		speaker "_TARGET"
+		message "I made the carrot cake!"
+
+		speaker "ChefAllon"
+		message "Excellent, friend! Let me take a look..."
+
+		local carrotCakes = Utility.Item.getItemsInPeepInventory(_TARGET, "CarrotCake")
+
+		local foundCarrotCake
+		for _, carrotCakeItem in ipairs(carrotCakes) do
+			local userdata = carrotCakeItem:getUserdata("ItemIngredientsUserdata")
+			if userdata then
+				local hasAllIngredients = true
+				for _, ingredient in ipairs(INGREDIENTS) do
+					if not userdata:hasIngredient(ingredient) then
+						hasAllIngredients = false
+						break
+					end
+				end
+
+				if hasAllIngredients then
+					foundCarrotCake = carrotCakeItem
+					break
+				end
+			end
+		end
+
+		if foundCarrotCake then
+			message "Excellent, you followed the recipe exactly!"
+
+			local tookItem = _TARGET:getState():take("Item", "CarrotCake", 1, { ['item-inventory'] = true, ['item-instances'] = { foundCarrotCake } })
+			if not tookItem then
+				Log.warn("Chef Allon ouldn't take carrot cake from player '%s'.", _TARGET:getName())
+				message "Let's try that again."
+			else
+				_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TurnedInCake")
+			end
+
+			local stage = _TARGET:getDirector():getGameInstance():getStage()
+			stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
+		else
+			if #carrotCakes > 1 then
+				message {
+					"I only needed one cake! But...",
+					"They're all wrong!",
+					"Let's see what was wrong with the first cake..."
+				}
+			end
+
+			local firstCarrotCake = carrotCakes[1]
+
+			local userdata = firstCarrotCake:getUserdata("ItemIngredientsUserdata")
+			if not userdata then
+				message "None of the ingredients were right!"
+			else
+				for i = 1, #INGREDIENTS do
+					if userdata:hasIngredient(INGREDIENTS[i]) then
+						message(INGREDIENT_MISSING_MESSAGES[i])
+					end
+				end
+			end
+		end
 	elseif result == ALONE then
 		return
 	end
