@@ -115,6 +115,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
+		Stackable = 1,
 		Value = ItsyScape.Utility.valueForItem(11),
 		Resource = Milk
 	}
@@ -173,6 +174,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
+		Stackable = 1,
 		Value = ItsyScape.Utility.valueForItem(11),
 		Resource = Butter
 	}
@@ -222,7 +224,7 @@ do
 
 	ItsyScape.Meta.Ingredient {
 		Item = GoldenEgg,
-		Ingredient = ItsyScape.Resource.Ingredient "GoldenEgg"
+		Ingredient = ItsyScape.Resource.Ingredient "Egg"
 	}
 
 	ItsyScape.Meta.Item {

@@ -85,6 +85,28 @@ ItsyScape.Resource.Recipe "CarrotCake" {
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Pecan",
 			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CarrotCake",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(12)
 		}
 	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Carrot cake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CarrotCake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A carrot cake topped with a creamy butter frosting - yum!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CarrotCake"
 }
