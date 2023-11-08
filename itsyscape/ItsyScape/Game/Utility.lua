@@ -3875,6 +3875,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
 	peep:addResource("animation-action-milk", actionMilk)
+	local actionChurn = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-churn", actionChurn)
 	local actionCraft = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
