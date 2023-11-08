@@ -1256,20 +1256,25 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 end
 
 function Utility.Item.getItemInPeepInventory(peep, itemID)
+	return Utility.Item.getItemsInPeepInventory(peep, itemID)[1]
+end
+
+function Utility.Item.getItemsInPeepInventory(peep, itemID)
 	local inventory = peep:getBehavior(InventoryBehavior)
 	inventory = inventory and inventory.inventory
 
 	if not inventory then
-		return nil
+		return {}
 	end
 
+	local result = {}
 	for item in inventory:getBroker():iterateItems(inventory) do
 		if item:getID() == itemID then
-			return item
+			table.insert(result, item)
 		end
 	end
 
-	return nil
+	return result
 end
 
 Utility.Map = {}
