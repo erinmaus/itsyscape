@@ -1534,7 +1534,7 @@ end
 
 function LocalStage:unloadInstancesPendingRemoval()
 	local index = 1
-	while index < #self.instancesPendingUnload do
+	while index <= #self.instancesPendingUnload do
 		local pending = self.instancesPendingUnload[index]
 		local instance = pending.instance
 
