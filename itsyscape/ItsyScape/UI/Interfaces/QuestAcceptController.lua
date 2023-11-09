@@ -26,6 +26,9 @@ function QuestAcceptController:new(peep, director, resource, action, questGiver)
 
 	self.state = Utility.getActionConstraints(director:getGameInstance(), action:getAction())
 	self.state.questName = Utility.getName(self.resource, gameDB) or self.resource.name .. "*"
+
+	local instance = self.actionInfo and self.actionInfo.instance
+	self.state.canPerform = self.action:canPerform(self:getPeep():getState(), self:getPeep())
 end
 
 function QuestAcceptController:poke(actionID, actionIndex, e)
@@ -42,12 +45,7 @@ function QuestAcceptController:accept(e)
 	local hasResource = self:getPeep():getState():has(
 		self.resourceType.name,
 		self.resource.name)
-	local success = hasResource or Utility.performAction(
-		self:getGame(),
-		self.resource,
-		self.action:getAction().id.value,
-		nil,
-		self:getPeep():getState(), self:getPeep())
+	local success = hasResource or self.action:perform(self:getPeep():getState(), self:getPeep())
 
 	if success then
 		if self.questGiver then
@@ -55,6 +53,8 @@ function QuestAcceptController:accept(e)
 		end
 
 		self:getGame():getUI():closeInstance(self)
+	else
+		Utility.UI.notifyFailure(self:getPeep(), "Message_QuestRequirementsNotMet")
 	end
 end
 
