@@ -1,5 +1,12 @@
-speaker "Lyra"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local isFollowing = _SPEAKERS["Lyra"]:hasBehavior(FollowerBehavior)
 
+if isFollowing then
+	defer "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/LyraFollow_en-US.lua"
+	return
+end
+
+speaker "Lyra"
 message {
 	"Good tidings and welcome to Rumbridge.",
 	"How may I help you, adventurer?"
@@ -324,19 +331,24 @@ do
 				end
 			end
 
+			if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_AgreedToHelpLyra") then
+				speaker "_TARGET"
+				message "Follow me!"
+
+				local _, lyraFollower = _SPEAKERS["Lyra"]:addBehavior(FollowerBehavior)
+				local _, oliverFollower = _SPEAKERS["Oliver"]:addBehavior(FollowerBehavior)
+
+				local player = Utility.Peep.getPlayerModel(_TARGET)
+				lyraFollower.playerID = player:getID()
+				lyraFollower.followAcrossMaps = true
+				oliverFollower.playerID = player:getID()
+				oliverFollower.followAcrossMaps = true
+
+				Utility.Peep.setMashinaState(_SPEAKERS["Lyra"], "follow")
+				Utility.Peep.setMashinaState(_SPEAKERS["Oliver"], "follow")
+			end
+
 			return
-
-			-- local _, lyraFollower = _SPEAKERS["Lyra"]:addBehavior(require "ItsyScape.Peep.Behaviors.FollowerBehavior")
-			-- local _, oliverFollower = _SPEAKERS["Oliver"]:addBehavior(require "ItsyScape.Peep.Behaviors.FollowerBehavior")
-
-			-- local player = Utility.Peep.getPlayerModel(_TARGET)
-			-- lyraFollower.playerID = player:getID()
-			-- lyraFollower.followAcrossMaps = true
-			-- oliverFollower.playerID = player:getID()
-			-- oliverFollower.followAcrossMaps = true
-
-			-- Utility.Peep.setMashinaState(_SPEAKERS["Lyra"], "follow")
-			-- Utility.Peep.setMashinaState(_SPEAKERS["Oliver"], "follow")
 		else
 			message "Enjoy your time in Rumbridge."
 		end
