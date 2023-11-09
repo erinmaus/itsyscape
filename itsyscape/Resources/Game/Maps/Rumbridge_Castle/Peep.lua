@@ -128,7 +128,6 @@ function Castle:onContinueSuperSupperSaboteur(chef, player)
 	if not namedMapAction then
 		Log.warn("Couldn't talk to Chef Allon after starting quest: named map action not found.")
 	else
-		print(">>> continue", chef:getName(), player:getName())
 		local action = Utility.getAction(game, namedMapAction:get("Action"))
 		action.instance:perform(player:getState(), player, chef)
 	end

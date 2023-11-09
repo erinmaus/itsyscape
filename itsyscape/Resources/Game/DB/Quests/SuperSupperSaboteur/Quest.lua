@@ -9,6 +9,28 @@
 --------------------------------------------------------------------------------
 
 do
+	local Poison = ItsyScape.Resource.Item "SuperSupperSaboteur_Poison"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Poison evidence",
+		Language = "en-US",
+		Resource = Poison
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "You found this poison in Lyra's shop.",
+		Language = "en-US",
+		Resource = Poison
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Resource = Poison
+	}
+end
+
+do
 	local RecipeCard = ItsyScape.Resource.Item "SuperSupperSaboteur_SecretCarrotCakeRecipeCard" {
 		ItsyScape.Action.ReadRecipe() {
 			Requirement {
@@ -691,6 +713,7 @@ Quest "SuperSupperSaboteur" {
 	Step "SuperSupperSaboteur_ButlerInspected",
 	Step "SuperSupperSaboteur_TalkedToGuardCaptain",
 	Step "SuperSupperSaboteur_TalkedToLyra",
+	Step "SuperSupperSaboteur_FoundEvidence",
 	Step "SuperSupperSaboteur_GotConfessionFromLyra",
 	Branch {
 		{
@@ -778,9 +801,14 @@ Description "SuperSupperSaboteur_TalkedToLyra" {
 	after = "When speaking to Lyra, she seemed suspicious."
 }
 
-Description "SuperSupperSaboteur_GotConfessionFromLyra" {
+Description "SuperSupperSaboteur_FoundEvidence" {
 	before = "Maybe Lyra is hiding something.",
-	after = "Lyra had a dangerous, magical poison in her desk. Is this enough evidence to turn her in?"
+	after = "Lyra had a dangerous, magical poison in the coffin. Is this enough evidence to get a confession?"
+}
+
+Description "SuperSupperSaboteur_GotConfessionFromLyra" {
+	before = "Confront Lyra about the poison you found in her shop.",
+	after = "Lyra confessed to preparing a poison to kill Earl Reddick."
 }
 
 Description "SuperSupperSaboteur_TurnedInLyra" {
