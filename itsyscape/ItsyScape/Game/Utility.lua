@@ -1423,7 +1423,7 @@ function Utility.Map.getAnchorDirection(game, map, anchor)
 		return mapObject:get("Direction") or 0
 	end
 
-	return nil, nil, nil
+	return 0
 end
 
 function Utility.Map.spawnMap(peep, map, position, args)
@@ -2947,7 +2947,7 @@ function Utility.Peep.Mashina:onReady(director)
 					m.states[state] = love.filesystem.load(tree)()
 
 					local default = record:get("IsDefault")
-					if default and default ~= 0 then
+					if default and default ~= 0 and not m.currentState then
 						m.currentState = state
 					end
 				end
