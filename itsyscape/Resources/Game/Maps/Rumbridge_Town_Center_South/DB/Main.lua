@@ -330,3 +330,38 @@ do
 		TalkAction
 	}
 end
+
+M["Coffin"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 4,
+		PositionZ = 51,
+		Name = "Coffin",
+		Map = M._MAP,
+		Resource = M["Coffin"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Coffin_Plain1",
+		MapObject = M["Coffin"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Coffin"],
+		Name = "Coffin",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/Coffin_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["Coffin"] {
+		TalkAction
+	}
+end
