@@ -293,6 +293,7 @@ do
 					speaker "Lyra"
 					message {
 						"%person{Cap'n Raven} and her crew found one recently!",
+						"They've been bragging about it at the port."
 						"But they refuse to help me.",
 						"Maybe you can convince her?"
 					}
@@ -319,7 +320,7 @@ do
 					}
 
 					speaker "Oliver"
-					message "*grr*"
+					message "Grrr! Woof!"
 				end
 			end
 
