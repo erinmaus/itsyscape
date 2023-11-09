@@ -1180,6 +1180,7 @@ include "Resources/Game/DB/Peeps/TheEmptyKing.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Peeps/Veggies.lua"
+include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"

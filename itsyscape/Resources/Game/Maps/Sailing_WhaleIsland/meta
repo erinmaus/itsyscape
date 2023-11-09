@@ -1,0 +1,7 @@
+{
+	{
+		autoMask = true,
+		tileSetID = "YendorianRuins",
+		maskID = true,
+	},
+}
