@@ -124,8 +124,8 @@ if not hasStartedQuest then
 		"and guess what? He put in a good word for you!"
 	}
 
-	local ISABELLE = "Even after the fiasco with Isabelle?"
-	local WHO_KNEW = "I didn't know that!"
+	local ISABELLE = option "Even after the fiasco with Isabelle?"
+	local WHO_KNEW = option "I didn't know that!"
 
 	local result = select {
 		ISABELLE,
@@ -411,7 +411,7 @@ then
 		message "I made the carrot cake!"
 
 		speaker "ChefAllon"
-		message "Excellent, friend! Let me take a look..."
+		message "Let me take a look, friend!"
 
 		local carrotCakes = Utility.Item.getItemsInPeepInventory(_TARGET, "CarrotCake")
 
