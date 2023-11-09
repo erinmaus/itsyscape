@@ -146,7 +146,8 @@ function NominomiconController:new(peep, director)
 			description = Utility.getDescription(q, gameDB),
 			didComplete = Utility.Quest.didComplete(q, peep),
 			inProgress = Utility.Quest.didStart(q, peep),
-			canStart = Utility.Quest.canStart(q, peep)
+			canStart = Utility.Quest.canStart(q, peep),
+			isQuest = true
 		}
 
 		local steps = Utility.Quest.build(q, gameDB)
@@ -159,7 +160,8 @@ function NominomiconController:new(peep, director)
 	table.insert(self.quests, 1, {
 		id = "X_Introduction",
 		name = "Introduction",
-		description = "Learn about the world of ItsyRealm."
+		description = "Learn about the world of ItsyRealm.",
+		isQuest = false
 	})
 
 	table.insert(self.questInfo, 1, NominomiconController.TUTORIAL["en-US"][1])
@@ -167,7 +169,8 @@ function NominomiconController:new(peep, director)
 	table.insert(self.quests, {
 		id = "X_Credits",
 		name = "Credits",
-		description = "See who made the magic."
+		description = "See who made the magic.",
+		isQuest = false
 	})
 
 	table.insert(self.questInfo, NominomiconController.CREDITS["en-US"][1])
