@@ -323,3 +323,30 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
+
+M["BeachedWhale"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local RotationY = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, -math.pi / 3)
+	local RotationZ = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Z, math.pi / 4)
+	local Rotation = RotationY * RotationZ
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 2,
+		PositionZ = 35,
+		RotationX = Rotation.x,
+		RotationY = Rotation.y,
+		RotationZ = Rotation.z,
+		RotationW = Rotation.w,
+		Name = "BeachedWhale",
+		Map = M._MAP,
+		Resource = M["BeachedWhale"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "UndeadWhale",
+		MapObject = M["BeachedWhale"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
