@@ -177,6 +177,11 @@ ItsyScape.Resource.Skill "Firemaking"
 		Skill = ItsyScape.Resource.Skill "Firemaking"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Craft",
+		Skill = ItsyScape.Resource.Skill "Firemaking"
+	}
+
 ItsyScape.Resource.Skill "Engineering"
 	ActionType "Fletch"
 	ActionType "Mix"
@@ -215,9 +220,23 @@ ItsyScape.Resource.Skill "Cooking"
 		Skill = ItsyScape.Resource.Skill "Cooking"
 	}
 
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Cook",
+		XProgressive = "Cooking",
+		Language = "en-US",
+		Type = "CookRecipe"
+	}
+
 	ItsyScape.Meta.SkillAction {
 		ActionType = "CookIngredient",
 		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Cook",
+		XProgressive = "Cooking",
+		Language = "en-US",
+		Type = "CookIngredient"
 	}
 
 	ActionType "ReadRecipe"
