@@ -332,7 +332,7 @@ do
 
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15,
-		PositionY = 2,
+		PositionY = 4,
 		PositionZ = 35,
 		RotationX = Rotation.x,
 		RotationY = Rotation.y,
@@ -348,5 +348,29 @@ do
 		MapObject = M["BeachedWhale"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
+	}
+end
+
+M["Whale"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Whale",
+		Map = M._MAP,
+		Resource = M["Whale"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "UndeadWhale",
+		MapObject = M["Whale"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "follow",
+		Tree = "Resources/Game/Maps/Sailing_WhaleIsland/Scripts/Whale_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Whale"]
 	}
 end

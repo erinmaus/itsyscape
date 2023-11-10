@@ -16,6 +16,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -27,6 +28,7 @@ function UndeadWhale:new(resource, name, ...)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 3
+	movement.float = -2
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(4, 10, 4)

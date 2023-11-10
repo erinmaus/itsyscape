@@ -26,30 +26,6 @@ do
 	}
 end
 
-M["ShadowTree_Stormy2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23.000000,
-		PositionY = 2.000000,
-		PositionZ = 7.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "ShadowTree_Stormy2",
-		Map = M._MAP,
-		Resource = M["ShadowTree_Stormy2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
-		MapObject = M["ShadowTree_Stormy2"]
-	}
-end
-
 M["CoconutFire4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -71,6 +47,54 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CoconutFire",
 		MapObject = M["CoconutFire4"]
+	}
+end
+
+M["CoconutTree_Stormy2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.000000,
+		PositionY = 2.000000,
+		PositionZ = 11.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CoconutTree_Stormy2",
+		Map = M._MAP,
+		Resource = M["CoconutTree_Stormy2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CoconutTree_Stormy",
+		MapObject = M["CoconutTree_Stormy2"]
+	}
+end
+
+M["FossilizedOakTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19.000000,
+		PositionY = 4.000000,
+		PositionZ = 15.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "FossilizedOakTree_Default1",
+		Map = M._MAP,
+		Resource = M["FossilizedOakTree_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "FossilizedOakTree_Default",
+		MapObject = M["FossilizedOakTree_Default1"]
 	}
 end
 
@@ -98,6 +122,126 @@ do
 	}
 end
 
+M["CoconutTree_Stormy1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11.000000,
+		PositionY = 4.000000,
+		PositionZ = 9.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CoconutTree_Stormy1",
+		Map = M._MAP,
+		Resource = M["CoconutTree_Stormy1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CoconutTree_Stormy",
+		MapObject = M["CoconutTree_Stormy1"]
+	}
+end
+
+M["ShadowTree_Stormy2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23.000000,
+		PositionY = 2.000000,
+		PositionZ = 7.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ShadowTree_Stormy2",
+		Map = M._MAP,
+		Resource = M["ShadowTree_Stormy2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
+		MapObject = M["ShadowTree_Stormy2"]
+	}
+end
+
+M["CoconutFire3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23.000000,
+		PositionY = 2.000000,
+		PositionZ = 9.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CoconutFire3",
+		Map = M._MAP,
+		Resource = M["CoconutFire3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CoconutFire",
+		MapObject = M["CoconutFire3"]
+	}
+end
+
+M["FossilizedOakTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13.000000,
+		PositionY = 4.000000,
+		PositionZ = 13.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "FossilizedOakTree_Default2",
+		Map = M._MAP,
+		Resource = M["FossilizedOakTree_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "FossilizedOakTree_Default",
+		MapObject = M["FossilizedOakTree_Default2"]
+	}
+end
+
+M["ShadowTree_Stormy3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.000000,
+		PositionY = 4.000000,
+		PositionZ = 13.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ShadowTree_Stormy3",
+		Map = M._MAP,
+		Resource = M["ShadowTree_Stormy3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
+		MapObject = M["ShadowTree_Stormy3"]
+	}
+end
+
 M["Bones_PileOfSkulls1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -122,10 +266,34 @@ do
 	}
 end
 
-M["FossilizedOakTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["ShadowTree_Stormy5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 19.000000,
+		PositionX = 9.000000,
+		PositionY = 4.000000,
+		PositionZ = 11.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ShadowTree_Stormy5",
+		Map = M._MAP,
+		Resource = M["ShadowTree_Stormy5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
+		MapObject = M["ShadowTree_Stormy5"]
+	}
+end
+
+M["CoconutFire1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11.000000,
 		PositionY = 4.000000,
 		PositionZ = 15.000000,
 		RotationX = 0.000000,
@@ -135,14 +303,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "FossilizedOakTree_Default1",
+		Name = "CoconutFire1",
 		Map = M._MAP,
-		Resource = M["FossilizedOakTree_Default1"]
+		Resource = M["CoconutFire1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "FossilizedOakTree_Default",
-		MapObject = M["FossilizedOakTree_Default1"]
+		Prop = ItsyScape.Resource.Prop "CoconutFire",
+		MapObject = M["CoconutFire1"]
 	}
 end
 
@@ -194,10 +362,10 @@ do
 	}
 end
 
-M["ShadowTree_Stormy4"] = ItsyScape.Resource.MapObject.Unique()
+M["Bones_JustBones1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 11.000000,
+		PositionX = 17.000000,
 		PositionY = 4.000000,
 		PositionZ = 17.000000,
 		RotationX = 0.000000,
@@ -207,38 +375,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "ShadowTree_Stormy4",
+		Name = "Bones_JustBones1",
 		Map = M._MAP,
-		Resource = M["ShadowTree_Stormy4"]
+		Resource = M["Bones_JustBones1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
-		MapObject = M["ShadowTree_Stormy4"]
-	}
-end
-
-M["CoconutFire3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23.000000,
-		PositionY = 2.000000,
-		PositionZ = 9.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CoconutFire3",
-		Map = M._MAP,
-		Resource = M["CoconutFire3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CoconutFire",
-		MapObject = M["CoconutFire3"]
+		Prop = ItsyScape.Resource.Prop "Bones_JustBones",
+		MapObject = M["Bones_JustBones1"]
 	}
 end
 
@@ -266,54 +410,6 @@ do
 	}
 end
 
-M["CoconutTree_Stormy1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 11.000000,
-		PositionY = 4.000000,
-		PositionZ = 9.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CoconutTree_Stormy1",
-		Map = M._MAP,
-		Resource = M["CoconutTree_Stormy1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CoconutTree_Stormy",
-		MapObject = M["CoconutTree_Stormy1"]
-	}
-end
-
-M["Bones_JustBones1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.000000,
-		PositionY = 4.000000,
-		PositionZ = 17.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Bones_JustBones1",
-		Map = M._MAP,
-		Resource = M["Bones_JustBones1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Bones_JustBones",
-		MapObject = M["Bones_JustBones1"]
-	}
-end
-
 M["ShadowTree_Stormy1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -338,60 +434,12 @@ do
 	}
 end
 
-M["ShadowTree_Stormy3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.000000,
-		PositionY = 4.000000,
-		PositionZ = 13.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "ShadowTree_Stormy3",
-		Map = M._MAP,
-		Resource = M["ShadowTree_Stormy3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
-		MapObject = M["ShadowTree_Stormy3"]
-	}
-end
-
-M["CoconutTree_Stormy2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
-		PositionY = 2.000000,
-		PositionZ = 11.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CoconutTree_Stormy2",
-		Map = M._MAP,
-		Resource = M["CoconutTree_Stormy2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CoconutTree_Stormy",
-		MapObject = M["CoconutTree_Stormy2"]
-	}
-end
-
-M["CoconutFire1"] = ItsyScape.Resource.MapObject.Unique()
+M["ShadowTree_Stormy4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 11.000000,
 		PositionY = 4.000000,
-		PositionZ = 15.000000,
+		PositionZ = 17.000000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -399,62 +447,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "CoconutFire1",
+		Name = "ShadowTree_Stormy4",
 		Map = M._MAP,
-		Resource = M["CoconutFire1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CoconutFire",
-		MapObject = M["CoconutFire1"]
-	}
-end
-
-M["ShadowTree_Stormy5"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 9.000000,
-		PositionY = 4.000000,
-		PositionZ = 11.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "ShadowTree_Stormy5",
-		Map = M._MAP,
-		Resource = M["ShadowTree_Stormy5"]
+		Resource = M["ShadowTree_Stormy4"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShadowTree_Stormy",
-		MapObject = M["ShadowTree_Stormy5"]
-	}
-end
-
-M["FossilizedOakTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13.000000,
-		PositionY = 4.000000,
-		PositionZ = 13.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "FossilizedOakTree_Default2",
-		Map = M._MAP,
-		Resource = M["FossilizedOakTree_Default2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "FossilizedOakTree_Default",
-		MapObject = M["FossilizedOakTree_Default2"]
+		MapObject = M["ShadowTree_Stormy4"]
 	}
 end
 
