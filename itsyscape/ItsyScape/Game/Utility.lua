@@ -2542,14 +2542,10 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 end
 
 function Utility.Peep.face(peep, target)
-	local peepPosition = peep:getBehavior(PositionBehavior)
-	local targetPosition = target:getBehavior(PositionBehavior)
+	local peepPosition = Utility.Peep.getPosition(peep)
+	local targetPosition = Utility.Peep.getPosition(target)
 
-	if not peepPosition or not targetPosition then
-		return
-	end
-
-	local dx = targetPosition.position.x - peepPosition.position.x
+	local dx = targetPosition.x - peepPosition.x
 
 	local movement = peep:getBehavior(MovementBehavior)
 	if movement then
