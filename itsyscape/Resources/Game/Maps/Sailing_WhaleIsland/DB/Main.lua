@@ -405,3 +405,93 @@ do
 		Resource = M["Whale"]
 	}
 end
+
+M["Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 4,
+		PositionZ = 17,
+		Name = "Pirate1",
+		Map = M._MAP,
+		Resource = M["Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronBlunderbuss",
+		Count = 1,
+		Resource = M["Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhaleIsland/Scripts/Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Pirate1"]
+	}
+end
+
+M["Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 4,
+		PositionZ = 13,
+		Name = "Pirate2",
+		Map = M._MAP,
+		Resource = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronPistol",
+		Count = 1,
+		Resource = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhaleIsland/Scripts/Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Pirate2"]
+	}
+end
+
+M["Pirate3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 2,
+		PositionZ = 11,
+		Name = "Pirate3",
+		Map = M._MAP,
+		Resource = M["Pirate3"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IronMusket",
+		Count = 1,
+		Resource = M["Pirate3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RuinsOfRhysilk_Pirate",
+		MapObject = M["Pirate3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhaleIsland/Scripts/Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Pirate3"]
+	}
+end
