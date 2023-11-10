@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local FollowerCortex = require "ItsyScape.Peep.Cortexes.FollowerCortex"
@@ -43,6 +44,34 @@ function WhaleIsland:onLoad(filename, args, layer)
 		Probe.namedMapObject("Light_Lightning"))[1]
 	self.lightningTime = 0
 	self:zap()
+
+	self:killBeachedWhale()
+end
+
+function WhaleIsland:killBeachedWhale()
+	local beachedWhale = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("BeachedWhale"))[1]
+
+	if beachedWhale then
+		beachedWhale:poke('die')
+
+		local actor = beachedWhale:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+		if actor then
+			Log.info("Playing death animation for beached whale.")
+			actor:playAnimation(
+				'combat',
+				1000,
+				beachedWhale:getResource("animation-die", "ItsyScape.Graphics.AnimationResource"),
+				true,
+				1000)
+		else
+			Log.warn("Couldn't get beached whale actor.")
+		end
+	else
+		Log.warn("Couldn't get beached whale.")
+	end
 end
 
 function WhaleIsland:onPlayerEnter(player)
