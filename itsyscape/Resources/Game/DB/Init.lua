@@ -759,6 +759,13 @@ Game "ItsyScape"
 
 	ActionType "ObtainSecondary"
 
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Obtain",
+		XProgressive = "Obtain",
+		Language = "en-US",
+		Type = "ObtainSecondary"
+	}
+
 	Meta "SecondaryWeight" {
 		Weight = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
@@ -1105,6 +1112,7 @@ include "Resources/Game/DB/Items/Meat.lua"
 include "Resources/Game/DB/Items/MiningSecondaries.lua"
 include "Resources/Game/DB/Items/Gunpowder.lua"
 include "Resources/Game/DB/Items/Veggies.lua"
+include "Resources/Game/DB/Items/Candles.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

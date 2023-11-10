@@ -694,6 +694,11 @@ Quest "SuperSupperSaboteur" {
 		},
 
 		Requirement {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Foraging",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
