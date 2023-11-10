@@ -31,6 +31,99 @@ do
 end
 
 do
+	local DemonContract = ItsyScape.Resource.Item "SuperSupperSaboteur_DemonContract"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Demonic assassin contract",
+		Language = "en-US",
+		Resource = DemonContract
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Summons a demon to assassinate Earl Reddick.",
+		Language = "en-US",
+		Resource = DemonContract
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Resource = DemonContract
+	}
+
+	local Assassin = ItsyScape.Resource.Peep "SuperSupperSaboteur_DemonicAssassin"
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Demonic",
+		Resource = Assassin
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Demonic.BaseDemonic",
+		Resource = Assassin
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Demonic assassin",
+		Language = "en-US",
+		Resource = Assassin
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "He's here to assassinate the Earl!",
+		Language = "en-US",
+		Resource = Assassin
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronZweihander",
+		Count = 1,
+		Resource = Assassin
+	}
+end
+
+do
+	local HellhoundContract = ItsyScape.Resource.Item "SuperSupperSaboteur_HellhoundContract"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Hellhound contract",
+		Language = "en-US",
+		Resource = HellhoundContract
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Summons a hellhound to assassinate Earl Reddick.",
+		Language = "en-US",
+		Resource = HellhoundContract
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Resource = HellhoundContract
+	}
+
+	local Hellhound = ItsyScape.Resource.Peep "SuperSupperSaboteur_Hellhound"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Demonic.Hellhound",
+		Resource = Hellhound
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Hellhound",
+		Language = "en-US",
+		Resource = Hellhound
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one ferocious dog from Daemon Realm!",
+		Language = "en-US",
+		Resource = Hellhound
+	}
+end
+
+do
 	local RecipeCard = ItsyScape.Resource.Item "SuperSupperSaboteur_SecretCarrotCakeRecipeCard" {
 		ItsyScape.Action.ReadRecipe() {
 			Requirement {

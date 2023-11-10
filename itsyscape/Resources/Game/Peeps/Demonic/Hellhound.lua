@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Oliver/Oliver.lua
+-- Resources/Game/Peeps/Demonic/Hellhound.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -18,22 +18,18 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
-local Oliver = Class(Creep)
-Oliver.SIT = 2
+local Hellhound = Class(Creep)
 
-function Oliver:new(resource, name, ...)
-	Creep.new(self, resource, name or 'Oliver', ...)
+function Hellhound:new(resource, name, ...)
+	Creep.new(self, resource, name or 'Hellhound', ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2.5, 2, 1)
 	size.pan = Vector(-1, 1, 0)
 	size.zoom = 2
-
-	self.isSitting = false
-	self.sittingDuration = 0
 end
 
-function Oliver:ready(director, game)
+function Hellhound:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
@@ -76,33 +72,12 @@ function Oliver:ready(director, game)
 
 	local skin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Oliver/Oliver.lua")
+		"Resources/Game/Skins/Hellhound/Hellhound.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, skin)
+
+	Utility.Peep.equipXWeapon(self, "Hellhound_Attack")
 
 	Creep.ready(self, director, game)
 end
 
-function Oliver:update(director, game)
-	Creep.update(self, director, game)
-
-	local movement = self:getBehavior(MovementBehavior)
-	local targetTile = self:getBehavior(TargetTileBehavior)
-	local isMoving = movement.velocity:getLength() > 0.1 or targetTile
-	local actor = self:getBehavior(ActorReferenceBehavior).actor
-
-	if not isMoving then
-		self.sittingDuration = self.sittingDuration + game:getDelta()
-		if self.sittingDuration >= Oliver.SIT and not self.isSitting then
-			local resource = self:getResource(
-				"animation-idle-sit",
-				"ItsyScape.Graphics.AnimationResource")
-			actor:playAnimation('main', 1, resource)
-			self.isSitting = true
-		end
-	else
-		self.sittingDuration = 0
-		self.isSitting = false
-	end
-end
-
-return Oliver
+return Hellhound

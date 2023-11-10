@@ -331,7 +331,8 @@ do
 				end
 			end
 
-			if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_AgreedToHelpLyra") then
+			if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_AgreedToHelpLyra") and
+			   not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_MadeCandle") then
 				speaker "_TARGET"
 				message "Follow me!"
 
@@ -346,6 +347,113 @@ do
 
 				Utility.Peep.setMashinaState(_SPEAKERS["Lyra"], "follow")
 				Utility.Peep.setMashinaState(_SPEAKERS["Oliver"], "follow")
+			end
+
+			local GIVE_FLAGS = { ["item-inventory"] = true }
+			local SEARCH_FLAGS = { ["item-inventory"] = true, ["item-bank"] = true }
+			local hasDemonContract = _TARGET:getState():has("Item", "SuperSupperSaboteur_DemonContract", 1, SEARCH_FLAGS)
+			local hasHellhoundContract = _TARGET:getState():has("Item", "SuperSupperSaboteur_HellhoundContract", 1, SEARCH_FLAGS)
+			local giveContracts = not (hasDemonContract and hasHellhoundContract)
+
+			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_GotContracts", _TARGET) then
+				speaker "_TARGET"
+				message "We made the %item{kursed candle} - what's next?"
+
+				speaker "Lyra"
+				message {
+					"I have a Plan A and Plan B.",
+					"The kursed candle is Plan B.",
+					"Summoning demonic assassins is Plan A."
+				}
+
+				speaker "_TARGET"
+				message "Demonic assassins?!"
+
+				speaker "Lyra"
+				message {
+					"Yes! I have made some %item{demonic contracts}.",
+					"The idea is if the assassins fail,",
+					"then the %item{kursed candle} will be a fail-safe."
+				}
+
+				speaker "_TARGET"
+				message "How strong are these assassins?"
+
+				speaker "Lyra"
+				message {
+					"Well, the asassins are pretty strong....",
+					"But there's something about %location{Rumbridge Castle}",
+					"and its proximity to the %location{Rumbridge Monastery}",
+					"that weakens the demons."
+				}
+
+				message {
+					"My hypothesis is it's the Bastielian influence",
+					"that excudes from the monastery."
+				}
+
+				message "Bastiel, an Old One, is an enemy of demons."
+
+				speaker "_TARGET"
+				message "I see..."
+
+				speaker "Lyra"
+				message {
+					"The idea is if the assassins fail,",
+					"we will be free-and-clear to kurse the cake",
+					"without suspicion."
+				}
+
+				speaker "_TARGET"
+				message "Good idea!"
+
+				_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_GotContracts")
+			end
+
+			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_BlamedSomeoneElse", _TARGET) then
+				speaker "Lyra"
+
+				local hasInventorySpace = giveContracts
+				if not hasDemonContract then
+					if not _TARGET:getState():give("Item", "SuperSupperSaboteur_DemonContract", 1, GIVE_FLAGS) then
+						hasInventorySpace = false
+						message "You need to make space in your bag for the contract."
+					else
+						message "Here's the %item{demonic assassin contract}..."
+					end
+				else
+					if not _TARGET:getState():has("Item", "SuperSupperSaboteur_DemonContract", 1, GIVE_FLAGS) then
+						message "Looks like the %item{demon assassin contract} is in your bank."
+					end
+				end
+
+				if not hasHellhoundContract then
+					if not _TARGET:getState():give("Item", "SuperSupperSaboteur_HellhoundContract", 1, GIVE_FLAGS) then
+						if hasInventorySpace then
+							message "You need to make space in your bag for the contract."
+						end
+					else
+						message "Here's the %item{hellhound contract}..."
+					end
+				else
+					if not _TARGET:getState():has("Item", "SuperSupperSaboteur_HellhoundContract", 1, GIVE_FLAGS) then
+						message "Looks like the %item{hellhound contract} is in your bank."
+					end
+				end
+
+				if hasInventorySpace then
+					message {
+						"Now it's time to shine!",
+						"Head to the second floor of %location{Rumbridge Castle}",
+						"and summon the demon and hellhound!"
+					}
+				elseif not giveContracts then
+					message {
+						"No time to waste!",
+						"Head to the second floor of %location{Rumbridge Castle}",
+						"and summon the demon and hellhound!"
+					}
+				end
 			end
 
 			return
