@@ -16,6 +16,7 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local FollowerCortex = require "ItsyScape.Peep.Cortexes.FollowerCortex"
 
 local WhaleIsland = Class(Map)
@@ -26,6 +27,8 @@ WhaleIsland.MAX_AMBIENCE = 3
 
 function WhaleIsland:new(resource, name, ...)
 	Map.new(self, resource, name or 'WhaleIsland', ...)
+
+	self:addPoke('killBeachedWhale')
 end
 
 function WhaleIsland:onLoad(filename, args, layer)
@@ -45,10 +48,10 @@ function WhaleIsland:onLoad(filename, args, layer)
 	self.lightningTime = 0
 	self:zap()
 
-	self:killBeachedWhale()
+	self:pushPoke('killBeachedWhale')
 end
 
-function WhaleIsland:killBeachedWhale()
+function WhaleIsland:onKillBeachedWhale()
 	local beachedWhale = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("BeachedWhale"))[1]
@@ -68,6 +71,11 @@ function WhaleIsland:killBeachedWhale()
 				1000)
 		else
 			Log.warn("Couldn't get beached whale actor.")
+		end
+
+		local movement = beachedWhale:getBehavior(MovementBehavior)
+		if movement then
+			movement.float = 0
 		end
 	else
 		Log.warn("Couldn't get beached whale.")
