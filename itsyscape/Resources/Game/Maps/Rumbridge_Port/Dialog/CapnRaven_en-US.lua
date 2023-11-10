@@ -89,7 +89,7 @@ if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_TalkedTo
 	message "Woof!"
 end
 
-if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_MadeCandle", _TARGET) then
+if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TalkedToCapnRaven") then
 	local GO   = option "I'm ready to sail!"
 	local STAY = option "I think I'm going to be sea sick."
 
@@ -99,17 +99,28 @@ if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_MadeCand
 	}
 
 	if result == GO then
-		if not hasLyra then
+		if not hasLyra and not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_MadeCandle") then
 			speaker "_TARGET"
 			message "(I better get %person{Lyra} from %location{town}...)"
 
 			return
 		else
-			speaker "_TARGET"
-			message "We're ready to go whenever you are!"
+			if hasLyra then
+				speaker "_TARGET"
+				message "We're ready to go whenever you are!"
+			else
+				speaker "_TARGET"
+				message "Ready to go whenever you are!"
+			end
 
 			speaker "CapnRaven"
 			message "Anchors away!"
+
+			local stage = _TARGET:getDirector():getGameInstance():getStage()
+			stage:movePeep(
+				_TARGET,
+				"Sailing_WhaleIsland",
+				"Anchor_Spawn")
 		end
 	else
 		speaker "_TARGET"

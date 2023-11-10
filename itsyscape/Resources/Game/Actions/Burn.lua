@@ -38,7 +38,7 @@ function Burn:perform(state, peep, item)
 		end
 	end
 
-	self:transfer(state, peep)
+	self:transfer(state, peep, { ['item-inventory'] = true, ['item-instances'] = { item } })
 	Action.perform(self, state, peep)
 
 	return true

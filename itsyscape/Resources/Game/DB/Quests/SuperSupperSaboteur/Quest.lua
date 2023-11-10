@@ -731,6 +731,7 @@ Quest "SuperSupperSaboteur" {
 			Step "SuperSupperSaboteur_AgreedToHelpLyra",
 			Step "SuperSupperSaboteur_TalkedToCapnRaven",
 			Step "SuperSupperSaboteur_MadeCandle",
+			Step "SuperSupperSaboteur_GotContracts",
 			Step "SuperSupperSaboteur_BlamedSomeoneElse",
 
 			Branch {
@@ -841,8 +842,13 @@ Description "SuperSupperSaboteur_MadeCandle" {
 	after = "Thanks to your firemaking prowess, you made a kursed birthday candle for Lyra."
 }
 
+Description "SuperSupperSaboteur_GotContracts" {
+	before = "Lyra said to meet her back in her shop in the Shade district.",
+	after = "Lyra gave you some demonic contracts to summon a demon and its hellhound familiar to assassinate the Earl."
+}
+
 Description "SuperSupperSaboteur_BlamedSomeoneElse" {
-	before = "Lyra gave you some demonic contracts to summon a demon and its hellhound familiar to attempt to assassinate the Earl.",
+	before = "Find the Earl and summon the demons.",
 	after = "The Rumbridge guards proved too capable and the demon and hellhound were slain. Time for Plan B!"
 }
 

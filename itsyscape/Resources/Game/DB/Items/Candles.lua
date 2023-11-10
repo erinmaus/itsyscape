@@ -147,6 +147,11 @@ do
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
 		Input {
 			Resource = UnlitKursedCandle,
 			Count = 1

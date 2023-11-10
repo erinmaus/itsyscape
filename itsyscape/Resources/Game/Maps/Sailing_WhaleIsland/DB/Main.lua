@@ -238,7 +238,7 @@ do
 	}
 
 	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/Rumbridge_Port/Dialog/CapnRaven_en-US.lua",
+		Script = "Resources/Game/Maps/Sailing_WhaleIsland/Dialog/CapnRaven_en-US.lua",
 		Language = "en-US",
 		Action = TalkAction
 	}
@@ -343,11 +343,42 @@ do
 		Resource = M["BeachedWhale"]
 	}
 
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Lyra"],
+		Name = "Lyra",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["BeachedWhale"],
+		Name = "Whale",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhaleIsland/Dialog/Whale_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Desecrate",
+		XProgressive = "Desecrating",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "UndeadWhale",
 		MapObject = M["BeachedWhale"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
+	}
+
+	M["BeachedWhale"] {
+		TalkAction
 	}
 end
 

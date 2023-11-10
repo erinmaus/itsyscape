@@ -355,6 +355,13 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.ActionVerb {
+		Value = "Search",
+		XProgressive = "Searching",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/Coffin_en-US.lua",
 		Language = "en-US",
