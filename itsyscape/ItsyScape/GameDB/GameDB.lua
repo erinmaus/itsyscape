@@ -38,9 +38,18 @@ function GameDB.create(inputFilename, outputFilename)
 
 	local S = Sandbox()
 	S.include = setfenv(function(filename)
-		local chunk = assert(_load(filename))
+		local chunk, e = _load(filename)
+		if e then
+			S.Game.getGame().Error(e)
+		end
 		_setfenv(chunk, S)
-		return chunk()
+
+		local s, r = pcall(chunk)
+		if not s then
+			S.Game.getGame().Error(r)
+		end
+
+		return r
 	end, S)
 
 	local packages = { ["debug"] = require "debug" }
