@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -77,6 +78,9 @@ function WhaleIsland:onKillBeachedWhale()
 		if movement then
 			movement.float = 0
 		end
+
+		local status = beachedWhale:getBehavior(CombatStatusBehavior)
+		status.dead = false
 	else
 		Log.warn("Couldn't get beached whale.")
 	end

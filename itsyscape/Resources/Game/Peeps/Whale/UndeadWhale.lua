@@ -31,7 +31,8 @@ function UndeadWhale:new(resource, name, ...)
 	movement.float = -2
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4, 10, 4)
+	size.size = Vector(4, 4, 10)
+	size.pan = Vector(0, 2, 0)
 
 	self:addBehavior(ScaleBehavior)
 	self:addBehavior(RotationBehavior)
