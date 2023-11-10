@@ -39,7 +39,7 @@ function Wand:getStyle()
 end
 
 function Wand:getCooldown()
-	return 1.8
+	return 1.2
 end
 
 return Wand

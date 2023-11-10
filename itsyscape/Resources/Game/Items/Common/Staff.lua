@@ -39,7 +39,7 @@ function Staff:getStyle()
 end
 
 function Staff:getCooldown()
-	return 3.6
+	return 2
 end
 
 return Staff
