@@ -509,6 +509,12 @@ do
 		Language = "en-US",
 		Resource = M["ButlerLear"]
 	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A friend of Chef Allon's and a darn good butler.",
+		Language = "en-US",
+		Resource = M["ButlerLear"]
+	}
 end
 
 M["Anchor_GuardCaptain"] = ItsyScape.Resource.MapObject.Unique()

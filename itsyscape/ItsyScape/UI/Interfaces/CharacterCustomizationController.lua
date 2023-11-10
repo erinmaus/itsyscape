@@ -43,6 +43,8 @@ local SKINS = {
 		{ name = "Dark red braid", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DarkRedBraid.lua" },
 		{ name = "Curly", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Curly.lua" },
 		{ name = "Grrl punk", t = MODEL_SKIN, filename = "PlayerKit1/Hair/GrrlPunk.lua" },
+		{ name = "Demon horns", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DemonicHorns.lua" },
+		{ name = "Draconic horns", t = MODEL_SKIN, filename = "PlayerKit1/Hair/DraconicHorns.lua" },
 		{ name = "Bald", t = false, filename = "PlayerKit1/Hair/Bald.lua" },
 		{ name = "Dragon horns (black)", t = MODEL_SKIN, filename = "PlayerKit1/Hair/Haru.lua", player = "Haru" }
 	},
@@ -65,6 +67,8 @@ local SKINS = {
 		{ name = "Robot eyes (happy)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/RobotEyes_Green.lua" },
 		{ name = "Robot eyes (angry)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/RobotEyes_Red.lua" },
 		{ name = "Dummy eyes", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/Eyes_Dummy.lua" },
+		{ name = "Demonic eyes (brown-red)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/DemonicEyes_BrownRed.lua" },
+		{ name = "Draconic eyes (white-green)", t = MODEL_SKIN, filename = "PlayerKit1/Eyes/DraconicEyes_WhiteGreen.lua" },
 		{ name = "Eyeless", t = false, filename = "PlayerKit1/Eyes/Eyeless.lua" }
 	},
 
@@ -85,6 +89,8 @@ local SKINS = {
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Head.lua" },
 		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Head/Dummy.lua" },
 		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Head/Robot_MkII.lua" },
+		{ name = "Demonic", t = MODEL_SKIN, filename = "PlayerKit1/Head/Demonic.lua" },
+		{ name = "Draconic", t = MODEL_SKIN, filename = "PlayerKit1/Head/Draconic.lua" },
 		{ name = "Eye", t = MODEL_SKIN, filename = "PlayerKit1/Head/Eye.lua" }
 	},
 
@@ -120,6 +126,9 @@ local SKINS = {
 		{ name = "Navigator (green)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Green.lua" },
 		{ name = "Navigator (purple)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Purple.lua" },
 		{ name = "Navigator (red)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Navigator_Red.lua" },
+		{ name = "X Utility Belt (red)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/RedXUtilityBelt.lua" },
+		{ name = "X Utility Belt (blue)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BlueXUtilityBelt.lua" },
+		{ name = "X Utility Belt (brown)", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/BrownXUtilityBelt.lua" },
 		{ name = "Lab coat", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/LabCoat.lua" },
 		{ name = "Alchemist's coat", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Alchemist.lua" },
 		{ name = "Witch's hunter garb", t = MODEL_SKIN, filename = "PlayerKit1/Shirts/Hunter.lua" },
@@ -155,6 +164,8 @@ local SKINS = {
 		{ name = "Skeleton", t = MODEL_SKIN, filename = "Skeleton/Hands.lua" },
 		{ name = "Ancient skeleton", t = MODEL_SKIN, filename = "AncientSkeleton/Hands.lua" },
 		{ name = "Dummy", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Dummy.lua" },
+		{ name = "Demonic", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Demonic.lua" },
+		{ name = "Draconic", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Draconic.lua" },
 		{ name = "Robot Mk II", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Robot_MkII.lua" },
 		{ name = "Unreal", t = MODEL_SKIN, filename = "PlayerKit1/Hands/Unreal.lua" }
 	},
