@@ -280,6 +280,8 @@ function BankInventoryProvider:load(...)
 	if storage then
 		for key, section in storage:iterateSections() do
 			local item = broker:itemFromStorage(self, section)
+
+			broker:setItemKey(item, key)
 			broker:setItemZ(item, broker:getItemKey(item))
 		end
 	end
