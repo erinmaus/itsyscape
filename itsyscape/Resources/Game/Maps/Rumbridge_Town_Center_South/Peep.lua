@@ -26,6 +26,10 @@ function Town:onPlayerEnter(player)
 end
 
 function Town:trySpawnLyra(player)
+	local playerPeep = player:getActor():getPeep()
+	local isLyraInJail = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") or
+	                     playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
+
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 
@@ -55,39 +59,43 @@ function Town:trySpawnLyra(player)
 	end
 
 	if lyraPeep and oliverPeep then
-		Log.info("Lyra and Oliver are following player '%s', not respawning.", player:getActor():getName())
+		Log.info("Lyra and Oliver are following player '%s', not respawning.", playerPeep:getName())
 	elseif not lyraPeep or not oliverPeep then
-		if not lyraPeep and not oliverPeep then
-			Log.info("Lyra and Oliver are not following player '%s, spawning.", player:getActor():getName())
+		if isLyraInJail then
+			Log.info("Lyra and Oliver are in jail for player '%s'; not spawning.", playerPeep:getName())
 		else
-			Log.warn("Just one of either Lyra or Oliver is following player '%s'!", player:getActor():getName())
-		end
-
-		if not lyraPeep then
-			local lyraActor = Utility.spawnMapObjectAtAnchor(self, "Lyra", "Anchor_Lyra", 0)
-
-			local _, instance = lyraActor:getPeep():addBehavior(InstancedBehavior)
-			instance.playerID = player:getID()
-
-			if oliverPeep then
-				local _, follower = lyraActor:getPeep():addBehavior(FollowerBehavior)
-
-				follower.playerID = player:getID()
-				follower.followAcrossMaps = true
+			if not lyraPeep and not oliverPeep then
+				Log.info("Lyra and Oliver are not following player '%s, spawning.", playerPeep:getName())
+			else
+				Log.warn("Just one of either Lyra or Oliver is following player '%s'!", playerPeep:getName())
 			end
-		end
 
-		if not oliverPeep then
-			local oliverActor = Utility.spawnMapObjectAtAnchor(self, "Oliver", "Anchor_Oliver", 0)
+			if not lyraPeep then
+				local lyraActor = Utility.spawnMapObjectAtAnchor(self, "Lyra", "Anchor_Lyra", 0)
 
-			local _, instance = oliverActor:getPeep():addBehavior(InstancedBehavior)
-			instance.playerID = player:getID()
+				local _, instance = lyraActor:getPeep():addBehavior(InstancedBehavior)
+				instance.playerID = player:getID()
 
-			if lyraPeep then
-				local _, follower = oliverActor:getPeep():addBehavior(FollowerBehavior)
+				if oliverPeep then
+					local _, follower = lyraActor:getPeep():addBehavior(FollowerBehavior)
 
-				follower.playerID = player:getID()
-				follower.followAcrossMaps = true
+					follower.playerID = player:getID()
+					follower.followAcrossMaps = true
+				end
+			end
+
+			if not oliverPeep then
+				local oliverActor = Utility.spawnMapObjectAtAnchor(self, "Oliver", "Anchor_Oliver", 0)
+
+				local _, instance = oliverActor:getPeep():addBehavior(InstancedBehavior)
+				instance.playerID = player:getID()
+
+				if lyraPeep then
+					local _, follower = oliverActor:getPeep():addBehavior(FollowerBehavior)
+
+					follower.playerID = player:getID()
+					follower.followAcrossMaps = true
+				end
 			end
 		end
 	end

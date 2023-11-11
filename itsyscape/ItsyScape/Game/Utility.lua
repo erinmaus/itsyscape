@@ -2364,10 +2364,6 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
-	if peep:hasBehavior(ActorReferenceBehavior) then
-		return Utility.Peep.getTile(peep)
-	end
-
 	local rotation = Utility.Peep.getRotation(peep)
 	local size = Utility.Peep.getSize(peep)
 
@@ -2399,6 +2395,14 @@ function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
 				offsetJ = record:get("OffsetJ")
 			end
 		end
+	end
+
+	if peep:hasBehavior(ActorReferenceBehavior) then
+		local i, j, k = Utility.Peep.getTile(peep)
+		i = i + (offsetI or 0)
+		j = j + (offsetJ or 0)
+
+		return i, j, k
 	end
 
 	if not (offsetI and offsetJ) then

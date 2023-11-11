@@ -1,16 +1,107 @@
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
 local hasAlmostBeenAssassinated = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_BlamedSomeoneElse")
 local hasBetrayedLyra = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra")
+local canTurnInLyra = Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_TurnedInLyra", _TARGET)
+local hasTurnedInLyra = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
 local hasCompletedQuest = _TARGET:getState():has("Quest", "SuperSupperSaboteur")
 
-print("hasStartedQuest", hasStartedQuest)
-print("hasAlmostBeenAssassinated", hasAlmostBeenAssassinated)
-print("hasBetrayedLyra", hasBetrayedLyra)
-print("hasCompletedQuest", hasCompletedQuest)
+local function turnInLyra()
+	speaker "EarlReddick"
+	message {
+		"%person{Lyra}?! The friendly witch?!",
+		"She's been a critical part of %location{Rumbridge} history,",
+		"for over a hundred years!"
+	}
+
+	speaker "_TARGET"
+	message {
+		"It's true! I found poison in her shop",
+		"and she confessed to wanting to assassinate you.",
+		"She threatened me to stay silent."
+	}
+
+	speaker "EarlReddick"
+	message {
+		"We will search her shop at once!",
+		"It's not like an adventurer to lie...!",
+		"If we get evidence or get a confession ourselves,",
+		"she will pay the price! No one is above the law!"
+	}
+
+	speaker "EarlReddick"
+	message "Guards!"
+
+	speaker "Guard1"
+	message "Heard loud and clear, liege!"
+
+	speaker "Guard2"
+	message "Aye! Aye! We'll head out!"
+
+	speaker "EarlReddick"
+	message {
+		"You will be handsomely rewarded.",
+		"I will make sure of that myself."
+	}
+end
 
 if hasStartedQuest then
 	if not hasCompletedQuest then
-		if hasBetrayedLyra then
+		if canTurnInLyra then
+			speaker "EarlReddick"
+			message {
+				"Well met, adventurer.",
+				"Today may be my birthday,",
+				"but I sit here with my guards in fear of my life."
+			}
+
+			speaker "_TARGET"
+			message "About that..."
+
+			local TURN_IN    = option "Turn in Lyra."
+			local NEVERMIND  = option "Nevermindß."
+
+			local result = select {
+				TURN_IN,
+				NEVERMIND
+			}
+
+			if result == TURN_IN then
+				speaker "_TARGET"
+				message "(Do I really want to turn in %person{Lyra}?)"
+
+				local YES = option "Yes, definitely, do it already!"
+				local NO  = option "Let's think about it"
+
+				local otherResult = select {
+					YES, NO
+				}
+
+				if otherResult == YES then
+					_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
+
+					speaker "_TARGET"
+					message "%person{Earl Reddick}, the rumoured assassin is %person{Lyra}!"
+
+					turnInLyra()
+				elseif otherResult == NO then
+					speaker "_TARGET"
+					message "Uh, nevermind."
+
+					speaker "EarlReddick"
+					message {
+						"(The Earl stares into your soul.)",
+						"If you hear something, say something.",
+						"I will reward you handsomely for any information."
+					}
+				end
+			elseif result == NEVERMIND then
+				speaker "_TARGET"
+				message {
+					"Actually, I don't have a single thought",
+					"in my tiny brain!"
+				}
+			end
+		elseif hasTurnedInLyra or hasBetrayedLyra then
 			speaker "EarlReddick"
 
 			message {
@@ -52,7 +143,6 @@ if hasStartedQuest then
 					local YES = option "Yes, definitely, do it already!"
 					local NO  = option "Let's think about it"
 
-
 					local otherResult = select {
 						YES, NO
 					}
@@ -67,42 +157,7 @@ if hasStartedQuest then
 							"She wants to kill you."
 						}
 
-						speaker "EarlReddick"
-						message {
-							"%person{Lyra}?! The friendly witch?!",
-							"She's been a critical part of %location{Rumbridge} history,",
-							"for over a hundred years!"
-						}
-
-						speaker "_TARGET"
-						message {
-							"It's true! I found poison in her shop",
-							"and she confessed to wanting to assassinate you.",
-							"She threatened me to stay silent."
-						}
-
-						speaker "EarlReddick"
-						message {
-							"We will search her shop at once!",
-							"It's not like an adventurer to lie...!",
-							"If we get evidence or get a confession ourselves,",
-							"she will pay the price! No one is above the law!"
-						}
-
-						speaker "EarlReddick"
-						message "Guards!"
-
-						speaker "Guard1"
-						message "Heard loud and clear, liege!"
-
-						speaker "Guard2"
-						message "Aye! Aye! We'll head out!"
-
-						speaker "EarlReddick"
-						message {
-							"You will be handsomely rewarded.",
-							"I will make sure of that myself."
-						}
+						turnInLyra()
 					end
 				end
 			end

@@ -903,14 +903,16 @@ Quest "SuperSupperSaboteur" {
 	Branch {
 		{
 			Step "SuperSupperSaboteur_TurnedInLyra",
-			Step "SuperSupperSaboteur_LitBirthdayCandle",
-			Step "SuperSupperSaboteur_Complete"
-		},
-
-		{
-			Step "SuperSupperSaboteur_TurnedInLyra",
-			Step "SuperSupperSaboteur_LitKursedCandle",
-			Step "SuperSupperSaboteur_Complete"
+			Branch {
+				{
+					Step "SuperSupperSaboteur_LitBirthdayCandle",
+					Step "SuperSupperSaboteur_Complete"
+				},
+				{
+					Step "SuperSupperSaboteur_LitKursedCandle",
+					Step "SuperSupperSaboteur_Complete"
+				}	
+			}
 		},
 
 		{
@@ -1044,11 +1046,11 @@ Description "SuperSupperSaboteur_BetrayedLyra" {
 }
 
 Description "SuperSupperSaboteur_LitKursedCandle" {
-	before = "Chef Allon needs you to light the birthday candle. Of course, in your possession are two candles. What will you do?",
-	after = "You lit the kursed candle and gave it to the Chef. The Earl was poisoned and died!"
+	before = "Chef Allon needs you to light the birthday candle. Will you hand over a kursed candle instead?",
+	after = "You lit the kursed candle and gave it to the Chef. The Earl will die!"
 }
 
 Description "SuperSupperSaboteur_Complete" {
-	before = "You need to complete Super Supper Saboteur.",
+	before = "Chef Allon still has something to say.",
 	after = "You completed Super Supper Saboteur. What a quest!"
 }
