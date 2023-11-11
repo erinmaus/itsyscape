@@ -3,6 +3,7 @@ speaker "ChefAllon"
 message "Welcome to my three-star kitchen, %person{${PLAYER_NAME}}!"
 
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
+local hasCompletedQuest = _TARGET:getState():has("Quest", "SuperSupperSaboteur")
 
 local WHO     = option "Who are you?"
 local COOK    = option "What's cooking?"
@@ -18,12 +19,20 @@ local NVM     = option "It's too hot in here!"
 
 local result
 repeat
-	result = select {
-		WHO,
-		COOK,
-		QUEST,
-		NVM
-	}
+	if hasCompletedQuest then
+		result = select {
+			WHO,
+			COOK,
+			NVM
+		}
+	else
+		result = select {
+			WHO,
+			COOK,
+			QUEST,
+			NVM
+		}
+	end
 
 	if result == WHO then
 		speaker "ChefAllon"

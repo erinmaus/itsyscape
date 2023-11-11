@@ -6,6 +6,12 @@ if isFollowing then
 	return
 end
 
+local hasCompletedQuest = _TARGET:getState():has("Quest", "SuperSupperSaboteur")
+if hasCompletedQuest then
+	defer "Resources/Game/Maps/Rumbridge_Town_Center_South/Dialog/LyraPostQuest_en-US.lua"
+	return
+end
+
 speaker "Lyra"
 message {
 	"Good tidings and welcome to Rumbridge.",
@@ -381,7 +387,7 @@ do
 
 				speaker "Lyra"
 				message {
-					"Well, the asassins are pretty strong....",
+					"Well, the assassins are pretty strong....",
 					"But there's something about %location{Rumbridge Castle}",
 					"and its proximity to the %location{Rumbridge Monastery}",
 					"that weakens the demons."
@@ -454,6 +460,22 @@ do
 						"and summon the demon and hellhound!"
 					}
 				end
+			end
+
+			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_BetrayedLyra", _TARGET) then
+				speaker "_TARGET"
+				message "Looks like the demons didn't work."
+
+				speaker "Oliver"
+				message "*whimper*"
+
+				speaker "Lyra"
+				message {
+					"It's ok boy.",
+					"Plan B it is.",
+					"Give the lit kursed candle to %person{Chef Allon}.",
+					"%person{Earl Reddick} will face his justice."
+				}
 			end
 
 			return

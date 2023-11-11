@@ -599,6 +599,72 @@ do
 	}
 end
 
+M["Anchor_EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4,
+		PositionZ = 27,
+		Direction = -1,
+		Name = "Anchor_EarlReddick",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick"]
+	}
+end
+
+M["Anchor_EarlReddick_Guard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 27,
+		Direction = -1,
+		Name = "Anchor_EarlReddick_Guard",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick_Guard"]
+	}
+end
+
+M["Anchor_EarlReddick_Chef"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 4,
+		PositionZ = 27,
+		Direction = 1,
+		Name = "Anchor_EarlReddick_Chef",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick_Chef"]
+	}
+end
+
+M["Anchor_EarlReddick_Player"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 4,
+		PositionZ = 31,
+		Direction = 1,
+		Name = "Anchor_EarlReddick_Player",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick_Player"]
+	}
+end
+
+M["EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "EarlReddick",
+		Map = M._MAP,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "EarlReddick",
+		MapObject = M["EarlReddick"]
+	}
+end
+
 do
 	local TalkAction = ItsyScape.Action.Talk()
 
@@ -611,6 +677,12 @@ do
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = M["GuardCaptain"],
 		Name = "GuardCaptain",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["EarlReddick"],
+		Name = "EarlReddick",
 		Action = TalkAction
 	}
 
@@ -648,6 +720,12 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["EarlReddick"],
+		Name = "EarlReddick",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.TalkDialog {
 		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurInProgress_en-US.lua",
 		Language = "en-US",
@@ -656,6 +734,40 @@ do
 
 	ItsyScape.Meta.NamedMapAction {
 		Name = "StartSuperSupperSaboteurCutscene",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ChefAllon"],
+		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["EarlReddick"],
+		Name = "EarlReddick",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["GuardCaptain"],
+		Name = "GuardCaptain",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurComplete_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "EndSuperSupperSaboteurCutscene",
 		Action = TalkAction,
 		Map = M._MAP
 	}
@@ -680,5 +792,71 @@ do
 		Name = "Oliver",
 		Cutscene = Cutscene,
 		Resource = M["Oliver"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_EarlReddickDies_DoubleCross"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ChefAllon",
+		Cutscene = Cutscene,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "EarlReddick",
+		Cutscene = Cutscene,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "GuardCaptain",
+		Cutscene = Cutscene,
+		Resource = M["GuardCaptain"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_EarlReddickDies"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ChefAllon",
+		Cutscene = Cutscene,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "EarlReddick",
+		Cutscene = Cutscene,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "GuardCaptain",
+		Cutscene = Cutscene,
+		Resource = M["GuardCaptain"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_EarlReddickLives"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ChefAllon",
+		Cutscene = Cutscene,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "EarlReddick",
+		Cutscene = Cutscene,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "GuardCaptain",
+		Cutscene = Cutscene,
+		Resource = M["GuardCaptain"]
 	}
 end

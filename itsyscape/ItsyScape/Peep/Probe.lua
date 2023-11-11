@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local Probe = {}
@@ -87,6 +89,24 @@ function Probe.namedMapObject(name)
 		end
 
 		return false
+	end
+end
+
+function Probe.instance(player, any)
+	return function(peep)
+		local instance = peep:getBehavior(InstancedBehavior)
+		if not instance and any then
+			return true
+		end
+
+		return instance and instance.playerID == player:getID()
+	end
+end
+
+function Probe.follower(player)
+	return function(peep)
+		local follower = peep:getBehavior(FollowerBehavior)
+		return follower and follower.playerID == player:getID()
 	end
 end
 

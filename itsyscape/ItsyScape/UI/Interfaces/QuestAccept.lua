@@ -100,8 +100,20 @@ function QuestAccept:new(id, index, ui)
 	self.requirementsConstraints:setConstraints(state.requirements)
 	self.constraintsPanel:addChild(self.requirementsConstraints)
 
+	if #state.outputs > 1 then
+		self.rewardConstraints = ConstraintsPanel(ui)
+		self.rewardConstraints:setSize(
+			QuestAccept.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - QuestAccept.PADDING * 2,
+			0)
+		self.rewardConstraints:setText("Reward")
+		self.rewardConstraints:setConstraints(state.outputs)
+		self.constraintsPanel:addChild(self.rewardConstraints)
+	end
+
 	self.constraintsPanel:setScrollSize(self.constraintsPanel:getInnerPanel():getSize())
 	self:addChild(self.constraintsPanel)
+
+	self.constraintsPanel:setScrollSize(self.constraintsPanel:getInnerPanel():getSize())
 
 	self.acceptButton = Button()
 	self.acceptButton:setSize(QuestAccept.WIDTH / 2 - QuestAccept.PADDING * 4, QuestAccept.BUTTON_SIZE)

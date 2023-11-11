@@ -1015,7 +1015,7 @@ function Instance:_clearInstancedActors(player)
 		if actorPeep then
 			if Utility.Peep.isInstancedToPlayer(actorPeep, player) then
 				local follower = actorPeep:getBehavior(FollowerBehavior)
-				if follower and not follower.followAcrossMaps and follower.playerID == player:getID() then
+				if not follower or (not follower.followAcrossMaps and follower.playerID == player:getID()) then
 					Log.engine(
 						"Clearing instanced actor '%s' (%d) for player %s (%d).",
 						actor:getName(), actor:getID(),

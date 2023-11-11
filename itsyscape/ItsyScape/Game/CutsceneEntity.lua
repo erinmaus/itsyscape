@@ -275,11 +275,11 @@ end
 
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
 	return function()
-		slot = slot or 'x-cutscene'
-		priority = priority or 10000
-		resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
-		time = time or 0
-		animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+		local slot = slot or 'x-cutscene'
+		local priority = priority or 10000
+		local resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
+		local time = time or 0
+		local animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
 
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then

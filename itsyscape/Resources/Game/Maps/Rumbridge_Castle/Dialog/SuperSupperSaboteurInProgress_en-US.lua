@@ -623,6 +623,9 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_Complete", _TARGET) then
 			"Time to celebrate the Earl's birthday!",
 			"I'll get him!"
 		}
+
+		local stage = _TARGET:getDirector():getGameInstance():getStage()
+		stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
 elseif not needToLightCandle then
 	speaker "ChefAllon"
 	message "Almost done! I'll need you soon."
