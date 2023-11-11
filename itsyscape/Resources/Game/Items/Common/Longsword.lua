@@ -23,7 +23,7 @@ function Longsword:getWeaponType()
 end
 
 function Longsword:getCooldown(peep)
-	return 2.4
+	return 1.8
 end
 
 return Longsword

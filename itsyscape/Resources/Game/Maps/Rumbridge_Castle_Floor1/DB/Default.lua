@@ -434,30 +434,6 @@ do
 	}
 end
 
-M["Chandelier_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 21.000000,
-		PositionY = 5.250000,
-		PositionZ = 35.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Chandelier_Default1",
-		Map = M._MAP,
-		Resource = M["Chandelier_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Chandelier_Default",
-		MapObject = M["Chandelier_Default1"]
-	}
-end
-
 M["Door_RumbridgeCastle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

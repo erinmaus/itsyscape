@@ -271,7 +271,7 @@ end
 function QuestProgressNotification:update(delta)
 	Interface.update(self, delta)
 
-	self:updatePosition()
+	--self:updatePosition()
 end
 
 return QuestProgressNotification

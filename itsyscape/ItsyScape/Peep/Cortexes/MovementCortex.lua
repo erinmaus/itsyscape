@@ -344,7 +344,7 @@ function MovementCortex:update(delta)
 				local xzVelocity = movement.velocity * Vector(1, 0, 1)
 				if xzVelocity:getLengthSquared() == 0 and movement.isOnGround then
 					movement.isStopping = false
-					if wasMoving and movement.targetFacing then
+					if not wasMoving and movement.targetFacing then
 						movement.facing = movement.targetFacing
 						movement.targetFacing = false
 					end

@@ -15,7 +15,7 @@ local TREES = {
 		fruit = {
 			{ name = "Pecan", tier = 1, factor = 1.5, health = -1 },
 			{ name = "RegalPecan", tier = 10, factor = 1.5, health = -1 },
-			{ name = "GoldenPecan", tier = 60, factor = 3, health = -1 },
+			{ name = "GoldenPecan", tier = 25, factor = 3, health = -1 },
 		}
 	},
 	["Apple"] = {
@@ -24,8 +24,8 @@ local TREES = {
 		fruit = {
 			{ name = "RedApple", tier = 1, factor = 1.5, health = 1 },
 			{ name = "GreenApple", tier = 10, factor = 1.5, health = 1 },
-			{ name = "SiliconApple", tier = 35, factor = 1.5, health = 2 },
-			{ name = "GoldenApple", tier = 65, factor = 5, health = 2 },
+			{ name = "SiliconApple", tier = 20, factor = 1.5, health = 2 },
+			{ name = "GoldenApple", tier = 50, factor = 5, health = 2 },
 			{ name = "WormyApple", tier = 99, factor = 15, health = -1 },
 		}
 	},
@@ -34,17 +34,17 @@ local TREES = {
 		ingredients = { "Fruit", "Pear" },
 		fruit = {
 			{ name = "Pear", tier = 1, factor = 1.5, health = 1 },
-			{ name = "DisgustingPear", tier = 30, factor = 1.5, health = -2 },
-			{ name = "RottenPear", tier = 65, factor = 1.5, health = -4 },
-			{ name = "JustMush", tier = 70, factor = 5, health = -8 },		}
+			{ name = "DisgustingPear", tier = 15, factor = 1.5, health = -2 },
+			{ name = "RottenPear", tier = 30, factor = 1.5, health = -4 },
+			{ name = "JustMush", tier = 45, factor = 5, health = -8 },		}
 	},
 	["Peach"] = {
 		niceName = "Peach",
 		ingredients = { "Fruit", "Peach" },
 		fruit = {
 			{ name = "Peach", tier = 1, factor = 1.5, health = 1 },
-			{ name = "JuicyPeach", tier = 30, factor = 1.5, health = 2 },
-			{ name = "DonutPeach", tier = 45, factor = 4, health = 1 },
+			{ name = "JuicyPeach", tier = 20, factor = 1.5, health = 2 },
+			{ name = "DonutPeach", tier = 40, factor = 4, health = 1 },
 		}
 	},
 	["Orange"] = {
@@ -52,8 +52,8 @@ local TREES = {
 		ingredients = { "Fruit", "Orange" },
 		fruit = {
 			{ name = "Orange", tier = 1, factor = 1.5, health = 1 },
-			{ name = "SunnyOrange", tier = 30, factor = 3, health = 2 },
-			{ name = "FireOrange", tier = 75, factor = 10, health = -4 },
+			{ name = "SunnyOrange", tier = 20, factor = 3, health = 2 },
+			{ name = "FireOrange", tier = 55, factor = 10, health = -4 },
 		}
 	}
 }
@@ -127,8 +127,21 @@ for name, tree in spairs(TREES) do
 			Action = EatAction
 		}
 
+		local CookAction = ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(fruit.tier)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(fruit.tier + 1)
+			}
+		}
+
 		Item {
-			EatAction
+			EatAction,
+			CookAction
 		}
 
 		Tree {

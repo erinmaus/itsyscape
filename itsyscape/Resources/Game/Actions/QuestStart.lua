@@ -16,7 +16,11 @@ QuestStart.SCOPES = { ['quest'] = true }
 QuestStart.FLAGS = { ['x-ignore-quest'] = true }
 
 function QuestStart:perform(state, peep)
-	return self:transfer(state, peep)
+	if self:canPerform(state, peep) and self:canTransfer(state, peep) then
+		return self:transfer(state, peep)
+	end
+
+	return false
 end
 
 function QuestStart:didStart(state, peep)

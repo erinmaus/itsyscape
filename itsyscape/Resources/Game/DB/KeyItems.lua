@@ -39,3 +39,19 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "Message_AntilogikaPortalSealed"
 }
+
+ItsyScape.Resource.KeyItem "Message_QuestRequirementsNotMet" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Quest requirements not met",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_QuestRequirementsNotMet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "You do not meet the requirements to start this quest.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_QuestRequirementsNotMet"
+}

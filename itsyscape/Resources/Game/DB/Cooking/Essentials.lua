@@ -457,6 +457,28 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(2)
 			}
+		},
+
+		ItsyScape.Action.Churn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Milk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(2)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Butter",
+				Count = 1
+			}
 		}
 	}
 
@@ -472,6 +494,12 @@ do
 		Resource = Item
 	}
 
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Churn",
+		Value = "Butter",
+		Resource = Item
+	}
+
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "Butter"
@@ -480,6 +508,114 @@ do
 	ItsyScape.Meta.Ingredient {
 		Item = Item,
 		Ingredient = ItsyScape.Resource.Ingredient "OilOrFat"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(2),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(2)
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "Milk" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Milk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(2)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Milk",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Yum, fresh whole milk!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Milk"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(2),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(2)
+	}
+end
+
+do
+	local Item = ItsyScape.Resource.Item "Egg" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Egg",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(2)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Egg",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An egg from a chicken. Quack!",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Egg"
 	}
 
 	ItsyScape.Meta.Item {
@@ -516,6 +652,28 @@ do
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(6)
 			}
+		},
+
+		ItsyScape.Action.Churn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Milk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "ExtraCreamyButter",
+				Count = 1
+			}
 		}
 	}
 
@@ -528,6 +686,12 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Good for baking!",
 		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Churn",
+		Value = "Butter",
 		Resource = Item
 	}
 

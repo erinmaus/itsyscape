@@ -27,8 +27,8 @@ local Widget = require "ItsyScape.UI.Widget"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local SkillGuide = Class(Interface)
-SkillGuide.WIDTH = 480
-SkillGuide.HEIGHT = 320
+SkillGuide.WIDTH = 640
+SkillGuide.HEIGHT = 480
 SkillGuide.BUTTON_SIZE = 48
 SkillGuide.BUTTON_PADDING = 4
 SkillGuide.PADDING = 4
@@ -241,6 +241,8 @@ function SkillGuide:update(...)
 					else
 						button:setText(Utility.getName(item, gameDB))
 					end
+
+					button:setText(state.actions[i].verb .. " " .. button:getText())
 
 					button:setStyle(
 						ButtonStyle(

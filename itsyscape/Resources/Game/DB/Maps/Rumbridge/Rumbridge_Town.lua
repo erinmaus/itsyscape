@@ -85,6 +85,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "Lyra"
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "follow",
+	Tree = "Resources/Game/Peeps/Lyra/FollowLogic.lua",
+	Resource = ItsyScape.Resource.Peep "Lyra"
+}
+
 ItsyScape.Resource.Peep "Oliver" {
 	-- Nothing.
 }
@@ -103,5 +109,11 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "What kind of dog is that?",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Oliver"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "follow",
+	Tree = "Resources/Game/Peeps/Oliver/FollowLogic.lua",
 	Resource = ItsyScape.Resource.Peep "Oliver"
 }

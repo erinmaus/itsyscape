@@ -18,11 +18,11 @@ function ItemIngredientsUserdata:new(...)
 	self.ingredients = {}
 end
 
-function ItemIngredientsUserdata:addIngredient(ingredient, count)
+function ItemIngredientsUserdata:addIngredient(resource, ingredient, count)
 	local hasIngredient = false
 
 	for i = 1, #self.ingredients do
-		if self.ingredients[i].name == ingredient then
+		if self.ingredients[i].resource == resource then
 			hasIngredient = true
 			self.ingredients[i].value = self.ingredients[i].value + math.max(count, 0)
 			break
@@ -30,7 +30,7 @@ function ItemIngredientsUserdata:addIngredient(ingredient, count)
 	end
 
 	if not hasIngredient then
-		table.insert(self.ingredients, { name = ingredient, value = count })
+		table.insert(self.ingredients, { name = ingredient, value = count, resource = resource })
 	end
 
 	table.sort(self.ingredients, function(a, b)
@@ -44,9 +44,9 @@ function ItemIngredientsUserdata:addIngredient(ingredient, count)
 	end)
 end
 
-function ItemIngredientsUserdata:hasIngredient(ingredient)
+function ItemIngredientsUserdata:hasIngredient(resource)
 	for i = 1, #self.ingredients do
-		if self.ingredients[i] == ingredient then
+		if self.ingredients[i].resource == resource then
 			return true
 		end
 	end
@@ -82,7 +82,7 @@ function ItemIngredientsUserdata:combine(otherUserdata)
 	end
 
 	for _, ingredient in otherUserdata:iterateIngredients() do
-		self:addIngredient(ingredient.name, ingredient.value)
+		self:addIngredient(ingredient.resource, ingredient.name, ingredient.value)
 	end
 
 	return true

@@ -72,6 +72,8 @@ function LocalGameManager:new(rpcService, game)
 	game:tick()
 
 	game.onPlayerSpawned:register(self.onPlayerSpawned, self)
+	game:getStage().onActorMoved:register(self.onActorMoved, self)
+	game:getStage().onPropMoved:register(self.onPropMoved, self)
 
 	self.rpcService:connect(self)
 end
@@ -146,6 +148,82 @@ function LocalGameManager:onPlayerMove(player, previousLayerName, currentLayerNa
 		Log.info(
 			"Player '%s' (%d) is not in new instance; cannot load.",
 			(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
+	end
+end
+
+function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayerName)
+	local stage = self.game:getStage()
+
+	local currentInstance
+	do
+		local currentID, currentFilename = stage:splitLayerNameIntoInstanceIDAndFilename(currentLayerName)
+		currentInstance = stage:getInstanceByFilenameAndID(currentFilename, currentID)
+	end
+
+	if currentInstance then
+		for _, player in currentInstance:iteratePlayers() do
+			if currentInstance:hasActor(actor, player) then
+				self:pushCreate(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				self:assignTargetToLastPush(player)
+
+				self:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onActorSpawned",
+					self:getArgs(actor:getPeepID(), actor))
+				self:assignTargetToLastPush(player)
+
+				currentInstance:loadActor(self, player, actor)
+			end
+		end
+
+		Log.info(
+			"Actor '%s' (%d) is in new instance; loaded.",
+			(actor:getName()) or "<poofed actor>", actor:getID())
+	else
+		Log.info(
+			"Actor '%s' (%d) is not in new instance; cannot load.",
+			(actor:getName()) or "<poofed actor>", actor:getID())
+	end
+end
+
+function LocalGameManager:onPropMoved(_, prop, previousLayerName, currentLayerName)
+	local stage = self.game:getStage()
+
+	local currentInstance
+	do
+		local currentID, currentFilename = stage:splitLayerNameIntoInstanceIDAndFilename(currentLayerName)
+		currentInstance = stage:getInstanceByFilenameAndID(currentFilename, currentID)
+	end
+
+	if currentInstance then
+		for _, player in currentInstance:iteratePlayers() do
+			if currentInstance:hasProp(prop, player) then
+				self:pushCreate(
+					"ItsyScape.Game.Model.Prop",
+					prop:getID())
+				self:assignTargetToLastPush(player)
+
+				self:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onPropPlaced",
+					self:getArgs(self:getGame().stage:lookupPropAlias(prop:getPeepID()), prop))
+				self:assignTargetToLastPush(player)
+
+				currentInstance:loadProp(self, player, prop)
+			end
+		end
+
+		Log.info(
+			"Prop '%s' (%d) is in new instance; loaded.",
+			(prop:getName()) or "<poofed prop>", prop:getID())
+	else
+		Log.info(
+			"Prop '%s' (%d) is not in new instance; cannot load.",
+			(prop:getName()) or "<poofed prop>", prop:getID())
 	end
 end
 

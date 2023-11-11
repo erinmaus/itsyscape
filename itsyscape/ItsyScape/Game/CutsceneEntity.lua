@@ -46,7 +46,7 @@ function CutsceneEntity:fireProjectile(target, projectile)
 	end
 end
 
-function CutsceneEntity:playAttackAnimation(target)
+function CutsceneEntity:playAttackAnimation(target, wait)
 	return function()
 		local animation, projectile
 		do
@@ -83,6 +83,15 @@ function CutsceneEntity:playAttackAnimation(target)
 			if projectile and target then
 				local stage = self.peep:getDirector():getGameInstance():getStage()
 				stage:fireProjectile(projectile, self.peep, target:getPeep())
+			end
+
+			if wait then
+				local duration = (weapon and weapon:getCooldown(self.peep)) or 2.4
+
+				while duration > 0 do
+					duration = duration - self.game:getDelta()
+					coroutine.yield()
+				end
 			end
 		end
 	end
@@ -124,14 +133,16 @@ function CutsceneEntity:lookAt(target, duration)
 	end
 end
 
-function CutsceneEntity:walkTo(anchor)
+function CutsceneEntity:walkTo(anchor, distance)
+	distance = distance or 0
+
 	return function()
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorX, _, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)
 		local map = Utility.Peep.getMap(self.peep)
 		local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 
-		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep))
+		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
 		if success then
 			local peepI, peepJ
 			repeat
@@ -139,6 +150,26 @@ function CutsceneEntity:walkTo(anchor)
 				coroutine.yield()
 			until peepI == anchorI and peepJ == anchorJ
 		end
+	end
+end
+
+function CutsceneEntity:follow(entity, distance)
+	distance = distance or 0
+
+	return function()
+		local isRunning
+		local oldI, oldJ, oldK
+		repeat
+			local i, j, k  = Utility.Peep.getTile(entity:getPeep())
+			if oldI ~= i or oldJ ~= j or oldK ~= k then
+				isRunning = Utility.Peep.walk(self.peep, i, j, k, distance, { isCutscene = true })
+				oldI, oldJ, oldK = i, j, k
+			else
+				isRunning = self.peep:getCommandQueue():getIsPending()
+			end
+
+			coroutine.yield()
+		until not isRunning
 	end
 end
 
@@ -159,8 +190,12 @@ end
 
 function CutsceneEntity:face(direction)
 	return function()
-		local movement = self.peep:getBehavior(MovementBehavior)
-		movement.facing = direction
+		if Class.isCompatibleType(direction, CutsceneEntity) then
+			Utility.Peep.face(self.peep, direction:getPeep())
+		else
+			local movement = self.peep:getBehavior(MovementBehavior)
+			movement.facing = direction
+		end
 	end
 end
 
@@ -240,11 +275,11 @@ end
 
 function CutsceneEntity:playAnimation(animation, slot, priority, force, time, resourceType)
 	return function()
-		slot = slot or 'x-cutscene'
-		priority = priority or 10000
-		resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
-		time = time or 0
-		animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+		local slot = slot or 'x-cutscene'
+		local priority = priority or 10000
+		local resourceType = resourceType or "ItsyScape.Graphics.AnimationResource"
+		local time = time or 0
+		local animation = string.format("Resources/Game/Animations/%s/Script.lua", animation)
 
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
@@ -264,6 +299,42 @@ function CutsceneEntity:yell(message, duration)
 	duration = duration or #message / 8
 	return function()
 		Utility.Peep.yell(self.peep, message, nil, duration)
+	end
+end
+
+function CutsceneEntity:damage(min, max, damageType)
+	if max == nil and min == 0 then
+		min = 0
+		max = 0
+	else
+		min, max = math.min(min or 1, max or 1), math.max(min or 1, max or 1)
+	end
+
+	return function()
+		local damage = love.math.random(min, max)
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			if not damageType then
+				if damage == 0 then
+					damageType = "block"
+				else
+					damageType = "none"
+				end
+			end
+
+			actor.actor:flash("Damage", 1, damageType, damage)
+		end		
+	end
+end
+
+function CutsceneEntity:flash(...)
+	local args = { n = select('#', ...), ... }
+
+	return function()
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor.actor:flash(unpack(args, 1, args.n))
+		end
 	end
 end
 
@@ -314,6 +385,22 @@ function CutsceneEntity:poke(...)
 
 	return function()
 		self.peep:poke(unpack(args, 1, args.n))
+	end
+end
+
+function CutsceneEntity:dialog(name)
+	return function()
+		local gameDB = self.peep:getDirector():getGameDB()
+		local action = gameDB:getRecord("NamedMapAction", {
+			Name = name,
+			Map = Utility.Peep.getMapResource(self.peep)
+		})
+
+		Utility.UI.openInterface(self.peep, "DialogBox", true, action:get("Action"), self.peep)
+
+		while Utility.UI.isOpen(self.peep, "DialogBox") do
+			coroutine.yield()
+		end
 	end
 end
 

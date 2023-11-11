@@ -315,6 +315,11 @@ function CookingWindowController:addIngredient(e)
 		return
 	end
 
+	if inventoryItem.count == inventoryItem.item:getCount() then
+		Utility.UI.notifyFailure(self:getPeep(), "Message_Cooking_AlreadyAddedIngredient")
+		return
+	end
+
 	local success, index = recipe:addIngredient(self:getPeep(), inventoryItem.item)
 
 	if not success then
@@ -402,6 +407,10 @@ function CookingWindowController:cook()
 	if action.instance:perform(self:getPeep():getState(), self:getPeep(), recipe) then
 		self:populateInventory()
 		self:populateRecipe({ index = self.currentRecipeIndex }, true)
+
+		local itemName = self.state.recipes[self.currentRecipeIndex].output.name:lower()
+		local isVowel = itemName:match("^[aeiou].*")
+		Utility.Peep.notify(self:getPeep(), string.format("You successfully cooked %s %s!", isVowel and "an" or "a", itemName))
 	end
 end
 

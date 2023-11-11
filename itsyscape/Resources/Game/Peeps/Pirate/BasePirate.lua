@@ -14,6 +14,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Peep = require "ItsyScape.Peep.Peep"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local BasePirate = Class(Player)
@@ -28,6 +29,9 @@ local SKIN = {
 
 function BasePirate:new(resource, name, ...)
 	Player.new(self, resource, name or 'Pirate', ...)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 16
 end
 
 function BasePirate:ready(director, game)

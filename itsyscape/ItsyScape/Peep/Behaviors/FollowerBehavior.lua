@@ -19,13 +19,15 @@ FollowerBehavior.NIL_ID = 0
 -- * scope: Scope of the follower. Defaults to 'General'. Scope is used to creeate storage
 --          for the peep, if necessary.
 -- * id: Index of the follower in the scope. An ID of 0 is invalid.
--- * pronouns: Pronouns of a Peep. Defaults to they/them/theirs/mazer.
+-- * playerID: The player ID this follower belongs to.
+-- * followAcrossMaps: Follow the player across maps.
 function FollowerBehavior:new()
 	Behavior.Type.new(self)
 
 	self.scope = "General"
-	self.id = FollowerBehavior.NIL_ID
+	self.followerID = FollowerBehavior.NIL_ID
 	self.playerID = FollowerBehavior.NIL_ID
+	self.followAcrossMaps = false
 end
 
 return FollowerBehavior

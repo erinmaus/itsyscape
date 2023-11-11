@@ -318,7 +318,7 @@ function CombatCortex:update(delta)
 								local executeWalk = false
 
 								local isPlayer = peep:hasBehavior(PlayerBehavior)
-								if isPlayer then
+								if isPlayer and not self.walking[peep] then
 									local currentPlayerTime = self.pendingPlayers[peep]
 									if not currentPlayerTime then
 										self.pendingPlayers[peep] = { idleTime = currentGlobalTime, movingTime = 0 }

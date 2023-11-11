@@ -76,8 +76,6 @@ function Dialog:next(...)
 		return SelectPacket(self, arg)
 	elseif t == 'speaker' then
 		return SpeakerPacket(self, arg)
-	elseif t ~= nil then
-		Log.error("Expected input, message, select, or speaker packet, got %s.", tostring(t))
 	end
 
 	return false

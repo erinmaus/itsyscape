@@ -38,7 +38,7 @@ function SkillGuideController:new(peep, director, skill)
 					if a then
 						local action = a.instance:getAction()
 						if not gameDB:getRecord("HiddenFromSkillGuide", { Action = action }) then
-							table.insert(self.state.actions, { id = a.id })
+							table.insert(self.state.actions, { id = a.id, verb = a.instance:getVerb() or a.instance:getName() })
 							self.actionsByID[a.id] = a
 						end
 					end

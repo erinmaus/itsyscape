@@ -383,7 +383,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		Peep = ItsyScape.Resource.Peep "Cow_Milkable",
 		MapObject = M["Cow1"]
 	}
 end
@@ -400,7 +400,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cow_Base",
+		Peep = ItsyScape.Resource.Peep "Cow_Milkable",
 		MapObject = M["Cow2"]
 	}
 end
@@ -432,6 +432,40 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Cow_Base",
 		MapObject = M["Bessie"]
+	}
+
+	M["Bessie"] {
+		ItsyScape.Action.Milk() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForLevel(5)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bucket",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "IsabelleIsland_BessiesMilk",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(6)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Foraging",
+				Count = ItsyScape.Utility.xpForResource(6)
+			}
+		}
 	}
 end
 

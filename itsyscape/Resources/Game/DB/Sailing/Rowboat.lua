@@ -13,9 +13,9 @@ ItsyScape.Resource.Prop "Rowboat_Default" {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 4.5,
+	SizeX = 3.5,
 	SizeY = 1.5,
-	SizeZ = 6.5,
+	SizeZ = 3.5,
 	MapObject = ItsyScape.Resource.Prop "Rowboat_Default"
 }
 

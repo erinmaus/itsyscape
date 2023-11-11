@@ -195,10 +195,12 @@ function BankController:initFoodTab(newSection, oldSection)
 	local food1 = self:pullItemsWithAction("Eat")
 	local food2 = self:pullItemsWithAction("Cook")
 	local food3 = self:pullItemsWithAction("CookIngredient")
+	local food4 = self:pullItemsWithAction("CookRecipe")
 	local tools = self:pullEquipment("fishing")
-	print(">>> tools", #tools, tools[1])
 
-	local items = self:initItems(newSection, oldSection, food1, food2, food3, tools)
+	local items = self:initItems(newSection, oldSection, food1, food2, food3, food4, tools)
+
+	items.icon = "CavePotato"
 	table.insert(newSection, items)
 end
 
@@ -243,14 +245,15 @@ function BankController:pullItemsWithAction(actionName, skill)
 		for action in brochure:findActionsByDefinition(actionDefinition) do
 			for resource in brochure:findResourcesByAction(action) do
 				local resourceType = brochure:getResourceTypeFromResource(resource)
-				if resourceType.name:lower() == "item" or resourceType.name:lower() == "prop" then
+
+				if resourceType.name:lower() == "item" or resourceType.name:lower() == "prop" or resourceType.name:lower() == "recipe" then
 					local constraints = Utility.getActionConstraints(self:getGame(), action)
 
 					local name
 					do
 						if resourceType.name:lower() == "item" then
 							name = resource.name
-						elseif resourceType.name:lower() == "prop" then
+						else
 							for j = 1, #constraints.outputs do
 								if constraints.outputs[j].type:lower() == "item" then
 									name = constraints.outputs[j].resource

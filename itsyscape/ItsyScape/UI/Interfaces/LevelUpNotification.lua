@@ -60,7 +60,7 @@ function LevelUpNotification:new(id, index, ui)
 	local text = Label()
 	text:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 22,
+		fontSize = 18,
 		textShadow = true,
 		width = LevelUpNotification.WIDTH,
 		align = 'center'
@@ -69,7 +69,7 @@ function LevelUpNotification:new(id, index, ui)
 		0,
 		LevelUpNotification.ICON_SIZE + LevelUpNotification.PADDING * 2)
 	text:setText(string.format(
-		"Congratulations on level %d %s!\nClick here to see the skill guide.",
+		"Congrats on level %d %s!\nClick here to see the skill guide.",
 		state.level, state.skill))
 	self:addChild(text)
 

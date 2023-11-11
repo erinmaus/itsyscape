@@ -107,15 +107,14 @@ function Cutscene:overrideEntities(entities)
 	end
 end
 
-function Cutscene.parallel(t)
-	local transformedT = {}
-	for i = 1, #t do
-		transformedT[i] = coroutine.create(t[i])
-	end
-
-	local statusT = {}
-
+function Cutscene.Parallel(t)
 	return function()
+		local transformedT = {}
+		for i = 1, #t do
+			transformedT[i] = coroutine.create(t[i])
+		end
+
+		local statusT = {}
 		local isRunning
 		repeat
 			isRunning = false
@@ -137,7 +136,7 @@ function Cutscene.parallel(t)
 	end
 end
 
-function Cutscene.sequence(t)
+function Cutscene.Sequence(t)
 	return function()
 		for i = 1, #t do
 			t[i]()
@@ -145,7 +144,7 @@ function Cutscene.sequence(t)
 	end
 end
 
-function Cutscene.loop(count)
+function Cutscene.Loop(count)
 	return function(t)
 		return function()
 			for i = 1, count do
@@ -159,11 +158,50 @@ function Cutscene.loop(count)
 	end
 end
 
+function Cutscene.While(t)
+	local condition = coroutine.create(t[1])
+	local current = coroutine.create(t[2])
+	local isError = false
+	local index = 2
+
+	return function()
+		repeat
+			if coroutine.status(condition) ~= "dead" then
+				local s, e = coroutine.resume(condition)
+				if not s then
+					Log.warn("Error running while loop condition in cutscene: %s", e)
+					isError = true
+				end
+			end
+
+			coroutine.yield()
+
+			if coroutine.status(current) ~= "dead" then
+				local s, e = coroutine.resume(current)
+				if not s then
+					Log.warn("Error running while loop body in cutscene: %s", e)
+					isError = true
+				end
+			else
+				index = index + 1
+				if index > #t and coroutine.status(condition) ~= "dead" then
+					index = 2
+					current = coroutine.create(t[index])
+				end
+
+			end
+
+			coroutine.yield()
+		until (coroutine.status(condition) == "dead" and coroutine.status(current) == "dead" and index > #t) or isError
+	end
+end
+
 function Cutscene:getSandbox()
 	local gSandbox, sSandbox = MirrorSandbox()
-	sSandbox.Sequence = Cutscene.sequence
-	sSandbox.Parallel = Cutscene.parallel
-	sSandbox.Loop = Cutscene.loop
+	sSandbox.Sequence = Cutscene.Sequence
+	sSandbox.Parallel = Cutscene.Parallel
+	sSandbox.Loop = Cutscene.Loop
+	sSandbox.While = Cutscene.While
 	sSandbox.math = math
 	sSandbox.Vector = require "ItsyScape.Common.Math.Vector"
 	sSandbox.Quaternion = require "ItsyScape.Common.Math.Quaternion"

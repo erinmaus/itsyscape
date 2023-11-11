@@ -237,6 +237,108 @@ do
 	}
 end
 
+M["Dandy1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 5,
+		PositionZ = 13,
+		Name = "Dandy1",
+		Map = M._MAP,
+		Resource = M["Dandy1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Dandy",
+		MapObject = M["Dandy1"]
+	}
+end
+
+M["Dandy2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 5,
+		PositionZ = 15,
+		Name = "Dandy2",
+		Map = M._MAP,
+		Resource = M["Dandy2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Dandy",
+		MapObject = M["Dandy2"]
+	}
+end
+
+M["Dandy3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 5,
+		PositionY = 4,
+		PositionZ = 65,
+		Name = "Dandy3",
+		Map = M._MAP,
+		Resource = M["Dandy3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Dandy",
+		MapObject = M["Dandy3"]
+	}
+end
+
+M["DeadDandy1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4.5,
+		PositionZ = 53,
+		Name = "DeadDandy1",
+		Map = M._MAP,
+		Resource = M["DeadDandy1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DeadDandy",
+		MapObject = M["DeadDandy1"]
+	}
+end
+
+M["DeadDandy2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 6,
+		PositionZ = 15,
+		Name = "DeadDandy2",
+		Map = M._MAP,
+		Resource = M["DeadDandy2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DeadDandy",
+		MapObject = M["DeadDandy2"]
+	}
+end
+
+M["DeadDandy3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 5,
+		PositionZ = 43,
+		Name = "DeadDandy3",
+		Map = M._MAP,
+		Resource = M["DeadDandy3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DeadDandy",
+		MapObject = M["DeadDandy3"]
+	}
+end
+
 M["Anchor_IslandFromCavern"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -378,5 +480,30 @@ do
 
 	M["Ladder_SecretCorner"] {
 		TravelAction
+	}
+end
+
+M["BankChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83,
+		PositionY = 5,
+		PositionZ = 47,
+		RotationX = 0,
+		RotationY = 1,
+		RotationZ = 0,
+		RotationW = 0,
+		Name = "BankChest",
+		Map = M._MAP,
+		Resource = M["BankChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["BankChest"]
+	}
+
+	M["BankChest"] {
+		ItsyScape.Action.Bank()
 	}
 end

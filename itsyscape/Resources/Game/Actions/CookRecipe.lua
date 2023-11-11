@@ -53,7 +53,7 @@ function CookRecipe:perform(state, peep, recipe)
 				local ingredientName = Utility.Item.getInstanceName(item)
 
 				local u = userdata["ItemIngredientsUserdata"] or itemManager:newUserdata("ItemIngredientsUserdata")
-				u:addIngredient(ingredientName, 1)
+				u:addIngredient(itemResource.name, ingredientName, 1)
 
 				userdata["ItemIngredientsUserdata"] = u
 			end
