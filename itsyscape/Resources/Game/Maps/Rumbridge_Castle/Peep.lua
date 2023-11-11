@@ -264,7 +264,7 @@ function Castle:trySpawnChef(player)
 	local isLyraInJail = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") or
 	                     playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
     local playerLitKursedCandle = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
-    local isInJail = not isLy and playerLitKursedCandle and isQuestComplete
+    local isInJail = not isLyraInJail and playerLitKursedCandle and isQuestComplete
 
     if isInJail then
     	Log.info("Chef Allon is in jail for player '%s'; not spawning in kitchen.", playerPeep:getName())
