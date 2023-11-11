@@ -554,9 +554,17 @@ end
 
 -- These are taken from the GameDB init script.
 -- See Resources/Game/DB/Init.lua
-local RESOURCE_CURVE = Curve(nil, nil, nil, 10)
+local RESOURCE_CURVE = Curve()
 function Utility.xpForResource(a)
-	return RESOURCE_CURVE(a + 1)
+	local point1 = RESOURCE_CURVE(a)
+	local point2 = RESOURCE_CURVE(a + 1)
+	local xp = point2 - point1
+
+	local A = 1 / 1000
+	local B = 5 / 100
+	local C = 4
+
+	return math.floor(xp / (A * a ^ 2 + B * a + C))
 end
 
 function Utility.styleBonusForItem(tier, weight)
@@ -660,14 +668,64 @@ end
 
 function Utility.Combat.getCombatXP(peep)
 	local stats = peep:getBehavior(StatsBehavior)
-	if stats and stats.stats then
-		stats = stats.stats
-		local combatLevel = math.min(Utility.Combat.getCombatLevel(peep), 512)
-		local cFactor = math.max(math.floor((stats:getSkill("Constitution"):getBaseLevel() / 10 + 0.5)), 1)
-		return math.floor(math.sqrt(combatLevel ^ 3 * cFactor) * 4 + 0.5)
+	do
+		stats = stats and stats.stats
+		if not stats then
+			return 0
+		end
 	end
 
-	return 0
+	local hitpoints
+	do
+		local status = peep:getBehavior(CombatStatusBehavior)
+		hitpoints = status and status.maximumHitpoints
+		if not hitpoints then
+			return 0
+		end
+
+		hitpoints = math.min(hitpoints, 100000)
+	end
+
+	local tier
+	do
+		local melee = (stats:getSkill("Attack"):getWorkingLevel() + stats:getSkill("Strength"):getWorkingLevel()) / 2
+		local magic = (stats:getSkill("Magic"):getWorkingLevel() + stats:getSkill("Wisdom"):getWorkingLevel()) / 2
+		local ranged = (stats:getSkill("Archery"):getWorkingLevel() + stats:getSkill("Dexterity"):getWorkingLevel()) / 2
+
+		tier = math.max(melee, magic, ranged)
+		tier = math.min(tier, 100)
+	end
+
+	local xpForTier
+	do
+		local point1 = RESOURCE_CURVE(tier)
+		local point2 = RESOURCE_CURVE(tier + 1)
+		xpForTier = point2 - point1
+	end
+
+	local xpFromTier
+	do
+		local A = 4 / 1000
+		local B = 5 / 100
+		local C = 8
+
+		local tierDivisor = math.floor(A * tier ^ 2 + B * tier + C)
+		tierDivisor = math.max(tierDivisor, C)
+
+		xpFromTier = math.floor(xpForTier / tierDivisor)
+	end
+
+	local xpFromHitpoints
+	do
+		local A = 0.000025
+		local B = 0.5
+		local C = 2
+
+		xpFromHitpoints = math.floor(A * hitpoints ^ 2 + B * hitpoints + C)
+	end
+
+	local totalXP = xpFromTier + xpFromHitpoints
+	return totalXP, xpFromTier, xpFromHitpoints
 end
 
 function Utility.Combat.giveCombatXP(peep, xp)
@@ -1198,20 +1256,25 @@ function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
 end
 
 function Utility.Item.getItemInPeepInventory(peep, itemID)
+	return Utility.Item.getItemsInPeepInventory(peep, itemID)[1]
+end
+
+function Utility.Item.getItemsInPeepInventory(peep, itemID)
 	local inventory = peep:getBehavior(InventoryBehavior)
 	inventory = inventory and inventory.inventory
 
 	if not inventory then
-		return nil
+		return {}
 	end
 
+	local result = {}
 	for item in inventory:getBroker():iterateItems(inventory) do
 		if item:getID() == itemID then
-			return item
+			table.insert(result, item)
 		end
 	end
 
-	return nil
+	return result
 end
 
 Utility.Map = {}
@@ -1360,7 +1423,7 @@ function Utility.Map.getAnchorDirection(game, map, anchor)
 		return mapObject:get("Direction") or 0
 	end
 
-	return nil, nil, nil
+	return 0
 end
 
 function Utility.Map.spawnMap(peep, map, position, args)
@@ -1552,7 +1615,7 @@ function Utility.Peep.dismiss(peep)
 		local director = peep:getDirector()
 		local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
 		local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
-		local followerID = follower.id
+		local followerID = follower.followerID
 
 		peep:listen('poof', function()
 			for i = 1, scopedStorage:length() do
@@ -1914,13 +1977,13 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 			local length = scopedStorage:length()
 			for i = 1, length do
 				local peepStorage = scopedStorage:getSection(i)
-				if peepStorage:get("id") == follower.id then
+				if peepStorage:get("id") == follower.followerID then
 					return peepStorage
 				end
 			end
 
 			local storage = scopedStorage:getSection(scopedStorage:length() + 1)
-			storage:set("id", follower.id)
+			storage:set("id", follower.followerID)
 
 			return storage
 		end
@@ -2301,10 +2364,6 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
-	if peep:hasBehavior(ActorReferenceBehavior) then
-		return Utility.Peep.getTile(peep)
-	end
-
 	local rotation = Utility.Peep.getRotation(peep)
 	local size = Utility.Peep.getSize(peep)
 
@@ -2336,6 +2395,14 @@ function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
 				offsetJ = record:get("OffsetJ")
 			end
 		end
+	end
+
+	if peep:hasBehavior(ActorReferenceBehavior) then
+		local i, j, k = Utility.Peep.getTile(peep)
+		i = i + (offsetI or 0)
+		j = j + (offsetJ or 0)
+
+		return i, j, k
 	end
 
 	if not (offsetI and offsetJ) then
@@ -2414,13 +2481,13 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 
 	do
 		local status = peep:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
-		if status.dead then
+		if status.dead and not t.isCutscene then
 			Log.info("Peep %s is dead; can't walk!", peep:getName())
 			return false, "dead"
 		end
 
 		local isDisabled = peep:hasBehavior(require "ItsyScape.Peep.Behaviors.DisabledBehavior")
-		if isDisabled then
+		if isDisabled and not t.isCutscene then
 			Log.info("Peep %s is disabled; can't walk!", peep:getName())
 			return false, "disabled"
 		end
@@ -2479,14 +2546,10 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 end
 
 function Utility.Peep.face(peep, target)
-	local peepPosition = peep:getBehavior(PositionBehavior)
-	local targetPosition = target:getBehavior(PositionBehavior)
+	local peepPosition = Utility.Peep.getPosition(peep)
+	local targetPosition = Utility.Peep.getPosition(target)
 
-	if not peepPosition or not targetPosition then
-		return
-	end
-
-	local dx = targetPosition.position.x - peepPosition.position.x
+	local dx = targetPosition.x - peepPosition.x
 
 	local movement = peep:getBehavior(MovementBehavior)
 	if movement then
@@ -2582,6 +2645,8 @@ function Utility.Peep.attack(peep, other, distance)
 					mashina.currentState = 'begin-attack'
 				elseif mashina.states['attack'] then
 					mashina.currentState = 'attack'
+				elseif mashina.currentState == 'idle' then
+					mashina.currentState = false
 				end
 			end
 		end
@@ -2843,7 +2908,7 @@ function Utility.Peep.Stats:onReady(director)
 		end
 	end
 
-	Log.info("%s combat level: %d (%d XP)", self:getName(), Utility.Combat.getCombatLevel(self), Utility.Combat.getCombatXP(self))
+	Log.info("%s combat level: %d (%d [from tier = %d, from hitpoints = %d] XP)", self:getName(), Utility.Combat.getCombatLevel(self), Utility.Combat.getCombatXP(self))
 
 	self:getState():addProvider("Skill", PlayerStatsStateProvider(self))
 end
@@ -2882,7 +2947,7 @@ function Utility.Peep.Mashina:onReady(director)
 					m.states[state] = love.filesystem.load(tree)()
 
 					local default = record:get("IsDefault")
-					if default and default ~= 0 then
+					if default and default ~= 0 and not m.currentState then
 						m.currentState = state
 					end
 				end
@@ -2907,6 +2972,13 @@ function Utility.Peep.makeMashina(peep)
 	peep:addBehavior(MashinaBehavior)
 
 	peep:listen('ready', Utility.Peep.Mashina.onReady)
+end
+
+function Utility.Peep.setMashinaState(peep, state)
+	local mashina = peep:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = state or false
+	end
 end
 
 Utility.Peep.Inventory = {}
@@ -3630,6 +3702,44 @@ function Utility.Peep.Dummy:onFinalize()
 	end
 end
 
+Utility.Peep.Creep = {}
+function Utility.Peep.Creep:applySkins()
+	local director = self:getDirector()
+	local gameDB = director:getGameDB()
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+
+		local function applySkins(resource)
+			local skins = gameDB:getRecords("PeepSkin", {
+				Resource = resource
+			})
+
+			for i = 1, #skins do
+				local skin = skins[i]
+				if skin:get("Type") and skin:get("Filename") then
+					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+				end
+			end
+		end
+
+		local resource = Utility.Peep.getResource(self)
+		if resource then
+			local resourceType = gameDB:getBrochure():getResourceTypeFromResource(resource)
+			if resourceType.name:lower() == "peep" then
+				applySkins(resource)
+			end
+		end
+
+		local mapObject = Utility.Peep.getMapObject(self)
+		if mapObject then
+			applySkins(mapObject)
+		end
+	end
+end
+
 Utility.Peep.Human = {}
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
@@ -3766,6 +3876,14 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
 	peep:addResource("animation-action-cook", actionCook)
+	local actionMilk = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-milk", actionMilk)
+	local actionChurn = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+	peep:addResource("animation-action-churn", actionChurn)
 	local actionCraft = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
@@ -3946,72 +4064,26 @@ end
 Utility.Quest = {}
 
 function Utility.Quest.isNextStep(quest, step, peep)
-	if type(quest) ~= 'table' then
-		local gameDB = peep:getDirector():getGameDB()
+	local nextStep = { Utility.Quest.getNextStep(quest, peep) }
+	nextStep = nextStep[#nextStep]
 
-		if type(quest) == 'string' then
-			local resource = gameDB:getResource(quest, "Quest")
-			if not resource then
-				Log.error("Could not find quest: '%s'", quest)
-				return false
-			end
-
-			quest = resource
-		end
-
-		quest = Utility.Quest.build(quest, gameDB)
+	local isBranch = #nextStep > 1
+	for i = 1, #nextStep do
+		isBranch = isBranch and type(nextStep[i]) == 'table'
 	end
 
-	local index = #quest
-	while index > 0 do
-		local currentSteps = quest[index]
-
-		-- We check to see if this key item is in this current step.
-		local currentStepsMatch = false
-		for i = 1, #currentSteps do
-			if currentSteps[i].name == step then
-				currentStepsMatch = true
+	if isBranch then
+		for _, branch in ipairs(nextStep) do
+			if branch[1][1].name == step then
+				return true
 			end
 		end
-
-		-- The logic is:
-		-- We have the target step ('step').
-		-- We have the previous steps ('previousSteps').
-		-- If the peep DOES NOT have the CURRENT step, but DOES have the
-		-- PREVIOUS step, this means this step is the NEXT step.
-		--
-		-- For example, imagine the quest line:
-		-- [1] -> Talk to Bob about chicken
-		-- [2] -> Find chicken
-		-- [3] -> Return chicken to Bob
-		--
-		-- And the state is:
-		-- [1] -> TRUE
-		-- [2] -> FALSE
-		-- [3] -> FALSE
-		--
-		-- And we do isNextStep(1), then it should return FALSE since STEP 1 was
-		-- completed.
-		--
-		-- If we do isNextStep(2) then it should return TRUE since STEP 1 was
-		-- completed but STEP 2 was not.
-		--
-		-- If we do isNextStep(3) then it should return FALSE since STEP 2 and
-		-- STEP 3 are both not completed.
-		if currentStepsMatch then
-			local previousSteps = quest[index - 1]
-			if previousSteps ~= nil then
-				for j = 1, #previousSteps do
-					if not peep:getState():has("KeyItem", previousSteps[j].name) then
-						return false
-					end
-				end
+	else
+		for _, keyItem in ipairs(nextStep) do
+			if keyItem.name == step then
+				return true
 			end
-
-			return not peep:getState():has("KeyItem", step)
 		end
-
-		index = index - 1
 	end
 
 	return false
@@ -4058,7 +4130,13 @@ function Utility.Quest._getNextStep(steps, peep, isBranch)
 end
 
 function Utility.Quest.getNextStep(quest, peep)
-	local steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
+	local steps
+	if type(quest) == 'table' then
+		steps = quest
+	else
+		steps = Utility.Quest.build(quest, peep:getDirector():getGameDB())
+	end
+
 	return Utility.Quest._getNextStep(steps, peep)
 end
 
@@ -4319,6 +4397,31 @@ function Utility.Quest.getStartAction(quest, game)
 	return action
 end
 
+function Utility.Quest.getCompleteAction(quest, game)
+	local gameDB = game:getGameDB()
+
+	if type(quest) == 'string' then
+		quest = gameDB:getResource(quest, "Quest")
+	end
+
+	local action
+	do
+		local actions = Utility.getActions(game, quest, 'quest')
+		for i = 1, #actions do
+			if actions[i].instance:is('QuestComplete') then
+				action = actions[i].instance
+			end
+		end
+	end
+
+	if not action then
+		Log.warn("No quest complete found for %s.", quest.name)
+		return nil
+	end
+
+	return action
+end
+
 function Utility.Quest.promptToStart(quest, peep, questGiver)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
@@ -4336,6 +4439,16 @@ function Utility.Quest.promptToStart(quest, peep, questGiver)
 		quest,
 		action,
 		questGiver)
+end
+
+function Utility.Quest.complete(quest, peep)
+	local action = Utility.Quest.getCompleteAction(quest, peep:getDirector():getGameInstance())
+	if action then
+		local result = action:perform(peep:getState(), peep)
+		if not result then
+			Log.warn("Could not complete quest '%s' for peep '%s'", quest.name or quest, peep)
+		end
+	end
 end
 
 function Utility.Quest.didComplete(quest, peep)

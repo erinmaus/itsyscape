@@ -8,7 +8,7 @@ Animation "Despawn FX" {
 
 		Tint {
 			1, 1, 1, 0,
-			duration = 10,
+			duration = INFINITY,
 			tween = 'constantOne'
 		}
 	}

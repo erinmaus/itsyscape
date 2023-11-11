@@ -177,6 +177,11 @@ ItsyScape.Resource.Skill "Firemaking"
 		Skill = ItsyScape.Resource.Skill "Firemaking"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Craft",
+		Skill = ItsyScape.Resource.Skill "Firemaking"
+	}
+
 ItsyScape.Resource.Skill "Engineering"
 	ActionType "Fletch"
 	ActionType "Mix"
@@ -198,9 +203,15 @@ ItsyScape.Resource.Skill "Engineering"
 
 ItsyScape.Resource.Skill "Cooking"
 	ActionType "Cook"
+	ActionType "Churn"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Cook",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Churn",
 		Skill = ItsyScape.Resource.Skill "Cooking"
 	}
 
@@ -209,9 +220,51 @@ ItsyScape.Resource.Skill "Cooking"
 		Skill = ItsyScape.Resource.Skill "Cooking"
 	}
 
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Cook",
+		XProgressive = "Cooking",
+		Language = "en-US",
+		Type = "CookRecipe"
+	}
+
 	ItsyScape.Meta.SkillAction {
 		ActionType = "CookIngredient",
 		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Cook",
+		XProgressive = "Cooking",
+		Language = "en-US",
+		Type = "CookIngredient"
+	}
+
+	ActionType "ReadRecipe"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ReadRecipe",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Read-recipe",
+		XProgressive = "Reading-recipe",
+		Language = "en-US",
+		Type = "ReadRecipe"
+	}
+
+	ActionType "Milk"
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Milk",
+		Skill = ItsyScape.Resource.Skill "Cooking"
+	}
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Milk",
+		XProgressive = "Milking",
+		Language = "en-US",
+		Type = "Milk"
 	}
 
 ItsyScape.Resource.Skill "Fishing"
@@ -267,6 +320,11 @@ ItsyScape.Resource.Skill "Foraging"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Gather",
+		Skill = ItsyScape.Resource.Skill "Foraging"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Milk",
 		Skill = ItsyScape.Resource.Skill "Foraging"
 	}
 

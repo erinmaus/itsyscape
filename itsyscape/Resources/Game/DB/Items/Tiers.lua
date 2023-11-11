@@ -257,3 +257,14 @@ do
 		Tier = 0
 	}
 end
+
+-- Cooking
+do
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Churn",
+		Value = "Butter",
+		Language = "en-US",
+		Name = "Butter",
+		Tier = 0
+	}
+end

@@ -22,8 +22,8 @@ local ItsyScapeDirector = Class(Director)
 function ItsyScapeDirector:new(game, gameDB)
 	Director.new(self, gameDB)
 
-	self:addCortex(MovementCortex)
 	self:addCortex(MoveToTileCortex)
+	self:addCortex(MovementCortex)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.MirrorCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatXPCortex")
@@ -35,6 +35,7 @@ function ItsyScapeDirector:new(game, gameDB)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorPositionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.MashinaCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.FollowerCortex")
 
 	self.game = game
 	self.gameDB = gameDB

@@ -25,7 +25,7 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 
 local CookingWindow = Class(Interface)
 
-CookingWindow.WIDTH  = 800
+CookingWindow.WIDTH  = 960
 CookingWindow.HEIGHT = 640
 
 CookingWindow.BUTTON_SIZE    = 48
@@ -327,12 +327,7 @@ function CookingWindow:removeIngredient(index)
 end
 
 function CookingWindow:populateInventory(inventory)
-	local inventorySize = 0
-	for i = 1, #inventory do
-		if inventory[i].count > 0 then
-			inventorySize = inventorySize + 1
-		end
-	end
+	local inventorySize = #inventory
 
 	local grid = self.inventoryList:getInnerPanel()
 
@@ -364,29 +359,29 @@ function CookingWindow:populateInventory(inventory)
 	local currentButtonIndex = 1
 	for i = 1, #inventory do
 		local item = inventory[i]
-		if item.count > 0 then
-			local button = grid:getChildAt(currentButtonIndex)
-			button:setData("inventoryIndex", i)
+		local button = grid:getChildAt(currentButtonIndex)
+		button:setData("inventoryIndex", i)
 
-			local usable
-			if item.usable then
-				usable = ToolTip.Text("You can cook with this ingredient.")
-			else
-				usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
-			end
-
-			button:setToolTip(
-				ToolTip.Header("Add " .. item.name),
-				ToolTip.Text(item.description),
-				usable)
-
-			local itemIcon = button:getData("icon")
-			itemIcon:setItemID(item.resource)
-			itemIcon:setItemCount(item.count)
-			itemIcon:setIsDisabled(not item.usable)
-
-			currentButtonIndex = currentButtonIndex + 1
+		local usable
+		if item.usable and item.count > 0 then
+			usable = ToolTip.Text("You can cook with this ingredient.")
+		elseif not item.usable then
+			usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
+		elseif item.count == 0 then
+			usable = ToolTip.Text("You've already added every ingredient of this type that you have.")
 		end
+
+		button:setToolTip(
+			ToolTip.Header("Add " .. item.name),
+			ToolTip.Text(item.description),
+			usable)
+
+		local itemIcon = button:getData("icon")
+		itemIcon:setItemID(item.resource)
+		itemIcon:setItemCount(item.count)
+		itemIcon:setIsDisabled(not item.usable or item.count == 0)
+
+		currentButtonIndex = currentButtonIndex + 1
 	end
 
 	if resetScroll then

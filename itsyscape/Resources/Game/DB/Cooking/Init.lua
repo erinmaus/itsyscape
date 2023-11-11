@@ -68,6 +68,22 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.KeyItem "Message_Cooking_TooManyIngredients"
 }
 
+ItsyScape.Resource.KeyItem "Message_Cooking_AlreadyAddedIngredient" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ingredient error",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_Cooking_AlreadyAddedIngredient"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "You don't have enough of this ingredient remaining to add more!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "Message_Cooking_AlreadyAddedIngredient"
+}
+
 do
 	ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
 

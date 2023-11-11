@@ -78,10 +78,6 @@ function Oliver:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Oliver/Oliver.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, skin)
-	local hat = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Oliver/Oliver.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, hat)
 
 	Creep.ready(self, director, game)
 end

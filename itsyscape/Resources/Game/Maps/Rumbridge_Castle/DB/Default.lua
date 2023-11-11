@@ -122,7 +122,7 @@ do
 	}
 end
 
-M["OrangeTree_Default7"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default7"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 35.000000,
@@ -135,14 +135,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default7",
+		Name = "PecanTree_Default7",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default7"]
+		Resource = M["PecanTree_Default7"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default7"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default7"]
 	}
 end
 
@@ -194,7 +194,7 @@ do
 	}
 end
 
-M["OrangeTree_Default5"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 59.000000,
@@ -207,14 +207,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default5",
+		Name = "PecanTree_Default5",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default5"]
+		Resource = M["PecanTree_Default5"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default5"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default5"]
 	}
 end
 
@@ -242,7 +242,7 @@ do
 	}
 end
 
-M["AppleTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default1_WasAppleTree"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 21.000000,
@@ -255,14 +255,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "AppleTree_Default1",
+		Name = "PecanTree_Default1_WasAppleTree",
 		Map = M._MAP,
-		Resource = M["AppleTree_Default1"]
+		Resource = M["PecanTree_Default1_WasAppleTree"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "AppleTree_Default",
-		MapObject = M["AppleTree_Default1"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default1_WasAppleTree"]
 	}
 end
 
@@ -290,7 +290,7 @@ do
 	}
 end
 
-M["AppleTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default2_WasAppleTree"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 63.000000,
@@ -303,14 +303,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "AppleTree_Default2",
+		Name = "PecanTree_Default2_WasAppleTree",
 		Map = M._MAP,
-		Resource = M["AppleTree_Default2"]
+		Resource = M["PecanTree_Default2_WasAppleTree"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "AppleTree_Default",
-		MapObject = M["AppleTree_Default2"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default2_WasAppleTree"]
 	}
 end
 
@@ -1538,7 +1538,7 @@ do
 	}
 end
 
-M["OrangeTree_Default4"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 51.000000,
@@ -1551,14 +1551,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default4",
+		Name = "PecanTree_Default4",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default4"]
+		Resource = M["PecanTree_Default4"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default4"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default4"]
 	}
 end
 
@@ -1706,7 +1706,7 @@ do
 	}
 end
 
-M["OrangeTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 41.000000,
@@ -1719,14 +1719,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default1",
+		Name = "PecanTree_Default1",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default1"]
+		Resource = M["PecanTree_Default1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default1"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default1"]
 	}
 end
 
@@ -1778,7 +1778,7 @@ do
 	}
 end
 
-M["OrangeTree_Default8"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default8"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 1.000000,
@@ -1791,14 +1791,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default8",
+		Name = "PecanTree_Default8",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default8"]
+		Resource = M["PecanTree_Default8"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default8"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default8"]
 	}
 end
 
@@ -1826,7 +1826,7 @@ do
 	}
 end
 
-M["OrangeTree_Default3"] = ItsyScape.Resource.MapObject.Unique()
+M["PecanTree_Default3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 19.000000,
@@ -1839,14 +1839,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "OrangeTree_Default3",
+		Name = "PecanTree_Default3",
 		Map = M._MAP,
-		Resource = M["OrangeTree_Default3"]
+		Resource = M["PecanTree_Default3"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "OrangeTree_Default",
-		MapObject = M["OrangeTree_Default3"]
+		Prop = ItsyScape.Resource.Prop "PecanTree_Default",
+		MapObject = M["PecanTree_Default3"]
 	}
 end
 

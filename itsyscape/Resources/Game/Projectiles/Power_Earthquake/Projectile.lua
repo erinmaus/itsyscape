@@ -50,6 +50,10 @@ function Earthquake:load()
 
 			self.decoration:fromGroup(model:getResource(), "Rock")
 		end)
+
+	resources:queueEvent(function()
+		self:getGameView():getGame():getPlayer():onPokeCamera('shake')
+	end)
 end
 
 function Earthquake:getDuration()

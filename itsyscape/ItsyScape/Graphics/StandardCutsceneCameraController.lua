@@ -92,6 +92,26 @@ function StandardCutsceneCameraController:update(delta)
 
 	self.currentTranslationTime = math.min(self.currentTranslationTime + delta, self.targetTranslationTime)
 	self.currentTranslation = self.previousTranslation:lerp(self.targetTranslation, Tween[self.translationTween](self.currentTranslationTime / self.targetTranslationTime))
+
+	if self.isShaking then
+		self.currentShakingInterval = self.currentShakingInterval - delta
+		if self.currentShakingInterval <= 0 then
+			self.currentShakingInterval = self.shakingInterval
+
+			local x = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+			local y = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+			local z = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+
+			self.previousShakingOffset = self.currentShakingOffset
+			self.currentShakingOffset = Vector(x, y, z)
+		end
+
+		self.currentShakingDuration = self.currentShakingDuration - delta
+		if self.currentShakingDuration <= 0 then
+			self.isShaking = false
+			self.currentShakingOffset = Vector(0)
+		end
+	end
 end
 
 function StandardCutsceneCameraController:onTranslate(position, duration)
@@ -163,11 +183,30 @@ function StandardCutsceneCameraController:onHorizontalRotate(angle, duration)
 	end
 end
 
+function StandardCutsceneCameraController:onShake(duration, interval, min, max)
+	self.isShaking = true
+	self.shakingDuration = duration or 1.5
+	self.shakingInterval = interval or 1 / 15
+	self.currentShakingInterval = 0
+	self.currentShakingDuration = self.shakingDuration
+	self.minShakingOffset = min or 0
+	self.maxShakingOffset = max or 1
+	self.previousShakingOffset = Vector(0)
+	self.currentShakingOffset = Vector(0)
+end
+
 function StandardCutsceneCameraController:draw()
+	local shake
+	if self.currentShakingOffset and self.previousShakingOffset then
+		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
+	else
+		shake = Vector.ZERO
+	end
+
 	self:getCamera():setDistance(self.currentZoom)
 	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation)
 	self:getCamera():setVerticalRotation(self.currentVerticalRotation)
-	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation)
+	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
 end
 
 return StandardCutsceneCameraController

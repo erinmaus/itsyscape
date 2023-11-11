@@ -50,4 +50,10 @@ function CutsceneCamera:horizontalRotate(angle, duration)
 	end
 end
 
+function CutsceneCamera:shake(duration, interval, min, max)
+	return function()
+		self.player:pokeCamera("shake", duration, interval, min, max)
+	end
+end
+
 return CutsceneCamera

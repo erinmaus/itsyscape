@@ -146,7 +146,9 @@ function Nominomicon:updateToggleButton()
 end
 
 function Nominomicon:getQuestStatusColor(quest)
-	if quest.didComplete then
+	if not quest.isQuest then
+		return { 1, 1, 1, 1 }
+	elseif quest.didComplete then
 		return { 0, 1, 0, 1}
 	elseif quest.inProgress then
 		return { 1, 1, 0, 1 }
@@ -177,6 +179,7 @@ function Nominomicon:update(...)
 				ButtonStyle(
 					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
 					self:getView():getResources()))
+			button:setData("quest", quest)
 			button:setID("Quest-" .. quest.id)
 
 			self.grid:addChild(button)
@@ -198,7 +201,7 @@ function Nominomicon:selectItem(index, button, mouseButton)
 		if self.previousSelection then
 			self.previousSelection:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(self.previousSelection:getData("quest"))),
 					self:getView():getResources()))
 		end
 

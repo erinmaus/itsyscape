@@ -47,7 +47,7 @@ function MetaInstance:instantiate(brochure)
 		local s, e = pcall(function() brochure:insert(self.definition, self.instance) end)
 		if not s then
 			local message = string.format("%s:%d: Could not insert Meta ('%s') from: %s", self.debugInfo.source, self.debugInfo.currentline, self.meta:getName(), Log.stringify(self.values))
-			error(message, 0)
+			ItsyScape.Error(message)
 		end
 	end
 

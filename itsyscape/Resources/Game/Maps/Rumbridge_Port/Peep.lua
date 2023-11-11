@@ -144,7 +144,7 @@ function Port:onRecruit(id, player)
 		end)
 
 		local follower = peep:getBehavior(FollowerBehavior)
-		follower.id = id
+		follower.followerID = id
 		follower.playerID = player:getID()
 
 		local instance = peep:getBehavior(InstancedBehavior)

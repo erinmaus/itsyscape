@@ -40,11 +40,15 @@ function Game:new(name)
 	self.actionTypes = {}
 	self.resourceTypes = {}
 	self.metaDefinitions = {}
+	self.errors = {}
 
 	self.Meta = MetaCategory(self)
 	self.Action = ActionCategory(self)
 	self.Resource = ResourceCategory(self)
 	self.Utility = {}
+	self.Error = function(m)
+		table.insert(self.errors, m)
+	end
 
 	_G["_GAME"] = self
 	_G[name] = self
@@ -133,6 +137,10 @@ end
 
 function Game:addMeta(meta)
 	self.Meta:add(meta)
+end
+
+function Game:getErrors()
+	return self.errors
 end
 
 return Game

@@ -25,22 +25,20 @@ function Burn:perform(state, peep, item)
 		Action = self:getAction()
 	})
 
-	if not enchantment then
-		Log.warn("Burn action without enchantment.")
-		return false
+	if enchantment then
+		local effect = enchantment:get("Effect")
+		if not effect then
+			Log.warn("Malformed enchantment record; missing Effect field.")
+			return false
+		end
+
+		if not Utility.Peep.applyEffect(peep, effect, true) then
+			Log.info("Effect '%s' probably already applied.", effect.name)
+			return false
+		end
 	end
 
-	local effect = enchantment:get("Effect")
-	if not effect then
-		Log.warn("Malformed enchantment record; missing Effect field.")
-		return false
-	end
-
-	if not Utility.Peep.applyEffect(peep, effect, true) then
-		return false
-	end
-
-	self:transfer(state, peep)
+	self:transfer(state, peep, { ['item-inventory'] = true, ['item-instances'] = { item } })
 	Action.perform(self, state, peep)
 
 	return true

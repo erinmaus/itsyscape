@@ -214,6 +214,54 @@ do
 	}
 end
 
+M["CapnRaven_Temporary"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 5,
+		PositionZ = 17,
+		Direction = 1,
+		Name = "CapnRaven_Temporary",
+		Map = M._MAP,
+		Resource = M["CapnRaven_Temporary"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CapnRaven",
+		MapObject = M["CapnRaven_Temporary"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["CapnRaven_Temporary"],
+		Name = "CapnRaven",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Lyra",
+		Name = "Lyra",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Oliver",
+		Name = "Oliver",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Port/Dialog/CapnRaven_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["CapnRaven_Temporary"] {
+		TalkAction
+	}
+end
+
 M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

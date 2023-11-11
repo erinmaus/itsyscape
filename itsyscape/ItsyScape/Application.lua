@@ -100,7 +100,18 @@ function Application:new(multiThreaded)
 	self.frames = 0
 	self.frameTime = 0
 
-	self.gameDB = GameDB.create()
+	do
+		local e
+		self.gameDB, e = GameDB.create()
+
+		if #e >= 1 then
+			for i = 1, #e do
+				Log.warn(e[i])
+			end
+
+			error("Encountered errors creating GameDB!")
+		end
+	end
 
 	self.multiThreaded = multiThreaded or false
 

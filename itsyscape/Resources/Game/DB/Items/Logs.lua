@@ -170,7 +170,7 @@ for name, log in spairs(LOGS) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Woodcutting",
-			Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1)) * 4
+			Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1))
 		},
 
 		Output {
@@ -274,7 +274,7 @@ for name, log in spairs(LOGS) do
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Firemaking",
-				Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1)) * 4
+				Count = ItsyScape.Utility.xpForResource(math.max(log.tier + 1, 1))
 			},
 
 			Input {

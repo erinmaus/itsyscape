@@ -530,30 +530,6 @@ do
 	}
 end
 
-M["Coffin_Plain13"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33.000000,
-		PositionY = 4.000000,
-		PositionZ = 51.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Coffin_Plain13",
-		Map = M._MAP,
-		Resource = M["Coffin_Plain13"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Coffin_Plain1",
-		MapObject = M["Coffin_Plain13"]
-	}
-end
-
 M["WillowTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -187,3 +187,226 @@ do
 		},
 	}
 end
+
+M["Chandelier"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 5.25,
+		PositionZ = 35,
+		Name = "Chandelier",
+		Map = M._MAP,
+		Resource = M["Chandelier"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chandelier_Default",
+		MapObject = M["Chandelier"]
+	}
+end
+
+M["Anchor_EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 0,
+		PositionZ = 35,
+		Name = "Anchor_EarlReddick",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick"]
+	}
+end
+
+M["Anchor_EarlReddick_Left"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 18,
+		PositionY = 0,
+		PositionZ = 35,
+		Name = "Anchor_EarlReddick_Left",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick_Left"]
+	}
+end
+
+M["Anchor_EarlReddick_Right"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 35,
+		Name = "Anchor_EarlReddick_Right",
+		Map = M._MAP,
+		Resource = M["Anchor_EarlReddick_Right"]
+	}
+end
+
+M["Guard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 0,
+		PositionZ = 27,
+		Name = "Guard1",
+		Map = M._MAP,
+		Resource = M["Guard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon_Cutscene",
+		MapObject = M["Guard1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Scripts/Guard_IdleLogic.lua",
+		Resource = M["Guard1"]
+	}
+end
+
+M["Guard2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 0,
+		PositionZ = 37,
+		Name = "Guard2",
+		Map = M._MAP,
+		Resource = M["Guard2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_RumbridgeDungeon_Cutscene",
+		MapObject = M["Guard2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Scripts/Guard_IdleLogic.lua",
+		Resource = M["Guard2"]
+	}
+end
+
+M["EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "EarlReddick",
+		Map = M._MAP,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "EarlReddick",
+		MapObject = M["EarlReddick"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "EarlReddick",
+		Resource = M["EarlReddick"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard1",
+		Resource = M["Guard1"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard2",
+		Resource = M["Guard2"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Dialog/EarlReddick_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["EarlReddick"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "EarlReddick",
+		Resource = M["EarlReddick"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard1",
+		Resource = M["Guard1"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard2",
+		Resource = M["Guard2"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Demon",
+		Resource = ItsyScape.Resource.Peep "SuperSupperSaboteur_DemonicAssassin",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Hellhound",
+		Resource = ItsyScape.Resource.Peep "SuperSupperSaboteur_Hellhound",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Dialog/SuperSupperSaboteurInProgress_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "StartSuperSupperSaboteurCutscene",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_Floor1_AssassinationAttempt"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "EarlReddick",
+		Cutscene = Cutscene,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Guard1",
+		Cutscene = Cutscene,
+		Resource = M["Guard1"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Guard2",
+		Cutscene = Cutscene,
+		Resource = M["Guard2"]
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Demon",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "SuperSupperSaboteur_DemonicAssassin"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Hellhound",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "SuperSupperSaboteur_Hellhound"
+	}
+end

@@ -759,6 +759,13 @@ Game "ItsyScape"
 
 	ActionType "ObtainSecondary"
 
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Obtain",
+		XProgressive = "Obtain",
+		Language = "en-US",
+		Type = "ObtainSecondary"
+	}
+
 	Meta "SecondaryWeight" {
 		Weight = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
@@ -789,7 +796,13 @@ local RESOURCE_CURVE = Curve(nil, nil, nil, nil)
 ItsyScape.Utility.xpForResource = function(a)
 	local point1 = RESOURCE_CURVE(a)
 	local point2 = RESOURCE_CURVE(a + 1)
-	return math.floor((point2 - point1) / 4)
+	local xp = point2 - point1
+
+	local A = 1 / 1000
+	local B = 5 / 100
+	local C = 4
+
+	return math.floor(xp / (A * a ^ 2 + B * a + C))
 end
 
 -- Calculates the sum style bonus for an item of the specified tier.
@@ -970,8 +983,8 @@ function ItsyScape.Utility.Quest(questName)
 			}
 		}
 
-		if steps.constraints then
-			Start(steps.constraints)
+		if steps.requirements then
+			Start(steps.requirements)
 		end
 
 		local Complete = ItsyScape.Action.QuestComplete() {
@@ -980,6 +993,10 @@ function ItsyScape.Utility.Quest(questName)
 				Count = 1
 			}
 		}
+
+		if steps.rewards then
+			Complete(steps.rewards)
+		end
 
 		Quest {
 			Start,
@@ -1099,6 +1116,7 @@ include "Resources/Game/DB/Items/Meat.lua"
 include "Resources/Game/DB/Items/MiningSecondaries.lua"
 include "Resources/Game/DB/Items/Gunpowder.lua"
 include "Resources/Game/DB/Items/Veggies.lua"
+include "Resources/Game/DB/Items/Candles.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -1161,6 +1179,7 @@ include "Resources/Game/DB/Creeps/AncientKaradon.lua"
 include "Resources/Game/DB/Creeps/Pig.lua"
 include "Resources/Game/DB/Creeps/Cheep.lua"
 include "Resources/Game/DB/Creeps/Cthulhu.lua"
+include "Resources/Game/DB/Creeps/Whale.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1174,6 +1193,8 @@ include "Resources/Game/DB/Peeps/TheEmptyKing.lua"
 include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Peeps/Veggies.lua"
+include "Resources/Game/DB/Peeps/BlackTentacle.lua"
+include "Resources/Game/DB/Peeps/Humans.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1232,6 +1253,7 @@ include "Resources/Game/DB/Props/ChemistTable.lua"
 include "Resources/Game/DB/Props/CSGBuilding.lua"
 include "Resources/Game/DB/Props/Farm.lua"
 include "Resources/Game/DB/Props/Altars.lua"
+include "Resources/Game/DB/Props/MilkOMatic.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

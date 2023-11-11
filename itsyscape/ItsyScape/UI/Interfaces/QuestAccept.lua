@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Button = require "ItsyScape.UI.Button"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
@@ -24,6 +25,17 @@ QuestAccept.WIDTH = 320
 QuestAccept.HEIGHT = 480
 QuestAccept.PADDING = 8
 QuestAccept.BUTTON_SIZE = 48
+
+QuestAccept.BUTTON_DISABLED = {
+	inactive = "Resources/Renderers/Widget/Button/Disabled-Inactive.9.png",
+	hover = "Resources/Renderers/Widget/Button/Disabled-Hover.9.png",
+	pressed = "Resources/Renderers/Widget/Button/Disabled-Pressed.9.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	textShadow = true,
+	padding = 4
+}
 
 function QuestAccept:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -88,17 +100,42 @@ function QuestAccept:new(id, index, ui)
 	self.requirementsConstraints:setConstraints(state.requirements)
 	self.constraintsPanel:addChild(self.requirementsConstraints)
 
+	if #state.outputs > 1 then
+		self.rewardConstraints = ConstraintsPanel(ui)
+		self.rewardConstraints:setSize(
+			QuestAccept.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - QuestAccept.PADDING * 2,
+			0)
+		self.rewardConstraints:setText("Reward")
+		self.rewardConstraints:setConstraints(state.outputs)
+		self.constraintsPanel:addChild(self.rewardConstraints)
+	end
+
 	self.constraintsPanel:setScrollSize(self.constraintsPanel:getInnerPanel():getSize())
 	self:addChild(self.constraintsPanel)
+
+	self.constraintsPanel:setScrollSize(self.constraintsPanel:getInnerPanel():getSize())
 
 	self.acceptButton = Button()
 	self.acceptButton:setSize(QuestAccept.WIDTH / 2 - QuestAccept.PADDING * 4, QuestAccept.BUTTON_SIZE)
 	self.acceptButton:setPosition(QuestAccept.PADDING, QuestAccept.HEIGHT - QuestAccept.BUTTON_SIZE - QuestAccept.PADDING)
 	self.acceptButton:setText("Accept")
 	self.acceptButton.onClick:register(function()
-		self:sendPoke("accept", nil, {})
+		local state = self:getState()
+		if state.canPerform then
+			self:sendPoke("accept", nil, {})
+		end
 	end)
 	self:addChild(self.acceptButton)
+
+	local state = self:getState()
+	if not state.canPerform then
+		self.acceptButton:setStyle(
+			ButtonStyle(QuestAccept.BUTTON_DISABLED,
+			self:getView():getResources()))
+		self.acceptButton:setToolTip(ToolTip.Text("You do not meet the requirements to start this quest."))
+	else
+		self.acceptButton:setToolTip(ToolTip.Text("You meet the requirements to start this quest."))
+	end
 
 	self.declineButton = Button()
 	self.declineButton:setSize(QuestAccept.WIDTH / 2 - QuestAccept.PADDING * 4, QuestAccept.BUTTON_SIZE)
