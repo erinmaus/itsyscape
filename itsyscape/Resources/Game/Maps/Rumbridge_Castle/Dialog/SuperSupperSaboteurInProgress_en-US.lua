@@ -87,9 +87,8 @@ then
 	speaker "_TARGET"
 	message "I'm a bit clumsy and lost your secret recipe card!"
 
+	speaker "ChefAllon"
 	if _TARGET:getState():give("Item", "SuperSupperSaboteur_SecretCarrotCakeRecipeCard", 1, GIVE_FLAGS) then
-		speaker "ChefAllon"
-
 		message {
 			"I knew this would happen!",
 			"Here's a copy I made!"
@@ -194,7 +193,6 @@ elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotRecipe", _TARGET)
 
 	if _TARGET:getState():give("Item", "SuperSupperSaboteur_SecretCarrotCakeRecipeCard", 1, GIVE_FLAGS) then
 		_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_GotRecipe")
-
 		message {
 			"Anyway, let's see... %hint{Here's my secret recipe card!}",
 			"If you lose it was adventurers are wont to do,",

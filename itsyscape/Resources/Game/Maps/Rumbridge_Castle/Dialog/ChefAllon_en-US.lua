@@ -4,6 +4,7 @@ message "Welcome to my three-star kitchen, %person{${PLAYER_NAME}}!"
 
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
 local hasCompletedQuest = _TARGET:getState():has("Quest", "SuperSupperSaboteur")
+local isEarlDead = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
 
 local WHO     = option "Who are you?"
 local COOK    = option "What's cooking?"
@@ -35,26 +36,49 @@ repeat
 	end
 
 	if result == WHO then
-		speaker "ChefAllon"
-		message {
-			"I'm one of the bestest chefs in the Realm!",
-			"But you know that, don't you, silly?",
-			"Critics may try, but they never have a single",
-			"complaint about my food."
-		}
-
-		message {
-			"The great %person{Earl Reddick} gives me the freedom",
-			"to explore the culinary world without limitations!",
-			"He's fond of food and is far from a picky eater."
-		}
-	elseif result == COOK then
 		if hasCompletedQuest then
 			speaker "ChefAllon"
 			message {
-				"I'm taking a break right now.",
-				"That supper saboteur was too much for me!"
+				"I'm one of the bestest chefs in the Realm!",
+				"But you know that, don't you, silly?",
+				"Critics may try, but they never have a single",
+				"complaint about my food."
 			}
+		else
+			speaker "ChefAllon"
+			message {
+				"I'm one of the bestest chefs in the Realm!",
+				"Critics may try, but they never have a single",
+				"complaint about my food."
+			}
+		end
+
+		if not (hasCompletedQuest and isEarlDead) then
+			message {
+				"The great %person{Earl Reddick} gives me the freedom",
+				"to explore the culinary world without limitations!",
+				"He's fond of food and is far from a picky eater."
+			}
+		else
+			message {
+				"As you know, the late %person{Earl Reddick} gave me",
+				"the freedom to explore the culinary world.",
+				"But since his death I'm considering other options."
+			}
+		end
+	elseif result == COOK then
+		if hasCompletedQuest then
+			if isEarlDead then
+				speaker "ChefAllon"
+				message "..."
+				message "I don't feel like cooking right now."
+			else
+				speaker "ChefAllon"
+				message {
+					"I'm taking a break right now.",
+					"That supper saboteur was too much for me!"
+				}
+			end
 		else
 			speaker "ChefAllon"
 			message {
