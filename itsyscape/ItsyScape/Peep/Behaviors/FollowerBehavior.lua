@@ -25,7 +25,7 @@ function FollowerBehavior:new()
 	Behavior.Type.new(self)
 
 	self.scope = "General"
-	self.id = FollowerBehavior.NIL_ID
+	self.followerID = FollowerBehavior.NIL_ID
 	self.playerID = FollowerBehavior.NIL_ID
 	self.followAcrossMaps = false
 end

@@ -241,20 +241,6 @@ do
 	}
 end
 
-M["EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "EarlReddick",
-		Map = M._MAP,
-		Resource = M["EarlReddick"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EarlReddick",
-		MapObject = M["EarlReddick"]
-	}
-end
-
 M["Guard1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -298,6 +284,50 @@ do
 		State = "idle",
 		Tree = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Scripts/Guard_IdleLogic.lua",
 		Resource = M["Guard2"]
+	}
+end
+
+M["EarlReddick"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "EarlReddick",
+		Map = M._MAP,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "EarlReddick",
+		MapObject = M["EarlReddick"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "EarlReddick",
+		Resource = M["EarlReddick"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard1",
+		Resource = M["Guard1"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Name = "Guard2",
+		Resource = M["Guard2"],
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle_Floor1/Dialog/EarlReddick_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["EarlReddick"] {
+		TalkAction
 	}
 end
 

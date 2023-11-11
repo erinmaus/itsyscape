@@ -22,6 +22,10 @@ function FollowerCortex:new()
 	self.hadPeep = setmetatable({}, { __mode = "k" })
 end
 
+function FollowerCortex:previewPeep(peep)
+	Cortex.previewPeep(self, peep)
+end
+
 function FollowerCortex:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
@@ -30,14 +34,14 @@ function FollowerCortex:addPeep(peep)
 	followers[peep] = peep
 
 	self.followersByPlayer[player] = followers
-	self.hadPeep[peep] = true
+	self.hadPeep[peep] = player
 end
 
 function FollowerCortex:removePeep(peep)
 	Cortex.removePeep(self, peep)
 
 	if self.hadPeep[peep] then
-		local player = Utility.Peep.getPlayerModel(peep)
+		local player = self.hadPeep[peep]
 		local followers = self.followersByPlayer[player]
 		if followers then
 			followers[peep] = nil

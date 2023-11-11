@@ -821,6 +821,12 @@ Quest "SuperSupperSaboteur" {
 		},
 
 		{
+			Step "SuperSupperSaboteur_TurnedInLyra",
+			Step "SuperSupperSaboteur_LitKursedCandle",
+			Step "SuperSupperSaboteur_Complete"
+		},
+
+		{
 			Step "SuperSupperSaboteur_AgreedToHelpLyra",
 			Step "SuperSupperSaboteur_TalkedToCapnRaven",
 			Step "SuperSupperSaboteur_MadeCandle",
@@ -911,8 +917,8 @@ Description "SuperSupperSaboteur_GotConfessionFromLyra" {
 }
 
 Description "SuperSupperSaboteur_TurnedInLyra" {
-	before = "Should you turn in Lyra to Chef Allon?",
-	after = "You turned in Lyra to Chef Allon, who got the guards to arrest her and confine her to the dungeon."
+	before = "Should you turn in Lyra to Earl Reddick above the kitchens of Rumbridge?",
+	after = "You turned in Lyra to Earl Reddick, who got the guards to arrest her and confine her to the dungeon."
 }
 
 Description "SuperSupperSaboteur_LitBirthdayCandle" {
@@ -946,7 +952,7 @@ Description "SuperSupperSaboteur_BlamedSomeoneElse" {
 }
 
 Description "SuperSupperSaboteur_BetrayedLyra" {
-	before = "Lyra can still be turned in.",
+	before = "Lyra can still be turned in to Earl Reddick.",
 	after = "Lyra was betrayed by you after turning her in despite agreeing to help!"
 }
 

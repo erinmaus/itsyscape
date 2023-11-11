@@ -10,12 +10,34 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 
 local PLAYER = B.Reference("Lyra", "PLAYER")
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Peep.GetPlayer {
 			[PLAYER] = B.Output.player
+		},
+
+		Mashina.Success {
+			Mashina.Sequence {
+				Mashina.Check {
+					condition = function(lyra, state)
+						local player = state[PLAYER]
+						if not player or player:getState():has("KeyItem", "SuperSupperSaboteur_MadeCandle") then
+							lyra:removeBehavior(FollowerBehavior)
+
+							return true
+						end
+
+						return false
+					end
+				},
+
+				Mashina.Peep.SetState {
+					state = false
+				}
+			}
 		},
 
 		Mashina.Success {

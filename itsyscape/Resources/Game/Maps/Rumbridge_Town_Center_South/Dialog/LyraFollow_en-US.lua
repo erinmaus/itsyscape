@@ -26,23 +26,21 @@ if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_TalkedTo
 		}
 	end
 elseif Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_MadeCandle", _TARGET) then
-	if map.name == "Sailing_WhaleIsland" then
-		if hasKursedCandle then
-			_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_MadeCandle")
+	if hasKursedCandle then
+		_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_MadeCandle")
 
-			speaker "Lyra"
-			message {
-				"Yay, you made the candle!",
-				"Now it's time to execute the plan.",
-				"Let's head back to %location{my shop in the Shade district}."
-			}
+		speaker "Lyra"
+		message {
+			"Yay, you made the candle!",
+			"Now it's time to execute the plan.",
+			"Let's head back to %location{my shop in the Shade district}."
+		}
 
-			speaker "_TARGET"
-			message "Sure thing!"
-		else
-			speaker "Lyra"
-			message "Let's find that whale carcass!"
-		end
+		speaker "_TARGET"
+		message "Sure thing!"
+	elseif map.name == "Sailing_WhaleIsland" then
+		speaker "Lyra"
+		message "Let's find that whale carcass!"
 	else
 		speaker "Lyra"
 		message {
