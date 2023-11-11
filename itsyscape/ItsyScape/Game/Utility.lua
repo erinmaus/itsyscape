@@ -1615,7 +1615,7 @@ function Utility.Peep.dismiss(peep)
 		local director = peep:getDirector()
 		local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
 		local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
-		local followerID = follower.id
+		local followerID = follower.followerID
 
 		peep:listen('poof', function()
 			for i = 1, scopedStorage:length() do
@@ -1977,13 +1977,13 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 			local length = scopedStorage:length()
 			for i = 1, length do
 				local peepStorage = scopedStorage:getSection(i)
-				if peepStorage:get("id") == follower.id then
+				if peepStorage:get("id") == follower.followerID then
 					return peepStorage
 				end
 			end
 
 			local storage = scopedStorage:getSection(scopedStorage:length() + 1)
-			storage:set("id", follower.id)
+			storage:set("id", follower.followerID)
 
 			return storage
 		end

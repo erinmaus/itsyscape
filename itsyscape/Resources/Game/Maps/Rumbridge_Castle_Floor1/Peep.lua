@@ -139,8 +139,8 @@ function Castle:playSuperSupperSaboteurCutscene(player)
 	cutscene:listen('done', function()
 		Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 
-		--playerPeep:getState():take("Item", "SuperSupperSaboteur_DemonContract", 1, TAKE_FLAGS)
-		--playerPeep:getState():take("Item", "SuperSupperSaboteur_HellhoundContract", 1, TAKE_FLAGS)
+		playerPeep:getState():take("Item", "SuperSupperSaboteur_DemonContract", 1, TAKE_FLAGS)
+		playerPeep:getState():take("Item", "SuperSupperSaboteur_HellhoundContract", 1, TAKE_FLAGS)
 
 		local stage = playerPeep:getDirector():getGameInstance():getStage()
 		stage:movePeep(playerPeep, "Rumbridge_Castle_Floor1", Utility.Peep.getPosition(playerPeep))
