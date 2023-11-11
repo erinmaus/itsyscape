@@ -76,6 +76,10 @@ function LocalPlayer:getClientID()
 	return self.clientID
 end
 
+function LocalPlayer:getTemporaryStorage()
+	return self.game:getDirector():getPlayerStorage(self.id):getRoot():getSection("Temporary")
+end
+
 function LocalPlayer:saveLocation()
 	if not self.instance or not self.actor or not self.actor:getPeep() then
 		return
@@ -126,6 +130,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 	self:unload()
 
 	self.game:getDirector():setPlayerStorage(self.id, storage)
+	storage:getRoot():removeSection("Temporary")
 
 	local success, actor = self.stage:spawnActor("Resources.Game.Peeps.Player.One", 1, previousLayerName or "::orphan")
 	if success then

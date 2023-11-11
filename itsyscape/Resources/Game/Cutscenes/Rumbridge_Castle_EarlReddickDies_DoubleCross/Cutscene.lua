@@ -1,6 +1,7 @@
 return Sequence {
 	Player:addBehavior("Disabled"),
 	Player:teleport("Anchor_EarlReddick_Player"),
+	Player:face(EarlReddick),
 	ChefAllon:teleport("Anchor_EarlReddick_Chef"),
 	ChefAllon:face(EarlReddick),
 
@@ -39,11 +40,11 @@ return Sequence {
 			GuardCaptain:wait(0.5),
 			GuardCaptain:playAnimation("Human_ActionBury_1"),
 			ChefAllon:wait(0.75),
-			ChefAllon:playAnimation("Human_ActionBury_1")
+			ChefAllon:playAnimation("Human_ActionBury_1"),
 
 			Map:wait(2)
 		}
-	}
+	},
 
 	Player:removeBehavior("Disabled")
 }

@@ -53,4 +53,11 @@ elseif _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotYelledAtForGold
 		"Go ahead, you can pick the carrot.",
 		"But be careful, he's an angry lil' guy."
 	}
+else
+	speaker "Farmer"
+	message {
+		"Leave me alone.",
+		"Ya better not think about messin'",
+		"with my %item{golden carrot}..."
+	}
 end

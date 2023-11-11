@@ -1,10 +1,15 @@
 local map = Utility.Peep.getMapResource(_TARGET)
 
 local SEARCH_FLAGS = {
-	['item-inventory'] = true,
-	['item-bank'] = true
+	['item-inventory'] = true
 }
 
+local GIVE_FLAGS = {
+	['item-inventory'] = true
+}
+
+local hasWhaleBlubber = _TARGET:getState():has("Item", "YendorianWhaleBlubber", 1, SEARCH_FLAGS)
+local hasCandleWick   = _TARGET:getState():has("Item", "CottonCandleWick", 1, SEARCH_FLAGS)
 local hasKursedCandle = _TARGET:getState():has("Item", "UnlitKursedCandle", 1, SEARCH_FLAGS) or
                         _TARGET:getState():has("Item", "LitKursedCandle", 1, SEARCH_FLAGS)
 
@@ -38,6 +43,25 @@ elseif Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_Made
 
 		speaker "_TARGET"
 		message "Sure thing!"
+	elseif hasWhaleBlubber then
+		if not hasCandleWick then
+			local success = _TARGET:getState():give("Item", "CottonCandleWick", 1, GIVE_FLAGS)
+			if not success then
+				speaker "Lyra"
+				message {
+					"I can't give you a cotton wick",
+					"because your inventory is full."
+				}
+			else
+				speaker "Lyra"
+				message "Here's a cotton wick."
+			end
+		end
+
+		if _SPEAKERS["Lyra"] then
+			speaker "Lyra"
+			message "Speak to me when you make the candle."
+		end
 	elseif map.name == "Sailing_WhaleIsland" then
 		speaker "Lyra"
 		message "Let's find that whale carcass!"

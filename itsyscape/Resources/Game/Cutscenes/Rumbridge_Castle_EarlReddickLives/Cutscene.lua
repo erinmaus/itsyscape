@@ -1,6 +1,7 @@
 return Sequence {
 	Player:addBehavior("Disabled"),
 	Player:teleport("Anchor_EarlReddick_Player"),
+	Player:face(EarlReddick),
 	ChefAllon:teleport("Anchor_EarlReddick_Chef"),
 	ChefAllon:face(EarlReddick),
 

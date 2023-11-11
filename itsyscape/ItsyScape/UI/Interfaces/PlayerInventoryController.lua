@@ -188,6 +188,15 @@ function PlayerInventoryController:_tryUseItem(item, actions)
 					end
 				end
 			end
+		elseif actions[i].instance:is("OpenCookingWindow") then
+			local itemResource = gameDB:getResource(item:getID(), "Item")
+			local isIngredient = gameDB:getRecord("Ingredient", {
+				Item = itemResource
+			})
+
+			if itemResource and isIngredient then
+				performAction = true
+			end
 		else
 			local constraints = Utility.getActionConstraints(game, actions[i].instance:getAction())
 

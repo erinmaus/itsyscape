@@ -462,7 +462,7 @@ do
 				end
 			end
 
-			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_BetrayedLyra", _TARGET) then
+			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_LitKursedCandle", _TARGET) then
 				speaker "_TARGET"
 				message "Looks like the demons didn't work."
 
@@ -476,6 +476,25 @@ do
 					"Give the lit kursed candle to %person{Chef Allon}.",
 					"%person{Earl Reddick} will face his justice."
 				}
+
+				local hasKursedCandle = _TARGET:getState():has("Item", "UnlitKursedCandle", 1, SEARCH_FLAGS) or
+				                        _TARGET:getState():has("Item", "LitKursedCandle", 1, SEARCH_FLAGS)
+                if not hasKursedCandle then
+                	if _TARGET:getState():give("Item", "UnlitKursedCandle", 1, GIVE_FLAGS) then
+                		speaker "Lyra"
+                		message {
+                			"Looks like you lost the %item{kursed candle}.",
+                			"I found it for you. Here you go."
+                		}
+                	else
+                		speaker "Lyra"
+                		message {
+                			"Looks like you lost the %item{kursed candle}.",
+                			"I found it for you.",
+                			"But you need to make room in your inventory first..."
+                		}
+                	end
+                end
 			end
 
 			return

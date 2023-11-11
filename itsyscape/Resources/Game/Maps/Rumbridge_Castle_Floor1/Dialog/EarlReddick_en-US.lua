@@ -58,7 +58,7 @@ if hasStartedQuest then
 			message "About that..."
 
 			local TURN_IN    = option "Turn in Lyra."
-			local NEVERMIND  = option "Nevermindß."
+			local NEVERMIND  = option "Nevermind."
 
 			local result = select {
 				TURN_IN,
@@ -106,7 +106,7 @@ if hasStartedQuest then
 
 			message {
 				"Well met, adventurer.",
-				"We are investigating %person{Lyra] as I speak.",
+				"We are investigating %person{Lyra} as I speak.",
 				"As soon as we have an answer, there will be justice."
 			}
 		elseif hasAlmostBeenAssassinated then
@@ -127,14 +127,13 @@ if hasStartedQuest then
 			}
 
 			if Utility.Quest.isNextStep("SuperSupperSaboteur", "SuperSupperSaboteur_BetrayedLyra", _TARGET) then
-				local BETRAY = option "Turn in Lyra."
+				local BETRAY = option "Betry Lyra and turn her in."
 				local QUIET  = option "Keep quiet."
 
 				local result = select {
 					BETRAY,
 					QUIET
 				}
-
 
 				if result == BETRAY then
 					speaker "_TARGET"
@@ -158,7 +157,16 @@ if hasStartedQuest then
 						}
 
 						turnInLyra()
+					elseif otherResult == NO then
+						speaker "EarlReddick"
+						message "Is there something wrong?"
 					end
+				elseif result == QUIET then
+					speaker "_TARGET"
+					message "I need to go help %person{Chef Allon}..."
+
+					speaker "EarlReddick"
+					message "Thank you both for the work you've put in!"
 				end
 			end
 		else
