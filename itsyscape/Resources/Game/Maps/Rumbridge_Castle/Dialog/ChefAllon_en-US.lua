@@ -38,6 +38,7 @@ repeat
 		speaker "ChefAllon"
 		message {
 			"I'm one of the bestest chefs in the Realm!",
+			"But you know that, don't you, silly?",
 			"Critics may try, but they never have a single",
 			"complaint about my food."
 		}
@@ -48,22 +49,30 @@ repeat
 			"He's fond of food and is far from a picky eater."
 		}
 	elseif result == COOK then
-		speaker "ChefAllon"
-		message {
-			"Currently, I'm prepping %person{Earl Reddick}'s dinner.",
-			"But I've heard whispers of an assassin",
-			"planning to kill him and in turn frame me!"
-		}
+		if hasCompletedQuest then
+			speaker "ChefAllon"
+			message {
+				"I'm taking a break right now.",
+				"That supper saboteur was too much for me!"
+			}
+		else
+			speaker "ChefAllon"
+			message {
+				"Currently, I'm prepping %person{Earl Reddick}'s dinner.",
+				"But I've heard whispers of an assassin",
+				"planning to kill him and in turn frame me!"
+			}
 
-		speaker "_TARGET"
-		message "Wow! Are you sure?"
+			speaker "_TARGET"
+			message "Wow! Are you sure?"
 
-		speaker "ChefAllon"
-		message {
-			"Secrets don't stay secret",
-			"on the lips of drunk pirates.",
-			"Rumors spread like wildfire in the port."
-		}
+			speaker "ChefAllon"
+			message {
+				"Secrets don't stay secret",
+				"on the lips of drunk pirates.",
+				"Rumors spread like wildfire in the port."
+			}
+		end
 	elseif result == QUEST then
 		defer "Resources/Game/Maps/Rumbridge_Castle/Dialog/SuperSupperSaboteurInProgress_en-US.lua"
 	elseif result == NVM then
