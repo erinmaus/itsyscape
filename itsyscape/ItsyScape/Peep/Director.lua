@@ -137,6 +137,7 @@ function Director:addPeep(key, peepType, ...)
 	self.newPeeps[peep] = { key = key }
 	self.pendingPeeps[peep] = true
 
+
 	local layer = self.peepsByLayer[key]
 	if not layer then
 		layer = {}

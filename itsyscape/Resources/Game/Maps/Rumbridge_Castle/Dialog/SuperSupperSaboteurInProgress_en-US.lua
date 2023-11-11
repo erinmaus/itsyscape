@@ -212,19 +212,6 @@ elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotRecipe", _TARGET)
 	end
 
 	message "If you need any help, feel free to ask me!"
-elseif _TARGET:getState():has("SuperSupperSaboteur_GotYelledAtForGoldenCarrot") then
-	speaker "_TARGET"
-	message {
-		"The golden carrot farmer won't let me",
-		"pick his prized carrot!"
-	}
-
-	speaker "ChefAllon"
-	message {
-		"Just tell him it's for the Earl's birthday!",
-		"Everyone in Rumbridge loves the Earl,",
-		"so he'll be happy to oblige!"
-	}
 elseif not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInCake") then
 	playCookingAnimation()
 
@@ -250,6 +237,8 @@ elseif isQuestCutscene and _TARGET:getState():has("KeyItem", "SuperSupperSaboteu
 		"I alert the guards!"
 	}
 elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToGuardCaptain", _TARGET) then
+	_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TalkedToGuardCaptain")
+
 	speaker "GuardCaptain"
 	message {
 		"We didn't find any clues...",
@@ -303,8 +292,6 @@ elseif Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToGuardCaptain
 		}
 	end
 
-	_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TalkedToGuardCaptain")
-
 	speaker "GuardCaptain"
 	message {
 		"Very well.",
@@ -353,13 +340,37 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInCake", _TARGET) 
    Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotYelledAtForGoldenCarrot", _TARGET) or
    Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotPermissionForGoldenCarrot", _TARGET)
 then
+	if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotYelledAtForGoldenCarrot") and
+	   not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotPermissionForGoldenCarrot")
+   then
+		speaker "_TARGET"
+		message {
+			"The golden carrot farmer won't let me",
+			"pick his prized carrot!"
+		}
+
+		speaker "ChefAllon"
+		message {
+			"Just tell him it's for the Earl's birthday!",
+			"Everyone in Rumbridge loves the Earl,",
+			"so he'll be happy to oblige!"
+		}
+
+		speaker "ChefAllon"
+		message "Anything else?"
+	end
+
+	local hasCarrotCake = _TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS) and _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotPermissionForGoldenCarrot")
+
 	local RECIPE = option "Where do I find the ingredients for the recipe?"
+	local BAKE   = option "Where do I bake the cake?"
 	local ALONE  = option "I'll leave you alone!"
 	local CAKE   = option "(Hand in the carrot cake.)"
 	local result = select {
 		RECIPE,
+		BAKE,
 		ALONE,
-		(_TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS) and CAKE) or nil
+		(hasCarrotCake and CAKE) or nil
 	}
 
 	if result == RECIPE then
@@ -410,6 +421,25 @@ then
 
 		speaker "ChefAllon"
 		message "Trust me, the Earl will reward you handsomely!"
+	elseif result == BAKE then
+		speaker "_TARGET"
+		message {
+			"How do I bake the cake?",
+			"I've %hint{only cooked simple things like fish} so far!"
+		}
+
+		speaker "ChefAllon"
+		message {
+			"I might be gettin' a little technical,",
+			"but %hint{you can use an ingredient on a range}",
+			"or %hint{'right-click' on a range and select 'cook-fancy'}!"
+		}
+
+		speaker "_TARGET"
+		message {
+			"That sounds like non-sense!",
+			"What does %hint{right-click} even mean?!"
+		}
 	elseif result == CAKE then
 		speaker "_TARGET"
 		message "I made the carrot cake!"
@@ -489,24 +519,7 @@ then
 				_TARGET,
 				Utility.UI.Groups.WORLD)
 
-			local _travel = function(player)
-				local mapScript = Utility.Peep.getMapScript(player)
-
-				local _finalize = function()
-					local Probe = require "ItsyScape.Peep.Probe"
-
-					local chef = _DIRECTOR:probe(
-						player:getLayerName(),
-						Probe.namedMapObject("ChefAllon"))[1]
-
-					mapScript:pushPoke('continueSuperSupperSaboteur', chef, player)
-					mapScript:silence('finalize', _finalize)
-				end
-				mapScript:listen('finalize', _finalize)
-
-				_TARGET:silence('moveInstance', _travel)
-			end
-			_TARGET:listen('moveInstance', _travel)
+			Utility.Peep.getTemporaryStorage(_TARGET):getSection("SuperSupperSaboteur"):set("performNamedAction", "StartSuperSupperSaboteur")
 
 			local stage = _TARGET:getDirector():getGameInstance():getStage()
 			stage:movePeep(_TARGET, "Rumbridge_Castle", Utility.Peep.getPosition(_TARGET))
@@ -538,11 +551,12 @@ elseif needToLightCandle then
 
 	if hasLitBirthdayCandleInInventory then
 		local BIRTHDAY = option "Hand over lit birthday candle."
-		local KURSE    = option "Hand over kursed candle."
+		local KURSE    = option "Hand over lit kursed candle."
+		local NOTHING  = option "Actually, let me think about my options."
 		
 		local result = select {
 			BIRTHDAY,
-			hasLitKursedCandleInInventory and KURSE
+			hasLitKursedCandleInInventory and KURSE or NOTHING
 		}
 
 		if result == KURSE then
@@ -566,6 +580,8 @@ elseif needToLightCandle then
 		elseif result == KURSE then
 			_TARGET:getState():take("Item", "LitKursedCandle", 1, TAKE_FLAGS)
 			_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
+		elseif result == NOTHING then
+			return
 		end
 
 		speaker "_TARGET"
@@ -626,7 +642,19 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_Complete", _TARGET) then
 
 		local stage = _TARGET:getDirector():getGameInstance():getStage()
 		stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
-elseif not needToLightCandle then
+end
+
+local isHelpingLyra =
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToLyra", _TARGET) or
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotConfessionFromLyra", _TARGET) or
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TalkedToCapnRaven", _TARGET) or
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_MadeCandle", _TARGET) or
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_GotContracts", _TARGET) or
+	Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_BlamedSomeoneElse", _TARGET)
+if isHelpingLyra then
 	speaker "ChefAllon"
-	message "Almost done! I'll need you soon."
+	message {
+		"I'm almost done! Just the finishing touches...",
+		"I'll let you know when I need you!"
+	}
 end

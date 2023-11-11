@@ -1013,7 +1013,7 @@ Quest "SuperSupperSaboteur" {
 }
 
 Description "SuperSupperSaboteur_Started" {
-	before = "You need to start Super supper Saboteur by speaking to Chef Allon at the Rumbridge Castle kitchen.",
+	before = "Start Super supper Saboteur by speaking to Chef Allon at the Rumbridge Castle kitchen.",
 	after = "Chef Allon wants to cook a spectacular dinner for the Earl, Reddick. He enlisted your help after receiving a glowing recommendation from Advisor Grimm."
 }
 
@@ -1098,7 +1098,7 @@ Description "SuperSupperSaboteur_GotContracts" {
 }
 
 Description "SuperSupperSaboteur_BlamedSomeoneElse" {
-	before = "Find the Earl and summon the demons.",
+	before = "Bring both demonic contracts with you and find the Earl to summon the demons.",
 	after = "The Rumbridge guards proved too capable and the demon and hellhound were slain. Time for Plan B!"
 }
 

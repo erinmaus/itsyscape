@@ -1937,6 +1937,10 @@ function Utility.Peep.getDescription(peep, lang)
 	return string.format("It's a %s.", peep:getName())
 end
 
+function Utility.Peep.getTemporaryStorage(peep)
+	return Utility.Peep.getPlayerModel(peep):getTemporaryStorage()
+end
+
 function Utility.Peep.getStorage(peep, instancedPlayer)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()

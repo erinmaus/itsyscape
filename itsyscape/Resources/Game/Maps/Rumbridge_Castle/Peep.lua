@@ -25,8 +25,6 @@ Castle.PARTY_MAX_RADIUS_J = 2
 
 function Castle:new(resource, name, ...)
 	Map.new(self, resource, name or 'RumbridgeCastle', ...)
-
-	self:addPoke('continueSuperSupperSaboteur')
 end
 
 function Castle:openAllDoors()
@@ -102,10 +100,55 @@ function Castle:spawnSuperSupperSaboteurParty(player, earl)
 	end
 end
 
+function Castle:onPlaySuperSupperSaboteurCutscene(player, cutsceneName)
+	local playerPeep = player:getActor():getPeep()
+
+	Log.info("Playing cutscene '%s' for player '%s'.", cutsceneName, playerPeep:getName())
+
+	local cutscene = Utility.Map.playCutscene(self, cutsceneName, "StandardCutscene", playerPeep)
+	cutscene:listen('done', function()
+		playerPeep:getState():give("KeyItem", "SuperSupperSaboteur_Complete")
+		Utility.Quest.complete("SuperSupperSaboteur", playerPeep)
+
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:movePeep(playerPeep, "Rumbridge_Castle", Utility.Peep.getPosition(playerPeep))
+
+		Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
+	end)
+end
+
+function Castle:onPerformSupperSaboteurNamedAction(player, namedMapAction)
+	local playerPeep = player:getActor():getPeep()
+	local director = self:getDirector()
+	local game = director:getGameInstance()
+	local gameDB = game:getGameDB()
+
+	local namedMapAction = gameDB:getRecord("NamedMapAction", {
+		Name = namedMapAction,
+		Map = Utility.Peep.getMapResource(self)
+	})
+
+	local chef = director:probe(
+		self:getLayerName(),
+		Probe.namedMapObject("ChefAllon"),
+		Probe.instance(player))[1]
+	if not chef then
+		Log.warn("Couldn't find Chef Allon for player '%s'.", playerPeep:getName())
+	end
+
+	local action = Utility.getAction(game, namedMapAction:get("Action"))
+	action.instance:perform(playerPeep:getState(), playerPeep, chef)
+end
+
 function Castle:initSuperSupperSaboteurInstance(player)
+	local playerPeep = player:getActor():getPeep()
+
+	local temporaryStorage = Utility.Peep.getTemporaryStorage(playerPeep):getSection("SuperSupperSaboteur")
+	local performNamedMapAction = temporaryStorage:get("performNamedAction")
+	temporaryStorage:set("performNamedAction", nil)
+
 	local isQuestCutscene = self:getArguments() and self:getArguments()["super_supper_saboteur"] ~= nil
 
-	local playerPeep = player:getActor():getPeep()
 	if playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_ButlerDied") then
 		Log.info("Butler Lear has died for player '%s'; not spawning.", playerPeep:getName())
 	else
@@ -142,8 +185,8 @@ function Castle:initSuperSupperSaboteurInstance(player)
 	if not isQuestCutscene and
 	   Utility.Quest.isNextStep(quest, "SuperSupperSaboteur_TalkedToGuardCaptain", playerPeep)
 	then
-		local guardCaptainActor = Utility.spawnMapObjectAtAnchor(self, "GuardCaptain", "Anchor_EarlReddick_GuardCaptain", 0)
-		local guardCaptainPeep = guardCaptainPeep and guardCaptainPeep:getPeep()
+		local guardCaptainActor = Utility.spawnMapObjectAtAnchor(self, "GuardCaptain", "Anchor_GuardCaptain", 0)
+		local guardCaptainPeep = guardCaptainActor and guardCaptainActor:getPeep()
 
 		if not guardCaptainPeep then
 			Log.warn("Couldn't spawn guard captain for player '%s'.", playerPeep:getName())
@@ -152,6 +195,10 @@ function Castle:initSuperSupperSaboteurInstance(player)
 
 			local _, instance = guardCaptainPeep:addBehavior(InstancedBehavior)
 			instance.playerID = player:getID()
+		end
+
+		if performNamedMapAction then
+			self:pushPoke('performSupperSaboteurNamedAction', player, namedMapAction)
 		end
 	end
 
@@ -199,38 +246,9 @@ function Castle:initSuperSupperSaboteurInstance(player)
 				cutsceneName = "Rumbridge_Castle_EarlReddickLives"
 			end
 
-			Log.info("Playing cutscene '%s' for player '%s'.", cutsceneName, playerPeep:getName())
-
-			local cutscene = Utility.Map.playCutscene(self, cutsceneName, "StandardCutscene", playerPeep)
-			cutscene:listen('done', function()
-				playerPeep:getState():give("KeyItem", "SuperSupperSaboteur_Complete")
-				Utility.Quest.complete("SuperSupperSaboteur", playerPeep)
-
-				local stage = self:getDirector():getGameInstance():getStage()
-				stage:movePeep(playerPeep, "Rumbridge_Castle", Utility.Peep.getPosition(playerPeep))
-
-				Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
-			end)
+			self:pushPoke('playSuperSupperSaboteurCutscene', player, cutsceneName)
 		else
-			local director = self:getDirector()
-			local game = director:getGameInstance()
-			local gameDB = game:getGameDB()
-
-			local namedMapAction = gameDB:getRecord("NamedMapAction", {
-				Name = "StartSuperSupperSaboteurCutscene",
-				Map = Utility.Peep.getMapResource(self)
-			})
-
-			local chef = director:probe(
-				self:getLayerName(),
-				Probe.namedMapObject("ChefAllon"),
-				Probe.instance(player))[1]
-			if not chef then
-				Log.warn("Couldn't find Chef Allon for player '%s'.", playerPeep:getName())
-			end
-
-			local action = Utility.getAction(game, namedMapAction:get("Action"))
-			action.instance:perform(playerPeep:getState(), playerPeep, chef)
+			self:pushPoke('performSupperSaboteurNamedAction', player, "StartSuperSupperSaboteurCutscene")
 		end
 	end
 end
@@ -281,23 +299,11 @@ function Castle:initSuperSupperSaboteur(chef)
 	end
 end
 
-function Castle:onContinueSuperSupperSaboteur(chef, player)
-	local director = self:getDirector()
-	local game = director:getGameInstance()
-	local gameDB = director:getGameDB()
-	local map = Utility.Peep.getMapResource(self)
-
-	local namedMapAction = gameDB:getRecord("NamedMapAction", {
-		Name = "StartSuperSupperSaboteur",
-		Map = map
-	})
-
-	if not namedMapAction then
-		Log.warn("Couldn't talk to Chef Allon after starting quest: named map action not found.")
-	else
-		local action = Utility.getAction(game, namedMapAction:get("Action"))
-		action.instance:perform(player:getState(), player, chef)
-	end
+function Castle:onContinueSuperSupperSaboteur(player)
+	self:pushPoke(
+		'performSupperSaboteurNamedAction',
+		Utility.Peep.getPlayerModel(player),
+		"StartSuperSupperSaboteur")
 end
 
 return Castle

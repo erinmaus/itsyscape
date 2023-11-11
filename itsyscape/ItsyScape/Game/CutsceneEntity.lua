@@ -50,6 +50,8 @@ function CutsceneEntity:playAttackAnimation(target, wait)
 	return function()
 		local animation, projectile
 		do
+			Utility.Peep.face(self.peep, target:getPeep())
+
 			local weapon = Utility.Peep.getEquippedWeapon(self.peep, true)
 			if weapon then
 				local animations = {

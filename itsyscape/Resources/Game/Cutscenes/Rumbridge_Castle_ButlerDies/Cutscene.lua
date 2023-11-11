@@ -23,10 +23,13 @@ return Sequence {
 			ChefAllon:walkTo("Anchor_ButlerLear_ChefAllonWalkTo"),
 		},
 
-		Player:face(-1),
-		ChefAllon:face(1),
+		Map:wait(0.25),
+
+		Player:face(ButlerLear),
+		ChefAllon:face(ButlerLear),
 
 		Camera:verticalRotate(-math.pi / 2 + math.pi / 8, 0.5),
+		Map:wait(0.5),
 
 		Parallel {
 			Oliver:walkTo("Anchor_Oliver_RunAway"),
