@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/Rumbridge_Castle_Dungeon/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Rumbridge_Castle_Dungeon.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Rumbridge Castle, Dungeon",
 	Language = "en-US",
@@ -65,6 +70,119 @@ do
 		FarDistance = 15,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
+	}
+end
+
+M["Anchor_SuperSupperSaboteurVictim"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 0,
+		PositionZ = 9,
+		Name = "Anchor_SuperSupperSaboteurVictim",
+		Map = M._MAP,
+		Resource = M["Anchor_SuperSupperSaboteurVictim"]
+	}
+end
+
+M["ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "ChefAllon",
+		Map = M._MAP,
+		Resource = M["ChefAllon"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ChefAllon",
+		MapObject = M["ChefAllon"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["ChefAllon"],
+		Name = "ChefAllon",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle_Dungeon/Dialog/ChefAllon_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 1,
+		Resource = M["ChefAllon"]
+	}
+
+	M["ChefAllon"] {
+		TalkAction
+	}
+end
+
+M["Oliver"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Oliver",
+		Map = M._MAP,
+		Resource = M["Oliver"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Oliver",
+		MapObject = M["Oliver"]
+	}
+
+	M["Oliver"] {
+		ItsyScape.Action.Pet()
+	}
+end
+
+
+M["Lyra"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Lyra",
+		Map = M._MAP,
+		Resource = M["Lyra"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Lyra",
+		MapObject = M["Lyra"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Lyra"],
+		Name = "Lyra",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Oliver"],
+		Name = "Oliver",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Rumbridge_Castle_Dungeon/Dialog/Lyra_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 1,
+		Resource = M["Lyra"]
+	}
+
+	M["Lyra"] {
+		TalkAction
 	}
 end
 

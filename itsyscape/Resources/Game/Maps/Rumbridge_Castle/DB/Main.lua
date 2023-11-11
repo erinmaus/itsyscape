@@ -549,12 +549,21 @@ do
 	}
 end
 
-M["ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 19,
 		PositionY = 4,
 		PositionZ = 15,
+		Name = "Anchor_ChefAllon",
+		Map = M._MAP,
+		Resource = M["Anchor_ChefAllon"]
+	}
+end
+
+M["ChefAllon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "ChefAllon",
 		Map = M._MAP,
 		Resource = M["ChefAllon"]

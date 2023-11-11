@@ -99,6 +99,36 @@ end
 
 function Castle:onPlayerEnter(player)
 	self:initSuperSupperSaboteurInstance(player)
+	self:trySpawnChef(player)
+end
+
+function Castle:trySpawnChef(player)
+	local playerPeep = player:getActor():getPeep()
+	local isQuestComplete = playerPeep:getState():has("Quest", "SuperSupperSaboteur")
+	local isLyraInJail = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") or
+	                     playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
+    local playerLitKursedCandle = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
+    local isInJail = not isLy and playerLitKursedCandle and isQuestComplete
+
+    if isInJail then
+    	Log.info("Chef Allon is in jail for player '%s'; not spawning in kitchen.", playerPeep:getName())
+    	return
+    end
+
+	local gameDB = self:getDirector():getGameDB()
+	local chefResource = gameDB:getResource("ChefAllon", "Peep")
+	if not chefResource then
+		Log.warn(
+			"Couldn't get resource in Rumbridge Dungeon (Chef = %s).",
+			Log.boolean(chefResource))
+		return
+	end
+
+	local chefActor = Utility.spawnMapObjectAtAnchor(self, "ChefAllon", "Anchor_ChefAllon", 0)
+	local _, instance = chefActor:getPeep():addBehavior(InstancedBehavior)
+	instance.playerID = player:getID()
+
+	Log.info("Spawned Chef Allon in kitchen for player '%s'.", playerPeep:getName())
 end
 
 function Castle:initSuperSupperSaboteur()

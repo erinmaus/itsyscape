@@ -59,6 +59,20 @@ local INGREDIENT_MISSING_MESSAGES = {
 	}
 }
 
+local function playCookingAnimation()
+	local allonPeep = _SPEAKERS["ChefAllon"]
+	local allonActor = allonPeep:getBehavior("ActorReference")
+	allonActor = allonActor and allonActor.actor
+	if allonActor then
+		local CacheRef = require "ItsyScape.Game.CacheRef"
+		local animation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
+
+		allonActor:playAnimation('x-cutscene', 10, animation)
+	end
+end
+
 PLAYER_NAME = _TARGET:getName()
 
 local map = Utility.Peep.getMapScript(_TARGET)
@@ -212,17 +226,7 @@ elseif _TARGET:getState():has("SuperSupperSaboteur_GotYelledAtForGoldenCarrot") 
 		"so he'll be happy to oblige!"
 	}
 elseif not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInCake") then
-	local allonPeep = _SPEAKERS["ChefAllon"]
-	local allonActor = allonPeep:getBehavior("ActorReference")
-	allonActor = allonActor and allonActor.actor
-	if allonActor then
-		local CacheRef = require "ItsyScape.Game.CacheRef"
-		local animation = CacheRef(
-			"ItsyScape.Graphics.AnimationResource",
-			"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
-
-		allonActor:playAnimation('x-cutscene', 10, animation)
-	end
+	playCookingAnimation()
 
 	speaker "ChefAllon"
 	message {
@@ -514,4 +518,112 @@ then
 		local stage = _TARGET:getDirector():getGameInstance():getStage()
 		stage:movePeep(_TARGET, "Rumbridge_Castle?super_supper_saboteur=1", Utility.Peep.getPosition(_TARGET))
 	end
+end
+
+local needToLightCandle = Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_LitBirthdayCandle", _TARGET)
+if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInLyra", _TARGET) then
+	speaker "ChefAllon"
+	message {
+		"%person{Earl Reddick} is probably better to talk about",
+		"anything about your investigation.",
+		"After all, I'm just a chef!"
+	}
+elseif needToLightCandle then
+	local hasBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, SEARCH_FLAGS) or
+	                          _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, SEARCH_FLAGS)
+	local hasLitBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, SEARCH_FLAGS)
+	local hasUnlitBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, SEARCH_FLAGS)
+	local hasLitBirthdayCandleInInventory = _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, TAKE_FLAGS)
+	local hasLitKursedCandleInInventory = _TARGET:getState():has("Item", "LitKursedCandle", 1, TAKE_FLAGS)
+
+	if hasLitBirthdayCandleInInventory then
+		local BIRTHDAY = option "Hand over lit birthday candle."
+		local KURSE    = option "Hand over kursed candle."
+		
+		local result = select {
+			BIRTHDAY,
+			hasLitKursedCandleInInventory and KURSE
+		}
+
+		if result == KURSE then
+			speaker "_TARGET"
+			message "(Am I sure about that? The Earl will die...)"
+
+			local YES = option "He deserves it! Hand over the kursed candle."
+			local NO  = option "On second thoughts, I'll hand in the birthday candle."
+
+			local otherResult = select { YES, NO }
+			if otherResult == YES then
+				result = KURSE
+			else
+				result = BIRTHDAY
+			end
+		end
+
+		if result == BIRTHDAY then
+			_TARGET:getState():take("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, TAKE_FLAGS)
+			_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_LitBirthdayCandle")
+		elseif result == KURSE then
+			_TARGET:getState():take("Item", "LitKursedCandle", 1, TAKE_FLAGS)
+			_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
+		end
+
+		speaker "_TARGET"
+		message "Here's the birthday candle!"
+	elseif hasBirthdayCandle then
+		if hasLitBirthdayCandle then
+			speaker "_TARGET"
+			message {
+				"(Wait, the lit birthday candle isn't on me!",
+				"It be in my bank or something.)"
+			}
+		elseif hasUnlitBirthdayCandle then
+			local hasTinderbox = _TARGET:getState():has("Item", "Tinderbox", 1, TAKE_FLAGS)
+
+			if hasTinderbox then
+				speaker "_TARGET"
+				message "(Wait, I need to light the candle!)"
+			else
+				speaker "_TARGET"
+				message "(Wait, I need to a tinderbox to light the candle!)"
+			end
+		else
+			speaker "_TARGET"
+			message {
+				"(Wait, the unlit birthday candle isn't on me!",
+				"It be in my bank or something.",
+				"Lemme go grab it and then light it.)"
+			}
+		end
+	else
+		local gotCandle = _TARGET:getState():give("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, GIVE_FLAGS)
+
+		if gotCandle then
+			speaker "ChefAllon"
+			message {
+				"Here's the %item{birthday candle}!",
+				"You'll need a %item{tinderbox} to light it.",
+				"Unfortunately, I'm only skilled in cooking.",
+				"Hand it over when you light it!"
+			}
+		else
+			speaker "ChefAllon"
+			message {
+				"Make more room in your inventory",
+				"for the %item{birthday candle}!"
+			}
+		end
+	end
+end
+
+if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_Complete", _TARGET) then
+		speaker "ChefAllon"
+		message {
+			"Excellent! Let's do this!",
+			"Time to celebrate the Earl's birthday!",
+			"I'll get him!"
+		}
+elseif not needToLightCandle then
+	speaker "ChefAllon"
+	message "Almost done! I'll need you soon."
 end
