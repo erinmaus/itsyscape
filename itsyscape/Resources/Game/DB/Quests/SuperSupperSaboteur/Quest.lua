@@ -31,6 +31,93 @@ do
 end
 
 do
+	local UnlitBirthdayCandle = ItsyScape.Resource.Item "SuperSupperSaboteur_UnlitBirthdayCandle"
+	local LitBirthdayCandle = ItsyScape.Resource.Item "SuperSupperSaboteur_LitBirthdayCandle"
+
+	local LightAction = ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = UnlitBirthdayCandle,
+			Count = 1
+		},
+
+		Output {
+			Resource = LitBirthdayCandle,
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+
+	UnlitBirthdayCandle {
+		LightAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Light",
+		XProgressive = "Lighting",
+		Language = "en-US",
+		Action = LightAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Fat",
+		Value = "Candle",
+		Resource = UnlitBirthdayCandle
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Unlit birthday candle",
+		Language = "en-US",
+		Resource = UnlitBirthdayCandle
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A candle to celebrate Earl Reddick's birthday. Needs to be lit.",
+		Language = "en-US",
+		Resource = UnlitBirthdayCandle
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Value = ItsyScape.Utility.valueForItem(15),
+		Resource = UnlitBirthdayCandle
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lit birthday candle",
+		Language = "en-US",
+		Resource = LitBirthdayCandle
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A lit candle to be put atop Earl Reddick's birthday carrot cake.",
+		Language = "en-US",
+		Resource = LitBirthdayCandle
+	}
+
+	ItsyScape.Meta.Item {
+		Untradeable = 1,
+		Unnoteable = 1,
+		Value = ItsyScape.Utility.valueForItem(16),
+		Resource = LitBirthdayCandle
+	}
+end
+
+do
 	local DemonContract = ItsyScape.Resource.Item "SuperSupperSaboteur_DemonContract"
 
 	ItsyScape.Meta.ResourceName {
