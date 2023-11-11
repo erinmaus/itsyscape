@@ -53,36 +53,34 @@ function DialogBoxController:new(peep, director, action, target)
 						Probe.mapObject(speaker:get("Resource")),
 						Probe.layer(Utility.Peep.getLayer(peep)))
 
-					local s
-					for _, p in ipairs(peeps) do
-						s = p
-						break
-					end
-
+					local s = peeps[1]
 					if not s then
+						Log.info("Speaker '%s' not found as map object.", speaker:get("Name"))
+
 						local r = speaker:get("Resource")
 						peeps = director:probe(
 							peep:getLayerName(),
 							Probe.resource(r),
 							Probe.layer(Utility.Peep.getLayer(peep)))
-						for _, p in ipairs(peeps) do
-							s = p
-							break
-						end
+						s = peeps[1]
 
 						if not s then
+							Log.info("Speaker '%s' not found as resource on same layer as player.", speaker:get("Name"))
 							peeps = director:probe(
 								peep:getLayerName(),
 								Probe.resource(r))
-							for _, p in ipairs(peeps) do
-								s = p
-								break
+							s = peeps[1]
+
+							if not s then
+								Log.info("Speaker '%s' not found as resource in same instance as player.", speaker:get("Name"))
 							end
 						end
 					end
 
 					if s then
 						self.dialog:setSpeaker(speaker:get("Name"), s)
+					else
+						Log.warn("Speaker '%s' not found at all.", speaker:get("Name"))
 					end
 				end
 
