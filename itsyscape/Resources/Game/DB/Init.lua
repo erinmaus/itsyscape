@@ -983,8 +983,8 @@ function ItsyScape.Utility.Quest(questName)
 			}
 		}
 
-		if steps.constraints then
-			Start(steps.constraints)
+		if steps.requirements then
+			Start(steps.requirements)
 		end
 
 		local Complete = ItsyScape.Action.QuestComplete() {
@@ -993,6 +993,10 @@ function ItsyScape.Utility.Quest(questName)
 				Count = 1
 			}
 		}
+
+		if steps.rewards then
+			Complete(steps.rewards)
+		end
 
 		Quest {
 			Start,
@@ -1190,6 +1194,7 @@ include "Resources/Game/DB/Peeps/Drakkenson.lua"
 include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Peeps/Veggies.lua"
 include "Resources/Game/DB/Peeps/BlackTentacle.lua"
+include "Resources/Game/DB/Peeps/Humans.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"

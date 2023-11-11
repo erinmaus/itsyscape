@@ -24,7 +24,31 @@ function QuestAcceptController:new(peep, director, resource, action, questGiver)
 	self.action = action
 	self.questGiver = questGiver
 
-	self.state = Utility.getActionConstraints(director:getGameInstance(), action:getAction())
+	local completeAction
+	do
+		local questActions = Utility.getActions(
+			self:getGame(),
+			self.resource,
+			'quest',
+			false)
+		for _, action in ipairs(questActions) do
+			if action.instance:is("QuestComplete") then
+				completeAction = action.instance
+				break
+			end
+		end
+	end
+
+	local requirements = Utility.getActionConstraints(self:getGame(), action:getAction())
+	local rewards = Utility.getActionConstraints(self:getGame(), completeAction:getAction())
+
+
+	self.state = {
+		requirements = requirements.requirements,
+		inputs = requirements.inputs,
+		outputs = rewards.outputs or requirements.outputs
+	}
+
 	self.state.questName = Utility.getName(self.resource, gameDB) or self.resource.name .. "*"
 
 	local instance = self.actionInfo and self.actionInfo.instance

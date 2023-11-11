@@ -13,10 +13,12 @@ local Action = require "ItsyScape.Peep.Action"
 
 local QuestComplete = Class(Action)
 QuestComplete.SCOPES = { ['quest'] = true }
-QuestComplete.FLAGS = { ['x-ignore-quest'] = true }
+QuestComplete.FLAGS = { ['x-ignore-quest'] = true, ['item-bank'] = true }
 
 function QuestComplete:perform(state, peep)
-	return false
+	if self:canPerform(state) and self:canTransfer(state) then
+		return self:transfer(state, peep)
+	end
 end
 
 return QuestComplete

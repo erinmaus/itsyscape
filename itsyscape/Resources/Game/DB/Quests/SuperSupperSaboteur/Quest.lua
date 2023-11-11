@@ -862,7 +862,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Quest "SuperSupperSaboteur"
 
 Quest "SuperSupperSaboteur" {
-	constraints = {
+	requirements = {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(10)
@@ -886,6 +886,68 @@ Quest "SuperSupperSaboteur" {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Mining",
 			Count = ItsyScape.Utility.xpForLevel(5)
+		}
+	},
+
+	rewards = {
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 5000
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = 2000
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Crafting",
+			Count = 2000
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Foraging",
+			Count = 2000
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = 1500
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Carrot",
+			Count = 20
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "AllPurposeFlour",
+			Count = 20
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Butter",
+			Count = 20
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "TableSalt",
+			Count = 20
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "VegetableOil",
+			Count = 20
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "GoldenPecan",
+			Count = 10
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 50000
 		}
 	},
 
@@ -1022,7 +1084,7 @@ Description "SuperSupperSaboteur_AgreedToHelpLyra" {
 
 Description "SuperSupperSaboteur_TalkedToCapnRaven" {
 	before = "Cap'n Raven and her crew has been bragging about finding a freshly beached Yendorian whale to drunkards at the bar, but she's keeping the location a secret.",
-	after = "Cap'n Raven agreed to take you to the Yendorian whale because she likes your guts, but she blindfolded you when doing so."
+	after = "Cap'n Raven agreed to take you to the Yendorian whale because she likes your guts, but she stuck you in the brig when doing so."
 }
 
 Description "SuperSupperSaboteur_MadeCandle" {
@@ -1052,5 +1114,5 @@ Description "SuperSupperSaboteur_LitKursedCandle" {
 
 Description "SuperSupperSaboteur_Complete" {
 	before = "Chef Allon still has something to say.",
-	after = "You completed Super Supper Saboteur. What a quest!"
+	after = "You completed Super Supper Saboteur. Check your bank for rewards. What a quest!"
 }

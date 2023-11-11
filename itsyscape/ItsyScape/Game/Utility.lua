@@ -4397,6 +4397,31 @@ function Utility.Quest.getStartAction(quest, game)
 	return action
 end
 
+function Utility.Quest.getCompleteAction(quest, game)
+	local gameDB = game:getGameDB()
+
+	if type(quest) == 'string' then
+		quest = gameDB:getResource(quest, "Quest")
+	end
+
+	local action
+	do
+		local actions = Utility.getActions(game, quest, 'quest')
+		for i = 1, #actions do
+			if actions[i].instance:is('QuestComplete') then
+				action = actions[i].instance
+			end
+		end
+	end
+
+	if not action then
+		Log.warn("No quest complete found for %s.", quest.name)
+		return nil
+	end
+
+	return action
+end
+
 function Utility.Quest.promptToStart(quest, peep, questGiver)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
@@ -4414,6 +4439,16 @@ function Utility.Quest.promptToStart(quest, peep, questGiver)
 		quest,
 		action,
 		questGiver)
+end
+
+function Utility.Quest.complete(quest, peep)
+	local action = Utility.Quest.getCompleteAction(quest, peep:getDirector():getGameInstance())
+	if action then
+		local result = action:perform(peep:getState(), peep)
+		if not result then
+			Log.warn("Could not complete quest '%s' for peep '%s'", quest.name or quest, peep)
+		end
+	end
 end
 
 function Utility.Quest.didComplete(quest, peep)
