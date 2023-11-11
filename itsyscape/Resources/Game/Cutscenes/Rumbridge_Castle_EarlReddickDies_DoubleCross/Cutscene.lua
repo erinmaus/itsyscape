@@ -24,6 +24,15 @@ return Sequence {
 		Player:dialog("EndSuperSupperSaboteurCutscene"),
 
 		Sequence {
+			EarlReddick:playAnimation("Human_ActionEat_1"),
+			EarlReddick:wait(1)
+		}
+	},
+
+	While {
+		Player:dialog("EndSuperSupperSaboteurCutscene"),
+
+		Sequence {
 			EarlReddick:playAnimation("UndeadSquid_Target_Inking"),
 			EarlReddick:wait(1.5)
 		}
