@@ -346,7 +346,7 @@ do
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Lyra"],
+		Resource = ItsyScape.Resource.Peep "Lyra",
 		Name = "Lyra",
 		Action = TalkAction
 	}

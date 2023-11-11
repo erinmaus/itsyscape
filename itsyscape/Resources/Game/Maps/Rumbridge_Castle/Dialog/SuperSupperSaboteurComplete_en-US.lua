@@ -1,4 +1,5 @@
-local isLyraInJail = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra")
+local isLyraInJail = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") or
+                     _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
 local isGoingToDie = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
 
 PLAYER_NAME = _TARGET:getName()

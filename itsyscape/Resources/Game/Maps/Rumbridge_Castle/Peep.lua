@@ -233,11 +233,12 @@ function Castle:initSuperSupperSaboteurInstance(player)
 			Utility.UI.closeAll(playerPeep)
 
 			local isGoingToDie = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
-			local doubleCrossedLyra = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra")
+			local isLyraInJail = playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") or
+			                     playerPeep:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra")
 
 			local cutsceneName
 			if isGoingToDie then
-				if doubleCrossedLyra then
+				if isLyraInJail then
 					cutsceneName = "Rumbridge_Castle_EarlReddickDies_DoubleCross"
 				else
 					cutsceneName = "Rumbridge_Castle_EarlReddickDies"
