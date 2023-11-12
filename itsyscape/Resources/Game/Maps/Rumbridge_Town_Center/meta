@@ -1,5 +1,6 @@
 {
 	{
+		autoMask = false,
 		tileSetID = "RumbridgeMainland",
 	},
 }
