@@ -39,7 +39,7 @@ repeat
 		if hasCompletedQuest then
 			speaker "ChefAllon"
 			message {
-				"I'm one of the bestest chefs in the Realm!",
+				"I'm one of the premier chefs in the Realm!",
 				"But you know that, don't you, silly?",
 				"Critics may try, but they never have a single",
 				"complaint about my food."
@@ -47,7 +47,7 @@ repeat
 		else
 			speaker "ChefAllon"
 			message {
-				"I'm one of the bestest chefs in the Realm!",
+				"I'm one of the premier chefs in the Realm!",
 				"Critics may try, but they never have a single",
 				"complaint about my food."
 			}

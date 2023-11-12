@@ -133,7 +133,7 @@ if not hasStartedQuest then
 
 	speaker "ChefAllon"
 	message {
-		"Lucky for me, %person{Orlando} is a renown food critic,",
+		"Lucky for me, %person{Orlando} is a renowned food critic,",
 		"and guess what? He put in a good word for you!"
 	}
 
