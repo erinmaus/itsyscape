@@ -806,8 +806,11 @@ function Bank:swap(button, x, y, absoluteX, absoluteY)
 			if destinationInventory == 'items' or destinationInventory == nil then
 				if sourceInventory == 'inventory' then
 					local state = self:getState()
-					local numItems = state.inventory[index].count
-					self:sendPoke("deposit", nil, { index = index, count = numItems })
+					local item = state.inventory[index]
+					if item then
+						local numItems = item.count
+						self:sendPoke("deposit", nil, { index = index, count = numItems })
+					end
 				else
 					if newIndex == nil then
 						local rightHandItem = self:getRightHandItem(self.bankLayout, 'items')
