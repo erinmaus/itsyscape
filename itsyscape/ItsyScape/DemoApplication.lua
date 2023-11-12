@@ -453,17 +453,6 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 	self.mouseX = x
 	self.mouseY = y
 
-	if not self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition()) then
-		self.mouseMoved = true
-		self.toolTipTick = math.min(self.toolTipTick, DemoApplication.PROBE_TICK)
-	else
-		if self.showingToolTip then
-			self.showingToolTip = false
-			local renderer = self:getUIView():getRenderManager()
-			renderer:unsetToolTip()
-		end
-	end
-
 	self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
 end
 
@@ -659,6 +648,17 @@ end
 function DemoApplication:updateToolTip(delta)
 	local isUIBlocking = self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition())
 
+	if not isUIBlocking then
+		self.mouseMoved = true
+		self.toolTipTick = math.min(self.toolTipTick, DemoApplication.PROBE_TICK)
+	else
+		if self.showingToolTip then
+			self.showingToolTip = false
+			local renderer = self:getUIView():getRenderManager()
+			renderer:unsetToolTip()
+		end
+	end
+
 	self.toolTipTick = self.toolTipTick - delta
 	if self.mouseMoved and self.toolTipTick < 0 then
 		if isUIBlocking then
@@ -670,12 +670,12 @@ function DemoApplication:updateToolTip(delta)
 				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
 					local text = string.format("%s %s", action.verb, action.object)
 					self.showingToolTip = true
-					if self.lastToolTipObject ~= action.id or not self.showingToolTip then
+					if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type and self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
 						self.toolTip = {
 							ToolTip.Header(text),
 							ToolTip.Text(action.description)
 						}
-						self.lastToolTipObject = action.id
+						self.lastToolTipObject = action
 
 						renderer:unsetToolTip(self.toolTipWidget)
 						self.toolTipWidget = nil
