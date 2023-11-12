@@ -18,7 +18,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local DeathCortex = Class(Cortex)
 
 DeathCortex.DESPAWN_ANIMATION_TIME_IN_SECONDS = 5
-DeathCortex.POOF_TIME_IN_SECONDS              = 6
+DeathCortex.POOF_TIME_IN_SECONDS              = 1
 DeathCortex.RESPAWN_TIME_IN_SECONDS           = 20
 
 function DeathCortex:new()
@@ -69,10 +69,16 @@ function DeathCortex:onDie(peep)
 		respawns = false
 	end
 
+	local poofTime
+	do
+		local status = peep:getBehavior(CombatStatusBehavior)
+		poofTime = status and status.deathPoofTime or DeathCortex.DESPAWN_ANIMATION_TIME_IN_SECONDS
+	end
+
 	if despawns then
 		self.pendingPoof[peep] = {
 			time = love.timer.getTime(),
-			animationTime = DeathCortex.DESPAWN_ANIMATION_TIME_IN_SECONDS,
+			animationTime = poofTime,
 			poofTime = DeathCortex.POOF_TIME_IN_SECONDS,
 			respawns = respawns
 		}
