@@ -32,6 +32,9 @@ function MagmaJellyfish:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge	
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = 1.5
 end
 
 function MagmaJellyfish:ready(director, game)
