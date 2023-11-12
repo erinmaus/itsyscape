@@ -15,6 +15,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -65,6 +66,9 @@ function MagmaSnail:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 1
 	movement.maxAcceleration = 1
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.deathPoofTime = 30
 end
 
 function MagmaSnail:onDie()
