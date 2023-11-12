@@ -163,8 +163,12 @@ function Skeleton:addBone(name, parent, inverseBindPose)
 	return bone
 end
 
+function Skeleton:hasBone(name)
+	return self.bonesByName[name] ~= nil
+end
+
 function Skeleton:getBoneIndex(name)
-	return self:getHandle():getBoneIndex(name) + 1
+	return self:hasBone(name) and self:getHandle():getBoneIndex(name) + 1 or 0
 end
 
 function Skeleton:getBoneByIndex(index)
@@ -172,7 +176,7 @@ function Skeleton:getBoneByIndex(index)
 end
 
 function Skeleton:getBoneByName(name)
-	return self.bones[self:getHandle():getBoneByName(name):getIndex() + 1]
+	return self:hasBone(name) and self.bones[self:getHandle():getBoneByName(name):getIndex() + 1]
 end
 
 function Skeleton:getNumBones()
@@ -261,6 +265,8 @@ function Skeleton:loadFromTable(t)
 		else
 			bone = self:addBone(boneDefinition.name, nil, transform)
 		end
+
+		self.bonesByName[boneDefinition.name] = bone
 
 		for i = 1, #boneDefinition.children do
 			addBone(boneDefinition.children[i], boneDefinition)
