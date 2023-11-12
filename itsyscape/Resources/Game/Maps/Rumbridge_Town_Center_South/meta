@@ -1,7 +1,7 @@
 {
 	{
-		tileSetID = "RumbridgeMainland",
 		autoMask = false,
+		tileSetID = "RumbridgeMainland",
 		maskID = true,
 	},
 }
