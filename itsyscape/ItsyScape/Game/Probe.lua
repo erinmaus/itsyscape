@@ -25,6 +25,14 @@ Probe.TESTS = {
 Probe.PROP_FILTERS = {
 	['open'] = function(prop)
 		return prop:getState().open
+	end,
+
+	['light_prop'] = function(prop)
+		return prop:getState().lit
+	end,
+
+	['snuff'] = function(prop)
+		return not prop:getState().lit
 	end
 }
 
@@ -257,7 +265,8 @@ function Probe:loot()
 			end
 
 			local action = {
-				id = "Take",
+				id = item.ref,
+				type = "item",
 				verb = "Take",
 				object = object,
 				description = description,
@@ -304,6 +313,7 @@ function Probe:actors()
 			for i = 1, #actions do
 				local action = {
 					id = actions[i].id,
+					type = "actor",
 					verb = actions[i].verb,
 					object = actor:getName(),
 					description = actor:getDescription(),
@@ -373,6 +383,7 @@ function Probe:props()
 
 				local action = {
 					id = actions[i].id,
+					type = "prop",
 					verb = actions[i].verb,
 					object = prop:getName(),
 					suppress = i > 1 or isHidden,

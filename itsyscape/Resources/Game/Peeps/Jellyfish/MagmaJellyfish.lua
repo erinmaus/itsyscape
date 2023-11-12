@@ -17,6 +17,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local MagmaJellyfish = Class(Creep)
@@ -32,6 +33,9 @@ function MagmaJellyfish:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge	
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = 1.5
 end
 
 function MagmaJellyfish:ready(director, game)

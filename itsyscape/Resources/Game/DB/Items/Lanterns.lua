@@ -147,7 +147,62 @@ end
 
 do
 	ItsyScape.Resource.Item "RainbowBullseyeLanternLense" {
-		-- Nothing.
+		ItsyScape.Action.Craft() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForLevel(12),
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "IronBlowpipe",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "BucketOfMoltenGlass",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "RedDye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "OrangeDye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "YellowDye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "GreenDye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "BlueDye",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "PurpleDye",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "RainbowBullseyeLanternLense",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Crafting",
+				Count = ItsyScape.Utility.xpForResource(13) * 5
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceCategory {
