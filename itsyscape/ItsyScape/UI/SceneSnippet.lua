@@ -27,7 +27,23 @@ function SceneSnippet:getRoot()
 end
 
 function SceneSnippet:setRoot(value)
-	self.root = value or self.root
+	self.root = value or SceneNode()
+end
+
+function SceneSnippet:setParentNode(parentNode)
+	self.parentNode = parentNode or false
+end
+
+function SceneSnippet:getParentNode(parentNode)
+	return self.parentNode
+end
+
+function SceneSnippet:setChildNode(childNode)
+	self.childNode = childNode or false
+end
+
+function SceneSnippet:getChildNode(childNode)
+	return self.childNode
 end
 
 function SceneSnippet:getIsFullLit()
