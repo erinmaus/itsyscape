@@ -156,7 +156,7 @@ local function get_border_box(p, x, y, w, h, preprocessed)
 	return x, y, w, h
 end
 
-local function draw(p, x, y, w, h, content_box)
+local function draw(p, x, y, w, h, content_box, drawFunc)
 	local skip_update = false
 
 	-- If all args match previous draw, no need to update the batch.
@@ -210,7 +210,7 @@ local function draw(p, x, y, w, h, content_box)
 
 		if p.areas[i].id then
 			--p.batch:set(p.areas[i].id, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
-			itsyrealm.graphics.drawq(p.image, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
+			(drawFunc or itsyrealm.graphics.drawq)(p.image, p.areas[i].quad, pax, pay, 0, p.areas[i].sx and sax or 1, p.areas[i].sy and say or 1)
 		end
 	end
 
