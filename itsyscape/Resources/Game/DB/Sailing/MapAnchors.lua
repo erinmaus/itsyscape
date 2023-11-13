@@ -97,25 +97,25 @@ do
 end
 
 do
-	ItsyScape.Meta.SailingMapLocation {
-		AnchorI = 46,
-		AnchorJ = 48,
-		Map = ItsyScape.Resource.Map "Sailing_MermanFortress",
-		SeaChart = CHART_MAIN,
-		Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
-	}
+	-- ItsyScape.Meta.SailingMapLocation {
+	-- 	AnchorI = 46,
+	-- 	AnchorJ = 48,
+	-- 	Map = ItsyScape.Resource.Map "Sailing_MermanFortress",
+	-- 	SeaChart = CHART_MAIN,
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
+	-- }
 
-	ItsyScape.Meta.ResourceName {
-		Value = "Merman Fortress",
-		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
-	}
+	-- ItsyScape.Meta.ResourceName {
+	-- 	Value = "Merman Fortress",
+	-- 	Language = "en-US",
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
+	-- }
 
-	ItsyScape.Meta.ResourceDescription {
-		Value = "When the sun sets at the Merman Fortress, all hope seems lost.",
-		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
-	}
+	-- ItsyScape.Meta.ResourceDescription {
+	-- 	Value = "When the sun sets at the Merman Fortress, all hope seems lost.",
+	-- 	Language = "en-US",
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MermanFortress"
+	-- }
 end
 
 do
@@ -141,25 +141,25 @@ do
 end
 
 do
-	ItsyScape.Meta.SailingMapLocation {
-		AnchorI = 40,
-		AnchorJ = 46,
-		Map = ItsyScape.Resource.Map "Sailing_MheesaIsland",
-		SeaChart = CHART_MAIN,
-		Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
-	}
+	-- ItsyScape.Meta.SailingMapLocation {
+	-- 	AnchorI = 40,
+	-- 	AnchorJ = 46,
+	-- 	Map = ItsyScape.Resource.Map "Sailing_MheesaIsland",
+	-- 	SeaChart = CHART_MAIN,
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
+	-- }
 
-	ItsyScape.Meta.ResourceName {
-		Value = "Mheesa Island",
-		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
-	}
+	-- ItsyScape.Meta.ResourceName {
+	-- 	Value = "Mheesa Island",
+	-- 	Language = "en-US",
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
+	-- }
 
-	ItsyScape.Meta.ResourceDescription {
-		Value = "Home to a bumbling Idiot King of a rather small kingdom.",
-		Language = "en-US",
-		Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
-	}
+	-- ItsyScape.Meta.ResourceDescription {
+	-- 	Value = "Home to a bumbling Idiot King of a rather small kingdom.",
+	-- 	Language = "en-US",
+	-- 	Resource = ItsyScape.Resource.SailingMapAnchor "MheesaIsland"
+	-- }
 end
 
 do
