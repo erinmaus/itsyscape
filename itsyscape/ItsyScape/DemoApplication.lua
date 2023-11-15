@@ -106,12 +106,29 @@ function DemoApplication:setPlayerFilename(value)
 	self.playerFilename = value
 end
 
-function DemoApplication:savePlayer(_, storage)
-	Application.savePlayer(self, _, storage)
+function DemoApplication:savePlayer(_, storage, isError)
+	Application.savePlayer(self, _, storage, isError)
 
 	if not self.playerFilename then
 		Log.info("Can't save player storage to file, player filename not set.")
 		return
+	end
+
+	if isError then
+		local backupFilename = self.playerFilename .. "." .. os.date("%Y%m%d_%H%M%S") .. ".bak"
+		Log.info("Making a back up of existing save file to '%s'...", backupFilename)
+
+		local backupData, e = love.filesystem.read(self.playerFilename)
+		if not backupData then
+			Log.warn("Couldn't read existing save file: %s", e)
+		else
+			local success, e = love.filesystem.write(backupFilename, backupData)
+			if not success then
+				Log.warn("Couldn't save back up of existing save file: %s", e)
+			else
+				Log.info("Back up success!")
+			end
+		end
 	end
 
 	love.filesystem.createDirectory("Player")
@@ -190,11 +207,11 @@ function DemoApplication:openTitleScreen()
 	self:getGame():getPlayer():spawn(storage, false, self:getPassword())
 end
 
-function DemoApplication:quit()
+function DemoApplication:quit(isError)
 	local Resource = require "ItsyScape.Graphics.Resource"
 	Resource.quit()
 
-	Application.quit(self)
+	Application.quit(self, isError)
 
 	return false
 end
