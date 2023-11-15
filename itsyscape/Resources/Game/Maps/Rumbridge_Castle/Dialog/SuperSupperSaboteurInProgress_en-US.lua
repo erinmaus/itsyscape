@@ -81,6 +81,118 @@ local isQuestCutscene = map:getArguments() and map:getArguments()["super_supper_
 local hasStartedQuest = _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_Started")
 local QUEST = Utility.Quest.build("SuperSupperSaboteur", _DIRECTOR:getGameDB())
 
+local FANCY_COOKING_TIPS = {
+	{
+		position = 'right',
+		id = "CookingWindow-Recipe-CarrotCake",
+		message = "Click on the carrot cake recipe!",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+					local recipe = interface:getCurrentRecipe()
+
+					return recipe and recipe:getItemID() == "CarrotCake"
+				end
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "CookingWindow-Inventory-SuperSupperSaboteur_OldGirlsMilk",
+		message = "Click on the Old Girl's milk\nto add it to the recipe.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+
+					local recipe = interface:getCurrentRecipe()
+					return recipe and recipe:hasIngredientWithItemID(target, "SuperSupperSaboteur_OldGirlsMilk")
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "CookingWindow-Inventory",
+		message = "Add the rest of the\ningredients to the recipe.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+
+					local recipe = interface:getCurrentRecipe()
+					return recipe and recipe:getIsReady()
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'down',
+		id = "CookingWindow-Pending",
+		message = "Double check your ingredients.\nIf something is wrong,\nclick the ingredient to remove it.",
+		open = function(target)
+			local targetTime
+			return function()
+				targetTime = targetTime or (love.timer.getTime() + 5)
+
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+
+					local item = interface:pull().lastCookedItem
+					return item ~= nil or love.timer.getTime() > targetTime
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'left',
+		id = "CookingWindow-Cook",
+		message = "Click the cook button when you're ready!",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+
+					local item = interface:pull().lastCookedItem
+					return item ~= nil
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "CookingWindow-Result",
+		message = "Success! You made a carrot cake!\nClick close to continue.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CookingWindow")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "CookingWindow", index)
+
+					local item = interface:pull().lastCookedItem
+					return item == nil or item.resource ~= "CarrotCake"
+				end
+
+				return true
+			end
+		end
+	}
+}
+
 if not _TARGET:getState():has("Item", "SuperSupperSaboteur_SecretCarrotCakeRecipeCard", 1, SEARCH_FLAGS) and
    _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotRecipe")
 then
@@ -438,6 +550,25 @@ then
 			"That sounds like non-sense!",
 			"What does %hint{right-click} even mean?!"
 		}
+
+		local hasAllIngredients = true
+		for _, ingredient in ipairs(INGREDIENTS) do
+			if not _TARGET:getState():has("Item", ingredient, 1, TAKE_FLAGS) then
+				hasAllIngredients = false
+				break
+			end
+		end
+
+		if hasAllIngredients then
+			speaker "ChefAllon"
+			message {
+				"Since you have all the ingredients,",
+				"let me show you!"
+			}
+
+			Utility.UI.openInterface(_TARGET, "CookingWindow", true)
+			Utility.UI.tutorial(_TARGET, FANCY_COOKING_TIPS)
+		end
 	elseif result == CAKE then
 		speaker "_TARGET"
 		message "I made the carrot cake!"
@@ -471,7 +602,7 @@ then
 
 			local tookItem = _TARGET:getState():take("Item", "CarrotCake", 1, { ['item-inventory'] = true, ['item-instances'] = { foundCarrotCake } })
 			if not tookItem then
-				Log.warn("Chef Allon ouldn't take carrot cake from player '%s'.", _TARGET:getName())
+				Log.warn("Chef Allon couldn't take carrot cake from player '%s'.", _TARGET:getName())
 				message "Let's try that again."
 			else
 				_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_TurnedInCake")
