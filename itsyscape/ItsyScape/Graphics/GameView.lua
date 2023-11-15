@@ -1241,6 +1241,25 @@ function GameView:quit()
 	self.mapThread:wait()
 end
 
+function GameView:dirty()
+	for layer, map in pairs(self.mapMeshes) do
+		local mapMeshMasks = map.mapMeshMasks
+		if mapMeshMasks then
+			Log.info("Resetting map mesh masks on layer %d.", layer)
+
+			for _, mapMeshMask in ipairs(mapMeshMasks) do
+				mapMeshMask:initializeCanvas()
+			end
+
+			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
+
+			for _, node in ipairs(map.parts) do
+				node:getMaterial():setTextures(map.texture, map.mask:getTexture())
+			end
+		end
+	end
+end
+
 function GameView:dumpStatsToCSV()
 	self.propViewDebugStats:dumpStatsToCSV("GameView_PropView_Update")
 end
