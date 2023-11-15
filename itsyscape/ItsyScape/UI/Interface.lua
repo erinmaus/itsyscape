@@ -87,6 +87,11 @@ function Interface:getState()
 end
 
 function Interface:examineItem(widget, inventory, index)
+	if not inventory then
+		widget:setToolTip()
+		return
+	end
+
 	local item = inventory[index]
 
 	if not item then
