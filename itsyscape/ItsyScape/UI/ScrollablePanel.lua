@@ -75,7 +75,7 @@ end
 
 function ScrollablePanel:getScrollBarActive()
 	local width, height = self:getSize()
-	local scrollSizeX, scrollSizeY = self:getSize()
+	local scrollSizeX, scrollSizeY = self:getScrollSize()
 
 	return scrollSizeX > width, scrollSizeY > height
 end

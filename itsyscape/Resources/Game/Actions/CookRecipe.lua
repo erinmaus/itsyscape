@@ -14,7 +14,7 @@ local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local CookRecipe = Class(Action)
 CookRecipe.SCOPES = { ['craft'] = true }
-CookRecipe.FLAGS = { ['item-inventory'] = false }
+CookRecipe.FLAGS = { ['item-inventory'] = true, ['item-ignore'] = true }
 
 function CookRecipe:perform(state, peep, recipe)
 	local itemID = recipe:getItemID()
@@ -125,11 +125,28 @@ function CookRecipe:perform(state, peep, recipe)
 		for i = 1, #items do
 			local resource = self:getGameDB():getResource(items[i]:getID(), "Item")
 			local actions = Utility.getActions(self:getGame(), resource, 'craft')
-			for i = 1, #actions do
-				if actions[i].instance:is("CookIngredient") then
-					actions[i].instance:transfer(state, peep, self.FLAGS, true)
+			for j = 1, #actions do
+				if actions[j].instance:is("CookIngredient") then
+					actions[j].instance:transfer(state, peep, self.FLAGS, true)
 				end
 			end
+		end
+
+		local resultItemInstance
+		for _, item in transaction:iterateItems() do
+			if itemBroker:hasItem(item) and item:getID() == itemID then
+				if resultItemInstance then
+					Log.warn("Recipe output '%s' (ref = %d) was found again with another, different item (ref = %d) in broker.", itemID, resultItemInstance:getRef(), item:getRef())
+				end
+
+				resultItemInstance = item
+			end
+		end
+
+		if not resultItemInstance then
+			Log.warn("Couldn't find output item '%s' from cooking recipe.", item:getID())
+		else
+			recipe:setResult(resultItemInstance)
 		end
 
 		self:transfer(state, peep, self.FLAGS, true)

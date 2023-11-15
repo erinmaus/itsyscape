@@ -94,7 +94,8 @@ function RandomEvent.Ship:prepare(director, layer, i, j)
 	local _, offset = self.ship:addBehavior(MapOffsetBehavior)
 	offset.offset = Vector(-map:getWidth(), 0, -map:getHeight())
 
-	self.ship:addBehavior(MovementBehavior)
+	local _, movement = self.ship:addBehavior(MovementBehavior)
+	movement.noClip = true
 
 	-- This is ugly, but this is based on the dimensions of the visible boat.
 	-- TODO: Compute visible boat dimensions.
@@ -287,7 +288,7 @@ function RandomEvent.Ship:tryFire(otherShip)
 			local isLayer
 			do
 				local peepMapResource = Utility.Peep.getMapResource(peep)
-				isLayer = peepMapResource.id.value == selfMapResource.id.value
+				isLayer = peepMapResource and peepMapResource.id.value == selfMapResource.id.value
 			end
 
 			return isLayer and isCannon
@@ -417,11 +418,11 @@ function RandomEvent:onLoad(...)
 		32,
 		24,
 		2.25)
+	self.npcShip = RandomEvent.Ship(ship)
 	ship:pushPoke('customize', scout)
 	ship:listen('sunk', self.onEnd, self, 'ko')
 	ship:listen('sink', self.onNPCShipSink, self)
-	self.npcShip = RandomEvent.Ship(ship)
-	self:prepareNPCShip(player, ship, 32, 24)
+	ship:listen('postLoad', self.prepareNPCShip, self, player, ship, 32, 24)
 
 	Utility.UI.openInterface(player, "BossHUD", false)
 
@@ -564,6 +565,8 @@ function RandomEvent:preparePlayerShip(player, ship, i, j)
 	movement.maxSpeed = maxSpeed
 	movement.maxAcceleration = maxAcceleration
 	movement.decay = 0.05
+
+	self.isPlayerShipReady = true
 end
 
 function RandomEvent:prepareNPCShip(player, ship, i, j)
@@ -578,10 +581,12 @@ function RandomEvent:prepareNPCShip(player, ship, i, j)
 	movement.maxSpeed = maxSpeed
 	movement.maxAcceleration = maxAcceleration
 	movement.decay = 0.05
+
+	self.isNPCShipReady = true
 end
 
 function RandomEvent:onPlayerShipChangeDirection(player, ship, direction)
-	self.playerShip.direction = self.playerShip.direction + direction
+	self.playerShip.direction = self.playerShip.direction + direction * 5
 end
 
 function RandomEvent:onPlayerShipChangeSpeed(player, ship, direction)
@@ -671,6 +676,14 @@ end
 
 function RandomEvent:update(director, game)
 	Map.update(self, director, game)
+
+	if not (self.isPlayerShipReady and self.isNPCShipReady) then
+		return
+	end
+
+	if not Utility.Peep.getPlayer(self) then
+		return
+	end
 
 	self:updatePlayerShip(game:getDelta())
 	self:updateNPCShip(game:getDelta())

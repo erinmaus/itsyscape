@@ -1053,7 +1053,7 @@ Description "SuperSupperSaboteur_TalkedToGuardCaptain" {
 }
 
 Description "SuperSupperSaboteur_TalkedToLyra" {
-	before = "Lyra, the witch in the Shade district of Rumbridge, has a large wolf familiar, according to Chef Allon.",
+	before = "Lyra, the witch in the Shade district of Rumbridge, has a large wolf familiar, according to the Rumbridge guard captain.",
 	after = "When speaking to Lyra, she seemed suspicious."
 }
 

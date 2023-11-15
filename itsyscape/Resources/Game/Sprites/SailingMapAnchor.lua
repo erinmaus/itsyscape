@@ -93,7 +93,9 @@ function SailingMapAnchor:draw(position, time)
 		position.x - nameWidth / 2 - SailingMapAnchor.PADDING,
 		position.y - smallFontHeight - descriptionHeight - bigFontHeight - SailingMapAnchor.PADDING,
 		width,
-		height)
+		height,
+		nil,
+		love.graphics.draw)
 
 	love.graphics.setFont(bigFont)
 	love.graphics.setColor(0, 0, 0, 1)

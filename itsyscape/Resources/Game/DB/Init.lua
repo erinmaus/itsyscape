@@ -791,6 +791,7 @@ end
 
 ItsyScape.Utility.xpForLevel = Curve.XP_CURVE
 ItsyScape.Utility.valueForItem = Curve.VALUE_CURVE
+ItsyScape.Utility.CurveConfig = require "ItsyScape.Game.CurveConfig"
 
 local RESOURCE_CURVE = Curve(nil, nil, nil, nil)
 ItsyScape.Utility.xpForResource = function(a)
@@ -798,11 +799,7 @@ ItsyScape.Utility.xpForResource = function(a)
 	local point2 = RESOURCE_CURVE(a + 1)
 	local xp = point2 - point1
 
-	local A = 1 / 1000
-	local B = 5 / 100
-	local C = 4
-
-	return math.floor(xp / (A * a ^ 2 + B * a + C))
+	return math.floor(xp / ItsyScape.Utility.CurveConfig.SkillXP:evaluate(a) + 0.5)
 end
 
 -- Calculates the sum style bonus for an item of the specified tier.
@@ -813,29 +810,23 @@ end
 -- Weapons (offensive bonuses) are handled differently; use styleBonusForWeapon.
 function ItsyScape.Utility.styleBonusForItem(tier, weight)
 	weight = weight or 1
-
-	local A = 1 / 40
-	local B = 2
-	local C = 10
-
-	return math.floor(math.floor(A * tier ^ 2 + B * tier + C) * weight)
+	return math.floor(ItsyScape.Utility.CurveConfig.StyleBonus:evaluate(tier) * weight)
 end
 
 function ItsyScape.Utility.styleBonusForArmor(tier, weight)
+	weight = weight or 1
 	return math.max(math.floor(ItsyScape.Utility.styleBonusForWeapon(tier, weight) / 6), 1)
 end
 
 -- Calculates the style bonus for a weapon of the given 'tier'.
 function ItsyScape.Utility.styleBonusForWeapon(tier, weight)
-	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3, weight)
+	weight = weight or 1
+	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3 * weight)
 end
 
 function ItsyScape.Utility.strengthBonusForWeapon(tier, weight)
-	local A = 1 / 100
-	local B = 1.5
-	local C = 5
-
-	return math.floor(A * tier ^ 2 + B * tier + C)
+	weight = weight or 1
+	return math.floor(ItsyScape.Utility.CurveConfig.StrengthBonus:evaluate(tier) * weight)
 end
 
 ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 0.3

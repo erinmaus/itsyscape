@@ -25,8 +25,11 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 
 local CookingWindow = Class(Interface)
 
-CookingWindow.WIDTH  = 960
+CookingWindow.WIDTH  = 984
 CookingWindow.HEIGHT = 640
+
+CookingWindow.POP_UP_WIDTH  = 384
+CookingWindow.POP_UP_HEIGHT = 480
 
 CookingWindow.BUTTON_SIZE    = 48
 CookingWindow.BUTTON_PADDING = 8
@@ -136,7 +139,9 @@ function CookingWindow:new(id, index, ui)
 		ingredientPanel:setStyle(PanelStyle({
 			image = "Resources/Renderers/Widget/Panel/Group.9.png"
 		}, self:getView():getResources()))
-		ingredientPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (1 / 4) - CookingWindow.BUTTON_PADDING * 2)
+		ingredientPanel:setSize(
+			w - CookingWindow.BUTTON_PADDING * 2,
+			CookingWindow.HEIGHT * (1 / 3) - CookingWindow.BUTTON_PADDING * 2)
 		ingredientPanel:setPosition(
 			CookingWindow.BUTTON_PADDING,
 			CookingWindow.BUTTON_PADDING + CookingWindow.BUTTON_SIZE)
@@ -145,6 +150,7 @@ function CookingWindow:new(id, index, ui)
 		w, h = ingredientPanel:getSize()
 
 		self.ingredientsList = ScrollablePanel(GridLayout)
+		self.ingredientsList:setID("CookingWindow-Pending")
 		self.ingredientsList:getInnerPanel():setWrapContents(true)
 		self.ingredientsList:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
 		self.ingredientsList:getInnerPanel():setUniformSize(true, CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
@@ -154,7 +160,7 @@ function CookingWindow:new(id, index, ui)
 		local inventoryHeader = Label()
 		inventoryHeader:setPosition(
 			CookingWindow.BUTTON_PADDING,
-			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE + CookingWindow.HEIGHT * (1 / 4))
+			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE + CookingWindow.HEIGHT * (1 / 3))
 		inventoryHeader:setText("Ingredients")
 		inventoryHeader:setStyle(LabelStyle(CookingWindow.HEADER_LABEL, self:getView():getResources()))
 		self.recipeBuilderPanel:addChild(inventoryHeader)
@@ -167,15 +173,16 @@ function CookingWindow:new(id, index, ui)
 		inventoryPanel:setStyle(PanelStyle({
 			image = "Resources/Renderers/Widget/Panel/Group.9.png"
 		}, self:getView():getResources()))
-		inventoryPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (3 / 4) - CookingWindow.BUTTON_PADDING * 5 - CookingWindow.BUTTON_SIZE * 3)
+		inventoryPanel:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.HEIGHT * (2 / 3) - CookingWindow.BUTTON_PADDING * 5 - CookingWindow.BUTTON_SIZE * 3)
 		inventoryPanel:setPosition(
 			CookingWindow.BUTTON_PADDING,
-			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE * 2 + CookingWindow.HEIGHT * (1 / 4))
+			CookingWindow.BUTTON_PADDING * 2 + CookingWindow.BUTTON_SIZE * 2 + CookingWindow.HEIGHT * (1 / 3))
 		self.recipeBuilderPanel:addChild(inventoryPanel)
 
 		w, h = inventoryPanel:getSize()
 
 		self.inventoryList = ScrollablePanel(GridLayout)
+		self.inventoryList:setID("CookingWindow-Inventory")
 		self.inventoryList:getInnerPanel():setWrapContents(true)
 		self.inventoryList:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
 		self.inventoryList:getInnerPanel():setUniformSize(true, CookingWindow.BUTTON_SIZE, CookingWindow.BUTTON_SIZE)
@@ -194,6 +201,7 @@ function CookingWindow:new(id, index, ui)
 		self.recipeBuilderPanel:addChild(self.requirementsPanel)
 
 		self.cookButton = Button()
+		self.cookButton:setID("CookingWindow-Cook")
 		self.cookButton:setSize(w - CookingWindow.BUTTON_PADDING * 2, CookingWindow.BUTTON_SIZE)
 		self.cookButton:setPosition(w + CookingWindow.BUTTON_PADDING, h - CookingWindow.BUTTON_SIZE - CookingWindow.BUTTON_PADDING * 3)
 		self.cookButton:setText("Cook!")
@@ -215,6 +223,7 @@ function CookingWindow:new(id, index, ui)
 			button:setStyle(ButtonStyle(
 				CookingWindow.INACTIVE_BUTTON_STYLE,
 				self:getView():getResources()))
+			button:setID(string.format("CookingWindow-Recipe-%s", item.resource))
 
 			local itemIcon = ItemIcon()
 			itemIcon:setItemID(item.resource)
@@ -226,6 +235,87 @@ function CookingWindow:new(id, index, ui)
 	end
 
 	self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
+
+	self.popUp = Panel()
+	self.popUp:setStyle(PanelStyle({ image = false, color = { 0, 0, 0, 0.2 } }, self:getView():getResources()))
+	self.popUp:setSize(self:getSize())
+
+	do
+		local popUpPanel = Panel()
+		popUpPanel:setID("CookingWindow-Result")
+		popUpPanel:setSize(CookingWindow.POP_UP_WIDTH, CookingWindow.POP_UP_HEIGHT)
+		popUpPanel:setPosition(
+			CookingWindow.WIDTH / 2 - CookingWindow.POP_UP_WIDTH / 2,
+			CookingWindow.HEIGHT / 2 - CookingWindow.POP_UP_HEIGHT / 2)
+		self.popUp:addChild(popUpPanel)
+
+		local popUpBackground = Panel()
+		popUpBackground:setStyle(PanelStyle({
+			image = "Resources/Renderers/Widget/Panel/Group.9.png"
+		}, self:getView():getResources()))
+		popUpBackground:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.BUTTON_PADDING)
+		popUpBackground:setSize(
+			CookingWindow.POP_UP_WIDTH - CookingWindow.BUTTON_PADDING * 2,
+			CookingWindow.POP_UP_HEIGHT - CookingWindow.BUTTON_PADDING * 3 - CookingWindow.BUTTON_SIZE)
+		popUpPanel:addChild(popUpBackground)
+
+		local closeButton = Button()
+		closeButton:setText("Close")
+		closeButton:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.POP_UP_HEIGHT - CookingWindow.BUTTON_SIZE - CookingWindow.BUTTON_PADDING)
+		closeButton:setSize(
+			CookingWindow.POP_UP_WIDTH - CookingWindow.BUTTON_PADDING * 2,
+			CookingWindow.BUTTON_SIZE)
+		closeButton.onClick:register(function()
+			local parent = self.popUp:getParent()
+			if parent then
+				parent:removeChild(self.popUp)
+			end
+
+			self:sendPoke("clear", nil, {})
+		end)
+		popUpPanel:addChild(closeButton)
+
+		self.scrollablePopUpPanel = ScrollablePanel()
+		self.scrollablePopUpPanel:getInnerPanel():setStyle(PanelStyle({ image = false }, self:getView():getResources()))
+		self.scrollablePopUpPanel:setPosition(
+			CookingWindow.BUTTON_PADDING * 2,
+			CookingWindow.BUTTON_PADDING * 2)
+		self.scrollablePopUpPanel:setSize(
+			CookingWindow.POP_UP_WIDTH - CookingWindow.BUTTON_PADDING * 4,
+			CookingWindow.POP_UP_HEIGHT - CookingWindow.BUTTON_PADDING * 5 - CookingWindow.BUTTON_SIZE)
+		popUpPanel:addChild(self.scrollablePopUpPanel)
+
+		self.cookItemIcon = ItemIcon()
+		self.cookItemIcon:setPosition(
+			self.scrollablePopUpPanel:getSize() / 2 - self.cookItemIcon:getSize() / 2,
+			CookingWindow.BUTTON_PADDING)
+		self.scrollablePopUpPanel:addChild(self.cookItemIcon)
+
+		self.cookText = Label()
+		self.cookText:setStyle(LabelStyle({
+			font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+			fontSize = 24,
+			textShadow = true,
+			align = 'center'
+		}, self:getView():getResources()))
+		self.cookText:setPosition(
+			CookingWindow.BUTTON_PADDING,
+			CookingWindow.BUTTON_PADDING * 2 + self.cookItemIcon:getSize())
+		self.scrollablePopUpPanel:addChild(self.cookText)
+
+		self.cookDescriptionText = Label()
+		self.cookDescriptionText:setStyle(LabelStyle({
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+			fontSize = 20,
+			textShadow = true
+		}, self:getView():getResources()))
+		self.scrollablePopUpPanel:addChild(self.cookDescriptionText)
+	end
 
 	self.currentRecipeIngredientButtons = {}
 end
@@ -249,7 +339,9 @@ function CookingWindow:selectRecipe(index, buttonWidget, buttonIndex)
 	self:sendPoke("populateRecipe", nil, { index = index })
 end
 
-function CookingWindow:populateRequirements(constraints)
+function CookingWindow:populateRequirements(constraints, additionalXP)
+	additionalXP = additionalXP or 0
+
 	local width = self.requirementsPanel:getSize()
 	local height = 0
 
@@ -267,15 +359,37 @@ function CookingWindow:populateRequirements(constraints)
 		self.requirementsPanel:addChild(panel)
 	end
 
+	local outputs = {}
+	do
+		for _, output in ipairs(constraints.outputs) do
+			if output.type == "Skill" and output.resource == "Cooking" then
+				table.insert(outputs, {
+					type = output.type,
+					resource = output.resource,
+					name = output.name,
+					description = output.description,
+					count = output.count + additionalXP,
+				})
+			else
+				table.insert(outputs, output)
+			end
+		end
+	end
+
 	self.requirementsPanel:getInnerPanel():clearChildren()
 
 	emitSection(constraints.requirements, "Requirements", { skillAsLevel = true })
 	emitSection(constraints.inputs, "Inputs")
-	emitSection(constraints.outputs, "Outputs")
+	emitSection(outputs, "Outputs")
 
 	local _, innerPanelHeight = self.requirementsPanel:getInnerPanel():getSize()
 	self.requirementsPanel:setScrollSize(width, innerPanelHeight)
-	self.requirementsPanel:getInnerPanel():setScroll(0, 0)
+
+	local visibleWidth, visibleHeight = self.requirementsPanel:getSize()
+	local currentScrollX, currentScrollY = self.requirementsPanel:getInnerPanel():getScroll()
+	self.requirementsPanel:getInnerPanel():setScroll(
+		0,
+		math.min(math.max(innerPanelHeight - visibleHeight, 0), currentScrollY))
 	self.requirementsPanel:performLayout()
 end
 
@@ -361,10 +475,15 @@ function CookingWindow:populateInventory(inventory)
 		local item = inventory[i]
 		local button = grid:getChildAt(currentButtonIndex)
 		button:setData("inventoryIndex", i)
+		button:setID(string.format("CookingWindow-Inventory-%s", item.resource))
 
-		local usable
+		local usable, xp
 		if item.usable and item.count > 0 then
 			usable = ToolTip.Text("You can cook with this ingredient.")
+
+			if item.xp > 0 then
+				xp = ToolTip.Text(string.format("Gives +%d additional Cooking XP.", item.xp or 0))
+			end
 		elseif not item.usable then
 			usable = ToolTip.Text("You do not meet the requirements to cook with this ingredient.")
 		elseif item.count == 0 then
@@ -374,7 +493,8 @@ function CookingWindow:populateInventory(inventory)
 		button:setToolTip(
 			ToolTip.Header("Add " .. item.name),
 			ToolTip.Text(item.description),
-			usable)
+			usable,
+			xp)
 
 		local itemIcon = button:getData("icon")
 		itemIcon:setItemID(item.resource)
@@ -391,11 +511,13 @@ function CookingWindow:populateInventory(inventory)
 end
 
 function CookingWindow:updateCurrentRecipe()
-	local currentRecipe = self:getState().currentRecipe
+	local state = self:getState()
+	local currentRecipe = state.currentRecipe
 	if not currentRecipe then
 		return
 	end
 
+	local additionalXP = 0
 	for i = 1, #currentRecipe do
 		local ingredient = currentRecipe[i]
 
@@ -413,8 +535,70 @@ function CookingWindow:updateCurrentRecipe()
 				button:setToolTip(
 					ToolTip.Header("Remove " .. ingredient.item.name),
 					ToolTip.Text(ingredient.item.description))
+				additionalXP = additionalXP + (ingredient.item.xp or 0)
 			end
+
+			button:setID(string.format("CookingWindow-Pending-%s", ingredient.item.resource))
 		end
+	end
+
+	self:populateRequirements(state.recipes[currentRecipe.index].constraints, additionalXP)
+end
+
+function CookingWindow:updatePopUp()
+	local lastCookedItem = self:getState().lastCookedItem
+	if not lastCookedItem then
+		return
+	end
+
+	if not self.lastCookedItem or self.lastCookedItem.ref ~= lastCookedItem.ref then
+		self:addChild(self.popUp)
+
+		local function populate(width)
+			self.cookItemIcon:setPosition(
+				width / 2 - self.cookItemIcon:getSize() / 2,
+				CookingWindow.BUTTON_PADDING)
+			self.cookItemIcon:setItemID(lastCookedItem.resource)
+
+			local isVowel = lastCookedItem.name:lower():match("^[aeiou].*")
+			local message = string.format("You successfully cooked %s %s!", isVowel and "an" or "a", lastCookedItem.name:lower())
+			self.cookText:setText(message)
+
+			local cookTextFont = self.cookText:getStyle().font
+			local _, cookTextLines = cookTextFont:getWrap(self.cookText:getText(), width)
+			local _, cookTextY = self.cookText:getPosition()
+			self.cookText:setSize(
+				width - CookingWindow.BUTTON_PADDING * 3,
+				cookTextFont:getHeight() * #cookTextLines)
+
+			local description = string.format("You gained %d cooking XP.\n%s", lastCookedItem.totalXP, lastCookedItem.description)
+			description = description:gsub("\n", "\n\n")
+
+			self.cookDescriptionText:setText(description)
+			local cookDescriptionFont = self.cookDescriptionText:getStyle().font
+			local _, cookDescriptionLines = cookDescriptionFont:getWrap(self.cookDescriptionText:getText(), width)
+			self.cookDescriptionText:setPosition(
+				CookingWindow.BUTTON_PADDING,
+				cookTextY + CookingWindow.BUTTON_PADDING * 2 + cookTextFont:getHeight() * #cookTextLines)
+			self.cookDescriptionText:setSize(
+				width - CookingWindow.BUTTON_PADDING * 3,
+				cookDescriptionFont:getHeight() * #cookDescriptionLines)
+
+			self.scrollablePopUpPanel:setScrollSize(
+				width,
+				self.cookItemIcon:getSize() + CookingWindow.BUTTON_PADDING * 2 +
+				cookTextFont:getHeight() * #cookTextLines + CookingWindow.BUTTON_PADDING +
+				cookDescriptionFont:getHeight() * #cookDescriptionLines + CookingWindow.BUTTON_PADDING)
+
+			local _, scrollY = self.scrollablePopUpPanel:getScrollBarActive()
+			return not scrollY
+		end
+
+		if not populate(self.scrollablePopUpPanel:getSize()) then
+			populate(self.scrollablePopUpPanel:getSize() - ScrollablePanel.DEFAULT_SCROLL_SIZE)
+		end
+
+		self.lastCookedItem = lastCookedItem
 	end
 end
 
@@ -422,6 +606,7 @@ function CookingWindow:update(...)
 	Interface.update(self, ...)
 
 	self:updateCurrentRecipe()
+	self:updatePopUp()
 end
 
 return CookingWindow

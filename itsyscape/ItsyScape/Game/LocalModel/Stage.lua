@@ -231,6 +231,8 @@ function LocalStage:spawnGround(filename, layer)
 		filename)
 
 	local ground = self.game:getDirector():addPeep(filename, require "Resources.Game.Peeps.Ground")
+	Utility.Peep.setLayer(ground, layer)
+
 	self.grounds[layer] = ground
 
 	local inventory = ground:getBehavior(InventoryBehavior).inventory

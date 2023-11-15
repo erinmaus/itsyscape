@@ -37,11 +37,16 @@ function ItemBroker.Transaction:new(broker)
 	self.parties = {}
 	self.steps = {}
 	self.conditions = {}
+	self.items = {}
 end
 
 -- Gets the ItemBroker this transaction belongs to.
 function ItemBroker.Transaction:getBroker(broker)
 	return self.broker
+end
+
+function ItemBroker.Transaction:iterateItems()
+	return pairs(self.items)
 end
 
 -- Adds provider 'party' as a party to the Transaction.
@@ -122,6 +127,8 @@ function ItemBroker.Transaction:consume(item, count)
 			self.broker:removeItem(item)
 		end
 
+		self.items[item:getRef()] = item
+
 		local s, r = pcall(provider.onConsume, provider, item, count)
 		if not s then
 			return false, r
@@ -161,6 +168,8 @@ function ItemBroker.Transaction:destroy(item, force)
 	local step = function()
 		local provider = self.broker.items[item]
 		self.broker:removeItem(item)
+
+		self.items[item:getRef()] = item
 
 		local s, r = pcall(provider.onDestroy, provider, item)
 		if not s then
@@ -261,6 +270,7 @@ function ItemBroker.Transaction:spawn(provider, id, count, noted, merge, force, 
 		end
 
 		for i = 1, #items do
+			self.items[items[i]:getRef()] = items[i]
 			items[i]:setUserdata(serializedUserdata)
 
 			local s, r = pcall(provider.onSpawn, provider, items[i], count)
@@ -323,6 +333,8 @@ function ItemBroker.Transaction:note(destination, id, count)
 		assert(count >= #items, "not enough items in inventory")
 
 		for i = 1, #items do
+			self.items[items[i]:getRef()] = items[i]
+
 			local destinationItem = inventory:findFirst(id, true, true, items[i]:getSerializedUserdata())
 			self.broker:removeItem(items[i])
 
@@ -332,6 +344,8 @@ function ItemBroker.Transaction:note(destination, id, count)
 			else
 				destinationItem:setCount(destinationItem:getCount() + items[i]:getCount())
 			end
+
+			self.items[destinationItem:getRef()] = destinationItem
 
 			local s, r = pcall(destination.onNote, destination, destinationItem, items)
 			if not s then
@@ -385,6 +399,7 @@ function ItemBroker.Transaction:unnote(item, count)
 		local inventory = self.broker.inventories[destination]
 
 		if count >= item:getCount() then
+			self.items[item:getRef()] = item
 			self.broker:removeItem(item)
 		end
 
@@ -404,6 +419,10 @@ function ItemBroker.Transaction:unnote(item, count)
 				local item = self.broker:addItem(destination, item:getID(), 1, false)
 				table.insert(items, item)
 			end
+		end
+
+		for i = 1, #items do
+			self.items[items[i]:getRef()] = items[i]
 		end
 
 		local s, r = pcall(destination.onUnnote, destination, item, items)
@@ -493,6 +512,8 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
 
+		self.items[destinationItem:getRef()] = destinationItem
+
 		local s, r = pcall(source.onTransferFrom, source, destination, item, count, purpose)
 		if not s then
 			io.stderr:write('error (onTransferFrom): ',  r, '\n')
@@ -503,6 +524,8 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 		else
 			item:setCount(item:getCount() - count)
 		end
+
+		self.items[item:getRef()] = item
 
 		s, r = pcall(destination.onTransferTo, destination, destinationItem, source, count, purpose)
 		if not s then

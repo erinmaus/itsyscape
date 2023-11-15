@@ -257,12 +257,6 @@ function ShipMapPeep:updateFoam()
 	do
 		local position = self:getBehavior(PositionBehavior)
 		x, z = position.position.x, position.position.z
-
-		local offset = self:getBehavior(MapOffsetBehavior)
-		if offset and offset.offset then
-			x = x + offset.offset.x
-			z = z + offset.offset.z
-		end
 	end
 
 	local rotation = self:getBehavior(RotationBehavior)
@@ -270,10 +264,20 @@ function ShipMapPeep:updateFoam()
 		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(RotationBehavior)
 		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(RotationBehavior)
 
+		local offset
+		if self:hasBehavior(MapOffsetBehavior) then
+			offset = Vector.ZERO
+		else
+			offset = Vector(
+				map:getWidth() / 2 * map:getCellSize(),
+				0,
+				map:getHeight() / 2 * map:getCellSize())
+		end
+		offset = rotation.rotation:transformVector(offset)
+
 		boatFoamPropScale.rotation = rotation.rotation
 		boatFoamTrailPropScale.rotation = rotation.rotation
 
-		local offset = rotation.rotation:transformVector(Vector(map:getWidth() / 2 * map:getCellSize(), 0, map:getHeight() / 2 * map:getCellSize()))
 		x = x + offset.x
 		z = z + offset.z
 	else

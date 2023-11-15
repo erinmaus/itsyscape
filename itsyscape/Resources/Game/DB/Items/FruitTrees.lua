@@ -133,6 +133,11 @@ for name, tree in spairs(TREES) do
 				Count = ItsyScape.Utility.xpForLevel(fruit.tier)
 			},
 
+			Input {
+				Resource = Item,
+				Count = 1
+			},
+
 			Output {
 				Resource = ItsyScape.Resource.Skill "Cooking",
 				Count = ItsyScape.Utility.xpForResource(fruit.tier + 1)
