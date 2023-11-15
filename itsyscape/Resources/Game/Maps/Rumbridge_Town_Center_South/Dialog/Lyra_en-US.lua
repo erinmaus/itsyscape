@@ -395,7 +395,7 @@ do
 
 				message {
 					"My hypothesis is it's the Bastielian influence",
-					"that excudes from the monastery."
+					"that exudes from the monastery."
 				}
 
 				message "Bastiel, an Old One, is an enemy of demons."
@@ -471,7 +471,7 @@ do
 
 				speaker "Lyra"
 				message {
-					"It's ok boy.",
+					"It's okay, boy.",
 					"Plan B it is.",
 					"Give the lit kursed candle to %person{Chef Allon}.",
 					"%person{Earl Reddick} will face his justice."

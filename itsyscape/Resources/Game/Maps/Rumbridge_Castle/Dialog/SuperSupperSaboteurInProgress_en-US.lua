@@ -473,7 +473,7 @@ then
 	local hasCarrotCake = _TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS) and _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotPermissionForGoldenCarrot")
 
 	local RECIPE = option "Where do I find the ingredients for the recipe?"
-	local BAKE   = option "Where do I bake the cake?"
+	local BAKE   = option "How do I bake the cake?"
 	local ALONE  = option "I'll leave you alone!"
 	local CAKE   = option "(Hand in the carrot cake.)"
 	local result = select {
@@ -673,20 +673,27 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_TurnedInLyra", _TARGET) 
 elseif needToLightCandle then
 	local hasBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, SEARCH_FLAGS) or
 	                          _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, SEARCH_FLAGS)
-	local hasLitBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, SEARCH_FLAGS)
-	local hasUnlitBirthdayCandle = _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, SEARCH_FLAGS)
 	local hasLitBirthdayCandleInInventory = _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, TAKE_FLAGS)
 	local hasLitKursedCandleInInventory = _TARGET:getState():has("Item", "LitKursedCandle", 1, TAKE_FLAGS)
 
-	if hasLitBirthdayCandleInInventory then
+	if hasBirthdayCandle and (hasLitBirthdayCandleInInventory or hasLitKursedCandleInInventory) then
 		local BIRTHDAY = option "Hand over lit birthday candle."
 		local KURSE    = option "Hand over lit kursed candle."
 		local NOTHING  = option "Actually, let me think about my options."
 		
-		local result = select {
-			BIRTHDAY,
-			hasLitKursedCandleInInventory and KURSE or NOTHING
-		}
+		local result
+		if hasLitKursedCandleInInventory or not _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_TurnedInLyra") then
+			result = select {
+				BIRTHDAY,
+				KURSE,
+				NOTHING
+			}
+		else
+			result = select {
+				BIRTHDAY,
+				KURSE
+			}
+		end
 
 		if result == KURSE then
 			speaker "_TARGET"
@@ -697,10 +704,78 @@ elseif needToLightCandle then
 
 			local otherResult = select { YES, NO }
 			if otherResult == YES then
+				message "(%item{Kursed candle} it is!)"
 				result = KURSE
 			else
+				message "(%item{Birthday candle} it is!)"
 				result = BIRTHDAY
 			end
+		elseif result == BIRTHDAY and hasLitKursedCandleInInventory then
+			speaker "_TARGET"
+			message "(Am I sure about that? I *do* have a %item{kursed candle}...)"
+
+			local YES = option "The Earl deserves to live! Hand over the birthday candle."
+			local NO  = option "On second thoughts, down with the Earl!"
+
+			local otherResult = select { YES, NO }
+			if otherResult == YES then
+				message "(Birthday candle it is!)"
+				result = BIRTHDAY
+			else
+				message "(Kursed candle it is!)"
+				result = KURSE
+			end
+		end
+
+		speaker "_TARGET"
+		if result == KURSE then
+			if not hasLitKursedCandleInInventory then
+				if _TARGET:getState():has("Item", "UnlitKursedCandle", 1, TAKE_FLAGS) then
+					message "(I need to light the %item{kursed candle}!)"
+				elseif _TARGET:getState():has("Item", "UnlitKursedCandle", 1, SEARCH_FLAGS) or
+				       _TARGET:getState():has("Item", "LitKursedCandle", 1, SEARCH_FLAGS)
+				then
+					message "(I need to go get the candle from the bank!)"
+				else
+					message "(Looks like I lost the %item{kursed candle}!)"
+
+					if _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_BetrayedLyra") then
+						message "(Maybe %person{Lyra} found it before I betrayed her...)"
+					else
+						message "(Maybe %person{Lyra} knows where it is...)"
+					end
+				end
+
+				return
+			else
+				message {
+					"(Here goes nothing...)",
+					"Here's the birthday candle!"
+				}
+			end
+		elseif result == BIRTHDAY then
+			if not hasLitBirthdayCandleInInventory then
+				if _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, TAKE_FLAGS) then
+					message "(I need to light the %item{birthday candle}!)"
+				elseif _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, SEARCH_FLAGS) or
+				       _TARGET:getState():has("Item", "LitKursedCandle", 1, SEARCH_FLAGS)
+				then
+					message "(I need to go get the candle from the bank!)"
+				else
+					message "(Looks like I lost the %item{birthday candle}!)"
+					message "(Maybe I should talk to %person{Chef Allon}...)"
+				end
+
+				return
+			else
+				message "Here's the birthday candle!"
+			end
+		elseif result == NOTHING then
+			message {
+				"Give me a minute!",
+				"I have to do something first."
+			}
+			return
 		end
 
 		if result == BIRTHDAY then
@@ -709,20 +784,9 @@ elseif needToLightCandle then
 		elseif result == KURSE then
 			_TARGET:getState():take("Item", "LitKursedCandle", 1, TAKE_FLAGS)
 			_TARGET:getState():give("KeyItem", "SuperSupperSaboteur_LitKursedCandle")
-		elseif result == NOTHING then
-			return
 		end
-
-		speaker "_TARGET"
-		message "Here's the birthday candle!"
 	elseif hasBirthdayCandle then
-		if hasLitBirthdayCandle then
-			speaker "_TARGET"
-			message {
-				"(Wait, the lit birthday candle isn't on me!",
-				"It be in my bank or something.)"
-			}
-		elseif hasUnlitBirthdayCandle then
+		if _TARGET:getState():has("Item", "SuperSupperSaboteur_UnlitBirthdayCandle", 1, TAKE_FLAGS) then
 			local hasTinderbox = _TARGET:getState():has("Item", "Tinderbox", 1, TAKE_FLAGS)
 
 			if hasTinderbox then
@@ -730,13 +794,19 @@ elseif needToLightCandle then
 				message "(Wait, I need to light the candle!)"
 			else
 				speaker "_TARGET"
-				message "(Wait, I need to a tinderbox to light the candle!)"
+				message "(Wait, I need to get a %item{tinderbox} to light the candle!)"
 			end
+		elseif _TARGET:getState():has("Item", "SuperSupperSaboteur_LitBirthdayCandle", 1, SEARCH_FLAGS) then
+			speaker "_TARGET"
+			message {
+				"(Wait, the %item{lit birthday candle} isn't on me!",
+				"It must be in my bank or something.)"
+			}
 		else
 			speaker "_TARGET"
 			message {
 				"(Wait, the unlit birthday candle isn't on me!",
-				"It be in my bank or something.",
+				"It must be in my bank or something.",
 				"Lemme go grab it and then light it.)"
 			}
 		end
@@ -766,7 +836,7 @@ if Utility.Quest.isNextStep(QUEST, "SuperSupperSaboteur_Complete", _TARGET) then
 		message {
 			"Excellent! Let's do this!",
 			"Time to celebrate the Earl's birthday!",
-			"I'll get him!"
+			"I'll go get him!"
 		}
 
 		local stage = _TARGET:getDirector():getGameInstance():getStage()
