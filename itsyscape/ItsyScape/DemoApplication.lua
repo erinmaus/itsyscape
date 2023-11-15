@@ -268,6 +268,7 @@ function DemoApplication:openMainMenu()
 				_DEBUG = _CONF.debug
 
 				itsyrealm.graphics.dirty()
+				self:getGameView():dirty()
 			end
 
 			self:closeMainMenu()
