@@ -19,11 +19,21 @@ function PanelStyle:new(t, resources)
 	else
 		self.image = false
 	end
+
+	if t.color then
+		self.color = t.color
+	else
+		self.color = false
+	end
 end
 
 function PanelStyle:draw(widget)
 	if self.image then
 		self.image:draw(0, 0, widget:getSize())
+	elseif self.color then
+		love.graphics.setColor(unpack(self.color))
+		itsyrealm.graphics.rectangle('fill', 0, 0, widget:getSize())
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 end
 
