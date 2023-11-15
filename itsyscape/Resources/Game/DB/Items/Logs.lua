@@ -12,7 +12,7 @@ local LOGS = {
 	["Common"] = {
 		tier = 0,
 		weight = 8,
-		health = 6,
+		health = 3,
 		tinderbox = "Tinderbox",
 		variants = { "Snowy" }
 	},
@@ -20,7 +20,7 @@ local LOGS = {
 	["Shadow"] = {
 		tier = 0,
 		weight = -2,
-		health = 3,
+		health = 2,
 		tinderbox = "Tinderbox",
 		variants = { "Stormy" }
 	},
@@ -35,14 +35,14 @@ local LOGS = {
 	["Willow"] = {
 		tier = 10,
 		weight = 6,
-		health = 20,
+		health = 7,
 		tinderbox = "Tinderbox"
 	},
 
 	["Oak"] = {
 		tier = 20,
 		weight = 4,
-		health = 40,
+		health = 15,
 		tinderbox = "Tinderbox"
 	},
 

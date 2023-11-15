@@ -14,6 +14,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
+local CurveConfig = require "ItsyScape.Game.CurveConfig"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
@@ -560,33 +561,22 @@ function Utility.xpForResource(a)
 	local point2 = RESOURCE_CURVE(a + 1)
 	local xp = point2 - point1
 
-	local A = 1 / 1000
-	local B = 5 / 100
-	local C = 4
-
-	return math.floor(xp / (A * a ^ 2 + B * a + C))
+	return math.floor(xp / CurveConfig.SkillXP:evaluate(a) + 0.5)
 end
 
 function Utility.styleBonusForItem(tier, weight)
 	weight = weight or 1
-
-	local A = 1 / 40
-	local B = 2
-	local C = 10
-
-	return math.floor(math.floor(A * tier ^ 2 + B * tier + C) * weight)
+	return math.floor(CurveConfig.StyleBonus:evaluate(tier) * weight)
 end
 
 function Utility.styleBonusForWeapon(tier, weight)
+	weight = weight or 1
 	return math.floor(Utility.styleBonusForItem(tier + 10) / 3, weight)
 end
 
 function Utility.strengthBonusForWeapon(tier, weight)
-	local A = 1 / 100
-	local B = 1.5
-	local C = 5
-
-	return math.floor(A * tier ^ 2 + B * tier + C)
+	weight = weight or 1
+	return math.floor(CurveConfig.StrengthBonus:evaluate(tier) * weight)
 end
 
 Utility.Magic = {}
@@ -705,24 +695,13 @@ function Utility.Combat.getCombatXP(peep)
 
 	local xpFromTier
 	do
-		local A = 4 / 1000
-		local B = 5 / 100
-		local C = 8
-
-		local tierDivisor = math.floor(A * tier ^ 2 + B * tier + C)
-		tierDivisor = math.max(tierDivisor, C)
+		local tierDivisor = CurveConfig.CombatXP:evaluate(tier)
+		tierDivisor = math.max(tierDivisor, CurveConfig.CombatXP.C)
 
 		xpFromTier = math.floor(xpForTier / tierDivisor)
 	end
 
-	local xpFromHitpoints
-	do
-		local A = 0.000025
-		local B = 0.5
-		local C = 2
-
-		xpFromHitpoints = math.floor(A * hitpoints ^ 2 + B * hitpoints + C)
-	end
+	local xpFromHitpoints = CurveConfig.HealthXP:evaluate(hitpoints)
 
 	local totalXP = xpFromTier + xpFromHitpoints
 	return totalXP, xpFromTier, xpFromHitpoints

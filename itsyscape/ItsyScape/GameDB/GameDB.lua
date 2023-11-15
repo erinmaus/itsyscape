@@ -113,9 +113,16 @@ function GameDB.create(inputFilename, outputFilename)
 		end
 
 		for i = 1, #inputs do
-			local script = assert(loadstring(love.filesystem.read(inputs[i]), inputs[i]))
-			local chunk = setfenv(script, S)
-			chunk()
+			local chunk, e = love.filesystem.load(inputs[i])
+			if not chunk then
+				Log.warn("Could not compile input '%s': %s", inputs[i], e)
+			else
+				chunk = setfenv(chunk, S)
+				local s, r = pcall(chunk)
+				if not s then
+					Log.warn("Couldn't run input '%s': %s", inputs[i], r)
+				end
+			end
 		end
 
 		game = S.Game.getGame()
@@ -123,7 +130,11 @@ function GameDB.create(inputFilename, outputFilename)
 
 	local brochure = Mapp.Brochure(outputFilename or ":memory:")
 	brochure:create()
-	game:instantiate(brochure)
+
+	local s, r = pcall(game.instantiate, game, brochure)
+	if not s then
+		Log.error("Error instantiating GameDB: %s", r)
+	end
 
 	return GameDB(brochure, game:getRecordDefinitions()), game:getErrors()
 end
