@@ -8,14 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Drawable = require "ItsyScape.UI.Drawable"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
-local Drawable = require "ItsyScape.UI.Drawable"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 
 local TutorialHint = Class(Interface)
-TutorialHint.PADDING_RATIO = 0.25
-TutorialHint.Z_DEPTH = math.huge
+TutorialHint.PADDING = 8
+TutorialHint.Z_DEPTH = 100000
 
 TutorialHint.Circle = Class(Drawable)
 function TutorialHint.Circle:new()
@@ -44,7 +46,7 @@ function TutorialHint.Circle:draw()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.setColor(0, 0, 0, alpha)
 	itsyrealm.graphics.circle('line', 1, 1, self.radius)
-	love.graphics.setColor(1, 1, 0, alpha)
+	love.graphics.setColor(0.2, 0.4, 1, alpha)
 	itsyrealm.graphics.circle('line', 0, 0, self.radius)
 	love.graphics.setColor(1, 1, 1, 1)
 end
@@ -58,13 +60,12 @@ function TutorialHint.Rectangle:draw()
 	local time = love.timer.getTime()
 	local alpha = math.sin(time * math.pi * 2)
 
-
 	love.graphics.setLineWidth(4)
 
 	local w, h = self:getSize()
 	love.graphics.setColor(0, 0, 0, alpha)
 	itsyrealm.graphics.rectangle('line', 1, 1, w, h, 4, 4)
-	love.graphics.setColor(1, 1, 0, alpha)
+	love.graphics.setColor(0.2, 0.4, 1, alpha)
 	itsyrealm.graphics.rectangle('line', 0, 0, w, h, 4, 4)
 	love.graphics.setColor(1 ,1, 1, 1)
 end
@@ -74,19 +75,24 @@ function TutorialHint:new(id, index, ui)
 
 	local state = self:getState()
 
+	self.panel = Panel()
+	self.panel:setStyle(PanelStyle({
+		image = "Resources/Renderers/Widget/Panel/Hint.9.png"
+	}, ui:getResources()))
+	self:addChild(self.panel)
+
 	self.label = Label()
 	self.label:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 		fontSize = 24,
 		textShadow = true,
-		color = { 1, 1, 0, 1 },
+		color = { 1, 1, 1, 1 },
 		align = 'center'
 	}, ui:getResources()))
 	self.label:setText(state.message)
-	self:setZDepth(TutorialHint.Z_DEPTH)
 	self:addChild(self.label)
 
-	self.isPlaced = false
+	self:setZDepth(TutorialHint.Z_DEPTH)
 end
 
 function TutorialHint:getOverflow()
@@ -110,33 +116,53 @@ function TutorialHint:place(widget)
 
 	local x, y
 	if state.position == 'center' then
-		x = (targetX + targetWidth / 2)
-		y = (targetY + targetHeight / 2) + textHeight / 2
+		x = (targetX + targetWidth / 2) - textWidth / 2
+		y = (targetY + targetHeight / 2) - textHeight / 2
 	else
 		if state.position == 'up' then
-			x = (targetX + targetWidth / 2)
-			y = targetY - (textHeight * TutorialHint.PADDING_RATIO) - textHeight
+			x = (targetX + targetWidth / 2) - textWidth / 2
+			y = targetY - textHeight - TutorialHint.PADDING * 3
 		elseif state.position == 'down' then
-			x = (targetX + targetWidth / 2)
-			y = targetY + (textHeight * TutorialHint.PADDING_RATIO) + textHeight
+			x = (targetX + targetWidth / 2) - textWidth / 2
+			y = targetY + targetHeight + TutorialHint.PADDING * 3
 		elseif state.position == 'left' then
-			x = targetX - (textWidth * TutorialHint.PADDING_RATIO) - textWidth
-			y = (targetY + targetHeight / 2) + textHeight / 2
+			x = targetX - textWidth - TutorialHint.PADDING * 3
+			y = (targetY + targetHeight / 2) - textHeight / 2
 		elseif state.position == 'right' then
-			x = targetX + (textWidth * TutorialHint.PADDING_RATIO) + textWidth
-			y = (targetY + targetHeight / 2) + textHeight / 2
+			x = targetX + targetWidth + TutorialHint.PADDING * 3
+			y = (targetY + targetHeight / 2) - textHeight / 2
 		end
 
 		local screenWidth, screenHeight = love.graphics.getScaledMode()
 
-		x = math.min(math.max(x, 0), screenWidth - textWidth / 2)
-		y = math.min(math.max(y, 0), screenHeight - textHeight / 2)
+		x = math.min(math.max(x, 0), screenWidth - textWidth)
+		y = math.min(math.max(y, 0), screenHeight - textHeight)
 	end
 
 	self.messageX = x
 	self.messageY = y
 
 	self.label:setPosition(x, y)
+	self.label:setSize(textWidth, textHeight)
+	self.panel:setPosition(
+		x - TutorialHint.PADDING,
+		y - TutorialHint.PADDING)
+	self.panel:setSize(
+		textWidth + TutorialHint.PADDING * 2,
+		textHeight + TutorialHint.PADDING * 2)
+end
+
+function TutorialHint:getTargetWidget(Type)
+	if not self.targetWidget or not self.targetWidget:isCompatibleType(Type) then
+		if self.targetWidget then
+			self:removeChild(self.targetWidget)
+		end
+
+		self.targetWidget = Type()
+		self:addChild(self.targetWidget)
+	end
+
+	return self.targetWidget
 end
 
 function TutorialHint:highlight(widget)
@@ -146,37 +172,29 @@ function TutorialHint:highlight(widget)
 	local targetWidth, targetHeight = widget:getSize()
 
 	if state.style == 'circle' then
-		local circle = TutorialHint.Circle()
+		local circle = self:getTargetWidget(TutorialHint.Circle)
 
 		local radius = (math.max(targetWidth, targetHeight) * (3 / 4)) + 4
 		circle:setRadius(radius)
 		circle:setPosition(targetX + targetWidth / 2, targetY + targetHeight / 2)
-
-		self:addChild(circle)
 	elseif state.style == 'rectangle' then
-		local rectangle = TutorialHint.Rectangle()
+		local rectangle = self:getTargetWidget(TutorialHint.Rectangle)
+
 		rectangle:setPosition(targetX - 4, targetY - 4)
 		rectangle:setSize(targetWidth + 8, targetHeight + 8)
-
-		self:addChild(rectangle)
 	end
 end
 
 function TutorialHint:update(...)
 	Interface.update(self, ...)
 
-	if not self.isPlaced then
-		local state = self:getState()
-		local uiView = self:getView()
-		local widget = uiView:findWidgetByID(state.id)
+	local state = self:getState()
+	local uiView = self:getView()
+	local widget = uiView:findWidgetByID(state.id)
 
-		if widget then
-			self:place(widget)
-			self:highlight(widget)
-			self.isPlaced = true
-		else
-			--Log.warn("Couldn't find widget %s.", state.id)
-		end
+	if widget then
+		self:place(widget)
+		self:highlight(widget)
 	end
 end
 

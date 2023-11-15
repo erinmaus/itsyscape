@@ -978,6 +978,31 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
+function Utility.UI.tutorial(target, tips)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+	target:addBehavior(DisabledBehavior)
+
+	local index = 0
+	local function after()
+		index = index + 1
+		if index <= #tips then
+			Utility.UI.openInterface(
+				target,
+				"TutorialHint",
+				false,
+				tips[index].id,
+				tips[index].message,
+				tips[index].open(target),
+				{ position = tips[index].position, style = tips[index].style },
+				after)
+		else
+			target:removeBehavior(DisabledBehavior)
+		end
+	end
+
+	after()
+end
+
 function Utility.UI.notifyFailure(peep, message)
 	local director = peep:getDirector()
 	if not director then
