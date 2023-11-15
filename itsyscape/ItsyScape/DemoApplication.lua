@@ -670,7 +670,7 @@ function DemoApplication:updateToolTip(delta)
 				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
 					local text = string.format("%s %s", action.verb, action.object)
 					self.showingToolTip = true
-					if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type and self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
+					if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type or self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
 						self.toolTip = {
 							ToolTip.Header(text),
 							ToolTip.Text(action.description)
