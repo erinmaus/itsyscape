@@ -47,6 +47,7 @@ function Recipe:new(resource, game)
 	self.constraints = Utility.getActionConstraints(self.game, self.action:getAction())
 
 	self.slots = {}
+	self.result = false
 	self:_addSlots(self.constraints.requirements)
 	self:_addSlots(self.constraints.inputs)
 end
@@ -220,7 +221,35 @@ function Recipe:removeIngredient(peep, item)
 	return false
 end
 
+function Recipe:hasIngredientWithItemID(peep, itemID)
+	local itemResource = self.gameDB:getResource(itemID, "Item")
+	if not itemResource then
+		return false
+	end
+
+	local count = 0
+	for i = 1, #self.slots do
+		local slot = self.slots[i]
+
+		if slot.item and slot.item:getID() == itemID then
+			count = count + 1
+		end
+	end
+
+	return count > 0, count
+end
+
+function Recipe:setResult(value)
+	self.result = value
+end
+
+function Recipe:getResult()
+	return self.result
+end
+
 function Recipe:reset()
+	self.result = false
+
 	for i = 1, #self.slots do
 		self.slots[i].item = false
 	end

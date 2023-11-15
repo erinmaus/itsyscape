@@ -118,6 +118,10 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		return false
 	end
 
+	if flags['item-ignore'] then
+		return true
+	end
+
 	local noted = false
 	if flags['item-noted'] then
 		noted = true

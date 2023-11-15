@@ -84,6 +84,10 @@ function BankInventoryStateProvider:give(name, count, flags)
 		return false
 	end
 
+	if flags['item-ignore'] then
+		return true
+	end
+
 	local broker = self.inventory:getBroker()
 	local transaction = broker:createTransaction()
 	do

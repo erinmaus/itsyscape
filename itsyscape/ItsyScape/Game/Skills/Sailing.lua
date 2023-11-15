@@ -190,10 +190,15 @@ end
 
 Sailing.Itinerary = {}
 function Sailing.Itinerary.hasItinerary(peep)
-	return Sailing.Itinerary.getStorage(peep):length() > 1
+	local itinerary = Sailing.Itinerary.getStorage(peep)
+	return itinerary and itinerary:length() > 1
 end
 
 function Sailing.Itinerary.getStorage(peep)
+	if not peep then
+		return
+	end
+
 	local director = peep:getDirector()
 	local rootStorage = director:getPlayerStorage(peep):getRoot()
 	local itineraryStorage = rootStorage:getSection("Sailing"):getSection("Itinerary")
@@ -235,8 +240,9 @@ end
 
 function Sailing.Itinerary.getLastDestination(peep)
 	local storage = Sailing.Itinerary.getStorage(peep)
-	local lastDestinationIndex = storage:length()
-	return Sailing.Itinerary.getDestination(peep, lastDestinationIndex)
+	if storage then
+		return Sailing.Itinerary.getDestination(peep, storage:length())
+	end
 end
 
 function Sailing.Itinerary.isReadyToSail(peep)
@@ -249,6 +255,9 @@ function Sailing.Itinerary.isReadyToSail(peep)
 	end
 
 	local _, lastDestinationLocation = Sailing.Itinerary.getLastDestination(peep)
+	if not lastDestinationLocation then
+		return false
+	end
 	
 	local isPortCondition = lastDestinationLocation:get("IsPort") ~= 0
 	local atLeastTwoDestinationsCondition = length > 1

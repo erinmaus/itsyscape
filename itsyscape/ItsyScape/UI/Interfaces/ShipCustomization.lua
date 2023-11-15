@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Class = require "ItsyScape.Common.Class"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local Button = require "ItsyScape.UI.Button"
@@ -120,8 +122,18 @@ function ShipCustomization:new(id, index, ui)
 	end)
 	self:addChild(self.closeButton)
 
+	self.rootSceneNode = SceneNode()
+
+	self.lightSceneNode = AmbientLightSceneNode()
+	self.lightSceneNode:setAmbience(0.6)
+	self.lightSceneNode:setParent(self.rootSceneNode)
+
+	self.parentSceneNode = SceneNode()
+	self.parentSceneNode:setParent(self.rootSceneNode)
+
 	self.shipScene = SceneSnippet()
-	self.shipScene:setIsFullLit(true)
+	self.shipScene:setRoot(self.rootSceneNode)
+	self.shipScene:setParentNode(self.parentSceneNode)
 	self.shipScene:setSize(ShipCustomization.WIDTH / 2, ShipCustomization.HEIGHT / 2)
 	self.shipScene:setPosition(
 		ShipCustomization.PADDING,
@@ -674,7 +686,7 @@ function ShipCustomization:update(...)
 	local state = self:getState()
 
 	self.camera:setVerticalRotation(math.pi / 8 * love.timer.getTime())
-	self.shipScene:setRoot(self:getView():getGameView():getMapSceneNode(state.layer))
+	self.shipScene:setChildNode(self:getView():getGameView():getMapSceneNode(state.layer))
 end
 
 return ShipCustomization

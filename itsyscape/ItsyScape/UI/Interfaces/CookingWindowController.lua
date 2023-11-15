@@ -13,6 +13,7 @@ local Cooking = require "ItsyScape.Game.Skills.Cooking"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Controller = require "ItsyScape.UI.Controller"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local CookingWindowController = Class(Controller)
 
@@ -20,6 +21,26 @@ function CookingWindowController:new(peep, director)
 	Controller.new(self, peep, director)
 
 	self:prepareState()
+
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"hide",
+		nil,
+		{})
+end
+
+function CookingWindowController:close()
+	Controller.close(self)
+
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self:getPeep(),
+		"Ribbon",
+		"show",
+		nil,
+		{})
 end
 
 function CookingWindowController:prepareState()
@@ -70,6 +91,7 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 	end
 
 	local usable = false
+	local xp = 0
 	do
 		local actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, 'craft')
 		for i = 1, #actions do
@@ -81,6 +103,15 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 			if isCookAction and canPerformAction then
 				usable = true
 			end
+
+			if isCookAction then
+				local constraints = Utility.getActionConstraints(self:getDirector():getGameInstance(), action.instance:getAction())
+				for _, output in ipairs(constraints.outputs) do
+					if output.type == "Skill" and output.resource == "Cooking" then
+						xp = xp + output.count
+					end
+				end
+			end
 		end
 	end
 
@@ -89,7 +120,8 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 		ref = broker:getItemRef(item),
 		ingredient = ingredient,
 		count = 0,
-		usable = usable
+		usable = usable,
+		xp = xp
 	})
 
 	table.insert(self.state.inventory, {
@@ -98,7 +130,8 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 		resource = item:getID(),
 		name = Utility.Item.getInstanceName(item, gameDB),
 		description = Utility.Item.getInstanceDescription(item, gameDB),
-		usable = usable
+		usable = usable,
+		xp = xp
 	})
 end
 
@@ -210,6 +243,8 @@ function CookingWindowController:poke(actionID, actionIndex, e)
 		self:removeIngredient(e)
 	elseif actionID == "cook" then
 		self:cook()
+	elseif actionID == "clear" then
+		self:clear()
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -286,6 +321,14 @@ end
 
 function CookingWindowController:pull()
 	return self.state
+end
+
+function CookingWindowController:getCurrentRecipe()
+	if not self.currentRecipeIndex then
+		return nil
+	end
+
+	return self.recipes[self.currentRecipeIndex].recipe
 end
 
 function CookingWindowController:addIngredient(e)
@@ -403,15 +446,43 @@ function CookingWindowController:cook()
 		return
 	end
 
+	local xpBefore = self:getPeep():getState():count("Skill", "Cooking", { ['skill-unboosted'] = true })
 	local action = self.recipes[self.currentRecipeIndex].action
 	if action.instance:perform(self:getPeep():getState(), self:getPeep(), recipe) then
+		local xpAfter = self:getPeep():getState():count("Skill", "Cooking", { ['skill-unboosted'] = true })
+
+		local result = recipe:getResult()
+		if result then
+			local broker = self:getDirector():getItemBroker()
+			local gameDB = self:getDirector():getGameDB()
+
+			self.state.lastCookedItem = {
+				ref = broker:getItemRef(result),
+				count = result:getCount(),
+				resource = result:getID(),
+				name = Utility.Item.getInstanceName(result, gameDB),
+				description = Utility.Item.getInstanceDescription(result, gameDB),
+				totalXP = xpAfter - xpBefore
+			}
+		end
+
 		self:populateInventory()
 		self:populateRecipe({ index = self.currentRecipeIndex }, true)
-
-		local itemName = self.state.recipes[self.currentRecipeIndex].output.name:lower()
-		local isVowel = itemName:match("^[aeiou].*")
-		Utility.Peep.notify(self:getPeep(), string.format("You successfully cooked %s %s!", isVowel and "an" or "a", itemName))
 	end
+end
+
+function CookingWindowController:clear()
+	if self.currentRecipeIndex then
+		self.recipes[self.currentRecipeIndex].recipe:reset()
+	end
+
+	self.state.lastCookedItem = nil
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateInventory",
+		nil,
+		{ self.state.inventory })
 end
 
 return CookingWindowController

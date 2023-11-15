@@ -42,8 +42,10 @@ function SceneSnippetRenderer:draw(widget)
 	if camera then
 		local renderer = self.renderers[widget]
 		do
-			if renderer.finalDeferredPass then
-				renderer.finalDeferredPass:setIsFullLit(widget:getIsFullLit())
+			local oldParent
+			if widget:getChildNode() and widget:getParentNode() then
+				oldParent = widget:getChildNode():getParent()
+				widget:getChildNode():setParent(widget:getParentNode())
 			end
 
 			love.graphics.push('all')
@@ -51,6 +53,10 @@ function SceneSnippetRenderer:draw(widget)
 			renderer:setCamera(camera)
 			renderer:draw(widget:getRoot(), 0, widget:getSize())
 			love.graphics.pop()
+
+			if oldParent then
+				widget:getChildNode():setParent(oldParent)
+			end
 		end
 
 		itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor())

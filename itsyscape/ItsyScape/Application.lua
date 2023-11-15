@@ -521,11 +521,11 @@ function Application:isGameThread(thread)
 	return self.gameThread and thread and self.gameThread == thread
 end
 
-function Application:savePlayer(player, storage)
+function Application:savePlayer(player, storage, isError)
 	-- Nothing.
 end
 
-function Application:quit()
+function Application:quit(isError)
 	if self.multiThreaded then
 		self.game:quit()
 		self.remoteGameManager:pushTick()
@@ -553,7 +553,7 @@ function Application:quit()
 						local storage = PlayerStorage()
 						storage:deserialize(serializedStorage)
 
-						self:savePlayer(self.game:getPlayer(), storage)
+						self:savePlayer(self.game:getPlayer(), storage, isError)
 					end
 				else
 					Log.warn("Didn't receive save command from logic thread before timeout.")

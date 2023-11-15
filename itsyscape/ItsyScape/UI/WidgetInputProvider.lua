@@ -133,28 +133,34 @@ end
 
 function WidgetInputProvider:mousePress(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
-	local function f(w)
+
+	local function clickedWidgetFilter(w)
+		return not w:getIsClickThrough()
+	end
+
+	local function clickableWidgetFilter(w)
 		return w:getIsFocusable() and not w:getIsClickThrough()
 	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
-	if widget then
-		self.clickedWidgets[button] = widget
-		widget:mousePress(x, y, button)
+	local clickedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickedWidgetFilter, true)
+	local clickableWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickableWidgetFilter, true)
+	local canClick = clickedWidget and clickableWidget and (clickedWidget == clickableWidget or clickedWidget:hasParent(clickableWidget))
+
+	if canClick then
+		self.clickedWidgets[button] = clickableWidget
+		clickableWidget:mousePress(x, y, button)
 	end
 
-	local focusedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
-	if focusedWidget ~= self.focusedWidget then
+	if self.focusedWidget ~= clickableWidget then
 		local oldFocusedWidget = self:getFocusedWidget()
 		if oldFocusedWidget then
 			oldFocusedWidget:blur()
 		end
 
-		self.focusedWidget = focusedWidget or false
-	end
-
-	if focusedWidget then
-		focusedWidget:focus('click')
+		self.focusedWidget = canClick and clickableWidget or false
+		if self.focusedWidget then
+			self.focusedWidget:focus('click')
+		end
 	end
 end
 
@@ -169,7 +175,7 @@ function WidgetInputProvider:mouseRelease(x, y, button)
 		widget:mouseRelease(x, y, button)
 	end
 
-	if self.clickedWidgets[button] then
+	if self.clickedWidgets[button] and self.clickedWidgets[button] ~= widget then
 		self.clickedWidgets[button]:mouseRelease(x, y, button)
 		self.clickedWidgets[button] = nil
 	end
