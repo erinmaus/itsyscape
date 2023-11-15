@@ -78,7 +78,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 5,
+		Health = 2,
 		SpawnTime = 20,
 		Resource = ItsyScape.Resource.Prop "Sardine_Default"
 	}
@@ -344,7 +344,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 10,
+		Health = 5,
 		SpawnTime = 30,
 		Resource = ItsyScape.Resource.Prop "SeaBass_Default"
 	}
