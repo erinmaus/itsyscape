@@ -174,9 +174,9 @@ function One:assign(director, key, ...)
 
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.currentHitpoints = stats.stats:getSkill("Constitution"):getWorkingLevel()
-		combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
+		combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getWorkingLevel()
 		combat.currentPrayer = stats.stats:getSkill("Faith"):getWorkingLevel()
-		combat.maximumPrayer = stats.stats:getSkill("Faith"):getBaseLevel()
+		combat.maximumPrayer = stats.stats:getSkill("Faith"):getWorkingLevel()
 	else
 		stats.stats = Stats("Player.One", director:getGameDB())
 		stats.stats:getSkill("Constitution"):setXP(Curve.XP_CURVE:compute(10))
@@ -203,12 +203,20 @@ function One:assign(director, key, ...)
 		combat.maximumHitpoints = combat.maximumHitpoints + difference
 		combat.currentHitpoints = combat.currentHitpoints + difference
 	end)
+	stats.stats:getSkill("Constitution").onBoost:register(function(skill)
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumHitpoints = skill:getWorkingLevel()
+	end)
 	stats.stats:getSkill("Faith").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 
 		local combat = self:getBehavior(CombatStatusBehavior)
 		combat.maximumPrayer = combat.maximumPrayer + difference
 		combat.currentPrayer = combat.currentPrayer + difference
+	end)
+	stats.stats:getSkill("Faith").onBoost:register(function(skill)
+		local combat = self:getBehavior(CombatStatusBehavior)
+		combat.maximumPrayer = skill:getWorkingLevel()
 	end)
 
 	do
