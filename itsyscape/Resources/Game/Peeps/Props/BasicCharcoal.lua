@@ -21,7 +21,7 @@ function BasicCharcoal:new(resource, name, ...)
 	PassableProp.new(self, resource, 'Charcoal', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(0.25, 0.25, 0.25)
+	size.size = Vector(1, 0.5, 1)
 
 	self.duration = math.huge
 end
