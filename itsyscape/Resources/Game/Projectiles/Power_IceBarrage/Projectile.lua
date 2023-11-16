@@ -35,7 +35,9 @@ function IceBarrage:load()
 		"Resources/Game/Projectiles/Power_IceBarrage/Model.lstatic",
 		function(model)
 			local material = self.decoration:getMaterial()
-			material:setTextures(self:getGameView():getWhiteTexture())
+
+			local whiteTexture = self:getGameView():getWhiteTexture()
+			material:setTextures(whiteTexture)
 			material:setIsTranslucent(true)
 
 			self.decoration:fromGroup(model:getResource(), "IceCube")
