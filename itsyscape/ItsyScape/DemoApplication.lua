@@ -81,8 +81,14 @@ function DemoApplication:new()
 
 	self:disconnect()
 
-	self.cursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
-	love.mouse.setCursor(self.cursor)
+	do
+		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
+
+		local _, blankCursorImageData = self:getGameView():getTranslucentTexture()
+		self.blankCursor = love.mouse.newCursor(blankCursorImageData, 0, 0)
+
+		love.mouse.setCursor(self.defaultCursor)
+	end
 
 	self:initTitleScreen()
 end
@@ -679,7 +685,7 @@ function DemoApplication:updateToolTip(delta)
 
 	self.toolTipTick = self.toolTipTick - delta
 	if self.mouseMoved and self.toolTipTick < 0 then
-		if isUIBlocking then
+		if isUIBlocking or (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
 			self:hideToolTip()
 		else
 			self:probe(self.mouseX, self.mouseY, false, function(probe)
@@ -735,6 +741,17 @@ function DemoApplication:update(delta)
 
 		if not self.mainMenu and self.titleScreen:isReady() then
 			self:openMainMenu()
+		end
+	end
+
+	local currentCursor = love.mouse.getCursor()
+	if (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
+		if currentCursor ~= self.blankCursor then
+			love.mouse.setCursor(self.blankCursor)
+		end
+	else
+		if currentCursor ~= self.defaultCursor then
+			love.mouse.setCursor(self.defaultCursor)
 		end
 	end
 end

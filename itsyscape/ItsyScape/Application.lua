@@ -167,6 +167,7 @@ function Application:new(multiThreaded)
 	end
 
 	self.showDebug = true
+	self.showUI = true
 	self.show2D = true
 	self.show3D = true
 
@@ -702,11 +703,11 @@ function Application:_draw()
 	love.graphics.origin()
 	love.graphics.ortho(width, height)
 
-	if self.show2D then
+	if self.showUI then
 		self.uiView:draw()
 	end
 
-	if self.clickActionTime > 0 then
+	if self.clickActionTime > 0 and not (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
 		local color
 		if self.clickActionType == Application.CLICK_WALK then
 			color = Color(1, 1, 0, 0.25)

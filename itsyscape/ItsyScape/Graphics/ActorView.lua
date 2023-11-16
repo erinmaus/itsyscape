@@ -379,7 +379,8 @@ function ActorView:_doApplySkin(slotNodes)
 						coroutine.yield()
 					end
 				else
-					slot.sceneNode:getMaterial():setTextures(self.game:getTranslucentTexture())
+					local translucentTexture = self.game:getTranslucentTexture()
+					slot.sceneNode:getMaterial():setTextures(translucentTexture)
 				end
 
 				if slot.instance:getIsTranslucent() then

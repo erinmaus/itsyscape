@@ -72,14 +72,17 @@ function GameView:new(game)
 	local translucentTextureImageData = love.image.newImageData(1, 1)
 	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
 	self.translucentTexture = TextureResource(love.graphics.newImage(translucentTextureImageData))
+	self.translucentTextureImageData = translucentTextureImageData
 
 	local whiteTextureImageData = love.image.newImageData(1, 1)
 	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
+	self.whiteTextureImageData = whiteTextureImageData
 
 	local itemTextureImageData = love.image.newImageData(1, 1)
 	itemTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.itemTexture = TextureResource(love.graphics.newImage(itemTextureImageData))
+	self.itemTextureImageData = itemTextureImageData
 
 	self.projectiles = {}
 
@@ -703,11 +706,11 @@ function GameView:getView(instance)
 end
 
 function GameView:getWhiteTexture()
-	return self.whiteTexture
+	return self.whiteTexture, self.whiteTextureImageData
 end
 
 function GameView:getTranslucentTexture()
-	return self.translucentTexture
+	return self.translucentTexture, self.translucentTextureImageData
 end
 
 function GameView:spawnItem(item, tile)

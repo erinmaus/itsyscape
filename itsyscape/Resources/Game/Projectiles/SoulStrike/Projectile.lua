@@ -47,8 +47,9 @@ function SoulStrike:load()
 		StaticMeshResource,
 		"Resources/Game/Projectiles/SoulStrike/Model.lstatic",
 		function(model)
+			local whiteTexture = self:getGameView():getWhiteTexture()
 			local material = self.decoration:getMaterial()
-			material:setTextures(self:getGameView():getWhiteTexture())
+			material:setTextures(whiteTexture)
 			material:setIsTranslucent(true)
 
 			self.decoration:fromGroup(model:getResource(), "SoulStrike")
