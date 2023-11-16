@@ -72,6 +72,17 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "Salt"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "PurpleSaltPeter",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Mining",
+	Boost = 2,
+	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
+}
+
 ItsyScape.Resource.Item "BlackFlint" {
 	ItsyScape.Action.ObtainSecondary() {
 		Requirement {

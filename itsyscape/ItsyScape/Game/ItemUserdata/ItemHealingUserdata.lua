@@ -75,4 +75,8 @@ function ItemHealingBoostUserdata:fromRecord(record)
 	self:setZealous(record:get("Zealous") ~= 0)
 end
 
+function ItemHealingBoostUserdata:apply(peep)
+	peep:poke('heal', { hitPoints = self.hitpoints, zealous = self.zealous })
+end
+
 return ItemHealingBoostUserdata

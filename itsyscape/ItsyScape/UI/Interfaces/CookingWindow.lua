@@ -490,11 +490,17 @@ function CookingWindow:populateInventory(inventory)
 			usable = ToolTip.Text("You've already added every ingredient of this type that you have.")
 		end
 
+		local hints = {}
+		for _, hint in ipairs(item.hints) do
+			table.insert(hints, string.format("- %s", hint))
+		end
+
 		button:setToolTip(
 			ToolTip.Header("Add " .. item.name),
 			ToolTip.Text(item.description),
 			usable,
-			xp)
+			xp,
+			ToolTip.Text(table.concat(hints, "\n")))
 
 		local itemIcon = button:getData("icon")
 		itemIcon:setItemID(item.resource)
@@ -597,6 +603,8 @@ function CookingWindow:updatePopUp()
 		if not populate(self.scrollablePopUpPanel:getSize()) then
 			populate(self.scrollablePopUpPanel:getSize() - ScrollablePanel.DEFAULT_SCROLL_SIZE)
 		end
+
+		self.scrollablePopUpPanel:setScroll(0, 0)
 
 		self.lastCookedItem = lastCookedItem
 	end

@@ -61,6 +61,10 @@ function Eat:perform(state, peep, item)
 		return false, "transaction failed"
 	end
 
+	for _, userdata in item:iterateUserdata() do
+		userdata:apply(peep)
+	end
+
 	Action.perform(self, state, peep)
 	return true
 end

@@ -30,6 +30,7 @@ function Stats.Skill:new(name, max)
 	self.isDirty = false
 	self.onLevelUp = Callback()
 	self.onXPGain = Callback()
+	self.onBoost = Callback()
 	self.max = max or Stats.Skill.MAX
 end
 
@@ -97,7 +98,12 @@ end
 --
 -- Values may be below zero for debuffs.
 function Stats.Skill:setLevelBoost(value)
+	local oldLevelBoost = self.levelBoost
 	self.levelBoost = math.floor(value or 0)
+
+	if oldLevelBoost ~= self.levelBoost then
+		self:onBoost(oldLevelBoost)
+	end
 end
 
 -- Gets the base level. This is the level derived from XP.

@@ -118,6 +118,16 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "PieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+}
+
+ItsyScape.Meta.ItemHealingUserdata {
+	Hitpoints = 2,
+	Resource = ItsyScape.Resource.Item "PieCrust"
+}
+
 ItsyScape.Resource.Recipe "SweetPieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -201,6 +211,16 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "SweetPieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+}
+
+ItsyScape.Meta.ItemHealingUserdata {
+	Hitpoints = 3,
+	Resource = ItsyScape.Resource.Item "SweetPieCrust"
+}
+
 ItsyScape.Resource.Recipe "RichPieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -282,6 +302,26 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.Ingredient {
 	Item = ItsyScape.Resource.Item "RichPieCrust",
 	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "RichPieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+}
+
+ItsyScape.Meta.ItemValueUserdata {
+	Value = ItsyScape.Utility.valueForItem(20),
+	Resource = ItsyScape.Resource.Item "RichPieCrust"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "RichPieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+}
+
+ItsyScape.Meta.ItemHealingUserdata {
+	Hitpoints = 5,
+	Resource = ItsyScape.Resource.Item "RichPieCrust"
 }
 
 ItsyScape.Resource.Recipe "ChocolatePieCrust" {
@@ -372,6 +412,33 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "PieCrust"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "ChocolatePieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+}
+
+ItsyScape.Meta.ItemHealingUserdata {
+	Hitpoints = 3,
+	Resource = ItsyScape.Resource.Item "ChocolatePieCrust"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "ChocolatePieCrust",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Boost = 2,
+	Resource = ItsyScape.Resource.Item "ChocolatePieCrust"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Boost = 2,
+	Resource = ItsyScape.Resource.Item "ChocolatePieCrust"
+}
+
 ItsyScape.Resource.Recipe "ApplePie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -424,7 +491,8 @@ do
 	}
 
 	ItsyScape.Resource.Item "ApplePie" {
-		CookAction
+		CookAction,
+		ItsyScape.Action.Eat()
 	}
 end
 
@@ -497,7 +565,8 @@ do
 	}
 
 	ItsyScape.Resource.Item "PecanPie" {
-		CookAction
+		CookAction,
+		ItsyScape.Action.Eat()
 	}
 end
 
@@ -570,7 +639,8 @@ do
 	}
 
 	ItsyScape.Resource.Item "FishPie" {
-		CookAction
+		CookAction,
+		ItsyScape.Action.Eat()
 	}
 end
 
@@ -589,6 +659,17 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.Ingredient {
 	Item = ItsyScape.Resource.Item "FishPie",
 	Ingredient = ItsyScape.Resource.Ingredient "Pie"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "FishPie",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Fishing",
+	Boost = 5,
+	Resource = ItsyScape.Resource.Item "FishPie"
 }
 
 ItsyScape.Resource.Recipe "MeatPie" {
@@ -643,7 +724,8 @@ do
 	}
 
 	ItsyScape.Resource.Item "MeatPie" {
-		CookAction
+		CookAction,
+		ItsyScape.Action.Eat()
 	}
 end
 
@@ -711,12 +793,9 @@ do
 		}
 	}
 
-	ItsyScape.Meta.HiddenFromSkillGuide {
-		Action = CookAction
-	}
-
 	ItsyScape.Resource.Item "PieFlavoredPie" {
-		CookAction
+		CookAction,
+		ItsyScape.Action.Eat()
 	}
 end
 

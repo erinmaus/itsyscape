@@ -9,8 +9,6 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Recipe "CarrotCake" {
-	ItsyScape.Action.Eat(),
-
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
@@ -79,4 +77,8 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A carrot cake topped with a creamy butter frosting - yum!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "CarrotCake"
+}
+
+ItsyScape.Resource.Item "CarrotCake" {
+	ItsyScape.Action.Eat()
 }

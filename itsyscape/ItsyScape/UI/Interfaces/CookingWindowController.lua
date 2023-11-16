@@ -130,6 +130,7 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 		resource = item:getID(),
 		name = Utility.Item.getInstanceName(item, gameDB),
 		description = Utility.Item.getInstanceDescription(item, gameDB),
+		hints = Utility.Item.getUserdataHints(item:getID(), gameDB),
 		usable = usable,
 		xp = xp
 	})

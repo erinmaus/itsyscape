@@ -88,4 +88,8 @@ function ItemUserdata:isSame(otherUserdata)
 	return isSameType and isStateEqual
 end
 
+function ItemUserdata:apply(peep)
+	-- Nothing.
+end
+
 return ItemUserdata
