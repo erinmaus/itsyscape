@@ -45,6 +45,7 @@ function ParticleSceneNode:new()
 	self:getMaterial():setIsFullLit(true)
 
 	self.mesh = false
+	self.isPlaying = true
 
 	self.vertexData = {}
 end
@@ -55,6 +56,18 @@ end
 
 function ParticleSceneNode:getParticleSystem()
 	return self.particleSystem
+end
+
+function ParticleSceneNode:pause()
+	self.isPlaying = false
+end
+
+function ParticleSceneNode:play()
+	self.isPlaying = true
+end
+
+function ParticleSceneNode:getIsPlaying()
+	return self.playing
 end
 
 function ParticleSceneNode:initParticleSystemFromDef(def, resources)
@@ -168,6 +181,10 @@ end
 
 function ParticleSceneNode:frame(delta)
 	if not self.particleSystem then
+		return
+	end
+
+	if not self.isPlaying then
 		return
 	end
 

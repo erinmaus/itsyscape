@@ -166,11 +166,19 @@ function Peep:poke(name, ...)
 end
 
 -- Pokes a peep the next update.
-function Peep:pushPoke(name, ...)
-	table.insert(self.pendingPokes, {
-		callback = name,
-		arguments = { n = select('#', ...), ... }
-	})
+function Peep:pushPoke(a, b, ...)
+	if type(a) == 'number' then
+		table.insert(self.pendingPokes, {
+			time = love.timer.getTime() + a,
+			callback = b,
+			arguments = { n = select('#', ...), ... }
+		})
+	elseif type(a) == 'string' then
+		table.insert(self.pendingPokes, {
+			callback = a,
+			arguments = { n = select('#', b, ...), b, ... }
+		})
+	end
 end
 
 -- Adds or replaces the CacheRef 'ref' to the resource 'name'.
@@ -537,14 +545,15 @@ function Peep:update(director, game)
 	end
 
 	local count = #self.pendingPokes
-
-	for i = 1, count do
-		local poke = self.pendingPokes[i]
-		self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
-	end
-
-	for i = 1, count do
-		table.remove(self.pendingPokes, 1)
+	local index = 1
+	while index <= #self.pendingPokes do
+		local poke = self.pendingPokes[index]
+		if not poke.time or poke.time <= love.timer.getTime() then
+			self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+			table.remove(self.pendingPokes, index)
+		else
+			index = index + 1
+		end
 	end
 
 	do

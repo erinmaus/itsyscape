@@ -19,6 +19,7 @@ WaterLeakView.MIN_TIME = 10 / 60
 WaterLeakView.MAX_TIME = 20 / 60
 WaterLeakView.MIN_SCALE = 0.4
 WaterLeakView.MAX_SCALE = 1.2
+WaterLeakView.TIME_TO_LIVE = 1.5
 
 function WaterLeakView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -48,7 +49,6 @@ function WaterLeakView:load()
 		self.decoration = DecorationSceneNode()
 		self.decoration:fromGroup(self.mesh:getResource(), "WaterLeak")
 		self.decoration:getMaterial():setTextures(self.texture)
-		self.decoration:setParent(root)
 
 		self:flicker()
 	end)
@@ -67,6 +67,10 @@ function WaterLeakView:update(delta)
 
 	PropView.update(self, delta)
 	self.time = self.time + delta
+
+	if self.time > WaterLeakView.TIME_TO_LIVE and self.decoration and not self.decoration:getParent() then
+		self.decoration:setParent(self:getRoot())
+	end
 end
 
 return WaterLeakView
