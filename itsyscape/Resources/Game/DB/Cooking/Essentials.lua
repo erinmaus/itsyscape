@@ -60,6 +60,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = Item
+	}
 end
 
 do
@@ -113,6 +123,16 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(6)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 2,
+		Resource = Item
 	}
 end
 
@@ -168,6 +188,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(11)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 4,
+		Resource = Item
+	}
 end
 
 do
@@ -221,6 +251,17 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Cooking",
+		Boost = 1,
+		Resource = Item
 	}
 end
 
@@ -276,6 +317,17 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(6)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Cooking",
+		Boost = 2,
+		Resource = Item
+	}
 end
 
 do
@@ -329,6 +381,17 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Cooking",
+		Boost = 2,
+		Resource = Item
 	}
 end
 
@@ -384,6 +447,17 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(11)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Cooking",
+		Boost = 3,
+		Resource = Item
+	}
 end
 
 do
@@ -437,6 +511,17 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Boost = 1,
+		Resource = Item
 	}
 end
 
@@ -525,6 +610,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = Item
+	}
 end
 
 do
@@ -579,6 +674,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = Item
+	}
 end
 
 do
@@ -632,6 +737,16 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(2)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = Item
 	}
 end
 
@@ -720,6 +835,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(6)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 2,
+		Resource = Item
+	}
 end
 
 do
@@ -801,6 +926,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(11)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 4,
+		Resource = Item
+	}
 end
 
 do
@@ -859,6 +994,16 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(6)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = Item
 	}
 end
 
@@ -919,6 +1064,16 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(6)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 2,
+		Resource = Item
+	}
 end
 
 do
@@ -978,6 +1133,27 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(47)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 5,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Boost = 5,
+		Resource = Item
+	}
 end
 
 do
@@ -1031,6 +1207,23 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(11)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Boost = 2,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Boost = 2,
+		Resource = Item
 	}
 end
 
@@ -1086,6 +1279,23 @@ do
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(16)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Boost = 4,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Boost = 4,
+		Resource = Item
+	}
 end
 
 do
@@ -1139,5 +1349,32 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Item,
 		Value = ItsyScape.Utility.valueForItem(16)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 3,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Boost = 2,
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Boost = 2,
+		Resource = Item
 	}
 end

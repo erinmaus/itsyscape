@@ -63,6 +63,10 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 		noted = true
 	end
 
+	if flags['item-ignore'] then
+		return true
+	end
+
 	local items = { count = 0 }
 
 	if flags['item-instances'] then

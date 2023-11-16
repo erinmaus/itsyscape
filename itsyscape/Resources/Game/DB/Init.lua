@@ -321,6 +321,12 @@ Game "ItsyScape"
 		Userdata = Meta.TYPE_RESOURCE
 	}
 
+	Meta "UserdataHint" {
+		Value = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT,
+		Userdata = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Prayer" {
 		Drain = Meta.TYPE_INTEGER,
 		IsNonCombat = Meta.TYPE_INTEGER,
@@ -1076,6 +1082,7 @@ do
 end
 
 -- Skills
+include "Resources/Game/DB/Userdata.lua"
 include "Resources/Game/DB/Skills.lua"
 include "Resources/Game/DB/Cooking/Init.lua"
 

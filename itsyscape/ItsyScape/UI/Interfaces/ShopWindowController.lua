@@ -331,6 +331,9 @@ function ShopWindowController:sell(e)
 				return
 			end
 
+			local instanceValue = item:hasUserdata("ItemValueUserdata") and item:getUserdata("ItemValueUserdata"):getValue()
+			value = instanceValue or value
+
 			local inventory = self:getPeep():getBehavior(InventoryBehavior)
 			if inventory and inventory.inventory then
 				inventory = inventory.inventory

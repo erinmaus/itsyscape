@@ -331,6 +331,27 @@ do
 		Resource = Milk,
 		Value = ItsyScape.Utility.valueForItem(11)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Milk,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 3,
+		Resource = Milk
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Milk,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Cooking",
+		Boost = 3,
+		Resource = Milk
+	}
 end
 
 do
@@ -418,6 +439,27 @@ do
 		Resource = Butter,
 		Value = ItsyScape.Utility.valueForItem(11)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Butter,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 3,
+		Resource = Butter
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Butter,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Foraging",
+		Boost = 3,
+		Resource = Butter
+	}
 end
 
 do
@@ -471,6 +513,27 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = GoldenEgg,
 		Value = ItsyScape.Utility.valueForItem(10)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenEgg,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 3,
+		Resource = GoldenEgg
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenEgg,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Crafting",
+		Boost = 3,
+		Resource = GoldenEgg
 	}
 end
 
@@ -543,6 +606,27 @@ do
 		Resource = GoldenCarrot,
 		Value = ItsyScape.Utility.valueForItem(15)
 	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenCarrot,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 1,
+		Resource = GoldenCarrot
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = GoldenCarrot,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Woodcutting",
+		Boost = 5,
+		Resource = GoldenCarrot
+	}
 end
 
 do
@@ -596,6 +680,16 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Flour,
 		Value = ItsyScape.Utility.valueForItem(10)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Flour,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 5,
+		Resource = Flour
 	}
 end
 
