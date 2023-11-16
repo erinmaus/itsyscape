@@ -101,6 +101,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.effectsPanel:setPadding(ProCombatStatusHUD.PADDING, ProCombatStatusHUD.PADDING)
 	self.effectsPanel:setWrapContents(true)
 	self.effectsPanel:setSize(ProCombatStatusHUD.Target.WIDTH, 0)
+	self.effectsPanel:setIsClickThrough(true)
 	self:addChild(self.effectsPanel)
 
 	self.label = Label()
@@ -111,6 +112,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.label:setPosition(0, (ProCombatStatusHUD.Target.HEIGHT + ProCombatStatusHUD.EFFECT_PADDING) + (ProCombatStatusHUD.Target.STAT_HEIGHT + ProCombatStatusHUD.EFFECT_PADDING) * 2)
+	self.label:setIsClickThrough(true)
 	self:addChild(self.label)
 
 	self.hitPoints = ProCombatStatusHUD.StatBar()
@@ -126,6 +128,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.hitPointsLabel:setPosition(ProCombatStatusHUD.EFFECT_PADDING, -ProCombatStatusHUD.EFFECT_PADDING)
+	self.hitPointsLabel:setIsClickThrough(true)
 	self.hitPoints:addChild(self.hitPointsLabel)
 	self:addChild(self.hitPoints)
 
@@ -142,12 +145,15 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.prayerPointsLabel:setPosition(ProCombatStatusHUD.EFFECT_PADDING, -ProCombatStatusHUD.EFFECT_PADDING)
+	self.prayerPointsLabel:setIsClickThrough(true)
 	self.prayerPoints:addChild(self.prayerPointsLabel)
 	self:addChild(self.prayerPoints)
 
 	self.effectsPanel:setSize(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.HEIGHT)
 
 	self.buttons = {}
+
+	self:setIsClickThrough(true)
 end
 
 function ProCombatStatusHUD.Target:getEffects()
@@ -275,6 +281,8 @@ function ProCombatStatusHUD.StatBar:new()
 	self.max = 1
 	self.inColor = Color(0, 1, 0, 1)
 	self.outColor = Color(1, 0, 0, 1)
+
+	self:setIsClickThrough(true)
 end
 
 function ProCombatStatusHUD.StatBar:getCurrent()
@@ -338,6 +346,8 @@ function ProCombatStatusHUD.EffectBorder:new()
 	self.current = 0
 	self.max = 1
 	self.color = Color(1, 1, 1, 0)
+
+	self:setIsClickThrough(true)
 end
 
 function ProCombatStatusHUD.EffectBorder:getColor()
@@ -1663,6 +1673,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 			timeLabel:setPosition(
 				ProCombatStatusHUD.EFFECT_PADDING,
 				ProCombatStatusHUD.EFFECT_SIZE - 22 - ProCombatStatusHUD.EFFECT_PADDING)
+			timeLabel:setIsClickThrough(true)
 			icon:setData('timeLabel', timeLabel)
 			icon:addChild(icon:getData('timeLabel'))
 
@@ -1670,6 +1681,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 			tinyDescriptionLabel:setPosition(
 				ProCombatStatusHUD.EFFECT_PADDING,
 				ProCombatStatusHUD.EFFECT_PADDING)
+			tinyDescriptionLabel:setIsClickThrough(true)
 			icon:setData('tinyDescriptionLabel', tinyDescriptionLabel)
 			icon:addChild(icon:getData('tinyDescriptionLabel'))
 
@@ -1685,6 +1697,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 
 		icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", state.effects[i].id))
 		icon:setSize(ProCombatStatusHUD.EFFECT_SIZE, ProCombatStatusHUD.EFFECT_SIZE)
+		icon:setIsClickThrough(true)
 
 		local duration = state.effects[i].duration
 		if duration ~= math.huge then
