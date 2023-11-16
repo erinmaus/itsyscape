@@ -33,11 +33,15 @@ function ItemIngredientsUserdata:addIngredient(resource, ingredient, count)
 		table.insert(self.ingredients, { name = ingredient, value = count, resource = resource })
 	end
 
+	self:_sortIngredients()
+end
+
+function ItemIngredientsUserdata:_sortIngredients()
 	table.sort(self.ingredients, function(a, b)
 		if a.value < b.value then
 			return true
 		elseif a.value == b.value then
-			return a.name < b.name
+			return a.resource < b.resource
 		end
 
 		return false
@@ -94,6 +98,7 @@ end
 
 function ItemIngredientsUserdata:deserialize(data)
 	self.ingredients = data
+	self:_sortIngredients()
 end
 
 return ItemIngredientsUserdata

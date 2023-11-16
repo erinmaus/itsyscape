@@ -107,6 +107,27 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "Roux"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "Roux",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Boost = 3,
+	Resource = ItsyScape.Resource.Item "Roux"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "Roux",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+}
+
+ItsyScape.Meta.ItemHealingUserdata {
+	Hitpoints = 2,
+	Resource = ItsyScape.Resource.Item "Roux"
+}
+
 ItsyScape.Resource.Recipe "WellCookedRoux" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
@@ -191,20 +212,8 @@ ItsyScape.Meta.ItemUserdata {
 }
 
 ItsyScape.Meta.ItemStatBoostUserdata {
-	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Boost = -3,
-	Resource = ItsyScape.Resource.Item "WellCookedRoux"
-}
-
-ItsyScape.Meta.ItemStatBoostUserdata {
-	Skill = ItsyScape.Resource.Skill "Strength",
-	Boost = -3,
-	Resource = ItsyScape.Resource.Item "WellCookedRoux"
-}
-
-ItsyScape.Meta.ItemStatBoostUserdata {
-	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Boost = -3,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Boost = 10,
 	Resource = ItsyScape.Resource.Item "WellCookedRoux"
 }
 

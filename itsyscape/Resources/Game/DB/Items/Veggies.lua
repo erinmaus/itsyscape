@@ -56,6 +56,17 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "Onion"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "YellowOnion",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Crafting",
+	Boost = 3,
+	Resource = ItsyScape.Resource.Item "YellowOnion"
+}
+
 ItsyScape.Resource.Item "Celery" {
 	ItsyScape.Action.CookIngredient() {
 		Requirement {
@@ -102,6 +113,17 @@ ItsyScape.Meta.Item {
 ItsyScape.Meta.Ingredient {
 	Item = ItsyScape.Resource.Item "Celery",
 	Ingredient = ItsyScape.Resource.Ingredient "Celery"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "Celery",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Smithing",
+	Boost = 3,
+	Resource = ItsyScape.Resource.Item "Celery"
 }
 
 ItsyScape.Resource.Item "Carrot" {
@@ -152,6 +174,17 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "Carrot"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "Carrot",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Woodcutting",
+	Boost = 3,
+	Resource = ItsyScape.Resource.Item "Carrot"
+}
+
 ItsyScape.Resource.Item "GreenPepper" {
 	ItsyScape.Action.CookIngredient() {
 		Requirement {
@@ -200,6 +233,17 @@ ItsyScape.Meta.Ingredient {
 	Ingredient = ItsyScape.Resource.Ingredient "BellPepper"
 }
 
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "GreenPepper",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Boost = 3,
+	Resource = ItsyScape.Resource.Item "GreenPepper"
+}
+
 ItsyScape.Resource.Item "GreenOnion" {
 	ItsyScape.Action.CookIngredient() {
 		Requirement {
@@ -246,4 +290,15 @@ ItsyScape.Meta.Item {
 ItsyScape.Meta.Ingredient {
 	Item = ItsyScape.Resource.Item "GreenOnion",
 	Ingredient = ItsyScape.Resource.Ingredient "Onion"
+}
+
+ItsyScape.Meta.ItemUserdata {
+	Item = ItsyScape.Resource.Item "GreenOnion",
+	Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+}
+
+ItsyScape.Meta.ItemStatBoostUserdata {
+	Skill = ItsyScape.Resource.Skill "Crafting",
+	Boost = 1,
+	Resource = ItsyScape.Resource.Item "GreenOnion"
 }

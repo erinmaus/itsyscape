@@ -1141,6 +1141,30 @@ function Utility.Item.getDescription(id, gameDB, lang)
 	end
 end
 
+function Utility.Item.getUserdataHints(id, gameDB, lang)
+	lang = lang or "en-US"
+
+	local itemResource = gameDB:getResource(id, "Item")
+	if not itemResource then
+		return {}
+	end
+
+	local result = {}
+	local userdataTypes = gameDB:getRecords("ItemUserdata", { Item = itemResource })
+	for _, userdataType in ipairs(userdataTypes) do
+		local hint = gameDB:getRecord("UserdataHint", { Userdata = userdataType:get("Userdata"), Language = lang })
+		if hint then
+			hint = hint:get("Value")
+		else
+			hint = "*" .. userdataType:get("Userdata").name
+		end
+
+		table.insert(result, hint)
+	end
+
+	return result
+end
+
 function Utility.Item.getInstanceName(instance, lang)
 	lang = lang or "en-US"
 
@@ -1175,13 +1199,19 @@ function Utility.Item.getInstanceDescription(instance, lang)
 	end
 	table.sort(userdata)
 
+	local result = {}
 	for i = 1, #userdata do
-		userdata[i] = instance:getUserdata(userdata[i]):getDescription()
+		local description = instance:getUserdata(userdata[i]):getDescription()
+		if description then
+			table.insert(result, description)
+		else
+			print("NONE 4", i, userdata[i])
+		end
 	end
 
-	table.insert(userdata, 1, baseDescription)
+	table.insert(result, 1, baseDescription)
 
-	return table.concat(userdata, "\n")
+	return table.concat(result, "\n")
 end
 
 function Utility.Item.getStats(id, gameDB)

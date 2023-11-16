@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local ItemUserdata = require "ItsyScape.Game.ItemUserdata"
 local Utility = require "ItsyScape.Game.Utility"
+local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local ItemStatBoostUserdata = Class(ItemUserdata)
 
@@ -78,6 +79,21 @@ end
 
 function ItemStatBoostUserdata:fromRecord(record)
 	self:setBoost(record:get("Skill").name, record:get("Boost"))
+end
+
+function ItemStatBoostUserdata:apply(peep)
+	local stats = peep:getBehavior(StatsBehavior)
+	stats = stats and stats.stats
+	if not stats then
+		return
+	end
+
+	for skill, boost in self:iterateSkillBoosts() do
+		local skill = stats:hasSkill(skill) and stats:getSkill(skill)
+		if skill then
+			skill:setLevelBoost(math.max(skill:getLevelBoost(), boost))
+		end
+	end
 end
 
 return ItemStatBoostUserdata

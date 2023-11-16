@@ -19,7 +19,7 @@ function ItemValueUserdata:new(...)
 end
 
 function ItemValueUserdata:setValue(value)
-	self.value = math.max(value, 0)
+	self.value = math.floor(math.max(value, 0))
 end
 
 function ItemValueUserdata:getValue()
@@ -53,7 +53,7 @@ function ItemValueUserdata:serialize()
 end
 
 function ItemValueUserdata:deserialize(data)
-	self.value = data.value
+	self.value = math.floor(data.value)
 end
 
 function ItemValueUserdata:fromRecord(record)
