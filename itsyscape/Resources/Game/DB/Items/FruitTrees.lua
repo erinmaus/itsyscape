@@ -13,9 +13,9 @@ local TREES = {
 		niceName = "Pecan",
 		ingredients = { "Fruit", "Pecan" },
 		fruit = {
-			{ name = "Pecan", tier = 1, factor = 1.5, health = -1 },
-			{ name = "RegalPecan", tier = 10, factor = 1.5, health = -1 },
-			{ name = "GoldenPecan", tier = 25, factor = 3, health = -1 },
+			{ name = "Pecan", tier = 1, factor = 2, health = -1 },
+			{ name = "RegalPecan", tier = 10, factor = 2, health = -1 },
+			{ name = "GoldenPecan", tier = 25, factor = 1, health = -1 },
 		}
 	},
 	["Apple"] = {
@@ -25,8 +25,8 @@ local TREES = {
 			{ name = "RedApple", tier = 1, factor = 1.5, health = 1 },
 			{ name = "GreenApple", tier = 10, factor = 1.5, health = 1 },
 			{ name = "SiliconApple", tier = 20, factor = 1.5, health = 2 },
-			{ name = "GoldenApple", tier = 50, factor = 5, health = 2 },
-			{ name = "WormyApple", tier = 99, factor = 15, health = -1 },
+			{ name = "GoldenApple", tier = 50, factor = 0.5, health = 2 },
+			{ name = "WormyApple", tier = 99, factor = 0.125, health = -1 },
 		}
 	},
 	["Pear"] = {
@@ -34,26 +34,26 @@ local TREES = {
 		ingredients = { "Fruit", "Pear" },
 		fruit = {
 			{ name = "Pear", tier = 1, factor = 1.5, health = 1 },
-			{ name = "DisgustingPear", tier = 15, factor = 1.5, health = -2 },
-			{ name = "RottenPear", tier = 30, factor = 1.5, health = -4 },
-			{ name = "JustMush", tier = 45, factor = 5, health = -8 },		}
+			{ name = "DisgustingPear", tier = 15, factor = 1, health = -2 },
+			{ name = "RottenPear", tier = 30, factor = 0.5, health = -4 },
+			{ name = "JustMush", tier = 45, factor = 0.25, health = -8 },		}
 	},
 	["Peach"] = {
 		niceName = "Peach",
 		ingredients = { "Fruit", "Peach" },
 		fruit = {
-			{ name = "Peach", tier = 1, factor = 1.5, health = 1 },
+			{ name = "Peach", tier = 1, factor = 2, health = 1 },
 			{ name = "JuicyPeach", tier = 20, factor = 1.5, health = 2 },
-			{ name = "DonutPeach", tier = 40, factor = 4, health = 1 },
+			{ name = "DonutPeach", tier = 40, factor = 0.5, health = 1 },
 		}
 	},
 	["Orange"] = {
 		niceName = "Orange",
 		ingredients = { "Fruit", "Orange" },
 		fruit = {
-			{ name = "Orange", tier = 1, factor = 1.5, health = 1 },
-			{ name = "SunnyOrange", tier = 20, factor = 3, health = 2 },
-			{ name = "FireOrange", tier = 55, factor = 10, health = -4 },
+			{ name = "Orange", tier = 1, factor = 1.25, health = 1 },
+			{ name = "SunnyOrange", tier = 20, factor = 1.0, health = 2 },
+			{ name = "FireOrange", tier = 55, factor = 0.5, health = -4 },
 		}
 	}
 }
