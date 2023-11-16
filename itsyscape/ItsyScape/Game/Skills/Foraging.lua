@@ -10,21 +10,13 @@
 local Utility = require "ItsyScape.Game.Utility"
 
 local Foraging = {}
-Foraging.MAX_WEIGHT = 100
 
 function Foraging.calculateWeight(foragingLevel, resourceTier, resourceFactor)
-	-- As in Excel:
-	-- =FLOOR(MAX(MIN($LEVEL/$TIER, 1)^$RARITY*100, 1), 1)
+	local difference = math.max(foragingLevel - resourceTier, 1) * 100
+	local factor = math.floor(difference * resourceFactor)
+	factor = math.max(factor, 1)
 
-	local delta = math.min(foragingLevel / resourceTier, 1)
-	local powerDelta = delta ^ resourceFactor
-
-	-- Clamp it so the weight has a minimum of 1
-	-- and a max of Foraging.MAX_WEIGHT
-	local clampedPowerDelta = math.max(powerDelta * Foraging.MAX_WEIGHT, 1)
-
-	-- Floor it so the calculation is integer
-	return math.floor(clampedPowerDelta)
+	return factor
 end
 
 function Foraging.materializeGatherActionTable(player, target, flags)
