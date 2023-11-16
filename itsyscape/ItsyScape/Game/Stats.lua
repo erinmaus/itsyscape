@@ -99,7 +99,7 @@ end
 -- Values may be below zero for debuffs.
 function Stats.Skill:setLevelBoost(value)
 	local oldLevelBoost = self.levelBoost
-	self.levelBoost = math.floor(value or 0)
+	self.levelBoost = math.max(math.floor(value or 0), -self:getBaseLevel())
 
 	if oldLevelBoost ~= self.levelBoost then
 		self:onBoost(oldLevelBoost)
