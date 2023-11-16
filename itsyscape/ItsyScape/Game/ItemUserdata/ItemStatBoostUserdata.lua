@@ -91,7 +91,11 @@ function ItemStatBoostUserdata:apply(peep)
 	for skill, boost in self:iterateSkillBoosts() do
 		local skill = stats:hasSkill(skill) and stats:getSkill(skill)
 		if skill then
-			skill:setLevelBoost(math.max(skill:getLevelBoost(), boost))
+			if boost < 0 then
+				skill:setLevelBoost(skill:getLevelBoost() + boost)
+			else
+				skill:setLevelBoost(math.max(skill:getLevelBoost(), boost))
+			end
 		end
 	end
 end
