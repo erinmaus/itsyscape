@@ -97,13 +97,13 @@ function Make:gatherSecondaries(state, player, prop)
 	local maxNumRolls = 1
 	local progress = prop:getBehavior(PropResourceHealthBehavior)
 	if progress then
-		maxNumRolls = math.ceil(progress.maxProgress / 5)
+		maxNumRolls = math.min(math.ceil(progress.maxProgress / 10), 1)
 	end
 
 	local loot = {}
 
 	-- The '0' is so there's a chance an action doesn't give any resources.
-	local numRolls = math.random(0, maxNumRolls)
+	local numRolls = love.math.random(0, maxNumRolls)
 	for i = 1, maxNumRolls do
 		local item = actions[1]
 		local currentWeight = 0
