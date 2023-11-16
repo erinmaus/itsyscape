@@ -176,9 +176,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 						local statusStorage = root:getSection("Status")
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)
 						status.currentHitpoints = statusStorage:get("currentHitpoints") or status.currentHitpoints
-						status.maximumHitpoints = statusStorage:get("maximumHitpoints") or status.maximumHitpoints
 						status.currentPrayer = statusStorage:get("currentPrayer") or status.currentPrayer
-						status.maximumPrayer = statusStorage:get("maximumPrayer") or status.maximumPrayer
 
 						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
