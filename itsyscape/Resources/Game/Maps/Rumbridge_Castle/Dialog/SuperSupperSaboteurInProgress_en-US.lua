@@ -59,6 +59,14 @@ local INGREDIENT_MISSING_MESSAGES = {
 	}
 }
 
+local hasAllIngredients = true
+for _, ingredient in ipairs(INGREDIENTS) do
+	if not _TARGET:getState():has("Item", ingredient, 1, TAKE_FLAGS) then
+		hasAllIngredients = false
+		break
+	end
+end
+
 local function playCookingAnimation()
 	local allonPeep = _SPEAKERS["ChefAllon"]
 	local allonActor = allonPeep:getBehavior("ActorReference")
@@ -95,6 +103,8 @@ local FANCY_COOKING_TIPS = {
 
 					return recipe and recipe:getItemID() == "CarrotCake"
 				end
+
+				return true
 			end
 		end
 	},
@@ -470,6 +480,15 @@ then
 		message "Anything else?"
 	end
 
+	if hasAllIngredients then
+		speaker "ChefAllon"
+		message {
+			"Looks like you have all the ingredients!",
+			"If you need help baking a cake,",
+			"just ask me!"
+		}
+	end
+
 	local hasCarrotCake = _TARGET:getState():has("Item", "CarrotCake", 1, TAKE_FLAGS) and _TARGET:getState():has("KeyItem", "SuperSupperSaboteur_GotPermissionForGoldenCarrot")
 
 	local RECIPE = option "Where do I find the ingredients for the recipe?"
@@ -551,23 +570,19 @@ then
 			"What does %hint{right-click} even mean?!"
 		}
 
-		local hasAllIngredients = true
-		for _, ingredient in ipairs(INGREDIENTS) do
-			if not _TARGET:getState():has("Item", ingredient, 1, TAKE_FLAGS) then
-				hasAllIngredients = false
-				break
-			end
-		end
-
 		if hasAllIngredients then
 			speaker "ChefAllon"
-			message {
-				"Since you have all the ingredients,",
-				"let me show you!"
-			}
+			message "Let me show you!"
 
 			Utility.UI.openInterface(_TARGET, "CookingWindow", true)
 			Utility.UI.tutorial(_TARGET, FANCY_COOKING_TIPS)
+		else
+			speaker "ChefAllon"
+			message {
+				"When you get all the ingredients,",
+				"speak to me again about how to bake",
+				"and I'll show you how!"
+			}
 		end
 	elseif result == CAKE then
 		speaker "_TARGET"

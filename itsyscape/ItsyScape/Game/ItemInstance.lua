@@ -63,6 +63,10 @@ function ItemInstance:removeUserdata(userdataID)
 end
 
 function ItemInstance:hasUserdata(userdataID)
+	if not userdataID then
+		return next(self.userdata) ~= nil
+	end
+
 	return self.userdata[userdataID] ~= nil
 end
 

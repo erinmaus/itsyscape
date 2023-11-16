@@ -45,6 +45,14 @@ function BankInventoryStateProvider:take(name, count, flags)
 		return false
 	end
 
+	if not flags['item-bank'] then
+		return false
+	end
+
+	if flags['item-ignore'] then
+		return true
+	end
+
 	local items = { count = 0 }
 
 	local broker = self.inventory:getBroker()

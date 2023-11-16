@@ -91,9 +91,6 @@ function MapMeshMask:initializeCanvas()
 		love.graphics.setCanvas(self.canvas, i)
 		love.graphics.clear(0, 0, 0, 0)
 		love.graphics.draw(texture, unpack(self.SEGMENT_OFFSETS[i]))
-
-			love.graphics.setCanvas()
-			self:getCanvas():newImageData(i):encode('png', string.format("single%05d.png", i))
 	end
 	love.graphics.pop()
 end
@@ -137,9 +134,6 @@ function MapMeshMask.combine(...)
 				0,
 				result:getCanvas():getWidth() / mask:getTexture():getResource():getWidth(),
 				result:getCanvas():getHeight() / mask:getTexture():getResource():getHeight())
-
-			love.graphics.setCanvas()
-			result:getCanvas():newImageData(i + MapMeshMask.MAX_TYPE_COMBINATIONS * (offset - 1)):encode('png', string.format("slice%05d.png", (i + MapMeshMask.MAX_TYPE_COMBINATIONS * (offset - 1))))
 		end
 	end
 	love.graphics.pop()
