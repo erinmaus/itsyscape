@@ -106,10 +106,16 @@ end
 
 M["Svalbard"] = ItsyScape.Resource.MapObject.Unique()
 do
+	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
+
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 53,
 		PositionY = 2,
 		PositionZ = 69,
+		RotationX = rotation.x,
+		RotationY = rotation.y,
+		RotationZ = rotation.z,
+		RotationW = rotation.w,
 		Name = "Svalbard",
 		Map = M._MAP,
 		Resource = M["Svalbard"]
