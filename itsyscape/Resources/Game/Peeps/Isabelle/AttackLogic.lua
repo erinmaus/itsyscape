@@ -18,13 +18,19 @@ local Isabelle = require "Resources.Game.Peeps.Isabelle.IsabelleMean"
 local HITS = B.Reference("Isabelle_AttackLogic", "HITS")
 local STYLE = B.Reference("Isabelle_AttackLogic", "STYLE")
 local TARGET = B.Reference("Isabelle_AttackLogic", "TARGET")
+local ENGAGED = B.Reference("Isabelle_AttackLogic", "ENGAGED")
 
 local THRESHOLD_SPECIAL_1 = 4
-local THRESHOLD_SPECIAL_2 = 6
-local THRESHOLD_SWITCH    = 9
+local THRESHOLD_SPECIAL_2 = 5
+local THRESHOLD_SWITCH    = 7
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
+		Mashina.Set {
+			value = true,
+			[ENGAGED] = B.Output.value
+		},
+
 		Mashina.Get {
 			value = function(mashina)
 				local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
@@ -45,6 +51,10 @@ local Tree = BTreeBuilder.Node() {
 			message = "Time to die!"
 		},
 
+		Mashina.Peep.ActivatePrayer {
+			prayer = "IronWill"
+		},
+
 		Mashina.Peep.PokeSelf {
 			event = "boss"
 		},
@@ -55,7 +65,6 @@ local Tree = BTreeBuilder.Node() {
 		},
 
 		Mashina.Repeat {
-
 			Mashina.Success {
 				Mashina.Sequence {
 					Mashina.Invert {
@@ -72,7 +81,8 @@ local Tree = BTreeBuilder.Node() {
 					},
 
 					Mashina.Peep.PokeSelf {
-						event = "rezzMinions"
+						event = "rezzMinions",
+						poke = true
 					},
 
 					Mashina.Peep.PokeSelf {
@@ -87,12 +97,30 @@ local Tree = BTreeBuilder.Node() {
 					[HITS] = B.Output.result
 				},
 
-				Mashina.Peep.Talk {
-					message = "Protect me, minions!"
+				Mashina.Try {
+					Mashina.Sequence {
+						Mashina.Check {
+							condition = ENGAGED
+						},
+
+						Mashina.Peep.Talk {
+							message = "Protect me, minions!"
+						}
+					},					
+
+					Mashina.Peep.Talk {
+						message = "Protect me, minion!"
+					}
 				},
 
 				Mashina.Peep.PokeSelf {
-					event = "rezzMinions"
+					event = "rezzMinions",
+					poke = ENGAGED
+				},
+
+				Mashina.Set {
+					value = false,
+					[ENGAGED] = B.Output.value
 				},
 
 				Mashina.Repeat {

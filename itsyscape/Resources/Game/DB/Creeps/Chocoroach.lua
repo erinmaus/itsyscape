@@ -45,25 +45,25 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(20),
-	Resource = ItsyScape.Resource.Peep "Chocoroach"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(20),
-	Resource = ItsyScape.Resource.Peep "Chocoroach"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Chocoroach"
 }
 
 ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Value = ItsyScape.Utility.xpForLevel(15),
+	Resource = ItsyScape.Resource.Peep "Chocoroach"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(10),
+	Resource = ItsyScape.Resource.Peep "Chocoroach"
+}
+
+ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(35),
+	Value = ItsyScape.Utility.xpForLevel(40),
 	Resource = ItsyScape.Resource.Peep "Chocoroach"
 }
 
@@ -125,8 +125,8 @@ ItsyScape.Meta.DropTableEntry {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(20, 1),
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20),
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(20),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(15),
 	Resource = ItsyScape.Resource.Peep "Chocoroach"
 }
 

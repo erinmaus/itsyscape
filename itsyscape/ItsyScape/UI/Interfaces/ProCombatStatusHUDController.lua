@@ -42,6 +42,18 @@ ProCombatStatusHUDController.THINGIES_SPELLS           = 3
 ProCombatStatusHUDController.THINGIES_PRAYERS          = 4
 ProCombatStatusHUDController.THINGIES_EQUIPMENT        = 5
 
+ProCombatStatusHUDController.COMBAT_SKILLS = {
+	"Constitution",
+	"Attack",
+	"Strength",
+	"Magic",
+	"Wisdom",
+	"Archery",
+	"Dexterity",
+	"Defense",
+	"Faith"
+}
+
 function ProCombatStatusHUDController:new(peep, director)
 	Controller.new(self, peep, director)
 
@@ -367,6 +379,50 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 				prayer = { current = 0, max = 0 },
 				hitpoints = { current = 0, max = 0 }
 			}
+		end
+	end
+
+	if target then
+		local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon("Unarmed")
+		local accuracy = weapon:rollAttack(peep, target:getPeep(), weapon:getBonusForStance(peep))
+		local damage = weapon:rollDamage(peep, Weapon.PURPOSE_KILL, target:getPeep())
+
+		result.dps = {
+			accuracy = {
+				level = accuracy:getAttackLevel(),
+				stat = accuracy:getAccuracyBonus(),
+				attackRoll = accuracy:getMaxAttackRoll(),
+				defenseRoll = accuracy:getMaxDefenseRoll()
+			},
+
+			damage = {
+				level = damage:getLevel(),
+				stat = damage:getBonus(),
+				damageMultiplier = damage:getDamageMultiplier(),
+				min = damage:getMinHit(),
+				max = damage:getMaxHit()
+			},
+
+			weapon = {
+				id = weapon:getID(),
+			},
+
+			bonuses = Utility.Peep.getEquipmentBonuses(peep),
+
+			skills = {}
+		}
+
+		local stats = peep:getBehavior(StatsBehavior)
+		stats = stats and stats.stats
+		if stats then
+			for _, skillName in ipairs(ProCombatStatusHUDController.COMBAT_SKILLS) do
+				local skill = stats:hasSkill(skillName) and stats:getSkill(skillName)
+				table.insert(result.dps.skills, {
+					id = skillName,
+					level = skill and skill:getBaseLevel() or 1,
+					boost = skill and skill:getLevelBoost() or 0
+				})
+			end
 		end
 	end
 

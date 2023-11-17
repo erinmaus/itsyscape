@@ -73,30 +73,30 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "YellowOnion"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "YellowOnion"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "YellowOnion"
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.9),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 1.3),
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(15),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.9),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 1.3),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.5),
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(28),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10),
 	Resource = ItsyScape.Resource.Peep "YellowOnion"
 }
 
@@ -165,30 +165,30 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "Celery"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Celery"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Celery"
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(15),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.9),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 0.5),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1.3),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(30),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15),
 	Resource = ItsyScape.Resource.Peep "Celery"
 }
 
@@ -257,30 +257,30 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "Carrot"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Carrot"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Carrot"
 }
 
 ItsyScape.Meta.Equipment {
 	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(25),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.9),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(12, 0.9),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(12, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(12, 1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 0.5),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1.3),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(30),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 1.3),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
 	Resource = ItsyScape.Resource.Peep "Carrot"
 }
 
@@ -349,30 +349,30 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(5),
 	Resource = ItsyScape.Resource.Peep "GreenPepper"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "GreenPepper"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "GreenPepper"
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.9),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.9),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(15, 0.6),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1.2),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(35),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20),
 	Resource = ItsyScape.Resource.Peep "GreenPepper"
 }
 
@@ -435,7 +435,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = ItsyScape.Resource.Peep "GreenOnion"
 }
 

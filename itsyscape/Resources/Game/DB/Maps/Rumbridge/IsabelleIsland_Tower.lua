@@ -50,12 +50,6 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice"
 	}
 
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AmuletOfYendor",
-		Count = 1,
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice"
-	}
-
 	local Pickpocket = ItsyScape.Action.Pickpocket()
 	ItsyScape.Meta.DebugAction {
 		Action = Pickpocket
@@ -92,12 +86,6 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "But she was so nice!",
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "AmuletOfYendor",
-		Count = 1,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
@@ -151,24 +139,25 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Faith",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(5),
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(5),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(5),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(5),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(15),
+		Prayer = 20,
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
