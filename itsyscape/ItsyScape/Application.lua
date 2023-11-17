@@ -333,8 +333,13 @@ function Application:update(delta)
 	end
 
 	if not _CONF.server then
-		self:measure('gameView:update()', function() self.gameView:update(delta) end)
-		self:measure('uiView:update()', function() self.uiView:update(delta) end)
+		if self.show3D then
+			self:measure('gameView:update()', function() self.gameView:update(delta) end)
+		end
+
+		if self.showUI then
+			self:measure('uiView:update()', function() self.uiView:update(delta) end)
+		end
 	end
 
 	self.clickActionTime = self.clickActionTime - delta
@@ -372,7 +377,10 @@ end
 function Application:tickMultiThread()
 	self:doCommonTick()
 
-	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	if self.show3D then
+		self:measure('gameView:tick()', function() self.gameView:tick() end)
+	end
+
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
 end
