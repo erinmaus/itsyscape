@@ -149,6 +149,8 @@ function TitleScreen:drawTitle()
 		local message
 		if _DEBUG then
 			message = string.format("%s\n(%s)", _ITSYREALM_VERSION, _DEBUG == true and 'debug' or 'debug ' .. tostring(_DEBUG))
+		else
+			message = _ITSYREALM_VERSION
 		end
 
 		local width = self.font:getResource():getWidth(message)
