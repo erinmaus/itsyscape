@@ -170,6 +170,10 @@ function PlayerStorage.Section:get(key)
 	end
 end
 
+function PlayerStorage.Section:hasValue(key)
+	return self.values[key] ~= nil
+end
+
 function PlayerStorage.Section:iterateValues()
 	return pairs(self.values)
 end

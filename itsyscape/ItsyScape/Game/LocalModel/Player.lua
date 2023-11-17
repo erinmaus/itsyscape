@@ -26,6 +26,8 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
@@ -103,11 +105,12 @@ function LocalPlayer:saveLocation()
 
 	local statusStorage = root:getSection("Status")
 	local status = self.actor:getPeep():getBehavior(CombatStatusBehavior)
+	local stance = self.actor:getPeep():getBehavior(StanceBehavior)
+
 	statusStorage:set({
-		currentHitpoints = status.currentHitpoints,
-		maximumHitpoints = status.maximumHitpoints,
-		currentPrayer = status.currentPrayer,
-		maximumPrayer = status.maximumPrayer
+		currentHitpoints = status and status.currentHitpoints or nil,
+		currentPrayer = status and status.currentPrayer or nil,
+		stance = stance and stance.stance or nil
 	})
 end
 
@@ -177,6 +180,9 @@ function LocalPlayer:spawn(storage, newGame, password)
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)
 						status.currentHitpoints = statusStorage:get("currentHitpoints") or status.currentHitpoints
 						status.currentPrayer = statusStorage:get("currentPrayer") or status.currentPrayer
+
+						local stance = actor:getPeep():getBehavior(StanceBehavior)
+						stance.stance = statusStorage:get("stance") or stance.stance
 
 						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
