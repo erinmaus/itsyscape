@@ -355,12 +355,11 @@ end
 -- Blue cotton
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(2, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2, 0.2),
-		DefenseRanged = 0,
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "BlueCottonGloves"
 	}
@@ -372,12 +371,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(1, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(1, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(1, 0.4),
-		DefenseRanged = 0,
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "BlueCottonSlippers"
 	}
@@ -389,13 +387,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(2, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2, 0.7),
-		DefenseRanged = 0,
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(3, 0.25),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "BlueCottonHat"
 	}
@@ -407,12 +403,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(3, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(3, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(3, 0.7),
-		DefenseRanged = 0,
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(3, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(5, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(3),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(3),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(0),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(3),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "BlueCottonRobe"
 	}
@@ -424,12 +419,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.6),
-		DefenseRanged = 0,
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(10, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(4),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(2),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "BlueCottonShield"
 	}
@@ -444,12 +438,11 @@ end
 -- Cotton cloth
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(13, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(13),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(11),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(12),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(14),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "CottonClothGloves"
 	}
@@ -461,12 +454,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(11, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(11, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(12),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(11),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(12),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "CottonClothSlippers"
 	}
@@ -478,13 +470,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(12, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(12, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(12, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(13, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(12),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(11),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(10),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(6),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(13),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "CottonClothHat"
 	}
@@ -496,12 +486,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(13, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(13, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(15, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(10),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(14),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(12),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(5.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(15),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "CottonClothRobe"
 	}
@@ -513,12 +502,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.6),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1.0),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(20, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(15),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(12),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(18),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(7),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(12),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "CottonClothShield"
 	}
@@ -533,12 +521,11 @@ end
 -- Spider silk cloth
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(23, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(22),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(21),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(25),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(10),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(22),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "SpiderSilkGloves"
 	}
@@ -550,12 +537,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(21, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(19),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(22),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(20),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(9),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(23),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "SpiderSilkSlippers"
 	}
@@ -567,13 +553,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(22, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(22, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(22, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(22, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(13, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(22),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(23),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(24),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(25),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "SpiderSilkHat"
 	}
@@ -585,12 +569,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(23, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(23, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(23, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 0.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(23, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(25, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(23),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(21),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(22),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(25),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "SpiderSilkRobe"
 	}
@@ -602,12 +585,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.6),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2, 1.0),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(20, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(20),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(20),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(20),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(20),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "SpiderSilkShield"
 	}
@@ -622,12 +604,11 @@ end
 -- Mystic cotton cloth
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(31),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(33),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(32),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(22),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(29),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "MysticCottonGloves"
 	}
@@ -639,12 +620,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(31),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(33),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(32),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(22),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(29),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "MysticCottonSlippers"
 	}
@@ -656,13 +636,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(32, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.25),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(23, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(29),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(31),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(30),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(22),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(32),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "MysticCottonHat"
 	}
@@ -674,12 +652,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(35, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(11, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(34, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(35, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(31),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(35),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(33),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(22),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(34),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "MysticCottonRobe"
 	}
@@ -691,12 +668,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(29, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(31, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(12, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForArmor(30, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(29),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(31),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(30),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(22),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(30),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "MysticCottonShield"
 	}
@@ -711,12 +687,11 @@ end
 -- Noble silk
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(43, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(43),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(43),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(43),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(31),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(43),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "NobleSilkGloves"
 	}
@@ -728,12 +703,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(41, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(41, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(41, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(42, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(41),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(41),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(41),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(31),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(42),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "NobleSilkSlippers"
 	}
@@ -745,13 +719,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(42, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(42, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(42, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(42, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(43, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(42),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(42),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(42),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(31),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(42),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "NobleSilkHat"
 	}
@@ -763,12 +735,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(43, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 0.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(43, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(45, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(43),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(43),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(43),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(31),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(43),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "NobleSilkRobe"
 	}
@@ -780,12 +751,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 0.6),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 1.0),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(40, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(40),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(40),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(40),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(31),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(40),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "NobleSilkShield"
 	}
@@ -800,12 +770,11 @@ end
 -- Zealot silk
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(53, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.3),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.1),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(52),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(55),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(55.75),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(45),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(53),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "ZealotSilkGloves"
 	}
@@ -817,12 +786,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(51, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(51, 0.8),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(52, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.2),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(51),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(52),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(50.5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(49),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(53),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "ZealotSilkSlippers"
 	}
@@ -834,13 +802,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(52, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(52, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(52, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(52, 0.4),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.3),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(53, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(59),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(55),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(54),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(44),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(50),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "ZealotSilkHat"
 	}
@@ -852,12 +818,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(53, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(53, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(53, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(55, 0.4),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(55),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(56),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(57),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(47),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(58),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "ZealotSilkRobe"
 	}
@@ -869,12 +834,16 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 0.6),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1.0),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 0.5),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForItem(50, 0.3),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(50),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(50),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(50),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(46),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(50),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(15),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "ZealotSilkShield"
 	}

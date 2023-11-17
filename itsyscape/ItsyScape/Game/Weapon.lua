@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local CurveConfig = require "ItsyScape.Game.CurveConfig"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
@@ -119,9 +120,21 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
 		local targetStats
 		do
-			targetStats = peep:getBehavior(StatsBehavior)
+			targetStats = target:getBehavior(StatsBehavior)
 			if targetStats then
 				targetStats = targetStats.stats
+			end
+		end
+
+		local defenseLevel = 1
+		if targetStats then
+			defenseLevel = targetStats:hasSkill("Defense") and targetStats:getSkill("Defense"):getWorkingLevel()
+		end
+
+		local stance = target:getBehavior(StanceBehavior)
+		if stance then
+			if stance.stance == Weapon.STANCE_DEFENSIVE then
+				defenseLevel = defenseLevel + 8
 			end
 		end
 
@@ -129,23 +142,21 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 		local accuracyBonusName = "Accuracy" .. styleBonus
 		local accuracyBonus = bonuses[accuracyBonusName]
+		local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
 
 		local defenseBonusName = "Defense" .. styleBonus
 		local defenseBonus = targetBonuses[defenseBonusName]
+		local defenseTier = math.max(CurveConfig.StyleBonus:solvePlus(defenseBonus), 0)
 
-		local defenseLevel, maxDefenseLevel
-		if stats then
-			local defenseSkill = targetStats:getSkill("Defense")
-			defenseLevel = defenseSkill:getBaseLevel()
-			maxDefenseLevel = defenseSkill:getMaxLevel()
-		else
-			defenseLevel = 1
-			maxDefenseLevel = 99
-		end
+		local armorDamageReduction = math.max(math.min(CurveConfig.ArmorDamageReduction:evaluate(defenseTier - accuracyTier), 100), 0)
+		local defenseDamageReduction = math.max(math.min(CurveConfig.DefenseDamageReduction:evaluate(defenseLevel), 100), 0)
+		local totalDamageReduction = armorDamageReduction + defenseDamageReduction
 
-		local defenseLevelMultiplier = math.min(math.max(defenseLevel / maxDefenseLevel, 0), 1) * 0.5
-		local statMultiplier = math.max(math.min((defenseBonus - accuracyBonus) / 100, 1), 0) * 0.5
-		local clampedMultiplier = math.min(math.max(defenseLevelMultiplier + statMultiplier, 0), 0.99)
+		Log.info(
+			"Rolling damage from peep '%s' (accuracy tier = %d) against player '%s' (defense tier = %d, working defense level = %d): %.2f%% damage reduction from armor, %.2f%% damage reduction from defense, for a total of %.2f%%.",
+			peep:getName(), accuracyTier, target:getName(), defenseTier, defenseLevel, armorDamageReduction, defenseDamageReduction, totalDamageReduction)
+
+		local clampedMultiplier = math.max(math.min(totalDamageReduction / 100, 1), 0)
 
 		self.damageMultiplier = 1 - clampedMultiplier
 	else
@@ -175,10 +186,6 @@ end
 
 function Weapon.DamageRoll:getDamageStat()
 	return self.stat
-end
-
-function Weapon.DamageRoll:setLevel(value)
-	self.level = value or self.level
 end
 
 function Weapon.DamageRoll:getStyle()
@@ -240,7 +247,7 @@ function Weapon.DamageRoll:roll()
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
 
-	return math.floor(math.random(minHit, maxHit) * self.damageMultiplier)
+	return math.ceil(math.random(minHit, maxHit) * self.damageMultiplier)
 end
 
 Weapon.AttackRoll = Class()
