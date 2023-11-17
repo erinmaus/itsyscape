@@ -81,7 +81,7 @@ local graphicsState = {
 	atlas = DynamicAtlas.new(0, 1, 0),
 	transform = love.math.newTransform(),
 	pseudoScissor = {},
-	drawQueue = {}
+	drawQueue = { n = 0 }
 }
 
 do
@@ -221,21 +221,27 @@ end
 itsyrealm.graphics.disabled = {}
 
 function itsyrealm.graphics.disable()
-	for key, value in pairs(itsyrealm.graphics) do
-		local l = love.graphics[key]
-		if type(value) == 'function' then
-			if l then
-				itsyrealm.graphics[key] = l
-				Log.engine(
-					"Replaced `itsyrealm.graphics.%s` with `love.graphics.%s`.",
-					key, key)
-			else
-				itsyrealm.graphics[key] = itsyrealm.graphics.disabled[key] or itsyrealm.graphics.impl.noOp
-				Log.engine(
-					"Poofed `itsyrealm.graphics.%s` (no-op = %s).",
-					key, Log.boolean(itsyrealm.graphics[key] == itsyrealm.graphics.impl.noOp))
+	if not graphicsState.isDisabled then
+		for key, value in pairs(itsyrealm.graphics) do
+			local l = love.graphics[key]
+			if type(value) == 'function' then
+				if l then
+					itsyrealm.graphics[key] = l
+					Log.engine(
+						"Replaced `itsyrealm.graphics.%s` with `love.graphics.%s`.",
+						key, key)
+				else
+					itsyrealm.graphics[key] = itsyrealm.graphics.disabled[key] or itsyrealm.graphics.impl.noOp
+					Log.engine(
+						"Poofed `itsyrealm.graphics.%s` (no-op = %s).",
+						key, Log.boolean(itsyrealm.graphics[key] == itsyrealm.graphics.impl.noOp))
+				end
 			end
 		end
+
+		graphicsState.isDisabled = true
+	else
+		Log.info("Advanced UI caching already disabled.")
 	end
 end
 
@@ -253,15 +259,29 @@ function itsyrealm.graphics.stop()
 		end
 	end
 
+	for font, textCache in pairs(graphicsState.text) do
+		for text, details in pairs(textCache) do
+			local staleSeconds = currentTime - details.time
+			if staleSeconds > graphicsState.textureTimeoutSeconds then
+				if graphicsState.currentTextures[details.image] then
+					graphicsState.atlas:remove(details.image)
+					graphicsState.currentTextures[text] = nil
+				end
+
+				textCache[text] = nil
+			end
+		end
+	end
+
 	graphicsState.atlas:bake("width")
 
 	love.graphics.push('all')
-	for i = 1, #graphicsState.drawQueue do
+	for i = 1, graphicsState.drawQueue.n do
 		local draw = graphicsState.drawQueue[i]
 		love.graphics.setBlendMode('alpha', 'premultiplied')
 		draw.command(unpack(draw, 1, draw.n))
 	end
-	table.clear(graphicsState.drawQueue)
+	graphicsState.drawQueue.n = 0
 	love.graphics.pop()
 end
 
@@ -271,13 +291,28 @@ function itsyrealm.graphics.clearPseudoScissor()
 end
 
 function itsyrealm.graphics.impl.push(command, ...)
-	table.insert(
-		graphicsState.drawQueue,
-		{
-			command = command,
-			n = select('#', ...),
-			...
-		})
+	if graphicsState.drawQueue.n < #graphicsState.drawQueue then
+		local n = graphicsState.drawQueue.n + 1
+		local q = graphicsState.drawQueue[n]
+
+		table.clear(q)
+
+		q.command = command
+		q.n = select('#', ...)
+		for i = 1, q.n do
+			q[i] = select(i, ...)
+		end
+
+		graphicsState.drawQueue.n = n
+	else
+		table.insert(
+			graphicsState.drawQueue,
+			{
+				command = command,
+				n = select('#', ...),
+				...
+			})
+	end
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
@@ -412,7 +447,7 @@ function itsyrealm.graphics.print(text, ...)
 			...)
 	else
 		local font = love.graphics.getFont()
-		local fontTexts = graphicsState.text[font] or {}
+		local fontTexts = graphicsState.text[font] or setmetatable({}, { __mode = 'k' })
 		local fontTextCanvas = fontTexts[text]
 		if not fontTextCanvas then
 			local width = font:getWidth(text)
@@ -449,6 +484,8 @@ function itsyrealm.graphics.print(text, ...)
 			}
 
 			fontTexts[text] = fontTextCanvas
+		else
+			fontTextCanvas.time = love.timer.getTime()
 		end
 
 		graphicsState.text[font] = fontTexts
@@ -510,6 +547,8 @@ function itsyrealm.graphics.printf(text, x, y, width, align, ...)
 			}
 
 			fontTexts[text] = fontTextCanvas
+		else
+			fontTextCanvas.time = love.timer.getTime()
 		end
 
 		graphicsState.text[font] = fontTexts
@@ -558,10 +597,11 @@ itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoSciss
 itsyrealm.graphics.disabled.drawq = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
 
-if love.system.getOS() ~= "OS X" then
+if love.system.getOS() ~= "OS X" and (not jit or jit.arch == "arm64") then
 	Log.info(
-		"Disabling advanced UI caching on platform '%s'.",
-		love.system.getOS())
+		"Disabling advanced UI caching on platform '%s' (arch '%s').",
+		love.system.getOS(),
+		jit and jit.arch or "???")
 	itsyrealm.graphics.disable()
 end
 

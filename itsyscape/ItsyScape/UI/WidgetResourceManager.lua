@@ -22,7 +22,9 @@ end
 
 function WidgetResourceTable:load(...)
 	local key = { n = select('#', ...), ... }
+	local c = 0
 	for k, v in pairs(self.resources) do
+		c = c + 1
 		local match = true
 		if k.n == key.n then
 			for i = 1, k.n do
