@@ -24,6 +24,7 @@ function ToolTip.Text:new(text, k)
 	k = k or {}
 	self.text = text or "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 	self.color = k.color or Color(0, 0, 0, 1)
+	self.shadow = k.shadow or false
 end
 
 ToolTip.Image = Class()

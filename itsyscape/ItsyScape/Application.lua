@@ -184,9 +184,28 @@ function Application:new(multiThreaded)
 end
 
 function Application:measure(name, func, ...)
+	if not _DEBUG then
+		func(...)
+		return
+	end
+
+	local beforeMemory = 0
+	if _DEBUG == 'plus' then
+		collectgarbage("stop")
+		beforeMemory = collectgarbage("count")
+	end
+
 	local before = love.timer.getTime()
 	func(...)
 	local after = love.timer.getTime()
+
+	local afterMemory = 0
+	if _DEBUG == 'plus' then
+		afterMemory = collectgarbage("count")
+		collectgarbage("restart")
+	end
+
+	local memory = afterMemory - beforeMemory
 
 	local index
 	if not self.times[name] then
@@ -194,9 +213,10 @@ function Application:measure(name, func, ...)
 		self.times[name] = index
 	else
 		index = self.times[name]
+		memory = memory < 1 and math.max(self.times[index].memory, memory) or memory
 	end
 
-	self.times[index] = { value = after - before, name = name }
+	self.times[index] = { value = after - before, memory = memory, name = name }
 end
 
 function Application:initialize()
@@ -309,7 +329,7 @@ function Application:update(delta)
 
 		self:measure('game:update()', function() self.localGame:update(delta) end)
 	else
-		self.remoteGameManager:receive()
+		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
 	end
 
 	if not _CONF.server then
@@ -638,9 +658,10 @@ function Application:drawDebug()
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f ms (%010d)\n",
+			"%s: %.04f ms, %05d KB (%010d)\n",
 			self.times[i].name,
 			self.times[i].value * 1000,
+			self.times[i].memory,
 			1 / self.times[i].value)
 		sum = sum + self.times[i].value
 	end
