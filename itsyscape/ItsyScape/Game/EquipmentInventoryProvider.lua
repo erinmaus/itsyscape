@@ -42,7 +42,7 @@ function EquipmentInventoryProvider:getEquipped(slot)
 	local broker = self:getBroker()
 	if broker then
 		for item in broker:iterateItemsByKey(self, slot) do
-			return item
+			return item, broker:getItemTag(item, 'equip-record')
 		end
 	end
 

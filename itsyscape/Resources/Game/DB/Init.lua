@@ -816,33 +816,49 @@ end
 -- Weapons (offensive bonuses) are handled differently; use styleBonusForWeapon.
 function ItsyScape.Utility.styleBonusForItem(tier, weight)
 	weight = weight or 1
-	return math.floor(ItsyScape.Utility.CurveConfig.StyleBonus:evaluate(tier) * weight)
-end
-
-function ItsyScape.Utility.styleBonusForArmor(tier, weight)
-	weight = weight or 1
-	return math.max(math.floor(ItsyScape.Utility.styleBonusForWeapon(tier, weight) / 6), 1)
+	return math.max(math.ceil(ItsyScape.Utility.CurveConfig.StyleBonus:evaluate(tier) * weight), 1)
 end
 
 -- Calculates the style bonus for a weapon of the given 'tier'.
 function ItsyScape.Utility.styleBonusForWeapon(tier, weight)
 	weight = weight or 1
-	return math.floor(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3 * weight)
+	return math.max(math.ceil(ItsyScape.Utility.styleBonusForItem(tier + 10) / 3 * weight), 1)
 end
 
 function ItsyScape.Utility.strengthBonusForWeapon(tier, weight)
 	weight = weight or 1
-	return math.floor(ItsyScape.Utility.CurveConfig.StrengthBonus:evaluate(tier) * weight)
+	return math.max(math.ceil(ItsyScape.Utility.CurveConfig.StrengthBonus:evaluate(tier) * weight), 1)
 end
 
-ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 0.3
-ItsyScape.Utility.ARMOR_BODY_WEIGHT       = 0.5
-ItsyScape.Utility.ARMOR_GLOVES_WEIGHT     = 0.1
-ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 0.2
-ItsyScape.Utility.ARMOR_SHIELD_WEIGHT     = 0.35
+ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 17 / 100
+ItsyScape.Utility.ARMOR_BODY_WEIGHT       = 42 / 100
+ItsyScape.Utility.ARMOR_GLOVES_WEIGHT     = 12 / 100
+ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 16 / 100
+ItsyScape.Utility.ARMOR_SHIELD_WEIGHT     = 31 / 100
 ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT   = 1.0
 ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
-ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 0.1
+ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT  = 1 / 3.5
+
+function ItsyScape.Utility.styleBonusForHead(tier)
+	return ItsyScape.Utility.styleBonusForItem(tier, ItsyScape.Utility.ARMOR_HELMET_WEIGHT)
+end
+
+function ItsyScape.Utility.styleBonusForBody(tier)
+	return ItsyScape.Utility.styleBonusForItem(tier, ItsyScape.Utility.ARMOR_BODY_WEIGHT)
+end
+
+function ItsyScape.Utility.styleBonusForHands(tier)
+	return ItsyScape.Utility.styleBonusForItem(tier, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT)
+end
+
+function ItsyScape.Utility.styleBonusForFeet(tier)
+	return ItsyScape.Utility.styleBonusForItem(tier, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT)
+end
+
+function ItsyScape.Utility.styleBonusForShield(tier)
+	return ItsyScape.Utility.styleBonusForItem(tier, ItsyScape.Utility.ARMOR_SHIELD_WEIGHT)
+end
+
 
 ItsyScape.Utility.Equipment = require "ItsyScape.Game.Equipment"
 ItsyScape.Utility.Weapon = {}

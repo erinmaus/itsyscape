@@ -208,12 +208,12 @@ end
 -- Ancient ceremonial
 do
 	ItsyScape.Meta.Equipment {
-		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(50, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
-		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(23, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForHead(55.5),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForHead(55.75),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForHead(55.25),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForHead(50),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForHead(10),
 		Prayer         = 5,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "AncientCeremonialHelm"
@@ -226,13 +226,13 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(45, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_BODY_WEIGHT),
-		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(45, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(19, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForBody(50),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForBody(55),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForBody(52),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForBody(50),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForBody(12),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		Prayer         = 10,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "AncientCeremonialRobe"
@@ -245,13 +245,13 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(40, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
-		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(40, ItsyScape.Utility.ARMOR_GLOVES_WEIGHT),
+		AccuracyMagic  = ItsyScape.Utility.styleBonusForWeapon(22, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForHands(50),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForHands(55),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForHands(52),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForHands(50),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForHands(9),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(20, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		Prayer         = 5,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "AncientCeremonialGloves"
@@ -264,12 +264,12 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab    = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseSlash   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseCrush   = ItsyScape.Utility.styleBonusForItem(55, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseMagic   = ItsyScape.Utility.styleBonusForItem(50, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		DefenseRanged  = ItsyScape.Utility.styleBonusForItem(25, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
-		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(40, ItsyScape.Utility.ARMOR_BOOTS_WEIGHT),
+		DefenseStab    = ItsyScape.Utility.styleBonusForFeet(60),
+		DefenseSlash   = ItsyScape.Utility.styleBonusForFeet(55),
+		DefenseCrush   = ItsyScape.Utility.styleBonusForFeet(50),
+		DefenseMagic   = ItsyScape.Utility.styleBonusForFeet(50),
+		DefenseRanged  = ItsyScape.Utility.styleBonusForFeet(10),
+		StrengthMagic  = ItsyScape.Utility.strengthBonusForWeapon(15, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		Prayer         = 6,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "AncientCeremonialBoots"
@@ -285,14 +285,14 @@ end
 -- Superior itsy
 do
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(15, 0.5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(14, 0.4),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 1.1),
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(10, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(10, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15),
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(61),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(63),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(55),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(65),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(30, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(30, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(30, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "SuperiorItsyGloves"
 	}
@@ -304,14 +304,14 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(13, 0.4),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 0.6),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 0.8),
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(9, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(9, 1),
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(9, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20),
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(55),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(65),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(50),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(55),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 		Resource = ItsyScape.Resource.Item "SuperiorItsyBoots"
 	}
@@ -323,14 +323,14 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 0.4),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 0.4),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 0.4),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 0.9),
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(15, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(15, 1),
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(15, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(16),
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(50),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(55),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(60),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(65),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(17, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(17, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(17, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(16, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 		Resource = ItsyScape.Resource.Item "SuperiorItsyHelmet"
 	}
@@ -342,39 +342,39 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(21, 0.6),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(22, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(21, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(28, 1),
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(20, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(55),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(54),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(60),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(65),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(20, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(20, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(20, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 		Resource = ItsyScape.Resource.Item "SuperiorItsyPlatebody"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Provides incredible offensive abilities at the cost of defense.",
+		Value = "Provides incredible defensive and offensive abilities.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "SuperiorItsyPlatebody"
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(65, 0.7),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(65, 0.7),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(65, 0.7),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(65, 1),
-		AccuracySlash = ItsyScape.Utility.styleBonusForItem(5, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForItem(5, 1),
-		AccuracyStab = ItsyScape.Utility.styleBonusForItem(5, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(65),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(65),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(65),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(67),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10, ItsyScape.Utility.ARMOR_OFFENSIVE_WEIGHT),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "SuperiorItsyShield"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Unlike the rest of the superior itsy equipment, it somehow provides increased defensive capabilities on top of the offensive prowess.",
+		Value = "Despite looking unwieldy, it boosts your offensive capabilities.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "SuperiorItsyShield"
 	}

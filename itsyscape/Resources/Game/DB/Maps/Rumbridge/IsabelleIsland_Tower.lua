@@ -145,7 +145,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
@@ -156,19 +156,19 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(5, 1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5, 1),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(5),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(5),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(5),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(5),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(5),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
