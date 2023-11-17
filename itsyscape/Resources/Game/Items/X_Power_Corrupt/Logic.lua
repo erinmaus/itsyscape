@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
+local Weapon = require "ItsyScape.Game.Weapon"
 local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 
@@ -21,7 +22,7 @@ function Corrupt:perform(peep, target)
 		local attack = AttackPoke({
 			attackType = self:getBonusForStance(peep):lower(),
 			weaponType = self:getWeaponType(),
-			damage = 0,
+			damage = self:rollDamage(peep, Weapon.PURPOSE_KILL, target):roll(),
 			aggressor = peep
 		})
 
