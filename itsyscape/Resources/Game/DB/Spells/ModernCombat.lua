@@ -51,11 +51,6 @@ ItsyScape.Resource.Spell "FireStrike" {
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 20
 		}
 	}
 }
@@ -112,11 +107,6 @@ ItsyScape.Resource.Spell "WaterStrike" {
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 15
 		}
 	}
 }
@@ -173,11 +163,6 @@ ItsyScape.Resource.Spell "EarthStrike" {
 		Input {
 			Resource = ItsyScape.Resource.Item "EarthRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 10
 		}
 	}
 }
@@ -229,11 +214,6 @@ ItsyScape.Resource.Spell "AirStrike" {
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 5
 		}
 	}
 }
@@ -274,11 +254,6 @@ ItsyScape.Resource.Spell "FireBlast" {
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 5
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 100
 		}
 	}
 }
@@ -319,11 +294,6 @@ ItsyScape.Resource.Spell "WaterBlast" {
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
 			Count = 5
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 90
 		}
 	}
 }
@@ -364,11 +334,6 @@ ItsyScape.Resource.Spell "EarthBlast" {
 		Input {
 			Resource = ItsyScape.Resource.Item "EarthRune",
 			Count = 5
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 70
 		}
 	}
 }
@@ -404,11 +369,6 @@ ItsyScape.Resource.Spell "AirBlast" {
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 5
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 60
 		}
 	}
 }
@@ -454,11 +414,6 @@ ItsyScape.Resource.Spell "Lightning" {
 		Input {
 			Resource = ItsyScape.Resource.Item "CosmicRune",
 			Count = 5
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 500
 		}
 	}
 }
@@ -499,11 +454,6 @@ ItsyScape.Resource.Spell "Infest" {
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 2
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 40
 		}
 	}
 }
@@ -594,11 +544,6 @@ ItsyScape.Resource.Spell "SummonGoo" {
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 30
 		}
 	}
 }
@@ -651,11 +596,6 @@ ItsyScape.Resource.Spell "Psychic" {
 		Input {
 			Resource = ItsyScape.Resource.Item "CosmicRune",
 			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 35
 		}
 	}
 }
@@ -729,11 +669,6 @@ ItsyScape.Resource.Spell "Icicle" {
 		Input {
 			Resource = ItsyScape.Resource.Item "WaterRune",
 			Count = 2
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 25
 		}
 	}
 }
@@ -780,11 +715,6 @@ ItsyScape.Resource.Spell "Miasma" {
 		Input {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 2
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = 150
 		}
 	}
 }
