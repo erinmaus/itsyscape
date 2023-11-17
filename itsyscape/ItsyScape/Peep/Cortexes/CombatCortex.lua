@@ -446,9 +446,6 @@ function CombatCortex:update(delta)
 						do
 							local targetCombat = target:getBehavior(CombatStatusBehavior)
 							if targetCombat and targetCombat.currentHitpoints == 0 then
-								if peep:hasBehavior(PlayerBehavior) then
-									print(">>> target ded")
-								end
 								peep:removeBehavior(CombatTargetBehavior)
 								target:getCommandQueue(CombatCortex.QUEUE):clear()
 								canAttack = false
