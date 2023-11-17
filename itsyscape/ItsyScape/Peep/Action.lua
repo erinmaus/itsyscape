@@ -356,9 +356,11 @@ function Action:transfer(state, player, flags, force)
 							local i, j, k = Utility.Peep.getTile(player)
 							local map = player:getDirector():getMap(k)
 
-							local position = propPeep:getBehavior(PositionBehavior)
-							if position then
-								position.position = map:getTileCenter(i, j)
+							if map then
+								local position = propPeep:getBehavior(PositionBehavior)
+								if position then
+									position.position = map:getTileCenter(i, j)
+								end
 							end
 
 							propPeep:poke('spawnedByAction', player)

@@ -20,6 +20,15 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local GhostBindersRing = Class(CombatEffect)
 GhostBindersRing.CHANCE = 0.25
 
+function GhostBindersRing:enchant(peep)
+	CombatEffect.enchant(self, peep)
+	self:rollNextAttack()
+end
+
+function GhostBindersRing:rollNextAttack()
+	self.nextAttack = math.random(1, 1 / GhostBindersRing.CHANCE)
+end
+
 function GhostBindersRing:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
@@ -49,13 +58,24 @@ function GhostBindersRing:applyTargetToDamage(roll)
 	local peepMapObject = Utility.Peep.getMapObject(peep)
 
 	if self:isUndead(peepResource) or self:isUndead(peepMapObject) then
-		if math.random() <= GhostBindersRing.CHANCE then
+		self.nextAttack = self.nextAttack - 1
+		if self.nextAttack <= 0 then
 			Log.info(
 				"Damage turned to healing via ghost binder's ring (attacker: '%s', defender: '%s').",
 				roll:getSelf():getName(),
 				roll:getTarget():getName())
 
 			roll:setDamageMultiplier(-1)
+			roll:setMaxHit(math.min(4, roll:getMaxHit()))
+			roll:setMinHit(1)
+
+			self:rollNextAttack()
+		else
+			Log.info(
+				"%d more hit(s) before ghost binder's ring activates (attacker: '%s', defender: '%s').",
+				self.nextAttack,
+				roll:getSelf():getName(),
+				roll:getTarget():getName())
 		end
 	end
 end

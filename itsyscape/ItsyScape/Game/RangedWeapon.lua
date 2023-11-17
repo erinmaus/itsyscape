@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local RangedWeapon = Class(Weapon)
 RangedWeapon.AMMO_SLOT = Equipment.PLAYER_SLOT_QUIVER
@@ -31,6 +32,21 @@ function RangedWeapon:getAmmo(peep)
 	end
 
 	return Equipment.AMMO_NONE, nil
+end
+
+function RangedWeapon:rollDamage(peep, purpose, target)
+	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+	if self:getAmmoSlot() ~= Equipment.PLAYER_SLOT_QUIVER then
+		local _, equipmentRecord = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_QUIVER)
+		if equipmentRecord then
+			roll:setBonus(roll:getBonus() - equipmentRecord:get("StrengthRanged"))
+		end
+	end
+
+	self:applyDamageModifiers(roll)
+	self:previewDamageRoll(roll)
+
+	return roll
 end
 
 function RangedWeapon:getIsTwoHanded()
@@ -95,6 +111,7 @@ function RangedWeapon:perform(peep, target)
 	})
 
 	self:applyCooldown(peep, target)
+	peep:removeBehavior(CombatTargetBehavior)
 
 	return false
 end
