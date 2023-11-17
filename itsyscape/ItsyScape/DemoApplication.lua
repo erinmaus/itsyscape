@@ -63,6 +63,7 @@ function DemoApplication:new()
 		player.onChangeCamera:register(self.changeCamera, self)
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
+		player.onMove:register(self.setMapName, self)
 
 		self:setPlayerFilename(nil)
 
@@ -143,6 +144,10 @@ function DemoApplication:savePlayer(_, storage, isError)
 	local result = storage:toString()
 	love.filesystem.write(self.playerFilename, result)
 	Log.info("Successfully saved player data.")
+end
+
+function DemoApplication:setMapName(_, _, map)
+	self:updateMemoryLabel(map)
 end
 
 function DemoApplication:quitPlayer()
