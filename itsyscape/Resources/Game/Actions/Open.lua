@@ -43,15 +43,15 @@ function Open:perform(state, player, prop, channel)
 			end
 		end
 
-		local i, j, k = Utility.Peep.getTileAnchor(prop)
+		local i, j, k = Utility.Peep.getTileAnchor(prop, 0, 0)
 		local s, t, r = Utility.Peep.getTileAnchor(player)
 		local distance = math.sqrt((s - i) ^ 2 + (j - t) ^ 2)
 		local walk
 		if not channel then
 			walk = Utility.Peep.getWalk(
 				player,
-				i, j, k, 3,
-				{ canUseObjects = true, asCloseAsPossible = true })
+				i, j, k, 2,
+				{ canUseObjects = true, asCloseAsPossible = false })
 		end
 
 		if (walk or distance < 3 or not channel) and k == r then
