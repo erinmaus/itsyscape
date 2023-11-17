@@ -227,15 +227,6 @@ end
 function QuestProgressNotification:updatePosition()
 	local w, h = love.graphics.getScaledMode()
 	local x, y = w - QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING, QuestProgressNotification.PADDING
-	do
-		for _, interface in self:getView():getInterfaces("DialogBox") do
-			local interfaceWidth, interfaceHeight = interface:getSize()
-			local interfaceX, interfaceY = interface:getPosition()
-			x = interfaceX + (interfaceWidth - QuestProgressNotification.WIDTH) / 2
-			y = interfaceY - QuestProgressNotification.HEIGHT - QuestProgressNotification.PADDING
-			break
-		end
-	end
 
 	self:setPosition(x, y)
 end
@@ -271,7 +262,7 @@ end
 function QuestProgressNotification:update(delta)
 	Interface.update(self, delta)
 
-	--self:updatePosition()
+	self:updatePosition()
 end
 
 return QuestProgressNotification

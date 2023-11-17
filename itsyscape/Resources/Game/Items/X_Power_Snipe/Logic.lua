@@ -29,7 +29,7 @@ function Snipe:perform(peep, target)
 			{ ['skill-as-level'] = true })
 
 		local scale = math.min(((level - 10) / 50) + 0.9, 1.8)
-		local damage = math.floor(maxHit * scale + 0.5)
+		local damage = math.max(math.floor(maxHit * scale + 0.5), 1)
 
 		roll:setMinHit(maxHit)
 		roll:setMaxHit(maxHit)

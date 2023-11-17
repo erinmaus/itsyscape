@@ -12,7 +12,7 @@ local ORES = {
 	["Copper"] = {
 		tier = 0,
 		weight = 10.5,
-		health = 8,
+		health = 4,
 		secondaries = {
 			"TableSalt",
 			"PurpleSaltPeter",
@@ -26,7 +26,7 @@ local ORES = {
 	["Tin"] = {
 		tier = 0,
 		weight = 9.1,
-		health = 8,
+		health = 4,
 		secondaries = {
 			"TableSalt",
 			"PurpleSaltPeter",
@@ -40,7 +40,7 @@ local ORES = {
 	["Iron"] = {
 		tier = 10,
 		weight = 11.5,
-		health = 20,
+		health = 10,
 		variants = {
 			"DeepSlate"
 		},

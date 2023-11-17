@@ -43,14 +43,16 @@ function Icicle:load()
 		StaticMeshResource,
 		"Resources/Game/Projectiles/Icicle/Model.lstatic",
 		function(model)
+			local whiteTexture = self:getGameView():getWhiteTexture()
+
 			local material = self.decoration:getMaterial()
-			material:setTextures(self:getGameView():getWhiteTexture())
+			material:setTextures(whiteTexture)
 			material:setIsTranslucent(true)
 
 			self.decoration:fromGroup(model:getResource(), "Icicle")
 
 			material = self.outline:getMaterial()
-			material:setTextures(self:getGameView():getWhiteTexture())
+			material:setTextures(whiteTexture)
 			material:setIsTranslucent(true)
 
 			self.outline:fromGroup(model:getResource(), "Outline")

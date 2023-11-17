@@ -90,7 +90,15 @@ function HumanoidActorAnimatorCortex:playCombatAnimation(peep, priority, resourc
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('combat', priority, resource)
+		actor:playAnimation('combat-attack', priority, resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:playDefendAnimation(peep, priority, resource)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor then
+		actor = actor.actor
+		actor:playAnimation('combat-defend', priority, resource)
 	end
 end
 
@@ -154,7 +162,7 @@ function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
 	end
 
 	if resource then
-		self:playCombatAnimation(
+		self:playDefendAnimation(
 			peep,
 			HumanoidActorAnimatorCortex.DEFEND_PRIORITY,
 			resource)
