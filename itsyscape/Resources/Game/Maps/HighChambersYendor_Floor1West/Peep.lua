@@ -522,8 +522,10 @@ function HighChambersYendor:minibossContinueChanting()
 			}))
 		end
 
-		for i = 1, #cthulhuians do
-			Utility.Peep.attack(cthulhuians[i], peeps[math.random(#peeps)])
+		if #peeps > 0 then
+			for i = 1, #cthulhuians do
+				Utility.Peep.attack(cthulhuians[i], peeps[math.random(#peeps)])
+			end
 		end
 
 		return
