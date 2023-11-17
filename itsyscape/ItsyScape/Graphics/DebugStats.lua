@@ -46,14 +46,22 @@ function DebugStats:measure(node, ...)
 	local duration, memory, result
 	do
 		local beforeTime = love.timer.getTime()
-		collectgarbage("stop")
-		local beforeMemory = collectgarbage("count")
+
+		if _DEBUG == 'plus' then
+			collectgarbage("stop")
+			local beforeMemory = collectgarbage("count")
+		end
+
 		result = self:process(node, ...)
 		local afterTime = love.timer.getTime()
-		local afterMemory = collectgarbage("count")
-		collectgarbage("restart")
+
+		if _DEBUG == 'plus' then
+			local afterMemory = collectgarbage("count")
+			collectgarbage("restart")
+		end
+
 		duration = afterTime - beforeTime
-		memory = afterMemory - beforeMemory
+		memory = (afterMemory or 0) - (beforeMemory or 0)
 	end
 
 	stat.minTime = math.min(stat.minTime, duration)
