@@ -60,7 +60,7 @@ function Corrupt:update(delta)
 
 	self.tick = self.tick - delta
 	if self.tick < 0 then
-		local damage = math.floor(self.damage / (Corrupt.DURATION / Corrupt.INTERVAL) + 0.5)
+		local damage = math.max(math.floor(self.damage / (Corrupt.DURATION / Corrupt.INTERVAL) + 0.5), 1)
 
 		local attack = AttackPoke({
 			damage = damage,
