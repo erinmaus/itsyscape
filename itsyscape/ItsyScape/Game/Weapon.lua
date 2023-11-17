@@ -152,10 +152,6 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local defenseDamageReduction = math.max(math.min(CurveConfig.DefenseDamageReduction:evaluate(defenseLevel), 100), 0)
 		local totalDamageReduction = armorDamageReduction + defenseDamageReduction
 
-		Log.info(
-			"Rolling damage from peep '%s' (accuracy tier = %d) against player '%s' (defense tier = %d, working defense level = %d): %.2f%% damage reduction from armor, %.2f%% damage reduction from defense, for a total of %.2f%%.",
-			peep:getName(), accuracyTier, target:getName(), defenseTier, defenseLevel, armorDamageReduction, defenseDamageReduction, totalDamageReduction)
-
 		local clampedMultiplier = math.max(math.min(totalDamageReduction / 100, 1), 0)
 
 		self.damageMultiplier = 1 - clampedMultiplier
@@ -246,6 +242,9 @@ function Weapon.DamageRoll:roll()
 
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
+
+	print(self:getSelf():getName(), "minHit", minHit)
+	print(self:getSelf():getName(), "maxHit", maxHit)
 
 	return math.ceil(math.random(minHit, maxHit) * self.damageMultiplier)
 end

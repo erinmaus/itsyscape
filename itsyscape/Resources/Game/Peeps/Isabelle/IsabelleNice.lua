@@ -47,6 +47,10 @@ function IsabelleNice:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Red.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
+	local amuletOfYendor = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Amulets/AmuletOfYendor.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_NECK, Equipment.SKIN_PRIORITY_EQUIPMENT, amuletOfYendor)
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Shirts/PinkDress.lua")

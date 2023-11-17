@@ -270,6 +270,41 @@ function ProCombatStatusHUD.Target:update(...)
 			self.prayerPoints:setMax(actorState.stats.prayer.max)
 		end
 	end
+
+	if _DEBUG then
+		self:updateToolTip()
+	else
+		self.hitPoints:setToolTip()
+	end
+end
+
+function ProCombatStatusHUD.Target:updateToolTip()
+	local actorState = self:getActorState(self.hud:getState())
+	if not actorState or not actorState.dps then
+		self.hitPoints:setToolTip()
+		return
+	end
+
+	local toolTip = {
+		ToolTip.Header("Accuracy"),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.accuracy.level)),
+		ToolTip.Text(string.format("Equipment Bonus: %d", actorState.dps.accuracy.stat)),
+		ToolTip.Text(string.format("Roll: %d (Atk) vs %d (Def)", actorState.dps.accuracy.attackRoll, actorState.dps.accuracy.defenseRoll, { color = actorState.dps.accuracy.attackRoll > actorState.dps.accuracy.defenseRoll and Color(0, 1, 0, 1) or Color(1, 0, 0, 1), textShadow = true })),
+		ToolTip.Header("Damage"),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.damage.level)),
+		ToolTip.Text(string.format("Strength Bonus: %d", actorState.dps.damage.stat)),
+		ToolTip.Text(string.format("Damage Reduction: %.2f%%", (1 - actorState.dps.damage.damageMultiplier) * 100)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
+		ToolTip.Header("Equipment"),
+		ToolTip.Text(string.format("Weapon: %s", actorState.dps.weapon.id))
+	}
+
+	for _, skill in ipairs(actorState.dps.skills) do
+		table.insert(skill, ToolTip.Text(string.format("%s: %d (base %d + boost %d)", skill.id, skill.level + skill.boost, skill.level, skill.boost)))
+	end
+
+	self.hitPoints:setToolTip(unpack(toolTip))
 end
 
 ProCombatStatusHUD.StatBar = Class(Drawable)

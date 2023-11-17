@@ -112,13 +112,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(25),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Dandy
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(10),
 		Resource = Dandy
 	}
 
@@ -129,13 +129,13 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 0.9),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5, 1.3),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15, 0.5),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(20),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(20),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(15),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10),
 		Resource = Dandy
 	}
 
@@ -202,11 +202,11 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(25),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(15, 0.9),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(15, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 1.3),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 0.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(15),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(15),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(15),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(1),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(28),
 		Resource = DeadDandy
 	}

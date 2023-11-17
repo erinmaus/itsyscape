@@ -50,25 +50,25 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "Boop"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(30),
+	Value = ItsyScape.Utility.xpForLevel(20),
 	Resource = ItsyScape.Resource.Peep "Boop"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(1),
 	Resource = ItsyScape.Resource.Peep "Boop"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(40),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = ItsyScape.Resource.Peep "Boop"
 }
 
@@ -77,9 +77,9 @@ ItsyScape.Meta.Equipment {
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(20),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(20),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(5),
 	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(20, 1),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(30),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
 	Resource = ItsyScape.Resource.Peep "Boop"
 }
 

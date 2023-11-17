@@ -67,13 +67,13 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "MagmaSnail"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(25),
+	Value = ItsyScape.Utility.xpForLevel(15),
 	Resource = ItsyScape.Resource.Peep "MagmaSnail"
 }
 
@@ -90,8 +90,8 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(17),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15),
 	Resource = ItsyScape.Resource.Peep "MagmaSnail"
 }
 
