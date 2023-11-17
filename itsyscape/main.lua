@@ -168,6 +168,8 @@ function love.keypressed(...)
 			_APP.show2D = not _APP.show2D
 		elseif (select(1, ...) == 'f4') then
 			_APP.show3D = not _APP.show3D
+		elseif (select(1, ...) == 'f5') then
+			itsyrealm.graphics.disable()
 		elseif (select(1, ...) == 'f12') then
 			local p = require "ProFi"
 			jit.off()
