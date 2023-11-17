@@ -107,7 +107,7 @@ else
 	Log.engine("ItsyRealm version '%s' bootstrapped.", _ITSYREALM_VERSION)
 end
 
-if love.system.getOS() == "OS X" then
-	Log.info("Running on macOS, disabling JIT.")
+if love.system.getOS() == "OS X" and jit and jit.arch == "arm64" then
+	Log.info("Running on macOS (arch = '%s'), disabling JIT.", jit and jit.arch or "???")
 	require("jit").off()
 end
