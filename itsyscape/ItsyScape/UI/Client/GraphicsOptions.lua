@@ -21,7 +21,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
 local GraphicsOptions = Class(Widget)
-GraphicsOptions.WIDTH = 640
+GraphicsOptions.WIDTH = 640 + 72
 GraphicsOptions.HEIGHT = 480
 GraphicsOptions.INPUT_WIDTH = 64
 GraphicsOptions.INPUT_HEIGHT = 64
@@ -342,7 +342,7 @@ function GraphicsOptions:new(application)
 			GraphicsOptions.INPUT_WIDTH,
 			GraphicsOptions.INPUT_HEIGHT)
 
-		if _CONF.debug then
+		if _CONF.debug == true then
 			onButton:setStyle(
 				ButtonStyle(
 					GraphicsOptions.ACTIVE_ITEM_STYLE,
@@ -382,6 +382,36 @@ function GraphicsOptions:new(application)
 		offButton.onClick:register(self.setDebug, self, false)
 		self:addChild(offButton)
 		self.debugOffButton = offButton
+
+		local onPlusButton = Button()
+		onPlusButton:setText('On+')
+		onPlusButton:setToolTip(
+			ToolTip.Text("Enable debug+ mode."),
+			ToolTip.Text("Will enable debug controls and show a HUD."),
+			ToolTip.Text("This mode is much more performance-intensive! YOUR FPS WILL SUFFER!", { color = Color(1, 0, 0, 1), shadow = true }),
+			ToolTip.Text("The function keys toggle various debugging tools."),
+			ToolTip.Text("Isabelle will be pick-pocketable and give a useful item."),
+			ToolTip.Text("You might have to restart the game for access to all debug tools."))
+		onPlusButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.INPUT_WIDTH * 2 + GraphicsOptions.PADDING * 5,
+			GraphicsOptions.PADDING * 3 + GraphicsOptions.INPUT_HEIGHT * 2)
+		onPlusButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+		if _CONF.debug == 'plus' then
+			onPlusButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			onPlusButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		onPlusButton.onClick:register(self.setDebug, self, 'plus')
+		self:addChild(onPlusButton)
+		self.debugOnPlusButton = onPlusButton
 	end
 
 	do
@@ -497,12 +527,29 @@ end
 
 function GraphicsOptions:setDebug(enabled)
 	self.conf.debug = enabled
-	if enabled then
+	if enabled == 'plus' then
+		self.debugOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOnPlusButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	elseif enabled then
 		self.debugOnButton:setStyle(
 			ButtonStyle(
 				GraphicsOptions.ACTIVE_ITEM_STYLE,
 				self.application:getUIView():getResources()))
 		self.debugOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOnPlusButton:setStyle(
 			ButtonStyle(
 				GraphicsOptions.INACTIVE_ITEM_STYLE,
 				self.application:getUIView():getResources()))
@@ -514,6 +561,10 @@ function GraphicsOptions:setDebug(enabled)
 		self.debugOffButton:setStyle(
 			ButtonStyle(
 				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.debugOnPlusButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
 				self.application:getUIView():getResources()))
 	end
 end

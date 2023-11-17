@@ -36,6 +36,10 @@ function love.load(args)
 			_DEBUG = true
 		end
 
+		if args[i] == "/debugplus" or args[i] == "--debugplus" then
+			_DEBUG = 'plus'
+		end
+
 		if args[i] == "/phantom" then
 			_ANALYTICS_KEY = args[i + 1]
 		end
