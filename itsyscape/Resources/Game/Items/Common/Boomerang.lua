@@ -14,6 +14,7 @@ local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 
 local Boomerang = Class(RangedWeapon)
 Boomerang.AMMO = Equipment.AMMO_NONE
+Boomerang.AMMO_SLOT = Equipment.PLAYER_SLOT_RIGHT_HAND
 
 function Boomerang:getAttackRange()
 	return 5
