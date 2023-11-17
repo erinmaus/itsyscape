@@ -146,13 +146,18 @@ function TitleScreen:drawTitle()
 	love.graphics.setColor(1, 1, 1, 1)
 
 	if _ITSYREALM_VERSION and self.font and self.showLogo then
-		local width = self.font:getResource():getWidth(_ITSYREALM_VERSION)
+		local message
+		if _DEBUG then
+			message = string.format("%s\n(%s)", _ITSYREALM_VERSION, _DEBUG == true and 'debug' or 'debug ' .. tostring(_DEBUG))
+		end
+
+		local width = self.font:getResource():getWidth(message)
 
 		local oldFont = love.graphics.getFont()
 		love.graphics.setFont(self.font:getResource())
 
 		love.graphics.print(
-			_ITSYREALM_VERSION,
+			message,
 			love.graphics.getWidth() - width / 4 - 96,
 			16,
 			0,

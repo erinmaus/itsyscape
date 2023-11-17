@@ -83,6 +83,7 @@ Application.CLICK_WALK = 2
 Application.CLICK_DURATION = 0.25
 Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
+Application.DEBUG_MEMORY_POLLS_SECONDS = 5
 Application.MAX_TICKS = 100
 
 Application.SINGLE_PLAYER_TICKS_PER_SECOND = 30
@@ -166,7 +167,7 @@ function Application:new(multiThreaded)
 		self.defaultFont = love.graphics.getFont()
 	end
 
-	self.showDebug = true
+	self.showDebug = false
 	self.showUI = true
 	self.show2D = true
 	self.show3D = true
@@ -181,6 +182,109 @@ function Application:new(multiThreaded)
 	self.paused = false
 
 	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
+end
+
+local memoryLabel
+function Application:updateMemoryLabel(label)
+	if memoryLabel ~= label then
+		memoryLabel = label
+
+		self:dumpMemoryStats()
+	end
+end
+
+function Application:dumpMemoryStats()
+	local currentTime = love.timer.getTime()
+	local stats = self:getMemoryStats()
+
+	if not stats then
+		return
+	end
+
+	local data = string.format(
+		"%f, %.02f, %.02f, %.02f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %s\n",
+		currentTime - self.previousMemoryUsage.start,
+		stats.min, stats.max, stats.average, stats.median,
+		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
+		stats.label)
+	love.filesystem.append("memory.csv", data)
+
+	Log.info(
+		"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
+		"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB",
+		currentTime - self.previousMemoryUsage.start,
+		stats.label,
+		stats.min, stats.max, stats.average, stats.median,
+		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference)
+
+	self.previousMemoryUsage.time = currentTime
+end
+
+function Application:updateMemoryUsage()
+	if not self.previousMemoryUsage then
+		love.filesystem.write("memory.csv", "Time, Min, Max, Avg, Mdn, Dif Min, Dif Max, Dif Avg, Dif Mdn, Label\n")
+	end
+
+	local currentTime = love.timer.getTime()
+	local previousMemoryUsage = self.previousMemoryUsage or { time = currentTime, start = currentTime }
+
+	while previousMemoryUsage[1] and
+	      previousMemoryUsage[1].time + Application.DEBUG_MEMORY_POLLS_SECONDS < currentTime
+	do
+		table.remove(previousMemoryUsage, 1)
+	end
+
+	local currentMemoryUsage = collectgarbage("count") / 1024
+	table.insert(previousMemoryUsage, {
+		time = currentTime,
+		memory = currentMemoryUsage
+	})
+
+	if _DEBUG and previousMemoryUsage.time + Application.DEBUG_MEMORY_POLLS_SECONDS < currentTime then
+		self:dumpMemoryStats()
+	end
+
+	self.previousMemoryUsage = previousMemoryUsage
+end
+
+function Application:getMemoryStats()
+	if not self.previousMemoryUsage or #self.previousMemoryUsage == 0 then
+		return nil
+	end
+
+	local min, max = math.huge, -math.huge
+	local average = 0
+	local median = {}
+	for _, usage in ipairs(self.previousMemoryUsage) do
+		min = math.min(min, usage.memory)
+		max = math.max(max, usage.memory)
+		average = average + usage.memory
+		table.insert(median, usage.memory)
+	end
+
+	table.sort(median)
+	do
+		if #median % 2 == 0 then
+			median = median[#median / 2]
+		else
+			local a = median[math.floor(#median / 2)]
+			local b = median[math.floor(#median / 2) + 1]
+			median = (a + b) / 2
+		end
+	end
+
+	average = average / #self.previousMemoryUsage
+
+	local stats = { min = min, max = max, average = average, median = median, label = memoryLabel }
+	local previousStats = self.previousStats or stats
+	self.previousStats = stats
+
+	stats.minDifference = stats.min - previousStats.min
+	stats.maxDifference = stats.max - previousStats.max
+	stats.averageDifference = stats.average - previousStats.average
+	stats.medianDifference = stats.median - previousStats.median
+
+	return stats
 end
 
 function Application:measure(name, func, ...)
@@ -343,6 +447,8 @@ function Application:update(delta)
 	end
 
 	self.clickActionTime = self.clickActionTime - delta
+
+	self:updateMemoryUsage()
 end
 
 function Application:doCommonTick()
