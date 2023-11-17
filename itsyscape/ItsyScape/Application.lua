@@ -202,27 +202,29 @@ function Application:dumpMemoryStats()
 	end
 
 	local data = string.format(
-		"%f, %.02f, %.02f, %.02f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %s\n",
+		"%f, %.02f, %.02f, %.02f, %0.2f, %0.2f, %0.2f, %0.2f, %0.2f, %d, %s\n",
 		currentTime - self.previousMemoryUsage.start,
 		stats.min, stats.max, stats.average, stats.median,
 		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
+		love.timer.getFPS(),
 		stats.label)
 	love.filesystem.append("memory.csv", data)
 
 	Log.info(
 		"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
-		"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB",
+		"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB, FPS = %d",
 		currentTime - self.previousMemoryUsage.start,
 		stats.label,
 		stats.min, stats.max, stats.average, stats.median,
-		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference)
+		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
+		love.timer.getFPS())
 
 	self.previousMemoryUsage.time = currentTime
 end
 
 function Application:updateMemoryUsage()
 	if not self.previousMemoryUsage then
-		love.filesystem.write("memory.csv", "Time, Min, Max, Avg, Mdn, Dif Min, Dif Max, Dif Avg, Dif Mdn, Label\n")
+		love.filesystem.write("memory.csv", "Time, Min, Max, Avg, Mdn, Dif Min, Dif Max, Dif Avg, Dif Mdn, FPS, Label\n")
 	end
 
 	local currentTime = love.timer.getTime()
