@@ -103,7 +103,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
@@ -161,11 +161,11 @@ do
 		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10, 1),
 		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10, 1),
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10, 1),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(5, 1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5, 1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5, 1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(5, 1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(5, 1),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(10, 0.5),

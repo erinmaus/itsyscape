@@ -107,9 +107,11 @@ function Gravity:load()
 		StaticMeshResource,
 		"Resources/Game/Projectiles/Power_Gravity/Model.lstatic",
 		function(model)
+			local whiteTexture = self:getGameView():getWhiteTexture()
+
 			do
 				local material = self.singularity:getMaterial()
-				material:setTextures(self:getGameView():getWhiteTexture())
+				material:setTextures(whiteTexture)
 				material:setIsTranslucent(true)
 
 				self.singularity:fromGroup(model:getResource(), "Singularity")
@@ -117,7 +119,7 @@ function Gravity:load()
 
 			do
 				local material = self.eventHorizon:getMaterial()
-				material:setTextures(self:getGameView():getWhiteTexture())
+				material:setTextures(whiteTexture)
 				material:setIsTranslucent(true)
 				material:setIsFullLit(true)
 

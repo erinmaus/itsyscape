@@ -7,18 +7,26 @@ Animation "Human Attack (Weapon: Zweihander, Style: Slash) Tornado" {
 			system = {
 				numParticles = 200,
 				texture = "Resources/Game/Animations/Human_AttackZweihanderSlash_Tornado/Particle.png",
+				columns = 4,
 
 				emitters = {
 					{
 						type = "RadialEmitter",
-						radius = { 0.0 },
+						radius = { 0 },
 						position = { 0, 1.5, 0 },
 						yRange = { 0, 0 }
 					},
 					{
 						type = "DirectionalEmitter",
 						direction = { 0, 1, 0 },
-						speed = { 1.5, 1.6 },
+						speed = { 1, 1.25 }
+					},
+					{
+						type = "RandomColorEmitter",
+						colors = {
+							{ 0.0, 0.8, 1.0, 0.0 },
+							{ 1.0, 0.8, 0.0, 0.0 },
+						}
 					},
 					{
 						type = "RandomLifetimeEmitter",
@@ -26,7 +34,12 @@ Animation "Human Attack (Weapon: Zweihander, Style: Slash) Tornado" {
 					},
 					{
 						type = "RandomScaleEmitter",
-						scale = { 0.25 }
+						scale = { 0.25, 0.35 }
+					},
+					{
+						type = "RandomRotationEmitter",
+						rotation = { 0, 360 },
+						velocity = { -180, 180 }
 					}
 				},
 
@@ -36,6 +49,10 @@ Animation "Human Attack (Weapon: Zweihander, Style: Slash) Tornado" {
 						fadeInPercent = { 0.2 },
 						fadeOutPercent = { 0.8 },
 						tween = { 'sineEaseOut' }
+					},
+					{
+						type = "TextureIndexPath",
+						textures = { 1, 4 }
 					}
 				},
 

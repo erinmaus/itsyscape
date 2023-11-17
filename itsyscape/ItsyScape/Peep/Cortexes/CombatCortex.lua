@@ -320,16 +320,19 @@ function CombatCortex:update(delta)
 								local isPlayer = peep:hasBehavior(PlayerBehavior)
 								if isPlayer and not self.walking[peep] then
 									local currentPlayerTime = self.pendingPlayers[peep]
-									if not currentPlayerTime then
-										self.pendingPlayers[peep] = { idleTime = currentGlobalTime, movingTime = 0 }
-									elseif (currentGlobalTime - currentPlayerTime.idleTime) > CombatCortex.PLAYER_RETRY_MIN_DURATION and
-										   (currentGlobalTime - currentPlayerTime.idleTime) < CombatCortex.PLAYER_RETRY_MAX_DURATION and
-									       not isMoving
+									if not currentPlayerTime and isMoving then
+										self.pendingPlayers[peep] = { idleTime = currentGlobalTime, movingTime = 0, totalTime = 0 }
+									elseif not isMoving then
+										executeWalk = true
+									elseif currentPlayerTime and
+									       (currentGlobalTime - currentPlayerTime.idleTime) > CombatCortex.PLAYER_RETRY_MIN_DURATION and
+										   (currentGlobalTime - currentPlayerTime.idleTime) < CombatCortex.PLAYER_RETRY_MAX_DURATION
 									then
 										Log.info(
 											"Player '%s' stopped moving; trying to re-engage with foe '%s'.",
 											peep:getName(),
 											target:getName())
+
 										self.pendingPlayers[peep] = nil
 
 										executeWalk = true
@@ -420,6 +423,16 @@ function CombatCortex:update(delta)
 							self.strafing[peep] = nil
 						end
 
+						if peep:hasBehavior(PlayerBehavior) and self.pendingPlayers[peep] then
+							local currentPlayerTime = self.pendingPlayers[peep]
+							Log.info(
+								"Player '%s' reached target in %0.2f second(s); resuming attack.",
+								peep:getName(),
+								currentPlayerTime.totalTime)
+
+							self.pendingPlayers[peep] = nil
+						end
+
 						local canAttack
 						do
 							local cooldown = peep:getBehavior(AttackCooldownBehavior)
@@ -505,6 +518,8 @@ function CombatCortex:update(delta)
 	end
 
 	for player, currentPlayerTime in pairs(self.pendingPlayers) do
+		currentPlayerTime.totalTime = currentPlayerTime.totalTime + delta
+
 		local isMoving = player:hasBehavior(MovementBehavior) and player:getBehavior(MovementBehavior).velocity:getLength() > 0.1
 		if isMoving then
 			currentPlayerTime.movingTime = 0

@@ -53,7 +53,7 @@ ItsyScape.Resource.Prop "AirObelisk" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForResource(1) / 4
+			Count = ItsyScape.Utility.xpForResource(1) / 10
 		}
 	}
 }
@@ -156,13 +156,13 @@ ItsyScape.Resource.Prop "CosmicObelisk" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForResource(5) / 4
+			Count = ItsyScape.Utility.xpForResource(5) / 10
 		}
 	}
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Air obelisk",
+	Value = "Cosmic obelisk",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CosmicObelisk"
 }

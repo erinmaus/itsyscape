@@ -14,7 +14,7 @@ end
 
 local CurveConfig = {
 	CombatXP = {
-		A = 0.004,
+		A = 0.0035,
 		B = -0.05,
 		C = 8,
 		evaluate = evaluate
@@ -22,7 +22,7 @@ local CurveConfig = {
 
 	HealthXP = {
 		A = 0.000025,
-		B = 0.05,
+		B = 1.25,
 		C = 2,
 		evaluate = evaluate
 	},

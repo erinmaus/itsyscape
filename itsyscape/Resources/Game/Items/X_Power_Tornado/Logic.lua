@@ -76,8 +76,8 @@ function Tornado:performAnimation(peep)
 			"ItsyScape.Graphics.AnimationResource",
 			"Resources/Game/Animations/Human_AttackZweihanderSlash_Tornado/Script.lua")
 		actor:playAnimation(
-			'combat',
-			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
+			'combat-attack',
+			HumanoidActorAnimatorCortex.ATTACK_PRIORITY + 1,
 			animation)
 	end
 end

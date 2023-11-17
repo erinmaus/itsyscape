@@ -20,12 +20,14 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local UndeadSquid = Class(Creep)
 UndeadSquid.INK_MIN = 3
 UndeadSquid.INK_MAX = 4
+UndeadSquid.LEAK_TIME_SECONDS = 1.5
 
 function UndeadSquid:new(resource, name, ...)
 	Creep.new(self, resource, name or 'UndeadSquid', ...)
@@ -161,7 +163,7 @@ function UndeadSquid:onAttackShip()
 							end)
 						end
 
-						shipMapScript:poke('leak', {
+						shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
 							leak = leakPeep
 						})
 					end
@@ -184,9 +186,12 @@ end
 function UndeadSquid:update(...)
 	Creep.update(self, ...)
 
-	local movement = self:getBehavior(MovementBehavior)
-	movement.facing = MovementBehavior.FACING_RIGHT
-	movement.targetFacing = MovementBehavior.FACING_RIGHT
+	local isMoving = self:hasBehavior(TargetTileBehavior)
+	if not isMoving then
+		local movement = self:getBehavior(MovementBehavior)
+		movement.facing = MovementBehavior.FACING_RIGHT
+		movement.targetFacing = MovementBehavior.FACING_RIGHT
+	end
 end
 
 return UndeadSquid
