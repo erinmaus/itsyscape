@@ -426,6 +426,12 @@ function GameView:removeMap(layer)
 			type = 'unload',
 			key = layer
 		})
+
+		for key, value in pairs(self.decorations) do
+			if value.layer == layer then
+				self.decorations[key] = nil
+			end
+		end
 	end
 end
 
@@ -651,7 +657,7 @@ function GameView:removeActor(actor)
 		local view = self.actors[actor]
 		self.actors[actor]:release()
 		self.actors[actor] = nil
-		self.views[view] = nil
+		self.views[actor] = nil
 	end
 end
 
@@ -811,6 +817,7 @@ function GameView:decorate(group, decoration, layer)
 
 		d.decoration = decoration
 		d.name = group
+		d.layer = layer
 
 		self.decorations[groupName] = d
 	end

@@ -111,3 +111,26 @@ if love.system.getOS() == "OS X" and jit and jit.arch == "arm64" then
 	Log.info("Running on macOS (arch = '%s'), disabling JIT.", jit and jit.arch or "???")
 	require("jit").off()
 end
+
+local _collectgarbage = collectgarbage
+local gcStops = 0
+
+function collectgarbage(opt, arg)
+	if opt == "stop" then
+		if gcStops == 0 then
+			local result = _collectgarbage("stop")
+		end
+
+		gcStops = gcStops + 1
+
+		return result
+	elseif opt == "restart" then
+		gcStops = math.max(gcStops - 1, 0)
+
+		if gcStops == 0 then
+			return _collectgarbage("restart")
+		end
+	else
+		return _collectgarbage(opt, arg)
+	end
+end
