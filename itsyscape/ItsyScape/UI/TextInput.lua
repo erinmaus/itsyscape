@@ -34,6 +34,13 @@ function TextInput:focus(...)
 	Widget.focus(self, ...)
 end
 
+function TextInput:blur(...)
+	self.cursorIndex = 1
+	self.cursorLength = 0
+
+	Widget.blur(self, ...)
+end
+
 function TextInput:getActiveCursor()
 	if self.cursorLength < 0 then
 		return TextInput.CURSOR_LEFT
