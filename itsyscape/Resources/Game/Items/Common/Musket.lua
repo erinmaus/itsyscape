@@ -99,7 +99,7 @@ function Musket:getWeaponType()
 end
 
 function Musket:getCooldown(peep)
-	return 3
+	return 2
 end
 
 function Musket:getProjectile(peep)

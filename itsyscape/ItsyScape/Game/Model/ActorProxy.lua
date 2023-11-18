@@ -87,7 +87,8 @@ ActorProxy.playAnimation:link(
 ActorProxy.stopAnimation:link(
 	"onAnimationStopped",
 	Event.Argument("slot"),
-	Event.Argument("priority"))
+	Event.Argument("priority"),
+	Event.Argument("force"))
 
 
 ActorProxy.damage = Event.ServerToClientRPC(Event.Arguments())

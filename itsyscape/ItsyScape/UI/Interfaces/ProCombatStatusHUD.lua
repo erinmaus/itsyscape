@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
@@ -551,10 +552,12 @@ ProCombatStatusHUD.Equipment.BUTTON_PADDING = 2
 ProCombatStatusHUD.Equipment.BUTTON_SIZE = ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2
 ProCombatStatusHUD.Equipment.PADDING = 8
 
-function ProCombatStatusHUD.Equipment:new(hud)
+function ProCombatStatusHUD.Equipment:new(hud, key, index)
 	Widget.new(self)
 
 	self.hud = hud
+	self.key = key or "current"
+	self.index = index or 1
 
 	local width = ProCombatStatusHUD.Equipment.PANEL_WIDTH + ProCombatStatusHUD.BUTTON_PADDING * 2
 	local height = ProCombatStatusHUD.Equipment.PANEL_HEIGHT + ProCombatStatusHUD.BUTTON_PADDING * 3 + ProCombatStatusHUD.BUTTON_SIZE
@@ -591,6 +594,8 @@ function ProCombatStatusHUD.Equipment:new(hud)
 	self:initButtons()
 
 	self:setZDepth(3000)
+
+	self.onClose = Callback()
 end
 
 function ProCombatStatusHUD.Equipment:initStats()
@@ -642,8 +647,11 @@ function ProCombatStatusHUD.Equipment:initStats()
 
 			local right = Label()
 			right:setData('stat', t[i][1])
+			right:setData('key', self.key)
+			right:setData('index', self.index)
 			right:setStyle(style)
-			right:bind("text", "equipment.current.stats[{stat}]")
+			right:setText("0")
+			right:bind("text", "equipment[{key}][{index}].stats[{stat}]")
 			layout:addChild(right)
 		end
 
@@ -685,12 +693,17 @@ function ProCombatStatusHUD.Equipment:initEquipment()
 		ProCombatStatusHUD.BUTTON_PADDING)
 	self.content:addChild(self.equipmentLayout)
 
+	local state = self.hud:getState()
+	local slots = state.equipment[self.key][self.index]
+
 	for i = 1, #Equipment.SLOTS do
 		local button = Button()
 		local icon = ItemIcon()
-		icon:setData('index', Equipment.SLOTS[i])
-		icon:bind("itemID", "equipment.current.items[{index}].id")
-		icon:bind("itemCount", "equipment.current.items[{index}].count")
+		icon:setData('slot', Equipment.SLOTS[i])
+		icon:setData('key', self.key)
+		icon:setData('index', self.index)
+		icon:bind("itemID", "equipment[{key}][{index}].items[{slot}].id")
+		icon:bind("itemCount", "equipment[{key}][{index}].items[{slot}].count")
 		icon:setPosition(
 			ProCombatStatusHUD.Equipment.BUTTON_PADDING,
 			ProCombatStatusHUD.Equipment.BUTTON_PADDING)
@@ -703,14 +716,21 @@ function ProCombatStatusHUD.Equipment:initEquipment()
 
 		button:addChild(icon)
 		button:setData('icon', icon)
-		button.onClick:register(self.setIcon, self, Equipment.SLOTS[i])
+
+		if self.key == "current" then
+			button.onClick:register(self.setIcon, self, Equipment.SLOTS[i])
+		end
 
 		self.equipmentLayout:addChild(button)
+
+		if slots.icon == Equipment.SLOTS[i] then
+			self:setIcon(slots.icon, button)
+		end
 	end
 end
 
 function ProCombatStatusHUD.Equipment:close()
-	self:getParent():removeChild(self)
+	self:onClose()
 end
 
 function ProCombatStatusHUD.Equipment:confirm()
@@ -719,32 +739,46 @@ function ProCombatStatusHUD.Equipment:confirm()
 end
 
 function ProCombatStatusHUD.Equipment:initButtons()
-	local cancel = Button()
-	cancel:setText("Cancel")
-	cancel:setPosition(
-		ProCombatStatusHUD.BUTTON_PADDING,
-		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
-	cancel:setSize(
-		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
-		ProCombatStatusHUD.BUTTON_SIZE)
-	cancel.onClick:register(self.close, self)
-	cancel:setToolTip("Don't save the equipment to a new slot.")
-	self:addChild(cancel)
+	if self.key ~= "current" then
+		local confirm = Button()
+		confirm:setText("Done")
+		confirm:setPosition(
+			ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2,
+			ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+		confirm:setSize(
+			ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
+			ProCombatStatusHUD.BUTTON_SIZE)
+		confirm.onClick:register(self.close, self)
+		confirm:setToolTip("Close the preview.")
+		self:addChild(confirm)
+	else
+		local cancel = Button()
+		cancel:setText("Cancel")
+		cancel:setPosition(
+			ProCombatStatusHUD.BUTTON_PADDING,
+			ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+		cancel:setSize(
+			ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
+			ProCombatStatusHUD.BUTTON_SIZE)
+		cancel.onClick:register(self.close, self)
+		cancel:setToolTip("Don't save the equipment to a new slot.")
+		self:addChild(cancel)
 
-	local confirm = Button()
-	confirm:setText("Confirm")
-	confirm:setPosition(
-		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2,
-		ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
-	confirm:setSize(
-		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
-		ProCombatStatusHUD.BUTTON_SIZE)
-	confirm.onClick:register(self.confirm, self)
-	confirm:setToolTip(
-		"Save the equipment load out to a new slot.",
-		"The icon will be the item you click on here.",
-		"If you don't click on an item, a good default will be selected.")
-	self:addChild(confirm)
+		local confirm = Button()
+		confirm:setText("Confirm")
+		confirm:setPosition(
+			ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2,
+			ProCombatStatusHUD.BUTTON_PADDING * 2 + ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
+		confirm:setSize(
+			ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.BUTTON_PADDING,
+			ProCombatStatusHUD.BUTTON_SIZE)
+		confirm.onClick:register(self.confirm, self)
+		confirm:setToolTip(
+			"Save the equipment load out to a new slot.",
+			"The icon will be the item you click on here.",
+			"If you don't click on an item, a good default will be selected.")
+		self:addChild(confirm)
+	end
 end
 
 function ProCombatStatusHUD:new(id, index, ui)
@@ -1152,6 +1186,14 @@ function ProCombatStatusHUD:equip(index, slot, _, mouseButton)
 				end
 			},
 			{
+				id = "Preview",
+				verb = "Preview",
+				object = string.format("Slot %d", slot),
+				callback = function()
+					self:previewEquipment(index, slot)
+				end
+			},
+			{
 				id = "Clear",
 				verb = "Clear",
 				object = string.format("Slot %d", slot),
@@ -1166,8 +1208,30 @@ function ProCombatStatusHUD:equip(index, slot, _, mouseButton)
 end
 
 function ProCombatStatusHUD:confirmSaveEquipment()
-	local equipment = ProCombatStatusHUD.Equipment(self)
-	self:addChild(equipment)
+	if self.equipment then
+		return
+	end
+
+	self.equipment = ProCombatStatusHUD.Equipment(self)
+	self.equipment.onClose:register(self.closeEquipment, self)
+
+	self:addChild(self.equipment)
+end
+
+function ProCombatStatusHUD:previewEquipment(index, slot)
+	if self.equipment then
+		return
+	end
+
+	self.equipment = ProCombatStatusHUD.Equipment(self, index, slot)
+	self.equipment.onClose:register(self.closeEquipment, self)
+
+	self:addChild(self.equipment)
+end
+
+function ProCombatStatusHUD:closeEquipment()
+	self:removeChild(self.equipment)
+	self.equipment = nil
 end
 
 function ProCombatStatusHUD:saveEquipment(icon)
@@ -1286,18 +1350,21 @@ function ProCombatStatusHUD:onShowEquipment()
 		local toolTipText = {}
 		local iconItemID
 		local iconItemPriority = math.huge
-		for j = 1, #equipmentSlot[i] do
-			local item = equipmentSlot[i][j]
+		local items = equipmentSlot[i].items or {}
+		for j = 1, #Equipment.SLOTS do
+			local item = items[Equipment.SLOTS[j]]
 
-			if item.slot == equipmentSlot[i].icon then
-				iconItemID = item.id
-				iconItemPriority = 0
-			end
-
-			for k = 1, #ProCombatStatusHUD.ITEM_ICON_PRIORITY do
-				if item.slot == ProCombatStatusHUD.ITEM_ICON_PRIORITY[k] and iconItemPriority >= k then
+			if item then
+				if item.slot == equipmentSlot[i].icon then
 					iconItemID = item.id
-					iconItemPriority = k
+					iconItemPriority = 0
+				end
+
+				for k = 1, #ProCombatStatusHUD.ITEM_ICON_PRIORITY do
+					if item.slot == ProCombatStatusHUD.ITEM_ICON_PRIORITY[k] and iconItemPriority >= k then
+						iconItemID = item.id
+						iconItemPriority = k
+					end
 				end
 			end
 		end
@@ -1307,6 +1374,7 @@ function ProCombatStatusHUD:onShowEquipment()
 		local icon = ItemIcon()
 		icon:setItemID(iconItemID)
 		button:addChild(icon)
+		button:setToolTip("Swap to this equipment immediately.")
 
 		table.insert(buttons, button)
 	end
@@ -1314,6 +1382,7 @@ function ProCombatStatusHUD:onShowEquipment()
 	do
 		local button = Button()
 		button.onClick:register(self.confirmSaveEquipment, self)
+		button:setToolTip("Add new quick item swap.")
 
 		local icon = Icon()
 		icon:setIcon("Resources/Game/UI/Icons/Concepts/Add.png")
@@ -1336,6 +1405,7 @@ function ProCombatStatusHUD:onShowEquipment()
 		if self.equipmentSlot > 1 then
 			self.previousEquipmentButton = Button()
 			self.previousEquipmentButton:setText("<")
+			self.previousEquipmentButton:setToolTip("View previous page of quick switches.")
 			self.previousEquipmentButton.onClick:register(self.previousEquipmentSlot, self)
 		end
 
@@ -1362,10 +1432,12 @@ function ProCombatStatusHUD:onShowEquipment()
 		if self.equipmentSlot < #equipment then
 			self.nextEquipmentButton = Button()
 			self.nextEquipmentButton:setText(">")
+			self.nextEquipmentButton:setToolTip("View next page of quick switches.")
 			self.nextEquipmentButton.onClick:register(self.nextEquipmentSlot, self)
 		elseif #buttons > 1 then
 			self.nextEquipmentButton = Button()
 			self.nextEquipmentButton:setText("+")
+			self.nextEquipmentButton:setToolTip("Create new page of quick switches.")
 			self.nextEquipmentButton.onClick:register(self.addEquipmentSlot, self)
 		end
 
