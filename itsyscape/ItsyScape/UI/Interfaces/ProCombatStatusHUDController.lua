@@ -228,7 +228,7 @@ function ProCombatStatusHUDController:saveEquipment(e)
 
 	local index = 1
 	for item in broker:iterateItems(equipment) do
-		slotStorage:set(index, {
+		slotStorage:getSection("items"):set(index, {
 			id = item:getID(),
 			slot = broker:getItemKey(item)
 		})
@@ -236,8 +236,23 @@ function ProCombatStatusHUDController:saveEquipment(e)
 		index = index + 1
 	end
 
+	local stats
+	do
+		local peep = self:getPeep()
+		local equipment = peep:getBehavior(EquipmentBehavior)
+		equipment = equipment and equipment.equipment
+
+		if equipment then
+			stats = {}
+			for name, value in equipment:getStats() do
+				stats[name] = value
+			end
+		end
+	end
+
 	if e.icon then
 		slotStorage:set("icon", e.icon)
+		slotStorage:set("stats", stats)
 	end
 
 	if index == 1 then
@@ -252,7 +267,7 @@ function ProCombatStatusHUDController:addEquipmentSlot(e)
 	local equipmentStorage = self:getStorage("Equipment")
 	local slotsStorage = equipmentStorage:getSection(equipmentStorage:length() + 1)
 	slotsStorage:set({
-		name = string.format("Slot %d", equipmentStorage:length())
+		name = string.format("More Gear", equipmentStorage:length())
 	})
 
 	self.isDirty = true
@@ -277,7 +292,7 @@ end
 
 function ProCombatStatusHUDController:equip(e)
 	local equipmentStorage = self:getStorage("Equipment")
-	local slotStorage = equipmentStorage:getSection(e.index):getSection(e.slot)
+	local slotStorage = equipmentStorage:getSection(e.index):getSection(e.slot):getSection("items")
 
 	local peep = self:getPeep()
 	local gameDB = self:getDirector():getGameDB()
@@ -299,6 +314,7 @@ function ProCombatStatusHUDController:equip(e)
 						peep:getState(),
 						peep,
 						itemInstance)
+					break
 				end
 			end
 		end
@@ -775,8 +791,39 @@ function ProCombatStatusHUDController:getCurrentEquipment(e)
 end
 
 function ProCombatStatusHUDController:getEquipment()
+	local equipment = self:getStorage("Equipment")
+	if equipment:length() <= 1 and not equipment:getSection(1):hasValue("name") then
+		equipment:getSection(1):set("name", "Gear")
+	end
+
 	local result = self:getStorage("Equipment"):get()
-	result.current = self:getCurrentEquipment()
+	for _, section in ipairs(result) do
+		for i, slot in ipairs(section) do
+			local newSlot = {
+				icon = slot.icon,
+				stats = slot.stats,
+				items = {}
+			}
+
+			local items = slot.items
+			for _, item in ipairs(items) do
+				local key = item.slot
+				if key == Equipment.PLAYER_SLOT_TWO_HANDED then
+					key = Equipment.PLAYER_SLOT_RIGHT_HAND
+				end
+
+				newSlot.items[key] = {
+					id = item.id,
+					count = 1,
+					slot = key
+				}
+			end
+
+			section[i] = newSlot
+		end
+	end
+
+	result.current = { self:getCurrentEquipment() }
 
 	return result
 end

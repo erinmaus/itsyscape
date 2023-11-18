@@ -80,6 +80,7 @@ function Chat:new(id, index, ui)
 
 	self.keybind = Keybinds['PLAYER_1_CHAT']
 	self.isKeybindDown = self.keybind:isDown()
+	self.hadFocusedWidget = self:getView():getInputProvider():getFocusedWidget() ~= nil
 
 	self:setZDepth(Chat.Z_DEPTH)
 end
@@ -174,10 +175,12 @@ function Chat:update(delta)
 	if not self.isKeybindDown and isKeybindDown then
 		if self.textInput:getIsFocused() then
 			self:send()
-		else
+		elseif not self.hadFocusedWidget then
 			self:getView():getInputProvider():setFocusedWidget(self.textInput)
 		end
 	end
+
+	self.hadFocusedWidget = self:getView():getInputProvider():getFocusedWidget()
 	self.isKeybindDown = isKeybindDown
 end
 

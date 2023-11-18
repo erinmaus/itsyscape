@@ -546,11 +546,12 @@ function Peep:update(director, game)
 
 	local count = #self.pendingPokes
 	local index = 1
-	while index <= #self.pendingPokes do
+	while index <= count do
 		local poke = self.pendingPokes[index]
 		if not poke.time or poke.time <= love.timer.getTime() then
 			self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
 			table.remove(self.pendingPokes, index)
+			count = count - 1
 		else
 			index = index + 1
 		end

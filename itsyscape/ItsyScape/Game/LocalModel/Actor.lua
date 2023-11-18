@@ -64,8 +64,12 @@ function LocalActor:spawn(id, group, resource, ...)
 		self.onDamage(self, 'heal', p.hitPoints)
 	end)
 	self.peep:listen("travel", function()
-		for animationSlot in self:iterateAnimationSlots() do
+		for animationSlot, animation in self:iterateAnimationSlots() do
 			if animationSlot ~= "main" then
+				Log.info(
+					"Stopping animation '%s' on slot '%s' for actor '%s' due to travel.",
+					animation:getFilename(), animationSlot, self.peep:getName())
+
 				self:stopAnimation(animationSlot)
 			end
 		end
@@ -347,7 +351,7 @@ function LocalActor:setBody(body)
 end
 
 function LocalActor:playAnimation(slot, priority, animation, force, time)
-	self.animations[slot] = true
+	self.animations[slot] = animation
 	self.onAnimationPlayed(self, slot, priority, animation, force, time)
 end
 

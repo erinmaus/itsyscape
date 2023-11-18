@@ -37,7 +37,7 @@ function Blunderbuss:getWeaponType()
 end
 
 function Blunderbuss:getCooldown(peep)
-	return 3
+	return 2
 end
 
 function Blunderbuss:getProjectile(peep)

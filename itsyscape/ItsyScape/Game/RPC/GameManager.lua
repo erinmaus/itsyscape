@@ -61,7 +61,7 @@ end
 function GameManager.Instance:getPropertyGroup(groupName)
 	local group = self.propertyGroups[groupName]
 	if not group then
-		group = GameManager.PropertyGroup()
+		group = GameManager.PropertyGroup(groupName)
 		self.propertyGroups[groupName] = group
 	end
 
@@ -141,7 +141,8 @@ end
 
 GameManager.PropertyGroup = Class()
 
-function GameManager.PropertyGroup:new()
+function GameManager.PropertyGroup:new(name)
+	self.name = name
 	self.values = {}
 end
 
@@ -169,10 +170,8 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 
 			if Class.isCompatibleType(argument, Event.SortedKeyArgument) then
 				local isNotBooleanOverride = type(value) == type(key[k].value) and type(value) ~= "boolean"
-				if (isNotBooleanOverride and key[k].value and value and key[k].value > value) and not override then
-					isMatch = false
+				if (isNotBooleanOverride and key[k].value and value and key[k].value < value) and not override then
 					outPrioritized = true
-					break
 				end
 			elseif Class.isCompatibleType(argument, Event.KeyArgument) then
 				if not State.deepEquals(key[k].value, value) then
@@ -190,7 +189,7 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 		end
 
 		if isMatch then
-			return i, outPrioritized
+			return i, outPrioritized and not override
 		end
 	end
 
@@ -199,14 +198,17 @@ end
 
 function GameManager.PropertyGroup:set(key, values)
 	local index, outPrioritized = self:findIndexOfKey(key)
-	if index then
-		self.values[index].value = values
-		return true
-	elseif not outPrioritized then
-		table.insert(self.values, {
-			key = key,
-			value = values
-		})
+	if not outPrioritized then
+		if index then
+			self.values[index].key = key
+			self.values[index].value = values
+		else
+			table.insert(self.values, {
+				key = key,
+				value = values
+			})
+		end
+
 		return true
 	end
 
