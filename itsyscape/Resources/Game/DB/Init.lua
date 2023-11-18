@@ -1153,6 +1153,7 @@ include "Resources/Game/DB/Items/AncientCeremonial.lua"
 include "Resources/Game/DB/Items/IronFlamethrower.lua"
 include "Resources/Game/DB/Items/Bullets.lua"
 include "Resources/Game/DB/Items/Guns.lua"
+include "Resources/Game/DB/Items/FishingRods.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
