@@ -243,9 +243,6 @@ function Weapon.DamageRoll:roll()
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
 
-	print(self:getSelf():getName(), "minHit", minHit)
-	print(self:getSelf():getName(), "maxHit", maxHit)
-
 	return math.ceil(math.random(minHit, maxHit) * self.damageMultiplier)
 end
 

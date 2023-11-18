@@ -386,6 +386,18 @@ do
 	}
 end
 
+M["Anchor_Treasury"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "Anchor_Treasury",
+		Map = M._MAP,
+		Resource = M["Anchor_Treasury"]
+	}
+end
+
 M["Door_Treasury"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -413,6 +425,18 @@ do
 				Count = 1
 			}
 		}
+	}
+end
+
+M["Anchor_Fish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "Anchor_Fish",
+		Map = M._MAP,
+		Resource = M["Anchor_Fish"]
 	}
 end
 
