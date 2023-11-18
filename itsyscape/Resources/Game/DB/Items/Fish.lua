@@ -870,6 +870,556 @@ do
 	}
 end
 
+-- Bass
+do
+	ItsyScape.Resource.Prop "Bass_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "Bass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(11)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "Bass_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bass_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a bass swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bass_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 8,
+		SpawnTime = 15,
+		Resource = ItsyScape.Resource.Prop "Bass_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "Bass_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Bass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(11)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "Bass" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Those are some big lips! Needs to be cooked.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(11),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "Bass",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Bass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 12,
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Bass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "Bass",
+		Value = ItsyScape.Utility.valueForItem(11)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "Bass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Engineering",
+		Boost = 1,
+		Resource = ItsyScape.Resource.Item "Bass"
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 8,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Bass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(11)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "Bass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 10,
+		Stop = 15,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedBass" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "It might be radioactive...?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(24),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedBass"
+	}
+
+	ItsyScape.Resource.Item "BurntBass" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Is this radioactive..? Better toss it out and not found out!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntBass"
+	}
+end
+
+-- Alligator gar
+do
+	ItsyScape.Resource.Prop "AlligatorGar_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(15)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "Bait",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "AlligatorGar",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(16)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "AlligatorGar_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Alligator gar",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "AlligatorGar_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's an alligator gar eyeing you from the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "AlligatorGar_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 10,
+		SpawnTime = 15,
+		Resource = ItsyScape.Resource.Prop "AlligatorGar_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "AlligatorGar_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AlligatorGar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(16)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "AlligatorGar" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Alligator gar",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's a big fish! Needs to be cooked.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(15),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "AlligatorGar",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "AlligatorGar",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 10,
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "AlligatorGar",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "AlligatorGar",
+		Value = ItsyScape.Utility.valueForItem(15)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "AlligatorGar",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Boost = 2,
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Boost = 1,
+		Resource = ItsyScape.Resource.Item "AlligatorGar"
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 10,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AlligatorGar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedAlligatorGar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(16)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(15)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AlligatorGar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntAlligatorGar",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 15,
+		Stop = 20,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedAlligatorGar" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked alligator gar",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Tastes like a freshly grilled steak with a hint of fish.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(16),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
+	}
+
+	ItsyScape.Resource.Item "BurntAlligatorGar" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt alligator gar",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's ruined!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntAlligatorGar"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntAlligatorGar"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntAlligatorGar"
+	}
+end
+
 -- Shrimp
 do
 	ItsyScape.Resource.Prop "Shrimp_Default" {

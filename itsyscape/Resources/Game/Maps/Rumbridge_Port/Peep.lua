@@ -104,7 +104,7 @@ end
 function Port:onSpawnShip(player)
 	local playerPeep = player:getActor() and player:getActor():getPeep()
 	if playerPeep and playerPeep:getState():has("SailingItem", "Ship") then
-		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(12, 0, 48), {
+		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(4, 0, 48), {
 			isInstancedToPlayer = true,
 			player = player
 		})

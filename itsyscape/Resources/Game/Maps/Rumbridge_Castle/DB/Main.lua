@@ -208,6 +208,12 @@ do
 		Resource = M["Ladder_ToBasement"]
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = -1,
+		Resource = M["Ladder_ToBasement"]
+	}
+
 	ItsyScape.Meta.ActionVerb {
 		Value = "Climb-down",
 		XProgressive = "Climbing-down",
