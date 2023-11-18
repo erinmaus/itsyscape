@@ -506,8 +506,12 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 		end
 
 		if not destinationItem then
-			destinationItem = self.broker:addItem(destination, id, count, noted)
-			destinationItem:setUserdata(item:getSerializedUserdata())
+			if count == item:getCount() then
+				destinationItem = item
+			else
+				destinationItem = self.broker:addItem(destination, id, count, noted)
+				destinationItem:setUserdata(item:getSerializedUserdata())
+			end
 		else
 			destinationItem:setCount(destinationItem:getCount() + count)
 		end
@@ -519,10 +523,20 @@ function ItemBroker.Transaction:transfer(destination, item, count, purpose, merg
 			io.stderr:write('error (onTransferFrom): ',  r, '\n')
 		end
 
-		if count == item:getCount() then
-			self.broker:removeItem(item)
+		if destinationItem ~= item then
+			if count == item:getCount() then
+				self.broker:removeItem(item)
+			else
+				item:setCount(item:getCount() - count)
+			end
 		else
-			item:setCount(item:getCount() - count)
+			local sourceInventory = self.broker.inventories[source]
+			local destinationInventory = self.broker.inventories[destination]
+
+			sourceInventory:remove(item)
+			destinationInventory:add(item)
+
+			self.broker:moveItem(item, destination)
 		end
 
 		self.items[item:getRef()] = item
@@ -773,21 +787,23 @@ end
 --
 -- The item must be in the inventory.
 function ItemBroker.Inventory:setKey(item, key)
-	assert(self:has(item), "item is not in Inventory")
+	assert(self:has(item), "item is not in inventory")
 
 	self:unsetKey(item)
 
-	local k = self:addKey(key)
-	k:add(item)
+	if key then
+		local k = self:addKey(key)
+		k:add(item)
 
-	self.itemsByKey[item] = k
+		self.itemsByKey[item] = k
+	end
 end
 
 -- Unsets a key, if any.
 --
 -- The item must be in the inventory.
 function ItemBroker.Inventory:unsetKey(item)
-	assert(self:has(item), "item is not in Inventory")
+	assert(self:has(item), "item is not in inventory")
 
 	local k = self.itemsByKey[item]
 	if k then
@@ -807,14 +823,14 @@ function ItemBroker.Inventory:unsetKey(item)
 end
 
 function ItemBroker.Inventory:setZ(item, value)
-	assert(self:has(item), "item is not in Inventory")
+	assert(self:has(item), "item is not in inventory")
 
 	self.zValues[item] = value
 	self:sortItems()
 end
 
 function ItemBroker.Inventory:getZ(item)
-	assert(self:has(item), "item is not in Inventory")
+	assert(self:has(item), "item is not in inventory")
 
 	return self.zValues[item] or 0
 end
@@ -942,6 +958,12 @@ function ItemBroker:removeItem(item)
 	inventory:remove(item)
 	self.items[item] = nil
 	self.itemRefs[item] = nil
+end
+
+function ItemBroker:moveItem(item, provider)
+	assert(self:hasItem(item), "item does not exist in broker")
+
+	self.items[item] = provider
 end
 
 function ItemBroker:hasItem(item)
