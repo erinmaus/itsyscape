@@ -133,7 +133,8 @@ function Castle:onPerformSupperSaboteurNamedAction(player, namedMapAction)
 		Probe.namedMapObject("ChefAllon"),
 		Probe.instance(player))[1]
 	if not chef then
-		Log.warn("Couldn't find Chef Allon for player '%s'.", playerPeep:getName())
+		Log.warn("Couldn't find Chef Allon for player '%s'. Doom!", playerPeep:getName())
+		return
 	end
 
 	local action = Utility.getAction(game, namedMapAction:get("Action"))
