@@ -33,7 +33,6 @@ function QuitGameWindowController:confirm(e)
 	playerModel:onLeave()
 
 	self:getGame():getUI():closeInstance(self)
-	Log.analytic("END_GAME")
 end
 
 function QuitGameWindowController:cancel(e)

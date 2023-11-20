@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local SailingItemStateProvider = Class(StateProvider)
 
@@ -47,7 +48,9 @@ function SailingItemStateProvider:give(name, count, flags)
 	end
 
 	if not self.storage:get(name) then
-		Log.analytic("PLAYER_GOT_SAILING_ITEM", name)
+		if self.peep:hasBehavior(PlayerBehavior) then
+			Analytics:gotSailingItem(self.peep, name)
+		end
 	end
 
 	self.storage:set(name, true)

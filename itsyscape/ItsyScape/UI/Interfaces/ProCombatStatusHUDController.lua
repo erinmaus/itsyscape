@@ -806,7 +806,7 @@ function ProCombatStatusHUDController:getEquipment()
 			}
 
 			local items = slot.items
-			for _, item in ipairs(items) do
+			for _, item in ipairs(items or {}) do
 				local key = item.slot
 				if key == Equipment.PLAYER_SLOT_TWO_HANDED then
 					key = Equipment.PLAYER_SLOT_RIGHT_HAND

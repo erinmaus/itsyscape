@@ -333,7 +333,7 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 				instance,
 				"DialogBox",
 				true,
-				actions[i].instance:getAction())
+				actions[i].instance)
 		end
 	end
 

@@ -17,6 +17,12 @@ MapInfoController.TIME = 5
 function MapInfoController:new(peep, director, mapResource)
 	Controller.new(self, peep, director)
 
+	local dream = director:getGameDB():getRecord("DreamRequirement", {
+		Map = mapResource
+	})
+
+	mapResource = dream and dream:get("Dream") or mapResource
+
 	time = math.max(time or 3, 1)
 	self.state = {
 		time = MapInfoController.TIME,

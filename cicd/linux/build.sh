@@ -4,6 +4,8 @@ set -xe
 
 cd ./cicd/linux
 
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update
 
 apt-get install --assume-yes build-essential git make cmake autoconf automake \
@@ -34,6 +36,7 @@ make LOVE_BRANCH=${LOVE_BRANCH}
 
 ./get_premake5.sh
 ./build_sentry.sh
+./get_luahttps.sh
 ./build_bmashina.sh
 ./build_discworld.sh
 ./build_nbunny.sh

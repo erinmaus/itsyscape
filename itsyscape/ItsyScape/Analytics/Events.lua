@@ -9,14 +9,30 @@
 --------------------------------------------------------------------------------
 
 local EVENTS = {
-	START_GAME = true,
-	END_GAME = true,
-	PLAYER_GOT_KEY_ITEM = true,
-	PLAYER_GOT_LEVEL_UP = true,
-	PLAYER_DREAMED = true,
-	PLAYER_DIED = true,
-	PLAYER_REZZED = true,
-	PLAYER_GOT_SAILING_ITEM = true,
+	START_GAME = "Start Game",
+	END_GAME = "End Game",
+	GOT_KEY_ITEM = "Made Quest Progress",
+	STARTED_QUEST = "Started Quest",
+	COMPLETED_QUEST = "Completed Quest",
+	DREAMED = "Dreamed",
+	GAINED_XP = "Gained XP",
+	GOT_LEVEL_UP = "Leveled Up",
+	PERFORMED_ACTION = "Performed Action",
+	FAILED_ACTION = "Failed Action",
+	COOKED_RECIPE = "Cooked Recipe",
+	GAINED_COMBAT_LEVEL = "Gained Combat Level",
+	KILLED_NPC = "Killed NPC",
+	TALKED_TO_NPC = "Talked to NPC",
+	SELECTED_DIALOGUE_OPTION = "Selected Dialogue Option",
+	NPC_DROPPED_ITEM = "NPC Dropped Item",
+	DIED = "Died",
+	REZZED = "Rezzed",
+	GOT_SAILING_ITEM = "Purchased Sailing Item",
+	OPENED_INTERFACE = "Opened Interface",
+	CLOSED_INTERFACE = "Closed Interface",
+	STARTED_RAID = "Started Raid",
+	TRAVELED = "Traveled",
+	PLAYED_CUTSCENE = "Played Cutscene"
 }
 
 local index = function(_, key)
@@ -25,7 +41,7 @@ local index = function(_, key)
 	else
 		key = key:upper()
 		if EVENTS[key] then
-			return key
+			return EVENTS[key]
 		else
 			Log.error("Analytic '%s' not found.", key)
 		end

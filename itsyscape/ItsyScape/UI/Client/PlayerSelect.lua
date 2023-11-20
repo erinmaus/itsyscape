@@ -63,7 +63,7 @@ function PlayerSelect.getPlayers()
 	local results = {}
 	for i = 1, #files do
 		local filename = "Player/" .. files[i]
-		if files[i]:match("%.dat$") and love.filesystem.getInfo(filename).type == 'file' then
+		if files[i]:match("Default%d*%.dat$") and love.filesystem.getInfo(filename).type == 'file' then
 			local result = PlayerStorage()
 			result:deserialize(love.filesystem.read(filename) or "{}")
 			result:getRoot():set({ filename = filename })
@@ -256,8 +256,6 @@ function PlayerSelect:loadPlayer(player)
 	game:getPlayer():spawn(player.storage, false, self.application:getPassword())
 
 	self.application:closeTitleScreen()
-
-	Log.analytic("START_GAME")
 end
 
 function PlayerSelect:deletePlayer(player)
@@ -331,8 +329,6 @@ function PlayerSelect:newPlayer(player)
 	player:spawn(storage, true, self.application:getPassword())
 
 	self.application:closeTitleScreen()
-
-	Log.analytic("START_GAME")
 end
 
 function PlayerSelect:update(delta)
