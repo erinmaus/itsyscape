@@ -166,6 +166,8 @@ function LocalUI:open(peep, interfaceID, ...)
 	self.onPush(self, interfaceID, i.n, controller:pull())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
+	Analytics:openedInterface(peep, interfaceID, false)
+
 	return interfaceID, i.n, controller
 end
 
@@ -179,6 +181,8 @@ function LocalUI:openBlockingInterface(peep, interfaceID, ...)
 		id = id,
 		index = n
 	}
+
+	Analytics:openedInterface(peep, interfaceID, true)
 
 	return id, n, controller
 end
@@ -200,16 +204,19 @@ function LocalUI:close(interfaceID, index)
 		return false
 	end
 
+	local isBlocking = false
 	if self.blockingInterface[controller:getPeep()] then
 		local blockingInterface = self.blockingInterface[controller:getPeep()]
 		if blockingInterface.id == interfaceID and
 		   blockingInterface.index == index
 		then
 			self.blockingInterface[controller:getPeep()] = nil
+			self.isBlocking = true
 		end
 	end
 
 	self.onClose(self, interfaceID, index, controller:getPlayer())
+	Analytics:closedInterface(controller:getPeep(), interfaceID, isBlocking)
 
 	controller:close()
 	self.interfaces[interfaceID].v[index] = nil

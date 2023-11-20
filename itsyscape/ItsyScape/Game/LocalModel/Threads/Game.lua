@@ -17,12 +17,14 @@ _CONF = conf._CONF
 
 local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
+local AnalyticsClient = require "ItsyScape.Analytics.AnalyticsClient"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local ServerRPCService = require "ItsyScape.Game.RPC.ServerRPCService"
 
 local game = LocalGame(GameDB.create())
+Analytics = AnalyticsClient(game, _conf)
 
 local inputChannel = love.thread.getChannel('ItsyScape.Game::input')
 local outputChannel = love.thread.getChannel('ItsyScape.Game::output')
@@ -351,6 +353,8 @@ end
 if serverRPCService then
 	serverRPCService:close()
 end
+
+Analytics:quit()
 
 Log.info("Game thread exiting...")
 Log.quit()

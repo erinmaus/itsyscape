@@ -111,6 +111,10 @@ function Loot:materializeDropTable(peep, inventory, loot)
 				end
 
 				for _, i in ipairs(items) do
+					if slayer and slayer:hasBehavior(PlayerBehavior) then
+						Analytics:npcDroppedItem(slayer, peep, i)
+					end
+
 					stage:dropItem(i, i:getCount(), slayer)
 				end
 			end

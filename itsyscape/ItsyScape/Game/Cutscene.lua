@@ -46,6 +46,8 @@ function Cutscene:new(resource, player, director, layerName, entities)
 		self.player.onMove:unregister(self._onPlayerMove)
 	end
 	self.player.onMove:register(self._onPlayerMove)
+
+	Analytics:playedCutscene(player, cutscene)
 end
 
 function Cutscene:addEntity(name, Type, probe)

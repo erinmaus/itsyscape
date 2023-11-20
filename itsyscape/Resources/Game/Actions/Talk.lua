@@ -14,6 +14,7 @@ local Action = require "ItsyScape.Peep.Action"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local OpenInterfaceCommand = require "ItsyScape.UI.OpenInterfaceCommand"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local Talk = Class(Action)
 Talk.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -27,10 +28,11 @@ function Talk:perform(state, player, target)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = false })
 	if walk then
 		local face = CallbackCommand(Utility.Peep.face, player, target)
-		local interface = OpenInterfaceCommand("DialogBox", true, self:getAction(), target)
+		local interface = OpenInterfaceCommand("DialogBox", true, self, target)
 		local transfer = CallbackCommand(Action.transfer, self, state, player)
 		local perform = CallbackCommand(Action.perform, self, state, player)
-		local command = CompositeCommand(true, walk, face, interface, transfer, perform)
+		local analytic = player:hasBehavior(PlayerBehavior) and CallbackCommand(Analytics.talkedToNPC, Analytics, player, target, self)
+		local command = CompositeCommand(true, walk, face, interface, transfer, perform, analytic)
 
 		return player:getCommandQueue():interrupt(command)
 	end

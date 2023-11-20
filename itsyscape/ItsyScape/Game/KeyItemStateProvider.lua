@@ -12,6 +12,7 @@ local State = require "ItsyScape.Game.State"
 local Utility = require "ItsyScape.Game.Utility"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 local QuestProgressNotificationController = require "ItsyScape.UI.Interfaces.QuestProgressNotificationController"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local KeyItemStateProvider = Class(StateProvider)
 
@@ -74,8 +75,7 @@ function KeyItemStateProvider:give(name, count, flags)
 
 	self.storage:set(name, true)
 
-	if not hadKeyItem then
-		Log.analytic("PLAYER_GOT_KEY_ITEM", name)
+	if not hadKeyItem and self.peep:hasBehavior(PlayerBehavior) then
 		Log.info(
 			"Player '%s' (%d) obtained key item %s.",
 			self.peep:getName(),
@@ -84,7 +84,18 @@ function KeyItemStateProvider:give(name, count, flags)
 
 		local quest = QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[name]
 		if quest and Utility.Quest.didComplete(quest, self.peep) then
+			Analytics:completedQuest(self.peep, quest.name)
 			Utility.UI.openInterface(self.peep, "QuestCompleteNotification", false, quest)
+		elseif quest then
+			local questLog = Utility.Quest.build(quest, gameDB)
+			local questStartKeyItems = questLog and questLog[1] 
+
+			for _, questStartKeyItem in ipairs(questStartKeyItem or {}) do
+				if questStartKeyItem and questStartKeyItem.name == name then
+					Analytics:startedQuest(self.peep, quest.name)
+					break
+				end
+			end
 		end
 	end
 

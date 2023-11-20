@@ -47,7 +47,9 @@ function SailingItemStateProvider:give(name, count, flags)
 	end
 
 	if not self.storage:get(name) then
-		Log.analytic("PLAYER_GOT_SAILING_ITEM", name)
+		if self.peep:hasBehavior(PlayerBehavior) then
+			Analytics:gotSailingItem(self.peep, name)
+		end
 	end
 
 	self.storage:set(name, true)

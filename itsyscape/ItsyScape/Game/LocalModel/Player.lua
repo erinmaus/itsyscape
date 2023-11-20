@@ -49,6 +49,7 @@ function LocalPlayer:new(id, game, stage)
 	self.actor = false
 	self.direction = Vector.UNIT_X
 	self.id = id
+	self.isPlayable = false
 
 	self.onPoof = Callback()
 	self.onForceDisconnect = Callback()
@@ -145,6 +146,11 @@ function LocalPlayer:spawn(storage, newGame, password)
 		p.id = self.id
 
 		actor:getPeep():listen('finalize', function()
+			local storage = self.game:getDirector():getPlayerStorage(self.id)
+			local root = storage:getRoot()
+
+			self.isPlayable = root:hasSection("Location") and not root:getSection("Location"):get("isTitleScreen")
+
 			if newGame then
 				self.stage:movePeep(
 					actor:getPeep(),
@@ -156,9 +162,8 @@ function LocalPlayer:spawn(storage, newGame, password)
 					"shoreAnchor=Anchor_Spawn",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
+				Analytics:startGame(actor:getPeep())
 			else
-				local storage = self.game:getDirector():getPlayerStorage(self.id)
-				local root = storage:getRoot()
 				if not root:hasSection("Location") or not root:getSection("Location"):get("name") then
 					self:_updateLastLocation(storage)
 				end
@@ -185,6 +190,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 
 						if not location:get("isTitleScreen") then
 							actor:getPeep():pushPoke('bootstrapComplete')
+							Analytics:startGame(actor:getPeep())
 						else
 							local x, y, z = Utility.Map.getAnchorPosition(self.game, location:get("name"), "Anchor_Spawn")
 							Utility.Peep.setPosition(actor:getPeep(), Vector(x, y, z))
@@ -292,6 +298,11 @@ function LocalPlayer:unload()
 		end
 
 		self.stage:removePlayer(self)
+
+		if self.isPlayable then
+			Analytics:endGame(self.actor:getPeep())
+		end
+
 		self.stage:killActor(self.actor)
 	end
 

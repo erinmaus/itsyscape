@@ -46,6 +46,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local One = Class(Peep)
+One.PENDING_ANALYTIC_PERIOD_SECONDS = 2
 
 function One:new(...)
 	Peep.new(self, 'Player', ...)
@@ -188,14 +189,23 @@ function One:assign(director, key, ...)
 		combat.maximumPrayer = 1
 	end
 
+	self.pendingLevelUps = {}
+	self.pendingXP = {}
+	self.pendingTime = love.timer.getTime()
+
 	stats.stats.onLevelUp:register(function(_, skill)
-		local value = string.format("%s=%d",
-			skill:getName(),
-			skill:getBaseLevel())
-		Log.analytic("PLAYER_GOT_LEVEL_UP", value)
+		self.pendingLevelUps[skill:getName()] = skill:getBaseLevel()
+		self.pendingTime = love.timer.getTime()
 
 		Utility.UI.openInterface(self, "LevelUpNotification", false, skill)
 	end)
+	stats.stats.onXPGain:register(function(_, skill, xp)
+		if xp > 0 then
+			self.pendingXP[skill:getName()] = (self.pendingXP[skill:getName()] or 0) + xp
+			self.pendingTime = love.timer.getTime()
+		end
+	end)
+
 	stats.stats:getSkill("Constitution").onLevelUp:register(function(skill, oldLevel)
 		local difference = math.max(skill:getBaseLevel() - oldLevel, 0)
 
@@ -327,6 +337,8 @@ function One:ready(director, game)
 	self.rezzTimer = math.huge
 
 	Peep.ready(self, director, game)
+
+	self.oldCombatLevel = Utility.Combat.getCombatLevel(self)
 end
 
 function One:onTransferItemTo(e)
@@ -382,11 +394,11 @@ function One:onDie(p)
 	self.deadTimer = 5
 	self:addBehavior(DisabledBehavior)
 
-	Log.analytic("PLAYER_DIED", Utility.Peep.getMapResource(self).name)
+	Analytics:died(self, p and p:getAggressor())
 end
 
 function One:onResurrect()
-	Log.analytic("PLAYER_REZZED", Utility.Peep.getMapResource(self).name)
+	Analytics:rezzed(self)
 
 	self.rezzTimer = 2
 
@@ -416,6 +428,42 @@ function One:update(...)
 				combatStatus.dead = false
 			end
 		end
+	end
+
+	if self.pendingTime + One.PENDING_ANALYTIC_PERIOD_SECONDS < love.timer.getTime() then
+		if next(self.pendingLevelUps) ~= nil then
+			Analytics:gotLevelUp(self.pendingLevelUps)
+			table.clear(self.pendingLevelUps)
+		end
+
+		if next(self.pendingXP) ~= nil then
+			Analytics:gainedXP(self.pendingXP)
+			table.clear(self.pendingXP)
+		end
+	end
+
+	if self.lastActionPerformed then
+		if not self.previousActionPerformed or self.previousActionPerformed:getID() ~= self.lastActionPerformed:getID() then
+			Analytics:performedAction(self, self.lastActionPerformed)
+
+			self.previousActionPerformed = self.lastActionPerformed
+			self.lastActionPerformed = nil
+		end
+	end
+
+	if self.lastActionFailed then
+		if not self.previousActionFailed or self.previousActionFailed:getID() ~= self.lastActionFailed:getID() then
+			Analytics:failedAction(self, self.lastActionFailed)
+
+			self.previousActionFailed = self.lastActionFailed
+			self.lastActionFailed = nil
+		end
+	end
+
+	local combatLevel = Utility.Combat.getCombatLevel(self)
+	if self.oldCombatLevel and self.oldCombatLevel ~= combatLevel then
+		self.oldCombatLevel = combatLevel
+		Analytics:gainedCombatLevel(self)
 	end
 
 	self.deadTimer = self.deadTimer - delta
@@ -462,6 +510,7 @@ end
 
 function One:onActionFailed(e)
 	Utility.UI.openInterface(self, "Notification", false, e)
+	self.lastActionFailed = e.action
 end
 
 function One:onActionPerformed(e)
@@ -473,6 +522,8 @@ function One:onActionPerformed(e)
 	then
 		self:interrupt(true)
 	end
+
+	self.lastActionPerformed = e.action
 end
 
 function One:interruptUI()
@@ -483,6 +534,7 @@ function One:interruptUI()
 end
 
 function One:onBootstrapComplete()
+	self.didCompleteBootstrap = true
 	Utility.UI.openGroup(self, Utility.UI.Groups.WORLD)
 end
 
@@ -491,6 +543,10 @@ function One:onMoveInstance(previousInstance, currentInstance)
 	if not player then
 		Log.error("Player '%s' does not have a player behavior.", self:getName())
 		return
+	end
+
+	if self.didCompleteBootstrap then
+		Analytics:traveled(self, (previousInstance and previousInstance:getFilename()), (currentInstance and currentInstance:getFilename()))
 	end
 
 	if not previousInstance or not currentInstance then

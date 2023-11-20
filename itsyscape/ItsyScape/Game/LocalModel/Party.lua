@@ -321,8 +321,6 @@ end
 function Party:start(otherAnchor)
 	Log.info("Party %d is trying to start raid...", self:getID())
 
-	self.isStarted = true
-
 	if not self:getRaid() then
 		Log.warn("Cannot start raid for party %d: no raid set.", self:getID())
 		return false
@@ -331,6 +329,8 @@ function Party:start(otherAnchor)
 	if self.isStarted then
 		Log.info("Heads up, party %d already started raid.", self:getID())
 	end
+
+	self.isStarted = true
 
 	local filename, anchor = self.raid:getStartMapAndAnchor()
 	if not filename or not anchor then
@@ -346,6 +346,8 @@ function Party:start(otherAnchor)
 	end
 
 	local leader = self:getLeader()
+	Analytics:startedRaid(leader, self:getRaid():getResource().name)
+
 	local originalInstance = leader:getInstance()
 	local instance = self:getGame():getStage():movePeep(
 		leader:getActor():getPeep(),
@@ -358,6 +360,7 @@ function Party:start(otherAnchor)
 	end
 
 	self:getRaid():addInstance(instance)
+
 
 	for _, player in self:iteratePlayers() do
 		local isInSameInstance = originalInstance and originalInstance:hasPlayer(player)

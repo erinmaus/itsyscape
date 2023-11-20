@@ -127,10 +127,14 @@ function Application:new(multiThreaded)
 		self.rpcService = ChannelRPCService(self.outputChannel, self.inputChannel)
 		self.remoteGameManager = RemoteGameManager(self.rpcService, self.gameDB)
 
+		local deviceInfo = love.graphics and love.graphics.getRendererInfo() or { vendor = "server", model = "server" }
+
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG,
-			_CONF = _CONF
+			_CONF = _CONF,
+			brand = deviceInfo.vendor,
+			model = string.format("%s / %s", jit and jit.arch or "???", deviceInfo.device)
 		}, self.inputAdminChannel, self.outputAdminChannel)
 
 		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
