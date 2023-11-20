@@ -120,16 +120,18 @@ function Client:endGame(peep)
 	self:newSession()
 end
 
-function Client:gotKeyItem(peep, keyItem)
+function Client:gotKeyItem(peep, keyItem, quest)
 	keyItem = self.gameDB:getResource(keyItem, "KeyItem")
 	if not keyItem then
 		return
 	end
 
+	quest = self.gameDB:getResource(quest, "Quest")
+
 	self:submit(Events.GOT_KEY_ITEM, {
 		["Player Name"] = peep:getName(),
 		["Resource"] = keyItem.name,
-		["Resource Name"] = Utility.getName(keyItem, self.gameDB),
+		["Resource Name"] = Utility.getName(keyItem, self.gameDB) or Utility.getName(quest, self.gameDB) or nil,
 		["Resource Description"] = Utility.getDescription(keyItem, self.gameDB, nil, 2)
 	})
 end
@@ -544,12 +546,15 @@ local INTERFACE_BLACKLIST = {
 	"Notification",
 	"GenericNotification",
 	"LevelUpNotification",
+	"QuestCompleteNotification",
 	"BossHUD",
 	"Countdown",
 	"KeyboardAction",
 	"MapInfo",
 	"ScoreHUD",
-	"TutorialHint"
+	"TutorialHint",
+	"ConfigWindow",
+	"DialogBox"
 }
 
 function Client:openedInterface(peep, interface, blocking)
