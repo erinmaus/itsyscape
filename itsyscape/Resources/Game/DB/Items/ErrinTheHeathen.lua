@@ -52,7 +52,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Errin the Heathen's Hat",
+	Value = "Wren the Heathen's Hat",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensHat"
 }
@@ -105,7 +105,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Errin the Heathen's Boots",
+	Value = "Wren the Heathen's Boots",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensBoots"
 }
@@ -146,7 +146,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Errin the Heathen's Gloves",
+	Value = "Wren the Heathen's Gloves",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensGloves"
 }
@@ -193,7 +193,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Errin the Heathen's Coat",
+	Value = "Wren the Heathen's Coat",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensCoat"
 }
@@ -231,7 +231,7 @@ ItsyScape.Meta.EquipmentModel {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Errin the Heathen's Staff",
+	Value = "Wren the Heathen's Staff",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ErrinTheHeathensStaff"
 }

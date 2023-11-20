@@ -14,6 +14,9 @@ require "love.timer"
 local version = love.filesystem.read("version.meta")
 _ITSYREALM_VERSION = version or "mainline"
 _ITSYREALM_VERSION = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
+_ITSYREALM_MAJOR   = tonumber(_ITSYREALM_VERSION:match("^(%d+)%.%d+%.%d+")) or 0
+_ITSYREALM_MINOR   = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+")) or 0
+_ITSYREALM_BUILD   = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)")) or 0
 
 math.randomseed(os.time())
 
@@ -32,13 +35,13 @@ do
 
 		_DEBUG = true
 		_MOBILE = true
-		_ANALYTICS_DISABLED = true
 	else
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
 		local cpath = package.cpath
 		package.cpath = string.format(
-			"%s/ext/?.dll;%s/ext/?.so;%s/../Frameworks/?.dylib;%s",
+			"%s/ext/?.dll;%s/ext/?.so;%s/../Frameworks/?.dylib;%s/../Frameworks/?.so;%s",
+			sourceDirectory,
 			sourceDirectory,
 			sourceDirectory,
 			sourceDirectory,
@@ -96,9 +99,6 @@ do
 end
 
 Log = require "ItsyScape.Common.Log"
-function Log.analytic(...)
-	Log.warnOnce("Analytics not installed.")
-end
 
 Log.setLogSuffix(_LOG_SUFFIX)
 if _LOG_SUFFIX then

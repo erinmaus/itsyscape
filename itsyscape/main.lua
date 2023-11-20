@@ -21,8 +21,7 @@ itsyrealm = {
 
 _ARGS = {}
 
-_ANALYTICS = false
-_ANALYTICS_KEY = false
+_ANALYTICS_ENABLED = false
 
 function love.load(args)
 	local main
@@ -54,44 +53,6 @@ function love.load(args)
 
 	_ARGS["anonymous"] = true
 	_DEBUG = _DEBUG or _CONF.debug or false
-
-	do
-		if not _ANALYTICS_DISABLED then
-			local AnalyticsClient = require "ItsyScape.Analytics.Client"
-			_ANALYTICS = AnalyticsClient("analytics.cfg", _ANALYTICS_KEY)
-		end
-
-		local function printAnalytic(key, value)
-			if not _ANALYTICS then
-				Log.warn("Analytics not installed.")
-				return
-			end
-
-			key = _ANALYTICS.EVENTS[key]
-			if key and type(key) == 'string' then
-				if not value then
-					Log.print("analytic", string.format("%s: <event>", key))
-				else
-					if type(value) == 'string' then
-						Log.print("analytic", string.format("%s: '%s'", key, value))
-					elseif type(value) == 'number' then
-						Log.print("analytic", string.format("%s: %.02f", key, value))
-					end
-				end
-			end
-		end
-
-		if _ANALYTICS and _ANALYTICS:getIsEnabled() then
-			Log.analytic = function(key, value)
-				printAnalytic(key, value)
-				_ANALYTICS:push(key, value)
-			end
-		else
-			Log.analytic = function(key, value)
-				printAnalytic(key, value)
-			end
-		end
-	end
 
 	if not main then
 		if _CONF.server then
