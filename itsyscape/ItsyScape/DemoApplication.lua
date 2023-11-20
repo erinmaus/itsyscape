@@ -278,6 +278,22 @@ function DemoApplication:openMainMenu()
 
 				_DEBUG = _CONF.debug
 
+				if _CONF.analytics ~= _ANALYTICS_ENABLED then
+					if _CONF.analytics then
+						Log.info("Analytics enabled.")
+					else
+						Log.info("Analytics disabled.")
+					end
+
+					self.inputAdminChannel:push({
+						type = 'analytics',
+						enable = _CONF.analytics
+					})
+
+					_ANALYTICS_ENABLED = _CONF.analytics
+				end
+				_CONF.analytics = nil
+
 				itsyrealm.graphics.dirty()
 				self:getGameView():dirty()
 			end
@@ -430,32 +446,12 @@ function DemoApplication:openOptionsScreen(Type, callback)
 end
 
 function DemoApplication:mousePress(x, y, button)
-	if self.titleScreen and not self.mainMenu then
-		if _ANALYTICS and not _ANALYTICS:getAcked() and not _ARGS["anonymous"] then
-			local WIDTH = 480
-			local HEIGHT = 240
-			local alertWindow = AlertWindow(self)
-			alertWindow:open(
-				"ItsyRealm collects anonymous analytics about things like how far you progress. " ..
-				"You can opt-out any time by using the Configure ItsyRealm shortcut created by the launcher. " ..
-				"Any analytics collected, assuming you opt-out, will be deleted.",
-				"A Boring Disclaimer",
-				WIDTH,
-				HEIGHT)
-			alertWindow.onSubmit:register(function()
-				if _ANALYTICS then
-					_ANALYTICS:ack()
-				end
-			end)
-		end
-	else
-		local isUIActive = Application.mousePress(self, x, y, button)
-		local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
-		if probeAction == CameraController.PROBE_SELECT_DEFAULT then
-			self:probe(x, y, true)
-		elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
-			self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
-		end
+	local isUIActive = Application.mousePress(self, x, y, button)
+	local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
+	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
+		self:probe(x, y, true)
+	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
+		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
 	end
 end
 

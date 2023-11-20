@@ -110,6 +110,10 @@ function Loot:materializeDropTable(peep, inventory, loot)
 					table.insert(items, i)
 				end
 
+				if #items >= 1 and slayer and slayer:hasBehavior(PlayerBehavior) then
+					Analytics:npcDroppedItem(slayer, peep, items[1], count)
+				end
+
 				for _, i in ipairs(items) do
 					stage:dropItem(i, i:getCount(), slayer)
 				end

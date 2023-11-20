@@ -24,7 +24,7 @@ function Yell:perform(state, player, target)
 
 	self:transfer(state, player)
 
-	local interface = OpenInterfaceCommand("DialogBox", true, self:getAction(), target)
+	local interface = OpenInterfaceCommand("DialogBox", true, self, target)
 	local perform = CallbackCommand(Action.perform, self, state, player)
 	local command = CompositeCommand(true, walk, interface, perform)
 

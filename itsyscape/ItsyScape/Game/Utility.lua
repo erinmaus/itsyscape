@@ -517,6 +517,10 @@ function Utility.getActions(game, resource, scope, filter)
 end
 
 function Utility.getName(resource, gameDB, lang)
+	if not resource then
+		return nil
+	end
+
 	lang = lang or "en-US"
 
 	local nameRecord = gameDB:getRecords("ResourceName", { Resource = resource, Language = lang }, 1)[1]
@@ -528,11 +532,15 @@ function Utility.getName(resource, gameDB, lang)
 end
 
 function Utility.getDescription(resource, gameDB, lang, index)
+	if not resource then
+		return nil
+	end
+
 	lang = lang or "en-US"
 
 	local descriptionRecord = gameDB:getRecords("ResourceDescription", { Resource = resource, Language = lang })
 	if descriptionRecord and #descriptionRecord > 0 then
-		return descriptionRecord[index or math.random(#descriptionRecord)]:get("Value")
+		return descriptionRecord[math.min(index or 1, #descriptionRecord) or love.math.random(#descriptionRecord)]:get("Value")
 	else
 		local name = Utility.getName(resource, gameDB) or ("*" .. resource.name)
 		return string.format("It's %s, as if you didn't know.", name)
@@ -3406,23 +3414,20 @@ function Utility.Peep.Attackable:onDie(p)
 	do
 		local actor = self:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
-			local director = self:getDirector()
-			local p = director:probe(self:getLayerName(), function(p)
-				local target = p:getBehavior(CombatTargetBehavior)
-				return target and target.actor == actor.actor
-			end)
+			local status = self:getBehavior(CombatStatusBehavior)
+			if status then
+				for peep, d in pairs(status.damage) do
+					local damage = d / status.maximumHitpoints
+					Log.info("%s gets %d%% XP for slaying %s (dealt %d damage).", peep:getName(), damage * 100, self:getName(), d)
 
-			do
-				local status = self:getBehavior(CombatStatusBehavior)
-				if status then
-					for peep, d in pairs(status.damage) do
-						local damage = d / status.maximumHitpoints
-						Log.info("%s gets %d%% XP for slaying %s (dealt %d damage).", peep:getName(), damage * 100, self:getName(), d)
-						Utility.Combat.giveCombatXP(peep, xp * damage)
+					if peep:hasBehavior(PlayerBehavior) then
+						Analytics:killedNPC(peep, self, math.floor(xp * damage))
 					end
 
-					status.dead = true
+					Utility.Combat.giveCombatXP(peep, xp * damage)
 				end
+
+				status.dead = true
 			end
 		end
 	end
@@ -4579,7 +4584,7 @@ function Utility.Quest.dream(peep, dream)
 		Log.warn("Dream '%s' doesn't have a requirement.", dream.name)
 		return false
 	else
-		peep:getState():give("KeyItem", dream.name, 1)
+		Analytics:dreamed(peep, dream.name)
 
 		local stage = director:getGameInstance():getStage()
 		stage:movePeep(

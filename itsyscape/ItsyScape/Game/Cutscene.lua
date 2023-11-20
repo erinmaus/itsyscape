@@ -46,6 +46,8 @@ function Cutscene:new(resource, player, director, layerName, entities)
 		self.player.onMove:unregister(self._onPlayerMove)
 	end
 	self.player.onMove:register(self._onPlayerMove)
+
+	Analytics:playedCutscene(player, resource.name)
 end
 
 function Cutscene:addEntity(name, Type, probe)
@@ -123,7 +125,7 @@ function Cutscene.Parallel(t)
 				if status ~= "dead" then 
 					local s, e = coroutine.resume(transformedT[i])
 					if not s then
-						Log.warn("Error running cutscene: %s", e)
+						Log.warn("Error running cutscene: %s %s", e, debug.traceback(transformedT[i]))
 					end
 
 					statusT[i] = coroutine.status(transformedT[i])
@@ -236,7 +238,7 @@ function Cutscene:update()
 	if not self.isDone and coroutine.status(self.script) ~= "dead" then
 		local s, e = coroutine.resume(self.script)
 		if not s then
-			Log.warn("Error running cutscene '%s': %s", self.resource.name, e)
+			Log.warn("Error running cutscene '%s': %s %s", self.resource.name, e, debug.traceback(self.script))
 		end
 
 		return true
