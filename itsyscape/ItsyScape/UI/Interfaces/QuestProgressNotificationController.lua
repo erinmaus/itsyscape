@@ -27,6 +27,7 @@ function QuestProgressNotificationController.updateCache(gameDB)
 
 	for q in gameDB:getResources("Quest") do
 		local quest = {
+			resource = q,
 			id = q.name,
 			name = Utility.getName(q, gameDB),
 			description = Utility.getDescription(q, gameDB)
@@ -39,7 +40,7 @@ function QuestProgressNotificationController.updateCache(gameDB)
 
 		for i = 1, #quest.steps.keyItems do
 			local keyItem = quest.steps.keyItems[i]
-			QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = q
+			QuestProgressNotificationController.KEY_ITEM_TO_QUEST_CACHE[keyItem.name] = quest
 		end
 	end
 end
@@ -79,7 +80,7 @@ function QuestProgressNotificationController:poke(actionID, actionIndex, e)
 end
 
 function QuestProgressNotificationController:updateQuest(quest)
-	self.questID = (quest and quest.name) or self.questID
+	self.questID = (quest and quest.resource and quest.resource.name) or self.questID
 	self.log = nil
 
 	if self.questID then

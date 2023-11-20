@@ -1,3 +1,4 @@
+
 #!/bin/sh
 
 set -xe
@@ -13,14 +14,14 @@ export MAKEFLAGS="-j4"
 
 mkdir -p bin
 mkdir -p build
-mkdir -p staging
-
+mkdir -p staging/ext
 
 ./get_love.sh
 ./get_premake5.sh
+./get_luajit.sh
+./get_luahttps.sh
 ./get_sentry.sh
 ./get_discord.sh
-./get_luajit.sh
 ./get_bmashina.sh
 ./get_discworld.sh
 ./get_nbunny.sh

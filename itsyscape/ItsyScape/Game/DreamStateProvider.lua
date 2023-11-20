@@ -41,10 +41,6 @@ function DreamStateProvider:give(name, count, flags)
 		return false
 	end
 
-	if not self.storage:get(name) then
-		Log.analytic("PLAYER_DREAMED", name)
-	end
-
 	self.storage:set(name, true)
 	return true
 end

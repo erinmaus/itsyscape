@@ -127,10 +127,17 @@ function Application:new(multiThreaded)
 		self.rpcService = ChannelRPCService(self.outputChannel, self.inputChannel)
 		self.remoteGameManager = RemoteGameManager(self.rpcService, self.gameDB)
 
+		local vendor, device
+		if love.graphics then
+			vendor, device = select(3, love.graphics.getRendererInfo())
+		end
+
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG,
-			_CONF = _CONF
+			_CONF = _CONF,
+			brand = vendor or "???",
+			model = string.format("%s / %s", jit and jit.arch or "???", device or "???")
 		}, self.inputAdminChannel, self.outputAdminChannel)
 
 		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
@@ -417,6 +424,17 @@ function Application:shoot(x, y)
 	return r
 end
 
+function Application:processAdminEvents()
+	local event
+	repeat 
+		event = self.outputAdminChannel:pop()
+
+		if type(event) == 'table' and event.type == 'analytics' then
+			_ANALYTICS_ENABLED = event.enable
+		end
+	until not event
+end
+
 function Application:update(delta)
 	-- Accumulator. Stores time until next tick.
 	self.time = self.time + delta
@@ -435,6 +453,7 @@ function Application:update(delta)
 
 		self:measure('game:update()', function() self.localGame:update(delta) end)
 	else
+		self:processAdminEvents()
 		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
 	end
 

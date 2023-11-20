@@ -415,6 +415,75 @@ function GraphicsOptions:new(application)
 	end
 
 	do
+		local label = Label()
+		label:setStyle(
+			LabelStyle(
+				GraphicsOptions.INPUT_STYLE,
+				self.application:getUIView():getResources()))
+		label:setText("Analytics")
+		label:setPosition(
+			GraphicsOptions.WIDTH / 2 + GraphicsOptions.PADDING * 2,
+			GraphicsOptions.PADDING * 5 + GraphicsOptions.INPUT_HEIGHT * 3)
+		label:setSize(GraphicsOptions.WIDTH / 4, GraphicsOptions.INPUT_HEIGHT)
+		self:addChild(label)
+
+		local onButton = Button()
+		onButton:setText('On')
+		onButton:setToolTip(
+			ToolTip.Text("Enable analytics."),
+			ToolTip.Text("Analytics send useful, anonymous data to improve gameplay."),
+			ToolTip.Text("Feel free to opt-out!"))
+		onButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.PADDING * 3,
+			GraphicsOptions.PADDING * 5 + GraphicsOptions.INPUT_HEIGHT * 3)
+		onButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+
+		if _ANALYTICS_ENABLED then
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		onButton.onClick:register(self.enableAnalytics, self, true)
+		self:addChild(onButton)
+		self.analyticsOnButton = onButton
+
+		local offButton = Button()
+		offButton:setText('Off')
+		onButton:setToolTip(
+			ToolTip.Text("Disable analytics."),
+			ToolTip.Text("Analytics send useful, anonymous data to improve gameplay."),
+			ToolTip.Text("Feel free to opt-out!"))
+		offButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.INPUT_WIDTH + GraphicsOptions.PADDING * 4,
+			GraphicsOptions.PADDING * 5 + GraphicsOptions.INPUT_HEIGHT * 3)
+		offButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+		if not _ANALYTICS_ENABLED then
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		offButton.onClick:register(self.enableAnalytics, self, false)
+		self:addChild(offButton)
+		self.analyticsOffButton = offButton
+	end
+
+	do
 		local confirmButton = Button()
 		confirmButton:setText("Confirm")
 		confirmButton:setStyle(
@@ -451,7 +520,8 @@ function GraphicsOptions:new(application)
 		height = _CONF.height,
 		vsync = _CONF.vsync,
 		fullscreen = _CONF.fullscreen,
-		debug = _CONF.debug
+		debug = _CONF.debug,
+		analytics = _ANALYTICS_ENABLED
 	}
 
 	self.onClose = Callback()
@@ -569,6 +639,29 @@ function GraphicsOptions:setDebug(enabled)
 	end
 end
 
+function GraphicsOptions:enableAnalytics(enabled)
+	self.conf.analytics = enabled
+	if enabled then
+		self.analyticsOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.analyticsOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	else
+		self.analyticsOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.analyticsOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	end
+end
+
 function GraphicsOptions:confirm(save)
 	if save then
 		_CONF.width = self.conf.width
@@ -576,9 +669,10 @@ function GraphicsOptions:confirm(save)
 		_CONF.fullscreen = self.conf.fullscreen
 		_CONF.vsync = self.conf.vsync
 		_CONF.debug = self.conf.debug
+		_CONF.analytics = self.conf.analytics
 	end
 
-	self.onClose(save)
+	self.onClose(save, self.conf)
 end
 
 return GraphicsOptions

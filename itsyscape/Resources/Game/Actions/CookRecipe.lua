@@ -157,6 +157,7 @@ function CookRecipe:perform(state, peep, recipe)
 			Log.warn("Couldn't find output item '%s' from cooking recipe.", item:getID())
 		else
 			recipe:setResult(resultItemInstance)
+			Analytics:cookedRecipe(peep, resultItemInstance)
 		end
 
 		self:transfer(state, peep, self.FLAGS, true)

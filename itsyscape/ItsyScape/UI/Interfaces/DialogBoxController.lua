@@ -35,7 +35,7 @@ function DialogBoxController:new(peep, director, action, target)
 	do
 		-- TODO: respect language
 		local gameDB = director:getGameDB()
-		local dialogRecord = gameDB:getRecord("TalkDialog", { Action = action, Language = "en-US" })
+		local dialogRecord = gameDB:getRecord("TalkDialog", { Action = self.action:getAction(), Language = "en-US" })
 		if dialogRecord then
 			local filename = dialogRecord:get("Script")
 			if filename then
@@ -45,7 +45,7 @@ function DialogBoxController:new(peep, director, action, target)
 				self.dialog:setSpeaker("_SELF", self.target)
 				self.dialog:setDirector(director)
 
-				local speakers = gameDB:getRecords("TalkSpeaker", { Action = action })
+				local speakers = gameDB:getRecords("TalkSpeaker", { Action = self.action:getAction() })
 				for i = 1, #speakers do
 					local speaker = speakers[i]
 					local peeps = director:probe(
@@ -117,6 +117,12 @@ function DialogBoxController:select(e)
 	assert(type(e.index) == "number", "index must be number")
 	assert(e.index > 0 and e.index <= self.currentPacket:getNumOptions(), "option out-of-bounds")
 
+	Analytics:selectedDialogueOption(
+		self:getPeep(),
+		self.target,
+		self.action,
+		table.concat(self.currentPacket:getOptionAtIndex(e.index).message, "\n"))
+
 	self:pump(self.currentPacket, e.index)
 end
 
@@ -168,7 +174,7 @@ function DialogBoxController:pump(e, ...)
 			}
 		elseif self.currentPacket:isType(SpeakerPacket) then
 			local gameDB = self:getDirector():getGameDB()
-			local speakerRecord = gameDB:getRecord("TalkSpeaker", { Action = self.action, Name = self.currentPacket:getSpeaker() })
+			local speakerRecord = gameDB:getRecord("TalkSpeaker", { Action = self.action:getAction(), Name = self.currentPacket:getSpeaker() })
 			local speakerName = speakerRecord and Utility.getName(speakerRecord:get("Resource"), gameDB)
 			if speakerName then
 				self.state.speaker = speakerName

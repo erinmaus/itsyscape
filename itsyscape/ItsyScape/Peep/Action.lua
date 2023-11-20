@@ -407,7 +407,7 @@ function Action:getFailureReason(state, peep)
 		})
 	end
 
-	return { requirements = requirements, inputs = inputs }
+	return { requirements = requirements, inputs = inputs, action = self }
 end
 
 -- Called when the action fails

@@ -209,13 +209,13 @@ do
 	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
 
 	ItsyScape.Meta.ResourceName {
-		Dream = "The Empty King's Throne Room",
+		Value = "The Empty King's Throne Room",
 		Language = "en-US",
 		Resource = Dream
 	}
 
-	ItsyScape.Meta.ResourceName {
-		Dream = "The Empty King kindly requests your audience.",
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The Empty King kindly requests your audience.",
 		Language = "en-US",
 		Resource = Dream
 	}
@@ -232,13 +232,13 @@ do
 	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
 
 	ItsyScape.Meta.ResourceName {
-		Dream = "Ocean",
+		Value = "Ocean",
 		Language = "en-US",
 		Resource = Dream
 	}
 
-	ItsyScape.Meta.ResourceName {
-		Dream = "A near death experience.",
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A near death experience.",
 		Language = "en-US",
 		Resource = Dream
 	}
