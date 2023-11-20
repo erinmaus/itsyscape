@@ -149,7 +149,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 			local storage = self.game:getDirector():getPlayerStorage(self.id)
 			local root = storage:getRoot()
 
-			self.isPlayable = root:hasSection("Location") and not root:getSection("Location"):get("isTitleScreen")
+			self.isPlayable = not root:hasSection("Location") or not root:getSection("Location"):get("isTitleScreen")
 
 			if newGame then
 				self.stage:movePeep(
