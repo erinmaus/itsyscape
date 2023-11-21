@@ -93,7 +93,7 @@ function KeyItemStateProvider:give(name, count, flags)
 			end
 		end
 
-		Analytics:gotKeyItem(self.peep, name)
+		Analytics:gotKeyItem(self.peep, name, quest and quest.resource and quest.resource.name)
 	end
 
 	self:updateQuestProgressNotificationController(resource)
