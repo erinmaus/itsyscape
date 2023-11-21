@@ -68,14 +68,14 @@ ActorProxy.ANIMATIONS = "animations"
 ActorProxy.playAnimation = Event.Set(
 	ActorProxy.ANIMATIONS,
 	Event.KeyArgument("slot"),
-	Event.SortedKeyArgument("priority"),
+	Event.Argument("priority"),
 	Event.Argument("animation"),
-	Event.OverrideKeyArgument("force"),
+	Event.Argument("force"),
 	Event.TimeArgument("time"))
 ActorProxy.stopAnimation = Event.Unset(
 	ActorProxy.ANIMATIONS,
 	Event.KeyArgument("slot"),
-	Event.SortedKeyArgument("priority"),
+	Event.Argument("priority"),
 	Event.OverrideKeyArgument("force"))
 ActorProxy.playAnimation:link(
 	"onAnimationPlayed",
