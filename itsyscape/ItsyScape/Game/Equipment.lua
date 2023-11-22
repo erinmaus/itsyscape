@@ -123,4 +123,8 @@ function Equipment:onDequip(peep)
 	-- Nothing.
 end
 
+function Equipment:getCalculatedBonuses(peep, item)
+	return {}
+end
+
 return Equipment

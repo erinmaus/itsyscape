@@ -1178,6 +1178,10 @@ function Utility.Item.getInstanceName(instance, lang)
 
 	local gameDB = instance:getManager():getGameDB()
 	local itemResource = gameDB:getResource(instance:getID(), "Item")
+	if not itemResource then
+		return "*" .. instance:getID()
+	end
+
 	local nameRecord = gameDB:getRecord("ResourceName", { Resource = itemResource, Language = lang }, 1)
 	if nameRecord then
 		return nameRecord:get("Value")
@@ -1194,7 +1198,7 @@ function Utility.Item.getInstanceDescription(instance, lang)
 		local gameDB = instance:getManager():getGameDB()
 		local itemResource = gameDB:getResource(instance:getID(), "Item")
 		local descriptionRecord = gameDB:getRecord("ResourceDescription", { Resource = itemResource, Language = lang })
-		if descriptionRecord then
+		if itemResource and descriptionRecord then
 			baseDescription = descriptionRecord:get("Value")
 		else
 			baseDescription = string.format("It's %s, as if you didn't know.", Utility.Item.getInstanceName(instance))
@@ -1212,8 +1216,6 @@ function Utility.Item.getInstanceDescription(instance, lang)
 		local description = instance:getUserdata(userdata[i]):getDescription()
 		if description then
 			table.insert(result, description)
-		else
-			print("NONE 4", i, userdata[i])
 		end
 	end
 
@@ -1242,6 +1244,37 @@ function Utility.Item.getStats(id, gameDB)
 	end
 
 	return nil
+end
+
+function Utility.Item.getInstanceStats(item, peep)
+	local baseStats = Utility.Item.getStats(item:getID(), item:getManager():getGameDB())
+
+	local calculatedStats
+	do
+		local logic = item:getManager():getLogic(item:getID())
+		if logic and Class.isCompatibleType(logic, require "ItsyScape.Game.Equipment") then
+			calculatedStats = logic:getCalculatedBonuses(peep, item)
+		else
+			calculatedStats = {}
+		end
+	end
+
+	for stat, value in pairs(calculatedStats) do
+		local found = false
+		for _, baseStat in ipairs(baseStats) do
+			if baseStat.name == stat then
+				baseStat.value = baseStat.value + value
+				found = true
+				break
+			end
+		end
+
+		if not found then
+			table.insert(baseStats, { name = stat, value = value })
+		end
+	end
+
+	return baseStats
 end
 
 function Utility.Item.getInfo(id, gameDB, lang)

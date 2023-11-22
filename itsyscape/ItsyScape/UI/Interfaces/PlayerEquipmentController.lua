@@ -33,7 +33,7 @@ end
 function PlayerEquipmentController:pull()
 	local equipment = self:getPeep():getBehavior(EquipmentBehavior)
 
-	local result = { items = {}, stats = {} }
+	local result = { items = {} }
 	if equipment and equipment.equipment then
 		local broker = equipment.equipment:getBroker()
 		if not broker then
@@ -55,9 +55,7 @@ function PlayerEquipmentController:pull()
 			end
 		end
 
-		for name, value in equipment.equipment:getStats() do
-			result.stats[name] = value
-		end
+		result.stats = Utility.Peep.getEquipmentBonuses(self:getPeep())
 	end
 
 	return result
@@ -70,6 +68,7 @@ function PlayerEquipmentController:pullItem(item)
 	result.noted = item:isNoted()
 	result.name = Utility.Item.getInstanceName(item)
 	result.description = Utility.Item.getInstanceDescription(item)
+	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
 
 	return result
 end

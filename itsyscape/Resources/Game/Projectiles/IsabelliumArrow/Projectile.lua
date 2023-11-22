@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Isabellium/Logic.lua
+-- ItsyScape/Resources/Game/Projectiles/IsabelliumArrow/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,21 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Staff = require "Resources.Game.Items.Common.Staff"
+local Arrow = require "Resources.Game.Projectiles.Common.Arrow"
 
-local IsabelliumStaff = Class(Staff)
+local IsabelliumArrow = Class(Arrow)
 
-function IsabelliumStaff:getCooldown(peep)
-	return 4
+function IsabelliumArrow:getTextureFilename()
+	return "Resources/Game/Projectiles/IsabelliumArrow/Texture.png"
 end
 
-function IsabelliumStaff:getID()
-	return 'X_IsabelliumStaff'
-end
-
-function IsabelliumStaff:getProjectile(peep)
-	return "IsabelleStrike"
-end
-
-return IsabelliumStaff
+return IsabelliumArrow

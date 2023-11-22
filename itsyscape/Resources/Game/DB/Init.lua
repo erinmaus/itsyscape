@@ -417,7 +417,36 @@ Game "ItsyScape"
 
 	ActionType "Loot"
 	ActionType "Reward"
+	ActionType "LootBag"
 	ResourceType "DropTable"
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Loot",
+		XProgressive = "Looting",
+		Language = "en-US",
+		Type = "LootBag"
+	}
+
+	ResourceType "LootCategory"
+
+	ItsyScape.Resource.LootCategory "Legendary"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Legendary",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.LootCategory "Legendary"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The most desirable and rarest loot.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.LootCategory "Legendary"
+	}
+
+	Meta "LootCategory" {
+		Item = Meta.TYPE_RESOURCE,
+		Category = Meta.TYPE_RESOURCE
+	}
 
 	Meta "DropTableEntry" {
 		Item = Meta.TYPE_RESOURCE,
@@ -830,10 +859,10 @@ function ItsyScape.Utility.strengthBonusForWeapon(tier, weight)
 	return math.max(math.ceil(ItsyScape.Utility.CurveConfig.StrengthBonus:evaluate(tier) * weight), 1)
 end
 
-ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 17 / 100
+ItsyScape.Utility.ARMOR_HELMET_WEIGHT     = 19 / 100
 ItsyScape.Utility.ARMOR_BODY_WEIGHT       = 42 / 100
 ItsyScape.Utility.ARMOR_GLOVES_WEIGHT     = 12 / 100
-ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 16 / 100
+ItsyScape.Utility.ARMOR_BOOTS_WEIGHT      = 14 / 100
 ItsyScape.Utility.ARMOR_SHIELD_WEIGHT     = 31 / 100
 ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT   = 1.0
 ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT = 0.8
@@ -1131,6 +1160,7 @@ include "Resources/Game/DB/Items/MiningSecondaries.lua"
 include "Resources/Game/DB/Items/Gunpowder.lua"
 include "Resources/Game/DB/Items/Veggies.lua"
 include "Resources/Game/DB/Items/Candles.lua"
+include "Resources/Game/DB/Items/Isabellium.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

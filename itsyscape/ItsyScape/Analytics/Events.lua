@@ -25,6 +25,7 @@ local EVENTS = {
 	TALKED_TO_NPC = "Talked to NPC",
 	SELECTED_DIALOGUE_OPTION = "Selected Dialogue Option",
 	NPC_DROPPED_ITEM = "NPC Dropped Item",
+	LOOTED_ITEM = "Looted Item",
 	DIED = "Died",
 	REZZED = "Rezzed",
 	GOT_SAILING_ITEM = "Purchased Sailing Item",

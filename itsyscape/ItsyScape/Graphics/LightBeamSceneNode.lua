@@ -48,6 +48,8 @@ function LightBeamSceneNode:new()
 	self.size = 1 / 8
 	self.path = {}
 	self.vertices = {}
+
+	self.blendMode = 'add'
 end
 
 function LightBeamSceneNode:getBeamSize()
@@ -56,6 +58,14 @@ end
 
 function LightBeamSceneNode:setBeamSize(value)
 	self.size = value or self.size
+end
+
+function LightBeamSceneNode:getBlendMode()
+	return self.blendMode
+end
+
+function LightBeamSceneNode:setBlendMode(value)
+	self.blendMode = value
 end
 
 function LightBeamSceneNode:initVertexCache(count)
@@ -275,13 +285,20 @@ function LightBeamSceneNode:release()
 end
 
 function LightBeamSceneNode:draw(renderer, delta)
+	local shader = renderer:getCurrentShader()
+	if shader:hasUniform("scape_Color") then
+		print(">>> has uniform", "scape_Color", self:getMaterial():getColor():get())
+		shader:send("scape_Color", { self:getMaterial():getColor():get() })
+	end
+
 	local mesh = self.mesh
 	if mesh then
 		love.graphics.push('all')
-		love.graphics.setBlendMode('add')
+		love.graphics.setBlendMode(self.blendMode)
 		love.graphics.setMeshCullMode('none')
 		love.graphics.setDepthMode('lequal', false)
 		love.graphics.draw(mesh)
+		love.graphics.setColorMask(false, false, false, false)
 		love.graphics.setDepthMode('lequal', true)
 		love.graphics.draw(mesh)
 		love.graphics.pop()
