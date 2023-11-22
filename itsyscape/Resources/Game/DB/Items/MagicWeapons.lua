@@ -105,7 +105,7 @@ for name, tier in spairs(TIERS) do
 
 				Requirement {
 					Resource = ItsyScape.Resource.Skill "Crafting",
-					Count = ItsyScape.Utility.xpForLevel(math.max(tier.tier + itemProps.logs, 1)),
+					Count = ItsyScape.Utility.xpForLevel(math.max(tier.tier + itemProps.logs - 1, 1)),
 				},
 
 				Requirement {
@@ -132,7 +132,7 @@ for name, tier in spairs(TIERS) do
 
 				Requirement {
 					Resource = ItsyScape.Resource.Skill "Crafting",
-					Count = ItsyScape.Utility.xpForLevel(math.max(tier.tier + itemProps.logs, 1)),
+					Count = ItsyScape.Utility.xpForLevel(math.max(tier.tier + itemProps.logs - 1, 1)),
 				},
 
 				Requirement {

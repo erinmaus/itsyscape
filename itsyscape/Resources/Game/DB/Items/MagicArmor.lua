@@ -11,7 +11,7 @@
 local FABRICS = {
 	["BlueCotton"] = {
 		name = "Blue cotton",
-		tier = 1,
+		tier = 0,
 		weight = 0.5,
 		thread = "PlainThread",
 		rune = "AirRune"
@@ -156,12 +156,12 @@ for name, fabric in spairs(FABRICS) do
 		local EquipAction = ItsyScape.Action.Equip() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Defense",
-				Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+				Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier, 1))
 			},
 
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+				Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier, 1))
 			}
 		}
 
@@ -201,12 +201,12 @@ for name, fabric in spairs(FABRICS) do
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Crafting",
-				Count = ItsyScape.Utility.xpForResource(math.max(fabric.tier + itemProps.fabric + 2, 1)) * itemProps.fabric
+				Count = ItsyScape.Utility.xpForResource(math.max(math.max(fabric.tier, 1) + itemProps.fabric + 2, 1)) * itemProps.fabric
 			},
 
 			Output {
 				Resource = ItsyScape.Resource.Skill "Magic",
-				Count = ItsyScape.Utility.xpForResource(math.max(fabric.tier + itemProps.fabric + 2, 1)) * itemProps.fabric
+				Count = ItsyScape.Utility.xpForResource(math.max(math.max(fabric.tier, 1) + itemProps.fabric + 2, 1)) * itemProps.fabric
 			},
 
 			Output {
@@ -257,12 +257,12 @@ for name, itemProps in spairs(SHIELDS) do
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Defense",
-			Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+			Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier, 1))
 		},
 
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(fabric.tier)
+			Count = ItsyScape.Utility.xpForLevel(math.max(fabric.tier, 1))
 		}
 	}
 
@@ -322,7 +322,7 @@ for name, itemProps in spairs(SHIELDS) do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(fabric.tier + itemProps.fabric + 3) * 3,
+		Value = ItsyScape.Utility.valueForItem(math.max(fabric.tier, 1) + itemProps.fabric + 3) * 3,
 		Weight = fabric.weight * itemProps.fabric,
 		Resource = Item
 	}
