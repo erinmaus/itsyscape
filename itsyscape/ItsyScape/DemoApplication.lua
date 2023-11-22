@@ -677,11 +677,7 @@ function DemoApplication:updateToolTip(delta)
 		self.mouseMoved = true
 		self.toolTipTick = math.min(self.toolTipTick, DemoApplication.PROBE_TICK)
 	else
-		if self.showingToolTip then
-			self.showingToolTip = false
-			local renderer = self:getUIView():getRenderManager()
-			renderer:unsetToolTip()
-		end
+		self:hideToolTip()
 	end
 
 	self.toolTipTick = self.toolTipTick - delta
@@ -717,11 +713,9 @@ function DemoApplication:updateToolTip(delta)
 
 	if self.showingToolTip then
 		local renderer = self:getUIView():getRenderManager()
-		if not self.toolTipWidget then
-			self.toolTipWidget = renderer:setToolTip(math.huge, unpack(self.toolTip))
-		else
-			if self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition()) then
-				self:hideToolTip()
+		if not isUIBlocking then
+			if not self.toolTipWidget then
+				self.toolTipWidget = renderer:setToolTip(math.huge, unpack(self.toolTip))
 			else
 				self.toolTipWidget:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
 			end
