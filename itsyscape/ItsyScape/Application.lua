@@ -111,6 +111,8 @@ function Application:new(multiThreaded)
 			end
 
 			error("Encountered errors creating GameDB!")
+
+			love.event.quit()
 		end
 	end
 

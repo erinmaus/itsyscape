@@ -432,7 +432,7 @@ function Client:selectedDialogueOption(peep, target, action, option)
 	})
 end
 
-function Client:npcDroppedItem(peep, target, item, count)
+function Client:npcDroppedItem(peep, target, item, count, isLegendary)
 	local resource = Utility.Peep.getResource(target)
 
 	self:submit(Events.NPC_DROPPED_ITEM, {
@@ -447,7 +447,24 @@ function Client:npcDroppedItem(peep, target, item, count)
 		["Item Is Note"] = item:isNoted(),
 		["Item Name"] = Utility.Item.getInstanceName(item),
 		["Item Description"] = Utility.Item.getInstanceDescription(item),
-		["Item Userdata Hints"] = Utility.Item.getUserdataHints(item:getID(), self.gameDB)
+		["Item Userdata Hints"] = Utility.Item.getUserdataHints(item:getID(), self.gameDB),
+		["Item Is Legendary"] = isLegendary == true
+	})
+end
+
+function Client:lootedItem(peep, lootBag, item, count, isLegendary)
+	self:submit(Events.LOOTED_ITEM, {
+		["Player Name"] = peep:getName(),
+		["Player Combat Level"] = Utility.Combat.getCombatLevel(peep),
+		["Loot Bag Resource"] = lootBag:getID(),
+		["Loot Bag Name"] = Utility.Item.getInstanceName(lootBag),
+		["Item Resource"] = item:getID(),
+		["Item Count"] = count or item:getCount(),
+		["Item Is Note"] = item:isNoted(),
+		["Item Name"] = Utility.Item.getInstanceName(item),
+		["Item Description"] = Utility.Item.getInstanceDescription(item),
+		["Item Userdata Hints"] = Utility.Item.getUserdataHints(item:getID(), self.gameDB),
+		["Item Is Legendary"] = isLegendary == true
 	})
 end
 
@@ -653,7 +670,7 @@ end
 
 function Client:submit(event, properties, flush)
 	if not self.serviceThread:isRunning() then
-		Log.engine("Not submitting analytic event '%s': analytics disabled.", event)
+		Log.engine("Not submitting analytic event '%s' (%s): analytics disabled.", event, Log.stringify(properties))
 		return
 	end
 

@@ -141,6 +141,7 @@ function Equip:perform(state, peep, item, target)
 
 			Log.info("Setting dequipped item key to %d.", itemKeyInInventory)
 			broker:setItemKey(equippedItem, itemKeyInInventory)
+			broker:setItemZ(equippedItem, itemKeyInInventory)
 
 			if existingItemAtKey then
 				Log.info("Re-assigning blocking item '%s' to a different slot.", existingItemAtKey:getID())
