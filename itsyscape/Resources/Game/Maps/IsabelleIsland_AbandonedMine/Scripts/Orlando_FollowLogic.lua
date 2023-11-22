@@ -20,9 +20,9 @@ local TOTAL_DAMAGE_TAKEN = B.Reference("Orlando", "TOTAL_DAMAGE_TAKEN")
 local CURRENT_PASSAGE = B.Reference("Orlando", "CURRENT_PASSAGE")
 local CURRENT_PASSAGE_TARGET_NPC = B.Reference("Orlando", "CURRENT_PASSAGE_TARGET_NPC")
 
-local DAMAGE_THRESHOLD = 10
-local FUNNY_HEAL_MIN = 100
-local FUNNY_HEAL_MAX = 200
+local DAMAGE_THRESHOLD = 5
+local FUNNY_HEAL_MIN = 50
+local FUNNY_HEAL_MAX = 100
 
 local TALK_DURATION = 2.5
 
@@ -81,8 +81,8 @@ local Tree = BTreeBuilder.Node() {
 						event = "heal",
 						poke = function(mashina, state)
 							return {
-								hitPoints = math.random(FUNNY_HEAL_MIN, FUNNY_HEAL_MAX),
-								zealous = true
+								hitPoints = love.math.random(FUNNY_HEAL_MIN, FUNNY_HEAL_MAX),
+								zealous = false
 							}
 						end
 					},
@@ -110,6 +110,10 @@ local Tree = BTreeBuilder.Node() {
 				},
 
 				Mashina.Repeat {
+					Mashina.Check {
+						condition = function(_, state) return state[AGGRESSOR] end
+					},
+
 					Mashina.Invert {
 						Mashina.Peep.IsDead {
 							peep = AGGRESSOR

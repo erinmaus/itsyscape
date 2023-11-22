@@ -326,7 +326,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_Orlando" {
-		-- Nothing
+		ItsyScape.Action.InvisibleAttack()
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -364,19 +364,8 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 
-	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(20),
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
-	}
-
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(20, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 1),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
