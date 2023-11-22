@@ -18,13 +18,16 @@ local BossHUDController = Class(HUDController)
 function BossHUDController:new(peep, director, ...)
 	HUDController.new(self, peep, director)
 
-	self.bosses = {}
+	self.bosses = { dead = 0 }
 	do
 		local bosses = { n = select('#', ...), ... }
 		for i = 1, bosses.n do
 			local boss = bosses[i]
 			if boss then
 				table.insert(self.bosses, boss)
+
+				boss:listen('die', self._onDeath, self)
+				boss:listen('resurrect', self._onRezz, self)
 			end
 		end
 	end
@@ -32,6 +35,30 @@ function BossHUDController:new(peep, director, ...)
 	peep:listen('travel', function()
 		self:poke("close", nil, {})
 	end)
+end
+
+function BossHUDController:close()
+	HUDController.close(self)
+
+	for i = 1, #self.bosses do
+		self.bosses[i]:silence('die')
+		self.bosses[i]:silence('resurrect')
+	end
+end
+
+function BossHUDController:_onDeath(boss)
+	self.bosses.dead = self.bosses.dead + 1
+
+	if self.bosses.dead >= #self.bosses then
+		Log.info(
+			"Boss HUD closing for '%s' because all bosses are dead.",
+			self:getPeep():getName())
+		self:poke("close", nil, {})
+	end
+end
+
+function BossHUDController:_onRezz(boss)
+	self.bosses.dead = self.bosses.dead - 1
 end
 
 function BossHUDController:updateStats()
@@ -72,25 +99,6 @@ function BossHUDController:updateStats()
 				end
 			end
 		end
-	end
-end
-
-function BossHUDController:updateBosses()
-	local alive = false
-	for i = 1, #self.bosses do
-		local peep = self.bosses[i]
-		local status = peep:getBehavior(CombatStatusBehavior)
-		if not peep:wasPoofed() and status and not status.dead then
-			alive = true
-			break
-		end
-	end
-
-	if not alive then
-		Log.info(
-			"Boss HUD closing for '%s' because all bosses are dead or poofed.",
-			self:getPeep():getName())
-		self:poke("close", nil, {})
 	end
 end
 
@@ -140,7 +148,6 @@ function BossHUDController:update(delta)
 	HUDController.update(self, delta)
 
 	self:updateStats()
-	self:updateBosses()
 end
 
 return BossHUDController

@@ -252,7 +252,25 @@ function BossHUD:updateStats()
 			stat:setMax(big[i].max)
 
 			local label = self.bigStats[i].statLabel
-			label:setText(string.format("%d/%d", big[i].current, big[i].max))
+			local leftNumber
+			if big[i].current == math.huge then
+				leftNumber = "infinite"
+			elseif big[i].current == -math.huge then
+				leftNumber = "-infinite"
+			else
+				leftNumber = string.format("%d", big[i].current)
+			end
+
+			local rightNumber
+			if big[i].max == math.huge then
+				rightNumber = "infinite"
+			elseif big[i].max == -math.huge then
+				rightNumber = "-infinite"
+			else
+				rightNumber = string.format("%d", big[i].max)
+			end
+
+			label:setText(string.format("%s/%s", leftNumber, rightNumber))
 		end
 	end
 	do

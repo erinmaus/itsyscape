@@ -52,7 +52,12 @@ function PartyTravel:getRaid()
 		return
 	end
 
-	return record:get("Raid"), record:get("AnchorOverride")
+	local mapOverride = gameDB:getRecord("PartyTravelDestinationMapOverride", {
+		Action = self:getAction(),
+		Raid = record:get("Raid")
+	})
+
+	return record:get("Raid"), record:get("AnchorOverride"), mapOverride and mapOverride:get("Map")
 end
 
 return PartyTravel

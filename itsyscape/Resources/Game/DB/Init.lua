@@ -210,6 +210,12 @@ Game "ItsyScape"
 		AnchorOverride = Meta.TYPE_TEXT
 	}
 
+	Meta "PartyTravelDestinationMapOverride" {
+		Action = Meta.TYPE_ACTION,
+		Raid = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 	Meta "GatherableProp" {
 		Health = Meta.TYPE_REAL,
 		SpawnTime = Meta.TYPE_REAL,

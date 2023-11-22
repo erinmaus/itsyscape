@@ -318,7 +318,7 @@ function Party:getIsStarted()
 	return self.isStarted
 end
 
-function Party:start(otherAnchor)
+function Party:start(otherMap, otherAnchor)
 	Log.info("Party %d is trying to start raid...", self:getID())
 
 	if not self:getRaid() then
@@ -336,6 +336,13 @@ function Party:start(otherAnchor)
 	if not filename or not anchor then
 		Log.warn("Cannot start raid for party %d because destination is bonked up.", self:getID())
 		return false
+	end
+
+	if otherMap then
+		Log.info(
+			"Using other map '%s' instead of default map '%s'.",
+			otherMap.name, filename)
+		filename = otherMap.name
 	end
 
 	if otherAnchor and otherAnchor ~= "" then
@@ -360,7 +367,6 @@ function Party:start(otherAnchor)
 	end
 
 	self:getRaid():addInstance(instance)
-
 
 	for _, player in self:iteratePlayers() do
 		local isInSameInstance = originalInstance and originalInstance:hasPlayer(player)
@@ -387,7 +393,7 @@ function Party:start(otherAnchor)
 	return true
 end
 
-function Party:rejoin(player, otherAnchor)
+function Party:rejoin(player, otherMap, otherAnchor)
 	if not self:getIsStarted() then
 		Log.info(
 			"Party %d's raid hasn't started, player %s (%d) can't rejoin.",
@@ -407,9 +413,16 @@ function Party:rejoin(player, otherAnchor)
 		return false
 	end
 
+	if otherMap then
+		Log.info(
+			"Using other map '%s' instead of default map '%s'.",
+			otherMap.name, filename)
+		filename = otherMap.name
+	end
+
 	if otherAnchor and otherAnchor ~= "" then
 		Log.info(
-			"Using anchor '%s' instead of anchor '%s'.",
+			"Using other anchor '%s' instead of anchor '%s'.",
 			otherAnchor, anchor)
 		anchor = otherAnchor
 	end
