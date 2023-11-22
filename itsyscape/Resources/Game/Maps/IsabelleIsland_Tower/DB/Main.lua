@@ -628,6 +628,71 @@ M["Door_Tower3"] {
 	ItsyScape.Action.Close()
 }
 
+M["Anchor_FromHighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 6,
+		PositionZ = 21,
+		Name = "Anchor_FromHighChambersYendor",
+		Map = M._MAP,
+		Resource = M["Anchor_FromHighChambersYendor"]
+	}
+end
+
+M["TrapDoor_ToHighChambersYendor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 6,
+		PositionZ = 21,
+		Name = "TrapDoor_ToHighChambersYendor",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToHighChambersYendor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToHighChambersYendor"]
+	}
+
+	local TravelAction = ItsyScape.Action.PartyTravel() {
+		Requirement {
+			Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.PartyTravelDestination {
+		Raid = ItsyScape.Resource.Raid "HighChambersYendor",
+		AnchorOverride = "Anchor_FromTower",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.PartyTravelDestinationMapOverride {
+		Raid = ItsyScape.Resource.Raid "HighChambersYendor",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor4",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromTower",
+		Map = ItsyScape.Resource.Map "HighChambersYendor_Floor4",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		XProgressive = "Descending",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToHighChambersYendor"] {
+		TravelAction
+	}
+end
+
 do
 	local SleepAction = ItsyScape.Action.Sleep()
 
