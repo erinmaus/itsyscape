@@ -263,9 +263,10 @@ function ShipMapPeep:updateFoam()
 	if rotation then
 		local _, boatFoamPropScale = self.boatFoamProp:addBehavior(RotationBehavior)
 		local _, boatFoamTrailPropScale = self.boatFoamTrailProp:addBehavior(RotationBehavior)
+		local shipOffset = self:hasBehavior(MapOffsetBehavior) and self:getBehavior(MapOffsetBehavior)
 
 		local offset
-		if self:hasBehavior(MapOffsetBehavior) then
+		if shipOffset and shipOffset.offset:getLength() > 0 then
 			offset = Vector.ZERO
 		else
 			offset = Vector(
