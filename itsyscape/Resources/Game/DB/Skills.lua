@@ -77,6 +77,11 @@ ItsyScape.Meta.SkillAction {
 
 ItsyScape.Resource.Skill "Faith"
 	ItsyScape.Meta.SkillAction {
+		ActionType = "Equip",
+		Skill = ItsyScape.Resource.Skill "Faith"
+	}
+
+	ItsyScape.Meta.SkillAction {
 		ActionType = "Bury",
 		Skill = ItsyScape.Resource.Skill "Faith"
 	}
@@ -124,6 +129,11 @@ ItsyScape.Resource.Skill "Smithing"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Smelt",
+		Skill = ItsyScape.Resource.Skill "Smithing"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "Craft",
 		Skill = ItsyScape.Resource.Skill "Smithing"
 	}
 

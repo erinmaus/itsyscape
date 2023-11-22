@@ -20,6 +20,7 @@ local AirStrike = Class(Projectile)
 
 AirStrike.SEGMENT_LENGTH  = 1 / 25
 AirStrike.RADIUS = 0.5
+AirStrike.COLOR = Color(1)
 
 AirStrike.SPEED = 8
 
@@ -35,7 +36,8 @@ function AirStrike:load()
 	self.airWave:setParent(root)
 	self.airWave:setBeamSize(0.25)
 	self.airWave:getMaterial():setIsFullLit(true)
-	self.airWave:getMaterial():setColor(Color(1))
+	self.airWave:getMaterial():setColor(self.COLOR)
+	self.airWave:setBlendMode('alpha')
 
 	self.fullPath = {}
 	self.currentPath = {}
@@ -44,19 +46,19 @@ end
 
 function AirStrike:generatePath(spawn, hit)
 	local crowDistance = (spawn - hit):getLength()
-	local totalDistance = 2 * math.pi * AirStrike.RADIUS * (crowDistance / AirStrike.RADIUS)
+	local totalDistance = 2 * math.pi * self.RADIUS * (crowDistance / self.RADIUS)
 
 	local currentDistance = 0
 	while currentDistance < totalDistance do
 		local delta = currentDistance / crowDistance
 
 		local position = Vector(
-			math.cos(delta * math.pi * 2) * (AirStrike.RADIUS),
-			math.sin(delta * math.pi * 2) * (AirStrike.RADIUS),
+			math.cos(delta * math.pi * 2) * (self.RADIUS),
+			math.sin(delta * math.pi * 2) * (self.RADIUS),
 			-currentDistance / totalDistance * crowDistance)
 		table.insert(self.fullPath, position)
 
-		currentDistance = currentDistance + AirStrike.SEGMENT_LENGTH
+		currentDistance = currentDistance + self.SEGMENT_LENGTH
 	end
 end
 
@@ -99,12 +101,16 @@ function AirStrike:update(elapsed)
 		self:updatePath()
 
 		local delta = self:getDelta()
-		local alpha = math.abs(math.sin(delta * math.pi)) * AirStrike.ALPHA_MULTIPLIER
-		alpha = math.min(alpha, 1)
+		local alpha = math.abs(math.sin(delta * math.pi)) * self.ALPHA_MULTIPLIER
+		alpha = math.max(math.min(alpha, 1), 0)
 
 		self.airWave:getTransform():setLocalRotation(Quaternion.lookAt(self.spawnPosition, self.hitPosition))
 		self.airWave:getTransform():setLocalTranslation(self.spawnPosition)
-		self.airWave:getMaterial():setColor(Color(1, 1, 1, alpha))
+		self.airWave:getMaterial():setColor(Color(
+			self.COLOR.r,
+			self.COLOR.g,
+			self.COLOR.b,
+			alpha))
 	end
 end
 

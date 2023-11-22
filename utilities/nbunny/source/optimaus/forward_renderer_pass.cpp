@@ -112,6 +112,7 @@ void nbunny::ForwardRendererPass::get_nearby_lights(SceneNode& node, float delta
 	{
 		Light light;
 		light.ambient_coefficient = 1.0f;
+		light.diffuse_coefficient = 0.0f;
 
 		lights.push_back(light);
 		return;
@@ -193,6 +194,7 @@ void nbunny::ForwardRendererPass::send_light(
 	send_light_property(shader, "scape_Lights", index, "color", glm::value_ptr(light.color), sizeof(glm::vec3));
 	send_light_property(shader, "scape_Lights", index, "attenuation", &light.attenuation, sizeof(float));
 	send_light_property(shader, "scape_Lights", index, "ambientCoefficient", &light.ambient_coefficient, sizeof(float));
+	send_light_property(shader, "scape_Lights", index, "diffuseCoefficient", &light.diffuse_coefficient, sizeof(float));
 	send_light_property(shader, "scape_Lights", index, "coneAngle", &light.cone_angle, sizeof(float));
 	send_light_property(shader, "scape_Lights", index, "coneDirection", glm::value_ptr(light.cone_direction), sizeof(glm::vec3));
 }

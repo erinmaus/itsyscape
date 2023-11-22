@@ -775,6 +775,7 @@ function BankController:pullItem(item, includeNoted)
 
 	result.name = Utility.Item.getInstanceName(item)
 	result.description = Utility.Item.getInstanceDescription(item)
+	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
 
 	return result
 end

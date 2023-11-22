@@ -18,6 +18,7 @@ local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavio
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local HighChambersYendorCommon = require "Resources.Game.Peeps.HighChambersYendor.Common"
 
@@ -277,6 +278,7 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 	local isabelleActor = isabelle:getBehavior(ActorReferenceBehavior)
 	isabelleActor = isabelleActor and isabelleActor.actor
 
+	local combatCortex = self:getDirector():getCortex(CombatCortex)
 	local instance = Utility.Peep.getInstance(self)
 	if instance and instance:hasRaid() then
 		local party = instance:getRaid():getParty()
@@ -288,13 +290,11 @@ function HighChambersYendor:onKillBoss(director, game, isabelle)
 				"Player %s (%d) was rewarded with Isabelle's defeat.",
 				playerPeep:getName(), player:getID())
 
-			local target = playerPeep:getBehavior(CombatTargetBehavior)
-			if target and target.actor == isabelleActor then
+			if combatCortex:stopAttacking(playerPeep, isabelle) then
 				Log.info(
-					"Player %s (%d) is dis-engaging from Isabelle.",
+					"Player %s (%d) was dis-engaged from Isabelle.",
 					playerPeep:getName(),
 					player:getID())
-				playerPeep:removeBehavior(CombatTargetBehavior)
 			else
 				Log.info(
 					"Player %s (%d) is not engaged with Isabelle.",

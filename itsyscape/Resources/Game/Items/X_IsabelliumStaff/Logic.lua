@@ -21,4 +21,8 @@ function IsabelliumStaff:getID()
 	return 'X_IsabelliumStaff'
 end
 
+function IsabelliumStaff:getProjectile(peep)
+	return "IsabelleStrike"
+end
+
 return IsabelliumStaff

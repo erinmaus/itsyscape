@@ -914,28 +914,4 @@ do
 	}
 end
 
-M["HighChambersYendor_Entrance1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23.000000,
-		PositionY = 1.000000,
-		PositionZ = 5.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "HighChambersYendor_Entrance1",
-		Map = M._MAP,
-		Resource = M["HighChambersYendor_Entrance1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
-		MapObject = M["HighChambersYendor_Entrance1"]
-	}
-end
-
 return M

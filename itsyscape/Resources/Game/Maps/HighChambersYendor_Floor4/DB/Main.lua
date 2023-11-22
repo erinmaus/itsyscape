@@ -366,3 +366,56 @@ do
 		DoesNotRespawn = 1
 	}
 end
+
+M["Anchor_FromTower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 1,
+		PositionZ = 7,
+		Name = "Anchor_FromTower",
+		Map = M._MAP,
+		Resource = M["Anchor_FromTower"]
+	}
+end
+
+M["HighChambersYendor_ToTower"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 1,
+		PositionZ = 5,
+		Name = "HighChambersYendor_ToTower",
+		Map = M._MAP,
+		Resource = M["HighChambersYendor_ToTower"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["HighChambersYendor_ToTower"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.Quest "CalmBeforeTheStorm",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromHighChambersYendor",
+		Map = ItsyScape.Resource.Map "IsabelleIsland_Tower",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Enter",
+		XProgressive = "Entering",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["HighChambersYendor_ToTower"] {
+		TravelAction
+	}
+end
