@@ -235,7 +235,8 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
 				j = y
 			end
 
-			if not self:canMove(i, j, i - pi, j - pj, shoot) then
+			local di, dj = i - pi, j - pj
+			if not self:canMove(i, j, pi - i, pj - j, shoot, isPlayer) then
 				return false
 			end
 
