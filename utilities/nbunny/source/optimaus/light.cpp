@@ -172,6 +172,7 @@ void nbunny::AmbientLightSceneNode::to_light(Light& light, float delta) const
 		current_ambience,
 		get_ticked() ? previous_ambience : current_ambience,
 		delta);
+	light.diffuse_coefficient = 0.0f;
 }
 
 void nbunny::AmbientLightSceneNode::tick()
