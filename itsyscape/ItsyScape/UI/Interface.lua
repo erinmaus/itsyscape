@@ -111,6 +111,10 @@ function Interface:examineItem(widget, inventory, index)
 		object = action.verb .. " " .. object
 	end
 
+	if item.count > 100000 then
+		object = string.format("%s (%s)", object, Utility.Text.prettyNumber(item.count))
+	end
+
 	local toolTip = {
 		ToolTip.Header(object),
 		ToolTip.Text(description)

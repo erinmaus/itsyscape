@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local HUD = require "ItsyScape.UI.Interfaces.HUD"
 local Drawable = require "ItsyScape.UI.Drawable"
@@ -258,7 +259,7 @@ function BossHUD:updateStats()
 			elseif big[i].current == -math.huge then
 				leftNumber = "-infinite"
 			else
-				leftNumber = string.format("%d", big[i].current)
+				leftNumber = Utility.Text.prettyNumber(big[i].current)
 			end
 
 			local rightNumber
@@ -267,7 +268,7 @@ function BossHUD:updateStats()
 			elseif big[i].max == -math.huge then
 				rightNumber = "-infinite"
 			else
-				rightNumber = string.format("%d", big[i].max)
+				rightNumber = Utility.Text.prettyNumber(big[i].max)
 			end
 
 			label:setText(string.format("%s/%s", leftNumber, rightNumber))
