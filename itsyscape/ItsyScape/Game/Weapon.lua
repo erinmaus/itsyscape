@@ -114,7 +114,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	end
 
 	self.bonusType = bonusType
-	self.level = level
+	self.level = level or 1
 
 	if target and target:hasBehavior(PlayerBehavior) then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)

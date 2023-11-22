@@ -288,17 +288,17 @@ function ProCombatStatusHUD.Target:updateToolTip()
 
 	local toolTip = {
 		ToolTip.Header("Accuracy"),
-		ToolTip.Text(string.format("Level: %d", actorState.dps.accuracy.level)),
-		ToolTip.Text(string.format("Equipment Bonus: %d", actorState.dps.accuracy.stat)),
-		ToolTip.Text(string.format("Roll: %d (Atk) vs %d (Def)", actorState.dps.accuracy.attackRoll, actorState.dps.accuracy.defenseRoll, { color = actorState.dps.accuracy.attackRoll > actorState.dps.accuracy.defenseRoll and Color(0, 1, 0, 1) or Color(1, 0, 0, 1), textShadow = true })),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.accuracy.level or 1)),
+		ToolTip.Text(string.format("Equipment Bonus: %d", actorState.dps.accuracy.stat or 0)),
+		ToolTip.Text(string.format("Roll: %d (Atk) vs %d (Def)", actorState.dps.accuracy.attackRoll or 0, actorState.dps.accuracy.defenseRoll or 0, { color = (actorState.dps.accuracy.attackRoll or 0) > (actorState.dps.accuracy.defenseRoll or 0) and Color(0, 1, 0, 1) or Color(1, 0, 0, 1), textShadow = true })),
 		ToolTip.Header("Damage"),
-		ToolTip.Text(string.format("Level: %d", actorState.dps.damage.level)),
-		ToolTip.Text(string.format("Strength Bonus: %d", actorState.dps.damage.stat)),
-		ToolTip.Text(string.format("Damage Reduction: %.2f%%", (1 - actorState.dps.damage.damageMultiplier) * 100)),
-		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
-		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.damage.level or 1)),
+		ToolTip.Text(string.format("Strength Bonus: %d", actorState.dps.damage.stat or 0)),
+		ToolTip.Text(string.format("Damage Reduction: %.2f%%", (1 - (actorState.dps.damage.damageMultiplier or 100)) * 100)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min or 1, actorState.dps.damage.max or 1)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min or 1, actorState.dps.damage.max or 1)),
 		ToolTip.Header("Equipment"),
-		ToolTip.Text(string.format("Weapon: %s", actorState.dps.weapon.id))
+		ToolTip.Text(string.format("Weapon: %s", actorState.dps.weapon.id or "unknown"))
 	}
 
 	for _, skill in ipairs(actorState.dps.skills) do

@@ -399,7 +399,9 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 	end
 
 	if target then
-		local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon("Unarmed")
+		local weapon, item = Utility.Peep.getEquippedWeapon(peep, true)
+		weapon = weapon or Weapon("Unarmed")
+
 		local accuracy = weapon:rollAttack(peep, target:getPeep(), weapon:getBonusForStance(peep))
 		local damage = weapon:rollDamage(peep, Weapon.PURPOSE_KILL, target:getPeep())
 
@@ -420,7 +422,7 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 			},
 
 			weapon = {
-				id = weapon:getID(),
+				id = item and Utility.Item.getInstanceName(item, gameDB) or weapon:getWeaponType(),
 			},
 
 			bonuses = Utility.Peep.getEquipmentBonuses(peep),
