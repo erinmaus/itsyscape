@@ -11,7 +11,7 @@
 local LEATHERS = {
 	["MooishLeather"] = {
 		name = "Mooish leather",
-		tier = 1,
+		tier = 0,
 		weight = 2,
 		thread = "PlainThread"
 	},
@@ -124,12 +124,12 @@ for name, leather in spairs(LEATHERS) do
 		local EquipAction = ItsyScape.Action.Equip() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Defense",
-				Count = ItsyScape.Utility.xpForLevel(leather.tier)
+				Count = ItsyScape.Utility.xpForLevel(math.max(leather.tier, 1))
 			},
 
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Dexterity",
-				Count = ItsyScape.Utility.xpForLevel(leather.tier)
+				Count = ItsyScape.Utility.xpForLevel(math.max(leather.tier, 1))
 			}
 		}
 
@@ -210,12 +210,12 @@ for name, itemProps in spairs(SHIELDS) do
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Defense",
-			Count = ItsyScape.Utility.xpForLevel(leather.tier)
+			Count = ItsyScape.Utility.xpForLevel(math.max(leather.tier, 1))
 		},
 
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Dexterity",
-			Count = ItsyScape.Utility.xpForLevel(leather.tier)
+			Count = ItsyScape.Utility.xpForLevel(math.max(leather.tier, 1))
 		}
 	}
 
@@ -250,7 +250,7 @@ for name, itemProps in spairs(SHIELDS) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Crafting",
-			Count = ItsyScape.Utility.xpForResource(math.max(leather.tier + itemProps.hides + 3, 1)) * itemProps.hides
+			Count = ItsyScape.Utility.xpForResource(math.max(math.max(leather.tier, 1) + itemProps.hides + 3, 1)) * itemProps.hides
 		},
 
 		Output {
@@ -260,7 +260,7 @@ for name, itemProps in spairs(SHIELDS) do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(leather.tier + itemProps.hides + 3) * 3,
+		Value = ItsyScape.Utility.valueForItem(math.max(leather.tier, 1) + itemProps.hides + 3) * 3,
 		Weight = leather.weight * itemProps.hides,
 		Resource = Item
 	}
