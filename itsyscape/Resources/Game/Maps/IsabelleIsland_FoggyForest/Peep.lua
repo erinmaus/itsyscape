@@ -135,7 +135,7 @@ function FoggyForest:spawnBossyNymph(e)
 					player,
 					"DialogBox",
 					true,
-					actions[i].instance:getAction(),
+					actions[i].instance,
 					nymph)
 			end
 		end
@@ -199,11 +199,17 @@ end
 function FoggyForest:onAncientDriftwoodTreeHit(e)
 	Log.info('Ancient driftwood tree hit; at %d ticks.', e.ticks)
 
-	if not self.nymphs[Utility.Peep.getPlayerModel(e.peep)] then
+	local nymph = self.nymphs[Utility.Peep.getPlayerModel(e.peep)]
+	if not nymph then
 		Log.info("Spawning bossy nymph...")
 		self:spawnBossyNymph(e)
 	else
-		self:spawnFoes(e)
+		local status = nymph.boss and nymph.boss:getBehavior(CombatStatusBehavior)
+		if status and not status.dead then 
+			self:spawnFoes(e)
+		else
+			Log.info("Bossy nymph dead; not spawning foes for player '%s'.", e.peep:getName())
+		end
 	end
 
 	local playerModel = Utility.Peep.getPlayerModel(e.peep)
