@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local ItemUserdata = require "ItsyScape.Game.ItemUserdata"
+local Utility = require "ItsyScape.Game.Utility"
 
 local ItemValueUserdata = Class(ItemUserdata)
 
@@ -26,14 +27,8 @@ function ItemValueUserdata:getValue()
 	return self.value
 end
 
-local function formatQuantity(number)
-  local i, j, minus, int, fraction = tostring(number):find('([-]?)(%d+)([.]?%d*)')
-  int = int:reverse():gsub("(%d%d%d)", "%1,")
-  return minus .. int:reverse():gsub("^,", "") .. fraction
-end
-
 function ItemValueUserdata:getDescription()
-	return self:buildDescription("Message_ItemValueUserdata_Description", formatQuantity(self.value))
+	return self:buildDescription("Message_ItemValueUserdata_Description", Utility.Text.prettyNumber(self.value))
 end
 
 function ItemValueUserdata:combine(otherUserdata)
