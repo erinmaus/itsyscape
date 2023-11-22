@@ -2409,7 +2409,7 @@ function Utility.Peep.isAttackable(peep)
 		if r then
 			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r, 'world')
 			for i = 1, #actions do
-				if actions[i].instance:is("Attack") then
+				if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
 					return true
 				end
 			end

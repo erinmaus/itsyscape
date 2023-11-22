@@ -250,6 +250,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "Attack"
+	ActionType "InvisibleAttack"
 
 	ResourceType "Spell"
 	ActionType "Cast"

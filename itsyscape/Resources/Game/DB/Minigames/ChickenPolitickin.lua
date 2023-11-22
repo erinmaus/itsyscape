@@ -8,7 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 do
-	local Chicken = ItsyScape.Resource.Peep "Chicken_Haru"
+	local Chicken = ItsyScape.Resource.Peep "Chicken_Haru" {
+		ItsyScape.Action.InvisibleAttack()
+	}
 
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Chicken.HaruChicken",
