@@ -171,6 +171,12 @@ do
 		Value = "Copper",
 		Resource = ItsyScape.Resource.Item "GhostspeakAmulet"
 	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "GhostspeakAmulet"
+	}
 end
 
 do
@@ -416,5 +422,11 @@ do
 		Value = "Has a 25% chance of turning damage dealt by ghosts and undead into healing.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Effect "GhostBindersRing"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Metal",
+		Value = "Copper",
+		Resource = ItsyScape.Resource.Item "GhostBindersRing"
 	}
 end
