@@ -69,7 +69,19 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean" {
-		-- Nothing.
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Isabelle_Primary",
+				Count = 2
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Isabelle_Secondary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -166,6 +178,126 @@ do
 		State = "attack",
 		Tree = "Resources/Game/Peeps/Isabelle/AttackLogic.lua",
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 200,
+		Count = 1500,
+		Range = 1000,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BoneShards",
+		Weight = 50,
+		Count = 100,
+		Range = 25,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "MooishLeatherHide",
+		Weight = 100,
+		Count = 10,
+		Range = 2,
+		Noted = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BlueCotton",
+		Weight = 100,
+		Count = 10,
+		Range = 2,
+		Noted = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeBar",
+		Weight = 100,
+		Count = 10,
+		Range = 2,
+		Noted = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeArrow",
+		Weight = 100,
+		Count = 100,
+		Range = 50,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BronzeArrow",
+		Weight = 100,
+		Count = 100,
+		Range = 50,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AirRune",
+		Weight = 100,
+		Count = 150,
+		Range = 50,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "FireRune",
+		Weight = 100,
+		Count = 100,
+		Range = 50,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CosmicRune",
+		Weight = 100,
+		Count = 50,
+		Range = 25,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "UnfocusedRune",
+		Weight = 10,
+		Count = 200,
+		Range = 100,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IsabelliumShard",
+		Weight = 97,
+		Count = 3,
+		Range = 2,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Secondary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IsabelliumZweihander",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Secondary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IsabelliumLongbow",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Secondary"
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "IsabelliumStaff",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "Isabelle_Secondary"
 	}
 end
 

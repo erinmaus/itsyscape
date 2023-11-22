@@ -56,7 +56,15 @@ function EquipmentInventoryProvider:assignKey(item)
 	if not logic then
 		Log.error("Logic for item '%s' not found.", item:getID())
 	elseif logic:isCompatibleType(Equipment) then
-		logic:onEquip(self.peep)
+		local s, e = xpcall(logic.onEquip, debug.traceback, logic, self.peep, item)
+		if not s then
+			Log.warn("Couldn't run equip logic for '%s': %s", item:getID(), e)
+		end
+
+		self:getPeep():poke('equipItem', {
+			item = item,
+			count = item:getCount()
+		})
 	end
 
 	local gameDB = self.peep:getDirector():getGameDB()
@@ -117,7 +125,10 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 	local itemManager = self.peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(item:getID())
 	if logic:isCompatibleType(Equipment) then
-		logic:onEquip(self.peep)
+		local s, e = xpcall(logic.onDequip, debug.traceback, logic, self.peep, item)
+		if not s then
+			Log.warn("Couldn't run dequip logic for '%s': %s", item:getID(), e)
+		end
 	end
 
 	local equipStatsTag = broker:getItemTag(item, 'equip-record')
@@ -154,6 +165,11 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 			end
 		end
 	end
+
+	self:getPeep():poke('dequipItem', {
+		item = item,
+		count = count
+	})
 end
 
 function EquipmentInventoryProvider:getStat(stat)

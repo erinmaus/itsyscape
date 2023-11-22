@@ -23,7 +23,7 @@ function IsabelliumLongbow:getID()
 end
 
 function IsabelliumLongbow:getProjectile()
-	return 'BronzeArrow'
+	return "IsabelliumArrow"
 end
 
 return IsabelliumLongbow

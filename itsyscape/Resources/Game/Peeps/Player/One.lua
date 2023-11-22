@@ -94,6 +94,8 @@ function One:new(...)
 	self:addPoke('changeWardrobe')
 	self:addPoke('transferItemTo')
 	self:addPoke('transferItemFrom')
+	self:addPoke('equipItem')
+	self:addPoke('dequipItem')
 	self:addPoke('travel')
 	self:addPoke('walk')
 	self:addPoke('bootstrapComplete')
@@ -140,15 +142,15 @@ end
 function One:assign(director, key, ...)
 	Peep.assign(self, director, key, ...)
 
+	local stats = self:getBehavior(StatsBehavior)
+	stats.stats = Stats("Player.One", director:getGameDB(), 99)
+
 	local inventory = self:getBehavior(InventoryBehavior)
 	director:getItemBroker():addProvider(inventory.inventory)
 	director:getItemBroker():addProvider(inventory.bank)
 
 	local equipment = self:getBehavior(EquipmentBehavior)
 	director:getItemBroker():addProvider(equipment.equipment)
-
-	local stats = self:getBehavior(StatsBehavior)
-	stats.stats = Stats("Player.One", director:getGameDB(), 99)
 
 	local storage = director:getPlayerStorage(self):getRoot()
 	if storage:get("filename") and storage:hasSection("Location") then

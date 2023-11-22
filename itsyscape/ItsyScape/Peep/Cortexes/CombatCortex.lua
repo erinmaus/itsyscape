@@ -68,6 +68,30 @@ function CombatCortex:resetPeep(peep)
 	peep:getCommandQueue(CombatCortex.QUEUE):clear()
 end
 
+function CombatCortex:stopAttacking(peep, target)
+	if self:hasPeep(peep) then
+		if target then
+			local actor = target:getBehavior(ActorReferenceBehavior)
+			actor = actor and actor.actor
+
+			local peepTarget = peep:getBehavior(CombatTargetBehavior)
+			peepTarget = peepTarget and peepTarget.actor
+			if not (peepTarget == actor or self.pendingResume[peep] == target) then
+				return false
+			end
+		end
+
+		self:resetPeep(peep)
+
+		self.pendingResume[peep] = nil
+		self.pendingPlayers[peep] = nil
+
+		return true
+	end
+
+	return false
+end
+
 function CombatCortex:resume(peep, target)
 	if peep:wasPoofed() or target:wasPoofed() then
 		return

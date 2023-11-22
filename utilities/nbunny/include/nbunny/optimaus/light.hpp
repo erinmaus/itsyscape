@@ -25,6 +25,7 @@ namespace nbunny
 		glm::vec3 color = glm::vec3(1.0f);
 		float attenuation = 1.0f;
 		float ambient_coefficient = 0.0f;
+		float diffuse_coefficient = 1.0f;
 		float cone_angle = 360.0f;
 		glm::vec3 cone_direction = glm::vec3(0, 1, 0);
 		float near_distance = 0.0f;

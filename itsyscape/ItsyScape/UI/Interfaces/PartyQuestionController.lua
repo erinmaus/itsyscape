@@ -15,7 +15,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local PartyQuestionController = Class(Controller)
 
-function PartyQuestionController:new(peep, director, raid, anchor)
+function PartyQuestionController:new(peep, director, raid, anchor, map)
 	Controller.new(self, peep, director)
 
 	if not raid then
@@ -25,6 +25,7 @@ function PartyQuestionController:new(peep, director, raid, anchor)
 	else
 		self.raid = raid
 		self.anchor = anchor
+		self.map = map
 	end
 
 	local actions = {}
@@ -50,10 +51,6 @@ function PartyQuestionController:new(peep, director, raid, anchor)
 	local isMemberOfParty = party and not isLeaderOfParty
 	local isNotInParty = party == nil
 
-	if isSoleMemberOfParty or isMemberOfParty then
-		table.insert(actions, "leave")
-	end
-
 	if isNotInParty then
 		table.insert(actions, "create")
 		table.insert(actions, "join")
@@ -65,9 +62,8 @@ function PartyQuestionController:new(peep, director, raid, anchor)
 
 	table.insert(actions, "close")
 
-	local difficulty
-	do
-		
+	if isSoleMemberOfParty or isMemberOfParty then
+		table.insert(actions, "leave")
 	end
 
 	self.state = {
@@ -103,7 +99,7 @@ function PartyQuestionController:rejoin()
 	local party = self:getPeep():getBehavior(PartyBehavior)
 	party = party and party.id and self:getDirector():getGameInstance():getPartyByID(party.id)
 	if party and party:getIsStarted() then
-		party:rejoin(Utility.Peep.getPlayerModel(self:getPeep()), self.anchor)
+		party:rejoin(Utility.Peep.getPlayerModel(self:getPeep()), self.map, self.anchor)
 	end
 end
 
@@ -112,7 +108,7 @@ function PartyQuestionController:create()
 	local party = game:startParty(Utility.Peep.getPlayerModel(self:getPeep()))
 	if party then
 		party:setRaid(self.raid)
-		Utility.UI.openInterface(self:getPeep(), "CreateParty", true, party, self.anchor)
+		Utility.UI.openInterface(self:getPeep(), "CreateParty", true, party, self.anchor, self.map)
 	else
 		self:doClose()
 	end

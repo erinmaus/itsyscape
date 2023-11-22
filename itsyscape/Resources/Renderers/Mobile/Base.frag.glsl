@@ -31,6 +31,7 @@ uniform struct Light {
 	vec3 color;
 	float attenuation;
 	float ambientCoefficient;
+	float diffuseCoefficient;
 	float coneAngle;
 	vec3 coneDirection;
 } scape_Lights[SCAPE_MAX_LIGHTS];
@@ -71,9 +72,9 @@ vec3 scapeApplyLight(
 
 	vec3 ambient = light.ambientCoefficient * color * light.color;
 	float diffuseCoefficient = max(0.0, dot(normal, direction));
-	vec3 diffuse = diffuseCoefficient * color * light.color;
+	vec3 diffuse = diffuseCoefficient * color * light.color * light.diffuseCoefficient;
 
-	return (attenuation * 0.25) * diffuse + ambient;
+	return attenuation * diffuse + ambient;
 }
 
 vec3 scapeApplyFog(

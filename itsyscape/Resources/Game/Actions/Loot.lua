@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local SimpleInventoryProvider = require "ItsyScape.Game.SimpleInventoryProvider"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -35,7 +36,7 @@ function Loot.getDroppedItem(loot)
 		currentWeight = item:get("Weight") or 0
 	end
 
-	local p = math.random(0, weight)
+	local p = love.math.random(0, weight)
 	for i = 2, #loot do
 		if currentWeight > p then
 			break
@@ -88,7 +89,7 @@ function Loot:materializeDropTable(peep, inventory, loot)
 		do
 			local range = item:get("Range") or 0
 			if range > 0 then
-				count = count + math.random(-range, range)
+				count = count + love.math.random(-range, range)
 			end
 		end
 
@@ -110,8 +111,20 @@ function Loot:materializeDropTable(peep, inventory, loot)
 					table.insert(items, i)
 				end
 
+				local gameDB = self:getGameDB()
+				local legendaryLootCategory = gameDB:getResource("Legendary", "LootCategory")
+				local isLegendary = legendaryLootCategory and gameDB:getRecord("LootCategory", {
+					Item = resource,
+					Category = legendaryLootCategory
+				}) ~= nil
+
 				if #items >= 1 and slayer and slayer:hasBehavior(PlayerBehavior) then
-					Analytics:npcDroppedItem(slayer, peep, items[1], count)
+					Analytics:npcDroppedItem(slayer, peep, items[1], count, isLegendary)
+				end
+
+				if isLegendary then
+					local stage = peep:getDirector():getGameInstance():getStage()
+					stage:fireProjectile("ConfettiSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(peep), Utility.Peep.getLayer(peep))
 				end
 
 				for _, i in ipairs(items) do

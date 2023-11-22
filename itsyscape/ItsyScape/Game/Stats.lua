@@ -134,6 +134,9 @@ function Stats:new(id, gameDB, max)
 	self.skillsByIndex = {}
 	self.onLevelUp = Callback()
 	self.onXPGain = Callback()
+	self.onBoost = Callback()
+	self.onDeserialize = Callback()
+	self.onSerialize = Callback()
 
 	local brochure = gameDB:getBrochure()
 	local resourceType = Mapp.ResourceType()
@@ -142,6 +145,7 @@ function Stats:new(id, gameDB, max)
 			local skill = Stats.Skill(resource.name, max)
 			skill.onLevelUp:register(self.onLevelUp, self)
 			skill.onXPGain:register(self.onXPGain, self)
+			skill.onBoost:register(self.onBoost, self)
 
 			self.skills[resource.name] = skill
 			table.insert(self.skillsByIndex, skill)
@@ -177,7 +181,7 @@ end
 --
 -- The skill must exist.
 function Stats:getSkill(skill)
-	assert(self:hasSkill(skill), "skill not found")
+	assert(self:hasSkill(skill), string.format("skill %s not found", skill))
 
 	return self.skills[skill]
 end
@@ -197,6 +201,8 @@ function Stats:load(storage)
 			skill:setLevelBoost(0)
 		end
 	end
+
+	self:onDeserialize()
 end
 
 -- Saves the stats into a save file.
@@ -209,6 +215,8 @@ function Stats:save(storage)
 			levelBoost = skill:getLevelBoost()
 		})
 	end
+
+	self:onSerialize()
 end
 
 return Stats
