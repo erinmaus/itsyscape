@@ -31,6 +31,14 @@ function CombatEffect:applyTargetToDamage(damageRoll)
 	-- Nothing.
 end
 
+function CombatEffect:dealDamage(damageRoll)
+	-- Nothing.
+end
+
+function CombatEffect:receiveDamage(damageRoll)
+	-- Nothing.
+end
+
 -- Modifies an attack roll, assuming 'attackRoll' is from self attacking the
 -- target.
 --
