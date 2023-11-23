@@ -274,7 +274,7 @@ function Minigame:updateDash(director, delta)
 		damage = self.dashStrength,
 		aggressor = player
 	})
-	director:broadcast(hits, 'receiveAttack', poke)
+	director:broadcast(hits, 'hit', poke)
 
 	for i = 1, #hits do
 		self.collisions[hits[i]] = true
