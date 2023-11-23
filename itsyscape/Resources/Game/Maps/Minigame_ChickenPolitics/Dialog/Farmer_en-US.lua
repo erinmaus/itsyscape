@@ -49,15 +49,16 @@ if not mapScript.isDone then
 			}
 
 			message {
-				"Hold the %hint{dash button} to charge ya tackle.",
+				"Hold the %hint{minigame dash button} to charge ya tackle.",
 				"The longer you prep your tackle,",
 				"the more powerful it'll be.",
-				"But the longer ya'll be looking like a loon."
+				"%hint{By default, space is the dash button.}"
 			}
 
 			message {
 				"The direction ya are movin' in will be",
-				"the direction ya tackle the chickens from."
+				"the direction ya tackle the chickens from.",
+				"%hint{Walking freely used keyboard is better.}"
 			}
 
 			speaker "_TARGET"
