@@ -49,6 +49,8 @@ function PlayerStatsController:pull()
 				xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0)
 			})
 		end
+	else
+		Log.warnOnce("Player '%s' lost stats (has behavior = %s, has stats = %s).", self:getPeep():getName(), Log.boolean(stats), Log.boolean(stats and stats.stats))
 	end
 
 	return result

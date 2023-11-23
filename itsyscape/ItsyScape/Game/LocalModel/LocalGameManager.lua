@@ -465,7 +465,7 @@ function LocalGameManager:processCallback(e)
 				if not playerBehavior then
 					Log.warn("Interface (id = '%s', index = %d) is not owned by a player.", interfaceID, interfaceIndex)
 				else
-					local player = self.game:getPlayerByID(playerBehavior.id)
+					local player = self.game:getPlayerByID(playerBehavior.playerID)
 					if not player or player:getClientID() ~= e.clientID then
 						Log.warn(
 							"Potential security issue: client %d tried invoking RPC '%s' on interface (id = '%s', index = %d), but player does not own that interface.",

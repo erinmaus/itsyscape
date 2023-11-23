@@ -143,7 +143,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 		actor:getPeep():listen('actionPerformed', self.onPlayerActionPerformed, self)
 
 		local p = actor:getPeep():getBehavior(PlayerBehavior)
-		p.id = self.id
+		p.playerID = self.id
 
 		actor:getPeep():listen('finalize', function()
 			local storage = self.game:getDirector():getPlayerStorage(self.id)

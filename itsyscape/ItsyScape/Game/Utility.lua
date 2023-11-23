@@ -1652,7 +1652,7 @@ function Utility.Peep.getPlayerModel(peep)
 
 	local player = peep:getBehavior(PlayerBehavior)
 	if player then
-		return game:getPlayerByID(player.id)
+		return game:getPlayerByID(player.playerID)
 	end
 
 	local stage = peep:getDirector():getGameInstance():getStage()
@@ -1686,7 +1686,7 @@ function Utility.Peep.dismiss(peep)
 	Log.info("Dismissing '%s'...", name)
 
 	local follower = peep:getBehavior(FollowerBehavior)
-	if follower and follower.id ~= FollowerBehavior.NIL_ID then
+	if follower and follower.followerID ~= FollowerBehavior.NIL_ID then
 		local director = peep:getDirector()
 		local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
 		local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
