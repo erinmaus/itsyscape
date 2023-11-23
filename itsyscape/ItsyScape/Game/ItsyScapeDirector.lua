@@ -62,8 +62,8 @@ function ItsyScapeDirector:getPlayerStorage(peep)
 			index = peep
 		elseif Class.isCompatibleType(peep, Peep) then
 			local player = peep:getBehavior(PlayerBehavior)
-			if player and player.id then
-				index = player.id
+			if player and player.playerID then
+				index = player.playerID
 			end
 		end
 

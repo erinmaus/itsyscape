@@ -49,7 +49,7 @@ end
 function JoinPartyController:join(e)
 	local player = self:getGame():getPlayerByID(e.id)
 	local party = player:getActor():getPeep():getBehavior(PartyBehavior)
-	party = party and party.id and self:getGame():getPartyByID(party.id)
+	party = party and party.partyID and self:getGame():getPartyByID(party.partyID)
 
 	if party and party:getLeader() == player then
 		party:join(Utility.Peep.getPlayerModel(self:getPeep()))
