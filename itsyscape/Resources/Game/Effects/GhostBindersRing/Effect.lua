@@ -52,14 +52,14 @@ function GhostBindersRing:isUndead(resource)
 	return undeadTag ~= nil
 end
 
-function GhostBindersRing:applyTargetToDamage(roll)
+function GhostBindersRing:receiveDamage(roll)
 	local peep = roll:getSelf()
 	local peepResource = Utility.Peep.getResource(peep)
 	local peepMapObject = Utility.Peep.getMapObject(peep)
 
 	if self:isUndead(peepResource) or self:isUndead(peepMapObject) then
 		self.nextAttack = self.nextAttack - 1
-		if self.nextAttack <= 0 then
+		if self.nextAttack <= 0 or love.math.random() <= GhostBindersRing.CHANCE then
 			Log.info(
 				"Damage turned to healing via ghost binder's ring (attacker: '%s', defender: '%s').",
 				roll:getSelf():getName(),

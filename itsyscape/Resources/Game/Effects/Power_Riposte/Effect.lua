@@ -41,7 +41,14 @@ function Riposte:applyTargetToDamage(roll)
 		local damage = roll:roll()
 		roll:setMaxHit(math.floor(damage * self.damageMultiplier))
 		roll:setMinHit(math.floor(damage * self.damageMultiplier))
+	end
+end
 
+function Riposte:receiveDamage(roll)
+	local target = self:getPeep():getBehavior(CombatTargetBehavior)
+	target = target and target.actor
+
+	if target and target:getPeep() == roll:getSelf() then
 		local attack = AttackPoke({
 			damage = math.floor(damage * self.counterMultiplier + 0.5),
 			aggressor = self:getPeep()

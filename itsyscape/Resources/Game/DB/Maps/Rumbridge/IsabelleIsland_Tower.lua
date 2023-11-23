@@ -232,10 +232,10 @@ do
 	}
 
 	ItsyScape.Meta.DropTableEntry {
-		Item = ItsyScape.Resource.Item "BronzeArrow",
-		Weight = 100,
-		Count = 100,
-		Range = 50,
+		Item = ItsyScape.Resource.Item "Dynamite",
+		Weight = 150,
+		Count = 20,
+		Range = 5,
 		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
 	}
 
