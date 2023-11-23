@@ -10,23 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local Utility = require "ItsyScape.Game.Utility"
-local Effect = require "ItsyScape.Peep.Effect"
-local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 
 local Bash = Class(CombatPower)
 
 function Bash:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 
-	local level = activator:getState():count(
-		"Skill",
-		"Defense",
-		{ ['skill-as-level'] = true })
-
-	local additionalCooldown = math.min(((level - 10) / 50), 1) * 10 + 10
-	local _, cooldown = target:addBehavior(AttackCooldownBehavior)
-	cooldown.cooldown = cooldown.cooldown + additionalCooldown
-	cooldown.ticks = activator:getDirector():getGameInstance():getCurrentTime()
+	self:setXWeaponID("Power_Bash")
 end
 
 return Bash

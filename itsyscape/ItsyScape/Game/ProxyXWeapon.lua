@@ -20,7 +20,8 @@ ProxyXWeapon.PATCH = {
 	"previewAttackRoll",
 	"onAttackHit",
 	"onAttackMiss",
-	"getDelay"
+	"getDelay",
+	"dealtDamage"
 }
 
 function ProxyXWeapon:new(id, manager, logic)
@@ -174,6 +175,14 @@ function ProxyXWeapon:getDelay(...)
 		return self.patches.getDelay(self.logic, ...)
 	else
 		return Weapon.getDelay(self, ...)
+	end
+end
+
+function ProxyXWeapon:dealtDamage(...)
+	if self.patches.dealtDamage then
+		return self.patches.dealtDamage(self.logic, ...)
+	else
+		return Weapon.dealtDamage(self, ...)
 	end
 end
 

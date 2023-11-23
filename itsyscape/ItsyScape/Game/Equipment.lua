@@ -88,6 +88,20 @@ Equipment.OFFENSIVE_STATS = {
 	["StrengthMagic"] = "Magic strength"
 }
 
+Equipment.ACCURACY_STATS = {
+	["AccuracyStab"] = "Stab",
+	["AccuracySlash"] = "Slash",
+	["AccuracyCrush"] = "Crush",
+	["AccuracyMagic"] = "Magic",
+	["AccuracyRanged"] = "Ranged",
+}
+
+Equipment.STRENGTH_STATS = {
+	["StrengthMelee"] = "Melee strength",
+	["StrengthRanged"] = "Ranged strength",
+	["StrengthMagic"] = "Magic strength"
+}
+
 Equipment.DEFENSIVE_STATS = {
 	["DefenseStab"] = "Stab",
 	["DefenseSlash"] = "Slash",
