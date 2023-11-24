@@ -37,6 +37,7 @@ local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 LocalPlayer.MAX_MESSAGES = 50
 LocalPlayer.MAX_MESSAGE_DURATION_SECONDS = 60 * 2 -- 2 minutes
+LocalPlayer.POKE_GRACE_PERIOD = 0.35
 
 -- Constructs a new player.
 --
@@ -143,7 +144,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 		actor:getPeep():listen('actionPerformed', self.onPlayerActionPerformed, self)
 
 		local p = actor:getPeep():getBehavior(PlayerBehavior)
-		p.id = self.id
+		p.playerID = self.id
 
 		actor:getPeep():listen('finalize', function()
 			local storage = self.game:getDirector():getPlayerStorage(self.id)
@@ -365,19 +366,10 @@ function LocalPlayer:poke(id, obj, scope)
 		return
 	end
 
-	-- TODO LAYER CHECK
-	if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
-		local layer = Utility.Peep.getLayer(obj:getPeep())
-		if not self.instance:hasLayer(layer) then
-			Log.warn(
-				"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
-				self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
-		else
-			obj:poke(id, scope, self.actor:getPeep())
-		end
-	elseif Class.isClass(obj) then
-		Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
-	end
+	self.nextObject = obj
+	self.nextActionID = id
+	self.nextActionScope = scope
+	self.lastPokeTime = love.timer.getTime()
 end
 
 function LocalPlayer:takeItem(i, j, layer, ref)
@@ -430,12 +422,47 @@ function LocalPlayer:move(x, z)
 	end
 end
 
+function LocalPlayer:tryPerformPoke()
+	local movement = self:getActor():getPeep():getBehavior(MovementBehavior)
+	if not movement or movement.velocity:getLength() == 0 then
+		if self.lastPokeTime and self.lastPokeTime + LocalPlayer.POKE_GRACE_PERIOD > love.timer.getTime() then
+			local obj = self.nextObject
+			local id = self.nextActionID
+			local scope = self.nextActionScope
+
+			if obj and id and scope then
+				if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
+					local layer = Utility.Peep.getLayer(obj:getPeep())
+					if not self.instance:hasLayer(layer) then
+						Log.warn(
+							"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
+							self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
+					else
+						obj:poke(id, scope, self.actor:getPeep())
+					end
+				elseif Class.isClass(obj) then
+					Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
+				end
+
+				self.nextObject = nil
+				self.nextActionID = nil
+				self.nextActionScope = nil
+				self.lastPokeTime = nil
+			end
+		end
+	end
+end
+
 function LocalPlayer:tick()
 	for i = #self.messages, 1, -1 do
 		if love.timer.getTime() > self.messages[i].expires then
 			table.remove(self.messages, i)
 			self.messages.received = self.messages.received + 1
 		end
+	end
+
+	if self:isReady() then
+		self:tryPerformPoke()
 	end
 end
 

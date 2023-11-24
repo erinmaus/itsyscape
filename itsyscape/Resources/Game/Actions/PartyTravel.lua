@@ -30,7 +30,7 @@ function PartyTravel:perform(state, player, target)
 	   self:canTransfer(state, PartyTravel.FLAGS)
 	then
 		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
+		local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = true })
 
 		if walk then
 			local perform = CallbackCommand(Action.perform, self, state, player)

@@ -33,16 +33,16 @@ function PartyQuestionController:new(peep, director, raid, anchor, map)
 	local party
 	do
 		local partyBehavior = peep:getBehavior(PartyBehavior)
-		if partyBehavior and partyBehavior.id then
-			party = director:getGameInstance():getPartyByID(partyBehavior.id)
+		if partyBehavior and partyBehavior.partyID then
+			party = director:getGameInstance():getPartyByID(partyBehavior.partyID)
 		end
 	end
 
 	local player
 	do
 		local playerBehavior = peep:getBehavior(PlayerBehavior)
-		if playerBehavior and playerBehavior.id then
-			player = director:getGameInstance():getPlayerByID(playerBehavior.id)
+		if playerBehavior and playerBehavior.playerID then
+			player = director:getGameInstance():getPlayerByID(playerBehavior.playerID)
 		end
 	end
 
@@ -97,7 +97,7 @@ end
 
 function PartyQuestionController:rejoin()
 	local party = self:getPeep():getBehavior(PartyBehavior)
-	party = party and party.id and self:getDirector():getGameInstance():getPartyByID(party.id)
+	party = party and party.partyID and self:getDirector():getGameInstance():getPartyByID(party.partyID)
 	if party and party:getIsStarted() then
 		party:rejoin(Utility.Peep.getPlayerModel(self:getPeep()), self.map, self.anchor)
 	end
@@ -116,7 +116,7 @@ end
 
 function PartyQuestionController:leave()
 	local party = self:getPeep():getBehavior(PartyBehavior)
-	party = party and party.id and self:getDirector():getGameInstance():getPartyByID(party.id)
+	party = party and party.partyID and self:getDirector():getGameInstance():getPartyByID(party.partyID)
 
 	if party then
 		party:leave(Utility.Peep.getPlayerModel(self:getPeep()))

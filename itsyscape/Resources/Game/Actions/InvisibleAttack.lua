@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Powers/Bash/Power.lua
+-- Resources/Game/Actions/InvisibleAttack.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,15 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local CombatPower = require "ItsyScape.Game.CombatPower"
-local Utility = require "ItsyScape.Game.Utility"
+local Action = require "ItsyScape.Peep.Action"
 
-local Bash = Class(CombatPower)
+local InvisibleAttack = Class(Action)
+InvisibleAttack.SCOPES = {}
 
-function Bash:activate(activator, target)
-	CombatPower.activate(self, activator, target)
-
-	self:setXWeaponID("Power_Bash")
+function InvisibleAttack:perform(state, player, target)
+	return false
 end
 
-return Bash
+return InvisibleAttack

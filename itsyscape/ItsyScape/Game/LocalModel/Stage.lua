@@ -849,7 +849,7 @@ function LocalStage:movePeep(peep, path, anchor)
 	end
 
 	if peep:hasBehavior(PlayerBehavior) then
-		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).playerID)
 		player:saveLocation()
 
 		local previousInstance = self:getPeepInstance(peep)
@@ -959,7 +959,7 @@ function LocalStage:movePeep(peep, path, anchor)
 	end
 
 	if peep:getBehavior(PlayerBehavior) then
-		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).id)
+		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).playerID)
 		if player then
 			local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(oldLayerName)
 
@@ -1333,7 +1333,7 @@ function LocalStage:collectItems(instance)
 
 					Log.engine(
 						"Transferring item '%s' (count = %d) to bank of player '%s' (%d).",
-						item:getID(), item:getCount(), owner:getName(), owner:getBehavior(PlayerBehavior).id)
+						item:getID(), item:getCount(), owner:getName(), owner:getBehavior(PlayerBehavior).playerID)
 				end
 			end
 

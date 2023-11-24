@@ -20,7 +20,7 @@ local PlayerBehavior = Behavior("Player")
 function PlayerBehavior:new(x, y, z)
 	Behavior.Type.new(self)
 
-	self.id = false
+	self.playerID = false
 end
 
 return PlayerBehavior

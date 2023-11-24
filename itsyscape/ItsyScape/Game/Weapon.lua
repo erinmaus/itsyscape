@@ -114,7 +114,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	end
 
 	self.bonusType = bonusType
-	self.level = level
+	self.level = level or 1
 
 	if target and target:hasBehavior(PlayerBehavior) then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
@@ -486,8 +486,22 @@ function Weapon:getAttackRange(peep)
 end
 
 function Weapon:onAttackHit(peep, target)
-	local damage = self:rollDamage(peep, Weapon.PURPOSE_KILL, target):roll()
+	local roll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
+	do
+		if roll:getSelf() then
+			for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:dealDamage(roll)
+			end
+		end
 
+		if roll:getTarget() then
+			for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:receiveDamage(roll)
+			end
+		end
+	end
+
+	local damage = roll:roll()
 	local attack = AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
@@ -501,13 +515,19 @@ function Weapon:onAttackHit(peep, target)
 			hitPoints = -damage
 		})
 	else
+
 		target:poke('receiveAttack', attack, peep)
 		peep:poke('initiateAttack', attack, target)
 	end
 
+	self:dealtDamage(peep, target, attack)
 	self:applyCooldown(peep, target)
 
 	return attack
+end
+
+function Weapon:dealtDamage(peep, target, attack)
+	-- Nothing.
 end
 
 function Weapon:onAttackMiss(peep, target)

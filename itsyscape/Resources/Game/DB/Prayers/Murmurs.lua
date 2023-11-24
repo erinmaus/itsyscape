@@ -186,9 +186,25 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Increases attack speed by 10 to 20%, based on your Faith level.",
+	Value = "Increases attack speed and movement speed by 10 to 20%, based on your Faith level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "BastielsGaze"
+}
+
+ItsyScape.Resource.Effect "BastielsGazeSpeed" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bastiel's Gaze (speed)",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsGazeSpeed"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Increases movement speed by 10 to 20%, based on your Faith level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "BastielsGazeSpeed"
 }
 
 ItsyScape.Meta.Prayer {

@@ -312,7 +312,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Deflect 50% of all damage received back on the attacker for 15 - 30 seconds, based on defense level.",
+	Value = "Deflect 50% of all damage received back on the attacker for 20 - 30 seconds, based on defense level. Immediately is lost if shield is dequipped.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Deflect"
 }
@@ -358,7 +358,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Every attempted hit against you increases your minimum and maximum damage by 10%, up to 100%, as long as you keep your shield equipped. If the shield is removed, fades after 10 - 20 seconds, based on defense level.",
+	Value = "Every successful hit against you increases your minimum and maximum damage from 5% to 10% depending of defense level up to 100%, If no damaging hits are received in 10 - 20 seconds (based on defense level), then the effect is lost.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Fury"
 }
@@ -370,7 +370,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Channel your fury, increasing your minimum and maximum damage after every hit, successful or not.",
+	Value = "Channel your fury, increasing your minimum and maximum damage after every damaging hit.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Fury"
 }

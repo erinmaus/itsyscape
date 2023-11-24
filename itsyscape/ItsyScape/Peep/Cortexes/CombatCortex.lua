@@ -241,6 +241,13 @@ function CombatCortex:update(delta)
 			end
 		end
 
+		do
+			local cooldown = peep:getBehavior(AttackCooldownBehavior)
+			if cooldown then
+				cooldown.cooldown = math.max((cooldown.cooldown or 0) - delta, 0)
+			end
+		end
+
 		if target then
 			local targetPosition = target:getBehavior(PositionBehavior)
 			if targetPosition then
@@ -461,8 +468,7 @@ function CombatCortex:update(delta)
 						do
 							local cooldown = peep:getBehavior(AttackCooldownBehavior)
 							if cooldown then
-								local cooldownFinishTicks = cooldown.cooldown + cooldown.ticks
-								canAttack = cooldownFinishTicks < game:getCurrentTime()
+								canAttack = (cooldown.cooldown or 0) <= 0
 							else
 								canAttack = true
 							end

@@ -519,7 +519,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Surround your foe in goo, reducing their speed by up to 25% for 60 seconds.",
+	Value = "Surround your foe in goo, reducing their speed by up to 50% for 60 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Spell "SummonGoo"
 }
@@ -564,7 +564,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Slows your movement speed from 5% to 25% for 60 seconds.",
+	Value = "Slows your movement speed from 10% to 50% for 60 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "SummonGoo"
 }

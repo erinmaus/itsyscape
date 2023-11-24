@@ -144,7 +144,7 @@ function Party:new(id, game, leader)
 
 	do
 		local _, party = leader:getActor():getPeep():addBehavior(PartyBehavior)
-		party.id = self:getID()
+		party.partyID = self:getID()
 	end
 end
 
@@ -215,13 +215,13 @@ function Party:join(player)
 		local party = player:getActor():getPeep():getBehavior(PartyBehavior)
 		Log.info(
 			"Player '%s' (%d) is already in party %d.",
-			player:getActor():getName(), player:getID(), party.id or -1)
+			player:getActor():getName(), player:getID(), party.partyID or -1)
 	else
 		table.insert(self.players, player)
 		self.playersByID[player:getID()] = player
 
 		local _, party = player:getActor():getPeep():addBehavior(PartyBehavior)
-		party.id = self:getID()
+		party.partyID = self:getID()
 
 		Log.info(
 			"Added player '%s' (%d) to party %d.",
@@ -247,10 +247,10 @@ function Party:leave(player)
 	end
 
 	local party = player:getActor():getPeep():getBehavior(PartyBehavior)
-	if party and party.id ~= self:getID() and party.id then
+	if party and party.partyID ~= self:getID() and party.partyID then
 		Log.warn(
 			"Player '%s' (%d) has switched parties incorrectly; they are in party %d, but are trying to leave party %d.",
-			player:getActor():getName(), player:getID(), party.id, self:getID())
+			player:getActor():getName(), player:getID(), party.partyID, self:getID())
 		return
 	end
 

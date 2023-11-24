@@ -30,7 +30,7 @@ end
 function Controller:getPlayer()
 	local player = self.peep and self.peep:getBehavior(PlayerBehavior)
 	if player then
-		return self.director:getGameInstance():getPlayerByID(player.id)
+		return self.director:getGameInstance():getPlayerByID(player.playerID)
 	end
 
 	return nil
