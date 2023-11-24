@@ -366,9 +366,15 @@ function ActorView:_doApplySkin(slotNodes)
 				slot.instance = instance
 				slot.sceneNode = ModelSceneNode()
 
-				local model = resourceManager:loadCacheRef(slot.instance:getModel())
-				model:getResource():bindSkeleton(self.body:getSkeleton())
-				slot.sceneNode:setModel(model)
+				if slot.instance:getModel() then
+					local model = resourceManager:loadCacheRef(slot.instance:getModel())
+					model:getResource():bindSkeleton(self.body:getSkeleton())
+					slot.sceneNode:setModel(model)
+
+					if coroutine.running() then
+						coroutine.yield()
+					end
+				end
 
 				local textureCacheRef = slot.instance:getTexture()
 				if textureCacheRef then

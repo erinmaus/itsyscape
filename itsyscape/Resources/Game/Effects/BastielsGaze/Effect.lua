@@ -24,12 +24,24 @@ function BastielsGaze:new()
 	PrayerCombatEffect.new(self)
 end
 
+function BastielsGaze:enchant(peep)
+	PrayerCombatEffect.enchant(self, peep)
+
+	local gameDB = peep:getDirector():getGameDB()
+	Utility.Peep.toggleEffect(peep, "BastielsGazeSpeed", true)
+end
+
+function BastielsGaze:sizzle()
+	Utility.Peep.toggleEffect(self:getPeep(), "BastielsGazeSpeed", false)
+	PrayerCombatEffect.sizzle(self)
+end
+
 function BastielsGaze:getDescription()
 	return string.format("%d%%", self:getBoost() * 100)
 end
 
 function BastielsGaze:getBuffType()
-	return Effect.BUFF_TYPE_POSITIVE
+	return Effect.BUFF_TYPE_NONE
 end
 
 function BastielsGaze:applyToSelfWeaponCooldown(peep, cooldown)
