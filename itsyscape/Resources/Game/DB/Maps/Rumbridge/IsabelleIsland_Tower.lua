@@ -103,43 +103,43 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(100),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(20),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
@@ -156,11 +156,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(10),
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(10),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(10),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(10),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(15),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(15),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(15),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(15),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10),
@@ -232,10 +232,10 @@ do
 	}
 
 	ItsyScape.Meta.DropTableEntry {
-		Item = ItsyScape.Resource.Item "BronzeArrow",
-		Weight = 100,
-		Count = 100,
-		Range = 50,
+		Item = ItsyScape.Resource.Item "Dynamite",
+		Weight = 150,
+		Count = 20,
+		Range = 5,
 		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"
 	}
 
@@ -326,7 +326,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_Orlando" {
-		-- Nothing
+		ItsyScape.Action.InvisibleAttack()
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -364,19 +364,8 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 
-	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(20),
-		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
-	}
-
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(20, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20, 1),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(20, 1),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(20, 1),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"

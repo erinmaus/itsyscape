@@ -20,7 +20,7 @@ local PartyBehavior = Behavior("Party")
 function PartyBehavior:new(id)
 	Behavior.Type.new(self)
 
-	self.id = id or false
+	self.partyID = id or false
 end
 
 return PartyBehavior

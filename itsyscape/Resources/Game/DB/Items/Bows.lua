@@ -54,7 +54,7 @@ local LOGS = {
 
 local ITEMS = {
 	["Boomerang"] = {
-		tier = 1,
+		tier = 0,
 		niceName = "%s boomerang",
 		isBoomerang = true
 	},

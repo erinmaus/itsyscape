@@ -59,7 +59,12 @@ function ModelSkin:loadFromFile(filename)
 	local chunk = assert(loadstring(file))
 	local result = setfenv(chunk, {})()
 
-	self.model = CacheRef("ItsyScape.Graphics.ModelResource", result.model)
+	if result.model then
+		self.model = CacheRef("ItsyScape.Graphics.ModelResource", result.model)
+	else
+		self.model = false
+	end
+
 	if result.texture then
 		self.texture = CacheRef("ItsyScape.Graphics.TextureResource", result.texture)
 	else

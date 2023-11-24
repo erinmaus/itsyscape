@@ -12,7 +12,7 @@ if result == YES then
 	local stage = _TARGET:getDirector():getGameInstance():getStage()
 	stage:movePeep(
 		_TARGET,
-		"Minigame_ChickenPolitics",
+		"@Minigame_ChickenPolitics",
 		"Anchor_Spawn")
 else
 	message "Cluck."

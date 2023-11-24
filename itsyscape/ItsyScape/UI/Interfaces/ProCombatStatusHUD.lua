@@ -44,9 +44,11 @@ ProCombatStatusHUD.BUTTON_SIZE = 48
 ProCombatStatusHUD.NUM_BUTTONS_PER_ROW = 4
 ProCombatStatusHUD.BUTTON_PADDING = 8
 ProCombatStatusHUD.THINGIES_WIDTH = (ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.BUTTON_PADDING) * ProCombatStatusHUD.NUM_BUTTONS_PER_ROW + ProCombatStatusHUD.BUTTON_PADDING
-ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 1)
+ProCombatStatusHUD.SPECIAL_COLOR = Color.fromHexString("ffcc00", 0.75)
+ProCombatStatusHUD.TARGET_COLOR = Color.fromHexString("c83737", 0.75)
 ProCombatStatusHUD.ACTOR_PADDING = 32
 ProCombatStatusHUD.ACTOR_ANTIJITTER_EPSILON = 0.25
+ProCombatStatusHUD.MAX_TARGETS = 6
 
 ProCombatStatusHUD.SECTION_TITLE_STYLE = {
 	inactive = Color(0, 0, 0, 0),
@@ -169,45 +171,6 @@ function ProCombatStatusHUD.Target:getIsDead()
 	return self.isDead
 end
 
-function ProCombatStatusHUD.Target:drawTarget(target)
-	local x, y = self:getPosition()
-
-
-	itsyrealm.graphics.translate(-x, -y)
-	if target.x < x then
-		local direction = (target * Vector.PLANE_XY) - Vector(x, y, 0)
-		local length = direction:getLength()
-		direction = direction / length
-		itsyrealm.graphics.rectangle(
-			'fill',
-			x, y,
-			ProCombatStatusHUD.Target.WIDTH,
-			ProCombatStatusHUD.Target.HEIGHT)
-		itsyrealm.graphics.polygon(
-			'fill',
-			x, y,
-			x + direction.x * length, y + direction.y * length,
-			x + direction.x * length, y + ProCombatStatusHUD.Target.HEIGHT + direction.y * length,
-			x, y + ProCombatStatusHUD.Target.HEIGHT)
-	else
-		local direction = (target * Vector.PLANE_XY) - Vector(x + ProCombatStatusHUD.Target.WIDTH, y, 0)
-		local length = direction:getLength()
-		direction = direction / length
-		itsyrealm.graphics.rectangle(
-			'fill',
-			x, y,
-			ProCombatStatusHUD.Target.WIDTH,
-			ProCombatStatusHUD.Target.HEIGHT)
-		itsyrealm.graphics.polygon(
-			'fill',
-			x + ProCombatStatusHUD.Target.WIDTH, y,
-			x + ProCombatStatusHUD.Target.WIDTH + direction.x * length, y + direction.y * length,
-			x + ProCombatStatusHUD.Target.WIDTH + direction.x * length, y + ProCombatStatusHUD.Target.HEIGHT + direction.y * length,
-			x + ProCombatStatusHUD.Target.WIDTH, y + ProCombatStatusHUD.Target.HEIGHT)
-	end
-	itsyrealm.graphics.translate(x, y)
-end
-
 function ProCombatStatusHUD.Target:getActorState(state)
 	for i = 1, #state.combatants do
 		if state.combatants[i].actorID == self.actorID then
@@ -218,30 +181,11 @@ function ProCombatStatusHUD.Target:getActorState(state)
 	return nil
 end
 
-function ProCombatStatusHUD.Target:draw(resources, state)
-	local actorState = self:getActorState(state)
-
-	self.isDead = actorState == nil
-	if self.isDead then
-		return
-	end
-
-	local actorPosition = self.hud:getActorPosition(self.actorID)
-	if actorPosition.z < 0 or actorPosition.z > 1 then
-		return
-	end
-
-	love.graphics.setColor(0, 0, 0, 0.5)
-	itsyrealm.graphics.translate(1, 1)
-	self:drawTarget(actorPosition)
-
-	love.graphics.setColor(ProCombatStatusHUD.SPECIAL_COLOR:get())
-	itsyrealm.graphics.translate(-1, -1)
-	self:drawTarget(actorPosition)
-end
-
 function ProCombatStatusHUD.Target:update(...)
 	Drawable.update(self, ...)
+
+	local actorState = self:getActorState(self.hud:getState())
+	self.isDead = actorState == nil
 
 	local width, height = self.effectsPanel:getSize()
 	self.effectsPanel:setPosition(
@@ -288,17 +232,17 @@ function ProCombatStatusHUD.Target:updateToolTip()
 
 	local toolTip = {
 		ToolTip.Header("Accuracy"),
-		ToolTip.Text(string.format("Level: %d", actorState.dps.accuracy.level)),
-		ToolTip.Text(string.format("Equipment Bonus: %d", actorState.dps.accuracy.stat)),
-		ToolTip.Text(string.format("Roll: %d (Atk) vs %d (Def)", actorState.dps.accuracy.attackRoll, actorState.dps.accuracy.defenseRoll, { color = actorState.dps.accuracy.attackRoll > actorState.dps.accuracy.defenseRoll and Color(0, 1, 0, 1) or Color(1, 0, 0, 1), textShadow = true })),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.accuracy.level or 1)),
+		ToolTip.Text(string.format("Equipment Bonus: %d", actorState.dps.accuracy.stat or 0)),
+		ToolTip.Text(string.format("Roll: %d (Atk) vs %d (Def)", actorState.dps.accuracy.attackRoll or 0, actorState.dps.accuracy.defenseRoll or 0, { color = (actorState.dps.accuracy.attackRoll or 0) > (actorState.dps.accuracy.defenseRoll or 0) and Color(0, 1, 0, 1) or Color(1, 0, 0, 1), textShadow = true })),
 		ToolTip.Header("Damage"),
-		ToolTip.Text(string.format("Level: %d", actorState.dps.damage.level)),
-		ToolTip.Text(string.format("Strength Bonus: %d", actorState.dps.damage.stat)),
-		ToolTip.Text(string.format("Damage Reduction: %.2f%%", (1 - actorState.dps.damage.damageMultiplier) * 100)),
-		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
-		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min, actorState.dps.damage.max)),
+		ToolTip.Text(string.format("Level: %d", actorState.dps.damage.level or 1)),
+		ToolTip.Text(string.format("Strength Bonus: %d", actorState.dps.damage.stat or 0)),
+		ToolTip.Text(string.format("Damage Reduction: %.2f%%", (1 - (actorState.dps.damage.damageMultiplier or 100)) * 100)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min or 1, actorState.dps.damage.max or 1)),
+		ToolTip.Text(string.format("Damage: %d (min) to %d (max)", actorState.dps.damage.min or 1, actorState.dps.damage.max or 1)),
 		ToolTip.Header("Equipment"),
-		ToolTip.Text(string.format("Weapon: %s", actorState.dps.weapon.id))
+		ToolTip.Text(string.format("Weapon: %s", actorState.dps.weapon.id or "unknown"))
 	}
 
 	for _, skill in ipairs(actorState.dps.skills) do
@@ -865,6 +809,11 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 		return
 	end
 
+	local thingiesParent = Panel()
+	thingiesParent:setStyle(PanelStyle({
+		color = { 0.5, 0.5, 0.5, 0.5 }
+	}, self:getView():getResources()))
+
 	local thingies = ProCombatStatusHUD.ThingiesLayout()
 	thingies:setUniformSize(true, ProCombatStatusHUD.BUTTON_SIZE, ProCombatStatusHUD.BUTTON_SIZE)
 	thingies:setPadding(ProCombatStatusHUD.BUTTON_PADDING, ProCombatStatusHUD.BUTTON_PADDING)
@@ -879,20 +828,21 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 	local targetWidth, targetHeight = target:getSize()
 	local width, height = thingies:getSize()
 
-	thingies:setPosition(
+	thingiesParent:setPosition(
 		targetX - (width / 2 - targetWidth / 2),
 		targetY - height - ProCombatStatusHUD.BUTTON_PADDING)
+	thingiesParent:setSize(width, height + ProCombatStatusHUD.BUTTON_PADDING)
+	thingiesParent:setZDepth(2000)
+	thingiesParent:addChild(thingies)
 
-	thingies:setZDepth(2000)
+	self:addChild(thingiesParent)
 
-	self:addChild(thingies)
-
-	self.openThingieHandles[type] = thingies
+	self.openThingieHandles[type] = thingiesParent
 	self.openThingies[type] = true
 
 	self:saveConfig()
 
-	return thingies
+	return thingiesParent
 end
 
 function ProCombatStatusHUD:registerThingies(type, openFunc)
@@ -1559,214 +1509,89 @@ function ProCombatStatusHUD:getActorPosition(actorID)
 	return actorPosition
 end
 
-function ProCombatStatusHUD:updateTargetPositions(delta)
-	local playerActorID
+function ProCombatStatusHUD:getSortedTargets()
+	local playerActorID, targetActorID
 	do
 		local state = self:getState()
 		if state.player then
 			playerActorID = state.player.actorID
-		else
-			playerActorID = 0
+			targetActorID = state.player.targetID
 		end
 	end
 
-	local playerPosition = self:getActorPosition(playerActorID)
-
-	local positions = {}
-
-	for actorID, targetWidget in pairs(self.targetWidgets) do
-		local actorPosition = positions[actorID] or Vector(targetWidget:getPosition())
-		local currentActorPosition = self:getActorPosition(actorID)		
-
-		if currentActorPosition.x < playerPosition.x and actorID ~= playerActorID then
-			currentActorPosition.x = currentActorPosition.x - ProCombatStatusHUD.TARGET_OFFSET_X - ProCombatStatusHUD.Target.PSEUDO_WIDTH
-			currentActorPosition.y = currentActorPosition.y - ProCombatStatusHUD.TARGET_OFFSET_Y
-		else
-			currentActorPosition.x = currentActorPosition.x + ProCombatStatusHUD.TARGET_OFFSET_X
-			currentActorPosition.y = currentActorPosition.y - ProCombatStatusHUD.TARGET_OFFSET_Y
-		end
-
-		positions[actorID] = actorPosition:lerp(currentActorPosition, 1 / delta)
-	end
-
-	local isCollision
-	local iteration = ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS
-	repeat
-		isCollision = false
-
+	local sortedWidgets = {}
+	do
 		for actorID, targetWidget in pairs(self.targetWidgets) do
-			local actorPosition = positions[actorID] or Vector(targetWidget:getPosition())
-			local targetWidgetWidth, targetWidgetHeight = ProCombatStatusHUD.Target.PSEUDO_WIDTH, ProCombatStatusHUD.Target.PSEUDO_HEIGHT
-
-			for otherActorID, otherTargetWidget in pairs(self.targetWidgets) do
-				local otherActorPosition = positions[otherActorID] or Vector(otherTargetWidget:getPosition())
-
-				if otherActorID ~= actorID then
-					local otherTargetWidgetX, otherTargetWidgetY = otherActorPosition.x, otherActorPosition.y
-					local otherTargetWidgetWidth, otherTargetWidgetHeight = ProCombatStatusHUD.Target.PSEUDO_WIDTH, ProCombatStatusHUD.Target.PSEUDO_HEIGHT
-					if actorPosition.x < otherTargetWidgetX + otherTargetWidgetWidth and
-					   actorPosition.x + targetWidgetWidth > otherTargetWidgetX and
-					   actorPosition.y < otherTargetWidgetY + otherTargetWidgetHeight and
-					   actorPosition.y + otherTargetWidgetHeight > otherTargetWidgetY
-					then
-						isCollision = true
-
-						local targetWidgetCenter = Vector(
-							actorPosition.x + targetWidgetWidth / 2,
-							actorPosition.y + targetWidgetHeight / 2,
-							0)
-						local otherTargetWidgetCenter = Vector(
-							otherTargetWidgetX + otherTargetWidgetWidth / 2,
-							otherTargetWidgetY + otherTargetWidgetHeight / 2,
-							0)
-
-						local centerDifference = otherTargetWidgetCenter - targetWidgetCenter
-						local distance = centerDifference:getLength()
-						local normal = centerDifference:getNormal()
-
-						actorPosition = actorPosition - distance / 2 * normal
-						otherActorPosition = otherActorPosition + distance / 2 * normal
-					end
-				end
-
-				local currentOtherActorPosition = self:getActorPosition(otherActorID) * Vector.PLANE_XY
-				if currentOtherActorPosition.x > actorPosition.x and
-				   currentOtherActorPosition.x < actorPosition.x + targetWidgetWidth and
-				   currentOtherActorPosition.y > actorPosition.y and
-				   currentOtherActorPosition.y < actorPosition.y + targetWidgetHeight
-				then
-					isCollision = true
-
-					local targetWidgetCenter = Vector(
-						actorPosition.x + targetWidgetWidth / 2,
-						actorPosition.y + targetWidgetHeight / 2,
-						0)
-
-					local centerDifference = currentOtherActorPosition - targetWidgetCenter
-					local distance = centerDifference:getLength()
-					local normal = centerDifference:getNormal()
-
-					actorPosition = actorPosition - distance * normal
-				end
-
-				positions[otherActorID] = otherActorPosition
-			end
-
-			positions[actorID] = actorPosition
+			table.insert(sortedWidgets, targetWidget)
 		end
 
-		iteration = iteration - 1
-	until not isCollision or iteration <= 0
-
-	for actorID, targetWidget in pairs(self.targetWidgets) do
-		local actorPosition = positions[actorID]
-		if actorPosition then
-			local currentPosition = Vector(targetWidget:getPosition())
-			local updatedPosition = currentPosition:lerp(actorPosition, delta)
-
-			local distance = (currentPosition - updatedPosition):getLength()
-
-			if distance > ProCombatStatusHUD.ACTOR_ANTIJITTER_EPSILON then
-				targetWidget:setPosition(updatedPosition:get())
+		table.sort(sortedWidgets, function(a, b)
+			if a.actorID == playerActorID then
+				return true
+			elseif b.actorID == playerActorID then
+				return false
+			else
+				if a.actorID == targetActorID then
+					return true
+				elseif b.actorID == targetActorID then
+					return false
+				else
+					return a.actorID < b.actorID
+				end
 			end
-		end
+		end)
+	end
+
+	return sortedWidgets
+end
+
+function ProCombatStatusHUD:updateTargetPositions(delta)
+	local sortedWidgets = self:getSortedTargets()
+
+	for i = 1, #sortedWidgets do
+		self:positionTarget(sortedWidgets[i], sortedWidgets, delta)
 	end
 end
 
-function ProCombatStatusHUD:positionTarget(targetWidget, actorID)
-	local playerActorID
-	do
-		local state = self:getState()
-		if state.player then
-			playerActorID = state.player.actorID
-		else
-			playerActorID = 0
+function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
+	sortedWidgets = sortedWidgets or self:getSortedTargets()
+	delta = delta or 1
+
+	local index = 1
+	for i = 1, #sortedWidgets do
+		if sortedWidgets[i].actorID == targetWidget.actorID then
+			index = i
+			break
 		end
 	end
 
-	local actorPosition = self:getActorPosition(actorID)
-	local playerPosition = self:getActorPosition(playerActorID)
+	local width, height = love.graphics.getScaledMode()
+	local radius = ProCombatStatusHUD.MAX_RADIUS + math.max(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.HEIGHT) / 3
 
-	if actorPosition.x < playerPosition.x and actorID ~= playerActorID then
-		actorPosition.x = actorPosition.x - ProCombatStatusHUD.TARGET_OFFSET_X - ProCombatStatusHUD.Target.PSEUDO_WIDTH
-		actorPosition.y = actorPosition.y - ProCombatStatusHUD.TARGET_OFFSET_Y
-	else
-		actorPosition.x = actorPosition.x + ProCombatStatusHUD.TARGET_OFFSET_X
-		actorPosition.y = actorPosition.y - ProCombatStatusHUD.TARGET_OFFSET_Y
+	local increment = math.pi * 2 / ProCombatStatusHUD.MAX_TARGETS
+	local angle = increment * (index - 1) - math.pi / 4
+
+	local halfSize = Vector(width, height) * 0.5
+
+	local x = math.cos(angle) * radius
+	local y = math.sin(angle) * radius
+
+	local currentPosition = Vector(x, y) + halfSize
+	if x < 0 then
+		currentPosition.x = currentPosition.x - ProCombatStatusHUD.Target.WIDTH
+	end
+	if y < 0 then
+		currentPosition.y = currentPosition.y - ProCombatStatusHUD.Target.HEIGHT
 	end
 
-	local screenWidth, screenHeight = love.graphics.getScaledMode()
-	local targetWidgetWidth, targetWidgetHeight = ProCombatStatusHUD.Target.PSEUDO_WIDTH, ProCombatStatusHUD.Target.PSEUDO_HEIGHT
-
-	local isCollision
-	local fudge = 1
-	local iterations = ProCombatStatusHUD.MAX_POSITIONING_ITERATIONS
-	repeat
-		isCollision = false
-
-		for otherActorID, otherTargetWidget in pairs(self.targetWidgets) do
-			if otherTargetWidget ~= targetWidget then
-				local otherTargetWidgetX, otherTargetWidgetY = otherTargetWidget:getPosition()
-				local otherTargetWidgetWidth, otherTargetWidgetHeight = ProCombatStatusHUD.Target.PSEUDO_WIDTH, ProCombatStatusHUD.Target.PSEUDO_HEIGHT
-				if actorPosition.x < otherTargetWidgetX + otherTargetWidgetWidth and
-				   actorPosition.x + targetWidgetWidth > otherTargetWidgetX and
-				   actorPosition.y < otherTargetWidgetY + otherTargetWidgetHeight and
-				   actorPosition.y + otherTargetWidgetHeight > otherTargetWidgetY
-				then
-					isCollision = true
-				end
-
-				local otherActorPosition = self:getActorPosition(otherActorID)
-				if otherActorPosition.x > actorPosition.x and
-				   otherActorPosition.x < actorPosition.x + targetWidgetWidth and
-				   otherActorPosition.y > actorPosition.y and
-				   otherActorPosition.y < actorPosition.y + targetWidgetHeight
-				then
-					isCollision = true
-					otherTargetWidgetX = otherActorPosition.x
-					otherTargetWidgetY = otherActorPosition.y
-					otherTargetWidgetWidth = ProCombatStatusHUD.ACTOR_PADDING
-					otherTargetWidgetHeight = ProCombatStatusHUD.ACTOR_PADDING
-				end
-
-				if isCollision then
-					local overlapX = otherTargetWidgetWidth - (actorPosition.x - otherTargetWidgetX)
-					local overlapY = otherTargetWidgetHeight - (actorPosition.y - otherTargetWidgetY)
-
-					if math.abs(overlapX) > math.abs(overlapY) then
-						actorPosition.x = actorPosition.x - overlapX * fudge
-					else
-						actorPosition.y = actorPosition.y - overlapY * fudge
-					end
-
-					fudge = fudge * 1.1
-				end
-			end
-		end
-
-		iterations = iterations - 1
-	until not isCollision or iterations <= 0
-
-	if actorPosition.x < ProCombatStatusHUD.SCREEN_PADDING then
-		actorPosition.x = ProCombatStatusHUD.SCREEN_PADDING
-	elseif actorPosition.x + targetWidgetWidth > screenWidth then
-		actorPosition.x = screenWidth - targetWidgetWidth - ProCombatStatusHUD.SCREEN_PADDING
-	end
-
-	if actorPosition.y < ProCombatStatusHUD.SCREEN_PADDING then
-		actorPosition.y = ProCombatStatusHUD.SCREEN_PADDING
-	elseif actorPosition.y + targetWidgetHeight > screenHeight then
-		actorPosition.y = screenHeight - targetWidgetHeight - ProCombatStatusHUD.SCREEN_PADDING
-	end
-
-	targetWidget:setPosition(actorPosition.x, actorPosition.y)
+	targetWidget:setPosition(currentPosition.x, currentPosition.y)
 end
 
 function ProCombatStatusHUD:addTarget(combatant)
 	local targetWidget = ProCombatStatusHUD.Target(self, combatant.actorID)
 	self.targetWidgets[combatant.actorID] = targetWidget
 
-	self:positionTarget(targetWidget, combatant.actorID)
+	self:positionTarget(targetWidget)
 	self:addChild(targetWidget)
 end
 
