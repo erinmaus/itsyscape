@@ -16,8 +16,8 @@ local SummonGoo = Class(MovementEffect)
 
 SummonGoo.DURATION = 60
 
-SummonGoo.INTERVAL = 0.05
-SummonGoo.MAX_DEBUFF = 0.25
+SummonGoo.INTERVAL = 0.1
+SummonGoo.MAX_DEBUFF = 0.5
 
 function SummonGoo:new()
 	MovementEffect.new(self)
