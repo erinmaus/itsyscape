@@ -29,6 +29,7 @@ Minigame.MAX_DASH_DURATION = 3
 Minigame.INIT_CHICKEN_COUNT = 3
 Minigame.DURATION_SECONDS = 60
 Minigame.WARNING_SECONDS = 10
+Minigame.DASH_GRACE_PERIOD = 0.4
 
 function Minigame:new(...)
 	Map.new(self, ...)
@@ -160,9 +161,10 @@ function Minigame:startPlayerDash()
 	local movement = player:getBehavior(MovementBehavior)
 	local direction
 	do
-		direction = movement.velocity:getNormal()
-		if direction:getLength() == 0 then
+		if movement.velocity:getLength() < 1 then
 			direction = Vector(movement.facing, 0, 0)
+		else
+			direction = movement.velocity:getNormal()
 		end
 	end
 	movement.additionalVelocity = direction * 8
@@ -179,12 +181,17 @@ function Minigame:startPlayerDash()
 			math.huge,
 			runAnimation,
 			true)
+
+		local feetSkin = CacheRef(
+			"ItsyScape.Game.Skin.ModelSkin",
+			"Resources/Game/Skins/PlayerKit1/Effects/BlazingFeet.lua")
+		actor:setSkin("minigame-chicken-dash", 0, feetSkin)
 	end
 
 	local dashDuration = love.timer.getTime() - self.prepDashStart
 
 	self.isDashing = true
-	self.dashDuration = math.max(dashDuration, Minigame.MAX_DASH_DURATION) / 2
+	self.dashDuration = math.max(self.dashDuration or 0, 0) + math.max(dashDuration, Minigame.MAX_DASH_DURATION) / 2
 	self.dashStrength = math.min(math.floor(6 ^ (dashDuration + 0.5) + 5), 20)
 	self.collisions = {}
 end
@@ -196,11 +203,12 @@ function Minigame:stopPlayerDash()
 	local actor = player:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
-		actor:playAnimation(
-			'minigame-chicken-dash',
-			false,
-			nil,
-			true)
+		actor:stopAnimation('minigame-chicken-dash')
+
+		local feetSkin = CacheRef(
+			"ItsyScape.Game.Skin.ModelSkin",
+			"Resources/Game/Skins/PlayerKit1/Effects/BlazingFeet.lua")
+		actor:unsetSkin("minigame-chicken-dash", 0, feetSkin)
 	end
 
 	local movement = player:getBehavior(MovementBehavior)
@@ -208,10 +216,11 @@ function Minigame:stopPlayerDash()
 end
 
 function Minigame:onPlayerDash(action)
-	if not self.isDashing and self.hasStarted and not self.isDone then
+	local canPrepDash = self.dashDuration < Minigame.DASH_GRACE_PERIOD
+
+	if canPrepDash and self.hasStarted and not self.isDone then
 		if self.isPreppingDashing and action == 'released' then
 			self.isPreppingDashing = false
-
 			self:startPlayerDash()
 		elseif not self.isPreppingDashing and action == 'pressed' then
 			self.isPreppingDashing = true
@@ -294,6 +303,14 @@ end
 
 function Minigame:update(director, game)
 	Map.update(self, director, game)
+
+	local player = Utility.Peep.getPlayer(self)
+	local movement = player:getBehavior(MovementBehavior)
+
+	if movement and movement.velocity:getLength() > 0 then
+		self.currentVelocity = Vector(movement.velocity:get())
+		self.lastMoveTime = love.timer.getTime()
+	end
 
 	self.nextTick = (self.nextTick or 0) - game:getDelta()
 	if self.nextTick <= 0 and self.hasStarted and not self.isDone then
