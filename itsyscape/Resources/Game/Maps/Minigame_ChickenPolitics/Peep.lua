@@ -305,8 +305,11 @@ function Minigame:update(director, game)
 	Map.update(self, director, game)
 
 	local player = Utility.Peep.getPlayer(self)
-	local movement = player:getBehavior(MovementBehavior)
+	if not player then
+		return
+	end
 
+	local movement = player:getBehavior(MovementBehavior)
 	if movement and movement.velocity:getLength() > 0 then
 		self.currentVelocity = Vector(movement.velocity:get())
 		self.lastMoveTime = love.timer.getTime()
