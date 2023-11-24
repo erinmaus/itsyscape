@@ -2360,7 +2360,7 @@ function Utility.Peep.applyEffect(peep, resource, singular, ...)
 	return true, effectInstance
 end
 
-function Utility.Peep.toggleEffect(peep, resource, ...)
+function Utility.Peep.toggleEffect(peep, resource, onOrOff, ...)
 	local gameDB = peep:getDirector():getGameDB()
 
 	local EffectType = Utility.Peep.getEffectType(resource, gameDB)
@@ -2371,9 +2371,9 @@ function Utility.Peep.toggleEffect(peep, resource, ...)
 	end
 
 	local e = peep:getEffect(EffectType)
-	if e then
+	if e and onOrOff ~= true then
 		peep:removeEffect(e)
-	else
+	elseif not e and onOrOff ~= false then
 		local effectInstance = EffectType(...)
 		effectInstance:setResource(resource)
 		peep:addEffect(effectInstance)
