@@ -200,6 +200,10 @@ function ActorView:new(actor, actorID)
 		self:playAnimation(slot, animation, priority, time or 0)
 	end
 	actor.onAnimationPlayed:register(self._onAnimationPlayed)
+	self._onAnimationStopped = function(_, slot, priority, animation, _, time)
+		self:playAnimation(slot, false, false, time or 0)
+	end
+	actor.onAnimationStopped:register(self._onAnimationStopped)
 
 	self.skins = {}
 	self.models = {}
@@ -271,6 +275,7 @@ function ActorView:release()
 	self.actor.onMove:unregister(self._onMove)
 	self.actor.onTeleport:unregister(self._onTeleport)
 	self.actor.onAnimationPlayed:unregister(self._onAnimationPlayed)
+	self.actor.onAnimationStopped:unregister(self._onAnimationStopped)
 	self.actor.onTransmogrified:unregister(self._onTransmogrified)
 	self.actor.onSkinChanged:unregister(self._onSkinChanged)
 	self.actor.onSkinRemoved:unregister(self._onSkinRemoved)
