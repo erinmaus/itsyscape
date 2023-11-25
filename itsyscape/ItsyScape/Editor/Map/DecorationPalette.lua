@@ -24,6 +24,7 @@ local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local TextInput = require "ItsyScape.UI.TextInput"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -31,6 +32,7 @@ DecorationPalette = Class(Widget)
 DecorationPalette.TILE_WIDTH = 96
 DecorationPalette.TILE_HEIGHT = 96
 DecorationPalette.PADDING = 8
+DecorationPalette.INPUT_HEIGHT = 48
 
 function DecorationPalette:new(application)
 	Widget.new(self)
@@ -51,23 +53,81 @@ function DecorationPalette:new(application)
 	panel:setSize(width, windowHeight)
 	self:addChild(panel)
 
+	self.searchInput = TextInput()
+	self.searchInput.onValueChanged:register(function(_, value)
+		self:search(value)
+	end)
+	self.searchInput.onSubmit:register(function()
+		self.searchInput:blur()
+	end)
+	self.searchInput:setSize(width - DecorationPalette.PADDING * 2, DecorationPalette.INPUT_HEIGHT)
+	self.searchInput:setPosition(DecorationPalette.PADDING, DecorationPalette.PADDING)
+	self:addChild(self.searchInput)
+
 	self.buttonsPanel = ScrollablePanel(GridLayout)
-	self.buttonsPanel:setPosition(DecorationPalette.PADDING / 2, DecorationPalette.PADDING / 2)
-	self.buttonsPanel:setSize(width - DecorationPalette.PADDING, windowHeight - DecorationPalette.PADDING)
+	self.buttonsPanel:setPosition(DecorationPalette.PADDING / 2, DecorationPalette.PADDING / 2 + DecorationPalette.PADDING + DecorationPalette.INPUT_HEIGHT)
+	self.buttonsPanel:setSize(width - DecorationPalette.PADDING, windowHeight - DecorationPalette.PADDING - DecorationPalette.INPUT_HEIGHT - DecorationPalette.PADDING * 2)
 	self:addChild(self.buttonsPanel)
 
 	self.currentGroup = false
 	self.currentGroupButton = false
 end
 
+function DecorationPalette:search(term)
+	local terms = {}
+	for match in string.gmatch(term:lower(), "([^%s]+)") do
+		table.insert(terms, match)
+	end
+
+	do
+		local gridLayout = self.buttonsPanel:getInnerPanel()
+
+		local oldButtons = {}
+		for _, button in gridLayout:iterate() do
+			table.insert(oldButtons, button)
+		end
+
+		for i = 1, #oldButtons do
+			gridLayout:removeChild(oldButtons[i])
+		end
+	end
+
+	for _, button in ipairs(self.buttons) do
+		local group = button:getData('tile-group')
+
+		local isMatch
+		if group and #terms >= 1 then
+			isMatch = true
+			for _, term in ipairs(terms) do
+				if not group:lower():find(term, 1, true) then
+					isMatch = false
+					break
+				end
+			end
+		else
+			isMatch = true
+		end
+
+		if isMatch then
+			self.buttonsPanel:addChild(button)
+		end
+	end
+
+	self.buttonsPanel:setScrollSize(self.buttonsPanel:getInnerPanel():getSize())
+	self.buttonsPanel:setScroll(0, 0)
+end
+
 function DecorationPalette:loadDecorations()
+	self.searchInput:setText("")
+
 	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
 	self.texture = TextureResource()
 	do
 		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", self.application.currentDecorationTileSet))
 	end
 
-	local buttons = {}
+	local oldButtons = self.buttons or {}
+	self.buttons = {}
 
 	for group in self.staticMesh:iterate() do
 		local button = Button()
@@ -80,6 +140,7 @@ function DecorationPalette:loadDecorations()
 		local sceneNode = DecorationSceneNode()
 		sceneNode:fromDecoration(decoration, self.staticMesh)
 		sceneNode:getMaterial():setTextures(self.texture)
+		sceneNode:getMaterial():setIsCullDisabled(true)
 		sceneNode:getTransform():setLocalTranslation(Vector(-0.5, 0, -0.5))
 		sceneNode:setParent(sceneSnippet:getRoot())
 
@@ -99,10 +160,10 @@ function DecorationPalette:loadDecorations()
 
 		button:addChild(sceneSnippet)
 
-		table.insert(buttons, button)
+		table.insert(self.buttons, button)
 	end
 
-	table.sort(buttons, function(a, b)
+	table.sort(self.buttons, function(a, b)
 		return a:getData('tile-group') < b:getData('tile-group')
 	end)
 
@@ -110,7 +171,7 @@ function DecorationPalette:loadDecorations()
 	setColorButton:setText("Set Color")
 	setColorButton.onClick:register(self.setColor, self)
 
-	table.insert(buttons, setColorButton)
+	table.insert(self.buttons, setColorButton)
 
 	local gridLayout = self.buttonsPanel:getInnerPanel()
 	gridLayout:setPosition(
@@ -125,22 +186,17 @@ function DecorationPalette:loadDecorations()
 		DecorationPalette.TILE_HEIGHT)
 	gridLayout:setWrapContents(true)
 
-
-	local oldButtons = {}
-	for _, button in gridLayout:iterate() do
-		table.insert(oldButtons, button)
-	end
-
 	for i = 1, #oldButtons do
 		gridLayout:removeChild(oldButtons[i])
 	end
 
-	for i = 1, #buttons do
-		gridLayout:addChild(buttons[i])
+	for i = 1, #self.buttons do
+		gridLayout:addChild(self.buttons[i])
 	end
 
 	self.buttonsPanel:setSize(width, windowHeight)
 	self.buttonsPanel:setScrollSize(gridLayout:getSize())
+	self.buttonsPanel:setScroll(0, 0)
 end
 
 function DecorationPalette:open(x, y, parent)
