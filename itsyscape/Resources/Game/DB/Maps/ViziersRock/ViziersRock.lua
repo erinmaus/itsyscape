@@ -85,6 +85,35 @@ ItsyScape.Meta.MapObjectSize {
 	MapObject = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
 }
 
+ItsyScape.Resource.Prop "WallLamp_ViziersRock" {
+	-- None.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "WallLamp_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Wall lamp",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WallLamp_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Surprised no bugs are flying about...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "WallLamp_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 0.5,
+	SizeY = 0.5,
+	SizeZ = 0.5,
+	OffsetY = 2,
+	MapObject = ItsyScape.Resource.Prop "WallLamp_ViziersRock"
+}
+
 ItsyScape.Resource.Prop "Banner_ViziersRock" {
 	-- Nothing
 }
