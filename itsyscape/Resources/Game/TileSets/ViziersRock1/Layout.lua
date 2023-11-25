@@ -96,5 +96,23 @@
 		height = 128,
 		name = "invisible",
 		mask = false
-	}
+	},
+
+	{
+		x = 256,
+		y = 128,
+		width = 128,
+		height = 128,
+		name = "carpet",
+		mask = false
+	},
+
+	{
+		x = 384,
+		y = 128,
+		width = 128,
+		height = 128,
+		name = "carpet_eye",
+		mask = false
+	},
 }
