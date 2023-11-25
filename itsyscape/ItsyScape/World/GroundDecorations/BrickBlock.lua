@@ -25,6 +25,7 @@ Brick.SCALE = Vector.ONE
 Brick.FEATURE = "brick"
 Brick.NUM_FEATURES = 2
 Brick.ONLY_FLAT = true
+Brick.EXCLUDE_DECALS = true
 
 function Brick:emit(tileSet, map, i, j, tileSetTile, mapTile)
 	local center = map:getTileCenter(i, j)
@@ -38,6 +39,10 @@ function Brick:emit(tileSet, map, i, j, tileSetTile, mapTile)
 	   mapTile.topLeft ~= mapTile.bottomRight) and
 	   self.ONLY_FLAT
 	then
+		return
+	end
+
+	if self.EXCLUDE_DECALS and (#mapTile.decals > 1 or next(mapTile.mask) ~= nil) then
 		return
 	end
 

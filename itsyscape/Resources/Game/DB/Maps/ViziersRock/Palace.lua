@@ -35,3 +35,32 @@ ItsyScape.Meta.MapObjectSize {
 	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "Bench_ViziersRock"
 }
+
+ItsyScape.Resource.Prop "Door_Curtain_ViziersRock" {
+	ItsyScape.Action.Open(),
+	ItsyScape.Action.Close()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Resource = ItsyScape.Resource.Prop "Door_Curtain_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Curtain",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_Curtain_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = ItsyScape.Resource.Prop "Door_Curtain_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The man behind the curtain...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Door_Curtain_ViziersRock"
+}

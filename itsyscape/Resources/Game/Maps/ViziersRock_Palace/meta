@@ -1,11 +1,11 @@
 {
 	{
-		autoMask = false,
-		tileSetID = "ViziersRock1",
 		maskID =
 		{
-			default = true,
 			building = "Building",
+			default = true,
 		},
+		tileSetID = "ViziersRock1",
+		autoMask = false,
 	},
 }
