@@ -30,7 +30,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 4.5,
+	SizeX = 3.5,
 	SizeY = 3,
 	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "Bench_ViziersRock"
