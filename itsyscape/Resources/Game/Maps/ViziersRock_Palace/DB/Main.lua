@@ -41,34 +41,34 @@ do
 	}
 end
 
-M["Light_Sun1"] = ItsyScape.Resource.MapObject.Unique()
+M["Light_Sun"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
 		PositionY = 0,
 		PositionZ = 0,
-		Name = "Light_Sun1",
+		Name = "Light_Sun",
 		Map = M._MAP,
-		Resource = M["Light_Sun1"]
+		Resource = M["Light_Sun"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
-		MapObject = M["Light_Sun1"]
+		MapObject = M["Light_Sun"]
 	}
 
 	ItsyScape.Meta.Light {
 		ColorRed = 111,
 		ColorGreen = 124,
 		ColorBlue = 145,
-		Resource = M["Light_Sun1"]
+		Resource = M["Light_Sun"]
 	}
 
 	ItsyScape.Meta.DirectionalLight {
-		DirectionX = -4,
+		DirectionX = 4,
 		DirectionY = 5,
 		DirectionZ = 4,
-		Resource = M["Light_Sun1"]
+		Resource = M["Light_Sun"]
 	}
 end
 
