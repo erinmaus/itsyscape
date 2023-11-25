@@ -84,3 +84,66 @@ ItsyScape.Meta.MapObjectSize {
 	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "StreetLamp_ViziersRock"
 }
+
+ItsyScape.Resource.Prop "Banner_ViziersRock" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
+	Resource = ItsyScape.Resource.Prop "Banner_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Vizier Rock's banner",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Banner_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Banner_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A banner representing Bastiel's omniscience. Or so the Arbitrationists believe...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Banner_ViziersRock"
+}
+
+ItsyScape.Resource.Prop "Fireplace_ViziersRock" {
+	ItsyScape.Action.Light_Prop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		}
+	},
+
+	ItsyScape.Action.Snuff()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicTorch",
+	Resource = ItsyScape.Resource.Prop "Fireplace_ViziersRock"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 3.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "Fireplace_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fireplace",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_ViziersRock"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This might not keep you as warm as you'd think.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Fireplace_ViziersRock"
+}
