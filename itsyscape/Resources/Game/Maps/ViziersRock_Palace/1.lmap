@@ -5140,6 +5140,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5151,6 +5152,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5162,6 +5164,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5173,6 +5176,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5502,6 +5506,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5535,6 +5540,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -5864,335 +5870,6 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 7, flat = 7, decals = {  },
-			mask = { [3] = 12 },
-			data =
-			{
-				["mask-key"] = "default",
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 7, flat = 7, decals = {  },
-			mask = { [4] = 12 },
-			data =
-			{
-				["mask-key"] = "default",
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 7, flat = 7, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 0, bottomLeft = 1, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 7, flat = 7, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			mask = { [3] = 12 },
-			data =
-			{
-				["mask-key"] = "default",
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 13 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 13 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 13 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 12, decals = { 11 },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			mask = { [4] = 12 },
-			data =
-			{
-				["mask-key"] = "default",
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
 				["impassable"] = true,
 			},
 		},
@@ -6227,39 +5904,7 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6404,6 +6049,373 @@
 		{
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 7, flat = 7, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 12, decals = { 11 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 7, flat = 7, decals = {  },
+			mask = { [4] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 7, flat = 7, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 0, bottomLeft = 1, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 7, flat = 7, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 12, decals = { 11 },
 			data =
 			{
@@ -6579,6 +6591,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6590,6 +6603,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6601,6 +6615,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6612,6 +6627,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6623,6 +6639,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6634,6 +6651,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -8569,6 +8587,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -8580,61 +8599,7 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -8682,17 +8647,7 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -8774,28 +8729,6 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
 				["impassable"] = true,
 			},
 		},
@@ -8808,271 +8741,7 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
 			},
 		},
 		{
@@ -9736,6 +9405,182 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
 			data =
 			{
 			},
@@ -9782,6 +9627,198 @@
 			edge = 2, flat = 5, decals = {  },
 			data =
 			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -10093,6 +10130,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -10104,52 +10187,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -10455,6 +10496,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -10466,52 +10553,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -10819,6 +10864,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
 			data =
 			{
 			},
@@ -10830,52 +10921,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -11181,6 +11230,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -11192,52 +11287,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -11552,6 +11605,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -11563,52 +11662,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -11913,6 +11970,52 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
 			data =
 			{
 			},
@@ -11924,52 +12027,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -12295,8 +12356,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -12306,8 +12369,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -12317,8 +12382,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -12328,8 +12395,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -13646,8 +13715,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -13657,8 +13728,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [2] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -13997,6 +14070,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -14008,30 +14105,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -14359,6 +14436,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
 			data =
 			{
 			},
@@ -14370,30 +14471,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -14713,6 +14794,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -14724,30 +14829,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -15067,6 +15152,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
 			data =
 			{
 			},
@@ -15078,30 +15187,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -15421,6 +15510,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -15432,30 +15545,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -15775,6 +15868,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
 			data =
 			{
 			},
@@ -15786,30 +15903,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -16131,6 +16228,30 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [3] = 12 },
+			data =
+			{
+				["mask-key"] = "default",
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12, 13 },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 5, decals = { 12 },
 			data =
 			{
 			},
@@ -16142,30 +16263,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [4] = 12 },
 			data =
 			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 5, decals = {  },
-			data =
-			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -16502,8 +16603,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{
@@ -16513,8 +16616,10 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 5, decals = {  },
+			mask = { [1] = 12 },
 			data =
 			{
+				["mask-key"] = "default",
 			},
 			flags =
 			{

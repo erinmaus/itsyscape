@@ -895,6 +895,34 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "ArmorStand_Iron"
 }
 
+ItsyScape.Resource.Prop "ArmorStand_Adamant" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Adamant"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 2,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ArmorStand_Adamant"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Adamant armor stand",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Adamant"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Wonder if anyone would notice if I just borrowed this... forever.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ArmorStand_Adamant"
+}
+
 ItsyScape.Resource.Prop "Art1" {
 	-- Nothing.
 }
