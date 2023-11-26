@@ -26,7 +26,8 @@ function CanQueuePower:update(mashina, state, executor)
 
 	local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
 	if coolDown then
-		if coolDown.powers[powerResource.id.value] then
+		local time = coolDown.powers[powerResource.id.value]
+		if time and time > love.timer.getTime() then
 			return B.Status.Failure
 		end
 	end
