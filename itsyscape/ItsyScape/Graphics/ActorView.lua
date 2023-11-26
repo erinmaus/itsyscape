@@ -460,11 +460,22 @@ function ActorView:_doApplySkin(slotNodes)
 
 	for i = 1, #slotNodes do
 		local slotNode = slotNodes[i]
+
 		if i + 1 < #slotNodes and slotNode.instance:getIsOccluded() then
 			if not slotNodes[i + 1].instance:getIsGhosty() then
 				slotNode.sceneNode:setParent(nil)
 			end
-		elseif slotNode.instance:getIsBlocking() then
+		end
+
+		if slotNode.instance:getIsOccluding() then
+			for j = i + 1, #slotNodes do
+				if not slotNodes[j].instance:getIsGhosty() then
+					slotNodes[j].sceneNode:setParent(nil)
+				end
+			end
+		end
+
+		if slotNode.instance:getIsBlocking() then
 			for j = 1, i - 1 do
 				slotNodes[j].sceneNode:setParent(nil)
 			end
