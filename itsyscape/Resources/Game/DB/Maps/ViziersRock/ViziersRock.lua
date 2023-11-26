@@ -299,3 +299,114 @@ do
 		Resource = Guard
 	}
 end
+
+do
+	local Guard = ItsyScape.Resource.Peep "Guard_ViziersRock" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Human_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.Guard",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/ViziersRockGuard/Body.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_EQUIPMENT,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/ViziersRockGuard/Gloves.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_EQUIPMENT,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/ViziersRockGuard/Boots.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_EQUIPMENT,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/ViziersRockGuard/Helmet.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_EQUIPMENT,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(75),
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronArrow",
+		Count = 10000,
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier Rock guard",
+		Language = "en-US",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "They try to keep order but aren't very good at it.",
+		Language = "en-US",
+		Resource = Guard
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/ViziersRock/Guard_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Guard
+	}
+end

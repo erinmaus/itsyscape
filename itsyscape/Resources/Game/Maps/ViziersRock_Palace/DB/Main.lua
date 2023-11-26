@@ -199,6 +199,121 @@ do
 	}
 end
 
+M["Guard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 79,
+		Name = "Guard1",
+		Map = M._MAP,
+		Resource = M["Guard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_ViziersRock",
+		MapObject = M["Guard1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronZweihander",
+		Count = 1,
+		Resource = M["Guard1"]
+	}
+end
+
+M["Guard2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 0,
+		PositionZ = 79,
+		Name = "Guard2",
+		Map = M._MAP,
+		Resource = M["Guard2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_ViziersRock",
+		MapObject = M["Guard2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronMace",
+		Count = 1,
+		Resource = M["Guard2"]
+	}
+end
+
+M["Guard3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 0,
+		PositionZ = 61,
+		Name = "Guard3",
+		Map = M._MAP,
+		Resource = M["Guard3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_ViziersRock",
+		MapObject = M["Guard3"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "PettyLongbow",
+		Count = 1,
+		Resource = M["Guard3"]
+	}
+end
+
+M["Guard4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 0,
+		PositionZ = 51,
+		Name = "Guard4",
+		Map = M._MAP,
+		Resource = M["Guard4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_ViziersRock",
+		MapObject = M["Guard4"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "PettyBow",
+		Count = 1,
+		Resource = M["Guard4"]
+	}
+end
+
+M["Guard5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 10,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Guard5",
+		Map = M._MAP,
+		Resource = M["Guard5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Guard_ViziersRock",
+		MapObject = M["Guard5"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronDagger",
+		Count = 1,
+		Resource = M["Guard5"]
+	}
+end
+
 M["Knight1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -230,5 +345,22 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Knight_ViziersRock",
 		MapObject = M["Knight2"]
+	}
+end
+
+M["Knight3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Knight3",
+		Map = M._MAP,
+		Resource = M["Knight3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Knight_ViziersRock",
+		MapObject = M["Knight3"]
 	}
 end
