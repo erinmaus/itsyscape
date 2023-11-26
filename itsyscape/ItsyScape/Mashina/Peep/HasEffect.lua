@@ -16,9 +16,11 @@ local HasBuff = B.Node("HasBuff")
 HasBuff.TARGET = B.Reference()
 HasBuff.EFFECT_TYPE = B.Reference()
 HasBuff.BUFF_TYPE = B.Reference()
+HasBuff.MIN_DURATION = B.Reference()
 
 function HasBuff:update(mashina, state, executor)
 	local target = state[self.TARGET] or mashina
+	local minDuration = state[self.MIN_DURATION] or 0
 
 	local effectType = state[self.EFFECT_TYPE]
 	if type(effectType) == 'string' then
@@ -28,7 +30,7 @@ function HasBuff:update(mashina, state, executor)
 	local buffType = state[self.BUFF_TYPE]
 	if buffType then
 		for effect in target:getEffects(effectType) do
-			if effect:getBuffType() == buffType then
+			if effect:getBuffType() == buffType and effect:getDuration() > minDuration then
 				return B.Status.Success
 			end
 		end
