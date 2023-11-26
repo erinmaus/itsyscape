@@ -156,17 +156,16 @@ local EarthquakeSequence = Mashina.Step {
 		power = "Earthquake"
 	},
 
-	Mashina.RandomCheck {
-		chance = 0.5
-	},
-
 	Mashina.Peep.TimeOut {
 		min_duration = 2,
 		max_duration = 4
 	},
 
+	Mashina.Peep.DidAttack,
+
 	Mashina.Peep.QueuePower {
-		power = "Earthquake"
+		power = "Earthquake",
+		require_no_cooldown = true
 	},
 
 	Mashina.Peep.DidAttack,
@@ -181,9 +180,7 @@ local TornadoSequence = Mashina.Step {
 		power = "Tornado"
 	},
 
-	Mashina.RandomCheck {
-		chance = 0.5
-	},
+	Mashina.Peep.DidAttack,
 
 	Mashina.Peep.TimeOut {
 		min_duration = 2,
@@ -191,7 +188,8 @@ local TornadoSequence = Mashina.Step {
 	},
 
 	Mashina.Peep.QueuePower {
-		power = "Tornado"
+		power = "Tornado",
+		require_no_cooldown = true
 	},
 
 	Mashina.Peep.DidAttack,
@@ -201,7 +199,7 @@ local TornadoSequence = Mashina.Step {
 	}
 }
 
-local DefenseMechanic = Mashina.ParallelSequence {
+local PowerMechanic = Mashina.ParallelSequence {
 	Mashina.Success {
 		Mashina.Sequence {
 			Mashina.ParallelTry {
@@ -227,23 +225,15 @@ local DefenseMechanic = Mashina.ParallelSequence {
 
 	Mashina.Success {
 		Mashina.ParallelTry {
+			Mashina.RandomTry {
+				EarthquakeSequence,
+				TornadoSequence
+			},
+
 			ParrySequence,
 			RiposteSequence,
 			MeditateSequence,
 			FreedomSequence
-		}
-	}
-}
-
-local AttackMechanic = Mashina.Step {
-	Mashina.Try {
-		Mashina.Peep.DidAttack
-	},
-
-	Mashina.Success {
-		Mashina.Try {
-			EarthquakeSequence,
-			TornadoSequence
 		}
 	}
 }
@@ -275,8 +265,7 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Success {
 			Mashina.ParallelSequence {
-				DefenseMechanic,
-				AttackMechanic
+				PowerMechanic
 			}
 		}
 	}
