@@ -248,6 +248,8 @@ function CombatCortex:update(delta)
 			end
 		end
 
+		local attacked = false
+
 		if target then
 			local targetPosition = target:getBehavior(PositionBehavior)
 			if targetPosition then
@@ -496,6 +498,8 @@ function CombatCortex:update(delta)
 										local stage = game:getStage()
 										stage:fireProjectile(projectile, peep, target)
 									end
+
+									attacked = true
 								end
 							end
 						else
@@ -504,7 +508,7 @@ function CombatCortex:update(delta)
 								power = power.power
 
 								if power:getIsInstant() then
-									self:usePower(peep, target, logic)
+									attacked = self:usePower(peep, target, logic)
 								end
 							end
 						end
@@ -530,6 +534,7 @@ function CombatCortex:update(delta)
 
 				if not power:getRequiresTarget() then
 					success = self:usePower(peep, nil, logic)
+					attacked = success
 				end
 			end
 
@@ -539,6 +544,18 @@ function CombatCortex:update(delta)
 
 				if not isWalking and not isStrafing then
 					self:resetPeep(peep)
+				end
+			end
+		end
+
+		if not attacked then
+			local power = peep:getBehavior(PendingPowerBehavior)
+			if power then
+				power = power.power
+
+				if not power:getRequiresTarget() then
+					success = self:usePower(peep, nil, logic)
+					attacked = success
 				end
 			end
 		end

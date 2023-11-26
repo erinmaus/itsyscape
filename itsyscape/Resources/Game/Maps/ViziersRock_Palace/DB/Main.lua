@@ -102,7 +102,7 @@ end
 M["Anchor_FromTown"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
+		PositionX = 32,
 		PositionY = 0,
 		PositionZ = 89,
 		Name = "Anchor_FromTown",
@@ -114,7 +114,7 @@ end
 M["Portal_ToTown"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
+		PositionX = 32,
 		PositionY = 0,
 		PositionZ = 93,
 		Name = "Portal_ToTown",
@@ -196,5 +196,39 @@ do
 	ItsyScape.Meta.PointLight {
 		Attenuation = 20,
 		Resource = M["Light_Chandlier"]
+	}
+end
+
+M["Knight1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 1,
+		PositionZ = 29,
+		Name = "Knight1",
+		Map = M._MAP,
+		Resource = M["Knight1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Knight_ViziersRock",
+		MapObject = M["Knight1"]
+	}
+end
+
+M["Knight2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 1,
+		PositionZ = 39,
+		Name = "Knight2",
+		Map = M._MAP,
+		Resource = M["Knight2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Knight_ViziersRock",
+		MapObject = M["Knight2"]
 	}
 end
