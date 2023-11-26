@@ -13,6 +13,8 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local EquipmentInventoryProvider = Class(InventoryProvider)
 EquipmentInventoryProvider.STATS = Equipment.STATS
@@ -195,12 +197,18 @@ end
 function EquipmentInventoryProvider:load(...)
 	InventoryProvider.load(self, ...)
 
+	if not (self.peep:hasBehavior(PlayerBehavior) or self.peep:hasBehavior(FollowerBehavior)) then
+		Log.engine("Peep '%s' is not a player or follower; not re-loading equipment.", self.peep:getName())
+		return
+	end
+
 	local broker = self:getBroker()
 
 	local storage = Utility.Item.getStorage(self.peep, "Equipment")
 	if storage then
 		for key, section in storage:iterateSections() do
 			local item = broker:itemFromStorage(self, section)
+			Log.info("Restoring equipment item '%s' (%d count) for peep '%s'.", item:getID(), item:getCount(), self.peep:getName())
 			self:assignKey(item)
 		end
 	end
@@ -209,11 +217,17 @@ end
 function EquipmentInventoryProvider:unload(...)
 	local broker = self:getBroker()
 
+	if not (self.peep:hasBehavior(PlayerBehavior) or self.peep:hasBehavior(FollowerBehavior)) then
+		Log.engine("Peep '%s' is not a player or follower; not unloading equipment.", self.peep:getName())
+		return
+	end
+
 	local storage = Utility.Item.getStorage(self.peep, "Equipment", true)
 	if storage then
 		local index = 1
 		for item in broker:iterateItems(self) do
 			broker:itemToStorage(item, storage, index)
+			Log.info("Saving equipment item '%s' (%d count) for peep '%s'.", item:getID(), item:getCount(), self.peep:getName())
 			index = index + 1
 		end
 	end
