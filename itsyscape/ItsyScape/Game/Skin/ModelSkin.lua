@@ -23,6 +23,7 @@ function ModelSkin:new()
 	self.texture = false
 	self.isBlocking = true
 	self.isOccluded = false
+	self.isOccluding = false
 	self.isTranslucent = false
 	self.isGhosty = false
 	self.position = Vector(0)
@@ -80,6 +81,12 @@ function ModelSkin:loadFromFile(filename)
 		else
 			self.isBlocking = false
 		end
+	end
+
+	if result.isOccluding then
+		self.isOccluding = true
+	else
+		self.isOccluding = false
 	end
 
 	if result.isTranslucent then
@@ -177,8 +184,14 @@ function ModelSkin:getIsBlocking()
 	return self.isBlocking
 end
 
+-- Whether or not the skin is blocked if a blocking skin comes before it.
 function ModelSkin:getIsOccluded()
 	return self.isOccluded
+end
+
+-- Whether or not the skin blocks skins that come after it.
+function ModelSkin:getIsOccluding()
+	return self.isOccluding
 end
 
 function ModelSkin:getIsGhosty()
