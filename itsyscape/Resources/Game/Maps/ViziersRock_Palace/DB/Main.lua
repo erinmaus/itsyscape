@@ -199,6 +199,47 @@ do
 	}
 end
 
+M["King"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 1,
+		PositionZ = 34,
+		Name = "King",
+		Map = M._MAP,
+		Resource = M["King"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "VizierKingYohn",
+		MapObject = M["King"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Knight_ViziersRock",
+		Name = "Knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["King"],
+		Name = "Yohn",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/ViziersRock_Palace/Dialog/VizierKingYohn_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["King"] {
+		TalkAction
+	}
+end
+
 M["Guard1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

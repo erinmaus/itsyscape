@@ -197,3 +197,70 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "DiningTableChair_Fancy_ViziersRock"
 }
+
+do
+	local Yohn = ItsyScape.Resource.Peep "VizierKingYohn"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Human.BaseHuman",
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/RoyalBlueRobes.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_GreyBrown.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = math.huge,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Hands/RoyalBlueGloves.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Head/Light.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepSkin {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/PlayerKit1/Hair/MiddleAgeMessy.lua",
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BluePartyHat",
+		Count = 1,
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier-King Yohn",
+		Language = "en-US",
+		Resource = Yohn
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Elected vizier and born king, he rules the Realm with a hint of zealotry to Bastiel.",
+		Language = "en-US",
+		Resource = Yohn
+	}
+end
