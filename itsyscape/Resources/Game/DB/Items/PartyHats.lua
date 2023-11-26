@@ -8,7 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local COLORS = {
-	"Pink"
+	"Pink",
+	"Blue"
 }
 
 local VALUE = ItsyScape.Utility.valueForItem(150)
