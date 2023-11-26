@@ -19,8 +19,6 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local HumanoidActorAnimatorCortex = require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex"
-local Zweihander = require "Resources.Game.Items.Common.Zweihander"
-local FishingRod = require "Resources.Game.Items.Common.FishingRod"
 
 -- Shoots two arrows. If the first attack hits, so does the second.
 local Tornado = Class(ProxyXWeapon)
@@ -60,20 +58,13 @@ function Tornado:performAnimation(peep)
 		return
 	end
 
-	local isZweihander, isFishingRod
-	do
-		local weapon = Utility.Peep.getEquippedWeapon(peep, true)
-		isZweihander = weapon and Class.isCompatibleType(weapon, Zweihander)
-		isFishingRod = weapon and Class.isCompatibleType(weapon, FishingRod)
-	end
-
 	local isHuman
 	do
 		local body = actor:getBody()
 		isHuman = body:getFilename() == "Resources/Game/Bodies/Human.lskel"
 	end
 
-	if isHuman and (isZweihander or isFishingRod) then
+	if isHuman then
 		local animation = CacheRef(
 			"ItsyScape.Graphics.AnimationResource",
 			"Resources/Game/Animations/Human_AttackZweihanderSlash_Tornado/Script.lua")
