@@ -506,6 +506,8 @@ function DemoApplication:keyDown(key, ...)
 			Log.info("Captured \"%s\".", url)
 
 			love.graphics.captureScreenshot(filename)
+
+			self.isScreenshotPending = true
 		end
 	end
 end
@@ -755,6 +757,13 @@ function DemoApplication:draw(delta)
 	self.cameraController:draw()
 
 	Application.draw(self, delta)
+
+	if self.isScreenshotPending then
+		local cursor = love.graphics.newImage("Resources/Game/UI/Cursor.png")
+		love.graphics.draw(cursor, love.mouse.getPosition())
+
+		self.isScreenshotPending = false
+	end
 
 	if self.titleScreen then
 		self.titleScreen:draw()
