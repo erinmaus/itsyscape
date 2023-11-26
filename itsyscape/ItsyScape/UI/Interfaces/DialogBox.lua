@@ -10,9 +10,11 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Color = require "ItsyScape.Graphics.Color"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Keybinds = require "ItsyScape.UI.Keybinds"
@@ -130,6 +132,8 @@ function DialogBox:new(id, index, ui)
 	self.speakerIcon:setPosition(
 		DialogBox.PADDING,
 		DialogBox.PADDING)
+	self.speakerIcon:setParentNode(SceneNode())
+	self.speakerIcon:setRoot(self.speakerIcon:getParentNode())
 	self:addChild(self.speakerIcon)
 
 	self.options = {}
@@ -231,7 +235,7 @@ function DialogBox:next(state)
 			if actor:getID() == state.actor then
 				local actorView = gameView:getActor(actor)
 				if actorView then
-					self.speakerIcon:setRoot(actorView:getSceneNode())
+					self.speakerIcon:setChildNode(actorView:getSceneNode())
 					self.actor = actor
 					self.prop = nil
 				end
@@ -247,7 +251,7 @@ function DialogBox:next(state)
 			if prop:getID() == state.prop then
 				local propView = gameView:getProp(prop)
 				if propView then
-					self.speakerIcon:setRoot(propView:getRoot())
+					self.speakerIcon:setChildNode(propView:getRoot())
 					self.prop = prop
 					self.actor = nil
 				end
@@ -263,7 +267,7 @@ function DialogBox:update(...)
 	self.camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
 	self.camera:setVerticalRotation(gameCamera:getVerticalRotation())
 
-	local root = self.speakerIcon:getRoot()
+	local root = self.speakerIcon:getChildNode()
 	local transform = root:getTransform():getGlobalTransform()
 
 	local offset
@@ -283,10 +287,16 @@ function DialogBox:update(...)
 		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
 
 		-- Flip if facing left.
+		local rotation = Quaternion.IDENTITY
 		if node == self.actor and node:getDirection().x < 0 then
-			self.camera:setVerticalRotation(
-				self.camera:getVerticalRotation() + math.pi)
+			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
 		end
+		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation)
+
+		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform()
+		otherTransform:apply(transform)
+
+		transform = otherTransform
 
 		self.camera:setNear(0.01)
 		self.camera:setFar(zoom * 2)
