@@ -1,0 +1,62 @@
+name: ios
+
+on:
+  workflow_dispatch: null
+
+jobs:
+  ios:
+    runs-on: macos-13
+    environment: main
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Prepare certificate and profiles
+        env: 
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
+          IOS_EXPORT_CERTIFICATE: ${{ secrets.IOS_EXPORT_CERTIFICATE }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_CERTIFICATE_NAME: ${{ secrets.IOS_CERTIFICATE_NAME }}
+          IOS_PROFILE: ${{ secrets.IOS_PROFILE }}
+          IOS_PROFILE_FILENAME: ${{ secrets.IOS_PROFILE_FILENAME }}
+          MACOS_CI_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_CI_KEYCHAIN_PASSWORD }}
+        run: |
+          echo $IOS_CERTIFICATE | base64 --decode > build.p12
+          echo $IOS_EXPORT_CERTIFICATE | base64 --decode > export.p12
+
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo $IOS_PROFILE | base64 --decode > "$HOME/Library/MobileDevice/Provisioning Profiles/${IOS_PROFILE_FILENAME}"
+
+          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles"
+          
+          security create-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          security import build.p12 -k build.keychain -P "$IOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security import export.p12 -k build.keychain -P "$IOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          security list-keychain -d user -s build.keychain
+
+          security find-identity -v -p codesigning
+      -
+        name: Build code
+        run: |
+          cd ./cicd/ios
+          ./build.sh
+      -
+        name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: itsyrealm_macos
+          path: |
+            cicd/macos/itsyrealm/ItsyRealm.ipa
+      - name: Verify
+        env:
+          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
+          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
+        run: |
+          cd ./cicd/ios
+          xcrun altool --validate-app -f itsyrealm/ItsyRealm.ipa -t ios -u "$IOS_NOTARIZATION_APPLE_ID" -p "$IOS_NOTARIZATION_PASSWORD"
