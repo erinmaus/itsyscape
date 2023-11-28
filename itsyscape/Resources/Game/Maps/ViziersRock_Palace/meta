@@ -1,0 +1,11 @@
+{
+	{
+		maskID =
+		{
+			default = true,
+			building = "Building",
+		},
+		tileSetID = "ViziersRock1",
+		autoMask = false,
+	},
+}

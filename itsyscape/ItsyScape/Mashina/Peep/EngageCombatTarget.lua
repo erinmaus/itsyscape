@@ -24,7 +24,7 @@ function EngageCombatTarget:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	if not Utility.Peep.canAttack(peep) then
+	if not Utility.Peep.isAttackable(peep) then
 		return B.Status.Failure
 	end
 

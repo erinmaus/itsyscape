@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Effect = require "ItsyScape.Peep.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
@@ -37,7 +38,7 @@ end
 function Riposte:applyTargetToDamage(roll)
 	local target = self:getPeep():getBehavior(CombatTargetBehavior)
 	target = target and target.actor
-	if target and target:getPeep() == roll:getSelf() then 
+	if target and target:getPeep() == roll:getSelf() then
 		local damage = roll:roll()
 		roll:setMaxHit(math.floor(damage * self.damageMultiplier))
 		roll:setMinHit(math.floor(damage * self.damageMultiplier))
@@ -49,11 +50,18 @@ function Riposte:receiveDamage(roll)
 	target = target and target.actor
 
 	if target and target:getPeep() == roll:getSelf() then
+		local targetWeapon = Utility.Peep.getEquippedWeapon(roll:getTarget(), true) or Weapon()
+		local otherRoll = Weapon.DamageRoll(targetWeapon, roll:getTarget(), Weapon.PURPOSE_KILL, roll:getSelf())
+		local damageMultiplier = otherRoll:getDamageMultiplier()
+
 		local attack = AttackPoke({
-			damage = math.floor(damage * self.counterMultiplier + 0.5),
+			damage = math.floor(roll:getMinHit() * self.counterMultiplier * damageMultiplier + 0.5),
 			aggressor = self:getPeep()
 		})
 		roll:getSelf():poke('receiveAttack', attack)
+
+		Log.info("Peep '%s' dealt %d damage to peep '%s' during riposte (reduced by %d%% by target damage multipler).",
+			self:getPeep():getName(), attack:getDamage(), roll:getSelf():getName(), (1 - damageMultiplier) * 100)
 
 		self:getPeep():removeEffect(self)
 	end

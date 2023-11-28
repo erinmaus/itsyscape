@@ -28,6 +28,6 @@ void performTransform(
 
 	frag_Direction = vec2(
 		VertexDirection,
-		(scape_WorldMatrix * vec4(1, 0, 0, 0)).x
+		(scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
 	);
 }

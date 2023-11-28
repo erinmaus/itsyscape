@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/AdamantDagger/Logic.lua
+-- Resources/Game/Items/TrimmedAdamantShield/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Weapon = require "ItsyScape.Game.Weapon"
-local Dagger = require "Resources.Game.Items.Common.Dagger"
+local Shield = require "ItsyScape.Game.Shield"
 
-local AdamantDagger = Class(Dagger)
+local TrimmedAdamantShield = Class(Shield)
 
-return AdamantDagger
+return TrimmedAdamantShield

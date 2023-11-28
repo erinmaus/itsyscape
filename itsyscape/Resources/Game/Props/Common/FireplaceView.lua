@@ -104,6 +104,9 @@ function FireplaceView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
+	self.light = PointLightSceneNode()
+	self.light:setParent(root)
+
 	self.decoration = DecorationSceneNode()
 
 	resources:queue(
@@ -131,7 +134,7 @@ end
 
 
 function FireplaceView:flicker()
-	if self.light then
+	if self.light and self.flames then
 		local flickerWidth = FireplaceView.MAX_FLICKER_TIME - FireplaceView.MIN_FLICKER_TIME
 		self.flickerTime = math.random() * flickerWidth + FireplaceView.MIN_FLICKER_TIME
 

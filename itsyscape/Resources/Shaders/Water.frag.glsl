@@ -1,7 +1,7 @@
 #line 1
 
-uniform float scape_Time;
-uniform vec3 scape_TimeScale;
+uniform highp float scape_Time;
+uniform highp vec3 scape_TimeScale;
 uniform Image scape_DiffuseTexture;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)

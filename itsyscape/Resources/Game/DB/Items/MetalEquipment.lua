@@ -37,7 +37,14 @@ local METALS = {
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
-		hammer = "Hammer"
+		hammer = "Hammer",
+		trim = {
+			"Gloves",
+			"Boots",
+			"Helmet",
+			"Platebody",
+			"Shield"
+		}
 	},
 
 	["Itsy"] = {
@@ -53,7 +60,8 @@ local ITEMS = {
 		niceName = "%s gloves",
 		slot = "Gloves",
 		bars = 1,
-		tier = 0
+		tier = 0,
+		trim = 15
 	},
 
 	["Boots"] = {
@@ -61,7 +69,8 @@ local ITEMS = {
 		niceName = "%s boots",
 		slot = "Boots",
 		bars = 1,
-		tier = 0
+		tier = 0,
+		trim = 15
 	},
 
 	["Helmet"] = {
@@ -69,7 +78,8 @@ local ITEMS = {
 		niceName = "%s full helmet",
 		slot = "Helmet",
 		bars = 2,
-		tier = 0
+		tier = 0,
+		trim = 20
 	},
 
 	["Platebody"] = {
@@ -77,7 +87,8 @@ local ITEMS = {
 		niceName = "%s platebody",
 		slot = "Body",
 		bars = 5,
-		tier = 0
+		tier = 0,
+		trim = 50
 	},
 
 	["Shield"] = {
@@ -85,7 +96,8 @@ local ITEMS = {
 		niceName = "%s shield",
 		slot = "Shield",
 		bars = 3,
-		tier = 1
+		tier = 1,
+		trim = 25
 	},
 
 	["Dagger"] = {
@@ -122,6 +134,90 @@ local ITEMS = {
 }
 
 for name, metal in spairs(METALS) do
+	for _, itemName in ipairs(metal.trim or {}) do
+		local itemProps = ITEMS[itemName]
+
+		local ItemName = string.format("Trimmed%s%s", name, itemName)
+		local Item = ItsyScape.Resource.Item(ItemName)
+
+		local EquipAction = ItsyScape.Action.Equip()
+		for i = 1, #itemProps.skills do
+			EquipAction {
+				Requirement {
+					Resource = ItsyScape.Resource.Skill(itemProps.skills[i]),
+					Count = ItsyScape.Utility.xpForLevel(metal.tier)
+				}
+			}
+		end
+
+		local DequipAction = ItsyScape.Action.Dequip()
+
+		local SmithAction = ItsyScape.Action.Craft()
+		SmithAction {
+			Input {
+				Resource = ItsyScape.Resource.Item(string.format("%s%s", name, itemName)),
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item(string.format("%sTrim", name)),
+				Count = itemProps.trim or 10
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item(metal.hammer),
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForLevel(math.max(metal.tier + itemProps.bars + itemProps.tier, 1))
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(math.max(metal.tier + itemProps.bars + itemProps.tier + 2, 1)) * itemProps.bars
+			},
+
+			Output {
+				Resource = Item,
+				Count = 1
+			}
+		}
+
+		ItsyScape.Meta.Item {
+			Value = ItsyScape.Utility.valueForItem(metal.tier + itemProps.bars + itemProps.tier + 2) * itemProps.bars,
+			Weight = metal.weight * itemProps.bars,
+			Resource = Item
+		}
+
+		ItsyScape.Meta.ResourceName {
+			Value = string.format(itemProps.niceName, string.format("Trimmed %s", (metal.niceName or name):lower())),
+			Language = "en-US",
+			Resource = Item
+		}
+
+		ItsyScape.Meta.EquipmentModel {
+			Type = "ItsyScape.Game.Skin.ModelSkin",
+			Filename = string.format("Resources/Game/Skins/%s/Trimmed%s.lua", name, itemProps.slot),
+			Resource = Item
+		}
+
+		ItsyScape.Meta.ResourceCategory {
+			Key = "Metal",
+			Value = name,
+			Resource = Item
+		}
+
+		Item {
+			EquipAction,
+			DequipAction,
+			SmithAction
+		}
+
+		ItsyScape.Utility.tag(Item, "melee")
+	end
+
 	for itemName, itemProps in spairs(ITEMS) do
 		local ItemName = string.format("%s%s", name, itemName)
 		local Item = ItsyScape.Resource.Item(ItemName)
@@ -323,7 +419,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(10, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10, 0.5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(10, 0.5),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(10),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -342,8 +438,8 @@ do
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForHands(15),
 		DefenseCrush = ItsyScape.Utility.styleBonusForHands(14),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(13),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(15),
 		DefenseMagic = ItsyScape.Utility.styleBonusForHands(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "IronGloves"
@@ -461,7 +557,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(15, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(11, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(11, 0.6),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -598,7 +694,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(29, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(29, 0.65),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(29, 0.65),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(29),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -617,8 +713,8 @@ do
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForHands(32),
 		DefenseCrush = ItsyScape.Utility.styleBonusForHands(31),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(33),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(32),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(33),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(32),
 		DefenseMagic = ItsyScape.Utility.styleBonusForHands(15),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "MithrilGloves"
@@ -735,7 +831,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(39, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(39, 0.65),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(39, 0.65),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(39),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -754,8 +850,8 @@ do
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForHands(42),
 		DefenseCrush = ItsyScape.Utility.styleBonusForHands(41),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(43),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(42),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(43),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(42),
 		DefenseMagic = ItsyScape.Utility.styleBonusForHands(22),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "AdamantGloves"
@@ -872,7 +968,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(51, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(51, 0.6),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(53),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -884,6 +980,94 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "AdamantZweihander"
 	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForHands(42),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHands(41),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(43),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(42),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHands(22),
+		Prayer = 2,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantGloves"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Gloves made in the image of Theodyssius, Bastiel's champion. Where she went after Bastiel's banishment, none know... Or so the Arbiters say.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantGloves"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForFeet(41),
+		DefenseCrush = ItsyScape.Utility.styleBonusForFeet(44),
+		DefenseSlash = ItsyScape.Utility.styleBonusForFeet(41),
+		DefenseMagic = ItsyScape.Utility.styleBonusForFeet(27),
+		DefenseRanged = ItsyScape.Utility.styleBonusForFeet(40),
+		Prayer = 2,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantBoots"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Tought boots lined with feathers.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantBoots"
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = 5,
+		AccuracySlash = 5,
+		AccuracyCrush = 5,
+		DefenseStab = ItsyScape.Utility.styleBonusForHead(44),
+		DefenseCrush = ItsyScape.Utility.styleBonusForHead(44),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHead(44),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHead(45),
+		DefenseMagic = ItsyScape.Utility.styleBonusForHead(30),
+		Prayer = 3,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantHelmet"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "No matter where you are, the eye sees.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantHelmet"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(46),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(47),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(46),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(48),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(27),
+		Prayer = 4,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantPlatebody"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Made of a similar alloy to Theodyssius's platebody. The alloy is lost to history, however, and even scraps are almost worth their weight in gold.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantPlatebody"
+	}
+
+	ItsyScape.Meta.Equipment {
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(47),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(44),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(47),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(48),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(30),
+		Prayer = 5,
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantShield"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A tower shield that requires significant focus to wield.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "TrimmedAdamantShield"
+	}
 end
 
 -- Itsy
@@ -891,8 +1075,8 @@ do
 	ItsyScape.Meta.Equipment {
 		DefenseStab = ItsyScape.Utility.styleBonusForHands(55),
 		DefenseCrush = ItsyScape.Utility.styleBonusForHands(54),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(53),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(55),
+		DefenseSlash = ItsyScape.Utility.styleBonusForHands(53),
+		DefenseRanged = ItsyScape.Utility.styleBonusForHands(55),
 		DefenseMagic = ItsyScape.Utility.styleBonusForHands(30),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 		Resource = ItsyScape.Resource.Item "ItsyGloves"
@@ -1010,7 +1194,7 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(51, 1.0),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(51, 0.6),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(51, 0.6),
 		DefenseRanged = 1,
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
@@ -1021,5 +1205,47 @@ do
 		Value = "Behead your foes in a single cleave or your money back!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ItsyZweihander"
+	}
+
+		ItsyScape.Resource.Item "AdamantTrim" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(40) / 5,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "AdamantTrim"
+	}
+
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Trim",
+		XProgressive = "Trimming",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Metal",
+		CategoryValue = "Adamant",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "AdamantTrim" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Adamant trim",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantTrim"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An alloy whose alchemy was lost to history after the Old Ones were banished from the Realm. Fragments can be used to trim adamant armor.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AdamantTrim"
 	}
 end
