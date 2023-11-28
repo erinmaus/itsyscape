@@ -7,16 +7,16 @@ const float HALF_RADIUS = 0.1;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
-	float textureY = clamp(textureCoordinate.y, HALF_RADIUS, 1 - HALF_RADIUS);
+	float textureY = clamp(textureCoordinate.y, HALF_RADIUS, 1.0 - HALF_RADIUS);
 	float timeOffset = scape_Time * TWO_PI;
 	float xOffset = textureCoordinate.x * TWO_PI * SPIKES;
 
 	// Offset sine to be between [0, 1] rather than [-1, 1]
-	float centerY = (sin(timeOffset + xOffset) + 1) / 2;
+	float centerY = (sin(timeOffset + xOffset) + 1.0) / 2.0;
 
 	// Scale center to fit between [RADIUS, 1 - 2RADIUS]
 	// so it the line doesn't get cut off by the edges
-	centerY *= 1 - RADIUS * 2;
+	centerY *= 1.0 - RADIUS * 2.0;
 	centerY += RADIUS;
 
 	float difference = distance(centerY, textureCoordinate.y);
@@ -28,7 +28,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	}
 
 	// Apply an alpha effect as the line moves from 'center' of wave
-	float alpha = 1 - absoluteDifference / RADIUS;
+	float alpha = 1.8 - absoluteDifference / RADIUS;
 
 	return vec4(color.rgb, alpha);
 }

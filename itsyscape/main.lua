@@ -241,6 +241,7 @@ function itsyrealm.errorhandler()
 	end
 
 	love.graphics.setCanvas()
+	love.graphics.setBlendMode('alpha')
 
 	local function draw()
 		love.graphics.setCanvas()
@@ -325,7 +326,7 @@ function love.errorhandler(message)
 	NSentry.close()
 
 	local Class = require "ItsyScape.Common.Class"
-	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
+	if _DEBUG or _MOBILE or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
 		return love.errhand(message)
 	else
 		return itsyrealm.errorhandler()

@@ -20,7 +20,7 @@ _ITSYREALM_BUILD   = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)")) or 0
 
 math.randomseed(os.time())
 
-_MOBILE = false
+_MOBILE = love.system.getOS() == "iOS" or love.system.getOS() == "Android"
 
 do
 	if love.system.getOS() == "Android" then
@@ -32,9 +32,6 @@ do
 			sourceDirectory,
 			sourceDirectory,
 			cpath)
-
-		_DEBUG = true
-		_MOBILE = true
 	else
 		local sourceDirectory = love.filesystem.getSourceBaseDirectory()
 
