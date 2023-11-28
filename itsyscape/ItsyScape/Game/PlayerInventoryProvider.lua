@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local PlayerInventoryProvider = Class(InventoryProvider)
 PlayerInventoryProvider.MAX_INVENTORY_SPACE = 28
@@ -94,12 +96,18 @@ end
 function PlayerInventoryProvider:load(...)
 	InventoryProvider.load(self, ...)
 
+	if not (self.peep:hasBehavior(PlayerBehavior) or self.peep:hasBehavior(FollowerBehavior)) then
+		Log.engine("Peep '%s' is not a player or follower; not re-loading inventory.", self.peep:getName())
+		return
+	end
+
 	local broker = self:getBroker()
 
 	local storage = Utility.Item.getStorage(self.peep, "Player")
 	if storage then
 		for key, section in storage:iterateSections() do
 			local item = broker:itemFromStorage(self, section)
+			Log.info("Restoring inventory item '%s' (%d count) for peep '%s'.", item:getID(), item:getCount(), self.peep:getName())
 			broker:setItemZ(item, broker:getItemKey(item))
 		end
 	end
@@ -108,10 +116,16 @@ end
 function PlayerInventoryProvider:unload(...)
 	local broker = self:getBroker()
 
+	if not (self.peep:hasBehavior(PlayerBehavior) or self.peep:hasBehavior(FollowerBehavior)) then
+		Log.engine("Peep '%s' is not a player or follower; not unloading inventory.", self.peep:getName())
+		return
+	end
+
 	local storage = Utility.Item.getStorage(self.peep, "Player", true)
 	if storage then
 		for item in broker:iterateItems(self) do
 			local key = broker:getItemKey(item)
+			Log.engine("Saving inventory item '%s' (%d count) for peep '%s'.", item:getID(), item:getCount(), self.peep:getName())
 			broker:itemToStorage(item, storage, key)
 		end
 	end

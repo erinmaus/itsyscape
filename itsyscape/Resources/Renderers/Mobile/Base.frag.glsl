@@ -74,7 +74,7 @@ vec3 scapeApplyLight(
 	float diffuseCoefficient = max(0.0, dot(normal, direction));
 	vec3 diffuse = diffuseCoefficient * color * light.color * light.diffuseCoefficient;
 
-	return attenuation * diffuse + ambient;
+	return (attenuation * 0.25) * diffuse + ambient;
 }
 
 vec3 scapeApplyFog(
@@ -84,7 +84,7 @@ vec3 scapeApplyFog(
 {
 	vec3 relativePosition = fog.position - position.xyz;
 	float length = length(relativePosition);
-	float factor = 0.0f;
+	float factor = 0.0;
 	if (fog.near <= fog.far)
 	{
 		factor = 1.0 - clamp((fog.far - length) / (fog.far - fog.near), 0.0, 1.0);

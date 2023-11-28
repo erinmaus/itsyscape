@@ -325,7 +325,7 @@ static int nbunny_renderer_draw(lua_State* L)
 	float delta = (float)luaL_checknumber(L, 3);
 	int width = luaL_checkinteger(L, 4);
 	int height = luaL_checkinteger(L, 5);
-	renderer->draw(L, node, delta, width, height);
+	love::luax_catchexcept(L, [&]() { renderer->draw(L, node, delta, width, height); });
 	return 0;
 }
 

@@ -3078,15 +3078,6 @@ function Utility.Peep.Inventory:onAssign(director)
 end
 
 function Utility.Peep.Inventory:onReady(director)
-	local storage = Utility.Peep.getStorage(self)
-	if storage then
-		if storage:get("peep-serialized-inventory") then
-			return
-		end
-
-		storage:set("peep-serialized-inventory", true)
-	end
-
 	local broker = director:getItemBroker()
 	local function spawnItems(records)
 		local inventory = self:getBehavior(InventoryBehavior)
@@ -3172,15 +3163,6 @@ function Utility.Peep.Equipment:onAssign(director)
 end
 
 function Utility.Peep.Equipment:onReady(director)
-	local storage = Utility.Peep.getStorage(self)
-	if storage then
-		if storage:get("peep-serialized-equipment") then
-			return
-		end
-
-		storage:set("peep-serialized-equipment", true)
-	end
-
 	local broker = director:getItemBroker()
 	local function equipItems(records)
 		local equipment = self:getBehavior(EquipmentBehavior)

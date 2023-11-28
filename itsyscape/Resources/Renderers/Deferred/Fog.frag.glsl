@@ -29,7 +29,7 @@ vec4 effect(
 	float near = scape_FogParameters.x;
 	float far = scape_FogParameters.y;
 
-	float factor = 0.0f;
+	float factor = 0.0;
 	if (near <= far)
 	{
 		factor = 1.0 - clamp((far - length) / (far - near), 0.0, 1.0);

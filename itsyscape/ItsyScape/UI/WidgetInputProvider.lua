@@ -46,7 +46,7 @@ end
 
 function WidgetInputProvider:getFocusedWidget()
 	if self.focusedWidget then
-		if not self.focusedWidget:getIsFocused() then
+		if not self.focusedWidget:getIsFocused() or not self.focusedWidget:hasParent(self.root) then
 			self.focusedWidget = false
 		end
 	end

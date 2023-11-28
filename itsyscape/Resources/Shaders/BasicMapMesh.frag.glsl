@@ -7,7 +7,7 @@ varying vec4 frag_TextureLayer;
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
 	vec2 maskCoordinate = textureCoordinate;
-	maskCoordinate.s = 1 - maskCoordinate.s;
+	maskCoordinate.s = 1.0 - maskCoordinate.s;
 
 	float mask = Texel(scape_MaskTexture, vec3(maskCoordinate, frag_TextureLayer.y)).a;
 

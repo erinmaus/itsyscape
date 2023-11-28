@@ -365,6 +365,60 @@ do
 	}
 end
 
+M["Anchor_FromPalace"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 5,
+		Name = "Anchor_FromPalace",
+		Map = M._MAP,
+		Resource = M["Anchor_FromPalace"]
+	}
+end
+
+M["Portal_ToPalace"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 3,
+		Name = "Portal_ToPalace",
+		Map = M._MAP,
+		Resource = M["Portal_ToPalace"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 3.5,
+		MapObject = M["Portal_ToPalace"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToPalace"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier's Rock Palace",
+		Language = "en-US",
+		Resource = M["Portal_ToPalace"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromTown",
+		Map = ItsyScape.Resource.Map "ViziersRock_Palace",
+		Action = TravelAction
+	}
+
+	M["Portal_ToPalace"] {
+		TravelAction
+	}
+end
+
 M["TrapDoor_ToSewers"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

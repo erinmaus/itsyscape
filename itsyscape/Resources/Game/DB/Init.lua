@@ -1347,6 +1347,7 @@ include "Resources/Game/DB/Minigames/ChickenPolitickin.lua"
 
 -- Drop tables
 include "Resources/Game/DB/SharedDropTables/Pirate.lua"
+include "Resources/Game/DB/SharedDropTables/Human.lua"
 
 -- Trailer
 include "Resources/Game/DB/Trailer/Trailer.lua"

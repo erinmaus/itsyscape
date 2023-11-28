@@ -33,7 +33,8 @@ function QueuePower:update(mashina, state, executor)
 		if clearCoolDown then
 			coolDown.powers[powerResource.id.value] = nil
 		elseif requireNoCooldown then
-			if coolDown.powers[powerResource.id.value] then
+			local time = coolDown.powers[powerResource.id.value]
+			if time and time > love.timer.getTime() then
 				return B.Status.Failure
 			end
 		end

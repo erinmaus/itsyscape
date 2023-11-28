@@ -82,7 +82,7 @@ function DemoApplication:new()
 
 	self:disconnect()
 
-	do
+	if not _MOBILE then
 		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 
 		local _, blankCursorImageData = self:getGameView():getTranslucentTexture()
@@ -506,6 +506,8 @@ function DemoApplication:keyDown(key, ...)
 			Log.info("Captured \"%s\".", url)
 
 			love.graphics.captureScreenshot(filename)
+
+			self.isScreenshotPending = true
 		end
 	end
 end
@@ -739,14 +741,16 @@ function DemoApplication:update(delta)
 		end
 	end
 
-	local currentCursor = love.mouse.getCursor()
-	if (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
-		if currentCursor ~= self.blankCursor then
-			love.mouse.setCursor(self.blankCursor)
-		end
-	else
-		if currentCursor ~= self.defaultCursor then
-			love.mouse.setCursor(self.defaultCursor)
+	if not _MOBILE then
+		local currentCursor = love.mouse.getCursor()
+		if (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
+			if currentCursor ~= self.blankCursor then
+				love.mouse.setCursor(self.blankCursor)
+			end
+		else
+			if currentCursor ~= self.defaultCursor then
+				love.mouse.setCursor(self.defaultCursor)
+			end
 		end
 	end
 end
@@ -755,6 +759,13 @@ function DemoApplication:draw(delta)
 	self.cameraController:draw()
 
 	Application.draw(self, delta)
+
+	if self.isScreenshotPending then
+		local cursor = love.graphics.newImage("Resources/Game/UI/Cursor.png")
+		love.graphics.draw(cursor, love.mouse.getPosition())
+
+		self.isScreenshotPending = false
+	end
 
 	if self.titleScreen then
 		self.titleScreen:draw()

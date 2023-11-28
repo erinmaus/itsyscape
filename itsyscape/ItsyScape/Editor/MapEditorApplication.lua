@@ -287,10 +287,10 @@ function MapEditorApplication:paint()
 							if love.keyboard.isDown('lalt') or
 							   love.keyboard.isDown('ralt')
 							then
-								tile.decals[#tile.decals + 1] = self.tileSetPalette:getCurrentTile()
+								tile.decals[#tile.decals + 1] = self.tileSetPalette:getCurrentTile() or nil
 							else
 								tile.decals = {
-									self.tileSetPalette:getCurrentTile()
+									self.tileSetPalette:getCurrentTile() or nil
 								}
 							end
 						end
@@ -588,7 +588,10 @@ end
 
 function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 	if not EditorApplication.keyDown(self, key, scan, isRepeat, ...) then
-		if not isRepeat then
+		local isWidgetFocused = self:getUIView():getInputProvider():getFocusedWidget()
+		isWidgetFocused = isWidgetFocused and Class.isCompatibleType(isWidgetFocused, require "ItsyScape.UI.TextInput")
+
+		if not isRepeat and not isWidgetFocused then
 			if key == 'f1' then
 				self:setTool(MapEditorApplication.TOOL_TERRAIN)
 			elseif key == 'f2' then
