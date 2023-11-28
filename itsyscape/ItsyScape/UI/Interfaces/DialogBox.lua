@@ -268,7 +268,7 @@ function DialogBox:update(...)
 	self.camera:setVerticalRotation(gameCamera:getVerticalRotation())
 
 	local root = self.speakerIcon:getChildNode()
-	local transform = root:getTransform():getGlobalTransform()
+	local transform = root:getTransform():getLocalTransform()
 
 	local offset
 	local zoom
