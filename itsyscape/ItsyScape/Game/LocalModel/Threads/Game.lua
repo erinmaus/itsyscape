@@ -363,6 +363,10 @@ while isRunning do
 					type = 'analytics',
 					enable = e.enable
 				})
+			elseif e.type == 'save' then
+				for _, player in game:iteratePlayers() do
+					player:save()
+				end
 			end
 		end
 	until not e

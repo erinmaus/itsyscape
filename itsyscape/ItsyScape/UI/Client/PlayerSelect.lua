@@ -58,6 +58,8 @@ PlayerSelect.NEW_GAME_BUTTON_STYLE = {
 }
 
 function PlayerSelect.getPlayers()
+	love.filesystem.createDirectory("Player")
+
 	local files = love.filesystem.getDirectoryItems("Player/")
 
 	local results = {}
