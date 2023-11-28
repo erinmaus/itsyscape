@@ -31,12 +31,22 @@ function TextInput:focus(...)
 	self.cursorIndex = #self:getText()
 	self.cursorLength = 0
 
+	if _MOBILE then
+		local x, y = self:getAbsolutePosition()
+		local w, h = self:getSize()
+		love.keyboard.setTextInput(true)
+	end
+
 	Widget.focus(self, ...)
 end
 
 function TextInput:blur(...)
 	self.cursorIndex = 1
 	self.cursorLength = 0
+
+	if _MOBILE then
+		love.keyboard.setTextInput(false)
+	end
 
 	Widget.blur(self, ...)
 end
@@ -194,6 +204,10 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 	-- elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 	-- 	self.isShiftDown = self.isShiftDown + 1
 	elseif key == 'return' and not isRepeat then
+		if _MOBILE then
+			self:blur()
+		end
+
 		self.onSubmit(self, self.text)
 	-- elseif key == 'tab' then
 	-- 	return false

@@ -82,7 +82,7 @@ function DemoApplication:new()
 
 	self:disconnect()
 
-	do
+	if not _MOBILE then
 		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
 
 		local _, blankCursorImageData = self:getGameView():getTranslucentTexture()
@@ -741,14 +741,16 @@ function DemoApplication:update(delta)
 		end
 	end
 
-	local currentCursor = love.mouse.getCursor()
-	if (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
-		if currentCursor ~= self.blankCursor then
-			love.mouse.setCursor(self.blankCursor)
-		end
-	else
-		if currentCursor ~= self.defaultCursor then
-			love.mouse.setCursor(self.defaultCursor)
+	if not _MOBILE then
+		local currentCursor = love.mouse.getCursor()
+		if (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
+			if currentCursor ~= self.blankCursor then
+				love.mouse.setCursor(self.blankCursor)
+			end
+		else
+			if currentCursor ~= self.defaultCursor then
+				love.mouse.setCursor(self.defaultCursor)
+			end
 		end
 	end
 end
