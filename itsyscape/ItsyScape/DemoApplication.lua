@@ -65,6 +65,10 @@ function DemoApplication:new()
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
 
+		if _MOBILE then
+			player.onMove:register(self.requestSave, self)
+		end
+
 		self:setPlayerFilename(nil)
 
 		self:getGameView():reset()

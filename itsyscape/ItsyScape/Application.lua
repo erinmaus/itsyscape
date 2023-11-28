@@ -679,6 +679,10 @@ function Application:isGameThread(thread)
 	return self.gameThread and thread and self.gameThread == thread
 end
 
+function Application:requestSave()
+	self.inputAdminChannel:push({ type = 'save' })
+end
+
 function Application:savePlayer(player, storage, isError)
 	-- Nothing.
 end
