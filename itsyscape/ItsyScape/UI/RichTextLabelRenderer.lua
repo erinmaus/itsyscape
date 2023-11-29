@@ -281,6 +281,7 @@ function RichTextLabelRenderer:draw(widget, state)
 
 	if widget:getWrapContents() then
 		widget:setSize(w, renderer.y)
+		widget:onSize()
 	end
 
 	if widget:getWrapParentContents() then

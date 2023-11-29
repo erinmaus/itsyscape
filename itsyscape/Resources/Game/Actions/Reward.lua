@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Action = require "ItsyScape.Peep.Action"
 
 local Reward = Class(Action)
+Reward.SCOPES = { ['loot'] = true }
 
 function Reward:perform(state, peep, target)
 	return true

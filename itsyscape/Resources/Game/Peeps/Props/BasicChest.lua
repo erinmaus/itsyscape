@@ -133,7 +133,7 @@ function BasicChest.getDroppedItem(loot, weight)
 		currentWeight = item.weight
 	end
 
-	local p = math.random(0, weight)
+	local p = love.math.random(0, weight)
 	for i = 2, #loot do
 		if currentWeight > p then
 			break
@@ -151,12 +151,12 @@ function BasicChest.getDroppedItem(loot, weight)
 end
 
 function BasicChest:onMaterialize(e)
-	local count = e.count
+	local gameDB = self:getDirector():getGameDB()
 
+	local count = e.count
 	local rewards = {}
 	local totalWeight = 0
 	do
-		local gameDB = self:getDirector():getGameDB()
 		local actions = Utility.getActions(self:getDirector():getGameInstance(), e.dropTable)
 		for _, action in ipairs(actions) do
 			if action.instance:is("Reward") then
@@ -177,17 +177,31 @@ function BasicChest:onMaterialize(e)
 	end
 
 	local xp = {}
+	local items = {}
 	for i = 1, count do
 		local reward = BasicChest.getDroppedItem(rewards, totalWeight)
-		self:reward(reward.action, e, xp)
+		self:reward(reward.action, e, xp, items)
 	end
 
 	for skill, xp in pairs(xp) do
 		e.peep:getState():give("Skill", skill, xp)
 	end
+
+	if e.peep and e.boss then
+		for itemID, itemDetails in pairs(items) do
+			Analytics:npcDroppedItem(
+				e.peep,
+				e.boss,
+				itemDetails.items[1],
+				itemDetails.count,
+				Utility.Boss.isLegendary(gameDB, itemID))
+
+			Utility.Boss.recordDrop(e.peep, e.boss, itemID, itemDetails.count)
+		end
+	end
 end
 
-function BasicChest:addItemToInstancedInventory(player, itemID, itemCount)
+function BasicChest:addItemToInstancedInventory(player, itemID, itemCount, boss)
 	local inventory = Utility.Peep.prepInstancedInventory(self, SimpleInventoryProvider, player)
 	if not inventory then
 		return
@@ -208,10 +222,11 @@ function BasicChest:addItemToInstancedInventory(player, itemID, itemCount)
 		Log.engine(
 			"Successfully spawned item %s (count = %d) for player %s (%d) in '%s'.",
 			itemID, itemCount, playerModel:getActor():getName(), playerModel:getID(), self:getName())
+		return transaction
 	end
 end
 
-function BasicChest:reward(action, e, xp)
+function BasicChest:reward(action, e, xp, items)
 	local gameDB = action:getGameDB()
 	local brochure = gameDB:getBrochure()
 	for output in brochure:getOutputs(action:getAction()) do
@@ -221,13 +236,26 @@ function BasicChest:reward(action, e, xp)
 		if resourceType.name:lower() == "skill" then
 			xp[resource.name] = (xp[resource.name] or 0) + output.count
 		elseif resourceType.name:lower() == "item" then
+			local transaction
 			if self:hasBehavior(InstancedInventoryBehavior) then
-				self:addItemToInstancedInventory(
+				transaction = self:addItemToInstancedInventory(
 					e.peep,
 					resource.name,
 					output.count)
 			else
-				e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+				local _
+				_, _, transaction = e.chest:getState():give("Item", resource.name, output.count, { ['item-inventory'] = true, ['item-noted'] = true })
+			end
+
+			if e.peep and e.boss and transaction then
+				for _, item in transaction:iterateItems() do
+					local c = items[item:getID()] or { items = {} }
+
+					c.count = (c.count or 0) + output.count
+					table.insert(c.items, item)
+
+					items[item:getID()] = c
+				end
 			end
 		else
 			Log.warn("Unhandled reward: '%s' of type '%s' (%dx)", resource.name, resourceType.name, output.count)

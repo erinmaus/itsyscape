@@ -13,6 +13,12 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local RichTextLabel = Class(Widget)
 
+function RichTextLabel:new()
+	Widget.new(self)
+
+	self.onSize = Callback()
+end
+
 function RichTextLabel:getOverflow()
 	return true
 end

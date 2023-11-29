@@ -359,6 +359,11 @@ do
 		Resource = ItsyScape.Resource.Item "SquidSkull"
 	}
 
+	ItsyScape.Meta.LootCategory {
+		Item = ItsyScape.Resource.Item "SquidSkull",
+		Category = ItsyScape.Resource.LootCategory "Special"
+	}
+
 	local SkullReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "SquidSkull",
