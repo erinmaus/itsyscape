@@ -25,13 +25,13 @@ jobs:
           ITSYREALM_ADMIN_USERNAME: ${{ secrets.ITSYREALM_ADMIN_USERNAME }}
           ITSYREALM_ADMIN_PASSWORD: ${{ secrets.ITSYREALM_ADMIN_PASSWORD }}
         run: |
-          ./cicd/publish/upload_itsyrealmcom.sh
+          ./cicd/publish/upload_itsyrealmcom.sh || true
       -
         name: Deploy ItsyRealm to itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
         run: |
-          ./cicd/publish/upload_itchio.sh
+          ./cicd/publish/upload_itchio.sh || true
       -
         name: Deploy ItsyRealm & ItsyRealm demo to Steam
         env:
