@@ -682,7 +682,8 @@ function Client:submit(event, properties, flush)
 	end
 
 	if not sanitize(properties) then
-		error(string.format("Properties not valid for analytic event '%s'!", event))
+		Log.error("Properties not valid for analytic event '%s'!", event)
+		return
 	end
 
 	Log.engine("Submitting analytic event '%s'...", event)
