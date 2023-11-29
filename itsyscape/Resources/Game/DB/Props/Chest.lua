@@ -26,3 +26,27 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Chest_Default"
 }
+
+ItsyScape.Resource.Prop "Chest_Instanced_Default"
+
+ItsyScape.Meta.PropAlias {
+	Alias = ItsyScape.Resource.Prop "Chest_Default",
+	Resource = ItsyScape.Resource.Prop "Chest_Instanced_Default"
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+	Resource = ItsyScape.Resource.Prop "Chest_Instanced_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Chest",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Chest_Instanced_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Bet there's something good stuffed in there...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Chest_Instanced_Default"
+}

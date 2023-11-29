@@ -150,7 +150,7 @@ do
 		}
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = "A strong wood nymph kursed by a mask made by the ancient driftwood, she keeps the peace in the Foggy Forest.",
+			Value = "A strong wood nymph kursed by a mask made from the ancient driftwood, she keeps the peace in the Foggy Forest.",
 			Language = "en-US",
 			Resource = BoundNymph
 		}
@@ -174,6 +174,112 @@ do
 		ItsyScape.Meta.BossDropTable {
 			Boss = BoundNymph,
 			DropTable = ItsyScape.Resource.DropTable "Nymph_Base_Secondary"
+		}
+	end
+end
+
+do
+	ItsyScape.Meta.BossCategory {
+		Category = "ViziersRockSewers",
+		Name = "Vizier's Rock sewers",
+		Description = "Vermin and pests that became a little too strong after exposure to pollution and magic...",
+		Language = "en-US"
+	}
+
+	do
+		local RatKing = ItsyScape.Resource.Boss "RatKing"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Rat King",
+			Language = "en-US",
+			Resource = RatKing
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "The Rat King was the pet of the Witch-King, Wren. After hundreds of year of exposure to the most powerful of magics, he became the horrifying monster he is today.",
+			Language = "en-US",
+			Resource = RatKing
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = RatKing,
+			Target = ItsyScape.Resource.Peep "RatKingUnleashed",
+			Category = "ViziersRockSewers",
+			RequireKill = 1
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = RatKing,
+			DropTable = ItsyScape.Resource.DropTable "RatKing_Primary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = RatKing,
+			DropTable = ItsyScape.Resource.DropTable "RatKing_Secondary"
+		}
+	end
+
+	do
+		local SewerSpiderMatriarch = ItsyScape.Resource.Boss "SewerSpiderMatriarch"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Sewer spider matriarch",
+			Language = "en-US",
+			Resource = SewerSpiderMatriarch
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "A spider that armored itself in the toughest of trashed metals, she is the definition of a tank - capable of taking and dealing damage without hesitation.",
+			Language = "en-US",
+			Resource = SewerSpiderMatriarch
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = SewerSpiderMatriarch,
+			Target = ItsyScape.Resource.Peep "SewerSpiderMatriarch",
+			Category = "ViziersRockSewers",
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = SewerSpiderMatriarch,
+			DropTable = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Primary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = SewerSpiderMatriarch,
+			DropTable = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Secondary"
+		}
+	end
+
+	do
+		local AncientKaradon = ItsyScape.Resource.Boss "AncientKaradon"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Ancient karadon",
+			Language = "en-US",
+			Resource = AncientKaradon
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "The ancient karadon is a prehistoric fish long thought to be extinct, but turns out one of them survived and is at the bottom of the Vizier's Rock sewers! Happy fishing!",
+			Language = "en-US",
+			Resource = AncientKaradon
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = AncientKaradon,
+			Target = ItsyScape.Resource.Peep "AncientKaradon",
+			Category = "ViziersRockSewers"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = AncientKaradon,
+			DropTable = ItsyScape.Resource.DropTable "AncientKaradon_Primary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = AncientKaradon,
+			DropTable = ItsyScape.Resource.DropTable "AncientKaradon_Secondary"
 		}
 	end
 end

@@ -248,6 +248,28 @@ do
 	}
 end
 
+M["RewardChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 3,
+		Name = "RewardChest",
+		Map = M._MAP,
+		Resource = M["RewardChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientKaradon_Chest",
+		MapObject = M["RewardChest"]
+	}
+
+	M["RewardChest"] {
+		ItsyScape.Action.Collect(),
+		ItsyScape.Action.Bank()
+	}
+end
+
 M["AncientKaradon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {

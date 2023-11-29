@@ -50,7 +50,21 @@ do
 	local SewerSpiderMatriarch = ItsyScape.Resource.Peep "SewerSpiderMatriarch"
 
 	ItsyScape.Resource.Peep "SewerSpiderMatriarch" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Primary",
+				Count = 2
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Secondary",
+				Count = 1
+			}
+		},
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -125,5 +139,57 @@ do
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
 		Prayer = 5,
 		Resource = SewerSpiderMatriarch
+	}
+end
+
+do
+	local DropTable = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 100,
+		Count = ItsyScape.Utility.valueForItem(45) * 3,
+		Range = ItsyScape.Utility.valueForItem(45),
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinOre",
+		Weight = 200,
+		Count = 10,
+		Range = 2,
+		Noted = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinBar",
+		Weight = 200,
+		Count = 10,
+		Range = 2,
+		Noted = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinCan",
+		Weight = 200,
+		Count = 30,
+		Range = 10,
+		Noted = 1,
+		Resource = DropTable
+	}
+end
+
+do
+	local DropTable = ItsyScape.Resource.DropTable "SewerSpiderMatriarch_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SpiderSilk",
+		Weight = 200,
+		Count = 10,
+		Range = 5,
+		Noted = 1,
+		Resource = DropTable
 	}
 end
