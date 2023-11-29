@@ -3426,12 +3426,18 @@ function Utility.Peep.Attackable:onDie(p)
 	movement.acceleration = Vector.ZERO
 
 	local xp = Utility.Combat.getCombatXP(self)
+	local slayers = {}
 	do
 		local actor = self:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			local status = self:getBehavior(CombatStatusBehavior)
 			if status then
+				local currentSlayerDamage = 0
 				for peep, d in pairs(status.damage) do
+					if peep:hasBehavior(PlayerBehavior) then
+						slayers[peep] = d
+					end
+
 					local damage = d / status.maximumHitpoints
 					Log.info("%s gets %d%% XP for slaying %s (dealt %d damage).", peep:getName(), damage * 100, self:getName(), d)
 
@@ -3443,6 +3449,72 @@ function Utility.Peep.Attackable:onDie(p)
 				end
 
 				status.dead = true
+			end
+		end
+	end
+
+	do
+		local s = {}
+		for slayer in pairs(slayers) do
+			table.insert(s, slayer)
+		end
+
+		table.sort(s, function(a, b)
+			return slayer[a] > slayer[b]
+		end)
+
+		slayers = s
+	end
+
+	if Utility.Boss.isBoss(self) then
+		local gameDB = self:getDirector():getGameDB()
+
+		local isDead = false
+		do
+			local mapObject = Utility.Peep.getMapObject(self)
+			if mapObject then
+				local group = gameDB:getRecord("MapObjectGroup", {
+					MapObject = mapObject,
+					Map = Utility.Peep.getMapResource(self)
+				})
+
+				if group then
+					local Probe = require "ItsyScape.Peep.Probe"
+					local hits = self:getDirector():probe(
+						self:getLayerName(),
+						function(peep)
+							local m = Utility.Peep.getMapObject(peep)
+							local g = m and gameDB:getRecord("MapObjectGroup", {
+								MapObject = m,
+								Map = Utility.Peep.getMapResource(peep),
+								MapObjectGroup = group:get("MapObjectGroup")
+							})
+
+							return m and g
+						end)
+
+					isDead = true
+					for _, hit in ipairs(hits) do
+						local status = hit:getBehavior(CombatStatusBehavior)
+
+						if not status or not status.dead then
+							print(">>>", hit:getName(), "still alive")
+							isDead = false
+							break
+						end
+					end
+				end
+			end
+		end
+
+		if isDead then
+			local instance = Utility.Peep.getInstance(self)
+			if instance and instance:getIsGlobal() and #slayers >= 1 then
+				Utility.Boss.recordKill(slayers[1], self)
+			elseif instance and instance:getIsLocal() then
+				for _, player in instance:iteratePlayers() do
+					Utility.Boss.recordKill(player:getActor():getPeep(), self)
+				end
 			end
 		end
 	end
@@ -3860,7 +3932,7 @@ end
 function Utility.Peep.makeHuman(peep)
 	local movement = peep:getBehavior(MovementBehavior)
 	if movement then
-		movement.maxSpeed = 8
+		movement.maxSpeed = 6
 		movement.maxAcceleration = 8
 		movement.decay = 0.6
 		movement.velocityMultiplier = 1
@@ -4091,6 +4163,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackZweihanderSlash_1/Script.lua")
 	peep:addResource("animation-attack-slash-zweihander", attackAnimationZweihanderSlash)
+	local attackAnimationZweihanderStab = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackZweihanderStab_1/Script.lua")
+	peep:addResource("animation-attack-stab-zweihander", attackAnimationZweihanderStab)
 	local attackAnimationFishingRodCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackFishingRodCrush_1/Script.lua")
@@ -4117,6 +4193,96 @@ function Utility.Peep.makeHuman(peep)
 	peep:addResource("animation-jump", jumpAnimation)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
+end
+
+Utility.Boss = {}
+function Utility.Boss.getBoss(target)
+	local resource = Utility.Peep.getResource(target)
+
+	local boss = resource and target:getDirector():getGameDB():getRecord("Boss", {
+		Target = resource
+	})
+
+	return boss and boss:get("Boss")
+end
+
+function Utility.Boss.isBoss(target)
+	return Utility.Boss.getBoss(target) ~= nil
+end
+
+function Utility.Boss.isLegendary(gameDB, itemID)
+	local legendaryLootCategory = gameDB:getResource("Legendary", "LootCategory")
+	local itemResource = gameDB:getResource(itemID, "Item")
+	local isLegendary = gameDB:getRecord("LootCategory", {
+		Item = itemResource,
+		Category = legendaryLootCategory
+	})
+
+	return legendaryLootCategory and itemResource and isLegendary
+end
+
+function Utility.Boss.isSpecial(gameDB, itemID)
+	local specialLootCategory = gameDB:getResource("Special", "LootCategory")
+	local itemResource = gameDB:getResource(itemID, "Item")
+	local isSpecial = gameDB:getRecord("LootCategory", {
+		Item = itemResource,
+		Category = specialLootCategory
+	})
+
+	return specialLootCategory and itemResource and isSpecial
+end
+
+function Utility.Boss.recordKill(peep, target)
+	local boss = Utility.Boss.getBoss(target)
+	if not boss then
+		return
+	end
+
+	local storage = Utility.Peep.getStorage(peep):getSection("Bosses")
+	local bossStorage = storage:getSection(boss.name)
+
+	bossStorage:set("count", (bossStorage:get("count") or 0) + 1)
+end
+
+function Utility.Boss.recordDrop(peep, target, itemID, itemCount)
+	local boss = Utility.Boss.getBoss(target)
+	if not boss then
+		return
+	end
+
+	local storage = Utility.Peep.getStorage(peep):getSection("Bosses")
+	local bossStorage = storage:getSection(boss.name)
+	local dropStorage = bossStorage:getSection("Drops"):getSection(itemID)
+
+	dropStorage:set({ count = (dropStorage:get("count") or 0) + itemCount })
+end
+
+function Utility.Boss.getDrops(peep, boss)
+	if type(boss) == 'string' then
+		boss = peep:getDirector():getGameDB():getResource(boss, "Boss")
+	end
+
+	if not boss then
+		return {}
+	end
+
+	local storage = Utility.Peep.getStorage(peep):getSection("Bosses")
+	local bossStorage = storage:getSection(boss.name)
+	return bossStorage:getSection("Drops"):get()
+end
+
+function Utility.Boss.getKillCount(peep, boss)
+	if type(boss) == 'string' then
+		boss = peep:getDirector():getGameDB():getResource(boss, "Boss")
+	end
+
+	if not boss then
+		return 0
+	end
+
+	local storage = Utility.Peep.getStorage(peep):getSection("Bosses")
+	local bossStorage = storage:getSection(boss.name)
+	return bossStorage:get("count") or 0
 end
 
 Utility.Quest = {}

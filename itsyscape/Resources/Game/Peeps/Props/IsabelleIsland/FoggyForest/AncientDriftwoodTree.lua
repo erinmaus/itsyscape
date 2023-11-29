@@ -26,28 +26,26 @@ function AncientDriftwoodTree:new(...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 4, 1)
 
-	self:addBehavior(SizeBehavior)
-
-	self.ticks = 0
-	self.felled = false
+	self.ticks = setmetatable({}, { __mode = "k" })
 end
 
 function AncientDriftwoodTree:onResourceObtained(e)
-	self.ticks = self.ticks + 1
+	self.ticks[e.peep] = (self.ticks[e.peep] or 0) + 1
+	local ticks = self.ticks[e.peep]
 
 	local map = Utility.Peep.getMapResource(self)
 	local director = self:getDirector()
 	local t = director:probe(self:getLayerName(), Probe.resource(map))
 
-	if self.ticks <= AncientDriftwoodTree.MAX_TICKS then
-		director:broadcast(t, 'ancientDriftwoodTreeHit', { ticks = self.ticks, peep = e.peep })
+	if ticks <= AncientDriftwoodTree.MAX_TICKS then
+		director:broadcast(t, 'ancientDriftwoodTreeHit', { ticks = ticks, peep = e.peep })
 
 		self.spawnCooldown = AncientDriftwoodTree.NORMAL_COOLDOWN
 	else
-		director:broadcast(t, 'ancientDriftwoodTreeFelled', { ticks = self.ticks, peep = e.peep })
+		director:broadcast(t, 'ancientDriftwoodTreeFelled', { ticks = ticks, peep = e.peep })
 	
 		self.spawnCooldown = AncientDriftwoodTree.FELLED_COOLDOWN
-		self.ticks = 0
+		self.ticks[e.peep] = nil
 	end
 end
 

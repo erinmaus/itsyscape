@@ -644,10 +644,13 @@ function HighChambersYendor:giveMinibossLoot()
 			local playerPeep = player:getActor():getPeep()
 
 			if heart then
+				local cthulhuians = self:getMiniboss()
+
 				heart:poke('materialize', {
 					count = math.random(30, 40),
 					dropTable = gameDB:getResource("HighChambersYendor_MassiveBeatingHeart_Rewards", "DropTable"),
 					peep = playerPeep,
+					boss = cthulhuians and cthulhuians[1],
 					chest = heart
 				})
 			end

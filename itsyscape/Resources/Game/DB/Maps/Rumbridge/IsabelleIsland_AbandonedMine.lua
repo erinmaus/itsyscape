@@ -76,6 +76,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre"
 }
 
+ItsyScape.Meta.LootCategory {
+	Item = ItsyScape.Resource.Item "IsabelleIsland_CrawlingCopperOre",
+	Category = ItsyScape.Resource.LootCategory "Special"
+}
+
 ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre" {
 	-- Nothing.
 }
@@ -98,6 +103,11 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "Just the touch of the ore on your skin makes you tense up...",
 	Resource = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre"
+}
+
+ItsyScape.Meta.LootCategory {
+	Item = ItsyScape.Resource.Item "IsabelleIsland_TenseTinOre",
+	Category = ItsyScape.Resource.LootCategory "Special"
 }
 
 ItsyScape.Resource.Peep "GhostlyMinerForeman" {

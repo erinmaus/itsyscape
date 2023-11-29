@@ -116,7 +116,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid",
-		MapObject = M["UndeadSquid"]
+		MapObject = M["UndeadSquid"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 end
 

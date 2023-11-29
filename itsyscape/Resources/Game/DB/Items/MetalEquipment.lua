@@ -1207,7 +1207,7 @@ do
 		Resource = ItsyScape.Resource.Item "ItsyZweihander"
 	}
 
-		ItsyScape.Resource.Item "AdamantTrim" {
+	ItsyScape.Resource.Item "AdamantTrim" {
 		-- Nothing.
 	}
 
