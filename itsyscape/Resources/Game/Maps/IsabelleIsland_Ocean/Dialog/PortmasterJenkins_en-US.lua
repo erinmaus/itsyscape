@@ -29,7 +29,7 @@ if squidAlive then
 
 	local player = Utility.Peep.getPlayerModel(_TARGET)
 	if player then
-		player:pokeCamera('shake', 0.1)
+		player:pokeCamera('shake', 0.5)
 	end
 
 	speaker "Squid"

@@ -207,7 +207,7 @@ do
 		}
 
 		ItsyScape.Meta.RewardEntry {
-			Action = SailorsHatReward,
+			Action = FishermansHatReward,
 			Weight = 5
 		}
 
