@@ -187,7 +187,7 @@ function Map:isOutOfBounds(x, z)
 	return false
 end
 
-function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
+function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 	if i1 == i2 and j1 == j2 then
 		return true
 	end
@@ -216,7 +216,11 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
 		pj = y
 	end
 
-	while x ~= (i2 + xstep) do
+	if isDebug then
+		Log.info("Line of sight check from (%d, %d) to (%d, %d) engaged...", i1, j1, i2, j2)
+	end
+
+	while x ~= i2 do
 		error = error - dy
 		if error < 0 then
 			y = y + ystep
@@ -235,8 +239,16 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
 				j = y
 			end
 
+			if isDebug then
+				Log.info("Checking to see if peep can move to (%d, %d) from (%d, %d)...", i, j, pi, pj)
+			end
+
 			local di, dj = i - pi, j - pj
-			if not self:canMove(i, j, pi - i, pj - j, shoot, isPlayer) then
+			if not self:canMove(pi, pj, di, dj, shoot, isDebug) then
+				if isDebug then
+					Log.info("Cannot move to (%d, %d) from (%d, %d)!", i, j, pi, pj)
+				end
+
 				return false
 			end
 
@@ -245,10 +257,14 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot)
 		end
 	end
 
+	if isDebug then
+		Log.info("Can move from (%d, %d) to (%d, %d)!", i1, j1, i2, j2)
+	end
+
 	return true
 end
 
-function Map:canMove(i, j, di, dj, shoot)
+function Map:canMove(i, j, di, dj, shoot, isDebug)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
 	end
@@ -269,6 +285,12 @@ function Map:canMove(i, j, di, dj, shoot)
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
 			isLeftPassable = true
+		else
+			if isDebug then
+				Log.info("Left (passable = %s, shoot = %s) elevation diff: top = %.2f, bottom = %.2f",
+					Log.boolean(left:getIsPassable()), Log.boolean(left:hasFlag("shoot") and shoot),
+					left.topRight - tile.topLeft, left.bottomRight - tile.bottomLeft)
+			end
 		end
 	end
 
@@ -280,6 +302,12 @@ function Map:canMove(i, j, di, dj, shoot)
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right"))
 		then
 			isRightPassable = true
+		else
+			if isDebug then
+				Log.info("Right (passable = %s, shoot = %s) elevation diff: top = %.2f, bottom = %.2f",
+					Log.boolean(right:getIsPassable()), Log.boolean(right:hasFlag("shoot") and shoot),
+					right.topLeft - tile.topRight, right.bottomLeft - tile.bottomRight)
+			end
 		end
 	end
 
@@ -291,6 +319,12 @@ function Map:canMove(i, j, di, dj, shoot)
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top"))
 		then
 			isTopPassable = true
+		else
+			if isDebug then
+				Log.info("Top (passable = %s, shoot = %s) elevation diff: left = %.2f, right = %.2f",
+					Log.boolean(top:getIsPassable()), Log.boolean(top:hasFlag("shoot") and shoot),
+					top.bottomLeft - tile.topLeft, top.bottomRight - tile.topRight)
+			end
 		end
 	end
 
@@ -302,7 +336,20 @@ function Map:canMove(i, j, di, dj, shoot)
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom"))
 		then
 			isBottomPassable = true
+		else
+			if isDebug then
+				Log.info("Bottom (passable = %s, shoot = %s) elevation diff: left = %.2f, right = %.2f",
+					Log.boolean(bottom:getIsPassable()), Log.boolean(bottom:hasFlag("shoot") and shoot),
+					bottom.topLeft - tile.bottomLeft, bottom.topRight - tile.bottomRight)
+			end
 		end
+	end
+
+	if isDebug then
+		Log.info(
+			"Passable (%d, %d -> %d, %d): left = %s, right = %s, top = %s, bottom = %s",
+			i, j, i + di, j + dj,
+			Log.boolean(isLeftPassable), Log.boolean(isRightPassable), Log.boolean(isTopPassable), Log.boolean(isBottomPassable))
 	end
 
 	if math.abs(di) + math.abs(dj) > 1 then
@@ -311,8 +358,22 @@ function Map:canMove(i, j, di, dj, shoot)
 			if topLeft.bottomRight <= tile.topLeft and
 			   (topLeft:getIsPassable({ 'impassable' }) or (topLeft:hasFlag("shoot") and shoot))
 			then
-				return isTopPassable and isLeftPassable
+				if isDebug then
+					Log.info(
+						"(%d, %d) top left = %.2f, (%d, %d) bottom right = %.2f, passable = %s",
+						i, j, tile.topLeft, i + di, j + dj, topLeft.bottomRight, Log.boolean(isTopPassable and isBottomPassable))
+				end
+
+				return (isTopPassable and isLeftPassable)
 			else
+				if isDebug then
+					Log.info("Cannot move to top left (%d, %d): passable = %s, shoot = %s, elevation diff = %.2f",
+						i + di, j + dj,
+						Log.boolean(topLeft:getIsPassable({ 'impassable' })),
+						Log.boolean(topLeft:hasFlag("shoot") and shoot),
+						topLeft.bottomRight - tile.topLeft)
+				end
+
 				return false
 			end
 		end
@@ -322,8 +383,22 @@ function Map:canMove(i, j, di, dj, shoot)
 			if bottomLeft.topRight <= tile.bottomLeft and
 			   (bottomLeft:getIsPassable({ 'impassable' }) or (bottomLeft:hasFlag("shoot") and shoot))
 			then
-				return isBottomPassable and isLeftPassable
+				if isDebug then
+					Log.info(
+						"(%d, %d) bottom left = %.2f, (%d, %d) top right = %.2f, passable = %s",
+						i, j, tile.bottomLeft, i + di, j + dj, bottomLeft.topRight, Log.boolean(isBottomPassable and isLeftPassable))
+				end
+
+				return (isBottomPassable and isLeftPassable)
 			else
+				if isDebug then
+					Log.info("Cannot move to bottom left (%d, %d): passable = %s, shoot = %s, elevation diff = %.2f",
+						i + di, j + dj,
+						Log.boolean(bottomLeft:getIsPassable({ 'impassable' })),
+						Log.boolean(bottomLeft:hasFlag("shoot") and shoot),
+						bottomLeft.topRight - tile.bottomLeft)
+				end
+
 				return false
 			end
 		end
@@ -333,8 +408,22 @@ function Map:canMove(i, j, di, dj, shoot)
 			if topRight.bottomLeft <= tile.topRight and
 			   (topRight:getIsPassable({ 'impassable' }) or (topRight:hasFlag("shoot") and shoot))
 			then
-				return isTopPassable and isRightPassable
+				if isDebug then
+					Log.info(
+						"(%d, %d) top right = %.2f, (%d, %d) bottom left = %.2f, passable = %s",
+						i, j, tile.topRight, i + di, j + dj, topRight.bottomLeft, Log.boolean(isTopPassable and isRightPassable))
+				end
+
+				return (isTopPassable and isRightPassable)
 			else
+				if isDebug then
+					Log.info("Cannot move to top right (%d, %d): passable = %s, shoot = %s, elevation diff = %.2f",
+						i + di, j + dj,
+						Log.boolean(topRight:getIsPassable({ 'impassable' })),
+						Log.boolean(topRight:hasFlag("shoot") and shoot),
+						topRight.bottomLeft - tile.topRight)
+				end
+
 				return false
 			end
 		end
@@ -344,8 +433,22 @@ function Map:canMove(i, j, di, dj, shoot)
 			if bottomRight.topLeft <= tile.bottomRight and
 			   (bottomRight:getIsPassable({ 'impassable' }) or (bottomRight:hasFlag("shoot") and shoot))
 			then
-				return isBottomPassable and isRightPassable
+				if isDebug then
+					Log.info(
+						"(%d, %d) bottom right = %.2f, (%d, %d) top left = %.2f, passable = %s",
+						i, j, tile.bottomRight, i + di, j + dj, bottomRight.topLeft, Log.boolean(isBottomPassable and isRightPassable))
+				end
+
+				return (isBottomPassable and isRightPassable)
 			else
+				if isDebug then
+					Log.info("Cannot move to bottom right (%d, %d): passable = %s, shoot = %s, elevation diff = %.2f",
+						i + di, j + dj,
+						Log.boolean(bottomRight:getIsPassable({ 'impassable' })),
+						Log.boolean(bottomRight:hasFlag("shoot") and shoot),
+						bottomRight.topLeft - tile.bottomRight)
+				end
+
 				return false
 			end
 		end
