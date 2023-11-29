@@ -70,7 +70,7 @@ local SummonOrTargetSequence = Mashina.ParallelTry {
 			message = "You think you've outsmarted me by slaying my court...?"
 		},
 
-		Mashina.Peep.Timeout {
+		Mashina.Peep.TimeOut {
 			duration = 1
 		},
 
