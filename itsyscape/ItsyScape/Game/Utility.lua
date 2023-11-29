@@ -4163,6 +4163,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackZweihanderSlash_1/Script.lua")
 	peep:addResource("animation-attack-slash-zweihander", attackAnimationZweihanderSlash)
+	local attackAnimationZweihanderStab = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_AttackZweihanderStab_1/Script.lua")
+	peep:addResource("animation-attack-stab-zweihander", attackAnimationZweihanderStab)
 	local attackAnimationFishingRodCrush = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_AttackFishingRodCrush_1/Script.lua")

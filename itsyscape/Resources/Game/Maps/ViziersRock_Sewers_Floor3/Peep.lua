@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local Common = require "Resources.Game.Peeps.ViziersRock.SewersCommon"
@@ -101,8 +102,6 @@ function Sewers:angerBoss(boss, fishingSpot, p)
 
 		Utility.Peep.attack(boss, p.peep)
 
-		print(">>> animState", boss.currentAnimationState)
-
 		boss:silence('target', onBossTarget)
 	end
 	boss:listen('target', onBossTarget)
@@ -110,9 +109,17 @@ function Sewers:angerBoss(boss, fishingSpot, p)
 	Utility.Peep.poof(fishingSpot)
 end
 
-function Sewers:onBossDie()
+function Sewers:onBossDie(boss)
 	local instance = Utility.Peep.getInstance(self)
 	Utility.Peep.notify(instance, "The ancient karadon spit up an adamant key...")
+	Utility.Peep.notify(instance, "The chest to the north has items in it for you!")
+
+	local chest = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("RewardChest"))[1]
+	if not chest then
+		Log.warn("Reward chest not found; cannot reward players!")
+	end
 
 	for _, player in instance:iteratePlayers() do
 		local playerPeep = player:getActor():getPeep()
@@ -122,6 +129,26 @@ function Sewers:onBossDie()
 			"ViziersRock_Sewers_AdamantKey",
 			1,
 			{ ['item-inventory'] = true, ['item-drop-excess'] = true, ['force-item-drop'] = true })
+
+		if chest then
+			local gameDB = self:getDirector():getGameDB()
+
+			chest:poke('materialize', {
+				count = love.math.random(15, 25),
+				dropTable = gameDB:getResource("AncientKaradon_Primary", "DropTable"),
+				peep = playerPeep,
+				boss = boss,
+				chest = chest
+			})
+
+			chest:poke('materialize', {
+				count = love.math.random(3, 6),
+				dropTable = gameDB:getResource("AncientKaradon_Secondary", "DropTable"),
+				peep = playerPeep,
+				boss = boss,
+				chest = chest
+			})
+		end
 	end
 end
 
