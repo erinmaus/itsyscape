@@ -156,14 +156,14 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 					stage:dropItem(item, item:getCount(), 'uninterrupted-drop')
 				end
 
-				return true
+				return true, pocketTransaction
 			end
 		end
 
 		return false
 	end
 
-	return true
+	return true, transaction
 end
 
 function PlayerInventoryStateProvider:count(name, flags)

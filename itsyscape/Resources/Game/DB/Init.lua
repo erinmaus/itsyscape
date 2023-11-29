@@ -75,6 +75,26 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Boss"
+	Meta "Boss" {
+		Boss = Meta.TYPE_RESOURCE,
+		Target = Meta.TYPE_RESOURCE,
+		RequireKill = Meta.TYPE_INTEGER,
+		Category = Meta.TYPE_TEXT
+	}
+
+	Meta "BossCategory" {
+		Category = Meta.TYPE_TEXT,
+		Name = Meta.TYPE_TEXT,
+		Description = Meta.TYPE_TEXT,
+		Language = Meta.TYPE_TEXT
+	}
+
+	Meta "BossDropTable" {
+		Boss = Meta.TYPE_RESOURCE,
+		DropTable = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "None"
 
 	ActionType "Bank"
@@ -448,6 +468,20 @@ Game "ItsyScape"
 		Value = "The most desirable and rarest loot.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.LootCategory "Legendary"
+	}
+
+	ItsyScape.Resource.LootCategory "Special"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Special",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.LootCategory "Special"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Special loot, like for quests.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.LootCategory "Special"
 	}
 
 	Meta "LootCategory" {
@@ -1140,6 +1174,7 @@ include "Resources/Game/DB/Cooking/Init.lua"
 
 -- Important key items
 include "Resources/Game/DB/KeyItems.lua"
+include "Resources/Game/DB/Peeps/Bosses.lua"
 
 -- Items
 -- Materials

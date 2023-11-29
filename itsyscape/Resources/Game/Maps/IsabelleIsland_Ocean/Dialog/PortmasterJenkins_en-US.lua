@@ -1,5 +1,6 @@
 speaker "Jenkins"
 
+local squid
 local squidAlive = true
 do
 	local director = _TARGET:getDirector()
@@ -11,7 +12,7 @@ do
 	if #hits == 0 then
 		squidAlive = false
 	else
-		local squid = hits[1]
+		squid = hits[1]
 		local status = squid:getBehavior("CombatStatus")
 		if not status or status.currentHitpoints == 0 then
 			squidAlive = false
@@ -28,7 +29,7 @@ if squidAlive then
 
 	local player = Utility.Peep.getPlayerModel(_TARGET)
 	if player then
-		player:pokeCamera('shake', 0.1)
+		player:pokeCamera('shake', 0.5)
 	end
 
 	speaker "Squid"
@@ -67,6 +68,7 @@ else
 			count = count,
 			dropTable = gameDB:getResource("IsabelleIsland_Port_UndeadSquid_Rewards", "DropTable"),
 			peep = _TARGET,
+			boss = squid,
 			chest = chest
 		})
 
@@ -74,6 +76,7 @@ else
 			count = 1,
 			dropTable = gameDB:getResource("IsabelleIsland_Port_UndeadSquid_Rewards_Skull", "DropTable"),
 			peep = _TARGET,
+			boss = squid,
 			chest = chest
 		})
 

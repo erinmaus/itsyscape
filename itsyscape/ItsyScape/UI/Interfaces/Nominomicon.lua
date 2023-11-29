@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
@@ -190,6 +191,19 @@ function Nominomicon:update(...)
 		self.ready = true
 	end
 
+	if self.doFlagResizeLayout then
+		if self.bossPanel then
+			self.bossPanel:performLayout()
+			self.bossPanel:getParent():performLayout()
+
+			self.infoPanel:setScrollSize(self.bossPanel:getSize())
+			self.infoPanel:setScroll(0, 0)
+
+		end
+
+		self.doFlagResizeLayout = false
+	end
+
 	self:updateToggleButton()
 end
 
@@ -220,7 +234,7 @@ function Nominomicon:selectItem(index, button, mouseButton)
 			self.previousSelection = false
 			self.guideLabel:setText("")
 		end
-	elseif mouseButton == 2 then
+	elseif mouseButton == 2 and quest.isQuest then
 		local actions = {}
 
 		table.insert(actions, {
@@ -251,8 +265,94 @@ function Nominomicon:updateGuide()
 	local state = self:getState()
 	local currentQuest = state.currentQuest
 
-	self.guideLabel:setText(currentQuest)
-	self.infoPanel:getInnerPanel():setScroll(0, 0)
+	self.infoPanel:getInnerPanel():clearChildren()
+
+	if currentQuest.bosses then
+		self:showBossDrops(currentQuest.bosses)
+	else
+		self.infoPanel:addChild(self.guideLabel)
+		self.guideLabel:setText(currentQuest)
+		self.infoPanel:getInnerPanel():setScroll(0, 0)
+	end
+end
+
+function Nominomicon:flagResizeLayout()
+	self.doFlagResizeLayout = true
+end
+
+function Nominomicon:showBossDrops(bosses)
+	local w, h = self.infoPanel:getInnerPanel():getSize()
+
+	local root = GridLayout()
+	root:setWrapContents(true)
+	root:setPadding(Nominomicon.PADDING, Nominomicon.PADDING)
+	root:setSize(w, 0)
+
+	for _, area in ipairs(bosses) do
+		local areaLabel = RichTextLabel()
+		areaLabel:setWrapContents(true)
+		areaLabel:setSize(w, 0)
+		areaLabel:setText({
+			{
+				t = "header",
+				area.name
+			},
+			area.description
+		})
+
+		areaLabel.onSize:register(self.flagResizeLayout, self)
+
+		root:addChild(areaLabel)
+
+		for _, boss in ipairs(area.bosses) do
+			if boss.count >= 1 or (not boss.isSpecial or _DEBUG) then
+				local bossLabel = RichTextLabel()
+				bossLabel:setWrapContents(true)
+				bossLabel:setSize(w, 0)
+				bossLabel:setText({
+					{
+						t = "header",
+						boss.name
+					},
+					boss.description,
+					boss.count >= 1 and string.format("You've killed %s %d %s.", boss.name, boss.count, boss.count > 1 and "times" or "time") or "You haven't killed this boss yet."
+				})
+
+				root:addChild(bossLabel)
+
+				local itemLayout = GridLayout()
+				itemLayout:setWrapContents(true)
+				itemLayout:setPadding(Nominomicon.PADDING, Nominomicon.PADDING)
+				itemLayout:setSize(w, 0)
+				itemLayout:setUniformSize(true, ItemIcon.DEFAULT_SIZE, ItemIcon.DEFAULT_SIZE)
+
+				for _, item in ipairs(boss.items) do
+					local icon = ItemIcon()
+					icon:setItemID(item.id)
+					icon:setItemCount(item.count)
+					icon:setIsDisabled(item.count == 0)
+					icon:setToolTip(
+						ToolTip.Header(item.name),
+						ToolTip.Text(item.description))
+
+					itemLayout:addChild(icon)
+				end
+
+				local _, itemLayoutHeight = itemLayout:getSize()
+				local background = Panel()
+				background:setStyle(PanelStyle({
+					image = "Resources/Renderers/Widget/Panel/Group.9.png"
+				}, self:getView():getResources()))
+				background:setSize(w, itemLayoutHeight + Nominomicon.PADDING)
+				background:addChild(itemLayout)
+
+				root:addChild(background)
+			end
+		end
+	end
+
+	self.bossPanel = root
+	self.infoPanel:addChild(root)
 end
 
 return Nominomicon

@@ -110,3 +110,42 @@ do
 		Resource = ItsyScape.Resource.Item "BugGutsHide"
 	}
 end
+
+do
+	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Leather",
+		CategoryValue = "AncientKaradon",
+		ActionType = "Craft",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Item "AncientKaradonHide" {
+		CraftAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ancient karadon skin",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonHide"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The skin and scales of an ancient karadon. Can make some cool robes with this!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonHide"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(41),
+		Resource = ItsyScape.Resource.Item "AncientKaradonHide"
+	}
+end

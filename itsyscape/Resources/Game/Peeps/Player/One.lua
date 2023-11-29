@@ -46,7 +46,8 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
 local One = Class(Peep)
-One.PENDING_ANALYTIC_PERIOD_SECONDS = 5
+One.PENDING_ANALYTIC_LEVEL_UP_PERIOD_SECONDS = 5
+One.PENDING_ANALYTIC_XP_GAIN_PERIOD_SECONDS = 30
 
 function One:new(...)
 	Peep.new(self, 'Player', ...)
@@ -68,12 +69,12 @@ function One:new(...)
 	size.size = Vector(1, 2, 1)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 10
-	movement.maxAcceleration = 9
+	movement.maxSpeed = 12
+	movement.maxAcceleration = 12
 	movement.decay = 0.5
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
-	movement.stoppingForce = 4
+	movement.stoppingForce = 3
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
@@ -194,18 +195,19 @@ function One:assign(director, key, ...)
 
 	self.pendingLevelUps = {}
 	self.pendingXP = {}
-	self.pendingTime = love.timer.getTime()
+	self.pendingXPTime = love.timer.getTime()
+	self.pendingLevelTime = love.timer.getTime()
 
 	stats.stats.onLevelUp:register(function(_, skill)
 		self.pendingLevelUps[skill:getName()] = skill:getBaseLevel()
-		self.pendingTime = love.timer.getTime()
+		self.pendingLevelUpTime = love.timer.getTime()
 
 		Utility.UI.openInterface(self, "LevelUpNotification", false, skill)
 	end)
 	stats.stats.onXPGain:register(function(_, skill, xp)
 		if xp > 0 then
 			self.pendingXP[skill:getName()] = (self.pendingXP[skill:getName()] or 0) + xp
-			self.pendingTime = love.timer.getTime()
+			self.pendingXPTime = love.timer.getTime()
 		end
 	end)
 
@@ -411,12 +413,14 @@ function One:onResurrect()
 end
 
 function One:updatePendingAnalytics(force)
-	if self.pendingTime + One.PENDING_ANALYTIC_PERIOD_SECONDS < love.timer.getTime() or force then
+	if self.pendingLevelTime + One.PENDING_ANALYTIC_LEVEL_UP_PERIOD_SECONDS < love.timer.getTime() or force then
 		if next(self.pendingLevelUps) ~= nil then
 			Analytics:gotLevelUp(self, self.pendingLevelUps)
 			table.clear(self.pendingLevelUps)
 		end
+	end
 
+	if self.pendingXPTime + One.PENDING_ANALYTIC_XP_GAIN_PERIOD_SECONDS < love.timer.getTime() or force then
 		if next(self.pendingXP) ~= nil then
 			Analytics:gainedXP(self, self.pendingXP)
 			table.clear(self.pendingXP)

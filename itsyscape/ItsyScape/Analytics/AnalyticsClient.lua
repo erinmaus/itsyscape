@@ -362,6 +362,7 @@ function Client:killedNPC(peep, target, xp)
 		["Target Current Prayer"] = targetCombatStatus and targetCombatStatus.currentPrayer,
 		["Target Maximum Prayer"] = targetCombatStatus and targetCombatStatus.maximumPrayer,
 		["Target Total XP"] = Utility.Combat.getCombatXP(target),
+		["Target Is Boss"] = Utility.Boss.isBoss(target),
 		["Player Partial XP"] = xp
 	}
 
@@ -571,7 +572,13 @@ local INTERFACE_BLACKLIST = {
 	"ScoreHUD",
 	"TutorialHint",
 	"ConfigWindow",
-	"DialogBox"
+	"DialogBox",
+	"PlayerStance",
+	"PlayerInventory",
+	"PlayerEquipment",
+	"PlayerStats",
+	"PlayerSpells",
+	"PlayerPrayers"
 }
 
 function Client:openedInterface(peep, interface, blocking)
@@ -675,7 +682,8 @@ function Client:submit(event, properties, flush)
 	end
 
 	if not sanitize(properties) then
-		error(string.format("Properties not valid for analytic event '%s'!", event))
+		Log.error("Properties not valid for analytic event '%s'!", event)
+		return
 	end
 
 	Log.engine("Submitting analytic event '%s'...", event)

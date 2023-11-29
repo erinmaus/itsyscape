@@ -179,6 +179,119 @@ function NominomiconController:new(peep, director)
 		quests = self.quests,
 		hideQuestProgress = self:getDirector():getPlayerStorage(self:getPeep()):getRoot():getSection("Nominomicon"):get("hideQuestProgress") == true
 	}
+
+	self:buildBosses()
+end
+
+function NominomiconController:buildBosses()
+	local bosses = {}
+
+	local gameDB = self:getDirector():getGameDB()
+	local areas = gameDB:getRecords("BossCategory", { Language = "en-US" })
+	for _, area in ipairs(areas) do
+		local a = {
+			name = area:get("Name"),
+			description = area:get("Description"),
+			bosses = {}
+		}
+
+		local areaName = area:get("Category")
+		local bossRecords = gameDB:getRecords("Boss", {
+			Category = area:get("Category")
+		})
+
+		for _, boss in ipairs(bossRecords) do
+			local bossResource = boss:get("Boss")
+			local killCount = Utility.Boss.getKillCount(self:getPeep(), bossResource)
+			local b = {
+				name = Utility.getName(bossResource, gameDB),
+				description = Utility.getDescription(bossResource, gameDB),
+				count = killCount,
+				isSpecial = boss:get("RequireKill") ~= 0,
+				items = self:buildBossDrops(bossResource)
+			}
+
+			table.insert(a.bosses, b)
+		end
+
+
+		table.insert(bosses, a)
+	end
+
+	table.insert(self.quests, 2, {
+		id = "X_BossLog",
+		name = "Boss Log",
+		description = "See the slain bosses and drops you've gotten from them.",
+		isQuest = false
+	})
+
+	table.insert(self.questInfo, 2, { bosses = bosses })
+end
+
+function NominomiconController:buildBossDrops(boss)
+	local gameDB = self:getDirector():getGameDB()
+	local items = {}
+
+	local tables = gameDB:getRecords("BossDropTable", {
+		Boss = boss
+	})
+
+	for _, bossDropTable in ipairs(tables) do
+		local dropTableResource = bossDropTable:get("DropTable")
+
+		local lootRecords = gameDB:getRecords("DropTableEntry", { Resource = dropTableResource })
+		for _, loot in ipairs(lootRecords) do
+			local item = loot:get("Item")
+			items[item.name] = true
+		end
+
+		local rewardActions = Utility.getActions(self:getGame(), dropTableResource, 'loot')
+		for _, reward in ipairs(rewardActions) do
+			local constraints = Utility.getActionConstraints(self:getGame(), reward.instance:getAction())
+			for _, output in ipairs(constraints.outputs) do
+				if output.type:lower() == "item" then
+					items[output.resource] = true
+				end
+			end
+		end
+	end
+
+	local drops = Utility.Boss.getDrops(self:getPeep(), boss)
+	local result = {}
+	for item in pairs(items) do
+		local itemResource = gameDB:getResource(item, "Item")
+		table.insert(result, {
+			id = item,
+			name = Utility.getName(itemResource, gameDB) or ("*" .. item),
+			description = Utility.getDescription(itemResource, gameDB),
+			count = drops[item] and drops[item].count or 0
+		})
+	end
+
+	table.sort(result, function(a, b)
+		local isLegendaryA = Utility.Boss.isLegendary(gameDB, a.id)
+		local isLegendaryB = Utility.Boss.isLegendary(gameDB, b.id)
+		local isSpecialA = Utility.Boss.isSpecial(gameDB, a.id)
+		local isSpecialB = Utility.Boss.isSpecial(gameDB, b.id)
+
+		if isLegendaryA == isLegendaryB then
+			if isSpecialA == isSpecialB then
+				return a.name < b.name
+			elseif isSpecialA and not isSpecialB then
+				return true
+			elseif not isSpecialA and isSpecialB then
+				return false
+			end
+		elseif isLegendaryA and not isLegendaryB then
+			return true
+		elseif not isLegendaryA and isLegendaryB then
+			return false
+		end
+
+		return false
+	end)
+
+	return result
 end
 
 function NominomiconController:poke(actionID, actionIndex, e)
@@ -227,7 +340,7 @@ function NominomiconController:select(e)
 	local currentQuest = self.questInfo[e.index]
 
 	local result
-	if e.index == 1 or e.index == #self.questInfo then
+	if not self.quests[e.index].isQuest then
 		result = currentQuest
 	else
 		result = Utility.Quest.buildRichTextLabelFromQuestLog(currentQuest, self:getPeep(), _DEBUG)

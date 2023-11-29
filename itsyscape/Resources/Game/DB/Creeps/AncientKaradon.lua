@@ -205,3 +205,158 @@ do
 		Resource = AncientKaradonPriest
 	}
 end
+
+
+
+do
+	local AncientKaradonScalesReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "AncientKaradonHide",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = AncientKaradonScalesReward,
+		Weight = 100
+	}
+
+	local CoelacanthReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coelacanth",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = CoelacanthReward,
+		Weight = 5
+	}
+
+	local CrawfishReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Crawfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(25)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = CrawfishReward,
+		Weight = 400
+	}
+
+	local ShrimpReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Shrimp",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = ShrimpReward,
+		Weight = 200
+	}
+
+	local FishermansHatReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "FishermansHat",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(15)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = FishermansHatReward,
+		Weight = 10
+	}
+
+	local BaitReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Bait",
+			Count = 200
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BaitReward,
+		Weight = 100
+	}
+
+	local CoinsReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Coins",
+			Count = 15000
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = CoinsReward,
+		Weight = 100
+	}
+
+	ItsyScape.Resource.DropTable "AncientKaradon_Primary" {
+		CoelacanthReward,
+		CrawfishReward,
+		ShrimpReward,
+		FishermansHatReward,
+		BaitReward,
+		CoinsReward
+	}
+
+	ItsyScape.Resource.DropTable "AncientKaradon_Secondary" {
+		AncientKaradonScalesReward
+	}
+end
+
+do
+	local SlimyChest = ItsyScape.Resource.Prop "AncientKaradon_Chest" {
+
+	}
+
+	ItsyScape.Meta.PropAlias {
+		Alias = ItsyScape.Resource.Prop "Chest_Default",
+		Resource = SlimyChest
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.InstancedBasicChest",
+		Resource = SlimyChest
+	}
+
+	ItsyScape.Meta.Peep {
+		Singleton = 1,
+		SingletonID = "AncientKaradon_Chest",
+		Resource = SlimyChest
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Slimy chest",
+		Language = "en-US",
+		Resource = SlimyChest
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks like a fish spit that chest up...! How disgusting.",
+		Language = "en-US",
+		Resource = SlimyChest
+	}
+end

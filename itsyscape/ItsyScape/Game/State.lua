@@ -131,8 +131,9 @@ function State:give(resource, name, count, flags)
 	end
 
 	for i = 1, #p do
-		if p[i]:give(name, count, flags) then
-			return true, p[i]
+		local success, result = p[i]:give(name, count, flags)
+		if success then
+			return true, p[i], result
 		end
 	end
 

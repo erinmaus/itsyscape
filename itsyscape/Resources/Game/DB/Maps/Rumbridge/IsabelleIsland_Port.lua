@@ -207,7 +207,7 @@ do
 		}
 
 		ItsyScape.Meta.RewardEntry {
-			Action = SailorsHatReward,
+			Action = FishermansHatReward,
 			Weight = 5
 		}
 
@@ -357,6 +357,11 @@ do
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/SquidSkull/SquidSkull.lua",
 		Resource = ItsyScape.Resource.Item "SquidSkull"
+	}
+
+	ItsyScape.Meta.LootCategory {
+		Item = ItsyScape.Resource.Item "SquidSkull",
+		Category = ItsyScape.Resource.LootCategory "Special"
 	}
 
 	local SkullReward = ItsyScape.Action.Reward() {

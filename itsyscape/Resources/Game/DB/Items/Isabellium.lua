@@ -114,7 +114,7 @@ for itemName, itemProps in spairs(ITEMS) do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(15) * itemProps.count,
+		Value = (ItsyScape.Utility.valueForItem(50) / 10) * itemProps.count,
 		Resource = Item
 	}
 
@@ -201,7 +201,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(50),
+		Value = ItsyScape.Utility.valueForItem(50) / 10,
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "IsabelliumShard"
 	}
@@ -236,6 +236,11 @@ do
 		Value = "A shard of the mysterious alloy Isabelle invented. Shines with potential.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IsabelliumShard"
+	}
+
+	ItsyScape.Meta.LootCategory {
+		Item = ItsyScape.Resource.Item "IsabelliumShard",
+		Category = ItsyScape.Resource.LootCategory "Special"
 	}
 end
 
@@ -295,7 +300,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(50) * 10,
+		Value = ItsyScape.Utility.valueForItem(51) * 10,
 		Resource = ItsyScape.Resource.Item "IsabellesLootBag"
 	}
 
@@ -344,7 +349,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(50) * 10,
+		Value = ItsyScape.Utility.valueForItem(51) * 10,
 		Resource = ItsyScape.Resource.Item "IsabelliumZweihander"
 	}
 
@@ -357,11 +362,6 @@ do
 	ItsyScape.Meta.EquipmentModel {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/Isabellium/IsabelliumZweihander.lua",
-		Resource = ItsyScape.Resource.Item "IsabelliumZweihander"
-	}
-
-	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(15) * 5,
 		Resource = ItsyScape.Resource.Item "IsabelliumZweihander"
 	}
 
@@ -412,7 +412,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(50) * 10,
+		Value = ItsyScape.Utility.valueForItem(51) * 10,
 		Resource = ItsyScape.Resource.Item "IsabelliumLongbow"
 	}
 
@@ -425,11 +425,6 @@ do
 	ItsyScape.Meta.EquipmentModel {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/Isabellium/IsabelliumLongbow.lua",
-		Resource = ItsyScape.Resource.Item "IsabelliumLongbow"
-	}
-
-	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(15) * 5,
 		Resource = ItsyScape.Resource.Item "IsabelliumLongbow"
 	}
 
@@ -493,11 +488,6 @@ do
 	ItsyScape.Meta.EquipmentModel {
 		Type = "ItsyScape.Game.Skin.ModelSkin",
 		Filename = "Resources/Game/Skins/Isabellium/IsabelliumStaff.lua",
-		Resource = ItsyScape.Resource.Item "IsabelliumStaff"
-	}
-
-	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(15) * 5,
 		Resource = ItsyScape.Resource.Item "IsabelliumStaff"
 	}
 
