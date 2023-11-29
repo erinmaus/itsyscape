@@ -572,7 +572,13 @@ local INTERFACE_BLACKLIST = {
 	"ScoreHUD",
 	"TutorialHint",
 	"ConfigWindow",
-	"DialogBox"
+	"DialogBox",
+	"PlayerStance",
+	"PlayerInventory",
+	"PlayerEquipment",
+	"PlayerStats",
+	"PlayerSpells",
+	"PlayerPrayers"
 }
 
 function Client:openedInterface(peep, interface, blocking)
