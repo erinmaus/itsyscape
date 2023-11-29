@@ -120,6 +120,7 @@ function Loot:materializeDropTable(peep, inventory, loot)
 
 				if #items >= 1 and slayer and slayer:hasBehavior(PlayerBehavior) then
 					Analytics:npcDroppedItem(slayer, peep, items[1], count, isLegendary)
+					Utility.Boss.recordDrop(slayer, peep, resource.name, count)
 				end
 
 				if isLegendary then

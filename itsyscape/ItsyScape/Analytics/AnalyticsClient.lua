@@ -362,6 +362,7 @@ function Client:killedNPC(peep, target, xp)
 		["Target Current Prayer"] = targetCombatStatus and targetCombatStatus.currentPrayer,
 		["Target Maximum Prayer"] = targetCombatStatus and targetCombatStatus.maximumPrayer,
 		["Target Total XP"] = Utility.Combat.getCombatXP(target),
+		["Target Is Boss"] = Utility.Boss.isBoss(target),
 		["Player Partial XP"] = xp
 	}
 

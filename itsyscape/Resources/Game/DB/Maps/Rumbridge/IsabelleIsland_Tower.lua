@@ -265,7 +265,7 @@ do
 
 	ItsyScape.Meta.DropTableEntry {
 		Item = ItsyScape.Resource.Item "UnfocusedRune",
-		Weight = 10,
+		Weight = 50,
 		Count = 200,
 		Range = 100,
 		Resource = ItsyScape.Resource.DropTable "Isabelle_Primary"

@@ -237,6 +237,11 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IsabelliumShard"
 	}
+
+	ItsyScape.Meta.LootCategory {
+		Item = ItsyScape.Resource.Item "IsabelliumShard",
+		Category = ItsyScape.Resource.LootCategory "Special"
+	}
 end
 
 do

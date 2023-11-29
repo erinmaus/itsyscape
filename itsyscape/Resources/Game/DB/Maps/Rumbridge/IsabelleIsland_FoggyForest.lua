@@ -81,6 +81,11 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "IsabelleIsland_FoggyForest_KursedGlue"
 	}
+
+	ItsyScape.Meta.LootCategory {
+		Item = ItsyScape.Resource.Item "IsabelleIsland_FoggyForest_KursedGlue",
+		Category = ItsyScape.Resource.LootCategory "Special"
+	}
 end
 
 do
