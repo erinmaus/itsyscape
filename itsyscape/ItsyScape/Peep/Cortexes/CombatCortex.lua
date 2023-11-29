@@ -305,14 +305,14 @@ function CombatCortex:update(delta)
 						peep:getCommandQueue(CombatCortex.QUEUE):clear()
 						peep:removeBehavior(CombatTargetBehavior)
 						peep:poke('targetFled', { target = target, distance = distanceToTarget })
-					elseif distanceToTarget > desiredDistance or (not movement.noClip and not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)) then
+					elseif distanceToTarget > desiredDistance or (not movement.noClip and not map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true, peep:hasBehavior(PlayerBehavior) and _DEBUG == 'plus')) then
 						local tile = self.walking[peep]
 						if (not tile or tile.i ~= targetI or tile.j ~= targetJ) and targetPosition.layer == position.layer then
 							local walk = Utility.Peep.getWalk(peep, targetI, targetJ, targetPosition.layer or 1, math.huge, { asCloseAsPossible = true })
 
 							if not walk then
 								Log.info(
-									"Peep %s (%d) couldn't reach target Peep %s (%d); abandoning.",
+									"Peep %s (%d) couldn't reach target peep %s (%d); abandoning.",
 									peep:getName(), peep:getTally(),
 									target:getName(), target:getTally())
 								peep:removeBehavior(CombatTargetBehavior)
