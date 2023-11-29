@@ -96,7 +96,7 @@ local MeditateSequence = Mashina.Sequence {
 	},
 
 	Mashina.Step {
-		Mashina.Peep.Timeout {
+		Mashina.Peep.TimeOut {
 			duration = 2
 		},
 
@@ -137,7 +137,7 @@ local FreedomSequence = Mashina.Sequence {
 	},
 
 	Mashina.Step {
-		Mashina.Peep.Timeout {
+		Mashina.Peep.TimeOut {
 			duration = 2
 		},
 
