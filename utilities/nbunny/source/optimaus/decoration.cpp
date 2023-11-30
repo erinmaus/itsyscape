@@ -198,7 +198,10 @@ nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 
 nbunny::DecorationSceneNode::~DecorationSceneNode()
 {
-	mesh->release();
+	if (mesh)
+	{
+		mesh->release();
+	}
 }
 
 static bool get_attrib(

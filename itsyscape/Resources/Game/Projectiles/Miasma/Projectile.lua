@@ -95,9 +95,8 @@ function Miasma:update(elapsed)
 
 	local spawnPosition = self:getTargetPosition(self:getDestination())
 
-	local particleSystem = self.particleSystemNode:getParticleSystem()
-	if particleSystem then
-		particleSystem:updateEmittersLocalPosition(spawnPosition)
+	if self.particleSystemNode:getIsReady() then
+		self.particleSystemNode:updateLocalPosition(spawnPosition)
 	end
 end
 
