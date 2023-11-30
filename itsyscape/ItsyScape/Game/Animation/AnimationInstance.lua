@@ -40,7 +40,12 @@ function AnimationInstance:addChannel(channel)
 end
 
 function AnimationInstance:stop()
-	-- Nothing.
+	for index in ipairs(self.channels) do
+		local currentCommand = self:getCurrentCommand(index)
+		if currentCommand then
+			currentCommand:stop(self.animatable)
+		end
+	end
 end
 
 -- Returns true if the animation is done, false otherwise.
