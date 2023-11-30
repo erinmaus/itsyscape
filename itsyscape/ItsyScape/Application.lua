@@ -280,8 +280,10 @@ function Application:getMemoryStats()
 		else
 			local a = median[math.floor(#median / 2)]
 			local b = median[math.floor(#median / 2) + 1]
-			median = (a + b) / 2
+			median = a and b and (a + b) / 2
 		end
+
+		median = median or 0
 	end
 
 	average = average / #self.previousMemoryUsage

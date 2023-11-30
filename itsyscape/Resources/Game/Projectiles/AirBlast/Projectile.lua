@@ -166,10 +166,9 @@ function AirBlast:update(elapsed)
 		self.airWave:getMaterial():setColor(Color(1, 1, 1, alpha))
 
 		if self.lastPosition then
-			local particleSystem = self.particleSystem:getParticleSystem()
-			if particleSystem then
+			if self.particleSystem:getIsReady() then
 				local position = self.spawnPosition + rotation:transformVector(self.lastPosition)
-				particleSystem:updateEmittersLocalPosition(position)
+				self.particleSystem:updateLocalPosition(position)
 			end
 		end
 	end
