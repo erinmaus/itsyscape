@@ -93,25 +93,25 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = SewerSpiderMatriarch
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(100),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = SewerSpiderMatriarch
 	}
 
@@ -133,7 +133,7 @@ do
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1.1),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1.1),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1.1),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 0.9),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(60, 1),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
