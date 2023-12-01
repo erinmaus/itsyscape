@@ -410,3 +410,55 @@ do
 		Resource = Guard
 	}
 end
+
+do
+	local Prisoner = ItsyScape.Resource.Peep "Prisoner_ViziersRock"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.Prisoner",
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "BlackenedIronPickaxe",
+		Count = 1,
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier Rock prisoner",
+		Language = "en-US",
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Value = ItsyScape.Utility.xpForLevel(20),
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Could be in prison for jay walking or murder... Who knows!",
+		Language = "en-US",
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "mine",
+		Tree = "Resources/Game/Peeps/ViziersRock/Prisoner_MineLogic.lua",
+		IsDefault = 1,
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "clear",
+		Tree = "Resources/Game/Peeps/ViziersRock/Prisoner_ClearLogic.lua",
+		Resource = Prisoner
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/ViziersRock/Prisoner_IdleLogic.lua",
+		Resource = Prisoner
+	}
+end

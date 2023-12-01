@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Peep/Trade.lua
+-- ItsyScape/Mashina/Peep/Consume.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,38 +12,26 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
-local Trade = B.Node("Trade")
-Trade.ITEM = B.Reference()
-Trade.NOTED = B.Reference()
-Trade.QUANTITY = B.Reference()
-Trade.TARGET = B.Reference()
+local Consume = B.Node("Consume")
+Consume.ITEM = B.Reference()
+Consume.NOTED = B.Reference()
+Consume.QUANTITY = B.Reference()
 
-function Trade:update(mashina, state, executor)
-	local target = state[self.TARGET]
-	if not target then
-		return B.Status.Failure
-	end
-
+function Consume:update(mashina, state, executor)
 	local item, noted, quantity = state[self.ITEM], state[self.NOTED] or false, state[self.QUANTITY] or 1
 	if not item then
 		return B.Status.Failure
 	end
 
 	local sourceInventory = mashina:getBehavior(InventoryBehavior)
-	local targetInventory = target:getBehavior(InventoryBehavior)
-	if sourceInventory and sourceInventory.inventory and
-	   target and targetInventory.inventory
-	then
+	if sourceInventory and sourceInventory.inventory then
 		sourceInventory = sourceInventory.inventory
-		targetInventory = targetInventory.inventory
-
 		broker = sourceInventory:getBroker()
-		assert(targetInventory:getBroker() == broker, "broker mismatch")
 
 		if noted then
 			local sourceItem
 			for i in broker:iterateItems(sourceInventory) do
-				if i:getID() == item and i:isNoted() and i:getCount() >= quantity then
+				if i:getID() == item and i:isNoted() and i:getCount() == quantity then
 					sourceItem = i
 					break
 				end
@@ -55,8 +43,7 @@ function Trade:update(mashina, state, executor)
 
 			local t = broker:createTransaction()
 			t:addParty(sourceInventory)
-			t:addParty(targetInventory)
-			t:transfer(targetInventory, sourceItem)
+			t:consume(sourceItem, quantity)
 			if t:commit() then
 				return B.Status.Success
 			else
@@ -85,10 +72,9 @@ function Trade:update(mashina, state, executor)
 
 			local t = broker:createTransaction()
 			t:addParty(sourceInventory)
-			t:addParty(targetInventory)
 
 			for i = 1, #sourceItems do
-				t:transfer(targetInventory, sourceItems[i][1], sourceItems[i][2])
+				t:consume(sourceItems[i][1], sourceItems[i][2])
 			end
 
 			if t:commit() then
@@ -102,4 +88,4 @@ function Trade:update(mashina, state, executor)
 	return B.Status.Failure
 end
 
-return Trade
+return Consume
