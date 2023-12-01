@@ -16,16 +16,20 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local TARGET = B.Reference("Knight_AttackLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Sequence {
-		Mashina.Success {
-			Mashina.Step {
+	Mashina.Try {
+		Mashina.Sequence {
+			Mashina.Try {
 				Mashina.Peep.FindNearbyCombatTarget {
 					include_npcs = true,
 					distance = 16,
 
-					filter = function(peep)
+					filter = function(peep, mashina)
 						local target = peep:getBehavior(CombatTargetBehavior)
 						target = target and target.actor and target.actor:getPeep()
+
+						if target == mashina then
+							return false
+						end
 
 						if target then
 							local resource = Utility.Peep.getResource(target)
@@ -36,6 +40,19 @@ local Tree = BTreeBuilder.Node() {
 					end,
 
 					[TARGET] = B.Output.result
+				},
+
+				Mashina.Failure {
+					Mashina.Set {
+						value = false,
+						[TARGET] = B.Output.result
+					}
+				}
+			},
+
+			Mashina.Step {
+				Mashina.Peep.DidAttack {
+					peep = TARGET
 				},
 
 				Mashina.Navigation.WalkToPeep {
