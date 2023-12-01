@@ -146,12 +146,12 @@ function PlayerPrayers:update(...)
 	PlayerTab.update(self, ...)
 
 	local state = self:getState()
-	for i = 1, #state.prayers do
+	for i = 1, #self.buttons do
 		local prayer = state.prayers[i]
 		local button = self.buttons[i]
 		local icon = button:getData("icon")
 
-		if prayer.isActive then
+		if prayer and prayer.isActive then
 			icon:setColor(Color(1))
 		else
 			icon:setColor(Color(0.3))
