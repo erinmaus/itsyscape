@@ -56,8 +56,9 @@ function MineNearbyRock:activated(mashina, state)
 						mashina,
 						best)
 
-					state[self.SUCCESS] = true
-					break
+					if s then
+						state[self.SUCCESS] = true
+					end
 				end
 			end
 		end

@@ -413,6 +413,193 @@ do
 	}
 end
 
+M["Prisoner1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Prisoner1",
+		Map = M._MAP,
+		Resource = M["Prisoner1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner1"]
+	}
+end
+
+M["Prisoner2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 0,
+		PositionZ = 11,
+		Name = "Prisoner2",
+		Map = M._MAP,
+		Resource = M["Prisoner2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner2"]
+	}
+end
+
+M["Prisoner2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 0,
+		PositionZ = 27,
+		Name = "Prisoner2",
+		Map = M._MAP,
+		Resource = M["Prisoner2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner2"]
+	}
+end
+
+M["Prisoner3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 0,
+		PositionZ = 29,
+		Name = "Prisoner3",
+		Map = M._MAP,
+		Resource = M["Prisoner3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner3"]
+	}
+end
+
+M["Prisoner4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 0,
+		PositionZ = 11,
+		Name = "Prisoner4",
+		Map = M._MAP,
+		Resource = M["Prisoner4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner4"]
+	}
+end
+
+M["Prisoner5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner5",
+		Map = M._MAP,
+		Resource = M["Prisoner5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner5"]
+	}
+end
+
+M["Prisoner6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner6",
+		Map = M._MAP,
+		Resource = M["Prisoner6"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner6"]
+	}
+end
+
+M["Prisoner7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner7",
+		Map = M._MAP,
+		Resource = M["Prisoner7"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner7"]
+	}
+end
+
+M["Prisoner8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner8",
+		Map = M._MAP,
+		Resource = M["Prisoner8"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner8"]
+	}
+end
+
+M["Prisoner9"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner9",
+		Map = M._MAP,
+		Resource = M["Prisoner9"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner9"]
+	}
+end
+
+M["Prisoner10"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Prisoner10",
+		Map = M._MAP,
+		Resource = M["Prisoner10"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Prisoner_ViziersRock",
+		MapObject = M["Prisoner10"]
+	}
+end
+
 M["BankingCrate"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
