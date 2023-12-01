@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/TinRock_Default/View.lua
+-- Resources/Game/Props/AdamantRock_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,10 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local RockView = require "Resources.Game.Props.Common.RockView2"
 
-local TinRockView = Class(RockView)
+local AdamantRockView = Class(RockView)
 
-function TinRockView:getTextureFilename()
-	return "Resources/Game/Props/TinRock_Default/Texture.png"
+function AdamantRockView:getTextureFilename()
+	return "Resources/Game/Props/AdamantRock_Default/Texture.png"
 end
 
-return TinRockView
+return AdamantRockView

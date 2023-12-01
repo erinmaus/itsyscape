@@ -58,7 +58,8 @@ local ORES = {
 	["Coal"] = {
 		tier = 20,
 		weight = 12,
-		health = 40,
+		health = 25,
+		format = "%s",
 		secondaries = {
 			"TableSalt",
 			"PurpleSaltPeter",
@@ -73,25 +74,44 @@ local ORES = {
 	["Lithium"] = {
 		tier = 25,
 		weight = 2,
-		health = 50
+		health = 30
 	},
 
 	["Mithril"] = {
 		tier = 30,
 		weight = 1.5,
-		health = 60
+		health = 30
 	},
 
 	["Caesium"] = {
 		tier = 35,
 		weight = 2,
-		health = 90
+		health = 45,
+		format = "%s salt",
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold"
+		}
 	},
 
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
-		health = 100
+		health = 65,
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold"
+		}
 	},
 
 	["Uranium"] = {
@@ -130,7 +150,7 @@ for name, ore in spairs(ORES) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s ore", name),
+		Value = string.format(ore.format or "%s ore", name),
 		Language = "en-US",
 		Resource = Ore
 	}
@@ -257,6 +277,18 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Makes smelting more efficient with certain ores like iron.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CoalOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Well, it was nice knowing ya...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CaesiumOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Needs smelting.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "AdamantOre"
@@ -308,6 +340,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Contains coal.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CoalRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains caesium salt.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CaesiumRock_Default"
 }
 
 ItsyScape.Meta.ResourceDescription {
