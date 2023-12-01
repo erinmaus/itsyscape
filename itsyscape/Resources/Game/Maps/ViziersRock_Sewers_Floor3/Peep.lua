@@ -124,6 +124,8 @@ function Sewers:onBossDie(boss)
 	for _, player in instance:iteratePlayers() do
 		local playerPeep = player:getActor():getPeep()
 
+		playerPeep:getState():give("KeyItem", "ViziersRock_Sewers_KilledKaradon")
+
 		playerPeep:getState():give(
 			"Item",
 			"ViziersRock_Sewers_AdamantKey",

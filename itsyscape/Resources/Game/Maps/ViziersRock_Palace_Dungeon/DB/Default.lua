@@ -338,30 +338,6 @@ do
 	}
 end
 
-M["ViziersRock_Sewers_Pipe_NoGrate2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 37.000000,
-		PositionY = 0.000000,
-		PositionZ = 22.125000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "ViziersRock_Sewers_Pipe_NoGrate2",
-		Map = M._MAP,
-		Resource = M["ViziersRock_Sewers_Pipe_NoGrate2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Pipe_NoGrate",
-		MapObject = M["ViziersRock_Sewers_Pipe_NoGrate2"]
-	}
-end
-
 M["Loo_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -695,30 +671,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WallLamp_ViziersRock",
 		MapObject = M["WallLamp_ViziersRock3"]
-	}
-end
-
-M["MetalLadder_Default3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59.000000,
-		PositionY = 0.000000,
-		PositionZ = 57.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "MetalLadder_Default3",
-		Map = M._MAP,
-		Resource = M["MetalLadder_Default3"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
-		MapObject = M["MetalLadder_Default3"]
 	}
 end
 

@@ -264,3 +264,24 @@ do
 		Resource = Yohn
 	}
 end
+
+do
+	local Key = ItsyScape.Resource.Item "ViziersRock_Palace_MineKey"
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Resource = Key
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Vizier's Rock palace dungeon key",
+		Resource = Key
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Opens the gate to the caesium mine in the Vizier's Rock palace dungeon.",
+		Resource = Key
+	}
+end
