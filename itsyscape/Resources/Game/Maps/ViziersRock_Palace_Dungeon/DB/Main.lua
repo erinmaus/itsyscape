@@ -1,10 +1,5 @@
 local M = include "Resources/Game/Maps/ViziersRock_Palace_Dungeon/DB/Default.lua"
 
--- ItsyScape.Meta.PeepID {
--- 	Value = "Resources.Game.Maps.ViziersRock_Palace_Dungeon.Peep",
--- 	Resource = M._MAP
--- }
-
 ItsyScape.Meta.ResourceName {
 	Value = "Vizier's Rock Palace, Dungeon",
 	Language = "en-US",
@@ -621,5 +616,118 @@ do
 
 	M["BankingCrate"] {
 		ItsyScape.Action.Bank()
+	}
+end
+
+M["Anchor_FromPalace"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 0,
+		PositionZ = 59,
+		Name = "Anchor_FromPalace",
+		Map = M._MAP,
+		Resource = M["Anchor_FromPalace"]
+	}
+end
+
+M["MetalLadder_ToPalace"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 0,
+		PositionZ = 57,
+		Name = "MetalLadder_ToPalace",
+		Map = M._MAP,
+		Resource = M["MetalLadder_ToPalace"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
+		MapObject = M["MetalLadder_ToPalace"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromDungeon",
+		Map = ItsyScape.Resource.Map "ViziersRock_Palace",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["MetalLadder_ToPalace"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromKaradon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 25,
+		Name = "Anchor_FromKaradon",
+		Map = M._MAP,
+		Resource = M["Anchor_FromKaradon"]
+	}
+end
+
+M["ViziersRock_Sewers_Pipe"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 22.125,
+		Name = "ViziersRock_Sewers_Pipe",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Sewers_Pipe"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Pipe_NoGrate",
+		MapObject = M["ViziersRock_Sewers_Pipe"]
+	}
+
+	local TravelAction = ItsyScape.Action.PartyTravel() {
+		Requirement {
+			Resource = ItsyScape.Resource.Boss "AncientKaradon",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.PartyTravelDestination {
+		Raid = ItsyScape.Resource.Raid "ViziersRockSewers",
+		AnchorOverride = "Anchor_FromPalaceDungeon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.PartyTravelDestinationMapOverride {
+		Raid = ItsyScape.Resource.Raid "ViziersRockSewers",
+		Map = ItsyScape.Resource.Map "ViziersRock_Sewers_Floor3",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromPalaceDungeon",
+		Map = ItsyScape.Resource.Map "ViziersRock_Sewers_Floor3",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Crawl-through",
+		XProgressive = "Crawling-through",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["ViziersRock_Sewers_Pipe"] {
+		TravelAction
 	}
 end

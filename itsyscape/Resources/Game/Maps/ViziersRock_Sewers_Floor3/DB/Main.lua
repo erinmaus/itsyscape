@@ -125,18 +125,65 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_IronGate_Guardian",
-		MapObject = M["CourtyardGate"]
-	}
-
-	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "AncientKaradon",
-		Map = M._MAP,
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
 		MapObject = M["CourtyardGate"]
 	}
 
 	M["CourtyardGate"] {
-		ItsyScape.Action.Open()
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.Boss "AncientKaradon",
+				Count = 1
+			}
+		}
+	}
+end
+
+M["Anchor_FromPalaceDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 3,
+		Name = "Anchor_FromPalaceDungeon",
+		Map = M._MAP,
+		Resource = M["Anchor_FromPalaceDungeon"]
+	}
+end
+
+M["ViziersRock_Dungeon_Pipe"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 1,
+		Name = "ViziersRock_Dungeon_Pipe",
+		Map = M._MAP,
+		Resource = M["ViziersRock_Dungeon_Pipe"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ViziersRock_Sewers_Pipe_NoGrate",
+		MapObject = M["ViziersRock_Dungeon_Pipe"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromKaradon",
+		Map = ItsyScape.Resource.Map "ViziersRock_Palace_Dungeon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Crawl-through",
+		XProgressive = "Crawling-through",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["ViziersRock_Dungeon_Pipe"] {
+		TravelAction
 	}
 end
 

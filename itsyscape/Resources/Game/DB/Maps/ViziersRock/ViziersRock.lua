@@ -185,6 +185,13 @@ do
 
 		ItsyScape.Action.Loot() {
 			Output {
+				Resource = ItsyScape.Resource.DropTable "Knight_ViziersRock_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
 				Resource = ItsyScape.Resource.DropTable "Human_Secondary",
 				Count = 1
 			}
@@ -298,11 +305,59 @@ do
 		Tree = "Resources/Game/Peeps/ViziersRock/Knight_AttackLogic.lua",
 		Resource = Guard
 	}
+
+	local DropTable = ItsyScape.Resource.DropTable "Knight_ViziersRock_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AdamantTrim",
+		Weight = 100,
+		Count = 10,
+		Range = 5,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 50,
+		Count = ItsyScape.Utility.xpForResource(45),
+		Range = ItsyScape.Utility.xpForResource(45) / 5,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "ViziersRock_Palace_MineKey",
+		Weight = 75,
+		Count = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CosmicRune",
+		Weight = 25,
+		Count = 100,
+		Range = 50,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AdamantArrow",
+		Weight = 25,
+		Count = 25,
+		Range = 10,
+		Resource = DropTable
+	}
 end
 
 do
 	local Guard = ItsyScape.Resource.Peep "Guard_ViziersRock" {
 		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Guard_ViziersRock_Primary",
+				Count = 1
+			}
+		},
 
 		ItsyScape.Action.Loot() {
 			Output {
@@ -408,6 +463,39 @@ do
 		Tree = "Resources/Game/Peeps/ViziersRock/Guard_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = Guard
+	}
+
+	local DropTable = ItsyScape.Resource.DropTable "Guard_ViziersRock_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AdamantTrim",
+		Weight = 5,
+		Count = 2,
+		Range = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 50,
+		Count = ItsyScape.Utility.xpForResource(25),
+		Range = ItsyScape.Utility.xpForResource(25) / 5,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "ViziersRock_Palace_MineKey",
+		Weight = 50,
+		Count = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BlackenedIronArrow",
+		Weight = 50,
+		Count = 30,
+		Range = 15,
+		Resource = DropTable
 	}
 end
 

@@ -435,3 +435,51 @@ do
 		MapObject = M["Knight3"]
 	}
 end
+
+M["Anchor_FromDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 0,
+		PositionZ = 51,
+		Name = "Anchor_FromDungeon",
+		Map = M._MAP,
+		Resource = M["Anchor_FromDungeon"]
+	}
+end
+
+M["TrapDoor_ToDungeon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9,
+		PositionY = 0,
+		PositionZ = 49,
+		Name = "TrapDoor_ToDungeon",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToDungeon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToDungeon"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromPalace",
+		Map = ItsyScape.Resource.Map "ViziersRock_Palace_Dungeon",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Descend",
+		XProgressive = "Descending",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor_ToDungeon"] {
+		TravelAction
+	}
+end
