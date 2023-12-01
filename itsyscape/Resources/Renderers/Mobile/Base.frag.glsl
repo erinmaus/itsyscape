@@ -49,18 +49,17 @@ vec3 scapeApplyLight(
 	vec3 color)
 {
 	vec3 direction;
-	float attenuation = 1.0;
-	if (light.position.w == 0.0)
+	float attenuation = 0.0;
+	if (light.position.w == 1.0)
 	{
 		direction = normalize(light.position.xyz);
-		attenuation = 0.5;
 	}
 	else
 	{
 		vec3 lightSurfaceDifference = light.position.xyz - position;
 		direction = normalize(lightSurfaceDifference);
 		float lightSurfaceDistance = length(lightSurfaceDifference);
-		attenuation = light.attenuation / lightSurfaceDistance;
+		attenuation = clamp(1.0 - lightSurfaceDistance / light.attenuation, 0.0, 1.0);
 
 		float dot = dot(-direction, normalize(light.coneDirection));
 		float lightToSurfaceAngle = degrees(acos(dot));
@@ -71,10 +70,11 @@ vec3 scapeApplyLight(
 	}
 
 	vec3 ambient = light.ambientCoefficient * color * light.color;
-	float diffuseCoefficient = max(0.0, dot(normal, direction));
-	vec3 diffuse = diffuseCoefficient * color * light.color * light.diffuseCoefficient;
+	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
+	vec3 diffuse = diffuseCoefficient * color * light.color;
+	vec3 point = attenuation * attenuation * light.color * color;
 
-	return (attenuation * 0.25) * diffuse + ambient;
+	return point + diffuse + ambient;
 }
 
 vec3 scapeApplyFog(

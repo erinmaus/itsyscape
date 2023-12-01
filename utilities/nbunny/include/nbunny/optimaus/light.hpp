@@ -21,7 +21,7 @@ namespace nbunny
 	struct Light
 	{
 	public:
-		glm::vec4 position = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 		glm::vec3 color = glm::vec3(1.0f);
 		float attenuation = 1.0f;
 		float ambient_coefficient = 0.0f;
