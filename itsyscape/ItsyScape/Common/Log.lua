@@ -16,6 +16,19 @@ function Log.sendError(message, targetStack)
 		return
 	end
 
+	local deviceID = "(none)"
+	do
+		local file = love.filesystem.read("Player/Common.dat") or "{}"
+		local r, e = loadstring("return " .. file)
+		if r then
+			r, e = pcall(setfenv(r, {}))
+		end
+
+		if r and type(e) == 'table' then
+			deviceID = e.id or deviceID
+		end
+	end
+
 	if not targetStack then
 		return
 	end
@@ -29,6 +42,13 @@ function Log.sendError(message, targetStack)
 	end
 
 	local variables = {}
+
+	table.insert(variables, {
+		storage = "global",
+		name = "deviceID",
+		value = deviceID,
+		type = Log.type(deviceID)
+	})
 
 	local localIndex = 1
 	while debug.getlocal(targetStack, localIndex) do
