@@ -10,79 +10,105 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local PrisonBreakSequence = require "Resources.Game.Peeps.ViziersRock.Prisoner_PrisonBreakSequence"
 
-local KNIGHT = B.Reference("Prisoner", "KNIGHT")
+local GUARD = B.Reference("Prisoner", "GUARD")
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Step {
-		Mashina.Peep.FindNearbyMapObject {
-			prop = "Knight2",
-			[KNIGHT] = B.Output.RESULT
-		},
+	Mashina.Sequence {
+		PrisonBreakSequence,
 
-		Mashina.Navigation.WalkToPeep {
-			peep = KNIGHT,
-			distance = 1.5,
-			as_close_as_possible = false
-		},
-
-		Mashina.Repeat {
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Navigation.TargetMoved {
-						peep = KNIGHT
-					},
-
-					Mashina.Navigation.WalkToPeep {
-						peep = KNIGHT,
-						distance = 1.5,
-						as_close_as_possible = false
-					}
-				}
+		Mashina.Try {
+			Mashina.Peep.FindNearbyMapObject {
+				prop = "Knight2",
+				[GUARD] = B.Output.RESULT
 			},
 
-			Mashina.Invert {
-				Mashina.Peep.Wait
+			Mashina.Peep.FindNearbyMapObject {
+				prop = "Guard1",
+				[GUARD] = B.Output.RESULT
+			},
+
+			Mashina.Peep.FindNearbyMapObject {
+				prop = "Guard2",
+				[GUARD] = B.Output.RESULT
+			},
+
+			Mashina.Peep.FindNearbyMapObject {
+				prop = "Guard3",
+				[GUARD] = B.Output.RESULT
 			}
 		},
 
-		Mashina.RandomTry {
+		Mashina.Step {
 			Mashina.Peep.Talk {
-				message = "Here ya go."
+				message = "found guard"
 			},
 
-			Mashina.Step {
-				Mashina.Peep.Talk {
-					message = "Pig!"
+			Mashina.Navigation.WalkToPeep {
+				peep = GUARD,
+				distance = 1.5,
+				as_close_as_possible = false
+			},
+
+			Mashina.Repeat {
+				Mashina.Success {
+					Mashina.Sequence {
+						Mashina.Navigation.TargetMoved {
+							peep = GUARD
+						},
+
+						Mashina.Navigation.WalkToPeep {
+							peep = GUARD,
+							distance = 1.5,
+							as_close_as_possible = false
+						}
+					}
 				},
 
-				Mashina.Peep.TimeOut {
-					duration = 0.5
-				},
-
-				Mashina.Peep.Talk {
-					peep = KNIGHT,
-					message = "Hold your tongue, maggot!"
+				Mashina.Invert {
+					Mashina.Peep.Wait
 				}
 			},
 
-			Mashina.Peep.Talk {
-				message = "..."
+			Mashina.RandomTry {
+				Mashina.Peep.Talk {
+					message = "Here ya go."
+				},
+
+				Mashina.Step {
+					Mashina.Peep.Talk {
+						message = "Pig!"
+					},
+
+					Mashina.Peep.TimeOut {
+						duration = 0.5
+					},
+
+					Mashina.Peep.Talk {
+						peep = GUARD,
+						message = "Hold your tongue, maggot!"
+					}
+				},
+
+				Mashina.Peep.Talk {
+					message = "..."
+				},
 			},
-		},
 
-		Mashina.Peep.Consume {
-			item = true,
-			quantity = math.huge
-		},
+			Mashina.Peep.Consume {
+				item = true,
+				quantity = math.huge
+			},
 
-		Mashina.Peep.TimeOut {
-			min_duration = 0.5,
-			max_duration = 1.5
-		},
+			Mashina.Peep.TimeOut {
+				min_duration = 0.5,
+				max_duration = 1.5
+			},
 
-		Mashina.Peep.SetState {
-			state = "mine"
+			Mashina.Peep.SetState {
+				state = "mine"
+			}
 		}
 	}
 }

@@ -69,14 +69,14 @@ function DidAttack:activated(mashina, state, executor)
 	self.callback = callback
 	self.peep = peep
 
-	mashina:listen('initiateAttack', callback, self, mashina, dealtDamage, missed, state)
+	peep:listen('initiateAttack', callback, self, peep, dealtDamage, missed, state)
 end
 
 function DidAttack:deactivated(mashina, state, executor)
 	state[self.ATTACKED] = nil
 	state[self.INTERNAL_ATTACK_POKE] = nil
 
-	mashina:silence('initiateAttack', self.callback)
+	self.peep:silence('initiateAttack', self.callback)
 	self.callback = nil
 end
 
