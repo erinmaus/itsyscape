@@ -2523,6 +2523,293 @@ do
 	}
 end
 
+-- Blackmelt bass
+do
+	ItsyScape.Resource.Prop "BlackmeltBass_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(30)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "WaterSlug",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "BlackmeltBass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(31)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a Blackmelt bass swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 45,
+		SpawnTime = 10,
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(32)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "BlackmeltBass" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An ugly fish that needs to be cooked well or you might just die.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(32),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 16,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Fishing",
+		Boost = 3,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Boost = 2,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemPrayerRestorationUserdata"
+	}
+
+	ItsyScape.Meta.ItemPrayerRestorationUserdata {
+		PrayerPoints = 2,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "BlackmeltBass",
+		Value = ItsyScape.Utility.valueForItem(32)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 16,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedBlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(32)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntBlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 30,
+		Stop = 35,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedBlackmeltBass" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks raw, but if you cook it too long, the poison strengthens.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(32),
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Resource.Item "BurntBlackmeltBass" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Eat that and die!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+end
+
 local SECONDARIES = {
 	"OldBoot",
 	"WaterSlug",
@@ -2541,6 +2828,7 @@ local FISH = {
 	"AlligatorGar",
 	"Shrimp",
 	"Crawfish",
+	"BlackmeltBass",
 	"LightningStormfish"
 }
 
