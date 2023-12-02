@@ -526,6 +526,71 @@ do
 end
 
 do
+	local Item = ItsyScape.Resource.Item "BlueTableSalt" {
+		ItsyScape.Action.CookIngredient() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(35)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "BlueTableSalt",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForResource(36)
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Blue table salt",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The glowing makings the food healthier! Ingredients: caesium-137.",
+		Language = "en-US",
+		Resource = Item
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = Item,
+		Ingredient = ItsyScape.Resource.Ingredient "Salt"
+	}
+
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Value = ItsyScape.Utility.valueForItem(36),
+		Resource = Item
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = Item,
+		Value = ItsyScape.Utility.valueForItem(36)
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = Item,
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Boost = 5,
+		Resource = Item
+	}
+end
+
+do
 	local Item = ItsyScape.Resource.Item "Butter" {
 		ItsyScape.Action.CookIngredient() {
 			Requirement {

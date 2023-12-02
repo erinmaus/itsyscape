@@ -17,6 +17,7 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Action = require "ItsyScape.Peep.Action"
 
 local Make = Class(Action)
@@ -97,13 +98,18 @@ function Make:gatherSecondaries(state, player, prop)
 	local maxNumRolls = 1
 	local progress = prop:getBehavior(PropResourceHealthBehavior)
 	if progress then
-		maxNumRolls = math.min(math.ceil(progress.maxProgress / 10), 1)
+		maxNumRolls = math.max(math.ceil(progress.maxProgress / 10), 1)
 	end
 
 	local loot = {}
 
 	-- The '0' is so there's a chance an action doesn't give any resources.
 	local numRolls = love.math.random(0, maxNumRolls)
+
+	local log = player:hasBehavior(PlayerBehavior) and Log.info or Log.engine
+	log(
+		"Player '%s', has %d rolls (max = %d) in obtaining secondaries from prop '%s'.",
+		player:getName(), numRolls, maxNumRolls, prop:getName())
 	for i = 1, maxNumRolls do
 		local item = actions[1]
 		local currentWeight = 0
@@ -126,6 +132,8 @@ function Make:gatherSecondaries(state, player, prop)
 		end
 
 		if item then
+			log("Player '%s' got item (id = '%s'), which is a %.2f%% chance!", player:getName(), item.resource.name, item.weight / maxWeight * 100)
+
 			local l = loot[item.resource.name] or { item = item, count = 0}
 			l.count = l.count + 1
 			loot[item.resource.name] = l

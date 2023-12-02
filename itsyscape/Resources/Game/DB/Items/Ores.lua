@@ -103,7 +103,8 @@ local ORES = {
 			"BlackGold",
 			"Sapphire",
 			"Emerald",
-			"Ruby"
+			"Ruby",
+			"BlueTableSalt"
 		}
 	},
 
@@ -122,7 +123,8 @@ local ORES = {
 			"Sapphire",
 			"Emerald",
 			"Ruby",
-			"Diamond"
+			"Diamond",
+			"BlueTableSalt"
 		}
 	},
 
