@@ -3916,17 +3916,36 @@ end
 function Utility.Peep.Human:onFinalize(director)
 	local stats = self:getBehavior(StatsBehavior)
 	if stats and stats.stats then
-		stats = stats.stats
-		stats.onXPGain:register(function(_, skill, xp)
-			local actor = self:getBehavior(ActorReferenceBehavior)
-			if actor and actor.actor then
-				actor = actor.actor
-				actor:flash("XPPopup", 1, skill:getName(), xp)
-			end
+		stats.stats.onXPGain:register(function(_, skill, xp)
+			stats.pendingXP[skill:getName()] = (stats.pendingXP[skill:getName()] or 0) + xp
 		end)
 	end
 
 	Utility.Peep.Human.applySkins(self)
+end
+
+function Utility.Peep.Human:flashXP()
+	local pendingXP = self:hasBehavior(StatsBehavior) and self:getBehavior(StatsBehavior).pendingXP
+
+	if pendingXP and next(pendingXP) then
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			local skills = {}
+			for skillName in pairs(pendingXP) do
+				table.insert(skills, skillName)
+			end
+
+			table.sort(skills)
+
+			for _, skillName in ipairs(skills) do
+				actor:flash("XPPopup", 1, skillName, pendingXP[skillName])
+			end
+		end
+
+		table.clear(pendingXP)
+	end
 end
 
 function Utility.Peep.makeHuman(peep)

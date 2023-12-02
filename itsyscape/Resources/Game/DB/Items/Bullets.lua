@@ -68,6 +68,11 @@ for name, metal in spairs(METALS) do
 		},
 
 		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier)
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Item "Hammer",
 			Count = 1
 		},
@@ -95,6 +100,11 @@ for name, metal in spairs(METALS) do
 		Output {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForResource(metal.tier + 1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(metal.tier + 1)
 		}
 	}
 
@@ -106,6 +116,11 @@ for name, metal in spairs(METALS) do
 
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForLevel(metal.tier + 10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
 			Count = ItsyScape.Utility.xpForLevel(metal.tier + 10)
 		},
 
@@ -136,6 +151,11 @@ for name, metal in spairs(METALS) do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Smithing",
+			Count = ItsyScape.Utility.xpForResource(metal.tier + 11)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
 			Count = ItsyScape.Utility.xpForResource(metal.tier + 11)
 		}
 	}
@@ -262,11 +282,35 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Pierces weaker armors like butter.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "BlackenedIronBullet"
+	Resource = ItsyScape.Resource.Item "MithrilBullet"
 }
 
 ItsyScape.Meta.ResourceDescription {
 	Value = "This shrapnel is so light it ricochets off everything.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Item "BlackenedIronGrenade"
+	Resource = ItsyScape.Resource.Item "AdamantGrenade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A heavy bullet that pierces armor like a cannon.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantBullet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Shrapnel that will leave gaping holes in plate armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AdamantGrenade"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A bullet of mass destruction.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ItsyBullet"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Will annihilate your foe. There will be nothing left. Well, except for their loot...",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ItsyGrenade"
 }

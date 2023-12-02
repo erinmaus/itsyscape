@@ -53,7 +53,7 @@ function Action:poke(t)
 		elseif Class.isType(t[i], Requirement) then
 			table.insert(self.requirements, t[i])
 		else
-			error("unrecognized parameter", 2)
+			Log.error("Unrecognized parameter to Pokeable (%s): %s (type = %s)", self:getDebugInfo().shortName, Log.stringify(t[i]), Log.type(t[i]))
 		end
 	end
 end

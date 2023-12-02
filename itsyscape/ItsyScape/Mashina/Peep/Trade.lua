@@ -43,7 +43,7 @@ function Trade:update(mashina, state, executor)
 		if noted then
 			local sourceItem
 			for i in broker:iterateItems(sourceInventory) do
-				if i:getID() == item and i:isNoted() and i:getCount() == quantity then
+				if i:getID() == item and i:isNoted() and i:getCount() >= quantity then
 					sourceItem = i
 					break
 				end
@@ -66,7 +66,7 @@ function Trade:update(mashina, state, executor)
 			local remainder = quantity
 			local sourceItems = {}
 			for i in broker:iterateItems(sourceInventory) do
-				if i:getID() == item and not i:isNoted() then
+				if (i:getID() == item or item == true) and not i:isNoted() then
 					local q = math.min(i:getCount(), remainder)
 					table.insert(sourceItems, { i, q })
 

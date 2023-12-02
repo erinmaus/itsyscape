@@ -150,9 +150,8 @@ function EarthStrike:update(elapsed)
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
 		self.particleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
 
-		local particleSystem = self.particleSystem:getParticleSystem()
-		if particleSystem then
-			particleSystem:updateEmittersLocalPosition(position)
+		if self.particleSystem:getIsReady() then
+			self.particleSystem:updateLocalPosition(position)
 		end
 
 		self.light:setAttenuation((1 - alpha) * 3 + 2)

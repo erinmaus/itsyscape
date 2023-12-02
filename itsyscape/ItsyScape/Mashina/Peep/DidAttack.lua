@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 
 local DidAttack = B.Node("DidAttack")
+DidAttack.PEEP = B.Reference()
 DidAttack.DEALT_DAMAGE = B.Reference()
 DidAttack.MISSED = B.Reference()
 DidAttack.ATTACK_POKE = B.Reference()
@@ -59,30 +60,31 @@ end
 function DidAttack:activated(mashina, state, executor)
 	local dealtDamage = state[self.DEALT_DAMAGE]
 	local missed = state[self.MISSED]
+	local peep = state[self.PEEP] or mashina
 
 	local callback = self.callback or function(self, ...)
 		self:hit(...)
 	end
 
 	self.callback = callback
-	self.mashina = mashina
+	self.peep = peep
 
-	mashina:listen('initiateAttack', callback, self, mashina, dealtDamage, missed, state)
+	peep:listen('initiateAttack', callback, self, peep, dealtDamage, missed, state)
 end
 
 function DidAttack:deactivated(mashina, state, executor)
 	state[self.ATTACKED] = nil
 	state[self.INTERNAL_ATTACK_POKE] = nil
 
-	mashina:silence('initiateAttack', self.callback)
+	self.peep:silence('initiateAttack', self.callback)
 	self.callback = nil
 end
 
 function DidAttack:removed()
-	if self.mashina then
-		self.mashina:silence('initiateAttack', self.callback)
+	if self.peep then
+		self.peep:silence('initiateAttack', self.callback)
 		self.callback = nil
-		self.mashina = nil
+		self.peep = nil
 	end
 end
 

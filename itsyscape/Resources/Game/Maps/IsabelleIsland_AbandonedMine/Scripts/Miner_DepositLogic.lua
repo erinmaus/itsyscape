@@ -44,6 +44,12 @@ local Tree = BTreeBuilder.Node() {
 			target = PEEP,
 		},
 
+		Mashina.Peep.Trade {
+			item = true,
+			quantity = math.huge,
+			target = PEEP,
+		},
+
 		Mashina.Peep.SetState {
 			state = "mine"
 		}

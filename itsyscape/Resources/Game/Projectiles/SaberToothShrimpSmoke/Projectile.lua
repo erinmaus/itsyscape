@@ -159,9 +159,8 @@ function Smoke:update(elapsed)
 		end
 	end
 
-	local particleSystem = self.particleSystemNode:getParticleSystem()
-	if particleSystem then
-		particleSystem:updateEmittersLocalPosition(headPosition)
+	if self.particleSystemNode:getIsReady() then
+		self.particleSystemNode:updateLocalPosition(headPosition)
 	end
 end
 
@@ -177,10 +176,7 @@ function Smoke:tick()
 	end
 
 	if not self.isAlive then
-		local particleSystem = self.particleSystemNode:getParticleSystem()
-		if particleSystem then
-			particleSystem:setEmissionStrategy(nil)
-		end
+		self.particleSystemNode:initEmissionStrategyFromDef({})
 	end
 end
 

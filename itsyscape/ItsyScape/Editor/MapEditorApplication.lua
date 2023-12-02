@@ -800,7 +800,7 @@ function MapEditorApplication:save(filename)
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
 					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID,
-					autoMask = self.meta and self.meta[layers[i]] and self.meta.autoMask == true
+					autoMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].autoMask
 				}
 			end
 

@@ -17,6 +17,7 @@ local Action = Class()
 Action.DEFAULT_FLAGS = {
 	['item-inventory'] = true
 }
+Action.WHILE_MOVING = false
 
 function Action:new(game, action)
 	self.game = game

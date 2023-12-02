@@ -41,7 +41,13 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 				return p ~= mashina
 			end
 		end,
-		state[self.FILTER],
+		function(p)
+			if state[self.FILTER] then
+				return state[self.FILTER](p, mashina, state, executor)
+			end
+
+			return true
+		end,
 		unpack(state[self.FILTERS] or {}))
 	if p and #p > 0 then
 		table.sort(

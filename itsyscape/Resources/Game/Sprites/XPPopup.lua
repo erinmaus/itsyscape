@@ -14,7 +14,7 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local XPPopup = Class(Sprite)
 XPPopup.FLOAT_HEIGHT = 32
-XPPopup.DURATION = 1.0
+XPPopup.DURATION = 1.75
 
 function XPPopup:new(...)
 	Sprite.new(self, ...)

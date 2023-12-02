@@ -78,4 +78,10 @@ function Player:ready(director, game)
 	Utility.Peep.setNameMagically(self)
 end
 
+function Player:update(...)
+	Peep.update(self, ...)
+
+	Utility.Peep.Human.flashXP(self)
+end
+
 return Player

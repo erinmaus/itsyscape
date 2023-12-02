@@ -63,7 +63,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.SecondaryWeight {
-	Weight = 500,
+	Weight = 1000,
 	Resource = ItsyScape.Resource.Item "PurpleSaltPeter"
 }
 
@@ -121,7 +121,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.SecondaryWeight {
-	Weight = 100,
+	Weight = 500,
 	Resource = ItsyScape.Resource.Item "BlackFlint"
 }
 
@@ -163,7 +163,7 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.SecondaryWeight {
-	Weight = 500,
+	Weight = 1000,
 	Resource = ItsyScape.Resource.Item "CrumblySulfur"
 }
 
@@ -188,7 +188,7 @@ do
 	}
 
 	ItsyScape.Meta.SecondaryWeight {
-		Weight = 100,
+		Weight = 400,
 		Resource = ItsyScape.Resource.Item "VegetableOil"
 	}
 
@@ -212,7 +212,7 @@ do
 	}
 
 	ItsyScape.Meta.SecondaryWeight {
-		Weight = 100,
+		Weight = 300,
 		Resource = ItsyScape.Resource.Item "PeanutOil"
 	}
 
@@ -236,7 +236,7 @@ do
 	}
 
 	ItsyScape.Meta.SecondaryWeight {
-		Weight = 5,
+		Weight = 150,
 		Resource = ItsyScape.Resource.Item "BlackGold"
 	}
 
@@ -260,7 +260,31 @@ do
 	}
 
 	ItsyScape.Meta.SecondaryWeight {
-		Weight = 50,
+		Weight = 750,
 		Resource = ItsyScape.Resource.Item "TableSalt"
+	}
+
+	ItsyScape.Resource.Item "BlueTableSalt" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(35),
+				Resource = ItsyScape.Resource.Skill "Mining"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(35),
+				Resource = ItsyScape.Resource.Skill "Mining"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "BlueTableSalt"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 500,
+		Resource = ItsyScape.Resource.Item "BlueTableSalt"
 	}
 end
