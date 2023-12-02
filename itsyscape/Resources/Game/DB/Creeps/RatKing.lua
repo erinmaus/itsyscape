@@ -313,7 +313,7 @@ do
 		ItsyScape.Action.Bury() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Faith",
-				Count = ItsyScape.Utility.xpForLevel(40)
+				Count = ItsyScape.Utility.xpForLevel(30)
 			},
 
 			Input {
