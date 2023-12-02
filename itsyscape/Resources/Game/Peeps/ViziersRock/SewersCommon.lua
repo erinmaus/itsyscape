@@ -28,7 +28,7 @@ function Common:hasValveBeenOpenedOrClosed(shape)
 	local storageProvider = Utility.Peep.getRaid(self) or Utility.Peep.getInstance(self)
 	local storage = storageProvider:getPlayerStorage()
 	local doorsStorage = storage:getRoot():getSection("Doors")
-	return doorsStorage:get(shape) == nil
+	return doorsStorage:get(shape) ~= nil
 end
 
 function Common:closeValve(shape)
@@ -40,7 +40,7 @@ function Common:closeValve(shape)
 	doorsStorage:set(shape, (shapeCount or 0) + 1)
 end
 
-function Common:closeValve(shape)
+function Common:openValve(shape)
 	local storageProvider = Utility.Peep.getRaid(self) or Utility.Peep.getInstance(self)
 	local storage = storageProvider:getPlayerStorage()
 
@@ -67,25 +67,27 @@ function Common:updateValve(mapObjectName, verticalMark, horizontalMark)
 
 	local currentDirection = valve:getDirection()
 	local previousDirection = valveStorage:get("direction")
-	if currentDirection ~= previousDirection then
-		valveStorage:set("direction", currentDirection)
+	if previousDirection then
+		if currentDirection ~= previousDirection then
+			valveStorage:set("direction", currentDirection)
 
-		local doorsStorage = storage:getRoot():getSection("Doors")
-		local shapeCount = doorsStorage:get(shape)
+			local doorsStorage = storage:getRoot():getSection("Doors")
+			local shapeCount = doorsStorage:get(shape)
 
-		if previousDirection ~= nil then
 			if previousDirection == valve.VERTICAL then
 				doorsStorage:set(verticalMark, math.max((doorsStorage:get(verticalMark) or 1) - 1, 0))
 			elseif previousDirection == valve.HORIZONTAL then
 				doorsStorage:set(horizontalMark, math.max((doorsStorage:get(horizontalMark) or 1) - 1, 0))
 			end
-		end
 
-		if currentDirection == valve.VERTICAL then
-			doorsStorage:set(verticalMark, (doorsStorage:get(verticalMark) or 0) + 1)
-		elseif currentDirection == valve.HORIZONTAL then
-			doorsStorage:set(horizontalMark, (doorsStorage:get(horizontalMark) or 0) + 1)
+			if currentDirection == valve.VERTICAL then
+				doorsStorage:set(verticalMark, (doorsStorage:get(verticalMark) or 0) + 1)
+			elseif currentDirection == valve.HORIZONTAL then
+				doorsStorage:set(horizontalMark, (doorsStorage:get(horizontalMark) or 0) + 1)
+			end
 		end
+	else
+		valveStorage:set("direction", currentDirection)
 	end
 end
 

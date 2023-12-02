@@ -25,6 +25,33 @@ function Sewers:onLoad(...)
 	Map.onLoad(self, ...)
 
 	self:initBoss()
+
+	-- This needs to be a push because the rotation of the valve in the boss room is NOT identity.
+	-- The logic to settle the initial direction of the valve, THEN we can initialize the default
+	-- state of the valves and resume updating the valves.
+	--
+	-- **This does not apply to any other sewers map because the valves ARE identity.**
+	self:pushPoke('initValves')
+	self.areValvesReady = false
+end
+
+function Sewers:onInitValves()
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
+		Common.closeValve(self, Common.MARK_CIRCLE)
+	end
+
+	-- First floor triangle/square valve
+	do
+		if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_TRIANGLE) then
+			Common.openValve(self, Common.MARK_TRIANGLE)
+		end
+
+		if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_SQUARE) then
+			Common.closeValve(self, Common.MARK_SQUARE)
+		end
+	end
+
+	self.areValvesReady = true
 end
 
 function Sewers:initBoss()
@@ -151,6 +178,14 @@ function Sewers:onBossDie(boss)
 				chest = chest
 			})
 		end
+	end
+end
+
+function Sewers:update(...)
+	Map.update(self, ...)
+
+	if self.areValvesReady then
+		Common.updateValve(self, "Valve_Circle", Common.MARK_CIRCLE, Common.MARK_NONE)
 	end
 end
 
