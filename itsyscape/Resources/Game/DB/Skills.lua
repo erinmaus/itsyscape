@@ -290,6 +290,11 @@ ItsyScape.Resource.Skill "Fishing"
 		Skill = ItsyScape.Resource.Skill "Fishing"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
+		Skill = ItsyScape.Resource.Skill "Fishing"
+	}
+
 ItsyScape.Resource.Skill "Sailing"
 	ActionType "Fire"
 
