@@ -19,6 +19,7 @@ local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 
 local Attack = Class(Action)
 Attack.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
+Attack.WHILE_MOVING = true
 
 function Attack:perform(state, player, target)
 	if not self:canPerform(state) then
