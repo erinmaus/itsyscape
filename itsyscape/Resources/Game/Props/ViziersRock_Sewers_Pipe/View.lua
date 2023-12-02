@@ -125,16 +125,12 @@ end
 function Pipe:tick()
 	PropView.tick(self)
 
-	if not self.particleSystem or not self.particleSystem:getIsReady() then
-		return
-	end
-
 	local position = self:getProp():getPosition()
 	local value = love.math.noise(position.x / 2, position.y / 2, position.z / 2)
-	local maxParticles = math.max(math.ceil(value * Pipe.MAX_PARTICLES), 0)
+	local maxParticles = math.max(math.ceil(value * Pipe.MAX_PARTICLES), 2)
 
 	if self.maxParticles ~= maxParticles then
-		self.particleSystem:initParticleSystemFromDef(Pipe.PARTICLE_SYSTEM(maxParticles))
+		self.particleSystem:initParticleSystemFromDef(Pipe.PARTICLE_SYSTEM(maxParticles), self:getResources())
 		self.maxParticles = maxParticles
 	end
 end
