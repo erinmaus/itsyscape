@@ -252,7 +252,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = SilverDubloonReward,
-		Weight = 5
+		Weight = 10
 	}
 
 	local GoldDubloonReward = ItsyScape.Action.Reward() {
@@ -269,7 +269,24 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = GoldDubloonReward,
-		Weight = 1
+		Weight = 3
+	}
+
+	local KeyReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(41)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = KeyReward,
+		Weight = 2
 	}
 
 	local LightningStormfishReward = ItsyScape.Action.Reward() {
@@ -286,7 +303,24 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = LightningStormfishReward,
-		Weight = 20
+		Weight = 50
+	}
+
+	local BlackmeltBassReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(30)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BlackmeltBassReward,
+		Weight = 100
 	}
 
 	local CoelacanthReward = ItsyScape.Action.Reward() {
@@ -303,7 +337,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = CoelacanthReward,
-		Weight = 5
+		Weight = 10
 	}
 
 	local CrawfishReward = ItsyScape.Action.Reward() {
@@ -320,7 +354,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = CrawfishReward,
-		Weight = 400
+		Weight = 200
 	}
 
 	local ShrimpReward = ItsyScape.Action.Reward() {
@@ -337,7 +371,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = ShrimpReward,
-		Weight = 200
+		Weight = 400
 	}
 
 	local FishermansHatReward = ItsyScape.Action.Reward() {
@@ -436,7 +470,9 @@ do
 		BronzeDubloonReward,
 		SilverDubloonReward,
 		GoldDubloonReward,
+		KeyReward,
 		LightningStormfishReward,
+		BlackmeltBassReward,
 		CoelacanthReward,
 		CrawfishReward,
 		ShrimpReward,

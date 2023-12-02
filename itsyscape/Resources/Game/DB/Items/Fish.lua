@@ -2817,7 +2817,8 @@ local SECONDARIES = {
 	"FishEggs",
 	"BronzeDubloon",
 	"SilverDubloon",
-	"GoldDubloon"
+	"GoldDubloon",
+	"Key_BlackmeltLagoon1"
 }
 
 local FISH = {

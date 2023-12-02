@@ -163,7 +163,7 @@ function Sewers:onBossDie(boss)
 			local gameDB = self:getDirector():getGameDB()
 
 			chest:poke('materialize', {
-				count = love.math.random(30, 60),
+				count = love.math.random(75, 125),
 				dropTable = gameDB:getResource("AncientKaradon_Primary", "DropTable"),
 				peep = playerPeep,
 				boss = boss,
