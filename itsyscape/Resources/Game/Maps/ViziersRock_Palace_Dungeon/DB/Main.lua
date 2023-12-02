@@ -614,8 +614,29 @@ do
 		MapObject = M["BankingCrate"]
 	}
 
+	ItsyScape.Meta.ResourceName {
+		Value = "Suspiciously large crate",
+		Language = "en-US",
+		Resource = M["BankingCrate"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That create is big enough to fit a prisoner in!",
+		Language = "en-US",
+		Resource = M["BankingCrate"]
+	}
+
+	local SmuggleAction = ItsyScape.Action.Bank()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Smuggle",
+		XProgressive = "Smuggling",
+		Language = "en-US",
+		Action = SmuggleAction
+	}
+
 	M["BankingCrate"] {
-		ItsyScape.Action.Bank()
+		SmuggleAction
 	}
 end
 
