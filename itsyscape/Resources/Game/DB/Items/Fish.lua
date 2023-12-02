@@ -1092,13 +1092,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Well that's one way to ruin a fish.",
+		Value = "Well that's one way to ruin a fish. Can still probably sell it for a pretty penny though...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
 	}
 
 	ItsyScape.Meta.Item {
-		Value = 150000,
+		Value = 50000,
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
 	}
