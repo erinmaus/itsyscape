@@ -49,7 +49,7 @@ function Peep:new(name)
 	self.layerName = "::orphan"
 
 	self.pokes = {}
-	self.pendingPokes = {}
+	self.pendingPokes = { count = 0 }
 
 	self.resources = {}
 
@@ -530,6 +530,8 @@ end
 
 -- Called before cortexes are updated.
 function Peep:preUpdate(director, game)
+	self.pendingPokes.count = #self.pendingPokes
+
 	if not self.isReady then
 		self:ready(director, game)
 		self.isReady = true
@@ -544,7 +546,7 @@ function Peep:update(director, game)
 		queue:update(game:getDelta())
 	end
 
-	local count = #self.pendingPokes
+	local count = self.pendingPokes.count
 	local index = 1
 	while index <= count do
 		local poke = self.pendingPokes[index]
