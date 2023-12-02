@@ -30,6 +30,13 @@ function LootBag:materializeDropTable(peep, inventory, loot, transaction)
 			end
 		end
 
+		if count <= 0 then
+			Log.warn(
+				"Item '%s' somehow dropped to zero or less (%d) when calculating drop count for '%s'.",
+				item:get("Item").id, count, peep:getName())
+			count = 1
+		end
+
 		local noted = item:get("Noted") or false
 		if noted == 0 then
 			noted = false
