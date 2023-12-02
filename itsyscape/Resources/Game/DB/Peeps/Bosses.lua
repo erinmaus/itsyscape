@@ -196,7 +196,7 @@ do
 		}
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = "The Rat King was the pet of the Witch-King, Wren. After hundreds of year of exposure to the most powerful of magics, he became the horrifying monster he is today.",
+			Value = "The Rat King was the pet of the Witch-King, Wren. After hundreds of years of exposure to the most powerful of magics, he became the horrifying monster he is today.",
 			Language = "en-US",
 			Resource = RatKing
 		}
