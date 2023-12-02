@@ -19,7 +19,7 @@ local ORES = {
 			"BlackFlint",
 			"CrumblySulfur",
 			"VegetableOil",
-			"BlackGold"
+			"Sapphire"
 		}
 	},
 
@@ -33,7 +33,8 @@ local ORES = {
 			"BlackFlint",
 			"CrumblySulfur",
 			"VegetableOil",
-			"BlackGold"
+			"BlackGold",
+			"Sapphire"
 		}
 	},
 
@@ -51,7 +52,9 @@ local ORES = {
 			"CrumblySulfur",
 			"VegetableOil",
 			"PeanutOil",
-			"BlackGold"
+			"BlackGold",
+			"Sapphire",
+			"Emerald"
 		}
 	},
 
@@ -67,7 +70,9 @@ local ORES = {
 			"CrumblySulfur",
 			"VegetableOil",
 			"PeanutOil",
-			"BlackGold"
+			"BlackGold",
+			"Sapphire",
+			"Emerald"
 		}
 	},
 
@@ -95,7 +100,10 @@ local ORES = {
 			"CrumblySulfur",
 			"VegetableOil",
 			"PeanutOil",
-			"BlackGold"
+			"BlackGold",
+			"Sapphire",
+			"Emerald",
+			"Ruby"
 		}
 	},
 
@@ -110,7 +118,11 @@ local ORES = {
 			"CrumblySulfur",
 			"VegetableOil",
 			"PeanutOil",
-			"BlackGold"
+			"BlackGold",
+			"Sapphire",
+			"Emerald",
+			"Ruby",
+			"Diamond"
 		}
 	},
 
