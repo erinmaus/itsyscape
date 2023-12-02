@@ -29,8 +29,12 @@ end
 function Sewers:onLoad(...)
 	Map.onLoad(self, ...)
 
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_TRIANGLE) then
+		Common.openValve(self, Common.MARK_TRIANGLE)
+	end
+
 	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
-		Common.closeValve(self, Common.MARK_CIRCLE)
+		Common.openValve(self, Common.MARK_CIRCLE)
 	end
 
 	self:initRatKingFight()

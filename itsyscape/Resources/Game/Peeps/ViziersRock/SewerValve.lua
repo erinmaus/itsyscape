@@ -28,6 +28,15 @@ function Valve:new(...)
 	self.currentRotation = Quaternion.IDENTITY
 end
 
+function Valve:onFinalize(...)
+	Prop.onFinalize(self, ...)
+
+	local rotation = self:getBehavior(RotationBehavior)
+	self:removeBehavior(RotationBehavior)
+
+	self.currentRotation = rotation.rotation:getNormal()
+end
+
 function Valve:onRotate(p)
 	-- The rotate action adds the rotation behavior, but we don't want the whole prop to rotate.
 	-- The prop view takes the rotation from prop state and rotates the valve only.
