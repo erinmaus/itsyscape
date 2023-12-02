@@ -330,7 +330,7 @@ do
 
 	ItsyScape.Meta.ResourceCategory {
 		Key = "Bones",
-		Value = "RatKingTooth",
+		Value = "Rat",
 		Resource = Tooth
 	}
 
