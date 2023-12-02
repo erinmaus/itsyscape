@@ -8,12 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Vector = require "ItsyScape.Common.Math.Vector"
-local Color = require "ItsyScape.Graphics.Color"
-local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local RockView = require "Resources.Game.Props.Common.RockView"
-local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
-local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local RockView = require "Resources.Game.Props.Common.RockView2"
 
 local TinRockView = Class(RockView)
 

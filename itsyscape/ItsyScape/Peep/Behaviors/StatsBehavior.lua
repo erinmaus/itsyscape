@@ -21,6 +21,7 @@ function StatsBehavior:new()
 	Behavior.Type.new(self)
 
 	self.stats = false
+	self.pendingXP = {}
 end
 
 return StatsBehavior

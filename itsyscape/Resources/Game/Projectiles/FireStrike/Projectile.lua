@@ -151,7 +151,7 @@ function FireStrike:load()
 	self.fireParticleSystem:initParticleSystemFromDef(FireStrike.FIRE_PARTICLE_SYSTEM, resources)
 
 	self.smokeParticleSystem = ParticleSceneNode()
-	--self.smokeParticleSystem:setParent(root)
+	self.smokeParticleSystem:setParent(root)
 	self.smokeParticleSystem:initParticleSystemFromDef(FireStrike.SMOKE_PARTICLE_SYSTEM, resources)
 
 	self.light = PointLightSceneNode()
@@ -165,9 +165,9 @@ end
 
 function FireStrike:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
+		self.spawnPosition = self:getTargetPosition(self:getSource())
 
-		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+		local hitPosition = self:getTargetPosition(self:getDestination())
 		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)
 	end
 end
@@ -187,14 +187,12 @@ function FireStrike:update(elapsed)
 			alpha = 1 - (delta - 0.5) / 0.5
 		end
 
-		local fireParticleSystem = self.fireParticleSystem:getParticleSystem()
-		if fireParticleSystem then
-			fireParticleSystem:updateEmittersLocalPosition(position)
+		if self.fireParticleSystem:getIsReady() then
+			self.fireParticleSystem:updateLocalPosition(position)
 		end
 
-		local smokeParticleSystem = self.smokeParticleSystem:getParticleSystem()
-		if smokeParticleSystem then
-			smokeParticleSystem:updateEmittersLocalPosition(position + Vector.UNIT_Y)
+		if self.smokeParticleSystem:getIsReady() then
+			self.smokeParticleSystem:updateLocalPosition(position + Vector.UNIT_Y)
 		end
 
 		self.fireParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))

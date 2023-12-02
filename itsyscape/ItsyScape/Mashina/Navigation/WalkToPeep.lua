@@ -23,7 +23,7 @@ function WalkToPeep:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local i, j, k = Utility.Peep.getTile(peep)
+	local i, j, k = Utility.Peep.getTileAnchor(peep)
 	local s = Utility.Peep.walk(mashina, i, j, k, state[self.DISTANCE], {
 		asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
 	})

@@ -23,69 +23,71 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local Pipe = Class(PropView)
 Pipe.MAX_PARTICLES = 6
 
-Pipe.PARTICLE_SYSTEM = {
-	numParticles = 50,
-	texture = "Resources/Game/Props/ViziersRock_Sewers_Pipe/Particle.png",
-	columns = 4,
+Pipe.PARTICLE_SYSTEM = function(count)
+	return {
+		numParticles = 50,
+		texture = "Resources/Game/Props/ViziersRock_Sewers_Pipe/Particle.png",
+		columns = 4,
 
-	emitters = {
-		{
-			type = "RadialEmitter",
-			radius = { 0, 1 },
-			yRange = { 0, 0 },
-			zRange = { 0, 0 },
-			position = { 0, 0.75, 1.75 }
-		},
-		{
-			type = "DirectionalEmitter",
-			direction = { 0, -1, 0 },
-			speed = { 2, 3 }
-		},
-		{
-			type = "RandomColorEmitter",
-			colors = {
-				{ Color.fromHexString("B8EBE6"):get() },
-				{ Color.fromHexString("5FBCD3"):get() },
-				{ Color.fromHexString("5FBCD3"):get() },
-				{ Color.fromHexString("5FBCD3"):get() }
+		emitters = {
+			{
+				type = "RadialEmitter",
+				radius = { 0, 1 },
+				yRange = { 0, 0 },
+				zRange = { 0, 0 },
+				position = { 0, 0.75, 1.75 }
+			},
+			{
+				type = "DirectionalEmitter",
+				direction = { 0, -1, 0 },
+				speed = { 2, 3 }
+			},
+			{
+				type = "RandomColorEmitter",
+				colors = {
+					{ Color.fromHexString("B8EBE6"):get() },
+					{ Color.fromHexString("5FBCD3"):get() },
+					{ Color.fromHexString("5FBCD3"):get() },
+					{ Color.fromHexString("5FBCD3"):get() }
+				}
+			},
+			{
+				type = "RandomLifetimeEmitter",
+				lifetime = { 0.3, 0.4 }
+			},
+			{
+				type = "RandomScaleEmitter",
+				scale = { 0.4, 0.6 }
+			},
+			{
+				type = "RandomRotationEmitter",
+				rotation = { 0, 360 },
+				velocity = { 30, 60 },
+				acceleration = { -40, -20 }
 			}
 		},
-		{
-			type = "RandomLifetimeEmitter",
-			lifetime = { 0.3, 0.4 }
-		},
-		{
-			type = "RandomScaleEmitter",
-			scale = { 0.4, 0.6 }
-		},
-		{
-			type = "RandomRotationEmitter",
-			rotation = { 0, 360 },
-			velocity = { 30, 60 },
-			acceleration = { -40, -20 }
-		}
-	},
 
-	paths = {
-		{
-			type = "FadeInOutPath",
-			fadeInPercent = { 0.1 },
-			fadeOutPercent = { 0.8 },
-			tween = { 'sineEaseOut' }
+		paths = {
+			{
+				type = "FadeInOutPath",
+				fadeInPercent = { 0.1 },
+				fadeOutPercent = { 0.8 },
+				tween = { 'sineEaseOut' }
+			},
+			{
+				type = "TextureIndexPath",
+				textures = { 1, 4 }
+			}
 		},
-		{
-			type = "TextureIndexPath",
-			textures = { 1, 4 }
-		}
-	},
 
-	emissionStrategy = {
-		type = "RandomDelayEmissionStrategy",
-		count = { 0, 0 },
-		delay = { 1 / 16 },
-		duration = { math.huge }
+		emissionStrategy = {
+			type = "RandomDelayEmissionStrategy",
+			count = { 0, count },
+			delay = { 1 / 16 },
+			duration = { math.huge }
+		}
 	}
-}
+end
 
 function Pipe:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -99,7 +101,6 @@ function Pipe:load()
 
 	self.particleSystem = ParticleSceneNode()
 	self.particleSystem:setParent(root)
-	self.particleSystem:initParticleSystemFromDef(Pipe.PARTICLE_SYSTEM, resources)
 
 	self.pipe = DecorationSceneNode()
 	self.pipe:setParent(root)
@@ -124,16 +125,14 @@ end
 function Pipe:tick()
 	PropView.tick(self)
 
-	if not self.particleSystem or not self.particleSystem:getParticleSystem() then
-		return
-	end
-
 	local position = self:getProp():getPosition()
 	local value = love.math.noise(position.x / 2, position.y / 2, position.z / 2)
-	local maxParticles = math.max(math.ceil(value * Pipe.MAX_PARTICLES), 0)
+	local maxParticles = math.max(math.ceil(value * Pipe.MAX_PARTICLES), 2)
 
-	local emissionStrategy = self.particleSystem:getParticleSystem():getEmissionStrategy()
-	emissionStrategy:setCount(0, maxParticles)
+	if self.maxParticles ~= maxParticles then
+		self.particleSystem:initParticleSystemFromDef(Pipe.PARTICLE_SYSTEM(maxParticles), self:getResources())
+		self.maxParticles = maxParticles
+	end
 end
 
 return Pipe

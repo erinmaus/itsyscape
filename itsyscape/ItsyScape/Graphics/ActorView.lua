@@ -706,10 +706,7 @@ function ActorView:updateAnimations(delta)
 					if p.attach then
 						local transform = self.animatable:getComposedTransform(p.attach)
 						local localPosition = Vector(transform:transformPoint(0, 0, 0))
-						local system = p.sceneNode:getParticleSystem()
-						if system then
-							system:updateEmittersLocalPosition(localPosition)
-						end
+						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end
 			end

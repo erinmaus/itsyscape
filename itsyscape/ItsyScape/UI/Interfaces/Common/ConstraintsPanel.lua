@@ -153,6 +153,12 @@ function ConstraintsPanel:performLayout(doLogic)
 				right:setText(text)
 			elseif c.type:lower() == 'keyitem' then
 				right:setText(c.description or c.name)
+			elseif c.type:lower() == "boss" then
+				if c.count > 1 then
+					right:setText(string.format("Defeat %s at least %s times.", c.name, Utility.Text.prettyNumber(c.count)))
+				else
+					right:setText(string.format("Defeat %s at least 1 time.", c.name))
+				end
 			else
 				local text
 				if c.count <= 1 then

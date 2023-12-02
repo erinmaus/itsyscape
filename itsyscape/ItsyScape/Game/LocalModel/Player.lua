@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local Color = require "ItsyScape.Graphics.Color"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -37,7 +38,7 @@ local LocalPlayer = Class(Player)
 LocalPlayer.MOVEMENT_STOP_THRESHOLD = 10
 LocalPlayer.MAX_MESSAGES = 50
 LocalPlayer.MAX_MESSAGE_DURATION_SECONDS = 60 * 2 -- 2 minutes
-LocalPlayer.POKE_GRACE_PERIOD = 0.35
+LocalPlayer.POKE_GRACE_PERIOD = 0.45
 
 -- Constructs a new player.
 --
@@ -422,9 +423,20 @@ function LocalPlayer:move(x, z)
 	end
 end
 
+function LocalPlayer:isPendingActionMovement()
+	local action = Mapp.Action()
+	local id = self.nextActionID and Mapp.ID(self.nextActionID)
+	if id and self.game:getGameDB():getBrochure():tryGetAction(id, action) then
+		local a = Utility.getAction(self.game, action)
+		return a and a.instance and a.instance.WHILE_MOVING
+	end
+
+	return false
+end
+
 function LocalPlayer:tryPerformPoke()
 	local movement = self:getActor():getPeep():getBehavior(MovementBehavior)
-	if not movement or movement.velocity:getLength() == 0 then
+	if not movement or movement.velocity:getLength() == 0 or self:isPendingActionMovement() then
 		if self.lastPokeTime and self.lastPokeTime + LocalPlayer.POKE_GRACE_PERIOD > love.timer.getTime() then
 			local obj = self.nextObject
 			local id = self.nextActionID

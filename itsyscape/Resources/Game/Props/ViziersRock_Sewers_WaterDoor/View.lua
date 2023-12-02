@@ -95,13 +95,11 @@ function WaterDoor:load()
 	self.particleSystem:initParticleSystemFromDef(WaterDoor.PARTICLE_SYSTEM, resources)
 
 	resources:queueEvent(function()
-		self.emissionStrategy = self.particleSystem:getParticleSystem():getEmissionStrategy()
-
 		local state = self:getProp():getState()
 		if state.open then
-			self.particleSystem:getParticleSystem():setEmissionStrategy(nil)
+			self.particleSystem:initEmissionStrategyFromDef({})
 		else
-			self.particleSystem:getParticleSystem():setEmissionStrategy(self.emissionStrategy)
+			self.particleSystem:initEmissionStrategyFromDef(WaterDoor.PARTICLE_SYSTEM.emissionStrategy)
 		end
 
 		self.open = state.open
@@ -111,16 +109,16 @@ end
 function WaterDoor:tick()
 	PropView.tick(self)
 
-	if not self.particleSystem or not self.particleSystem:getParticleSystem() then
+	if not self.particleSystem or not self.particleSystem:getIsReady() then
 		return
 	end
 
 	local state = self:getProp():getState()
 	if state.open ~= self.open then
 		if state.open then
-			self.particleSystem:getParticleSystem():setEmissionStrategy(nil)
+			self.particleSystem:initEmissionStrategyFromDef({})
 		else
-			self.particleSystem:getParticleSystem():setEmissionStrategy(self.emissionStrategy)
+			self.particleSystem:initEmissionStrategyFromDef(WaterDoor.PARTICLE_SYSTEM.emissionStrategy)
 		end
 
 		self.open = state.open

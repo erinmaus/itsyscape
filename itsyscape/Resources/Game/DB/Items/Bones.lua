@@ -59,6 +59,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(5) / 3,
 	Weight = 5,
+	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "Bones"
 }
 
@@ -131,7 +132,7 @@ ItsyScape.Resource.Item "DragonBones" {
 	ItsyScape.Action.Bury() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForLevel(40)
+			Count = ItsyScape.Utility.xpForLevel(45)
 		},
 
 		Input {
@@ -141,7 +142,7 @@ ItsyScape.Resource.Item "DragonBones" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForResource(40)
+			Count = ItsyScape.Utility.xpForResource(55)
 		}
 	}
 }
@@ -161,6 +162,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(50),
 	Weight = 20,
+	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "DragonBones"
 }
 
@@ -184,7 +186,7 @@ ItsyScape.Resource.Item "GildedDragonBones" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Faith",
-			Count = ItsyScape.Utility.xpForResource(60)
+			Count = ItsyScape.Utility.xpForResource(65)
 		}
 	},
 
@@ -237,6 +239,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(55) + ItsyScape.Utility.valueForItem(60),
 	Weight = 25,
+	Stackable = 1,
 	Resource = ItsyScape.Resource.Item "GildedDragonBones"
 }
 

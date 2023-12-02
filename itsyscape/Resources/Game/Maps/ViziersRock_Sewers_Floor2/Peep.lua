@@ -24,11 +24,11 @@ function Sewers:onLoad(...)
 	Map.onLoad(self, ...)
 
 	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
-		Common.closeValve(self, Common.MARK_CIRCLE)
+		Common.openValve(self, Common.MARK_CIRCLE)
 	end
 
 	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_STAR) then
-		Common.closeValve(self, Common.MARK_STAR)
+		Common.openValve(self, Common.MARK_STAR)
 	end
 end
 

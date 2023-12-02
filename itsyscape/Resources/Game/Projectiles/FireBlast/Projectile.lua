@@ -183,14 +183,12 @@ function FireBlast:update(elapsed)
 			alpha = 1 - (delta - 0.5) / 0.5
 		end
 
-		local fireParticleSystem = self.fireParticleSystem:getParticleSystem()
-		if fireParticleSystem then
-			fireParticleSystem:updateEmittersLocalPosition(position)
+		if self.fireParticleSystem:getIsReady() then
+			self.fireParticleSystem:updateLocalPosition(position)
 		end
-
-		local smokeParticleSystem = self.smokeParticleSystem:getParticleSystem()
-		if smokeParticleSystem then
-			smokeParticleSystem:updateEmittersLocalPosition(position + Vector.UNIT_Y)
+		
+		if self.smokeParticleSystem:getIsReady() then
+			self.smokeParticleSystem:updateLocalPosition(position + Vector.UNIT_Y)
 		end
 
 		self.fireParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Items/Bones.lua
+-- Resources/Game/DB/Items/Fish.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -30,6 +30,300 @@ do
 		Value = "Good for fish, or if you're on a diet.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "Bait"
+	}
+
+	ItsyScape.Resource.Item "OldBoot" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(2),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(2),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "OldBoot"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 50,
+		Resource = ItsyScape.Resource.Item "OldBoot"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 0,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "OldBoot"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Waterlogged old boot with a hole in the sole",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OldBoot"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This boot is useless, no one could patch it up! At least a fish won't eat it now!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OldBoot"
+	}
+
+	ItsyScape.Resource.Item "WaterSlug" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(2),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(4),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "WaterSlug"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 200,
+		Resource = ItsyScape.Resource.Item "WaterSlug"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(3.5),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "WaterSlug"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Water slug",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WaterSlug"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Aww, what a cute lil' guy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WaterSlug"
+	}
+
+	ItsyScape.Resource.Item "FishEggs" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(5),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(6.5),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "FishEggs"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 100,
+		Resource = ItsyScape.Resource.Item "FishEggs"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(11.25),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "FishEggs"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Fish eggs",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "FishEggs"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Who knows what fish will hatch from these!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "FishEggs"
+	}
+
+	ItsyScape.Resource.Item "WaterWorm" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(5),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(7.5),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "WaterWorm"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 50,
+		Resource = ItsyScape.Resource.Item "WaterWorm"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(17.5),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "WaterWorm"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Water worm",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WaterWorm"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Eww, what a gross lil' guy!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "WaterWorm"
+	}
+
+	ItsyScape.Resource.Item "BronzeDubloon" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(20),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(20),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "BronzeDubloon"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 10,
+		Resource = ItsyScape.Resource.Item "BronzeDubloon"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(30),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BronzeDubloon"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bronze dubloon",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeDubloon"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not worth a lot to landlubbers, but can definitely barter with pirates.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BronzeDubloon"
+	}
+
+	ItsyScape.Resource.Item "SilverDubloon" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(40),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(40),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "SilverDubloon"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 5,
+		Resource = ItsyScape.Resource.Item "SilverDubloon"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(45),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "SilverDubloon"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Silver dubloon",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SilverDubloon"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Worth something a bit to landlubbers, but worth more to pirates.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "SilverDubloon"
+	}
+
+	ItsyScape.Resource.Item "GoldDubloon" {
+		ItsyScape.Action.ObtainSecondary() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(55),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = ItsyScape.Utility.xpForResource(55),
+				Resource = ItsyScape.Resource.Skill "Fishing"
+			},
+
+			Output {
+				Count = 1,
+				Resource = ItsyScape.Resource.Item "GoldDubloon"
+			}
+		}
+	}
+
+	ItsyScape.Meta.SecondaryWeight {
+		Weight = 1,
+		Resource = ItsyScape.Resource.Item "GoldDubloon"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(65),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "GoldDubloon"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Gold dubloon",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GoldDubloon"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Worth a lot to pirates and landlubbers alike!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "GoldDubloon"
 	}
 end
 
@@ -798,13 +1092,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Well that's one way to ruin a fish.",
+		Value = "Well that's one way to ruin a fish. Can still probably sell it for a pretty penny though...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
 	}
 
 	ItsyScape.Meta.Item {
-		Value = 150000,
+		Value = 50000,
 		Stackable = 1,
 		Resource = ItsyScape.Resource.Item "BurntCoelacanth"
 	}
@@ -1940,4 +2234,622 @@ do
 		Value = "BurntFish",
 		Resource = ItsyScape.Resource.Item "BurntCrawfish"
 	}
+end
+
+-- Lightning stormfish
+do
+	ItsyScape.Resource.Prop "LightningStormfish_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(35)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "WaterWorm",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "LightningStormfish",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(36)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lightning stormfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a lightning stormfish swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 65,
+		SpawnTime = 20,
+		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "LightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(37)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "LightningStormfish" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lightning stormfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A majestic, rare fish that swims to the surface only during storms. Some believe the fish to be a stormbringer itself.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(37),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "LightningStormfish",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "LightningStormfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 18,
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "LightningStormfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Boost = 3,
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Engineering",
+		Boost = 3,
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "LightningStormfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemPrayerRestorationUserdata"
+	}
+
+	ItsyScape.Meta.ItemPrayerRestorationUserdata {
+		PrayerPoints = 6,
+		Resource = ItsyScape.Resource.Item "LightningStormfish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "LightningStormfish",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "LightningStormfish",
+		Value = ItsyScape.Utility.valueForItem(37)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 18,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "LightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedLightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(37)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "LightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntLightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 35,
+		Stop = 40,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedLightningStormfish" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked lightning stormfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Quite a mouthful. Gives a tiny shock, but has a rich taste.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(40),
+		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
+	}
+
+	ItsyScape.Resource.Item "BurntLightningStormfish" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt lightning stormfish",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "What a waste of such an amazing fish.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntLightningStormfish"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntLightningStormfish"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntLightningStormfish"
+	}
+end
+
+-- Blackmelt bass
+do
+	ItsyScape.Resource.Prop "BlackmeltBass_Default" {
+		ItsyScape.Action.Fish() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForLevel(30)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "WaterSlug",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "BlackmeltBass",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Fishing",
+				Count = ItsyScape.Utility.xpForResource(31)
+			}
+		}
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's a Blackmelt bass swimming in the water.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = 45,
+		SpawnTime = 10,
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFish",
+		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
+	}
+
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(32)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "BlackmeltBass" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An ugly fish that needs to be cooked well or you might just die.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(32),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 16,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemStatBoostUserdata"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Fishing",
+		Boost = 3,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemStatBoostUserdata {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Boost = 2,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemPrayerRestorationUserdata"
+	}
+
+	ItsyScape.Meta.ItemPrayerRestorationUserdata {
+		PrayerPoints = 2,
+		Resource = ItsyScape.Resource.Item "BlackmeltBass"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "BlackmeltBass",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "BlackmeltBass",
+		Value = ItsyScape.Utility.valueForItem(32)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 16,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedBlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(32)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntBlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 30,
+		Stop = 35,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedBlackmeltBass" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks raw, but if you cook it too long, the poison strengthens.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(32),
+		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
+	}
+
+	ItsyScape.Resource.Item "BurntBlackmeltBass" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt Blackmelt bass",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Eat that and die!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntBlackmeltBass"
+	}
+end
+
+local SECONDARIES = {
+	"OldBoot",
+	"WaterSlug",
+	"WaterWorm",
+	"FishEggs",
+	"BronzeDubloon",
+	"SilverDubloon",
+	"GoldDubloon",
+	"Key_BlackmeltLagoon1"
+}
+
+local FISH = {
+	"Sardine",
+	"SeaBass",
+	"Coelacanth",
+	"Bass",
+	"AlligatorGar",
+	"Shrimp",
+	"Crawfish",
+	"BlackmeltBass",
+	"LightningStormfish"
+}
+
+for _, fish in ipairs(FISH) do
+	local prop = string.format("%s_Default", fish)
+
+	for _, secondary in ipairs(SECONDARIES) do
+		local Action = ItsyScape.Action.ObtainSecondary() {
+			Output {
+				Resource = ItsyScape.Resource.Item(secondary),
+				Count = 1
+			}
+		}
+
+		ItsyScape.Meta.HiddenFromSkillGuide {
+			Action = Action
+		}
+
+		ItsyScape.Resource.Prop(prop) {
+			Action
+		}
+	end
 end

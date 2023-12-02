@@ -9,7 +9,27 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Item "Key_BlackmeltLagoon1" {
-	-- Nothing.
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(40),
+			Resource = ItsyScape.Resource.Skill "Fishing"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(41),
+			Resource = ItsyScape.Resource.Skill "Fishing"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1"
+		}
+	}
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 5,
+	Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1"
 }
 
 ItsyScape.Meta.Item {
@@ -25,7 +45,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Grants access to the Black Tentacle's treasury under the Blackmelt Lagoon.",
+	Value = "Grants one-time access to the Black Tentacle's treasury under the Blackmelt Lagoon.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1"
 }

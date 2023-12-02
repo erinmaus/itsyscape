@@ -221,6 +221,108 @@ do
 		Weight = 100
 	}
 
+	local BronzeDubloonReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "BronzeDubloon",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(55)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BronzeDubloonReward,
+		Weight = 10
+	}
+
+	local SilverDubloonReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "SilverDubloon",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(55)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = SilverDubloonReward,
+		Weight = 10
+	}
+
+	local GoldDubloonReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "GoldDubloon",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(55)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = GoldDubloonReward,
+		Weight = 3
+	}
+
+	local KeyReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "Key_BlackmeltLagoon1",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(41)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = KeyReward,
+		Weight = 2
+	}
+
+	local LightningStormfishReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "LightningStormfish",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(35)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = LightningStormfishReward,
+		Weight = 50
+	}
+
+	local BlackmeltBassReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "BlackmeltBass",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(30)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = BlackmeltBassReward,
+		Weight = 100
+	}
+
 	local CoelacanthReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "Coelacanth",
@@ -235,7 +337,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = CoelacanthReward,
-		Weight = 5
+		Weight = 10
 	}
 
 	local CrawfishReward = ItsyScape.Action.Reward() {
@@ -252,7 +354,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = CrawfishReward,
-		Weight = 400
+		Weight = 200
 	}
 
 	local ShrimpReward = ItsyScape.Action.Reward() {
@@ -269,7 +371,7 @@ do
 
 	ItsyScape.Meta.RewardEntry {
 		Action = ShrimpReward,
-		Weight = 200
+		Weight = 400
 	}
 
 	local FishermansHatReward = ItsyScape.Action.Reward() {
@@ -301,6 +403,57 @@ do
 		Weight = 100
 	}
 
+	local WaterWormReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "WaterWorm",
+			Count = 25
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(7.5) * 25
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = WaterWormReward,
+		Weight = 100
+	}
+
+	local WaterSlugReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "WaterSlug",
+			Count = 15
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(5.5) * 15
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = WaterSlugReward,
+		Weight = 100
+	}
+
+	local OldBootReward = ItsyScape.Action.Reward() {
+		Output {
+			Resource = ItsyScape.Resource.Item "OldBoot",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Fishing",
+			Count = ItsyScape.Utility.xpForResource(2)
+		}
+	}
+
+	ItsyScape.Meta.RewardEntry {
+		Action = OldBootReward,
+		Weight = 20
+	}
+
 	local CoinsReward = ItsyScape.Action.Reward() {
 		Output {
 			Resource = ItsyScape.Resource.Item "Coins",
@@ -314,10 +467,19 @@ do
 	}
 
 	ItsyScape.Resource.DropTable "AncientKaradon_Primary" {
+		BronzeDubloonReward,
+		SilverDubloonReward,
+		GoldDubloonReward,
+		KeyReward,
+		LightningStormfishReward,
+		BlackmeltBassReward,
 		CoelacanthReward,
 		CrawfishReward,
 		ShrimpReward,
 		FishermansHatReward,
+		WaterWormReward,
+		WaterSlugReward,
+		OldBootReward,
 		BaitReward,
 		CoinsReward
 	}

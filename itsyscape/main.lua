@@ -318,7 +318,7 @@ function love.errorhandler(message)
 		if not s then
 			Log.warn("Couldn't safely quit game as a last resort on error.")
 		else
-			Log.info("Safetly quit game as a last resort on error.")
+			Log.info("Safely quit game as a last resort on error.")
 		end
 	end
 

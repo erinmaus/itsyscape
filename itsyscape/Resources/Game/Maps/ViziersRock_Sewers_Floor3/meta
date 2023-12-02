@@ -1,6 +1,7 @@
 {
 	{
+		autoMask = true,
 		tileSetID = "ViziersRock1",
-		maskID = true
+		maskID = true,
 	},
 }

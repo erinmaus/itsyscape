@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Curve = require "ItsyScape.Game.Curve"
 local BankInventoryProvider = require "ItsyScape.Game.BankInventoryProvider"
+local BossStateProvider = require "ItsyScape.Game.BossStateProvider"
 local DreamStateProvider = require "ItsyScape.Game.DreamStateProvider"
 local KeyItemStateProvider = require "ItsyScape.Game.KeyItemStateProvider"
 local PlayerEquipmentStateProvider = require "ItsyScape.Game.PlayerEquipmentStateProvider"
@@ -330,6 +331,7 @@ function One:ready(director, game)
 	end
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
+	self:getState():addProvider("Boss", BossStateProvider(self))
 	self:getState():addProvider("Dream", DreamStateProvider(self))
 	self:getState():addProvider("Quest", QuestStateProvider(self))
 	self:getState():addProvider("SailingItem", SailingItemStateProvider(self))
@@ -476,6 +478,8 @@ function One:update(...)
 	end
 
 	self:updatePendingAnalytics()
+
+	Utility.Peep.Human.flashXP(self)
 
 	self.deadTimer = self.deadTimer - delta
 	if self.deadTimer < 0 then

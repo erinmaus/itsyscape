@@ -44,7 +44,8 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Peep.Talk {
-				message = "Bwak bwak bwak!"
+				message = "Bwak bwak bwak!",
+				log = false
 			}
 		}
 	}

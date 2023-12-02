@@ -9,7 +9,27 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Item "Sapphire" {
-	-- Nothing.
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Sapphire",
+			Count = 1
+		}
+	}
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 20,
+	Resource = ItsyScape.Resource.Item "Sapphire"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -30,7 +50,27 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "Emerald" {
-	-- Nothing.
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Emerald",
+			Count = 1
+		}
+	}
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 15,
+	Resource = ItsyScape.Resource.Item "Emerald"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -48,6 +88,30 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.Item {
 	Value = ItsyScape.Utility.valueForItem(50),
 	Resource = ItsyScape.Resource.Item "Emerald"
+}
+
+ItsyScape.Resource.Item "Ruby" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(30)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Ruby",
+			Count = 1
+		}
+	}
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 10,
+	Resource = ItsyScape.Resource.Item "Ruby"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -68,7 +132,27 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Resource.Item "Diamond" {
-	-- Nothing.
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(40)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "Diamond",
+			Count = 1
+		}
+	}
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 5,
+	Resource = ItsyScape.Resource.Item "Diamond"
 }
 
 ItsyScape.Meta.ResourceName {
