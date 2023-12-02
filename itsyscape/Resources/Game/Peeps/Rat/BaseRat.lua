@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseRat = Class(Creep)
@@ -23,6 +24,9 @@ function BaseRat:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2, 2.5, 2)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 12
 end
 
 function BaseRat:ready(director, game)
