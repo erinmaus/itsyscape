@@ -2,7 +2,21 @@ do
 	local Rat = ItsyScape.Resource.Peep "Rat"
 
 	ItsyScape.Resource.Peep "Rat" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Rat_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Rat_Secondary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -74,7 +88,21 @@ do
 	local SkeletalRat = ItsyScape.Resource.Peep "SkeletalRat"
 
 	ItsyScape.Resource.Peep "SkeletalRat" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Rat_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Rat_Secondary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -144,5 +172,137 @@ do
 	ItsyScape.Meta.ResourceTag {
 		Value = "Undead",
 		Resource = SkeletalRat
+	}
+end
+
+do
+	local DropTable = ItsyScape.Resource.DropTable "Rat_Primary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AdamantTrim",
+		Weight = 5,
+		Count = 2,
+		Range = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bait",
+		Weight = 50,
+		Count = 100,
+		Range = 50,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Coins",
+		Weight = 100,
+		Count = 5000,
+		Range = 2500,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "TinCan",
+		Weight = 50,
+		Count = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "BlueTableSalt",
+		Weight = 10,
+		Count = 5,
+		Range = 3,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "OldBoot",
+		Weight = 50,
+		Count = 5,
+		Range = 3,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "FishEggs",
+		Weight = 50,
+		Count = 5,
+		Range = 3,
+		Resource = DropTable
+	}
+end
+
+do
+	local DropTable = ItsyScape.Resource.DropTable "Rat_Secondary"
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bones",
+		Weight = 100,
+		Count = 2,
+		Range = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "RatPaw",
+		Weight = 200,
+		Count = 1,
+		Resource = DropTable
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "RatKingTooth",
+		Weight = 5,
+		Count = 1,
+		Resource = DropTable
+	}
+end
+
+do
+	local Paw = ItsyScape.Resource.Item "RatPaw" {
+		ItsyScape.Action.Bury() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Faith",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "RatPaw",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Faith",
+				Count = ItsyScape.Utility.xpForResource(30)
+			}
+		},
+
+		BoneCraftAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Bones",
+		Value = "Rat",
+		Resource = ItsyScape.Resource.Item "RatPaw"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Rat paw",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RatPaw"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(25) / 3,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "RatPaw"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better than a monkey's paw! Better bury it, the thing is still twitching!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "RatPaw"
 	}
 end
