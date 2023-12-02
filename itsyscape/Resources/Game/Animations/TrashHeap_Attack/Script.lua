@@ -3,7 +3,7 @@ Animation "Trash Heap Attack" {
 		Wait(0.25),
 
 		Particles {
-			duration = 2,
+			duration = 3.5,
 			attach = "body2",
 
 			system = {
