@@ -9,55 +9,60 @@
 --------------------------------------------------------------------------------
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local PrisonBreakSequence = require "Resources.Game.Peeps.ViziersRock.Prisoner_PrisonBreakSequence"
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Step {
-		Mashina.Peep.Wait,
+	Mashina.Sequence {
+		PrisonBreakSequence,
 
-		Mashina.Repeat {
-			Mashina.Invert {
-				Mashina.Peep.IsInventoryFull
-			},
+		Mashina.Step {
+			Mashina.Peep.Wait,
 
-			Mashina.Step {
-				Mashina.Try {
-					Mashina.Skills.Mining.MineNearbyRock {
-						resource = "CoalOre"
+			Mashina.Repeat {
+				Mashina.Invert {
+					Mashina.Peep.IsInventoryFull
+				},
+
+				Mashina.Step {
+					Mashina.Try {
+						Mashina.Skills.Mining.MineNearbyRock {
+							resource = "CoalOre"
+						},
+
+						Mashina.Peep.SetState {
+							state = "idle"
+						}
 					},
 
-					Mashina.Peep.SetState {
-						state = "idle"
-					}
-				},
+					Mashina.Peep.Wait,
 
-				Mashina.Peep.Wait,
+					Mashina.Navigation.Wander {
+						radial_distance = 3
+					},
 
-				Mashina.Navigation.Wander {
-					radial_distance = 3
-				},
+					Mashina.Peep.Wait,
 
-				Mashina.Peep.Wait,
-
-				Mashina.Peep.TimeOut {
-					min_duration = 0.5,
-					max_duration = 1.5
+					Mashina.Peep.TimeOut {
+						min_duration = 0.5,
+						max_duration = 1.5
+					},
 				},
 			},
-		},
 
-		Mashina.Peep.TimeOut {
-			min_duration = 0.5,
-			max_duration = 1.5
-		},
+			Mashina.Peep.TimeOut {
+				min_duration = 0.5,
+				max_duration = 1.5
+			},
 
-		Mashina.Navigation.Wander {
-			radial_distance = 2
-		},
+			Mashina.Navigation.Wander {
+				radial_distance = 2
+			},
 
-		Mashina.Peep.Wait,
+			Mashina.Peep.Wait,
 
-		Mashina.Peep.SetState {
-			state = "clear"
+			Mashina.Peep.SetState {
+				state = "clear"
+			}
 		}
 	}
 }

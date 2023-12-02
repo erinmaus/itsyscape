@@ -549,4 +549,10 @@ do
 		Tree = "Resources/Game/Peeps/ViziersRock/Prisoner_IdleLogic.lua",
 		Resource = Prisoner
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "prison-break",
+		Tree = "Resources/Game/Peeps/ViziersRock/Prisoner_PrisonBreakLogic.lua",
+		Resource = Prisoner
+	}
 end
