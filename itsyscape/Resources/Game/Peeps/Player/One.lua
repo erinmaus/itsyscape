@@ -479,6 +479,8 @@ function One:update(...)
 
 	self:updatePendingAnalytics()
 
+	Utility.Peep.Human.flashXP(self)
+
 	self.deadTimer = self.deadTimer - delta
 	if self.deadTimer < 0 then
 		self.deadTimer = math.huge
