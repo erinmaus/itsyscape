@@ -1,12 +1,10 @@
 {
 	layer = 1,
-	texture = "DarkFoamyWater1",
-	i = -8,
-	j = -8,
-	width = 40,
-	height = 40,
-	y = 1.25,
-	finesse = 3,
-	yOffset = 0,
-	timeScale = 1.5
+	texture = "LightFoamyWater1",
+	i = -16,
+	j = -16,
+	width = 96,
+	height = 96,
+	y = 4.25,
+	finesse = 3
 }
