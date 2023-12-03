@@ -102,7 +102,7 @@ function WidgetInputProvider:isBlocking(x, y)
 		return not w:getIsClickThrough()
 	end, true)
 
-	return widget ~= self.root and widget, widget
+	return (widget ~= self.root and widget) or next(self.clickedWidgets) ~= nil, widget
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)
@@ -177,8 +177,8 @@ function WidgetInputProvider:mouseRelease(x, y, button)
 
 	if self.clickedWidgets[button] and self.clickedWidgets[button] ~= widget then
 		self.clickedWidgets[button]:mouseRelease(x, y, button)
-		self.clickedWidgets[button] = nil
 	end
+	self.clickedWidgets[button] = nil
 end
 
 function WidgetInputProvider:mouseMove(x, y, dx, dy)
