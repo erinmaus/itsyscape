@@ -31,6 +31,19 @@ function WidgetRenderManager:new(inputProvider)
 	self.input = inputProvider
 	self.toolTips = {}
 	self.debugStats = WidgetRenderManager.DebugStats()
+	self.toolTipsEnabled = true
+end
+
+function WidgetRenderManager:disableHoverToolTips()
+	self.toolTipsEnabled = false
+end
+
+function WidgetRenderManager:enableHoverToolTips()
+	self.toolTipEnabled = true
+end
+
+function WidgetRenderManager:getIsToolTipsEnabled()
+	return self.toolTipEnabled
 end
 
 function WidgetRenderManager:getDebugStats()
@@ -167,22 +180,24 @@ function WidgetRenderManager:stop()
 		itsyrealm.graphics.translate(-mouseX, -mouseY)
 	end
 
-	local toolTips = self:getToolTips()
-	for i = 1, #toolTips do
-		local toolTip = toolTips[i]
+	if self.toolTipsEnabled then
+		local toolTips = self:getToolTips()
+		for i = 1, #toolTips do
+			local toolTip = toolTips[i]
 
-		if toolTip:getDuration() < 0.5 then
-			self.toolTips[toolTip] = nil
-		else
-			self:draw(toolTip, {}, true)
+			if toolTip:getDuration() < 0.5 then
+				self.toolTips[toolTip] = nil
+			else
+				self:draw(toolTip, {}, true)
+			end
 		end
-	end
 
-	for widget, toolTip in pairs(self.hovered) do
-		if toolTip then
-			itsyrealm.graphics.translate(mouseX, mouseY)
-			self:draw(toolTip.w, toolTip.s, true)
-			itsyrealm.graphics.translate(-mouseX, -mouseY)
+		for widget, toolTip in pairs(self.hovered) do
+			if toolTip then
+				itsyrealm.graphics.translate(mouseX, mouseY)
+				self:draw(toolTip.w, toolTip.s, true)
+				itsyrealm.graphics.translate(-mouseX, -mouseY)
+			end
 		end
 	end
 
