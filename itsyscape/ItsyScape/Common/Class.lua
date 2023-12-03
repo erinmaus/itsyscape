@@ -103,7 +103,7 @@ local Common = {
 -- the returned class definition. Same for overriding properties or methods.
 --
 -- Returns the class definition and the metatable.
-local function __call(self, parent)
+local function __call(self, parent, stack)
 	local C = Class
 
 	local Type = { __index = parent or Common, __parent = parent, __c = Class }
@@ -117,7 +117,7 @@ local function __call(self, parent)
 		local debug = require "debug"
 		local log = require "ItsyScape.Common.Log" -- Class has higher priority than Log so the Log global might not be available
 
-		local info = debug.getinfo(2, "Sl")
+		local info = debug.getinfo(2 + (stack or 0), "Sl")
 		if info then
 			local shortClassName = info.source:match("^.*/(.*/.*).lua$") or info.source
 			local lineNumber = info.currentline

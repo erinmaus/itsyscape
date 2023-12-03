@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Property = require "ItsyScape.UI.Property"
 
 local Widget = Class()
@@ -475,8 +476,14 @@ function Widget:type(...)
 end
 
 function Widget:update(...)
-	for i = 1, #self.children do
-		self.children[i]:update(...)
+	if _DEBUG == 'plus' then
+		for i = 1, #self.children do
+			DebugStats.GLOBAL:measure(self.children[i]:getDebugInfo().shortName, self.children[i].update, self.children[i], ...)
+		end
+	else
+		for i = 1, #self.children do
+			self.children[i]:update(...)
+		end
 	end
 end
 

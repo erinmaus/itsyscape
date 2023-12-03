@@ -77,6 +77,7 @@ local function tick()
 		end
 
 		game:cleanup()
+		collectgarbage("step")
 
 		Analytics:update()
 	end

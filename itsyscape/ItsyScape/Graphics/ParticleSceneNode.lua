@@ -79,4 +79,5 @@ function ParticleSceneNode:frame(delta)
 	SceneNode.frame(self, delta)
 	self:getHandle():frame(delta)
 end
+
 return ParticleSceneNode

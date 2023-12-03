@@ -119,6 +119,8 @@ function love.mousemoved(...)
 	end
 end
 
+local isCollectingGarbage = true
+local oldDebug = _DEBUG
 function love.keypressed(...)
 	if _APP and not _CONF.server then
 		_APP:keyDown(...)
@@ -126,7 +128,21 @@ function love.keypressed(...)
 
 	if _DEBUG then
 		if (select(1, ...) == 'f1') then
-			_APP.showDebug = not _APP.showDebug
+			if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
+				if isCollectingGarbage then
+					isCollectingGarbage = false
+					collectgarbage("stop")
+					oldDebug = _DEBUG
+					_DEBUG = 'plus'
+				else
+					isCollectingGarbage = true
+					collectgarbage("restart")
+					collectgarbage()
+					_DEBUG = oldDebug
+				end
+			else
+				_APP.showDebug = not _APP.showDebug
+			end
 		elseif (select(1, ...) == 'f2') then
 			_APP.showUI = not _APP.showUI
 		elseif (select(1, ...) == 'f3') then

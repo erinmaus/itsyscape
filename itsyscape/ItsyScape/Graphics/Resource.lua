@@ -114,8 +114,8 @@ function Resource:getID()
 end
 
 -- Override the constructor to create a new type, not a new instance.
-local function __call(self, NBunnyResource, ...)
-	local DerivedResource = Class(Resource, ...)
+local function __call(self, NBunnyResource)
+	local DerivedResource = Class(Resource, 1)
 	local nbunnyResource = (NBunnyResource or NResource)()
 
 	DerivedResource.RESOURCE = nbunnyResource
