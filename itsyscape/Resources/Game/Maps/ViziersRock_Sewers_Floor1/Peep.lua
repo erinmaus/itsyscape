@@ -33,6 +33,10 @@ function Sewers:onLoad(...)
 		Common.openValve(self, Common.MARK_TRIANGLE)
 	end
 
+	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_SQUARE) then
+		Common.closeValve(self, Common.MARK_SQUARE)
+	end
+
 	if not Common.hasValveBeenOpenedOrClosed(self, Common.MARK_CIRCLE) then
 		Common.openValve(self, Common.MARK_CIRCLE)
 	end
