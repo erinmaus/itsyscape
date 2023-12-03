@@ -238,11 +238,11 @@ namespace nbunny
 }
 
 template <typename SceneNode>
-SceneNode* nbunny_scene_node_create(sol::object reference, sol::this_state S)
+std::shared_ptr<SceneNode> nbunny_scene_node_create(sol::object reference, sol::this_state S)
 {
 	lua_State* L = S;
 	lua_pushvalue(L, 2);
-	return new SceneNode(nbunny::set_weak_reference(L));
+	return std::make_shared<SceneNode>(nbunny::set_weak_reference(L));
 }
 
 #endif
