@@ -53,7 +53,7 @@ local function __call(self, name)
 	if Type then
 		return Type
 	else
-		Type = Class(Behavior.Type)
+		Type = Class(Behavior.Type, 1)
 	end
 
 	local id = Behaviors.currentID

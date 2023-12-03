@@ -22,6 +22,7 @@ local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
@@ -253,6 +254,10 @@ function Application:updateMemoryUsage()
 
 	if _DEBUG and previousMemoryUsage.time + Application.DEBUG_MEMORY_POLLS_SECONDS < currentTime then
 		self:dumpMemoryStats()
+
+		for _, func in ipairs(self.times) do
+			func.max = 0
+		end
 	end
 
 	self.previousMemoryUsage = previousMemoryUsage
@@ -313,7 +318,7 @@ function Application:measure(name, func, ...)
 	end
 
 	local before = love.timer.getTime()
-	func(...)
+	DebugStats.GLOBAL:measure(name, func, ...)
 	local after = love.timer.getTime()
 
 	local afterMemory = 0
@@ -333,7 +338,14 @@ function Application:measure(name, func, ...)
 		memory = memory < 1 and math.max(self.times[index].memory, memory) or memory
 	end
 
-	self.times[index] = { value = after - before, memory = memory, name = name }
+	if self.times[index] then
+		self.times[index].max = math.max(self.times[index].max, after - before)
+		self.times[index].value = after - before
+		self.times[index].memory = memory
+		self.times[index].name = name
+	else
+		self.times[index] = { value = after - before, memory = memory, name = name, max = 0 }
+	end
 end
 
 function Application:initialize()
@@ -801,9 +813,10 @@ function Application:drawDebug()
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f ms, %05d KB (%010d)\n",
+			"%s: %.04f ms (%.04f max), %05d KB (%010d)\n",
 			self.times[i].name,
 			self.times[i].value * 1000,
+			(self.times[i].max or self.times[i].value) * 1000,
 			self.times[i].memory,
 			1 / self.times[i].value)
 		sum = sum + self.times[i].value
