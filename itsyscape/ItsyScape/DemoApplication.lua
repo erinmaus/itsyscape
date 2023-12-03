@@ -55,6 +55,9 @@ function DemoApplication:new()
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
 
+	self.touches = { current = {}, n = 1 }
+	self.isExamining = false
+
 	self.cameraController = DefaultCameraController(self)
 
 	self:getGame().onReady:register(function(_, player)
@@ -96,6 +99,56 @@ function DemoApplication:new()
 	end
 
 	self:initTitleScreen()
+	self:initMobileUI()
+end
+
+function DemoApplication:initMobileUI()
+	if not _MOBILE then
+		return
+	end
+
+	local examineButton = Button()
+	examineButton:setText("Examine: Off")
+	examineButton:setSize(160, 48)
+	examineButton:setZDepth(math.huge)
+
+	local function updateExamineButtonStyle()
+		if self.isExamining then
+			examineButton:setText("Examine: On")
+			examineButton:setStyle(ButtonStyle({
+				pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+				inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+				hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+				color = { 1, 1, 1, 1 },
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+				fontSize = 24,
+				padding = 4,
+				textShadow = true
+			}, self:getUIView():getResources()))
+		else
+			examineButton:setText("Examine: Off")
+			examineButton:setStyle(ButtonStyle({
+				pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
+				inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
+				hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+				color = { 1, 1, 1, 1 },
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+				fontSize = 24,
+				padding = 4,
+				textShadow = true
+			}, self:getUIView():getResources()))
+		end
+	end
+
+	examineButton.onClick:register(function()
+		self.isExamining = not self.isExamining
+		updateExamineButtonStyle()
+	end)
+
+	self:getUIView():getRoot():addChild(examineButton)
+
+	self.examineButton = examineButton
+	updateExamineButtonStyle()
 end
 
 function DemoApplication:changeCamera(_, cameraType)
@@ -397,7 +450,7 @@ function DemoApplication:openMainMenu()
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		fontSize = 24,
 		textShadow = true,
-		}, self:getUIView():getResources()))
+	}, self:getUIView():getResources()))
 	closeButton:setText("X")
 	closeButton.onClick:register(function()
 		love.event.quit()
@@ -449,7 +502,23 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	self.titleScreen:disableLogo()
 end
 
+function DemoApplication:isExamineButtonHovered(x, y)
+	if not _MOBILE or not self.examineButton then
+		return false
+	end
+
+	local buttonX, buttonY = self.examineButton:getAbsolutePosition()
+	local buttonWidth, buttonHeight = self.examineButton:getSize()
+
+	return x >= buttonX and x <= buttonX + buttonWidth and
+	       y >= buttonY and y <= buttonY + buttonHeight
+end
+
 function DemoApplication:mousePress(x, y, button)
+	if _MOBILE and self.isExamining and not self:isExamineButtonHovered(x, y) then
+		return
+	end
+
 	local isUIActive = Application.mousePress(self, x, y, button)
 	local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
@@ -460,6 +529,10 @@ function DemoApplication:mousePress(x, y, button)
 end
 
 function DemoApplication:mouseRelease(x, y, button)
+	if _MOBILE and self.isExamining and not self:isExamineButtonHovered(x, y) then
+		return
+	end
+
 	local isUIActive = Application.mouseRelease(self, x, y, button)
 
 	local probeAction = self.cameraController:mouseRelease(isUIActive, x, y, button)
@@ -477,12 +550,223 @@ function DemoApplication:mouseScroll(x, y)
 end
 
 function DemoApplication:mouseMove(x, y, dx, dy)
-	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
-
 	self.mouseX = x
 	self.mouseY = y
 
+	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
+
+	if _MOBILE and self.isExamining then
+		return
+	end
+
 	self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
+end
+
+function DemoApplication:getTouches()
+	local result = {}
+	for _, touch in pairs(self.touches.current) do
+		table.insert(result, touch)
+	end
+
+	table.sort(result, function(a, b)
+		return a.n < b.n
+	end)
+
+	return result
+end
+
+DemoApplication.TOUCH_STILL_MAX = 8
+DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS = 0.5
+
+DemoApplication.TOUCH_MODE_NONE         = 0
+DemoApplication.TOUCH_MODE_LEFT_CLICK   = 1
+DemoApplication.TOUCH_MODE_RIGHT_CLICK  = 2
+DemoApplication.TOUCH_MODE_MIDDLE_CLICK = 3
+
+DemoApplication.TOUCH_SCROLL_MARGIN      = 128
+DemoApplication.TOUCH_SCROLL_DENOMINATOR = 16
+
+function DemoApplication:updateMobileMouse()
+	local touches = self:getTouches()
+
+	local currentTouchMode = self.currentTouchMode or DemoApplication.TOUCH_MODE_NONE
+
+	if #touches == 1 then
+		local touch = touches[1]
+		local currentTime = love.timer.getTime() - touch.startTime
+
+		local isMoving
+		do
+			local totalMovement = math.sqrt(touch.differenceX ^ 2 + touch.differenceY ^ 2)
+			isMoving = totalMovement > DemoApplication.TOUCH_STILL_MAX
+
+			local startingWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+				touch.startX,
+				touch.startY,
+				nil, nil, nil,
+				function(w)
+					return w:getIsFocusable()
+				end,
+				true)
+			local currentWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+				touch.currentX,
+				touch.currentY,
+				nil, nil, nil,
+				function(w)
+					return w:getIsFocusable()
+				end,
+				true)
+
+			isMoving = isMoving or (startingWidget and startingWidget ~= currentWidget)
+		end
+
+		if currentTouchMode == DemoApplication.TOUCH_MODE_NONE then
+			currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK
+		elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK then
+			if not isMoving and currentTime > DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS then
+				currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK
+			end
+		elseif currentTouchMode == DemoApplication.TOUCH_MODE_MIDDLE_CLICK then
+			self:mouseRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_MIDDLE_CLICK)
+		end
+
+		if touch.released then
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK then
+				if currentTime < DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS then
+					self:mousePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_LEFT_CLICK)
+				end
+
+				print(">>> release", touch.id)
+				self:mouseRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_LEFT_CLICK)
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK then
+				self:mouseRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_RIGHT_CLICK)
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			end
+		elseif not touch.pressed then
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK or
+			   currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK
+			then
+				self:mouseMove(
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+			end
+
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK then
+				if isMoving then
+					self:mousePress(touch.startX, touch.startY, DemoApplication.TOUCH_MODE_LEFT_CLICK)
+					touch.pressed = true
+				end
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK then
+				self:mousePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_RIGHT_CLICK)
+				self:mouseRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_RIGHT_CLICK)
+				touch.pressed = true
+				touch.released = true
+			end
+		else
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK then
+				self:mouseMove(
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+			end
+		end
+	elseif #touches > 1 and
+	       (currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK or
+	        currentTouchMode == DemoApplication.TOUCH_MODE_MIDDLE_CLICK)
+	then
+		local touch = touches[2]
+
+		currentTouchMode = DemoApplication.TOUCH_MODE_MIDDLE_CLICK
+
+		if touch.released then
+			self:mouseRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_MIDDLE_CLICK)
+			currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+		elseif not touch.pressed then
+			self:mousePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_MODE_MIDDLE_CLICK)
+			touch.pressed = true
+		elseif touch.moved then
+			local w = love.window.getMode()
+			if touch.currentX >= w - DemoApplication.TOUCH_SCROLL_MARGIN then
+				self:mouseScroll(
+					(touch.currentX - touch.previousX) / DemoApplication.TOUCH_SCROLL_DENOMINATOR,
+					(touch.currentY - touch.previousY) / DemoApplication.TOUCH_SCROLL_DENOMINATOR)
+			elseif touch.moved then
+				self:mouseMove(
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+			end
+
+			touch.moved = false
+		end
+	else
+		currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+	end
+
+	if self.currentTouchMode ~= currentTouchMode then
+		print(">>> touch mode before", self.currentTouchMode or 0)
+		print(">>> touch mode after", currentTouchMode)
+	end
+
+	self.currentTouchMode = currentTouchMode
+
+	if self.isExamining then
+		self:getUIView():getRenderManager():enableHoverToolTips()
+	else
+		self:getUIView():getRenderManager():disableHoverToolTips()
+	end
+end
+
+function DemoApplication:touchPress(id, x, y, pressure)
+	self.touches.current[id] = {
+		id = id,
+		startTime = love.timer.getTime(),
+		currentTime = love.timer.getTime(),
+		startX = x,
+		startY = y,
+		previousX = x,
+		previousY = y,
+		currentX = x,
+		currentY = y,
+		differenceX = 0,
+		differenceY = 0,
+		released = false,
+		n = self.touches.n
+	}
+
+	self.touches.n = self.touches.n + 1
+
+	self:updateMobileMouse()
+end
+
+function DemoApplication:touchRelease(id, x, y, pressure)
+	if self.touches.current[id] and not self.touches.current[id].released then
+		self.touches.current[id].released = true
+		self:updateMobileMouse()
+	end
+
+	self.touches.current[id] = nil
+end
+
+function DemoApplication:touchMove(id, x, y, dx, dy)
+	local touch = self.touches.current[id]
+	if touch then
+		touch.currentTime = love.timer.getTime()
+		touch.previousX = touch.currentX
+		touch.previousY = touch.currentY
+		touch.currentX = x
+		touch.currentY = y
+		touch.differenceX = touch.differenceX + dx
+		touch.differenceY = touch.differenceY + dy
+		touch.moved = true
+	end
+
+	self:updateMobileMouse()
 end
 
 function DemoApplication:keyDown(key, ...)
@@ -731,6 +1015,10 @@ end
 
 function DemoApplication:update(delta)
 	Application.update(self, delta)
+
+	if _MOBILE then
+		self:updateMobileMouse()
+	end
 
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)

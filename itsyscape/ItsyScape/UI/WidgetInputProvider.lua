@@ -102,7 +102,7 @@ function WidgetInputProvider:isBlocking(x, y)
 		return not w:getIsClickThrough()
 	end, true)
 
-	return widget ~= self.root and widget
+	return widget ~= self.root and widget, widget
 end
 
 function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, overflow)

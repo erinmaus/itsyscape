@@ -100,11 +100,7 @@ end
 
 function DefaultCameraController:mousePress(uiActive, x, y, button)
 	if not uiActive then
-		if button == DefaultCameraController.ACTION_BUTTON then
-			return CameraController.PROBE_SELECT_DEFAULT
-		elseif button == DefaultCameraController.PROBE_BUTTON then
-			return CameraController.PROBE_CHOOSE_OPTION
-		elseif button == DefaultCameraController.CAMERA_BUTTON then
+		if button == DefaultCameraController.CAMERA_BUTTON then
 			self.isCameraDragging = true
 		end
 	end
@@ -113,6 +109,14 @@ end
 function DefaultCameraController:mouseRelease(uiActive, x, y, button)
 	if button == DefaultCameraController.CAMERA_BUTTON then
 		self.isCameraDragging = false
+	end
+
+	if not uiActive then
+		if button == DefaultCameraController.ACTION_BUTTON then
+			return CameraController.PROBE_SELECT_DEFAULT
+		elseif button == DefaultCameraController.PROBE_BUTTON then
+			return CameraController.PROBE_CHOOSE_OPTION
+		end
 	end
 
 	return CameraController.PROBE_SUPPRESS
