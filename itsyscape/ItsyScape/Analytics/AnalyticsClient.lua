@@ -75,8 +75,6 @@ function Client:_loadID(device)
 
 	if config.enabled == false then
 		Log.info("Analytics disabled.")
-		self.id = ""
-
 		return
 	end
 
@@ -88,7 +86,7 @@ function Client:_loadID(device)
 		end
 
 		config.id = table.concat(id)
-		self:saveConfig()
+		self:saveConfig(config)
 	end
 
 	Log.info("Got analytics ID '%s'.", config.id)
