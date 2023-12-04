@@ -26,6 +26,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local Screenshot = require "ItsyScape.UI.Client.Screenshot"
 local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
@@ -54,6 +55,8 @@ function DemoApplication:new()
 	self.toolTipTick = math.huge
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
+
+	self.touches = { current = {}, n = 1 }
 
 	self.cameraController = DefaultCameraController(self)
 
@@ -93,6 +96,8 @@ function DemoApplication:new()
 		self.blankCursor = love.mouse.newCursor(blankCursorImageData, 0, 0)
 
 		love.mouse.setCursor(self.defaultCursor)
+	else
+		self.mobileCursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
 	end
 
 	self:initTitleScreen()
@@ -397,7 +402,7 @@ function DemoApplication:openMainMenu()
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		fontSize = 24,
 		textShadow = true,
-		}, self:getUIView():getResources()))
+	}, self:getUIView():getResources()))
 	closeButton:setText("X")
 	closeButton.onClick:register(function()
 		love.event.quit()
@@ -451,6 +456,10 @@ end
 
 function DemoApplication:mousePress(x, y, button)
 	local isUIActive = Application.mousePress(self, x, y, button)
+	self:mouseProbePress(x, y, button, isUIActive)
+end
+
+function DemoApplication:mouseProbePress(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
 		self:probe(x, y, true)
@@ -461,7 +470,10 @@ end
 
 function DemoApplication:mouseRelease(x, y, button)
 	local isUIActive = Application.mouseRelease(self, x, y, button)
+	self:mouseProbeRelease(x, y, button, isUIActive)
+end
 
+function DemoApplication:mouseProbeRelease(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mouseRelease(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
 		self:probe(x, y, true)
@@ -477,12 +489,261 @@ function DemoApplication:mouseScroll(x, y)
 end
 
 function DemoApplication:mouseMove(x, y, dx, dy)
-	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
-
 	self.mouseX = x
 	self.mouseY = y
 
+	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
 	self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
+end
+
+function DemoApplication:getTouches()
+	local result = {}
+	for _, touch in pairs(self.touches.current) do
+		table.insert(result, touch)
+	end
+
+	table.sort(result, function(a, b)
+		return a.n < b.n
+	end)
+
+	return result
+end
+
+DemoApplication.TOUCH_STILL_MAX = 12
+DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS = 0.35
+
+DemoApplication.TOUCH_MODE_NONE             = 0
+DemoApplication.TOUCH_MODE_LEFT_CLICK_UI    = 1
+DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI   = 2
+DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME  = 3
+DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME = 4
+DemoApplication.TOUCH_MODE_DRAG_CAMERA      = 5
+DemoApplication.TOUCH_MODE_ZOOM_CAMERA      = 6
+
+DemoApplication.TOUCH_LEFT_MOUSE_BUTTON    = 1
+DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON   = 2
+DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON  = 3
+
+DemoApplication.TOUCH_CAMERA_DENOMINATOR = 24
+
+function DemoApplication:updateMobileMouse()
+	local touches = self:getTouches()
+
+	local currentTouchMode = self.currentTouchMode or DemoApplication.TOUCH_MODE_NONE
+
+	if #touches == 1 then
+		local touch = touches[1]
+		local currentTime = love.timer.getTime() - touch.startTime
+
+		local isMoving
+		do
+			local totalMovement = math.sqrt(touch.differenceX ^ 2 + touch.differenceY ^ 2)
+			isMoving = totalMovement > DemoApplication.TOUCH_STILL_MAX
+
+			local startingWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+				touch.startX,
+				touch.startY,
+				nil, nil, nil,
+				function(w)
+					return w:getIsFocusable()
+				end,
+				true)
+			local currentWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+				touch.currentX,
+				touch.currentY,
+				nil, nil, nil,
+				function(w)
+					return w:getIsFocusable()
+				end,
+				true)
+
+			isMoving = isMoving or (startingWidget and startingWidget ~= currentWidget)
+		end
+
+		local isUIActive = self:getUIView():getInputProvider():isBlocking(touch.currentX, touch.currentY)
+		if currentTouchMode == DemoApplication.TOUCH_MODE_NONE then
+			if isUIActive then
+				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_UI
+			else
+				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
+			end
+		elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
+			currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+		end
+
+		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
+		   currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
+		then
+			if not isMoving and currentTime > DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS then
+				if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+					currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI
+				elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+					currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME
+				end
+			end
+		end
+
+		if touch.released then
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
+			   currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
+			then
+				if currentTime < DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS or isMoving then
+					if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+						Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+					elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+						self:getUIView():closePokeMenu()
+						self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
+					end
+				end
+
+				if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+					Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+				elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+					self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
+				end
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI or
+			       currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME
+			then
+				if currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI then
+					Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
+				elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME then
+					self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
+				end
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA then
+				self.cameraController:mouseRelease(
+					false,
+					touch.currentX, touch.currentY,
+					DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON)
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			end
+		elseif not touch.pressed then
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
+			   currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI
+			then
+				Application.mouseMove(
+					self,
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+			end
+
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+				if isMoving then
+					Application.mousePress(self, touch.startX, touch.startY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+					touch.pressed = true
+				end
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+				if isMoving then
+					self.cameraController:mousePress(
+						false,
+						touch.currentX,
+						touch.currentY,
+						DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON)
+					currentTouchMode = DemoApplication.TOUCH_MODE_DRAG_CAMERA
+					touch.pressed = true
+				end
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI then
+				Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
+				Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
+				touch.pressed = true
+				touch.released = true
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME then
+				self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
+				self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
+				touch.pressed = true
+				touch.released = true
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA then
+				self.cameraController:mousePress(
+					false,
+					touch.currentX, touch.currentY,
+					DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON)
+				touch.pressed = true
+			end
+		elseif touch.moved then
+			if isMoving and currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+				Application.mouseMove(
+					self,
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA then
+				self.cameraController:mouseMove(
+					false,
+					touch.currentX,
+					touch.currentY,
+					touch.currentX - touch.previousX,
+					touch.currentY - touch.previousY)
+				touch.moved = false
+			end
+		end
+	elseif #touches == 2 then
+		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+			currentTouchMode = DemoApplication.TOUCH_MODE_ZOOM_CAMERA
+		elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
+			local touch1 = touches[1]
+			local touch2 = touches[2]
+
+			local distanceCurrent = math.sqrt((touch1.currentX - touch2.currentX) ^ 2 + (touch1.currentY - touch2.currentY) ^ 2)
+			local distancePrevious = math.sqrt((touch1.previousX - touch2.previousX) ^ 2 + (touch1.previousY - touch2.previousY) ^ 2)
+
+			self.cameraController:mouseScroll(false, 0, (distanceCurrent - distancePrevious) / DemoApplication.TOUCH_CAMERA_DENOMINATOR)
+		end
+	end
+
+	self.currentTouchMode = currentTouchMode
+end
+
+function DemoApplication:touchPress(id, x, y, pressure)
+	self.touches.current[id] = {
+		id = id,
+		startTime = love.timer.getTime(),
+		currentTime = love.timer.getTime(),
+		startX = x,
+		startY = y,
+		previousX = x,
+		previousY = y,
+		currentX = x,
+		currentY = y,
+		differenceX = 0,
+		differenceY = 0,
+		released = false,
+		n = self.touches.n
+	}
+
+	self.touches.n = self.touches.n + 1
+
+	self:updateMobileMouse()
+end
+
+function DemoApplication:touchRelease(id, x, y, pressure)
+	if self.touches.current[id] and not self.touches.current[id].released then
+		self.touches.current[id].released = true
+		self:updateMobileMouse()
+	end
+
+	self.touches.current[id] = nil
+end
+
+function DemoApplication:touchMove(id, x, y, dx, dy)
+	local touch = self.touches.current[id]
+	if touch then
+		touch.currentTime = love.timer.getTime()
+		touch.previousX = touch.currentX
+		touch.previousY = touch.currentY
+		touch.currentX = x
+		touch.currentY = y
+		touch.differenceX = touch.differenceX + dx
+		touch.differenceY = touch.differenceY + dy
+		touch.moved = true
+	end
+
+	self:updateMobileMouse()
 end
 
 function DemoApplication:keyDown(key, ...)
@@ -509,10 +770,23 @@ function DemoApplication:keyDown(key, ...)
 			end
 			Log.info("Captured \"%s\".", url)
 
-			love.graphics.captureScreenshot(filename)
+			love.graphics.captureScreenshot(function(imageData)
+				imageData:encode('png', filename)
+
+				self:showScreenShot(filename)
+			end)
 
 			self.isScreenshotPending = true
 		end
+	end
+end
+
+function DemoApplication:showScreenShot(filename)
+	local screenshot = Screenshot(self:getUIView(), filename)
+
+	if screenshot:isReady() then
+		screenshot:setZDepth(math.huge)
+		self:getUIView():getRoot():addChild(screenshot)
 	end
 end
 
@@ -549,6 +823,7 @@ function DemoApplication:snapshotPlayerPeep()
 		camera:setVerticalRotation(gameCamera:getVerticalRotation())
 		camera:setWidth(1024)
 		camera:setHeight(1024)
+		camera:setUp(Vector(0, -1, 0))
 
 		local renderer = Renderer()
 		love.graphics.setScissor()
@@ -576,7 +851,13 @@ function DemoApplication:snapshotPlayerPeep()
 			love.graphics.setCanvas()
 
 			local imageData = renderer:getOutputBuffer():getColor():newImageData()
-			imageData:encode('png', self:getScreenshotName("Peep", index))
+			local filename = self:getScreenshotName("Peep", index)
+			imageData:encode('png', filename)
+
+			if actor == self:getGame():getPlayer():getActor() then
+				self:showScreenShot(filename)
+			end
+
 			love.graphics.pop()
 		end
 	end
@@ -732,6 +1013,10 @@ end
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
+	if _MOBILE then
+		self:updateMobileMouse()
+	end
+
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)
 
@@ -769,6 +1054,14 @@ function DemoApplication:draw(delta)
 		love.graphics.draw(cursor, love.mouse.getPosition())
 
 		self.isScreenshotPending = false
+	end
+
+	if _DEBUG and _MOBILE then
+		local touches = self:getTouches()
+
+		for i = 1, #touches do
+			love.graphics.draw(self.mobileCursor, touches[i].currentX, touches[i].currentY)
+		end
 	end
 
 	if self.titleScreen then

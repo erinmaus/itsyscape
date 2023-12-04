@@ -765,9 +765,7 @@ function UIView:examine(a, b)
 end
 
 function UIView:probe(actions)
-	if self.pokeMenu then
-		self.pokeMenu:close()
-	end
+	self:closePokeMenu()
 
 	self.pokeMenu = PokeMenu(self, actions)
 	do
@@ -794,6 +792,21 @@ function UIView:probe(actions)
 		self.pokeMenu.onClose:register(function() self.pokeMenu = false end)
 
 		self.root:addChild(self.pokeMenu)
+	end
+end
+
+function UIView:isPokeMenu(widget)
+	if self.pokeMenu then
+		return self.pokeMenu == widget or self.pokeMenu:isParentOf(widget)
+	end
+
+	return false
+end
+
+function UIView:closePokeMenu()
+	if self.pokeMenu then
+		self.pokeMenu:close()
+		self.pokeMenu = false
 	end
 end
 

@@ -96,26 +96,44 @@ function love.update(delta)
 end
 
 function love.mousepressed(...)
-	if _APP and not _CONF.server then
+	if _APP and not _CONF.server and not _MOBILE then
 		_APP:mousePress(...)
 	end
 end
 
 function love.mousereleased(...)
-	if _APP and not _CONF.server then
+	if _APP and not _CONF.server and not _MOBILE then
 		_APP:mouseRelease(...)
 	end
 end
 
 function love.wheelmoved(...)
-	if _APP and not _CONF.server then
+	if _APP and not _CONF.server and not _MOBILE then
 		_APP:mouseScroll(...)
 	end
 end
 
 function love.mousemoved(...)
-	if _APP and not _CONF.server then
+	if _APP and not _CONF.server and not _MOBILE then
 		_APP:mouseMove(...)
+	end
+end
+
+function love.touchpressed(...)
+	if _APP and not _CONF.server and _MOBILE then
+		_APP:touchPress(...)
+	end
+end
+
+function love.touchreleased(...)
+	if _APP and not _CONF.server and _MOBILE then
+		_APP:touchRelease(...)
+	end
+end
+
+function love.touchmoved(...)
+	if _APP and not _CONF.server and _MOBILE then
+		_APP:touchMove(...)
 	end
 end
 
@@ -176,6 +194,17 @@ function love.draw()
 	if _APP and not _CONF.server then
 		_APP:draw()
 	end
+end
+
+function love.background()
+	if _APP then
+		_APP:background()
+	end
+
+	local serpent = require "serpent"
+	local serializedConf = serpent.block(_CONF, { comment = false })
+
+	love.filesystem.write("settings.cfg", serializedConf)
 end
 
 function love.quit()
