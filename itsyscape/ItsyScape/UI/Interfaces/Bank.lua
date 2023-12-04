@@ -266,6 +266,17 @@ function Bank:new(id, index, ui)
 	end
 	self:addChild(self.inventoryLayout)
 
+	self.depositAllButton = Button()
+	self.depositAllButton:setText("Deposit All")
+	self.depositAllButton:setPosition(
+		w - ((Bank.ITEM_SIZE + Bank.ITEM_PADDING) * Bank.INVENTORY_COLUMNS + Bank.ITEM_PADDING * 2),
+		Bank.ITEM_PADDING + Bank.TITLE_LABEL_HEIGHT + Bank.ITEM_PADDING)
+	self.depositAllButton:setSize(
+		(Bank.ITEM_SIZE + Bank.ITEM_PADDING) * Bank.INVENTORY_COLUMNS + Bank.ITEM_PADDING,
+		Bank.ITEM_TAB_SIZE)
+	self.depositAllButton.onClick:register(self.depositAll, self)
+	self:addChild(self.depositAllButton)
+
 	local inventoryBackground = Panel()
 	inventoryBackground:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/Group.9.png"
@@ -303,6 +314,31 @@ end
 
 function Bank:getIsFullscreen()
 	return true
+end
+
+function Bank:depositAll(_, index)
+	if index == 2 then
+		self:getView():probe({
+			{
+				id = "Deposit-All",
+				verb = "Deposit-All",
+				object = "Inventory",
+				callback = function()
+					self:sendPoke("depositAllInventory", nil, {})
+				end
+			},
+			{
+				id = "Deposit-All",
+				verb = "Deposit-All",
+				object = "Equipment",
+				callback = function()
+					self:sendPoke("depositAllEquipment", nil, {})
+				end
+			}
+		})
+	else
+		self:sendPoke("depositAllInventory", nil, {})
+	end
 end
 
 function Bank:withdrawX(index)

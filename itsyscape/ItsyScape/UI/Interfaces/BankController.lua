@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local BankController = Class(Controller)
@@ -713,6 +714,10 @@ function BankController:poke(actionID, actionIndex, e)
 		self:withdraw(e)
 	elseif actionID == "deposit" then
 		self:deposit(e)
+	elseif actionID == "depositAllInventory" then
+		self:depositAllInventory()
+	elseif actionID == "depositAllEquipment" then
+		self:depositAllEquipment()
 	elseif actionID == "addSection" then
 		self:addSection(e)
 	elseif actionID == "deleteSection" then
@@ -979,6 +984,37 @@ function BankController:deposit(e)
 		if not tabStorage:get(item:getID()) then
 			tabStorage:set(tabStorage:length() + 1, item:getID())
 			tabStorage:set(item:getID(), true)
+		end
+	end
+end
+
+function BankController:depositAllInventory()
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	if inventory and inventory.bank and inventory.inventory then
+		local items = {}
+		for item in self:getDirector():getItemBroker():iterateItems(inventory.inventory) do
+			table.insert(items, item)
+		end
+
+		for _, item in ipairs(items) do
+			if item then
+				inventory.bank:deposit(item, item:getCount(), true)
+			end
+		end
+	end
+end
+
+function BankController:depositAllEquipment()
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	local equipment = self:getPeep():getBehavior(EquipmentBehavior)
+	if inventory and inventory.bank and equipment and equipment.equipment then
+		local items = {}
+		for item in self:getDirector():getItemBroker():iterateItems(equipment.equipment) do
+			table.insert(items, item)
+		end
+
+		for _, item in ipairs(items) do
+			inventory.bank:deposit(item, item:getCount(), true)
 		end
 	end
 end
