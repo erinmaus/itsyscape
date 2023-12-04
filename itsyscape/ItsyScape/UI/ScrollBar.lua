@@ -15,6 +15,7 @@ local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ScrollBar = Class(Widget)
+ScrollBar.MIN_HEIGHT = 16
 
 function ScrollBar:new()
 	Widget.new(self)
@@ -171,7 +172,7 @@ function ScrollBar:performLayout()
 					local scrollButtonHeight = math.max(
 						remainingHeight * ratio,
 						remainingHeight / 16,
-						1)
+						ScrollBar.MIN_HEIGHT)
 
 					self:addChild(self.scrollButton)
 					self.scrollButton:setSize(width, scrollButtonHeight)

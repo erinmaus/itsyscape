@@ -261,6 +261,21 @@ while isRunning do
 					type = 'save',
 					storage = buffer.encode(storage and storage:serialize() or {})
 				})
+			elseif e.type == 'background' then
+				local storage
+				for _, player in game:iteratePlayers() do
+					if player:getID() == adminPlayerID then
+						player:save()
+						storage = game:getDirector():getPlayerStorage(player:getID())
+					end
+				end
+
+				if storage then
+					outputAdminChannel:push({
+						type = 'save',
+						storage = buffer.encode(storage and storage:serialize() or {})
+					})
+				end
 			elseif e.type == 'admin' then
 				adminPlayerID = e.admin
 				gameManager:setAdmin(adminPlayerID)

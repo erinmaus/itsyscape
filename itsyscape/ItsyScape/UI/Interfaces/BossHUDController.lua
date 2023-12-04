@@ -32,6 +32,8 @@ function BossHUDController:new(peep, director, ...)
 		end
 	end
 
+	self:updateStats()
+
 	peep:listen('travel', function()
 		self:poke("close", nil, {})
 	end)

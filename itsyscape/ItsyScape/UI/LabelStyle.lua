@@ -23,6 +23,9 @@ function LabelStyle:new(t, resources)
 
 	if t.font then
 		self.font = resources:load(love.graphics.newFont, t.font, t.fontSize or 12)
+		if t.lineHeight then
+			self.font:setLineHeight(t.lineHeight)
+		end
 	else
 		self.font = false
 	end

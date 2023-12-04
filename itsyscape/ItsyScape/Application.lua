@@ -701,6 +701,25 @@ function Application:savePlayer(player, storage, isError)
 	-- Nothing.
 end
 
+function Application:background()
+	if self.multiThreaded and self.gameThread then
+		self.inputAdminChannel:push({
+			type = 'background'
+		})
+
+		local event = self.outputAdminChannel:demand(1)
+		if event and event.type == 'save' then
+			local serializedStorage = buffer.decode(event.storage)
+			if next(serializedStorage) then
+				local storage = PlayerStorage()
+				storage:deserialize(serializedStorage)
+
+				self:savePlayer(self.game:getPlayer(), storage, false)
+			end
+		end
+	end
+end
+
 function Application:quit(isError)
 	if self.multiThreaded then
 		self.game:quit()
@@ -746,8 +765,14 @@ function Application:quitGame(game)
 end
 
 function Application:mousePress(x, y, button)
-	if self.uiView:getInputProvider():isBlocking(x, y) then
+	local isBlocking, widget = self.uiView:getInputProvider():isBlocking(x, y)
+	if isBlocking then
 		self.uiView:getInputProvider():mousePress(x, y, button)
+
+		if not self.uiView:isPokeMenu(widget) then
+			self.uiView:closePokeMenu()
+		end
+
 		return true
 	end
 
@@ -755,9 +780,10 @@ function Application:mousePress(x, y, button)
 end
 
 function Application:mouseRelease(x, y, button)
+	local isBlocking = self.uiView:getInputProvider():isBlocking(x, y)
 	self.uiView:getInputProvider():mouseRelease(x, y, button)
 
-	return false
+	return isBlocking
 end
 
 function Application:mouseScroll(x, y)
@@ -773,6 +799,18 @@ function Application:mouseMove(x, y, dx, dy)
 	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
 
 	return false
+end
+
+function Application:touchPress(...)
+	-- Nothing.
+end
+
+function Application:touchRelease(...)
+	-- Nothing.
+end
+
+function Application:touchMove(...)
+	-- Nothing.
 end
 
 function Application:keyDown(...)
