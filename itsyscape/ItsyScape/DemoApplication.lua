@@ -26,6 +26,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local Screenshot = require "ItsyScape.UI.Client.Screenshot"
 local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
@@ -769,10 +770,23 @@ function DemoApplication:keyDown(key, ...)
 			end
 			Log.info("Captured \"%s\".", url)
 
-			love.graphics.captureScreenshot(filename)
+			love.graphics.captureScreenshot(function(imageData)
+				imageData:encode('png', filename)
+
+				self:showScreenShot(filename)
+			end)
 
 			self.isScreenshotPending = true
 		end
+	end
+end
+
+function DemoApplication:showScreenShot(filename)
+	local screenshot = Screenshot(self:getUIView(), filename)
+
+	if screenshot:isReady() then
+		screenshot:setZDepth(math.huge)
+		self:getUIView():getRoot():addChild(screenshot)
 	end
 end
 
@@ -809,6 +823,7 @@ function DemoApplication:snapshotPlayerPeep()
 		camera:setVerticalRotation(gameCamera:getVerticalRotation())
 		camera:setWidth(1024)
 		camera:setHeight(1024)
+		camera:setUp(Vector(0, -1, 0))
 
 		local renderer = Renderer()
 		love.graphics.setScissor()
@@ -836,7 +851,13 @@ function DemoApplication:snapshotPlayerPeep()
 			love.graphics.setCanvas()
 
 			local imageData = renderer:getOutputBuffer():getColor():newImageData()
-			imageData:encode('png', self:getScreenshotName("Peep", index))
+			local filename = self:getScreenshotName("Peep", index)
+			imageData:encode('png', filename)
+
+			if actor == self:getGame():getPlayer():getActor() then
+				self:showScreenShot(filename)
+			end
+
 			love.graphics.pop()
 		end
 	end
