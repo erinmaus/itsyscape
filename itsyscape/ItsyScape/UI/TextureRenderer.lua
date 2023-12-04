@@ -48,17 +48,14 @@ function TextureRenderer:draw(widget, state)
 		local width, height = widget:getSize()
 		local scaleX, scaleY
 		if widget:getKeepAspect() then
-			if w > h then
+			if width < height then
 				local aspect = h / w
 				scaleX = width / w
-				scaleY = scaleX * aspect
-			elseif h > w then
+				scaleY = width * aspect / h
+			else
 				local aspect = w / h
 				scaleY = height	/ h
-				scaleX = scaleY * aspect
-			else
-				scaleX = width / w
-				scaleY = height / h
+				scaleX = height * aspect / w
 			end
 		else
 			scaleX = width / w
@@ -69,9 +66,9 @@ function TextureRenderer:draw(widget, state)
 		hw = hw / 2
 		hh = hh / 2
 
-		local x, y = widget:getSize()
-		x = x / 2
-		y = y / 2
+		local x, y
+		x = width / 2
+		y = height / 2
 
 		love.graphics.setBlendMode('alpha')
 		love.graphics.setColor(widget:getColor():get())

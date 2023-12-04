@@ -481,8 +481,16 @@ function Widget:update(...)
 			DebugStats.GLOBAL:measure(self.children[i]:getDebugInfo().shortName, self.children[i].update, self.children[i], ...)
 		end
 	else
-		for i = 1, #self.children do
-			self.children[i]:update(...)
+		local index = 1
+		local count = #self.children
+		while index <= #self.children do
+			self.children[index]:update(...)
+
+			if #self.children == count then
+				index = index + 1
+			end
+
+			count = #self.children
 		end
 	end
 end
