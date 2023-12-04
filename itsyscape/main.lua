@@ -137,34 +137,6 @@ function love.touchmoved(...)
 	end
 end
 
-if _MOBILE then
-	love.mousepressed = function(x, y, button)
-		print("pressed", button)
-		love.touchpressed(button, x, y)
-	end
-
-	love.mousereleased = function(x, y, button)
-		print("released", button)
-		love.touchreleased(button, x, y)
-	end
-
-	love.mousemoved = function(x, y, dx, dy)
-		local button 
-		if love.keyboard.isDown('1') then
-			button = 1
-		elseif love.keyboard.isDown('2') then
-			button = 2
-		elseif love.keyboard.isDown('3') then
-			button = 3
-		end
-
-		if button then
-			print("move", button)
-			love.touchmoved(button, x, y, dx, dy)
-		end
-	end
-end
-
 local isCollectingGarbage = true
 local oldDebug = _DEBUG
 function love.keypressed(...)
@@ -222,6 +194,17 @@ function love.draw()
 	if _APP and not _CONF.server then
 		_APP:draw()
 	end
+end
+
+function love.background()
+	if _APP then
+		_APP:background()
+	end
+
+	local serpent = require "serpent"
+	local serializedConf = serpent.block(_CONF, { comment = false })
+
+	love.filesystem.write("settings.cfg", serializedConf)
 end
 
 function love.quit()

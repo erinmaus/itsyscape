@@ -701,6 +701,25 @@ function Application:savePlayer(player, storage, isError)
 	-- Nothing.
 end
 
+function Application:background()
+	if self.multiThreaded and self.gameThread then
+		self.inputAdminChannel:push({
+			type = 'background'
+		})
+
+		local event = self.outputAdminChannel:demand(1)
+		if event and event.type == 'save' then
+			local serializedStorage = buffer.decode(event.storage)
+			if next(serializedStorage) then
+				local storage = PlayerStorage()
+				storage:deserialize(serializedStorage)
+
+				self:savePlayer(self.game:getPlayer(), storage, false)
+			end
+		end
+	end
+end
+
 function Application:quit(isError)
 	if self.multiThreaded then
 		self.game:quit()
