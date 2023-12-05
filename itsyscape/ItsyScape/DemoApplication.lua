@@ -756,6 +756,8 @@ function DemoApplication:keyDown(key, ...)
 	                   love.keyboard.isDown('rctrl')
 
 	if key == 'printscreen' or key == 'f10' then
+		self:prepareScreenshot()
+
 		if isCtrlDown then
 			self:snapshotPlayerPeep()
 		elseif isShiftDown then
@@ -781,12 +783,25 @@ function DemoApplication:keyDown(key, ...)
 	end
 end
 
+function DemoApplication:prepareScreenshot()
+	if self.screenshot then
+		local parent = self.screenshot:getParent()
+		if parent then
+			parent:removeChild(self.screenshot)
+		end
+
+		self.screenshot = nil
+	end
+end
+
 function DemoApplication:showScreenShot(filename)
 	local screenshot = Screenshot(self:getUIView(), filename)
 
 	if screenshot:isReady() then
 		screenshot:setZDepth(math.huge)
 		self:getUIView():getRoot():addChild(screenshot)
+
+		self.screenshot = screenshot
 	end
 end
 
