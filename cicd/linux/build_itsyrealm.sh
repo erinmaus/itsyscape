@@ -7,6 +7,10 @@ cp -r ../../itsyscape itsyscape-love
 cd itsyscape-love
 
 cp -r ../bmashina/lmashina/lua/B ./B
+cp -r ../devi/devi ./devi
+
+mkdir -p ./Player
+cp ../Common.dat ./Player/Common.dat
 
 echo $ITSYREALM_VERSION > version.meta
 zip -9 -qr ../itsyrealm.love .
