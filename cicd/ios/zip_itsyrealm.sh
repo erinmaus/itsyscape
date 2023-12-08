@@ -19,7 +19,9 @@ if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ]; then
 fi
 
 cp -r ../cicd/ios/staging/ext/B ./B
+cp -r ../cicd/ios/staging/ext/devi ./devi
 zip -9 -qr ../cicd/ios/staging/itsyrealm.love .
 rm -r ./B
+rm -r ./devi
 rm -rf ./Player/Default.dat
 rm -rf ./Player/Common.dat

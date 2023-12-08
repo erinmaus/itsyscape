@@ -22,6 +22,8 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local Controls = require "ItsyScape.UI.Client.Controls"
@@ -29,6 +31,7 @@ local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
 local Screenshot = require "ItsyScape.UI.Client.Screenshot"
 local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
+local Update = require "ItsyScape.UI.Client.Update"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 
 local DemoApplication = Class(Application)
@@ -55,6 +58,11 @@ function DemoApplication:new()
 	self.toolTipTick = math.huge
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
+
+	self.patchNotesServiceInputChannel = love.thread.newChannel()
+	self.patchNotesServiceOutputChannel = love.thread.newChannel()
+	self.patchNotesServiceThread = love.thread.newThread("ItsyScape/Analytics/Threads/PatchNotesService.lua")
+	self.patchNotesServiceThread:start(self.patchNotesServiceInputChannel, self.patchNotesServiceOutputChannel)
 
 	self.touches = { current = {}, n = 1 }
 
@@ -225,11 +233,21 @@ function DemoApplication:openTitleScreen()
 	})
 
 	self:getGame():getPlayer():spawn(storage, false, self:getPassword())
+
+	self.patchNotesServiceInputChannel:push({ type = "update" })
 end
 
 function DemoApplication:quit(isError)
 	local Resource = require "ItsyScape.Graphics.Resource"
 	Resource.quit()
+
+	self.patchNotesServiceInputChannel:push({ type = "quit" })
+	self.patchNotesServiceThread:wait()
+
+	local e = self.patchNotesServiceThread:getError()
+	if e then
+		Log.warn("Error quitting patch notes thread: %s", e)
+	end
 
 	Application.quit(self, isError)
 
@@ -414,6 +432,8 @@ function DemoApplication:openMainMenu()
 	closeButton:setToolTip(ToolTip.Text("Quit the game."))
 	self.mainMenu:addChild(closeButton)
 
+	self:addPatchNotesUI()
+
 	self:getUIView():getRoot():addChild(self.mainMenu)
 
 	if self.titleScreen then
@@ -424,6 +444,45 @@ function DemoApplication:openMainMenu()
 		_DEBUG = _CONF.debug or _DEBUG,
 		_CONF = _CONF
 	})
+end
+
+function DemoApplication:addPatchNotesUI()
+	if self.updateButton then
+		self.updateButton:getParent():removeChild(self.updateButton)
+		self.updateButton = nil
+	end
+
+	local updateButton = Button()
+	if not self.patchNotes then
+		updateButton:setStyle(ButtonStyle({
+			inactive = "Resources/Renderers/Widget/Button/Disabled-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/Disabled-Hover.9.png",
+			pressed = "Resources/Renderers/Widget/Button/Disabled-Pressed.9.png",
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+			fontSize = 24,
+			textShadow = true,
+			padding = 4
+		}, self:getUIView():getResources()))
+		updateButton:setText("Checking updates...")
+	elseif self.patchNotes.hasNewVersion then
+		updateButton:setText("New update available!")
+	else
+		updateButton:setText("View patch notes")
+	end
+
+	local w, h = love.graphics.getScaledMode()
+	local BUTTON_WIDTH = 256
+	local BUTTON_HEIGHT = 48
+	updateButton:setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+	updateButton:setPosition(w / 2 - BUTTON_WIDTH / 2, h - BUTTON_HEIGHT - 8)
+	updateButton.onClick:register(function()
+		self:openOptionsScreen(Update, function(w)
+			self.mainMenu:removeChild(w:getParent())
+		end)
+	end)
+
+	self.mainMenu:addChild(updateButton)
 end
 
 function DemoApplication:onNetworkError(client, message)
@@ -447,9 +506,17 @@ function DemoApplication:openOptionsScreen(Type, callback)
 		self.mainMenu:removeChild(self.optionsScreen)
 	end
 
-	self.optionsScreen = Type(self)
-	self.optionsScreen.onClose:register(callback)
-	self.mainMenu:addChild(self.optionsScreen)
+	local parent = Panel()
+	parent:setSize(love.graphics.getScaledMode())
+	parent:setStyle(PanelStyle({ color = { 0, 0, 0, 0.5 }, radius = 0 }, self:getUIView():getResources()))
+
+	local optionsScreen = Type(self)
+	optionsScreen.onClose:register(callback)
+
+	parent:addChild(optionsScreen)
+
+	self.mainMenu:addChild(parent)
+	self.optionsScreen = parent
 
 	self.titleScreen:disableLogo()
 end
@@ -756,6 +823,8 @@ function DemoApplication:keyDown(key, ...)
 	                   love.keyboard.isDown('rctrl')
 
 	if key == 'printscreen' or key == 'f10' then
+		self:prepareScreenshot()
+
 		if isCtrlDown then
 			self:snapshotPlayerPeep()
 		elseif isShiftDown then
@@ -781,12 +850,25 @@ function DemoApplication:keyDown(key, ...)
 	end
 end
 
+function DemoApplication:prepareScreenshot()
+	if self.screenshot then
+		local parent = self.screenshot:getParent()
+		if parent then
+			parent:removeChild(self.screenshot)
+		end
+
+		self.screenshot = nil
+	end
+end
+
 function DemoApplication:showScreenShot(filename)
 	local screenshot = Screenshot(self:getUIView(), filename)
 
 	if screenshot:isReady() then
 		screenshot:setZDepth(math.huge)
 		self:getUIView():getRoot():addChild(screenshot)
+
+		self.screenshot = screenshot
 	end
 end
 
@@ -1010,6 +1092,23 @@ function DemoApplication:updateToolTip(delta)
 	end
 end
 
+function DemoApplication:setPatchNotes(event)
+	self.patchNotes = event
+
+	if self.mainMenu then
+		self:addPatchNotesUI()
+	end
+end
+
+function DemoApplication:updatePatchNotes()
+	local event = self.patchNotesServiceOutputChannel:pop()
+	if event and type(event) == "table" then
+		if event.type == "update" and event.success then
+			self:setPatchNotes(event)
+		end
+	end
+end
+
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
@@ -1042,6 +1141,8 @@ function DemoApplication:update(delta)
 			end
 		end
 	end
+
+	self:updatePatchNotes()
 end
 
 function DemoApplication:draw(delta)

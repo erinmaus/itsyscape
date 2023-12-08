@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local devi = require "devi"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local TextInput = require "ItsyScape.UI.TextInput"
@@ -194,21 +195,63 @@ function RichTextLabelRenderer.Draw:drawList(block, parent)
 end
 
 function RichTextLabelRenderer.Draw:drawImage(block, parent)
-	local resource = block.resource
-	local key = "image://" .. resource
+	local image
+	if type(block.resource) == "string" then
+		local resource = block.resource
+		local key = "image://" .. resource
 
-	local image = self.resources[key]
-	if not image then
-		image = love.graphics.newImage(resource)
-		self.resources[key] = image
+		image = self.resources[key]
+		if not image then
+			local success
+
+			success, image = pcall(devi.newImage, resource)
+			if not success then
+				success, image = pcall(love.graphics.newImage, resource)
+				image = success and image
+			end
+
+			self.resources[resource] = image
+		end
+	else
+		local resource = block.resource
+		image = self.resources[resource]
+		if not image then
+			local success
+
+			success, image = pcall(devi.newImage, resource)
+			if not success then
+				success, image = pcall(love.graphics.newImage, resource)
+				image = success and image
+			end
+
+			self.resources[resource] = image
+		end
 	end
 
-	self.x = self.left
-	self.y = self.y + self.height
+	if type(image) == "table" then
+		-- it's a devi image
+		image:update()
+		image = image:getTexture()
+	end
 
-	itsyrealm.graphics.draw(image, self.x, self.y)
+	if image then
+		self.x = self.left
+		self.y = self.y + self.height
 
-	self.height = image:getHeight()
+		local scale
+		local maxWidth = self.width - self.x
+		if image:getWidth() > maxWidth then
+			scale = maxWidth / image:getWidth()
+		end
+
+		if block.align == "center" then
+			itsyrealm.graphics.uncachedDraw(image, self.x + (self.width / 2 - (image:getWidth() * scale) / 2), self.y, 0, scale, scale)
+		else
+			itsyrealm.graphics.uncachedDraw(image, self.x, self.y, 0, scale, scale)
+		end
+
+		self.y = self.y + image:getHeight() * scale + self.renderer.fonts.text:getHeight()
+	end
 end
 
 function RichTextLabelRenderer.Draw:drawBlock(block, parent)
@@ -287,12 +330,7 @@ function RichTextLabelRenderer:draw(widget, state)
 	if widget:getWrapParentContents() then
 		local p = widget:getParent()
 		if p then
-			p:setSize(w, renderer.y)
-
-			p = p:getParent()
-			if p then
-				p:setScrollSize(w, renderer.y)
-			end
+			p:setSize(w, renderer.y + renderer.height)
 		end
 	end
 end
