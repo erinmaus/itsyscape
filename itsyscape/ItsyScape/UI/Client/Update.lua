@@ -54,16 +54,20 @@ function Update:new(app)
 		Update.WIDTH - Update.PADDING * 4,
 		Update.HEIGHT - Update.BUTTON_HEIGHT - Update.PADDING * 6)
 	self.patchNotesContainer:getInnerPanel():setWrapContents(true)
-	self.patchNotesContainer:getInnerPanel():setSize(Update.WIDTH - Update.PADDING * 4.5 - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
+	self.patchNotesContainer:getInnerPanel():setSize(Update.WIDTH - Update.PADDING * 5 - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
 	panel:addChild(self.patchNotesContainer)
 
 	self.patchNotes = RichTextLabel()
 	self.patchNotes:setSize(self.patchNotesContainer:getInnerPanel():getSize())
 	self.patchNotes:setWrapContents(true)
-	self.patchNotes:setWrapParentContents(true)
 	self.patchNotesContainer:addChild(self.patchNotes)
 	self.patchNotes:setText(app.patchNotes.patchNotes)
-	self.patchNotesContainer:setScrollSize(self.patchNotesContainer:getInnerPanel():getSize())
+
+	self.patchNotes.onSize:register(function()
+		local _, scrollHeight = self.patchNotes:getSize()
+		self.patchNotesContainer:getInnerPanel():setSize(self.patchNotes:getSize())
+		self.patchNotesContainer:setScrollSize(self.patchNotesContainer:getSize(), scrollHeight)
+	end)
 
 	self.versionLabel = Label()
 	self.versionLabel:setText(app.patchNotes.version)

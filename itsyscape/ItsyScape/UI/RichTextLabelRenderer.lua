@@ -250,7 +250,7 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 			itsyrealm.graphics.uncachedDraw(image, self.x, self.y, 0, scale, scale)
 		end
 
-		self.height = image:getHeight() * scale
+		self.y = self.y + image:getHeight() * scale + self.renderer.fonts.text:getHeight()
 	end
 end
 
@@ -330,12 +330,7 @@ function RichTextLabelRenderer:draw(widget, state)
 	if widget:getWrapParentContents() then
 		local p = widget:getParent()
 		if p then
-			p:setSize(w, renderer.y)
-
-			p = p:getParent()
-			if p then
-				p:setScrollSize(w, renderer.y)
-			end
+			p:setSize(w, renderer.y + renderer.height)
 		end
 	end
 end
