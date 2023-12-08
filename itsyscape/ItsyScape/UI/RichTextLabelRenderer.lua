@@ -238,7 +238,7 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 		self.x = self.left
 		self.y = self.y + self.height
 
-		local scale
+		local scale = 1
 		local maxWidth = self.width - self.x
 		if image:getWidth() > maxWidth then
 			scale = maxWidth / image:getWidth()
@@ -312,6 +312,7 @@ function RichTextLabelRenderer:draw(widget, state)
 
 		text = {
 			t = t,
+			y = 0,
 			resources = {}
 		}
 
@@ -322,9 +323,11 @@ function RichTextLabelRenderer:draw(widget, state)
 	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, w)
 	renderer:draw()
 
-	if widget:getWrapContents() then
+	if widget:getWrapContents() and text.y ~= renderer.y then
 		widget:setSize(w, renderer.y)
 		widget:onSize()
+
+		text.y = renderer.y
 	end
 
 	if widget:getWrapParentContents() then
