@@ -276,7 +276,6 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	if not widget:getOverflow() and pushedScissor then
 		local w, h = widget:getSize()
 		if w > 0 and h > 0 then
-			pop = true
 			itsyrealm.graphics.popPseudoScissor()
 		end
 

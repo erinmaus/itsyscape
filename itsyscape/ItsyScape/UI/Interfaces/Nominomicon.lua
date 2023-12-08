@@ -102,6 +102,11 @@ function Nominomicon:new(id, index, ui)
 	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel:setWrapParentContents(true)
+	self.guideLabel.onSize:register(function()
+		local _, scrollHeight = self.guideLabel:getSize()
+		self.infoPanel:getInnerPanel():setSize(self.guideLabel:getSize())
+		self.infoPanel:setScrollSize(self.infoPanel:getSize(), scrollHeight)
+	end)
 	self.infoPanel:addChild(self.guideLabel)
 
 	self.closeButton = Button()
@@ -194,11 +199,13 @@ function Nominomicon:update(...)
 	if self.doFlagResizeLayout then
 		if self.bossPanel then
 			self.bossPanel:performLayout()
-			self.bossPanel:getParent():performLayout()
+
+			if self.bossPanel:getParent() then
+				self.bossPanel:getParent():performLayout()
+			end
 
 			self.infoPanel:setScrollSize(self.bossPanel:getSize())
 			self.infoPanel:setScroll(0, 0)
-
 		end
 
 		self.doFlagResizeLayout = false
