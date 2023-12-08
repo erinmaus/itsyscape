@@ -517,8 +517,7 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
-	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
-	previous_time = timer_instance->getTime();
+	// Nothing.
 }
 
 nbunny::ParticleSceneNode::~ParticleSceneNode()
@@ -539,12 +538,7 @@ const nbunny::BaseType& nbunny::ParticleSceneNode::get_type() const
 float nbunny::ParticleSceneNode::update_delta()
 {
 	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
-	auto current_time = timer_instance->getTime();
-
-	auto delta = current_time - previous_time;
-	previous_time = current_time;
-
-	return delta;
+	return timer_instance->getDelta();
 }
 
 void nbunny::ParticleSceneNode::update()

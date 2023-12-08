@@ -99,8 +99,6 @@ namespace nbunny
 
 		bool is_playing = true;
 
-		float previous_time = 0.0f;
-
 		float update_delta();
 		void update();
 		void emit(int count);
