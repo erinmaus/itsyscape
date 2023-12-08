@@ -66,7 +66,7 @@ function love.load(args)
 
 	local s, r = xpcall(require, debug.traceback, main)
 	if not s then
-		Log.warn("Failed to run %s: %s", main, r)
+		Log.warn("Failed to load %s: %s", main, r)
 		Log.quit()
 
 		if _DEBUG then
@@ -75,8 +75,16 @@ function love.load(args)
 			error(r, 0)
 		end
 	else
-		_APP = r(args)
-		_APP:initialize()
+		s, r = xpcall(r, debug.traceback, args)
+		if not s then
+			Log.warn("Failed to create %s: %s", main, r)
+		end
+
+		_APP = r
+		s, r = xpcall(r.initialize, debug.traceback, r)
+		if not s then
+			Log.warn("Failed to initialize %s: %s", main, r)
+		end
 	end
 
 	Log.info("Game initialized.")

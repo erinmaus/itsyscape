@@ -34,3 +34,4 @@ sentry-native-*-build/
 sentry-native-*/
 curl-*/
 openssl-*/
+devi/
