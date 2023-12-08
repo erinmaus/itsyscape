@@ -452,6 +452,10 @@ function DemoApplication:addPatchNotesUI()
 		self.updateButton = nil
 	end
 
+	if self.patchNotesWindow then
+		self.patchNotesWindow:updatePatchNotes(self.patchNotes.patchNotes)
+	end
+
 	local updateButton = Button()
 	if not self.patchNotes then
 		updateButton:setStyle(ButtonStyle({
@@ -466,6 +470,16 @@ function DemoApplication:addPatchNotesUI()
 		}, self:getUIView():getResources()))
 		updateButton:setText("Checking updates...")
 	elseif self.patchNotes.hasNewVersion then
+		updateButton:setStyle(ButtonStyle({
+			pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/Purple-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/Purple-Hover.9.png",
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+			fontSize = 24,
+			textShadow = true,
+			padding = 4
+		}, self:getUIView():getResources()))
 		updateButton:setText("New update available!")
 	else
 		updateButton:setText("View patch notes")
@@ -474,12 +488,16 @@ function DemoApplication:addPatchNotesUI()
 	local w, h = love.graphics.getScaledMode()
 	local BUTTON_WIDTH = 256
 	local BUTTON_HEIGHT = 48
+	updateButton:setZDepth(0)
 	updateButton:setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
 	updateButton:setPosition(w / 2 - BUTTON_WIDTH / 2, h - BUTTON_HEIGHT - 8)
 	updateButton.onClick:register(function()
-		self:openOptionsScreen(Update, function(w)
-			self.mainMenu:removeChild(w:getParent())
-		end)
+		if self.patchNotes then
+			self.patchNotesWindow = self:openOptionsScreen(Update, function(w)
+				self.mainMenu:removeChild(w:getParent())
+				self.titleScreen:enableLogo()
+			end)
+		end
 	end)
 
 	self.mainMenu:addChild(updateButton)
@@ -519,6 +537,8 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	self.optionsScreen = parent
 
 	self.titleScreen:disableLogo()
+
+	return optionsScreen
 end
 
 function DemoApplication:mousePress(x, y, button)

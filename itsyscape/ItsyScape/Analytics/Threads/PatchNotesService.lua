@@ -28,18 +28,38 @@ local function tryGetPatchNotes()
 			local nextVersion = string.format("%d.%d.%d", major, minor, build)
 			local currentVersion = string.format("%d.%d.%d", _ITSYREALM_MAJOR, _ITSYREALM_MINOR, _ITSYREALM_BUILD)
 
-			return true, nextVersion ~= currentVersion, nextVersion, patchNotes.patchNotes
+			local hasNewVersion
+			if (major > _ITSYREALM_MAJOR) or
+			   (major == _ITSYREALM_MAJOR and minor > _ITSYREALM_MINOR) or
+			   (major == _ITSYREALM_MAJOR and minor == _ITSYREALM_MINOR and build > _ITSYREALM_BUILD)
+			then
+				hasNewVersion = true
+			else
+				hasNewVersion = false
+			end
+
+			return true, hasNewVersion, nextVersion, patchNotes.patchNotes
 		end
 	end
 
 	return false
 end
 
-local function tryGetImage(url)
+local MODE_PREFETCH = "prefetch"
+local MODE_THUMB    = "thumb"
+local MODE_FULL     = "full"
+
+local MODES = {
+	MODE_PREFETCH,
+	MODE_THUMB,
+	MODE_FULL
+}
+
+local function tryGetImage(url, mode)
 	local format, id = url:match("https://itsyrealm%.com/api/photo/view/(%w+)/(%d+)")
 
 	if format and id then
-		if format == "thumb" then
+		if format == "thumb" and mode == MODE_FULL then
 			url = string.format("https://itsyrealm.com/api/photo/view/full/%d", tonumber(id))
 		end
 	end
@@ -60,7 +80,7 @@ function lines(s)
 	return s:gmatch("(.-)\n")
 end
 
-local function tryFormatPatchNotes(patchNotes)
+local function tryFormatPatchNotes(patchNotes, mode)
 	local result = {}
 
 	local currentBlock
@@ -78,16 +98,27 @@ local function tryFormatPatchNotes(patchNotes)
 			table.insert(currentBlock, line:match("^%*+%s*(.*)%s*"))
 		elseif line:match("^!") then
 			local alt, image = line:match("^!(%b[])(%b())")
-
+			alt = alt and image:match("%[(.*)%]")
 			image = image and image:match("%((.*)%)")
-			local imageData = image and tryGetImage(image)
 
-			if imageData then
+			if mode == MODE_PREFETCH then
 				table.insert(result, {
 					t = "image",
 					align = "center",
-					resource = imageData
+					resource = love.filesystem.newFileData("Resources/Game/UI/PatchNotesLoadingImage.png")
 				})
+
+				table.insert(result, "(Image loading... Enjoy this chest mimic!)")
+			else
+				local imageData = image and tryGetImage(image, mode)
+
+				if imageData then
+					table.insert(result, {
+						t = "image",
+						align = "center",
+						resource = imageData
+					})
+				end
 			end
 
 			currentBlock = nil
@@ -115,15 +146,16 @@ while isRunning do
 		elseif event.type == "update" then
 			local success, hasNewVersion, version, patchNotes = tryGetPatchNotes()
 			if success then
-				local formattedPatchNotes = tryFormatPatchNotes(patchNotes)
-
-				outputChannel:push({
-					type = "update",
-					success = true,
-					hasNewVersion = hasNewVersion,
-					version = version,
-					patchNotes = formattedPatchNotes
-				})
+				for _, mode in ipairs(MODES) do
+					local formattedPatchNotes = tryFormatPatchNotes(patchNotes, mode)
+					outputChannel:push({
+						type = "update",
+						success = true,
+						hasNewVersion = hasNewVersion,
+						version = version,
+						patchNotes = formattedPatchNotes
+					})
+				end
 			else
 				outputChannel:push({
 					type = "update",

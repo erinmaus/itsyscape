@@ -22,7 +22,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local Update = Class(Widget)
 
 Update.WIDTH  = 640
-Update.HEIGHT = 480
+Update.HEIGHT = 544
 Update.PADDING = 8
 Update.BUTTON_WIDTH = 128
 Update.BUTTON_HEIGHT = 48
@@ -93,6 +93,10 @@ function Update:new(app)
 	panel:addChild(self.closeButton)
 
 	self.onClose = Callback()
+end
+
+function Update:updatePatchNotes(text)
+	self.patchNotes:setText(text)
 end
 
 return Update
