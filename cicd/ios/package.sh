@@ -20,6 +20,9 @@ security cms -D -i "$PROFILE_PATH" > provision.plist
 find ./ext -name '*.so' -exec ../build_framework.sh {} \;
 find ./ext -name '*.dylib' -exec ../build_framework.sh {} \;
 
+defaults write "$(pwd)/Payload/ItsyRealm.app/Info.plist" CFBundleShortVersionString -string $(../../common/make_version.sh simple)
+defaults write "$(pwd)/Payload/ItsyRealm.app/Info.plist" CFBundleVersion -string $(../../common/make_version.sh build)
+
 cp ./itsyrealm.love ./Payload/ItsyRealm.app/itsyrealm.love
 
 /usr/bin/codesign --force -s "$IOS_CERTIFICATE_NAME" Payload/ItsyRealm.app/Frameworks/* -v	
