@@ -237,15 +237,17 @@ function love.draw()
 	end
 end
 
-function love.background()
-	if _APP then
-		_APP:background()
+function love.focus(isInFocus)
+	if not isInFocus and _MOBILE then
+		if _APP then
+			_APP:background()
+		end
+
+		local serpent = require "serpent"
+		local serializedConf = serpent.block(_CONF, { comment = false })
+
+		love.filesystem.write("settings.cfg", serializedConf)
 	end
-
-	local serpent = require "serpent"
-	local serializedConf = serpent.block(_CONF, { comment = false })
-
-	love.filesystem.write("settings.cfg", serializedConf)
 end
 
 function love.quit()
