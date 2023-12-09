@@ -65,6 +65,7 @@ function TitleScreen:load()
 		"Resources/Game/TitleScreens/Logo.png",
 		function(texture)
 			self.logo = texture
+			self.logo:getResource():setFilter('linear', 'linear')
 		end)
 
 	self.resources:queue(
@@ -103,6 +104,7 @@ function TitleScreen._calculateAlpha(time, duration1, duration2)
 end
 
 function TitleScreen:drawTitle()
+	local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 	local width, height = love.window.getMode()
 
 	love.graphics.setBlendMode('alpha')
@@ -120,8 +122,8 @@ function TitleScreen:drawTitle()
 			width / 2 + self.logo:getWidth() / 4 * logoSlide,
 			height / 4,
 			0,
-			0.5 + 0.5 * (1 - logoSlide),
-			0.5 + 0.5 * (1 - logoSlide),
+			(0.5 + 0.5 * (1 - logoSlide)) * scaleX,
+			(0.5 + 0.5 * (1 - logoSlide)) * scaleY,
 			self.logo:getWidth() / 2,
 			self.logo:getHeight() / 2)
 	end
