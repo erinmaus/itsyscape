@@ -8,14 +8,16 @@ cd ../../itsyscape
 
 echo $ITSYREALM_VERSION > version.meta
 
-if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ]; then
-	mkdir -p Player
-	cp "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ./Player/Default.dat
-fi
+if [ "$1" != "release" ]; then
+	if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ]; then
+		mkdir -p Player
+		cp "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ./Player/Default.dat
+	fi
 
-if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ]; then
-	mkdir -p Player
-	cp "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ./Player/Common.dat
+	if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ]; then
+		mkdir -p Player
+		cp "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ./Player/Common.dat
+	fi
 fi
 
 cp -r ../cicd/ios/staging/ext/B ./B
