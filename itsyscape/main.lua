@@ -1,6 +1,24 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
+if _MOBILE then
+	local p = print
+
+	print = function(...)
+		local t = { n = select("#", ...), ... }
+
+		for i = 1, t.n do
+			t[i] = tostring(t[i])
+		end
+
+		if _APP then
+			_APP:getGame():getPlayer():addExclusiveChatMessage(table.concat(t, " "))
+		end
+
+		p(...)
+	end
+end
+
 local _GAME_THREAD_ERROR = false
 
 do
@@ -126,6 +144,21 @@ function love.mousemoved(...)
 		_APP:mouseMove(...)
 	end
 end
+
+-- Uncomment to test single-touch controls
+-- _MOBILE = true
+
+-- function love.mousepressed(x, y, button)
+-- 	love.touchpressed(button, x, y)
+-- end
+
+-- function love.mousereleased(x, y, button)
+-- 	love.touchreleased(button, x, y)
+-- end
+
+-- function love.mousemoved(x, y, dx, dy)
+-- 	love.touchmoved(1, x, y, dx, dy)
+-- end
 
 function love.touchpressed(...)
 	if _APP and not _CONF.server and _MOBILE then
@@ -379,7 +412,7 @@ function love.errorhandler(message)
 	NSentry.close()
 
 	local Class = require "ItsyScape.Common.Class"
-	if _DEBUG or _MOBILE or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
+	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
 		return love.errhand(message)
 	else
 		return itsyrealm.errorhandler()
