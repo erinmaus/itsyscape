@@ -38,6 +38,7 @@ itsyrealm = {
 }
 
 _ARGS = {}
+_MOBILE = true
 
 _ANALYTICS_ENABLED = false
 
@@ -324,6 +325,20 @@ function itsyrealm.errorhandler()
 		end
 	end
 
+	local width, height, scale
+	do
+		local s, w, h, scaleX, scaleY = pcall(love.graphics.getScaledMode)
+		if s then
+			scale = math.min(scaleX, scaleY)
+			width = love.graphics.getWidth() / scale
+			height = love.graphics.getHeight() / scale
+		else
+			scale = 1
+			width = love.graphics.getWidth()
+			height = love.graphics.getHeight()
+		end
+	end
+
 	if love.audio then
 		love.audio.stop()
 	end
@@ -335,20 +350,28 @@ function itsyrealm.errorhandler()
 		love.graphics.setCanvas()
 
 		love.graphics.clear(0, 0, 0)
-
 		love.graphics.setColor(1, 1, 1, 1)
+
+		love.graphics.origin()
+		love.graphics.scale(scale, scale)
+
 		if logo then
 			love.graphics.draw(
 				logo,
-				love.graphics.getWidth() / 2 - logo:getWidth() / 2,
-				love.graphics.getHeight() / 2 - logo:getHeight())
+				width / 2,
+				height / 2 - height / 4,
+				0,
+				scale,
+				scale,
+				logo:getWidth() / 2,
+				logo:getHeight() / 2)
 		end
 
-		if qrCode then
+		if qrCode and not _MOBILE then
 			love.graphics.draw(
 				qrCode,
-				love.graphics.getWidth() - qrCode:getWidth() / 2 - 16,
-				love.graphics.getHeight() - qrCode:getHeight() / 2 - 16,
+				width - qrCode:getWidth() / 2 - 16,
+				height - qrCode:getHeight() / 2 - 16,
 				0,
 				0.5,
 				0.5)
@@ -365,14 +388,14 @@ function itsyrealm.errorhandler()
 		love.graphics.printf(
 			message,
 			0,
-			love.graphics.getHeight() / 2 + 32,
-			love.graphics.getWidth(),
+			height / 2 + 32,
+			width,
 			'center')
 
 		if _ITSYREALM_VERSION then
 			love.graphics.print(
 				_ITSYREALM_VERSION,
-				love.graphics.getWidth() - love.graphics.getFont():getWidth(_ITSYREALM_VERSION) - 16,
+				width - love.graphics.getFont():getWidth(_ITSYREALM_VERSION) - 16,
 				16)
 		end
 
@@ -414,11 +437,11 @@ function love.errorhandler(message)
 	NSentry.close()
 
 	local Class = require "ItsyScape.Common.Class"
-	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
-		return love.errhand(message)
-	else
+	--if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
+	--	return love.errhand(message)
+	--else
 		return itsyrealm.errorhandler()
-	end
+	--end
 end
 
 function love.threaderror(thread, e)

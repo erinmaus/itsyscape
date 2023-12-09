@@ -48,15 +48,15 @@ local UIView = Class()
 
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
+UIView.MOBILE_HEIGHT = 720
 
 function love.graphics.getScaledMode()
-	local dpiScale = love.graphics.getDPIScale()
 	local currentWidth, currentHeight = love.window.getMode()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
 
 	local scale
-	if _MOBILE and dpiScale >= 2 then
-		scale = 0.5
+	if currentHeight < UIView.MOBILE_HEIGHT then
+		scale = 0.75
 	elseif currentWidth > desiredWidth then
 		scale = math.floor(currentWidth / desiredWidth + 0.5)
 	else
