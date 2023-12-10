@@ -436,11 +436,11 @@ function love.errorhandler(message)
 	NSentry.close()
 
 	local Class = require "ItsyScape.Common.Class"
-	--if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
-	--	return love.errhand(message)
-	--else
+	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
+		return love.errhand(message)
+	else
 		return itsyrealm.errorhandler()
-	--end
+	end
 end
 
 function love.threaderror(thread, e)
