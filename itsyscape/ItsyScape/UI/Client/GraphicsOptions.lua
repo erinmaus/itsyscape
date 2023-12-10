@@ -157,6 +157,8 @@ function GraphicsOptions:new(application)
 			self.resolutions:addChild(button)
 		end
 
+		addResolution(currentResWidth, currentResHeight)
+
 		local resolutions = love.window.getFullscreenModes()
 		table.sort(resolutions,
 			function(a, b)
