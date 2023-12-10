@@ -38,6 +38,7 @@ function Chat:new(id, index, ui)
 	self.messages = {}
 
 	self.textInput = TextInput()
+	self.textInput:setHint("Enter chat message")
 	self.textInput:setStyle(TextInputStyle({
 		inactive = Color(0, 0, 0, 0),
 		active = Color(0, 0, 0, 0.5),

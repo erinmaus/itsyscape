@@ -1413,6 +1413,7 @@ function ProCombatStatusHUD:onShowEquipment()
 
 		if self.isEditingEquipmentTitle then
 			self.title = TextInput()
+			self.title:setHint("Enter name for equipment tab")
 			self.title:setStyle(TextInputStyle(ProCombatStatusHUD.TEXT_INPUT_STYLE, self:getView():getResources()))
 			self.title:setText(equipmentSlot.name)
 			self.title.onBlur:register(self.renameEquipmentSlot, self, self.equipmentSlot)

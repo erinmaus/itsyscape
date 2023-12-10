@@ -25,6 +25,15 @@ function TextInput:new()
 	self.isShiftDown = 0
 	self.isMouseOver = false
 	self.isPressed = false
+	self.hint = ""
+end
+
+function TextInput:getHint()
+	return self.hint
+end
+
+function TextInput:setHint(value)
+	self.hint = value or ""
 end
 
 function TextInput:focus(...)
