@@ -341,10 +341,19 @@ function DemoApplication:openMainMenu()
 		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
 		self:getUIView():getResources()))
 	controlsButton.onClick:register(function()
-		self:openOptionsScreen(Controls, function(value)
-			self:closeMainMenu()
-			self:openMainMenu()
-		end)
+		if _MOBILE then
+			local error = AlertWindow(self)
+			error:open(
+				"Controls aren't currently customizable!",
+				"Whoops...",
+				480,
+				320)
+		else
+			self:openOptionsScreen(Controls, function(value)
+				self:closeMainMenu()
+				self:openMainMenu()
+			end)
+		end
 	end)
 	controlsButton:setPosition(
 		w - BUTTON_SIZE - PADDING,
