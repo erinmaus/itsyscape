@@ -779,9 +779,12 @@ function UIView:probe(actions)
 
 	self.pokeMenu = PokeMenu(self, actions)
 	do
-		local windowWidth, windowHeight = love.window.getMode()
+		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pokeMenu:getSize()
-		local mouseX, mouseY = love.mouse.getPosition()
+		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+		mouseX = mouseX - offsetX
+		mouseY = mouseY - offsetY
+
 		local menuX = mouseX - PokeMenu.PADDING
 		local menuY = mouseY - PokeMenu.PADDING
 
