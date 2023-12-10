@@ -175,7 +175,9 @@ function GraphicsOptions:new(application)
 			end
 		end
 
-		addResolution(1024, 1024) -- Insta resolution
+		if not _MOBILE then
+			addResolution(1024, 1024) -- Insta resolution
+		end
 
 		self.resolutions:setScrollSize(self.resolutions:getInnerPanel():getSize())
 		self:addChild(self.resolutions)
