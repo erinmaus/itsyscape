@@ -224,11 +224,14 @@ function WidgetRenderManager:stop()
 			end
 		end
 
+		local _, _, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		for widget, toolTip in pairs(self.hovered) do
 			if toolTip then
+				itsyrealm.graphics.translate(offsetX, offsetY)
 				itsyrealm.graphics.translate(mouseX, mouseY)
 				self:draw(toolTip.w, toolTip.s, true)
 				itsyrealm.graphics.translate(-mouseX, -mouseY)
+				itsyrealm.graphics.translate(-offsetX, -offsetY)
 			end
 		end
 	end
