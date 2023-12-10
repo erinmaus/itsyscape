@@ -414,7 +414,9 @@ function GraphicsOptions:new(application)
 					self.application:getUIView():getResources()))
 		end
 		onPlusButton.onClick:register(self.setDebug, self, 'plus')
-		self:addChild(onPlusButton)
+		if not _MOBILE then
+			self:addChild(onPlusButton)
+		end
 		self.debugOnPlusButton = onPlusButton
 	end
 
