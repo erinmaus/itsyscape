@@ -73,6 +73,9 @@ end
 function TutorialHint:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
+	local _, _, _, _, offsetX, offsetY = love.graphics.getScaledMode()
+	self:setPosition(-offsetX, -offsetY)
+
 	local state = self:getState()
 
 	self.panel = Panel()
