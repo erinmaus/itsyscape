@@ -118,6 +118,8 @@ CharacterCustomization.TEXT_INPUT_STYLE = {
 	padding = 4
 }
 
+CharacterCustomization.DIALOG_WIDTH  = 960
+CharacterCustomization.DIALOG_HEIGHT = 240
 CharacterCustomization.DIALOG_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 	fontSize = 32,
@@ -128,11 +130,11 @@ CharacterCustomization.DIALOG_STYLE = {
 }
 
 CharacterCustomization.DIALOG_CLICK_TO_CONTINUE_STYLE = {
-		align = 'center',
-		textShadow = true,
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 24
-	}
+	align = 'center',
+	textShadow = true,
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24
+}
 
 function CharacterCustomization:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -145,6 +147,8 @@ function CharacterCustomization:new(id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(w, h)
+
+	local isTooSmall = h < (CharacterCustomization.INFO_HEIGHT + CharacterCustomization.DIALOG_HEIGHT)
 
 	self.panel = Panel()
 	self.panel:setSize(w, h)
@@ -456,28 +460,60 @@ function CharacterCustomization:new(id, index, ui)
 
 		panel:addChild(grid)
 		mainLayout:addChild(panel)
+
+		if isTooSmall then
+			local x, y = panel:getPosition()
+			local gridWidth, gridHeight = grid:getSize()
+
+			local viewDialogButton = Button()
+			viewDialogButton:setText("Dialogue Example")
+			viewDialogButton:setStyle(ButtonStyle(CharacterCustomization.BUTTON_STYLE, ui:getResources()))
+			viewDialogButton:setPosition(0, gridHeight + CharacterCustomization.PADDING + INPUT_HEIGHT)
+			viewDialogButton:setSize(gridWidth - CharacterCustomization.PADDING * 2, CharacterCustomization.BUTTON_SIZE)
+			viewDialogButton.onClick:register(self.showDialogExample, self)
+
+			panel:addChild(viewDialogButton)
+
+			local panelWidth, panelHeight = panel:getSize()
+			panel:setSize(panelWidth, panelHeight + CharacterCustomization.BUTTON_SIZE + CharacterCustomization.PADDING)
+		end
 	end
 
 	do
 		local panel = Panel()
 		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
-		panel:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
-		panel:setPosition(
-			CharacterCustomization.PADDING * 3 + CharacterCustomization.INFO_WIDTH * 2,
-			CharacterCustomization.PADDING)
 
-		mainLayout:addChild(panel)
+		if not isTooSmall then
+			panel:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
+			panel:setPosition(
+				CharacterCustomization.PADDING * 3 + CharacterCustomization.INFO_WIDTH * 2,
+				CharacterCustomization.PADDING)
+			mainLayout:addChild(panel)
+		end
 
-		local panelX, panelY = panel:getPosition()
-		local mainLayoutWidth, mainLayoutHeight = mainLayout:getSize()
-		local mainLayoutPaddingX, mainLayoutPaddingY = mainLayout:getPadding()
-		local remainingWidth = mainLayoutWidth - panelX - mainLayoutPaddingX
-		local remainingHeight = h - panelY - mainLayoutPaddingY * 2
-		panel:setSize(remainingWidth, remainingHeight)
+		if isTooSmall then
+			panel:setStyle(PanelStyle({ color = { 0, 0, 0, 0.75 } }, self:getView():getResources()))
+			panel:setSize(w, h)
+
+			self.dialogPanel = panel
+		else
+			local panelX, panelY = panel:getPosition()
+			local mainLayoutWidth, mainLayoutHeight = mainLayout:getSize()
+			local mainLayoutPaddingX, mainLayoutPaddingY = mainLayout:getPadding()
+			local remainingWidth = mainLayoutWidth - panelX - mainLayoutPaddingX
+			local remainingHeight = h - panelY - mainLayoutPaddingY * 2
+			panel:setSize(remainingWidth, remainingHeight)
+		end
 
 		local panelWidth, panelHeight = panel:getSize()
-		local dialogWidth = panelWidth * (2 / 3)
-		local dialogHeight = 240
+		local dialogWidth, dialogHeight
+		if isTooSmall then
+			dialogWidth = CharacterCustomization.DIALOG_WIDTH
+			dialogHeight = CharacterCustomization.DIALOG_HEIGHT
+		else
+			dialogWidth = math.min(panelWidth, CharacterCustomization.DIALOG_WIDTH)
+			dialogHeight = math.min(panelHeight, CharacterCustomization.DIALOG_HEIGHT)
+		end
 
 		local dialogPanel = Panel()
 		dialogPanel:setSize(dialogWidth, dialogHeight)
@@ -485,6 +521,26 @@ function CharacterCustomization:new(id, index, ui)
 			panelWidth / 2 - dialogWidth / 2,
 			panelHeight / 2 - dialogHeight / 2)
 		panel:addChild(dialogPanel)
+
+		if isTooSmall then
+			local closeButton = Button()
+			closeButton:setSize(dialogWidth / 2, CharacterCustomization.BUTTON_SIZE)
+
+			local x, y = dialogPanel:getPosition()
+			y = y + dialogHeight + CharacterCustomization.PADDING
+			closeButton:setPosition(x + dialogWidth / 4, y)
+
+			closeButton:setText("Return to character customization")
+			closeButton.onClick:register(function()
+				if panel:getParent() then
+					panel:getParent():removeChild(panel)
+				end
+			end)
+
+			closeButton:setStyle(ButtonStyle(CharacterCustomization.ACTIVE_BUTTON_STYLE, ui:getResources()))
+
+			panel:addChild(closeButton)
+		end
 
 		local label = Label()
 		label:setStyle(LabelStyle(CharacterCustomization.DIALOG_STYLE, ui:getResources()))
@@ -670,6 +726,10 @@ function CharacterCustomization:changeName(value)
 		name = value,
 		refresh = false
 	})
+end
+
+function CharacterCustomization:showDialogExample()
+	self:addChild(self.dialogPanel)
 end
 
 function CharacterCustomization:nextDialog()
