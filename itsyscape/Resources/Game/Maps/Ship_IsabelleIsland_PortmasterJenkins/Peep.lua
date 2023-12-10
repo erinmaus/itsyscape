@@ -16,7 +16,6 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
-local _MOBILE = true
 local Ship = Class(Map)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
@@ -283,6 +282,7 @@ function Ship:initPirateEncounter()
 
 	self:pushPoke("openCharacterCustomization")
 	self.player:addBehavior(DisabledBehavior)
+	self.openedCharacterCustomization = false
 end
 
 function Ship:onOpenCharacterCustomization()
@@ -294,6 +294,8 @@ function Ship:onOpenCharacterCustomization()
 		self.blockingInterfaceID = "CharacterCustomization"
 		self.blockingInterfaceIndex = index
 	end
+
+	self.openedCharacterCustomization = true
 end
 
 function Ship:onPirateDeath(pirate)
@@ -371,7 +373,7 @@ function Ship:update(director, game)
 				self.blockingInterfaceIndex = nil
 			end
 		end
-	elseif not self.showedCombatHints then
+	elseif not self.showedCombatHints and self.openedCharacterCustomization then
 		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
 		   and not self.player:getState():has("Quest", "PreTutorial")
 		then
