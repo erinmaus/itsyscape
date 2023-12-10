@@ -38,7 +38,6 @@ itsyrealm = {
 }
 
 _ARGS = {}
-_MOBILE = true
 
 _ANALYTICS_ENABLED = false
 

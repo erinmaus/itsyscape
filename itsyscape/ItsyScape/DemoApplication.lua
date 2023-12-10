@@ -528,7 +528,10 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	end
 
 	local parent = Panel()
-	parent:setSize(love.graphics.getScaledMode())
+
+	local width, height, _, _, paddingX, paddingY = love.graphics.getScaledMode()
+	parent:setPosition(-paddingX, -paddingY)
+	parent:setSize(width + paddingX * 2, height + paddingY * 2)
 	parent:setStyle(PanelStyle({ color = { 0, 0, 0, 0.5 }, radius = 0 }, self:getUIView():getResources()))
 
 	local optionsScreen = Type(self)
