@@ -48,14 +48,20 @@ local UIView = Class()
 
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
-UIView.MOBILE_HEIGHT = 720
+UIView.MOBILE_HEIGHT  = 720
+UIView.MOBILE_PADDING = 16
 
 function love.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
+	local paddingX, paddingY = 0, 0
 
 	local scale
 	if currentHeight < UIView.MOBILE_HEIGHT then
+		if _MOBILE or true then
+			paddingX, paddingY = UIView.MOBILE_PADDING, UIView.MOBILE_PADDING
+		end
+
 		scale = 0.75
 	elseif currentWidth > desiredWidth then
 		scale = math.floor(currentWidth / desiredWidth + 0.5)
@@ -63,14 +69,14 @@ function love.graphics.getScaledMode()
 		scale = 1
 	end
 
-	local realWidth = currentWidth / scale
-	local realHeight = currentHeight / scale
+	local realWidth = currentWidth / scale - paddingX * 2
+	local realHeight = currentHeight / scale - paddingY * 2
 
-	return math.floor(realWidth), math.floor(realHeight), scale, scale
+	return math.floor(realWidth), math.floor(realHeight), scale, scale, paddingX, paddingY
 end
 
 function love.graphics.getScaledPoint(x, y)
-	local _, _, sx, sy = love.graphics.getScaledMode()
+	local _, _, sx, sy, ox, oy = love.graphics.getScaledMode()
 	x = x / sx
 	y = y / sy
 
@@ -853,8 +859,9 @@ function UIView:update(delta)
 end
 
 function UIView:draw()
-	local width, height = self:getMode()
+	local width, height, _, _, offsetX, offsetY = self:getMode()
 	self.root:setSize(width, height)
+	self.root:setPosition(offsetX, offsetY)
 
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
