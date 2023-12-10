@@ -81,6 +81,7 @@ function CraftWindow:new(id, index, ui)
 	self.controlLayout:addChild(quantityLabel)
 
 	self.quantityInput = TextInput()
+	self.quantityInput:setHint("Enter a quantity")
 	self.quantityInput:setText("0")
 	self.quantityInput:setID("Craft-QuantityInput")
 	self.quantityInput:setSize(160, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)

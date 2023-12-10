@@ -28,6 +28,7 @@ function WidgetRenderManager:new(inputProvider)
 	self.renderers = {}
 	self.defaultRenderer = WidgetRenderer()
 	self.cursor = { widget = false, state = {}, x = 0, y = 0 }
+	self.inputFocus = { widget = false, state = {} }
 	self.input = inputProvider
 	self.toolTips = {}
 	self.debugStats = WidgetRenderManager.DebugStats()
@@ -73,6 +74,10 @@ function WidgetRenderManager:setCursor(widget)
 		self.cursor.x = x - mouseX
 		self.cursor.y = y - mouseY
 	end
+end
+
+function WidgetRenderManager:setInput(widget, label)
+	self.inputFocus = { widget = widget or false, label = label, state = {} }
 end
 
 function WidgetRenderManager:setToolTip(duration, ...)
@@ -171,6 +176,33 @@ function WidgetRenderManager:start()
 end
 
 function WidgetRenderManager:stop()
+	if self.inputFocus.widget then
+		local width, height = self.inputFocus.widget:getSize()
+		local widgetX, widgetY = self.inputFocus.widget:getPosition()
+		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
+
+		local x = windowWidth / 2 - width / 2 + offsetX - widgetX
+		local y = windowHeight / 2 - (windowHeight / 4 - height / 2) + offsetY - widgetY
+
+		love.graphics.setColor(0, 0, 0, 0.75)
+		itsyrealm.graphics.rectangle('fill', 0, 0, windowWidth + offsetX * 2, windowHeight + offsetY * 2)
+		love.graphics.setColor(1, 1, 1, 1)
+
+		itsyrealm.graphics.translate(x, y)
+		do
+			if self.inputFocus.label then
+				local _, labelHeight = self.inputFocus.label:getSize()
+
+				itsyrealm.graphics.translate(0, -labelHeight)
+				self:draw(self.inputFocus.label, self.inputFocus.state)
+				itsyrealm.graphics.translate(0, labelHeight)
+			end
+
+			self:draw(self.inputFocus.widget, self.inputFocus.state, true)
+		end
+		itsyrealm.graphics.translate(-x, -y)
+	end
+
 	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
 	if self.cursor.widget then
 		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
@@ -222,6 +254,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	if widget == self.cursor.widget and not cursor then
 		self.cursor.state = state
 		return
+	end
+
+	if widget == self.inputFocus.widget and not cursor then
+		self.inputFocus.state = state
 	end
 
 	if self.hovered[widget] ~= nil and widget:getToolTip() then

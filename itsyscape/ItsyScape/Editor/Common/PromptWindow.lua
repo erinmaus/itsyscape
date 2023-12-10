@@ -107,6 +107,7 @@ function PromptWindow:open(query, title, value, width, height)
 	self.titleLabel:setText(title or "Prompt")
 	self.queryLabel:setText(query or "Please enter a value.")
 	self.input:setText(value or "")
+	self.input:setHint(query)
 
 	self:setSize(width, height)
 

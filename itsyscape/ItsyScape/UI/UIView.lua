@@ -22,6 +22,7 @@ local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local PokeMenu = require "ItsyScape.UI.PokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
@@ -855,6 +856,39 @@ function UIView:update(delta)
 	local toolTips = self.renderManager:getToolTips()
 	for i = 1, #toolTips do
 		toolTips[i]:update(delta)
+	end
+
+	if _MOBILE then
+		local focusedWidget = self.inputProvider:getFocusedWidget()
+		if focusedWidget ~= self.currentFocusedWidget then
+			if focusedWidget and Class.isCompatibleType(focusedWidget, TextInput) then
+				local focusedWidgetX, focusedWidgetY = focusedWidget:getPosition()
+				local focusedWidgetWidth, focusedWidgetHeight = focusedWidget:getSize()
+
+				local hintLabel
+				if focusedWidget:getHint() ~= "" then
+					hintLabel = Label()
+					hintLabel:setStyle(LabelStyle({
+						font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+						fontSize = 24,
+						color = { 1, 1, 1, 1 },
+						align = "center",
+						textShadow = true
+					}, self.resources))
+					hintLabel:setText(focusedWidget:getHint())
+					hintLabel:setSize(0, focusedWidgetHeight)
+
+					hintLabel:setPosition(focusedWidgetX + focusedWidgetWidth / 2, focusedWidgetY)
+				end
+
+				self.renderManager:setInput(focusedWidget, hintLabel)
+				self.currentFocusedWidget = focusedWidget
+			else
+				self.renderManager:setInput()
+			end
+
+			self.currentFocusedWidget = focusedWidget
+		end
 	end
 end
 
