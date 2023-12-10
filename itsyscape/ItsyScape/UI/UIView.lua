@@ -51,6 +51,7 @@ UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
 UIView.MOBILE_HEIGHT  = 720
 UIView.MOBILE_PADDING = 16
+UIView.MOBILE_SCALE   = 0.65
 
 function love.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
@@ -63,7 +64,7 @@ function love.graphics.getScaledMode()
 			paddingX, paddingY = UIView.MOBILE_PADDING, UIView.MOBILE_PADDING
 		end
 
-		scale = 0.75
+		scale = UIView.MOBILE_SCALE
 	elseif currentWidth > desiredWidth then
 		scale = math.floor(currentWidth / desiredWidth + 0.5)
 	else
