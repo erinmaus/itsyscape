@@ -1108,10 +1108,15 @@ function GameView:updateSprites(delta)
 end
 
 function GameView:updateMusic(delta)
+	local multiplier = 1
+	if _MOBILE then
+		multiplier = _CONF.volume or 1
+	end
+
 	-- Update tags
-	self.soundTags.soundEffects.volume = _CONF.soundEffectsVolume or 1
-	self.soundTags.main.volume = _CONF.musicVolume or 1
-	self.soundTags.ambience.volume = _CONF.ambienceVolume or 1
+	self.soundTags.soundEffects.volume = (_CONF.soundEffectsVolume or 1) * multiplier
+	self.soundTags.main.volume = (_CONF.musicVolume or 1) * multiplier
+	self.soundTags.ambience.volume = (_CONF.ambienceVolume or 1) * multiplier
 
 	-- Clear out pending music.
 	do
