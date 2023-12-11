@@ -47,7 +47,7 @@ function QuestProgressNotification.LocationHint:new(hint, interface)
 	local label = Label()
 	label:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 14,
+		fontSize = 22,
 		textShadow = true,
 		width = QuestProgressNotification.HINT_WIDTH,
 		color = { 1, 1, 0, 1 },

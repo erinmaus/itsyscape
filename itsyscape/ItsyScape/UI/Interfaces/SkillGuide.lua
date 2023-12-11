@@ -38,7 +38,7 @@ SkillGuide.INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	textShadow = true
 }
 
@@ -47,7 +47,7 @@ SkillGuide.ACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	textShadow = true
 }
 
@@ -88,7 +88,7 @@ function SkillGuide:new(id, index, ui)
 	self.requirementsPanel = ConstraintsPanel(self:getView())
 	self.requirementsPanel:setData('skillAsLevel', true)
 	self.requirementsPanel:setText("Requirements")
-	self.requirementsPanel:setSize(WIDTH * (1 / 2), 03)
+	self.requirementsPanel:setSize(WIDTH * (1 / 2), 0)
 	self.requirementsPanel:setPosition(WIDTH * (1 / 2), 0)
 	self.infoPanel:addChild(self.requirementsPanel)
 

@@ -22,9 +22,9 @@ function ToolTipRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.toolTipBorder = resources:load(patchy.load, "Resources/Renderers/Widget/Panel/ToolTip.9.png")
-	self.headerFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf", 20)
-	self.textFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 16)
-	self.maxWidth = 256
+	self.headerFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf", 24)
+	self.textFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 22)
+	self.maxWidth = 320
 	self.padding = 8
 end
 

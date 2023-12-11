@@ -18,7 +18,7 @@ function ItemIconRenderer:new(resources)
 
 	self.icons = {}
 	self.note = love.graphics.newImage("Resources/Game/Items/Note.png")
-	self.font = love.graphics.newFont("Resources/Renderers/Widget/ItemIcon/Font.ttf", 18)
+	self.font = love.graphics.newFont("Resources/Renderers/Widget/ItemIcon/Font.ttf", 22)
 end
 
 function ItemIconRenderer:start()

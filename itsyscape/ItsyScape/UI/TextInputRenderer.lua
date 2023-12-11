@@ -23,7 +23,7 @@ function TextInputRenderer:new(resources)
 		color = { 0, 0, 0, 1 },
 		selectionColor = { 1, 1, 1, 0.5 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = 22,
 		padding = 4
 	}, resources)
 end

@@ -20,9 +20,9 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ConstraintsPanel = Class(Widget)
-ConstraintsPanel.DEFAULT_WIDTH = 120
+ConstraintsPanel.DEFAULT_WIDTH = 240
 ConstraintsPanel.DEFAULT_PADDING = 4
-ConstraintsPanel.TITLE_SIZE = 16
+ConstraintsPanel.TITLE_SIZE = 24
 ConstraintsPanel.BLACKLIST = {
 	['prop'] = true
 }
@@ -101,7 +101,7 @@ function ConstraintsPanel:performLayout(doLogic)
 	self.layout:setSize(width, 0)
 	self.panel:addChild(self.layout)
 
-	local rowHeight = (self.config.constraintFontSize or 16) * 2
+	local rowHeight = (self.config.constraintFontSize or 22) * 2
 	local leftWidth = rowHeight
 	local rightWidth = width - leftWidth - self.padding * 7
 	for i = 1, #self.constraints do
@@ -128,7 +128,7 @@ function ConstraintsPanel:performLayout(doLogic)
 
 			local right = Label()
 			right:setStyle(LabelStyle({
-				fontSize = self.config.constraintFontSize or 16,
+				fontSize = self.config.constraintFontSize or 22,
 				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 				color = self.config.constraintColor or { 1, 1, 1, 1 },
 				textShadow = self.config.constraintShadow == nil or false,
