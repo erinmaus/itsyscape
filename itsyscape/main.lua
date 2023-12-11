@@ -1,6 +1,24 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
+if _MOBILE then
+	local p = print
+
+	print = function(...)
+		local t = { n = select("#", ...), ... }
+
+		for i = 1, t.n do
+			t[i] = tostring(t[i])
+		end
+
+		if _APP then
+			_APP:getGame():getPlayer():addExclusiveChatMessage(table.concat(t, " "))
+		end
+
+		p(...)
+	end
+end
+
 local _GAME_THREAD_ERROR = false
 
 do
@@ -127,6 +145,21 @@ function love.mousemoved(...)
 	end
 end
 
+-- Uncomment to test single-touch controls
+-- _MOBILE = true
+
+-- function love.mousepressed(x, y, button)
+-- 	love.touchpressed(button, x, y)
+-- end
+
+-- function love.mousereleased(x, y, button)
+-- 	love.touchreleased(button, x, y)
+-- end
+
+-- function love.mousemoved(x, y, dx, dy)
+-- 	love.touchmoved(1, x, y, dx, dy)
+-- end
+
 function love.touchpressed(...)
 	if _APP and not _CONF.server and _MOBILE then
 		_APP:touchPress(...)
@@ -204,15 +237,17 @@ function love.draw()
 	end
 end
 
-function love.background()
-	if _APP then
-		_APP:background()
+function love.focus(isInFocus)
+	if not isInFocus and _MOBILE then
+		if _APP then
+			_APP:background()
+		end
+
+		local serpent = require "serpent"
+		local serializedConf = serpent.block(_CONF, { comment = false })
+
+		love.filesystem.write("settings.cfg", serializedConf)
 	end
-
-	local serpent = require "serpent"
-	local serializedConf = serpent.block(_CONF, { comment = false })
-
-	love.filesystem.write("settings.cfg", serializedConf)
 end
 
 function love.quit()
@@ -289,6 +324,20 @@ function itsyrealm.errorhandler()
 		end
 	end
 
+	local width, height, scale
+	do
+		local s, w, h, scaleX, scaleY = pcall(love.graphics.getScaledMode)
+		if s then
+			scale = math.min(scaleX, scaleY)
+			width = love.graphics.getWidth() / scale
+			height = love.graphics.getHeight() / scale
+		else
+			scale = 1
+			width = love.graphics.getWidth()
+			height = love.graphics.getHeight()
+		end
+	end
+
 	if love.audio then
 		love.audio.stop()
 	end
@@ -300,20 +349,28 @@ function itsyrealm.errorhandler()
 		love.graphics.setCanvas()
 
 		love.graphics.clear(0, 0, 0)
-
 		love.graphics.setColor(1, 1, 1, 1)
+
+		love.graphics.origin()
+		love.graphics.scale(scale, scale)
+
 		if logo then
 			love.graphics.draw(
 				logo,
-				love.graphics.getWidth() / 2 - logo:getWidth() / 2,
-				love.graphics.getHeight() / 2 - logo:getHeight())
+				width / 2,
+				height / 2 - height / 4,
+				0,
+				scale,
+				scale,
+				logo:getWidth() / 2,
+				logo:getHeight() / 2)
 		end
 
-		if qrCode then
+		if qrCode and not _MOBILE then
 			love.graphics.draw(
 				qrCode,
-				love.graphics.getWidth() - qrCode:getWidth() / 2 - 16,
-				love.graphics.getHeight() - qrCode:getHeight() / 2 - 16,
+				width - qrCode:getWidth() / 2 - 16,
+				height - qrCode:getHeight() / 2 - 16,
 				0,
 				0.5,
 				0.5)
@@ -330,14 +387,14 @@ function itsyrealm.errorhandler()
 		love.graphics.printf(
 			message,
 			0,
-			love.graphics.getHeight() / 2 + 32,
-			love.graphics.getWidth(),
+			height / 2 + 32,
+			width,
 			'center')
 
 		if _ITSYREALM_VERSION then
 			love.graphics.print(
 				_ITSYREALM_VERSION,
-				love.graphics.getWidth() - love.graphics.getFont():getWidth(_ITSYREALM_VERSION) - 16,
+				width - love.graphics.getFont():getWidth(_ITSYREALM_VERSION) - 16,
 				16)
 		end
 
@@ -379,7 +436,7 @@ function love.errorhandler(message)
 	NSentry.close()
 
 	local Class = require "ItsyScape.Common.Class"
-	if _DEBUG or _MOBILE or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
+	if _DEBUG or (Class.isDerived(require(_APP_REQUIRE), require "ItsyScape.Editor.EditorApplication")) then
 		return love.errhand(message)
 	else
 		return itsyrealm.errorhandler()

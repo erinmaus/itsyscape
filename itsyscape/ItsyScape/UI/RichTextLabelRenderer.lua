@@ -282,8 +282,8 @@ function RichTextLabelRenderer:new(t, resources)
 	WidgetRenderer.new(self, resources)
 
 	self.fonts = {
-		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 16),
-		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", 18)
+		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 22),
+		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", 26)
 	}
 	self.texts = {}
 end

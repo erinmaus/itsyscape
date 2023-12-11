@@ -23,7 +23,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "Ribbon-PlayerInventory",
-		message = "Click here to access your inventory.",
+		message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
 		open = function(target)
 			return function()
 				return Utility.UI.isOpen(target, "PlayerInventory")
@@ -33,7 +33,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "Inventory-RustyDagger",
-		message = "Click on the rusty dagger to equip it.\nRight-click on the dagger to see additional options.",
+		message = not _MOBILE and "Click on the rusty dagger to equip it.\nRight-click on the dagger to see additional options." or "Tap on the rusty dagger to equip it.\nHold your tap on the dagger to see additional options.",
 		open = function(target)
 			return function()
 				return not target:getState():has('Item', "RustyDagger", 1, { ['item-inventory'] = true })
@@ -43,7 +43,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "Ribbon-PlayerEquipment",
-		message = "Click here to see your equipment.",
+		message = not _MOBILE and "Click here to see your equipment." or "Tap here to see your equipment.",
 		open = function(target)
 			return function()
 				return Utility.UI.isOpen(target, "PlayerEquipment")
@@ -53,7 +53,8 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "PlayerEquipment",
-		message = "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.\nClose this tab when you're done by clicking the icon again.",
+		message = not _MOBILE and "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.\nClose this tab when you're done by clicking the icon again." or
+	              "View your bonuses and dequip items from here.\nYou can hold your tap on your equipment for additional options.\nClose this tab when you're done by tapping the icon again.",
 		open = function(target)
 			local time = love.timer.getTime()
 			return function()
@@ -64,7 +65,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "Ribbon-PlayerStance",
-		message = "Click here to see your stance.",
+		message = not _MOBILE and "Click here to see your stance." or "Tap here to see your stance.",
 		open = function(target)
 			return function()
 				return Utility.UI.isOpen(target, "PlayerStance")
@@ -74,7 +75,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "PlayerStance",
-		message = "Change your stance to 'Aggressive' to deal more damage.\nHover over the other stances to see what they do.",
+		message = not _MOBILE and "Change your stance to 'Aggressive' to deal more damage.\nHover over the other stances to see what they do." or "Change your stance to 'Aggressive' to deal more damage.",
 		open = function(target)
 			return function()
 				return target:getBehavior(StanceBehavior).stance == Weapon.STANCE_AGGRESSIVE
@@ -84,7 +85,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "PlayerStance-ToggleHUD",
-		message = "Click here to toggle the combat HUD.",
+		message = not _MOBILE and "Click here to toggle the combat HUD." or "Tap here to toggle the combat HUD.",
 		open = function(target)
 			return function()
 				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
@@ -100,7 +101,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'up',
 		id = "ProCombatStatusHUD-OffensivePowers",
-		message = "Click here to view your available Powers.",
+		message = not _MOBILE and "Click here to view your available Powers." or "Tap here to view your available Powers.",
 		open = function(target)
 			return function()
 				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
@@ -122,7 +123,7 @@ Ship.COMBAT_HINT = {
 	{
 		position = 'down',
 		id = "ProCombatStatusHUD-PowerBackstab",
-		message = "Click 'Backstab', then click on a pirate to attack.\nYou will deal a special attack!",
+		message = not _MOBILE and "Click 'Backstab' then click on a pirate to attack.\nYou will deal a special attack!" or "Tap 'Backstab' then tap on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
 			return function()
 				local power = target:getBehavior(PendingPowerBehavior)
@@ -279,6 +280,12 @@ function Ship:initPirateEncounter()
 		state:give("Item", "RustyDagger",  1,FLAGS)
 	end
 
+	self:pushPoke("openCharacterCustomization")
+	self.player:addBehavior(DisabledBehavior)
+	self.openedCharacterCustomization = false
+end
+
+function Ship:onOpenCharacterCustomization()
 	local s, index = Utility.UI.openInterface(
 		self.player,
 		"CharacterCustomization",
@@ -286,8 +293,9 @@ function Ship:initPirateEncounter()
 	if s then
 		self.blockingInterfaceID = "CharacterCustomization"
 		self.blockingInterfaceIndex = index
-		self.player:addBehavior(DisabledBehavior)
 	end
+
+	self.openedCharacterCustomization = true
 end
 
 function Ship:onPirateDeath(pirate)
@@ -365,7 +373,7 @@ function Ship:update(director, game)
 				self.blockingInterfaceIndex = nil
 			end
 		end
-	elseif not self.showedCombatHints then
+	elseif not self.showedCombatHints and self.openedCharacterCustomization then
 		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
 		   and not self.player:getState():has("Quest", "PreTutorial")
 		then
@@ -374,7 +382,7 @@ function Ship:update(director, game)
 				"TutorialHint",
 				false,
 				"root",
-				"Look at the bottom right corner.\nClick on the flashing icon to continue.",
+				not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
 				function()
 					return Utility.UI.isOpen(self.player, "PlayerInventory")
 				end,

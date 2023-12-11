@@ -341,10 +341,19 @@ function DemoApplication:openMainMenu()
 		BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
 		self:getUIView():getResources()))
 	controlsButton.onClick:register(function()
-		self:openOptionsScreen(Controls, function(value)
-			self:closeMainMenu()
-			self:openMainMenu()
-		end)
+		if _MOBILE then
+			local error = AlertWindow(self)
+			error:open(
+				"Controls aren't currently customizable!",
+				"Whoops...",
+				480,
+				320)
+		else
+			self:openOptionsScreen(Controls, function(value)
+				self:closeMainMenu()
+				self:openMainMenu()
+			end)
+		end
 	end)
 	controlsButton:setPosition(
 		w - BUTTON_SIZE - PADDING,
@@ -411,26 +420,29 @@ function DemoApplication:openMainMenu()
 	networkButton:setToolTip(ToolTip.Text("Play online or on the local network."))
 	self.mainMenu:addChild(networkButton)
 
-	local closeButton = Button()
-	closeButton:setStyle(ButtonStyle({
-		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
-		inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
-		color = { 1, 1, 1, 1 },
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-		fontSize = 24,
-		textShadow = true,
-	}, self:getUIView():getResources()))
-	closeButton:setText("X")
-	closeButton.onClick:register(function()
-		love.event.quit()
-	end)
-	closeButton:setPosition(
-		w - BUTTON_SIZE - PADDING,
-		PADDING)
-	closeButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
-	closeButton:setToolTip(ToolTip.Text("Quit the game."))
-	self.mainMenu:addChild(closeButton)
+
+	if not _MOBILE then
+		local closeButton = Button()
+		closeButton:setStyle(ButtonStyle({
+			pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+			inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+			hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+			color = { 1, 1, 1, 1 },
+			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			fontSize = 24,
+			textShadow = true,
+		}, self:getUIView():getResources()))
+		closeButton:setText("X")
+		closeButton.onClick:register(function()
+			love.event.quit()
+		end)
+		closeButton:setPosition(
+			w - BUTTON_SIZE - PADDING,
+			PADDING)
+		closeButton:setSize(BUTTON_SIZE, BUTTON_SIZE)
+		closeButton:setToolTip(ToolTip.Text("Quit the game."))
+		self.mainMenu:addChild(closeButton)
+	end
 
 	self:addPatchNotesUI()
 
@@ -525,7 +537,10 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	end
 
 	local parent = Panel()
-	parent:setSize(love.graphics.getScaledMode())
+
+	local width, height, _, _, paddingX, paddingY = love.graphics.getScaledMode()
+	parent:setPosition(-paddingX, -paddingY)
+	parent:setSize(width + paddingX * 2, height + paddingY * 2)
 	parent:setStyle(PanelStyle({ color = { 0, 0, 0, 0.5 }, radius = 0 }, self:getUIView():getResources()))
 
 	local optionsScreen = Type(self)
@@ -674,12 +689,14 @@ function DemoApplication:updateMobileMouse()
 			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
 			   currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
 			then
-				if currentTime < DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS or isMoving then
-					if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
-						Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
-					elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
-						self:getUIView():closePokeMenu()
-						self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
+				if not touch.pressed then
+					if currentTime < DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS or isMoving then
+						if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+							Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+						elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+							self:getUIView():closePokeMenu()
+							self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
+						end
 					end
 				end
 
@@ -810,7 +827,14 @@ end
 
 function DemoApplication:touchRelease(id, x, y, pressure)
 	if self.touches.current[id] and not self.touches.current[id].released then
-		self.touches.current[id].released = true
+		local touch = self.touches.current[id]
+		touch.currentTime = love.timer.getTime()
+		touch.previousX = touch.currentX
+		touch.previousY = touch.currentY
+		touch.currentX = x
+		touch.currentY = y
+		touch.released = true
+
 		self:updateMobileMouse()
 	end
 

@@ -61,21 +61,23 @@ function ConfigWindow:new(id, index, ui)
 	layout:setWrapContents(true)
 	self:addChild(layout)
 
-	local controlsButton = Button()
-	controlsButton:setStyle(ButtonStyle(
-		ConfigWindow.BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
-		self:getView():getResources()))
-	controlsButton.onClick:register(function()
-		local controls = Controls(_APP)
-		local root = self:getView():getRoot()
-		root:addChild(controls)
+	if not _MOBILE then
+		local controlsButton = Button()
+		controlsButton:setStyle(ButtonStyle(
+			ConfigWindow.BUTTON_STYLE("Resources/Game/UI/Icons/Concepts/Keyboard.png"),
+			self:getView():getResources()))
+		controlsButton.onClick:register(function()
+			local controls = Controls(_APP)
+			local root = self:getView():getRoot()
+			root:addChild(controls)
 
-		controls.onClose:register(function()
-			root:removeChild(controls)
+			controls.onClose:register(function()
+				root:removeChild(controls)
+			end)
 		end)
-	end)
-	controlsButton:setToolTip(ToolTip.Text("Configure controls."))
-	layout:addChild(controlsButton)
+		controlsButton:setToolTip(ToolTip.Text("Configure controls."))
+		layout:addChild(controlsButton)
+	end
 
 	local soundButton = Button()
 	if _CONF.volume == 0 then

@@ -157,6 +157,8 @@ function GraphicsOptions:new(application)
 			self.resolutions:addChild(button)
 		end
 
+		addResolution(currentResWidth, currentResHeight)
+
 		local resolutions = love.window.getFullscreenModes()
 		table.sort(resolutions,
 			function(a, b)
@@ -173,7 +175,9 @@ function GraphicsOptions:new(application)
 			end
 		end
 
-		addResolution(1024, 1024) -- Insta resolution
+		if not _MOBILE then
+			addResolution(1024, 1024) -- Insta resolution
+		end
 
 		self.resolutions:setScrollSize(self.resolutions:getInnerPanel():getSize())
 		self:addChild(self.resolutions)
@@ -410,7 +414,9 @@ function GraphicsOptions:new(application)
 					self.application:getUIView():getResources()))
 		end
 		onPlusButton.onClick:register(self.setDebug, self, 'plus')
-		self:addChild(onPlusButton)
+		if not _MOBILE then
+			self:addChild(onPlusButton)
+		end
 		self.debugOnPlusButton = onPlusButton
 	end
 

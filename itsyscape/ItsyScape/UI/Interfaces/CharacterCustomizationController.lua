@@ -448,7 +448,7 @@ function CharacterCustomizationController:pull()
 	local storage = self:getDirector():getPlayerStorage(peep)
 
 	local state = {
-		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name"),
+		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name") or "Player",
 		gender = gender.gender,
 		description = gender.description or "Non-Binary",
 		pronouns = {
