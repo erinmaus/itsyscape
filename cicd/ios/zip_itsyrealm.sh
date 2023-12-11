@@ -22,6 +22,7 @@ fi
 
 cp -r ../cicd/ios/staging/ext/B ./B
 cp -r ../cicd/ios/staging/ext/devi ./devi
+rm -f ../cicd/ios/staging/itsyrealm.love
 zip -9 -qr ../cicd/ios/staging/itsyrealm.love .
 rm -r ./B
 rm -r ./devi
