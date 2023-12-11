@@ -101,8 +101,8 @@ function PlayerEquipment:new(id, index, ui)
 	statLayout:setUniformSize(
 		true,
 		width / 2 - PlayerEquipment.PADDING / 2,
-		height / 4 + 8)
-	statLayout:setPosition(0, height / 2 - 32)
+		height / 4 + 24)
+	statLayout:setPosition(0, height / 2 - 40)
 
 	local function emitLayout(t, title)
 		local panel = Panel()
@@ -114,22 +114,21 @@ function PlayerEquipment:new(id, index, ui)
 			PlayerEquipment.PADDING / 2,
 			PlayerEquipment.PADDING / 2)
 		titleLabel:setStyle(LabelStyle({
-			fontSize = 16,
+			fontSize = 24,
 			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 			textShadow = true
 		}, self:getView():getResources()))
 		panel:addChild(titleLabel)
 
 		local layout = GridLayout()
-		layout:setPadding(PlayerEquipment.PADDING / 2)
+		layout:setPadding(0, 0)
 		layout:setSize(width / 2, height / 4)
-		layout:setUniformSize(true, width / 4 - PlayerEquipment.PADDING, 8)
-		layout:setPosition(PlayerEquipment.PADDING / 2, 20)
+		layout:setPosition(PlayerEquipment.PADDING / 2, 24)
 		panel:addChild(layout)
 
 		for i = 1, #t do
 			local style = LabelStyle({
-				fontSize = 12,
+				fontSize = 22,
 				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 				textShadow = true
 			}, self:getView():getResources())
@@ -137,11 +136,13 @@ function PlayerEquipment:new(id, index, ui)
 			local left = Label()
 			left:setText(t[i][2])
 			left:setStyle(style)
+			left:setSize(width / 2 * (2 / 3) - PlayerEquipment.PADDING / 2, 22)
 			layout:addChild(left)
 
 			local right = Label()
 			right:setData('stat', t[i][1])
 			right:setStyle(style)
+			right:setSize(width / 2 * (1 / 3), 22)
 			right:bind("text", "stats[{stat}]")
 			layout:addChild(right)
 		end

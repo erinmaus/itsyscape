@@ -53,7 +53,7 @@ function Chat:new(id, index, ui)
 		color = { 1, 1, 1, 1 },
 		selectionColor = { 1, 1, 1, 0.5 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = 22,
 		padding = 4,
 		textShadow = true
 	}, ui:getResources()))
@@ -77,7 +77,7 @@ function Chat:new(id, index, ui)
 	self.chatLabelStyle = LabelStyle({
 		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = 22,
 		padding = 4,
 		textShadow = true
 	}, self:getView():getResources())
