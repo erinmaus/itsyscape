@@ -47,7 +47,7 @@ function QuestProgressNotification.LocationHint:new(hint, interface)
 	local label = Label()
 	label:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 14,
+		fontSize = 22,
 		textShadow = true,
 		width = QuestProgressNotification.HINT_WIDTH,
 		color = { 1, 1, 0, 1 },
@@ -126,7 +126,7 @@ function QuestProgressNotification.LocationHint:update()
 	Drawable.update(self, delta)
 
 	local w, h = self:getSize()
-	local windowWidth, windowHeight = love.graphics.getScaledMode()
+	local windowWidth, windowHeight, scaleX, scaleY, offsetX, offsetY = love.graphics.getScaledMode()
 
 	local screenPosition
 	do
@@ -140,8 +140,11 @@ function QuestProgressNotification.LocationHint:update()
 			screenPosition = Vector.ZERO
 		end
 	end
+	screenPosition = screenPosition / Vector(scaleX, scaleY)
 
 	local x, y = self:getParent():getPosition()
+	x = x + offsetX
+	y = y + offsetY
 
 	self:setPosition(
 		math.min(math.max(screenPosition.x, 0), windowWidth) - w / 2 - x,

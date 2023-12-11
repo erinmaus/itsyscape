@@ -280,6 +280,7 @@ function ShipCustomization:new(id, index, ui)
 				panel:addChild(label)
 
 				local input = TextInput()
+				input:setHint("Enter a color value")
 				input.onValueChanged:register(self.onColorInputChanged, self, channel, color)
 				panel:addChild(input)
 

@@ -221,6 +221,7 @@ function Bank:new(id, index, ui)
 	local search = TextInput()
 	search:setStyle(TextInputStyle(Bank.TEXT_INPUT_STYLE, ui:getResources()))
 	search:setText("Search...")
+	search:setHint("Search for items")
 	search:setData('empty', true)
 	search:setPosition(
 		self.bankLayout:getPosition() + self.bankLayout:getSize() * (1 / 3),
@@ -400,6 +401,7 @@ function Bank:generateSection(stateSection, sectionIndex)
 	local addButton
 	if sectionIndex > 0 then
 		local sectionTextInput = TextInput()
+		sectionTextInput:setHint("Set section title")
 		sectionTextInput:setStyle(TextInputStyle(Bank.SECTION_TITLE_STYLE, self:getView():getResources()))
 		sectionTextInput:setText(stateSection.name)
 		sectionTextInput:setSize(

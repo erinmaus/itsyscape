@@ -16,6 +16,7 @@ cmake -Bbuild \
 	-DCMAKE_OSX_SYSROOT=$(xcrun --sdk iphoneos --show-sdk-path) \
 	-DCMAKE_OSX_ARCHITECTURES="arm64" \
 	-DLUA_INCLUDE_DIR=$(pwd)/../include \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET="13.0" \
 	-DLUA_LIBRARIES=$(pwd)/../lib/liblua51.a
 
 pushd build

@@ -490,11 +490,11 @@ ProCombatStatusHUD.Equipment.MISC = {
 	{ "Prayer", "Divinity" }
 }
 
-ProCombatStatusHUD.Equipment.PANEL_WIDTH = 248
-ProCombatStatusHUD.Equipment.PANEL_HEIGHT = 428
+ProCombatStatusHUD.Equipment.PADDING = 8
+ProCombatStatusHUD.Equipment.PANEL_WIDTH = 296 + ProCombatStatusHUD.Equipment.PADDING * 1
+ProCombatStatusHUD.Equipment.PANEL_HEIGHT = 428 + ProCombatStatusHUD.Equipment.PADDING * 2 + ProCombatStatusHUD.BUTTON_SIZE
 ProCombatStatusHUD.Equipment.BUTTON_PADDING = 2
 ProCombatStatusHUD.Equipment.BUTTON_SIZE = ProCombatStatusHUD.BUTTON_SIZE + ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2
-ProCombatStatusHUD.Equipment.PADDING = 8
 
 function ProCombatStatusHUD.Equipment:new(hud, key, index)
 	Widget.new(self)
@@ -549,7 +549,7 @@ function ProCombatStatusHUD.Equipment:initStats()
 	statLayout:setUniformSize(
 		true,
 		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - ProCombatStatusHUD.Equipment.PADDING / 2,
-		ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4 + 8)
+		ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4 + 24)
 	statLayout:setPosition(
 		ProCombatStatusHUD.Equipment.BUTTON_PADDING,
 		ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 2 - 32)
@@ -564,32 +564,33 @@ function ProCombatStatusHUD.Equipment:initStats()
 			ProCombatStatusHUD.Equipment.PADDING / 2,
 			ProCombatStatusHUD.Equipment.PADDING / 2)
 		titleLabel:setStyle(LabelStyle({
-			fontSize = 16,
+			fontSize = 24,
 			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 			textShadow = true
 		}, self.hud:getView():getResources()))
 		panel:addChild(titleLabel)
 
 		local layout = GridLayout()
-		layout:setPadding(ProCombatStatusHUD.Equipment.PADDING / 2)
+		layout:setPadding(0, 0)
 		layout:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2, ProCombatStatusHUD.Equipment.PANEL_HEIGHT / 4)
-		layout:setUniformSize(true, ProCombatStatusHUD.Equipment.PANEL_WIDTH / 4 - ProCombatStatusHUD.Equipment.PADDING, 8)
-		layout:setPosition(ProCombatStatusHUD.Equipment.PADDING / 2, 20)
+		layout:setPosition(ProCombatStatusHUD.Equipment.PADDING, 24)
 		panel:addChild(layout)
 
 		for i = 1, #t do
 			local style = LabelStyle({
-				fontSize = 12,
+				fontSize = 22,
 				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 				textShadow = true
 			}, self.hud:getView():getResources())
 
 			local left = Label()
 			left:setText(t[i][2])
+			left:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 * (2 / 3), 24)
 			left:setStyle(style)
 			layout:addChild(left)
 
 			local right = Label()
+			right:setSize(ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 * (1 / 3), 24)
 			right:setData('stat', t[i][1])
 			right:setData('key', self.key)
 			right:setData('index', self.index)
@@ -623,8 +624,8 @@ end
 function ProCombatStatusHUD.Equipment:initEquipment()
 	self.equipmentLayout = GridLayout()
 	self.equipmentLayout:setPadding(
-		ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2,
-		ProCombatStatusHUD.Equipment.BUTTON_PADDING * 2)
+		ProCombatStatusHUD.Equipment.PADDING * 2,
+		ProCombatStatusHUD.Equipment.PADDING * 2)
 	self.equipmentLayout:setUniformSize(
 		true,
 		ProCombatStatusHUD.Equipment.BUTTON_SIZE,
@@ -633,7 +634,7 @@ function ProCombatStatusHUD.Equipment:initEquipment()
 		ProCombatStatusHUD.Equipment.PANEL_WIDTH,
 		ProCombatStatusHUD.Equipment.PANEL_HEIGHT)
 	self.equipmentLayout:setPosition(
-		ProCombatStatusHUD.Equipment.PANEL_WIDTH / 2 - (ProCombatStatusHUD.Equipment.BUTTON_PADDING * 5 * 2 + ProCombatStatusHUD.Equipment.BUTTON_SIZE * 4) / 2,
+		ProCombatStatusHUD.Equipment.PADDING,
 		ProCombatStatusHUD.BUTTON_PADDING)
 	self.content:addChild(self.equipmentLayout)
 
@@ -1413,6 +1414,7 @@ function ProCombatStatusHUD:onShowEquipment()
 
 		if self.isEditingEquipmentTitle then
 			self.title = TextInput()
+			self.title:setHint("Enter name for equipment tab")
 			self.title:setStyle(TextInputStyle(ProCombatStatusHUD.TEXT_INPUT_STYLE, self:getView():getResources()))
 			self.title:setText(equipmentSlot.name)
 			self.title.onBlur:register(self.renameEquipmentSlot, self, self.equipmentSlot)
@@ -1665,7 +1667,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 			label:setText(tinyDescription)
 			label:setStyle(LabelStyle({
 				font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
-				fontSize = 16,
+				fontSize = 22,
 				textShadow = true
 			}, self:getView():getResources()))
 		else

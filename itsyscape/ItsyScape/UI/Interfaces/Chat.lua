@@ -24,6 +24,7 @@ Chat.HEIGHT  = 240
 Chat.INPUT   = 48
 Chat.PADDING = 8
 Chat.Z_DEPTH = -1000
+Chat.MOBILE_OFFSET = 32
 
 Chat.LINE_HEIGHT = 24
 
@@ -31,13 +32,20 @@ function Chat:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local windowWidth, windowHeight = love.graphics.getScaledMode()
-	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
+
+	if _MOBILE then
+		self:setPosition(Chat.MOBILE_OFFSET, windowHeight - Chat.HEIGHT - Chat.INPUT)
+	else
+		self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
+	end
+
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
 	self:setIsClickThrough(true)
 
 	self.messages = {}
 
 	self.textInput = TextInput()
+	self.textInput:setHint("Enter chat message")
 	self.textInput:setStyle(TextInputStyle({
 		inactive = Color(0, 0, 0, 0),
 		active = Color(0, 0, 0, 0.5),
@@ -45,13 +53,13 @@ function Chat:new(id, index, ui)
 		color = { 1, 1, 1, 1 },
 		selectionColor = { 1, 1, 1, 0.5 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = 22,
 		padding = 4,
 		textShadow = true
 	}, ui:getResources()))
 	self.textInput.onFocus:register(self.onTextInputFocus, self)
 	self.textInput.onBlur:register(self.onTextInputBlur, self)
-	self.textInput.onSubmit:register(self.onTextInputSubmit, self)
+	self.textInput.onSubmit:register(self.send, self)
 	self.textInput:setText("Click here to chat...")
 	self.textInput:setSize(Chat.WIDTH, Chat.INPUT)
 	self.textInput:setPosition(0, Chat.HEIGHT)
@@ -69,7 +77,7 @@ function Chat:new(id, index, ui)
 	self.chatLabelStyle = LabelStyle({
 		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = 22,
 		padding = 4,
 		textShadow = true
 	}, self:getView():getResources())

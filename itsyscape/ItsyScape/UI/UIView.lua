@@ -22,6 +22,7 @@ local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local PokeMenu = require "ItsyScape.UI.PokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
@@ -48,26 +49,36 @@ local UIView = Class()
 
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
+UIView.MOBILE_HEIGHT  = 720
+UIView.MOBILE_PADDING = 16
+UIView.MOBILE_SCALE   = 0.65
 
 function love.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
+	local paddingX, paddingY = 0, 0
 
 	local scale
-	if currentWidth > desiredWidth then
+	if currentHeight < UIView.MOBILE_HEIGHT then
+		if _MOBILE or true then
+			paddingX, paddingY = UIView.MOBILE_PADDING, UIView.MOBILE_PADDING
+		end
+
+		scale = UIView.MOBILE_SCALE
+	elseif currentWidth > desiredWidth then
 		scale = math.floor(currentWidth / desiredWidth + 0.5)
 	else
 		scale = 1
 	end
 
-	local realWidth = currentWidth / scale
-	local realHeight = currentHeight / scale
+	local realWidth = currentWidth / scale - paddingX * 2
+	local realHeight = currentHeight / scale - paddingY * 2
 
-	return math.floor(realWidth), math.floor(realHeight), scale, scale
+	return math.floor(realWidth), math.floor(realHeight), scale, scale, paddingX, paddingY
 end
 
 function love.graphics.getScaledPoint(x, y)
-	local _, _, sx, sy = love.graphics.getScaledMode()
+	local _, _, sx, sy, ox, oy = love.graphics.getScaledMode()
 	x = x / sx
 	y = y / sy
 
@@ -769,9 +780,12 @@ function UIView:probe(actions)
 
 	self.pokeMenu = PokeMenu(self, actions)
 	do
-		local windowWidth, windowHeight = love.window.getMode()
+		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pokeMenu:getSize()
-		local mouseX, mouseY = love.mouse.getPosition()
+		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+		mouseX = mouseX - offsetX
+		mouseY = mouseY - offsetY
+
 		local menuX = mouseX - PokeMenu.PADDING
 		local menuY = mouseY - PokeMenu.PADDING
 
@@ -847,11 +861,45 @@ function UIView:update(delta)
 	for i = 1, #toolTips do
 		toolTips[i]:update(delta)
 	end
+
+	if _MOBILE then
+		local focusedWidget = self.inputProvider:getFocusedWidget()
+		if focusedWidget ~= self.currentFocusedWidget then
+			if focusedWidget and Class.isCompatibleType(focusedWidget, TextInput) then
+				local focusedWidgetX, focusedWidgetY = focusedWidget:getPosition()
+				local focusedWidgetWidth, focusedWidgetHeight = focusedWidget:getSize()
+
+				local hintLabel
+				if focusedWidget:getHint() ~= "" then
+					hintLabel = Label()
+					hintLabel:setStyle(LabelStyle({
+						font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+						fontSize = 24,
+						color = { 1, 1, 1, 1 },
+						align = "center",
+						textShadow = true
+					}, self.resources))
+					hintLabel:setText(focusedWidget:getHint())
+					hintLabel:setSize(0, focusedWidgetHeight)
+
+					hintLabel:setPosition(focusedWidgetX + focusedWidgetWidth / 2, focusedWidgetY)
+				end
+
+				self.renderManager:setInput(focusedWidget, hintLabel)
+				self.currentFocusedWidget = focusedWidget
+			else
+				self.renderManager:setInput()
+			end
+
+			self.currentFocusedWidget = focusedWidget
+		end
+	end
 end
 
 function UIView:draw()
-	local width, height = self:getMode()
+	local width, height, _, _, offsetX, offsetY = self:getMode()
 	self.root:setSize(width, height)
+	self.root:setPosition(offsetX, offsetY)
 
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()

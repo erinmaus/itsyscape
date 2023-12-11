@@ -39,7 +39,7 @@ CookingWindow.INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	textShadow = true
 }
 
@@ -48,7 +48,7 @@ CookingWindow.ACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	textShadow = true
 }
 
@@ -311,7 +311,7 @@ function CookingWindow:new(id, index, ui)
 		self.cookDescriptionText:setStyle(LabelStyle({
 			color = { 1, 1, 1, 1 },
 			font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-			fontSize = 20,
+			fontSize = 22,
 			textShadow = true
 		}, self:getView():getResources()))
 		self.scrollablePopUpPanel:addChild(self.cookDescriptionText)
