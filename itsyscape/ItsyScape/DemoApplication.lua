@@ -663,8 +663,9 @@ function DemoApplication:updateMobileMouse()
 		end
 
 		local isUIActive = self:getUIView():getInputProvider():isBlocking(touch.currentX, touch.currentY)
+		local hasFullscreenUI = self:getUIView():getIsFullscreen()
 		if currentTouchMode == DemoApplication.TOUCH_MODE_NONE then
-			if isUIActive then
+			if isUIActive or hasFullscreenUI then
 				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_UI
 			else
 				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
@@ -787,7 +788,9 @@ function DemoApplication:updateMobileMouse()
 			end
 		end
 	elseif #touches == 2 then
-		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME or
+		   currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA
+		then
 			currentTouchMode = DemoApplication.TOUCH_MODE_ZOOM_CAMERA
 		elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
 			local touch1 = touches[1]
