@@ -26,7 +26,12 @@ local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPane
 local CookingWindow = Class(Interface)
 
 CookingWindow.WIDTH  = 984
-CookingWindow.HEIGHT = 640
+
+if _MOBILE then
+	CookingWindow.HEIGHT = 560
+else
+	CookingWindow.HEIGHT = 640
+end
 
 CookingWindow.POP_UP_WIDTH  = 384
 CookingWindow.POP_UP_HEIGHT = 480

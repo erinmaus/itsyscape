@@ -49,9 +49,10 @@ local UIView = Class()
 
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
-UIView.MOBILE_HEIGHT  = 720
-UIView.MOBILE_PADDING = 16
-UIView.MOBILE_SCALE   = 0.65
+UIView.MOBILE_HEIGHT    = 720
+UIView.MOBILE_X_PADDING = 48
+UIView.MOBILE_Y_PADDING = 24
+UIView.MOBILE_SCALE     = 0.65
 
 function love.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
@@ -61,7 +62,7 @@ function love.graphics.getScaledMode()
 	local scale
 	if currentHeight < UIView.MOBILE_HEIGHT then
 		if _MOBILE or true then
-			paddingX, paddingY = UIView.MOBILE_PADDING, UIView.MOBILE_PADDING
+			paddingX, paddingY = UIView.MOBILE_X_PADDING, UIView.MOBILE_Y_PADDING
 		end
 
 		scale = UIView.MOBILE_SCALE
