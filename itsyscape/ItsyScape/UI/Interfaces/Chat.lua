@@ -54,6 +54,7 @@ function Chat:new(id, index, ui)
 	}, ui:getResources()))
 	self.textInput.onFocus:register(self.onTextInputFocus, self)
 	self.textInput.onBlur:register(self.onTextInputBlur, self)
+	self.textInput.onValueChanged:register(self.onTextInputValueChanged, self)
 	self.textInput.onSubmit:register(self.send, self)
 	self.textInput:setText("Click here to chat...")
 	self.textInput:setSize(Chat.WIDTH, Chat.INPUT)
@@ -88,6 +89,10 @@ function Chat:new(id, index, ui)
 	self:setZDepth(Chat.Z_DEPTH)
 end
 
+function Chat:onTextInputValueChanged()
+	self.isMessageEmpty = false
+end
+
 function Chat:onTextInputFocus()
 	if self.isMessageEmpty then
 		self.textInput:setText("")
@@ -101,7 +106,9 @@ function Chat:onTextInputBlur()
 end
 
 function Chat:send()
-	self:sendPoke("chat", nil, { message = self.textInput:getText() })
+	if not self.isMessageEmpty and not self.textInput:getText():match("^%s*$") then
+		self:sendPoke("chat", nil, { message = self.textInput:getText() })
+	end
 
 	self.isMessageEmpty = true
 	self.textInput:setText("Click here to chat...")
