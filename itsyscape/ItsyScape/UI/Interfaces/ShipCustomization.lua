@@ -143,7 +143,6 @@ function ShipCustomization:new(id, index, ui)
 	self.camera = ThirdPersonCamera()
 	self.camera:setDistance(55)
 	self.camera:setUp(Vector(0, -1, 0))
-	self.camera:setPosition(Vector(23.5, 10, 28))
 	self.camera:setHorizontalRotation(-math.pi / 8)
 	self.camera:setWidth(ShipCustomization.WIDTH / 2)
 	self.camera:setHeight(ShipCustomization.HEIGHT / 2)
@@ -394,6 +393,10 @@ function ShipCustomization:new(id, index, ui)
 	end
 
 	self:populateTabs()
+end
+
+function ShipCustomization:getIsFullscreen()
+	return true
 end
 
 function ShipCustomization:populateTabs()
@@ -686,8 +689,14 @@ function ShipCustomization:update(...)
 
 	local state = self:getState()
 
-	self.camera:setVerticalRotation(math.pi / 8 * love.timer.getTime())
-	self.shipScene:setChildNode(self:getView():getGameView():getMapSceneNode(state.layer))
+	self.camera:setVerticalRotation(-math.pi / 8 * love.timer.getTime())
+
+	local mapSceneNode = self:getView():getGameView():getMapSceneNode(state.layer)
+	if mapSceneNode then
+		local position = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(20, 5, 10))
+		self.camera:setPosition(position)
+		self.shipScene:setChildNode(mapSceneNode)
+	end
 end
 
 return ShipCustomization
