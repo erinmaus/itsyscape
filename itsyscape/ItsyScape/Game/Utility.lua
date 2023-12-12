@@ -4799,7 +4799,7 @@ function Utility.Quest.wakeUp(peep)
 	local stage = director:getGameInstance():getStage()
 
 	local storage = director:getPlayerStorage(peep):getRoot()
-	local location = storage:getSection("Location")
+	local location = storage:getSection("Spawn")
 
 	stage:movePeep(
 		peep,
