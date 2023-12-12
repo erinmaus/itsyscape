@@ -75,6 +75,19 @@ local LOGS = {
 		tinderbox = "Tinderbox"
 	},
 
+	["FoxFir"] = {
+		niceName = "Fox fir",
+		tier = 35,
+		weight = 16,
+		health = 30,
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Leaf",
+			"Branch",
+			"Flower"
+		}
+	},
+
 	["Yew"] = {
 		tier = 40,
 		weight = 6,
@@ -776,6 +789,84 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A dead, rotten tree; not even good for firewood.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "RottenTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single leaf from an oak tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir flower",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirFlower"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A sharp, black flower. Used to mourn the dead, it never withers or wilts.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirFlower"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from an oak tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirBranch"
+}
+
+ItsyScape.Resource.Item "FoxFirBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FoxFirBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(39.5)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A fire made from fox fir logs. Gets really hot!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FoxFirFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Heavy logs from a fox fir.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "According to Bastiel's Book of Feathers, the fox fir was a gift from Bastiel to His people, representing that He would always keep the sun burning and provide a joyous afterlife for His followers.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FoxFirTree_Default"
 }
 
 ItsyScape.Meta.ResourceName {
