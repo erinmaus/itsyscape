@@ -47,6 +47,11 @@ local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 
 local UIView = Class()
 
+UIView.Root = Class(Widget)
+function UIView.Root:getOverflow()
+	return true
+end
+
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
 UIView.MOBILE_HEIGHT    = 720
@@ -626,7 +631,7 @@ function UIView:new(gameView)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
 
-	self.root = Widget()
+	self.root = UIView.Root()
 	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
 
