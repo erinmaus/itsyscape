@@ -3,8 +3,8 @@
 attribute vec4 VertexTileBounds;
 attribute vec4 VertexTextureLayer;
 
-varying vec4 frag_TileBounds;
-varying vec4 frag_TextureLayer;
+varying highp vec4 frag_TileBounds;
+varying highp vec4 frag_TextureLayer;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
