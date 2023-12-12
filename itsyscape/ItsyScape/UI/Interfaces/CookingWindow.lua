@@ -325,6 +325,10 @@ function CookingWindow:new(id, index, ui)
 	self.currentRecipeIngredientButtons = {}
 end
 
+function CookingWindow:getIsFullscreen()
+	return _MOBILE
+end
+
 function CookingWindow:selectRecipe(index, buttonWidget, buttonIndex)
 	if buttonIndex ~= 1 then
 		return
