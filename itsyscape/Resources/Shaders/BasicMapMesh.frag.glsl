@@ -1,8 +1,8 @@
 uniform Image scape_DiffuseTexture;
 uniform ArrayImage scape_MaskTexture;
 
-varying vec4 frag_TileBounds;
-varying vec4 frag_TextureLayer;
+varying highp vec4 frag_TileBounds;
+varying highp vec4 frag_TextureLayer;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
