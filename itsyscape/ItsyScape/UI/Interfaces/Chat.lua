@@ -24,7 +24,6 @@ Chat.HEIGHT  = 240
 Chat.INPUT   = 48
 Chat.PADDING = 8
 Chat.Z_DEPTH = -1000
-Chat.MOBILE_OFFSET = 32
 
 Chat.LINE_HEIGHT = 24
 
@@ -33,11 +32,7 @@ function Chat:new(id, index, ui)
 
 	local windowWidth, windowHeight = love.graphics.getScaledMode()
 
-	if _MOBILE then
-		self:setPosition(Chat.MOBILE_OFFSET, windowHeight - Chat.HEIGHT - Chat.INPUT)
-	else
-		self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
-	end
+	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
 
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
 	self:setIsClickThrough(true)
