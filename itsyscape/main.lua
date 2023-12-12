@@ -121,15 +121,15 @@ function love.update(delta)
 	end
 end
 
-function love.mousepressed(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mousePress(...)
+function love.mousepressed(x, y, button, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mousePress(x, y, button)
 	end
 end
 
-function love.mousereleased(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mouseRelease(...)
+function love.mousereleased(x, y, button, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mouseRelease(x, y, button)
 	end
 end
 
@@ -139,9 +139,9 @@ function love.wheelmoved(...)
 	end
 end
 
-function love.mousemoved(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mouseMove(...)
+function love.mousemoved(x, y, dx, dy, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mouseMove(x, y, dx, dy)
 	end
 end
 
