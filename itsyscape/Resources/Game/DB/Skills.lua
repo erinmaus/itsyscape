@@ -165,6 +165,11 @@ ItsyScape.Resource.Skill "Woodcutting"
 		Skill = ItsyScape.Resource.Skill "Woodcutting"
 	}
 
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
+		Skill = ItsyScape.Resource.Skill "Woodcutting"
+	}
+
 ItsyScape.Resource.Skill "Firemaking"
 	ActionType "Light"
 	ActionType "Light_Prop"
@@ -340,6 +345,11 @@ ItsyScape.Resource.Skill "Foraging"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Milk",
+		Skill = ItsyScape.Resource.Skill "Foraging"
+	}
+
+	ItsyScape.Meta.SkillAction {
+		ActionType = "ObtainSecondary",
 		Skill = ItsyScape.Resource.Skill "Foraging"
 	}
 

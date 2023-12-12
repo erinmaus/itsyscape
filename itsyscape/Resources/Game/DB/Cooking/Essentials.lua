@@ -772,7 +772,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Egg",
+		Value = "Chicken egg",
 		Language = "en-US",
 		Resource = Item
 	}

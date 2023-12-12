@@ -96,12 +96,13 @@ function love.load(args)
 		s, r = xpcall(r, debug.traceback, args)
 		if not s then
 			Log.warn("Failed to create %s: %s", main, r)
-		end
+		else
+			_APP = r
 
-		_APP = r
-		s, r = xpcall(r.initialize, debug.traceback, r)
-		if not s then
-			Log.warn("Failed to initialize %s: %s", main, r)
+			s, r = xpcall(_APP.initialize, debug.traceback, _APP)
+			if not s then
+				Log.warn("Failed to initialize %s: %s", main, r)
+			end
 		end
 	end
 

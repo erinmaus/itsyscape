@@ -12,11 +12,11 @@ local Utility = require "ItsyScape.Game.Utility"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
-local Action = require "ItsyScape.Peep.Action"
 local GatheredResourceBehavior = require "ItsyScape.Peep.Behaviors.GatheredResourceBehavior"
 local ForagingSkill = require "ItsyScape.Game.Skills.Foraging"
+local Make = require "Resources.Game.Actions.Make"
 
-local Shake = Class(Action)
+local Shake = Class(Make)
 Shake.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 Shake.FLAGS = { ['item-inventory'] = true, ['item-equipment'] = true }
 Shake.QUEUE = {}
@@ -41,8 +41,9 @@ function Shake:perform(state, player, target)
 			local transfer = CallbackCommand(self.transfer, self, state, player)
 			local wait = WaitCommand(Shake.DURATION, false)
 			local drop = CallbackCommand(self.drop, self, state, player, target)
-			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, wait, transfer, perform, drop)
+			local secondaries = CallbackCommand(self.gatherSecondaries, self, state, player, target)
+			local perform = CallbackCommand(Make.perform, self, state, player)
+			local command = CompositeCommand(true, walk, wait, transfer, perform, drop, secondaries)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

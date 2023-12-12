@@ -8,6 +8,21 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local FRUIT_TREE_SECONDARIES = {
+	"Leaf",
+	"Branch"
+}
+
+local COMMON_SECONDARIES = {
+	"CommonBlackSpider",
+	"CommonTreeMoth",
+	"CommonTreeBeetle",
+	"RobinEgg",
+	"CardinalEgg",
+	"BlueJayEgg",
+	"WrenEgg",
+}
+
 local TREES = {
 	["Pecan"] = {
 		niceName = "Pecan",
@@ -16,7 +31,8 @@ local TREES = {
 			{ name = "Pecan", tier = 1, factor = 2, health = -1 },
 			{ name = "RegalPecan", tier = 10, factor = 2, health = -1 },
 			{ name = "GoldenPecan", tier = 25, factor = 1, health = -1 },
-		}
+		},
+		woodcutting = 10
 	},
 	["Apple"] = {
 		niceName = "Apple",
@@ -27,7 +43,8 @@ local TREES = {
 			{ name = "SiliconApple", tier = 20, factor = 1.5, health = 2 },
 			{ name = "GoldenApple", tier = 50, factor = 0.5, health = 2 },
 			{ name = "WormyApple", tier = 99, factor = 0.125, health = -1 },
-		}
+		},
+		woodcutting = 1
 	},
 	["Pear"] = {
 		niceName = "Pear",
@@ -36,7 +53,9 @@ local TREES = {
 			{ name = "Pear", tier = 1, factor = 1.5, health = 1 },
 			{ name = "DisgustingPear", tier = 15, factor = 1, health = -2 },
 			{ name = "RottenPear", tier = 30, factor = 0.5, health = -4 },
-			{ name = "JustMush", tier = 45, factor = 0.25, health = -8 },		}
+			{ name = "JustMush", tier = 45, factor = 0.25, health = -8 },
+		},
+		woodcutting = 20
 	},
 	["Peach"] = {
 		niceName = "Peach",
@@ -45,7 +64,8 @@ local TREES = {
 			{ name = "Peach", tier = 1, factor = 2, health = 1 },
 			{ name = "JuicyPeach", tier = 20, factor = 1.5, health = 2 },
 			{ name = "DonutPeach", tier = 40, factor = 0.5, health = 1 },
-		}
+		},
+		woodcutting = 10
 	},
 	["Orange"] = {
 		niceName = "Orange",
@@ -54,7 +74,8 @@ local TREES = {
 			{ name = "Orange", tier = 1, factor = 1.25, health = 1 },
 			{ name = "SunnyOrange", tier = 20, factor = 1.0, health = 2 },
 			{ name = "FireOrange", tier = 55, factor = 0.5, health = -4 },
-		}
+		},
+		woodcutting = 30
 	}
 }
 
@@ -165,10 +186,131 @@ for name, tree in spairs(TREES) do
 		}
 	end
 
+	ItsyScape.Meta.GatherableProp {
+		Health = math.max(tree.woodcutting + 5, 10),
+		SpawnTime = 0,
+		Resource = Tree
+	}
+
+	for _, secondary in ipairs(FRUIT_TREE_SECONDARIES) do
+		local SecondaryItemName = string.format("%s%s", name, secondary)
+		local SecondaryItem = ItsyScape.Resource.Item(SecondaryItemName)
+
+		SecondaryItem {
+			ItsyScape.Action.ObtainSecondary() {
+				Requirement {
+					Resource = ItsyScape.Resource.Skill "Foraging",
+					Count = ItsyScape.Utility.xpForLevel(math.max(tree.woodcutting, 0))
+				},
+
+				Requirement {
+					Resource = ItsyScape.Resource.Skill "Woodcutting",
+					Count = ItsyScape.Utility.xpForLevel(math.max(tree.woodcutting, 0))
+				},
+
+				Output {
+					Resource = ItsyScape.Resource.Skill "Foraging",
+					Count = math.ceil(ItsyScape.Utility.xpForResource(math.max(tree.woodcutting, 1)) / 4)
+				},
+
+				Output {
+					Resource = ItsyScape.Resource.Skill "Woodcutting",
+					Count = math.ceil(ItsyScape.Utility.xpForResource(math.max(tree.woodcutting, 1)) / 4)
+				},
+
+				Output {
+					Resource = SecondaryItem,
+					Count = 1
+				}
+			}
+		}
+
+		ItsyScape.Meta.SecondaryWeight {
+			Weight = 500,
+			Resource = SecondaryItem
+		}
+
+		ItsyScape.Meta.Item {
+			Stackable = 1,
+			Value = ItsyScape.Utility.valueForItem(math.max(tree.woodcutting, 1)),
+			Resource = SecondaryItem
+		}
+
+		Tree {
+			ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = SecondaryItem,
+					Count = 1
+				}
+			}
+		}
+	end
+
+	for _, secondary in ipairs(COMMON_SECONDARIES) do
+		Tree {
+			ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = ItsyScape.Resource.Item(secondary),
+					Count = 1
+				}
+			}
+		}
+	end
+
 	ItsyScape.Meta.ResourceName {
 		Value = string.format("%s tree", tree.niceName),
 		Language = "en-US",
 		Resource = Tree
+	}
+end
+
+do
+	ItsyScape.Meta.ResourceName {
+		Value = "Pecan leaf",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PecanLeaf"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A leaf from a pecan tree.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PecanBranch"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Pecan branch",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PecanBranch"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A branch from a pecan tree. Good for kindling.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PecanBranch"
+	}
+
+	ItsyScape.Resource.Item "PecanBranch" {
+		ItsyScape.Action.Burn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Tinderbox",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "PecanBranch",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(10)
+			}
+		}
 	}
 end
 
@@ -280,6 +422,56 @@ do
 	ItsyScape.Meta.ItemPrayerRestorationUserdata {
 		PrayerPoints = 10,
 		Resource = ItsyScape.Resource.Item "GoldenPecan"
+	}
+end
+
+do
+	ItsyScape.Meta.ResourceName {
+		Value = "Apple leaf",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AppleLeaf"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A leaf from an apple tree.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AppleLeaf"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Apple branch",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AppleBranch"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A branch from an apple tree. Good for kindling.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AppleBranch"
+	}
+
+	ItsyScape.Resource.Item "AppleBranch" {
+		ItsyScape.Action.Burn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Tinderbox",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "AppleBranch",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(1)
+			}
+		}
 	}
 end
 
@@ -479,6 +671,56 @@ ItsyScape.Meta.ResourceDescription {
 
 do
 	ItsyScape.Meta.ResourceName {
+		Value = "Pear leaf",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PearLeaf"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A leaf from a pear tree.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PearLeaf"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Pear branch",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PearBranch"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A branch from a pear tree. Good for kindling.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PearBranch"
+	}
+
+	ItsyScape.Resource.Item "PearBranch" {
+		ItsyScape.Action.Burn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(20)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Tinderbox",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "PearBranch",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(20)
+			}
+		}
+	}
+end
+
+do
+	ItsyScape.Meta.ResourceName {
 		Value = "Pear",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "Pear"
@@ -582,6 +824,56 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "PearTree_Default"
 }
+
+do
+	ItsyScape.Meta.ResourceName {
+		Value = "Peach leaf",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PeachLeaf"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A leaf from a peach tree.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PeachLeaf"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Peach branch",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PeachBranch"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A branch from a peach tree. Good for kindling.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "PeachBranch"
+	}
+
+	ItsyScape.Resource.Item "PeachBranch" {
+		ItsyScape.Action.Burn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(10)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Tinderbox",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "PeachBranch",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(10)
+			}
+		}
+	}
+end
 
 do
 	ItsyScape.Meta.ResourceName {
@@ -709,8 +1001,58 @@ end
 ItsyScape.Meta.ResourceDescription {
 	Value = "From top to bottom, what a good looking tree!",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "PearTree_Default"
+	Resource = ItsyScape.Resource.Prop "PeachTree_Default"
 }
+
+do
+	ItsyScape.Meta.ResourceName {
+		Value = "Orange leaf",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OrangeLeaf"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A leaf from an orange tree.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OrangeLeaf"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Orange branch",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OrangeBranch"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A branch from an orange tree. Good for kindling.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "OrangeBranch"
+	}
+
+	ItsyScape.Resource.Item "OrangeBranch" {
+		ItsyScape.Action.Burn() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForLevel(30)
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.Item "Tinderbox",
+				Count = 1
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "OrangeBranch",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Count = ItsyScape.Utility.xpForResource(30)
+			}
+		}
+	}
+end
 
 do
 	ItsyScape.Meta.ResourceName {
