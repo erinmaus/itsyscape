@@ -1159,9 +1159,7 @@ end
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
-	if _MOBILE then
-		self:updateMobileMouse()
-	end
+	self:updateMobileMouse()
 
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)

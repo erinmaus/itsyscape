@@ -161,19 +161,19 @@ end
 -- end
 
 function love.touchpressed(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchPress(...)
 	end
 end
 
 function love.touchreleased(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchRelease(...)
 	end
 end
 
 function love.touchmoved(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchMove(...)
 	end
 end
