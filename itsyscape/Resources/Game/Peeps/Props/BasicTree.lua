@@ -55,6 +55,7 @@ function BasicTree:ready(director, game)
 			local h = self:getBehavior(PropResourceHealthBehavior)
 			if h then
 				h.maxProgress = health:get("Health") or 1
+				print(">>> max progress", self:getName(), h.maxProgress)
 			end
 		end
 	end
