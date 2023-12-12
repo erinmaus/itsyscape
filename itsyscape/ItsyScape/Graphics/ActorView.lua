@@ -50,7 +50,7 @@ function ActorView.Animatable:playSound(filename, attenuation)
 	if not sound then
 		sound = love.audio.newSource(filename, 'static')
 		self.sounds[filename] = sound
-		sound:setVolume((_CONF.soundEffectsVolume or 1))
+		sound:setVolume((_CONF.soundEffectsVolume or 1) * (_CONF.volume or 1))
 
 		if attenuation then
 			sound:setAttenuationDistances(unpack(attenuation))
