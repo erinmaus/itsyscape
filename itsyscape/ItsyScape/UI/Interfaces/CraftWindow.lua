@@ -40,6 +40,7 @@ else
 end
 
 CraftWindow.BUTTON_SIZE = 48
+CraftWindow.CONTROL_SIZE = 56
 CraftWindow.BUTTON_PADDING = 4
 CraftWindow.PADDING = 4
 
@@ -59,30 +60,31 @@ function CraftWindow:new(id, index, ui)
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(CraftWindow.BUTTON_PADDING)
-	self.grid:setSize(CraftWindow.WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE, CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
+	self.grid:setSize(CraftWindow.WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE, CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE)
 	self:addChild(self.grid)
 
 	self.requirementsPanel = ScrollablePanel(GridLayout)
 	self.requirementsPanel:getInnerPanel():setPadding(0, 0)
 	self.requirementsPanel:getInnerPanel():setWrapContents(true)
-	self.requirementsPanel:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
+	self.requirementsPanel:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE)
 	self.requirementsPanel:setPosition(CraftWindow.WIDTH * (1 / 2), CraftWindow.PADDING)
 	self:addChild(self.requirementsPanel)
 
 	self.controlLayout = GridLayout()
-	self.controlLayout:setSize(CraftWindow.WIDTH, CraftWindow.BUTTON_SIZE)
+	self.controlLayout:setSize(CraftWindow.WIDTH, CraftWindow.CONTROL_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self.controlLayout:setPadding(CraftWindow.BUTTON_PADDING)
-	self.controlLayout:setPosition(0, CraftWindow.HEIGHT - CraftWindow.BUTTON_SIZE)
+	self.controlLayout:setPosition(0, CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	self:addChild(self.controlLayout)
 
 	local quantityLabel = Label()
 	quantityLabel:setText("Quantity:")
-	quantityLabel:setSize(128)
+	quantityLabel:setSize(128, CraftWindow.CONTROL_SIZE - CraftWindow.BUTTON_PADDING * 2)
 	quantityLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 		fontSize = 22,
 		textShadow = true,
-		color = { 1, 1, 1, 1 }
+		color = { 1, 1, 1, 1 },
+		spaceLines = true
 	}, ui:getResources()))
 	self.controlLayout:addChild(quantityLabel)
 
@@ -90,7 +92,7 @@ function CraftWindow:new(id, index, ui)
 	self.quantityInput:setHint("Enter a quantity")
 	self.quantityInput:setText("0")
 	self.quantityInput:setID("Craft-QuantityInput")
-	self.quantityInput:setSize(160, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
+	self.quantityInput:setSize(160, CraftWindow.CONTROL_SIZE - CraftWindow.BUTTON_PADDING * 4)
 	self.controlLayout:addChild(self.quantityInput)
 	self.quantityInput.onFocus:register(function()
 		self.quantityInput:setCursor(0, #self.quantityInput:getText() + 1)
@@ -101,7 +103,7 @@ function CraftWindow:new(id, index, ui)
 
 	self.craftButton = Button()
 	self.craftButton.onClick:register(self.craft, self)
-	self.craftButton:setSize(160, CraftWindow.BUTTON_SIZE - CraftWindow.BUTTON_PADDING * 2)
+	self.craftButton:setSize(160, CraftWindow.CONTROL_SIZE - CraftWindow.BUTTON_PADDING * 4)
 	self.craftButton:setText("Make it!")
 	self.craftButton:setID("Craft-MakeIt!")
 	self.controlLayout:addChild(self.craftButton)
@@ -118,6 +120,10 @@ function CraftWindow:new(id, index, ui)
 	self.ready = false
 	self.previousSelection = false
 	self.activeAction = false
+end
+
+function CraftWindow:getIsFullscreen()
+	return _MOBILE
 end
 
 function CraftWindow:update(...)

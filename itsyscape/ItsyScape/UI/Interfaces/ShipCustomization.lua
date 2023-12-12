@@ -113,15 +113,6 @@ function ShipCustomization:new(id, index, ui)
 	panel:setSize(ShipCustomization.WIDTH, ShipCustomization.HEIGHT)
 	self:addChild(panel)
 
-	self.closeButton = Button()
-	self.closeButton:setSize(ShipCustomization.TAB_SIZE, ShipCustomization.TAB_SIZE)
-	self.closeButton:setPosition(ShipCustomization.WIDTH - ShipCustomization.TAB_SIZE, 0)
-	self.closeButton:setText("X")
-	self.closeButton.onClick:register(function()
-		self:sendPoke("close", nil, {})
-	end)
-	self:addChild(self.closeButton)
-
 	self.rootSceneNode = SceneNode()
 
 	self.lightSceneNode = AmbientLightSceneNode()
@@ -392,11 +383,20 @@ function ShipCustomization:new(id, index, ui)
 		self.activatePanel:addChild(activateButton)
 	end
 
+	self.closeButton = Button()
+	self.closeButton:setSize(ShipCustomization.TAB_SIZE, ShipCustomization.TAB_SIZE)
+	self.closeButton:setPosition(ShipCustomization.WIDTH - ShipCustomization.TAB_SIZE, 0)
+	self.closeButton:setText("X")
+	self.closeButton.onClick:register(function()
+		self:sendPoke("close", nil, {})
+	end)
+	self:addChild(self.closeButton)
+
 	self:populateTabs()
 end
 
 function ShipCustomization:getIsFullscreen()
-	return true
+	return _MOBILE
 end
 
 function ShipCustomization:populateTabs()
