@@ -535,20 +535,12 @@ const nbunny::BaseType& nbunny::ParticleSceneNode::get_type() const
 	return type_pointer;
 }
 
-float nbunny::ParticleSceneNode::update_delta()
+void nbunny::ParticleSceneNode::update(float time_delta)
 {
-	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
-	return timer_instance->getDelta();
-}
-
-void nbunny::ParticleSceneNode::update()
-{
-	auto delta = update_delta();
-
 	int count = 0;
 	if (emission_strategy)
 	{
-		count = emission_strategy->update(delta);
+		count = emission_strategy->update(time_delta);
 	}
 
 	emit(count);
@@ -561,15 +553,15 @@ void nbunny::ParticleSceneNode::update()
 
 		if (is_alive)
 		{
-			p.velocity += p.acceleration * delta;
-			p.position += p.velocity * delta;
-			p.rotation_velocity += p.rotation_acceleration * delta;
-			p.rotation += p.rotation_velocity * delta;
-			p.age += delta;
+			p.velocity += p.acceleration * time_delta;
+			p.position += p.velocity * time_delta;
+			p.rotation_velocity += p.rotation_acceleration * time_delta;
+			p.rotation += p.rotation_velocity * time_delta;
+			p.age += time_delta;
 
 			for(auto& path: paths)
 			{
-				path->update(p, delta);
+				path->update(p, time_delta);
 			}
 
 			++i;
@@ -874,15 +866,15 @@ bool nbunny::ParticleSceneNode::get_is_playing() const
 	return is_playing;
 }
 
-void nbunny::ParticleSceneNode::frame(float delta)
+void nbunny::ParticleSceneNode::frame(float frame_delta, float time_delta)
 {
 	if (!is_playing)
 	{
 		return;
 	}
 
-	update();
-	build(delta);
+	update(time_delta);
+	build(frame_delta);
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
