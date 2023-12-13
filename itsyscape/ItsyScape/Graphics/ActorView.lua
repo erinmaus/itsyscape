@@ -638,28 +638,8 @@ function ActorView:getLocalBoneTransform(boneName)
 
 	local transforms = self.localTransforms
 	local skeleton = self.animatable:getSkeleton()
-	local boneIndex = skeleton:getBoneIndex(boneName)
 
-	local parents = {}
-	local bone
-	repeat
-		bone = skeleton:getBoneByIndex(boneIndex)
-		if bone then
-			table.insert(parents, 1, boneIndex)
-
-			boneIndex = bone:getParentIndex()
-			bone = skeleton:getBoneByIndex(boneIndex)
-		end
-	until not bone
-
-	for i = 1, #parents do
-		local t = transforms:getTransform(parents[i])
-		if t then
-			transform:apply(t)
-		end
-	end
-
-	return transform
+	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
 end
 
 function ActorView:updateAnimations(delta)

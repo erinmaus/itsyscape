@@ -43,6 +43,10 @@ function TreeView:getResourcePath(resource)
 	return string.format("%s/%s", self:getBaseFilename(), resource)
 end
 
+function TreeView:done()
+	-- Nothing.
+end
+
 function TreeView:getCurrentAnimation()
 	return self.animations[self.currentAnimation]
 	    or self.animations[TreeView.ANIMATION_IDLE]
@@ -138,6 +142,8 @@ function TreeView:load()
 				else
 					self.time = self:getCurrentAnimation():getDuration()
 				end
+
+				self:done()
 
 				self.spawned = true
 			end)
