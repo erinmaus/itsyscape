@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Resource = require "ItsyScape.Graphics.Resource"
 local NSkeletonBone = require "nbunny.optimaus.skeletonbone"
 local NSkeletonResourceInstance = require "nbunny.optimaus.skeletonresourceinstance"
@@ -278,6 +279,33 @@ function Skeleton:loadFromTable(t)
 		local bone = self:getBoneByIndex(i)
 		assert(bone:getParentIndex() < bone:getIndex())
 	end
+end
+
+function Skeleton:getLocalBoneTransform(boneName, transforms, transform)
+	transform = transform or love.math.newTransform()
+
+	local boneIndex = self:getBoneIndex(boneName)
+
+	local parents = {}
+	local bone
+	repeat
+		bone = self:getBoneByIndex(boneIndex)
+		if bone then
+			table.insert(parents, 1, boneIndex)
+
+			boneIndex = bone:getParentIndex()
+			bone = self:getBoneByIndex(boneIndex)
+		end
+	until not bone
+
+	for i = 1, #parents do
+		local t = transforms:getTransform(parents[i])
+		if t then
+			transform:apply(t)
+		end
+	end
+
+	return transform
 end
 
 -- Constants.
