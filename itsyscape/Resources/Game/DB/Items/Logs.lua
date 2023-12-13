@@ -905,6 +905,30 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
 }
 
+ItsyScape.Resource.Item "FossilizedOakBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FossilizedOakBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(25)
+		}
+	}
+}
+
 ItsyScape.Resource.Prop "Charcoal" {
 	ItsyScape.Action.Pick() {
 		Requirement {
