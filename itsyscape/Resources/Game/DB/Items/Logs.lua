@@ -125,7 +125,7 @@ local LOGS = {
 
 	["FossilizedOak"] = {
 		niceName = "Fossilized oak",
-		tier = 20,
+		tier = 25,
 		weight = 15,
 		health = 150,
 		tinderbox = "Tinderbox",
