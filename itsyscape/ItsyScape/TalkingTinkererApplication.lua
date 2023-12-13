@@ -27,6 +27,8 @@ TalkingTinkererApplication.FPS = 60
 TalkingTinkererApplication.END_DELAY_SECONDS = 1
 TalkingTinkererApplication.HEIGHT = 1920
 TalkingTinkererApplication.WIDTH = 1080
+TalkingTinkererApplication.STICKER_WIDTH  = 320
+TalkingTinkererApplication.STICKER_HEIGHT = 320
 
 TalkingTinkererApplication.VOWEL_TO_SHAPE = {
 	a = "d",
@@ -105,7 +107,7 @@ function TalkingTinkererApplication:loadTranscript()
 	do
 		success, error = pcall(function()
 			for line in io.lines(filename) do
-				local time, animation = line:match("(%d*%.%d*)%s*(%w*)")
+				local time, animation = line:match("(%d*%.%d*)%s*([%w%d_]*)")
 
 				table.insert(self.animations, {
 					time = tonumber(time),
@@ -151,7 +153,7 @@ function TalkingTinkererApplication:loadTranscript()
 end
 
 function TalkingTinkererApplication:getCurrentFrame(currentTime)
-	local animation = self.animations[0]
+	local animation = self.animations[1]
 	for i = 2, #self.animations do
 		local a = self.animations[i]
 
@@ -183,9 +185,10 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 			self.targetView:playAnimation(channel or 'idle', animation, priority or 0, 0)
 		else
 			Log.info("Changed animation to '%s'", animationFilename)
-			self.targetView:playAnimation(channel or 'main', animation, priority or 1, 0)
+			self.targetView:playAnimation(channel or 'main', animation, priority or 2, 0)
 		end
-
+	else
+		Log.warn("No animation for '%s'.", animation)
 	end
 
 	local gameView = self:getGameView()
@@ -226,7 +229,10 @@ function TalkingTinkererApplication:onLipSyncAnimation(_, event)
 		local shape = self.VOWEL_TO_SHAPE[vowel]
 
 		if event.phonemeIndex ~= self.lastPhonemeIndex then
-			self:playAnimation({ animation = shape:upper() })
+			if not _ARGS["sticker"] then
+				self:playAnimation({ animation = shape:upper() })
+			end
+
 			self.lastPhonemeIndex = event.phonemeIndex
 		end
 	end
@@ -254,9 +260,18 @@ function TalkingTinkererApplication:loadCamera()
 end
 
 function TalkingTinkererApplication:renderTick()
+	local width, height
+	if _ARGS["sticker"] then
+		width = self.STICKER_WIDTH
+		height = self.STICKER_HEIGHT
+	else
+		width = self.WIDTH
+		height = self.HEIGHT
+	end
+
 	local gameCamera = self:getCamera()
-	gameCamera:setWidth(self.WIDTH)
-	gameCamera:setHeight(self.HEIGHT)
+	gameCamera:setWidth(width)
+	gameCamera:setHeight(height)
 
 	self.targetRenderer:setClearColor(Color(0, 0, 0, 0))
 	self.targetRenderer:setCullEnabled(true)
@@ -266,8 +281,8 @@ function TalkingTinkererApplication:renderTick()
 	self.targetRenderer:draw(
 		self.targetView:getSceneNode(),
 		0,
-		self.WIDTH,
-		self.HEIGHT)
+		width,
+		height)
 	love.graphics.pop()
 
 	return self.targetRenderer:getOutputBuffer():getColor():newImageData()
@@ -281,14 +296,21 @@ function TalkingTinkererApplication:drawTinkerer()
 
 	love.filesystem.createDirectory(directory)
 
-	local endTime = self.maxTime + self.END_DELAY_SECONDS
+	local endTime = self.maxTime + (_ARGS["sticker"] and 0 or self.END_DELAY_SECONDS)
 	local currentTime = 0
 	local deltaPerTick = 1 / self.FPS
 
 	local currentFrame = nil
 
-	self:playAnimation({ animation = "Idle" }, "idle", 0)
-	self:playAnimation({ animation = "A" })
+	if not _ARGS["sticker"] then
+		self:playAnimation({ animation = "Idle" }, "idle", 0)
+		self:playAnimation({ animation = "A" })
+	end
+
+	local f = love.timer.getDelta
+	love.timer.getDelta = function()
+		return deltaPerTick
+	end
 
 	local index = 0
 	while currentTime <= endTime do
@@ -309,6 +331,8 @@ function TalkingTinkererApplication:drawTinkerer()
 		currentTime = currentTime + deltaPerTick
 		index = index + 1
 	end
+
+	love.timer.getDelta = f
 
 	local url = string.format("%s/%s", love.filesystem.getSaveDirectory(), directory)
 	Log.info("Saved Tinkerer animation to directory '%s'", url)
