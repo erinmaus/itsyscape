@@ -49,7 +49,7 @@ function Light:perform(state, peep, item)
 		local perform = CallbackCommand(Action.perform, self, state, peep)
 
 		local queue = peep:getCommandQueue()
-		local success = queue:interrupt(light) and queue:push(wait) and queue:push(perform)
+		local success = queue:interrupt(light) and queue:push(perform) and queue:push(wait)
 		if success and walk then
 			return queue:push(walk)
 		else
