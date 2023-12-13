@@ -16,6 +16,8 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local WidgetRenderManager = Class()
 
+WidgetRenderManager.HOVER_TIME = 4
+
 WidgetRenderManager.DebugStats = Class(DebugStats)
 
 function WidgetRenderManager.DebugStats:process(renderer, widget, state)
@@ -150,13 +152,30 @@ function WidgetRenderManager:start()
 	do
 		local mx, my = love.graphics.getScaledPoint(love.mouse.getPosition())
 
-		self.topHovered = self.input:getWidgetUnderPoint(
+		local widget = self.input:getWidgetUnderPoint(
 			mx, my,
 			0, 0, nil,
 			function(w)
 				return w:getIsFocusable() or w:getToolTip()
 			end,
 			true)
+
+		if widget and widget ~= self.topHovered then
+			self.topHovered = widget
+			self.topHoveredTime = love.timer.getTime()
+		end
+
+		if self.topHovered then
+			mx = math.floor(mx)
+			my = math.floor(my)
+
+			if self.topHoveredX ~= mx or self.topHoveredY ~= my then
+				self.topHoveredTime = love.timer.getTime()
+
+				self.topHoveredX = mx
+				self.topHoveredY = my
+			end
+		end
 	end
 
 	do
@@ -225,13 +244,16 @@ function WidgetRenderManager:stop()
 		end
 
 		local _, _, _, _, offsetX, offsetY = love.graphics.getScaledMode()
-		for widget, toolTip in pairs(self.hovered) do
-			if toolTip then
-				itsyrealm.graphics.translate(offsetX, offsetY)
-				itsyrealm.graphics.translate(mouseX, mouseY)
-				self:draw(toolTip.w, toolTip.s, true)
-				itsyrealm.graphics.translate(-mouseX, -mouseY)
-				itsyrealm.graphics.translate(-offsetX, -offsetY)
+		local difference = love.timer.getTime() - (self.topHoveredTime or 0)
+		if difference <= WidgetRenderManager.HOVER_TIME or not _MOBILE then
+			for widget, toolTip in pairs(self.hovered) do
+				if toolTip then
+					itsyrealm.graphics.translate(offsetX, offsetY)
+					itsyrealm.graphics.translate(mouseX, mouseY)
+					self:draw(toolTip.w, toolTip.s, true)
+					itsyrealm.graphics.translate(-mouseX, -mouseY)
+					itsyrealm.graphics.translate(-offsetX, -offsetY)
+				end
 			end
 		end
 	end
@@ -267,7 +289,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		if widget == self.topHovered then
 			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
 		else
-			self.hovered[widget] = false
+			self.hovered[widget] = nil
 		end
 	end
 
