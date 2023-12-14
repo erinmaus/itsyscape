@@ -880,7 +880,7 @@ function UIView:update(delta)
 					hintLabel = Label()
 					hintLabel:setStyle(LabelStyle({
 						font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-						fontSize = 24,
+						fontSize = 30,
 						color = { 1, 1, 1, 1 },
 						align = "center",
 						textShadow = true
