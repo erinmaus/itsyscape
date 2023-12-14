@@ -122,6 +122,8 @@ function PlayerPowers:onActivateDefensivePower(index)
 end
 
 function PlayerPowers:createPowerButtons(powers, layout, onClick)
+	powers = powers or {}
+
 	layout:clearChildren()
 	layout:setSize(self:getSize(), 0)
 
