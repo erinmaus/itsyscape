@@ -757,11 +757,15 @@ function DemoApplication:updateMobileMouse()
 				Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
 				touch.pressed = true
 				touch.released = true
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
 			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME then
 				self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
 				self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
 				touch.pressed = true
 				touch.released = true
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
 			elseif currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA then
 				self.cameraController:mousePress(
 					false,
