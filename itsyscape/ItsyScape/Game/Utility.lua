@@ -1608,14 +1608,23 @@ function Utility.Peep.notify(peep, message, suppressGenericNotification)
 		local ui = peep:getDirector():getGameInstance():getUI()
 
 		local didUpdate = false
-		for _, interface in ui:getInterfacesForPeep(peep, "GenericNotification") do
-			interface:updateMessage(message)
-			didUpdate = true
-			break
+		if not suppressGenericNotification then
+			for _, interface in ui:getInterfacesForPeep(peep, "GenericNotification") do
+				interface:updateMessage(message)
+				didUpdate = true
+				break
+			end
 		end
 
 		if not didUpdate then
-			Utility.UI.openInterface(peep, "GenericNotification", false, message)
+			if not suppressGenericNotification then
+				Utility.UI.openInterface(peep, "GenericNotification", false, message)
+			else
+				local player = Utility.Peep.getPlayerModel(peep)
+				if player then
+					player:addExclusiveChatMessage(message)
+				end
+			end
 		end
 	end
 end
