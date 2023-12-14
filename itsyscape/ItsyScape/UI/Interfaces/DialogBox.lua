@@ -94,7 +94,7 @@ function DialogBox:new(id, index, ui)
 		align = 'center',
 		textShadow = true,
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 24
+		fontSize = _MOBILE and 28 or 24
 	}, self:getView():getResources()))
 	clickToContinue:setPosition(
 		0,
