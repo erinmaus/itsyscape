@@ -365,6 +365,9 @@ function CharacterCustomization:new(id, index, ui)
 		table.insert(self.inputs, descriptionInput)
 
 		panel:addChild(basic)
+
+		local basicWidth, basicHeight = basic:getSize()
+		panel:setSize(basicWidth, basicHeight + CharacterCustomization.BUTTON_SIZE)
 		mainLayout:addChild(panel)
 	end
 
