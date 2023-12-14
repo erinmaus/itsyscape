@@ -16,7 +16,6 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
-local _MOBILE = true
 local Ship = Class(Map)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
