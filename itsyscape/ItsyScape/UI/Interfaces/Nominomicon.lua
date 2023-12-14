@@ -23,33 +23,47 @@ local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local Nominomicon = Class(Interface)
-Nominomicon.WIDTH = 640
+Nominomicon.WIDTH = 800
 Nominomicon.HEIGHT = 480
 Nominomicon.BUTTON_SIZE = 48
 Nominomicon.BUTTON_PADDING = 4
 Nominomicon.PADDING = 4
 
-Nominomicon.INACTIVE_BUTTON_STYLE = function(color)
+Nominomicon.INACTIVE_BUTTON_STYLE = function(icon, color)
 	return {
 		pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 		inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		icon = {
+			filename = icon,
+			x = 0.1,
+			color = color or { 1, 1, 1, 1 }
+		},
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
-		textShadow = true
+		textShadow = true,
+		textOutline = true,
+		textShadowOffset = 2
 	}
 end
 
-Nominomicon.ACTIVE_BUTTON_STYLE = function(color)
+Nominomicon.ACTIVE_BUTTON_STYLE = function(icon, color)
 	return {
 		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 		inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		icon = {
+			filename = icon,
+			x = 0.1,
+			color = color or { 1, 1, 1, 1 }
+		},
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
-		textShadow = true
+		textShadow = true,
+		textOutline = true,
+		textShadowOffset = 2
 	}
 end
 
@@ -151,17 +165,17 @@ function Nominomicon:updateToggleButton()
 	end
 end
 
-function Nominomicon:getQuestStatusColor(quest)
+function Nominomicon:getQuestStatusIcon(quest)
 	if not quest.isQuest then
-		return { 1, 1, 1, 1 }
+		return nil
 	elseif quest.didComplete then
-		return { 0, 1, 0, 1}
+		return "Resources/Game/UI/Icons/Concepts/Complete.png"
 	elseif quest.inProgress then
-		return { 1, 1, 0, 1 }
+		return "Resources/Game/UI/Icons/Things/Compass.png"
 	elseif not quest.canStart then
-		return { 1, 0, 0, 1 }
+		return "Resources/Game/UI/Icons/Concepts/Lock.png", { 0.5, 0.5, 0.5, 1.0 }
 	else
-		return { 1, 1, 1, 1 }
+		return nil
 	end
 end
 
@@ -183,7 +197,7 @@ function Nominomicon:update(...)
 
 			button:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(quest)),
 					self:getView():getResources()))
 			button:setData("quest", quest)
 			button:setID("Quest-" .. quest.id)
@@ -222,14 +236,14 @@ function Nominomicon:selectItem(index, button, mouseButton)
 		if self.previousSelection then
 			self.previousSelection:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(self.previousSelection:getData("quest"))),
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(self.previousSelection:getData("quest"))),
 					self:getView():getResources()))
 		end
 
 		if self.previousSelection ~= button then
 			button:setStyle(
 				ButtonStyle(
-					Nominomicon.ACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					Nominomicon.ACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(quest)),
 					self:getView():getResources()))
 
 			self.activeItem = index
