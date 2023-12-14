@@ -103,12 +103,14 @@ function ButtonStyle:draw(widget)
 		local y = height * self.iconY
 		local scaleX = self.iconWidth / self.icon:getWidth()
 		local scaleY = self.iconHeight / self.icon:getHeight()
+		love.graphics.setColor(self.iconColor:get())
 		itsyrealm.graphics.draw(
 			self.icon,
 			x, y,
 			0,
 			scaleX, scaleY,
 			self.icon:getWidth() / 2, self.icon:getHeight() / 2)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	if #widget:getText() > 0 then
