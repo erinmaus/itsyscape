@@ -135,7 +135,7 @@ function love.mousereleased(x, y, button, isTouch)
 end
 
 function love.wheelmoved(...)
-	if _APP and not _CONF.server and not _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:mouseScroll(...)
 	end
 end
