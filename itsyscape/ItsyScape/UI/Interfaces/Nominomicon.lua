@@ -36,7 +36,7 @@ Nominomicon.INACTIVE_BUTTON_STYLE = function(color)
 		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		color = color or { 1, 1, 1, 1 },
-		fontSize = 16,
+		fontSize = _MOBILE and 22 or 16,
 		textShadow = true
 	}
 end
@@ -48,7 +48,7 @@ Nominomicon.ACTIVE_BUTTON_STYLE = function(color)
 		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		color = color or { 1, 1, 1, 1 },
-		fontSize = 16,
+		fontSize = _MOBILE and 22 or 16,
 		textShadow = true
 	}
 end
