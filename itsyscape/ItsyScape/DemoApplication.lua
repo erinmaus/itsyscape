@@ -1094,6 +1094,11 @@ function DemoApplication:hideToolTip()
 end
 
 function DemoApplication:updateToolTip(delta)
+	if _MOBILE then
+		self:hideToolTip()
+		return
+	end
+
 	local isUIBlocking = self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition())
 
 	if not isUIBlocking then
