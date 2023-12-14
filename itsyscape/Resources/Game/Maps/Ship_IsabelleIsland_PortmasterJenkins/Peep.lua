@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -105,7 +106,7 @@ Ship.COMBAT_HINT = {
 	},
 }
 
-function Ship.showTip(tips, target)
+function Ship:showTip(tips, target)
 	target:addBehavior(DisabledBehavior)
 
 	local index = 0
@@ -123,10 +124,53 @@ function Ship.showTip(tips, target)
 				after)
 		else
 			target:removeBehavior(DisabledBehavior)
+
+			self:listenForAttack()
 		end
 	end
 
 	after()
+end
+
+function Ship:listenForAttack()
+	self.numTimesAttacked = 0
+	self.previousTarget = nil
+
+	local SPAM_MESSAGE_THRESHOLD = 3
+
+	local notifiedPlayer = false
+
+	local function performAttackAction(_, e)
+		if e.action:is("Attack") then
+			if self.numTimesAttacked == 0 then
+				Utility.Peep.notify(self.player, "You'll automatically deal blows until the foe is slain.")
+			end
+
+			local target = self.player:getBehavior(CombatTargetBehavior)
+			target = target and target.actor
+
+			if self.previousTarget ~= target then
+				self.previousTarget = target
+				self.numTimesAttacked = 1
+			else
+				self.numTimesAttacked = self.numTimesAttacked + 1
+			end
+
+			if self.numTimesAttacked > SPAM_MESSAGE_THRESHOLD then
+				self.numTimesAttacked = 1
+
+				Utility.Peep.notify(self.player, _MOBILE and "You only need to tap once to attack!" or "You only need to click once to attack!", notifiedPlayer)
+				notifiedPlayer = true
+			end
+		end
+	end
+
+	local function travel()
+		self.player:silence("actionPerformed", performAttackAction)
+		self.player:silence("travel", travel)
+	end
+
+	self.player:listen("actionPerformed", performAttackAction)
 end
 
 function Ship:new(resource, name, ...)
@@ -361,7 +405,7 @@ function Ship:update(director, game)
 				{ position = 'center' })
 
 			if not _DEBUG or _MOBILE then
-				Ship.showTip(Ship.COMBAT_HINT, self.player)
+				self:showTip(Ship.COMBAT_HINT, self.player)
 			end
 		end
 		
