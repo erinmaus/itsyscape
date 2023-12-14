@@ -160,9 +160,14 @@ function WidgetRenderManager:start()
 			end,
 			true)
 
-		if widget and widget ~= self.topHovered then
-			self.topHovered = widget
-			self.topHoveredTime = love.timer.getTime()
+		if widget then
+			if widget ~= self.topHovered then
+				self.topHovered = widget
+				self.topHoveredTime = love.timer.getTime()
+			end
+		else
+			self.topHovered = nil
+			self.topHoveredTime = nil
 		end
 
 		if self.topHovered then
