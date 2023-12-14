@@ -163,7 +163,7 @@ function LocalUI:_open(peep, interfaceID, blocking, ...)
 	self.interfaces[interfaceID] = i
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
-	self.onPush(self, interfaceID, i.n, controller:pull())
+	self.onPush(self, interfaceID, i.n, controller:pull(), controller:getPlayer())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
 	Analytics:openedInterface(peep, interfaceID, blocking)
