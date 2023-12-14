@@ -32,12 +32,13 @@ local CharacterCustomization = Class(Interface)
 CharacterCustomization.BUTTON_SIZE = 48
 CharacterCustomization.CONFIRM_BUTTON_WIDTH = 128
 CharacterCustomization.CONFIRM_BUTTON_HEIGHT = 64
-CharacterCustomization.PADDING = 16
+CharacterCustomization.PADDING = 8
 CharacterCustomization.CUSTOMIZATION_WIDTH = 480
 CharacterCustomization.INFO_WIDTH = 320
 CharacterCustomization.INFO_HEIGHT = 540
 CharacterCustomization.CUSTOMIZATION_HEIGHT = 540
 CharacterCustomization.INPUT_HEIGHT = 64
+CharacterCustomization.LABEL_HEIGHT = 48
 
 CharacterCustomization.TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
@@ -50,7 +51,7 @@ CharacterCustomization.BUTTON_STYLE = {
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 24
+	fontSize = _MOBILE and 28 or 24
 }
 
 CharacterCustomization.ACTIVE_BUTTON_STYLE = {
@@ -58,15 +59,7 @@ CharacterCustomization.ACTIVE_BUTTON_STYLE = {
 	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 24
-}
-
-CharacterCustomization.ACTIVE_BUTTON_STYLE = {
-	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
-	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
-	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 24
+	fontSize = _MOBILE and 28 or 24
 }
 
 CharacterCustomization.DESCRIPTION_STYLE = {
@@ -81,7 +74,7 @@ CharacterCustomization.SELECT_INACTIVE_BOX_BUTTON_STYLE = {
 	hover = Color(0.7, 0.6, 0.5),
 	active = Color(0.5, 0.4, 0.3),
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 24,
+	fontSize = _MOBILE and 28 or 24,
 	textX = 0.0,
 	textY = 0.5,
 	textAlign = 'left',
@@ -93,7 +86,7 @@ CharacterCustomization.SELECT_ACTIVE_BOX_BUTTON_STYLE = {
 	hover = Color(0.7, 0.6, 0.5),
 	active = Color(0.5, 0.4, 0.3),
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 24,
+	fontSize = _MOBILE and 28 or 24,
 	textX = 0.0,
 	textY = 0.5,
 	textAlign = 'left',
@@ -103,7 +96,7 @@ CharacterCustomization.SELECT_ACTIVE_BOX_BUTTON_STYLE = {
 CharacterCustomization.VALUE_STYLE = {
 	color = { 1, 1, 1, 1 },
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 24,
+	fontSize = _MOBILE and 28 or 24,
 	textShadow = true
 }
 
@@ -112,7 +105,7 @@ CharacterCustomization.TEXT_INPUT_STYLE = {
 	hover = "Resources/Renderers/Widget/TextInput/Default-Hover.9.png",
 	active = "Resources/Renderers/Widget/TextInput/Default-Active.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 24,
+	fontSize = _MOBILE and 36 or 24,
 	color = Color(1, 1, 1, 1),
 	textShadow = true,
 	padding = 4
@@ -133,7 +126,7 @@ CharacterCustomization.DIALOG_CLICK_TO_CONTINUE_STYLE = {
 	align = 'center',
 	textShadow = true,
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 24
+	fontSize = _MOBILE and 28 or 24
 }
 
 function CharacterCustomization:new(id, index, ui)
@@ -254,7 +247,7 @@ function CharacterCustomization:new(id, index, ui)
 		local state = self:getState()
 
 		local INPUT_WIDTH = CharacterCustomization.INFO_WIDTH - CharacterCustomization.PADDING * 2
-		local INPUT_HEIGHT = 48
+		local INPUT_HEIGHT = _MOBILE and CharacterCustomization.INPUT_HEIGHT or 48
 
 		local panel = Panel()
 		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
@@ -269,6 +262,7 @@ function CharacterCustomization:new(id, index, ui)
 		panel:addChild(titleLabel)
 
 		local basic = GridLayout()
+		basic:setWrapContents(true)
 		basic:setSize(CharacterCustomization.INFO_WIDTH, CharacterCustomization.INFO_HEIGHT)
 		basic:setPadding(CharacterCustomization.PADDING, CharacterCustomization.PADDING)
 		basic:setPosition(0, CharacterCustomization.BUTTON_SIZE)
@@ -276,7 +270,7 @@ function CharacterCustomization:new(id, index, ui)
 		local nameLabel = Label()
 		nameLabel:setText("Name:")
 		nameLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
-		nameLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		nameLabel:setSize(INPUT_WIDTH, CharacterCustomization.LABEL_HEIGHT)
 		basic:addChild(nameLabel)
 
 		local nameInput = TextInput()
@@ -302,7 +296,7 @@ function CharacterCustomization:new(id, index, ui)
 		local genderLabel = Label()
 		genderLabel:setText("Gender:")
 		genderLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
-		genderLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		genderLabel:setSize(INPUT_WIDTH, CharacterCustomization.LABEL_HEIGHT)
 		basic:addChild(genderLabel)
 
 		local genderSelect = ScrollablePanel(GridLayout)
@@ -344,7 +338,7 @@ function CharacterCustomization:new(id, index, ui)
 		local descriptionLabel = Label()
 		descriptionLabel:setText("Gender Description:")
 		descriptionLabel:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, self:getView():getResources()))
-		descriptionLabel:setSize(INPUT_WIDTH, INPUT_HEIGHT)
+		descriptionLabel:setSize(INPUT_WIDTH, CharacterCustomization.LABEL_HEIGHT)
 		basic:addChild(descriptionLabel)
 
 		local descriptionInput = TextInput()
@@ -378,7 +372,7 @@ function CharacterCustomization:new(id, index, ui)
 		local state = self:getState()
 
 		local INPUT_WIDTH = (CharacterCustomization.INFO_WIDTH - CharacterCustomization.PADDING * 2) / 2
-		local INPUT_HEIGHT = 48
+		local INPUT_HEIGHT = _MOBILE and CharacterCustomization.INPUT_HEIGHT or 48
 
 		local panel = Panel()
 		panel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
@@ -455,8 +449,8 @@ function CharacterCustomization:new(id, index, ui)
 			grid:addChild(button)
 		end
 
-		setPronounPlurality("Plural: ON", true)
-		setPronounPlurality("Plural: OFF", false)
+		setPronounPlurality("Plural", true)
+		setPronounPlurality("Singular", false)
 
 		panel:addChild(grid)
 		mainLayout:addChild(panel)
