@@ -360,7 +360,7 @@ function Ship:update(director, game)
 				end,
 				{ position = 'center' })
 
-			if not _DEBUG then
+			if not _DEBUG or _MOBILE then
 				Ship.showTip(Ship.COMBAT_HINT, self.player)
 			end
 		end
