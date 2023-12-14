@@ -16,15 +16,24 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local Panel = require "ItsyScape.UI.Panel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local Widget = require "ItsyScape.UI.Widget"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerStats = Class(PlayerTab)
 PlayerStats.PADDING = 8
-PlayerStats.BUTTON_WIDTH = 72
-PlayerStats.BUTTON_HEIGHT = 32
+
+if _MOBILE then
+	PlayerStats.BUTTON_WIDTH = (PlayerTab.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - PlayerStats.PADDING * 3) / 2
+	PlayerStats.BUTTON_HEIGHT = 48
+else
+	PlayerStats.BUTTON_WIDTH = 72
+	PlayerStats.BUTTON_HEIGHT = 32
+end
+
 PlayerStats.SORT_ORDER = {
 	["Magic"] = 1,
 	["Wisdom"] = 2,
@@ -60,12 +69,13 @@ function PlayerStats:new(id, index, ui)
 	panel:setSize(self:getSize())
 	self:addChild(panel)
 
-	self.layout = GridLayout()
-	self.layout:setUniformSize(
+	self.layout = ScrollablePanel(GridLayout)
+	self.layout:getInnerPanel():setWrapContents(true)
+	self.layout:getInnerPanel():setUniformSize(
 		true,
 		PlayerStats.BUTTON_WIDTH,
 		PlayerStats.BUTTON_HEIGHT)
-	self.layout:setPadding(PlayerStats.PADDING, PlayerStats.PADDING)
+	self.layout:getInnerPanel():setPadding(PlayerStats.PADDING, PlayerStats.PADDING)
 	panel:addChild(self.layout)
 
 	self.layout:setSize(self:getSize())
@@ -105,6 +115,8 @@ function PlayerStats:update(...)
 	end
 
 	self:updateStats(state.skills)
+	self.combatLevelButton:setText(tostring(state.combatLevel or 1))
+	self.overallStatsButton:setText(tostring(state.totalLevel or #state.skills))
 end
 
 function PlayerStats:populate(skills)
@@ -114,6 +126,52 @@ function PlayerStats:populate(skills)
 		table.insert(self.buttons, button)
 		self.layout:addChild(button)
 	end
+
+	if _MOBILE then
+		self.layout:addChild(Widget())
+	end
+
+	self.overallStatsButton = Button()
+	self.overallStatsButton:setStyle(ButtonStyle({
+		inactive = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		hover = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		pressed = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		color = Color(1),
+		icon = { filename = "Resources/Game/UI/Icons/Common/Skills.png", x = 0.25, y = 0.5, width = _MOBILE and 48 or 32, height = _MOBILE and 48 or 32 },
+		font = _MOBILE and "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf" or "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
+		fontSize = _MOBILE and 24 or 18,
+		textX = _MOBILE and 0.95 or 0.9,
+		textY = _MOBILE and 0.5 or 0.6,
+		textOutline = true,
+		textShadowOffset = _MOBILE and 2 or 1,
+		textAlign = 'right'
+	}, self:getView():getResources()))
+	self.overallStatsButton:setToolTip(
+		ToolTip.Header("Total Level"),
+		ToolTip.Text("The sum of all your unboosted stats."))
+	self.layout:addChild(self.overallStatsButton)
+
+	self.combatLevelButton = Button()
+	self.combatLevelButton:setStyle(ButtonStyle({
+		inactive = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		hover = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		pressed = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
+		color = Color(1),
+		icon = { filename = "Resources/Game/UI/Icons/Common/Stance.png", x = 0.25, y = 0.5, width = _MOBILE and 48 or 32, height = _MOBILE and 48 or 32 },
+		font = _MOBILE and "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf" or "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
+		fontSize = _MOBILE and 24 or 18,
+		textX = _MOBILE and 0.95 or 0.9,
+		textY = _MOBILE and 0.5 or 0.6,
+		textOutline = true,
+		textShadowOffset = _MOBILE and 2 or 1,
+		textAlign = 'right'
+	}, self:getView():getResources()))
+	self.combatLevelButton:setToolTip(
+		ToolTip.Header("Combat Level"),
+		ToolTip.Text("An effective power rating based on your combat stats."))
+	self.layout:addChild(self.combatLevelButton)
+
+	self.layout:setScrollSize(self.layout:getInnerPanel():getSize())
 end
 
 function PlayerStats:updateStats(skills)
@@ -137,12 +195,13 @@ function PlayerStats:updateStats(skills)
 		button:setStyle(ButtonStyle({
 			inactive = image, hover = image, pressed = image,
 			color = color,
-			icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skills[i].name), x = 0.25, y = 0.5, width = 32, height = 32 },
-			font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
-			fontSize = 18,
-			textX = 0.9,
-			textY = 0.6,
-			textShadow = true,
+			icon = { filename = string.format("Resources/Game/UI/Icons/Skills/%s.png", skills[i].name), x = 0.25, y = 0.5, width = _MOBILE and 48 or 32, height = _MOBILE and 48 or 32 },
+			font = _MOBILE and "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf" or "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
+			fontSize = _MOBILE and 24 or 18,
+			textX = _MOBILE and 0.95 or 0.9,
+			textY = _MOBILE and 0.5 or 0.6,
+			textOutline = true,
+			textShadowOffset = _MOBILE and 2 or 1,
 			textAlign = 'right'
 		}, self:getView():getResources()))
 
