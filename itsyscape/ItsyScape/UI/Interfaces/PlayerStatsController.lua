@@ -33,12 +33,14 @@ function PlayerStatsController:pull()
 
 	local gameDB = self:getDirector():getGameDB()
 
-	local result = { skills = {} }
+	local result = { skills = {}, totalLevel = 0, combatLevel = Utility.Combat.getCombatLevel(self:getPeep()) }
 	if stats and stats.stats then
 		stats = stats.stats
 
 		for skill in stats:iterate() do
 			local s = gameDB:getResource(skill:getName(), "Skill")
+
+			result.totalLevel = result.totalLevel + skill:getBaseLevel()
 
 			table.insert(result.skills, {
 				name = Utility.getName(s, gameDB),

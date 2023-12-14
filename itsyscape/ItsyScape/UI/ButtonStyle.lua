@@ -58,6 +58,8 @@ function ButtonStyle:new(t, resources)
 	self.textY = t.textY or 0.5
 	self.textAlign = t.textAlign or 'center'
 	self.textShadow = t.textShadow or false
+	self.textOutline = t.textOutline or false
+	self.textShadowOffset = t.textShadowOffset or 1
 
 	if t.icon and type(t.icon) == 'table' and t.icon.filename then
 		self.icon = resources:load(love.graphics.newImage, t.icon.filename)
@@ -65,6 +67,7 @@ function ButtonStyle:new(t, resources)
 		self.iconY = t.icon.y or 0.5
 		self.iconWidth = t.icon.width or self.icon:getWidth()
 		self.iconHeight = t.icon.height or self.icon:getHeight()
+		self.iconColor = Color(unpack(t.icon.color or {}))
 	else
 		self.icon = false
 	end
@@ -128,14 +131,35 @@ function ButtonStyle:draw(widget)
 			-- Nothing needed for 'left'.
 		end
 
-		if self.textShadow then
+		if self.textShadow or self.textOutline then
 			love.graphics.setColor(0, 0, 0, 1)
 			itsyrealm.graphics.printf(
 				widget:getText(),
-				x + 1,
-				y + 1,
+				x + self.textShadowOffset,
+				y + self.textShadowOffset,
 				width,
 				self.textAlign)
+
+			if self.textOutline then
+				itsyrealm.graphics.printf(
+					widget:getText(),
+					x - self.textShadowOffset,
+					y - self.textShadowOffset,
+					width,
+					self.textAlign)
+				itsyrealm.graphics.printf(
+					widget:getText(),
+					x - self.textShadowOffset,
+					y + self.textShadowOffset,
+					width,
+					self.textAlign)
+				itsyrealm.graphics.printf(
+					widget:getText(),
+					x + self.textShadowOffset,
+					y - self.textShadowOffset,
+					width,
+					self.textAlign)
+			end
 		end
 
 		love.graphics.setColor(self.color:get())
