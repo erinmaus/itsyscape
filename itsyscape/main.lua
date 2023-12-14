@@ -96,12 +96,13 @@ function love.load(args)
 		s, r = xpcall(r, debug.traceback, args)
 		if not s then
 			Log.warn("Failed to create %s: %s", main, r)
-		end
+		else
+			_APP = r
 
-		_APP = r
-		s, r = xpcall(r.initialize, debug.traceback, r)
-		if not s then
-			Log.warn("Failed to initialize %s: %s", main, r)
+			s, r = xpcall(_APP.initialize, debug.traceback, _APP)
+			if not s then
+				Log.warn("Failed to initialize %s: %s", main, r)
+			end
 		end
 	end
 
@@ -121,27 +122,27 @@ function love.update(delta)
 	end
 end
 
-function love.mousepressed(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mousePress(...)
+function love.mousepressed(x, y, button, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mousePress(x, y, button)
 	end
 end
 
-function love.mousereleased(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mouseRelease(...)
+function love.mousereleased(x, y, button, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mouseRelease(x, y, button)
 	end
 end
 
 function love.wheelmoved(...)
-	if _APP and not _CONF.server and not _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:mouseScroll(...)
 	end
 end
 
-function love.mousemoved(...)
-	if _APP and not _CONF.server and not _MOBILE then
-		_APP:mouseMove(...)
+function love.mousemoved(x, y, dx, dy, isTouch)
+	if _APP and not _CONF.server and not isTouch then
+		_APP:mouseMove(x, y, dx, dy)
 	end
 end
 
@@ -161,19 +162,19 @@ end
 -- end
 
 function love.touchpressed(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchPress(...)
 	end
 end
 
 function love.touchreleased(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchRelease(...)
 	end
 end
 
 function love.touchmoved(...)
-	if _APP and not _CONF.server and _MOBILE then
+	if _APP and not _CONF.server then
 		_APP:touchMove(...)
 	end
 end

@@ -42,12 +42,14 @@ UIProxy.push = Event.Set(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID", true),
 	Event.KeyArgument("index", true),
-	Event.Argument("state"))
+	Event.Argument("state"),
+	Event.Argument("player", true))
 UIProxy.push:link(
 	"onPush",
 	Event.Argument("interfaceID"),
 	Event.Argument("index"),
-	Event.Argument("state"))
+	Event.Argument("state"),
+	Event.Argument("player"))
 UIProxy.pull = Event.Get(
 	UIProxy.INTERFACE,
 	Event.KeyArgument("interfaceID"),

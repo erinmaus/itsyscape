@@ -1203,6 +1203,7 @@ include "Resources/Game/DB/Items/Gunpowder.lua"
 include "Resources/Game/DB/Items/Veggies.lua"
 include "Resources/Game/DB/Items/Candles.lua"
 include "Resources/Game/DB/Items/Isabellium.lua"
+include "Resources/Game/DB/Items/TreeSecondaries.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

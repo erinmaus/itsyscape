@@ -35,11 +35,15 @@ function SceneNode:getHandle()
 end
 
 function SceneNode:onWillRender(func)
+	local oldWillRender = self.willRender
+
 	if func then
 		self.willRender = func
 	else
 		self.willRender = false
 	end
+
+	return oldWillRender
 end
 
 function SceneNode:getBounds()

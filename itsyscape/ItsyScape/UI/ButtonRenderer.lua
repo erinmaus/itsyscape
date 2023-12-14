@@ -22,7 +22,7 @@ function ButtonRenderer:new(resources)
 		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 24,
+		fontSize = _MOBILE and 28 or 24,
 		textShadow = true,
 		padding = 4
 	}, resources)

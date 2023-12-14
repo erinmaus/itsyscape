@@ -663,24 +663,28 @@ function DemoApplication:updateMobileMouse()
 		end
 
 		local isUIActive = self:getUIView():getInputProvider():isBlocking(touch.currentX, touch.currentY)
-		if currentTouchMode == DemoApplication.TOUCH_MODE_NONE then
-			if isUIActive then
-				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_UI
-			else
-				currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
-			end
-		elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
-			currentTouchMode = DemoApplication.TOUCH_MODE_NONE
-		end
+		local hasFullscreenUI = self:getUIView():getIsFullscreen()
 
-		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
-		   currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
-		then
-			if not isMoving and currentTime > DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS then
-				if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
-					currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI
-				elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
-					currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME
+		if not touch.released then
+			if currentTouchMode == DemoApplication.TOUCH_MODE_NONE then
+				if isUIActive or hasFullscreenUI then
+					currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_UI
+				else
+					currentTouchMode = DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
+				end
+			elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
+			end
+
+			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI or
+			   currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME
+			then
+				if not isMoving and currentTime > DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS then
+					if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+						currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI
+					elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+						currentTouchMode = DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME
+					end
 				end
 			end
 		end
@@ -756,11 +760,15 @@ function DemoApplication:updateMobileMouse()
 				Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
 				touch.pressed = true
 				touch.released = true
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
 			elseif currentTouchMode == DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME then
 				self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
 				self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON, false)
 				touch.pressed = true
 				touch.released = true
+
+				currentTouchMode = DemoApplication.TOUCH_MODE_NONE
 			elseif currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA then
 				self.cameraController:mousePress(
 					false,
@@ -787,7 +795,9 @@ function DemoApplication:updateMobileMouse()
 			end
 		end
 	elseif #touches == 2 then
-		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
+		if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME or
+		   currentTouchMode == DemoApplication.TOUCH_MODE_DRAG_CAMERA
+		then
 			currentTouchMode = DemoApplication.TOUCH_MODE_ZOOM_CAMERA
 		elseif currentTouchMode == DemoApplication.TOUCH_MODE_ZOOM_CAMERA then
 			local touch1 = touches[1]
@@ -1084,6 +1094,11 @@ function DemoApplication:hideToolTip()
 end
 
 function DemoApplication:updateToolTip(delta)
+	if _MOBILE then
+		self:hideToolTip()
+		return
+	end
+
 	local isUIBlocking = self:getUIView():getInputProvider():isBlocking(love.mouse.getPosition())
 
 	if not isUIBlocking then
@@ -1156,9 +1171,7 @@ end
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
-	if _MOBILE then
-		self:updateMobileMouse()
-	end
+	self:updateMobileMouse()
 
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)
